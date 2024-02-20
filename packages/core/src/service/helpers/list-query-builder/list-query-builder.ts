@@ -4,10 +4,8 @@ import { ID, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 import {
     Brackets,
-    FindManyOptions,
     FindOneOptions,
     FindOptionsWhere,
-    In,
     Repository,
     SelectQueryBuilder,
     WhereExpressionBuilder,
@@ -15,6 +13,7 @@ import {
 import { BetterSqlite3Driver } from 'typeorm/driver/better-sqlite3/BetterSqlite3Driver';
 import { SqljsDriver } from 'typeorm/driver/sqljs/SqljsDriver';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
+import { snakeCase } from 'typeorm/util/StringUtils';
 
 import { ApiType } from '../../../api/common/get-api-type';
 import { RequestContext } from '../../../api/common/request-context';
@@ -267,11 +266,12 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         const alias = extendedOptions.entityAlias || entity.name.toLowerCase();
         const minimumRequiredRelations = this.getMinimumRequiredRelations(repo, options, extendedOptions);
         const qb = repo.createQueryBuilder(alias).setFindOptions({
-            relations: minimumRequiredRelations,
+            relations: unique([...minimumRequiredRelations, ...(extendedOptions?.relations ?? [])]),
             take,
             skip,
             where: extendedOptions.where || {},
             relationLoadStrategy: 'query',
+            loadEagerRelations: true,
         });
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
@@ -328,8 +328,6 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         }
 
         qb.orderBy(sort);
-        this.optimizeGetManyAndCountMethod(qb, repo, extendedOptions, minimumRequiredRelations);
-        this.optimizeGetManyMethod(qb, repo, extendedOptions, minimumRequiredRelations);
         return qb;
     }
 
@@ -399,6 +397,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         if (extendedOptions.channelId) {
             requiredRelations.push('channels');
         }
+
         if (extendedOptions.customPropertyMap) {
             const metadata = repository.metadata;
 
@@ -426,133 +425,6 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
 
     private customPropertyIsBeingUsed(property: string, options: ListQueryOptions<any>): boolean {
         return !!(options.sort?.[property] || options.filter?.[property]);
-    }
-
-    /**
-     * @description
-     * This will monkey-patch the `getManyAndCount()` method in order to implement a more efficient
-     * parallel-query based approach to joining multiple relations. This is loosely based on the
-     * solution outlined here: https://github.com/typeorm/typeorm/issues/3857#issuecomment-633006643
-     *
-     * TODO: When upgrading to TypeORM v0.3+, this will likely become redundant due to the new
-     * `relationLoadStrategy` feature.
-     */
-    private optimizeGetManyAndCountMethod<T extends VendureEntity>(
-        qb: SelectQueryBuilder<T>,
-        repo: Repository<T>,
-        extendedOptions: ExtendedListQueryOptions<T>,
-        alreadyJoined: string[],
-    ) {
-        const originalGetManyAndCount = qb.getManyAndCount.bind(qb);
-        qb.getManyAndCount = async () => {
-            const relations = unique(extendedOptions.relations ?? []);
-            const [entities, count] = await originalGetManyAndCount();
-            if (relations == null || alreadyJoined.sort().join() === relations?.sort().join()) {
-                // No further relations need to be joined, so we just
-                // return the regular result.
-                return [entities, count];
-            }
-            const result = await this.parallelLoadRelations(entities, relations, alreadyJoined, repo);
-            return [result, count];
-        };
-    }
-    /**
-     * @description
-     * This will monkey-patch the `getMany()` method in order to implement a more efficient
-     * parallel-query based approach to joining multiple relations. This is loosely based on the
-     * solution outlined here: https://github.com/typeorm/typeorm/issues/3857#issuecomment-633006643
-     *
-     * TODO: When upgrading to TypeORM v0.3+, this will likely become redundant due to the new
-     * `relationLoadStrategy` feature.
-     */
-    private optimizeGetManyMethod<T extends VendureEntity>(
-        qb: SelectQueryBuilder<T>,
-        repo: Repository<T>,
-        extendedOptions: ExtendedListQueryOptions<T>,
-        alreadyJoined: string[],
-    ) {
-        const originalGetMany = qb.getMany.bind(qb);
-        qb.getMany = async () => {
-            const relations = unique(extendedOptions.relations ?? []);
-            const entities = await originalGetMany();
-            if (relations == null || alreadyJoined.sort().join() === relations?.sort().join()) {
-                // No further relations need to be joined, so we just
-                // return the regular result.
-                return entities;
-            }
-            return this.parallelLoadRelations(entities, relations, alreadyJoined, repo);
-        };
-    }
-
-    private async parallelLoadRelations<T extends VendureEntity>(
-        entities: T[],
-        relations: string[],
-        alreadyJoined: string[],
-        repo: Repository<T>,
-    ): Promise<T[]> {
-        const entityMap = new Map(entities.map(e => [e.id, e]));
-        const entitiesIds = entities.map(({ id }) => id);
-
-        const splitRelations = relations
-            .map(r => r.split('.'))
-            .filter(path => {
-                // There is an issue in TypeORM currently which causes
-                // an error when trying to join nested relations inside
-                // customFields. See https://github.com/vendure-ecommerce/vendure/issues/1664
-                // The work-around is to omit them and rely on the GraphQL resolver
-                // layer to handle.
-                if (path[0] === 'customFields' && 2 < path.length) {
-                    return false;
-                }
-                return true;
-            });
-        const groupedRelationsMap = new Map<string, string[]>();
-
-        for (const relationParts of splitRelations) {
-            const group = groupedRelationsMap.get(relationParts[0]);
-            if (group) {
-                group.push(relationParts.join('.'));
-            } else {
-                groupedRelationsMap.set(relationParts[0], [relationParts.join('.')]);
-            }
-        }
-
-        // If the extendedOptions includes relations that were already joined, then
-        // we ignore those now so as not to do the work of joining twice.
-        for (const tableName of alreadyJoined) {
-            if (groupedRelationsMap.get(tableName)?.length === 1) {
-                groupedRelationsMap.delete(tableName);
-            }
-        }
-
-        const entitiesIdsWithRelations = await Promise.all(
-            Array.from(groupedRelationsMap.values())?.map(relationPaths => {
-                return repo
-                    .find({
-                        where: { id: In(entitiesIds) },
-                        select: ['id'],
-                        relations: relationPaths,
-                        loadEagerRelations: true,
-                    } as FindManyOptions<T>)
-                    .then(results =>
-                        results.map(r => ({
-                            relations: relationPaths[0].startsWith('customFields.')
-                                ? relationPaths
-                                : [relationPaths[0]],
-                            entity: r,
-                        })),
-                    );
-            }),
-        ).then(all => all.flat());
-        for (const entry of entitiesIdsWithRelations) {
-            const finalEntity = entityMap.get(entry.entity.id);
-            for (const relation of entry.relations) {
-                if (finalEntity) {
-                    this.assignDeep(relation, entry.entity, finalEntity);
-                }
-            }
-        }
-        return Array.from(entityMap.values());
     }
 
     private assignDeep<T>(relation: string | keyof T, source: T, target: T) {
