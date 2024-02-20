@@ -62,7 +62,15 @@ export const devConfig: VendureConfig = {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
 
-    customFields: {},
+    customFields: {
+        Product: [
+            {
+                name: 'secret',
+                type: 'string',
+                encryptionSecret: 'foo',
+            },
+        ],
+    },
     logger: new DefaultLogger({ level: LogLevel.Verbose }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),

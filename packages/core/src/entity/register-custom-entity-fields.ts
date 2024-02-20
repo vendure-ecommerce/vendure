@@ -2,14 +2,19 @@
 import { CustomFieldType } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import {
+    AfterLoad,
+    BeforeUpdate,
     Column,
     ColumnOptions,
     ColumnType,
     DataSourceOptions,
+    EntitySubscriberInterface,
+    EventSubscriber,
     getMetadataArgsStorage,
     Index,
     JoinColumn,
     JoinTable,
+    LoadEvent,
     ManyToMany,
     ManyToOne,
 } from 'typeorm';
@@ -19,6 +24,7 @@ import { DateUtils } from 'typeorm/util/DateUtils';
 import { CustomFieldConfig, CustomFields } from '../config/custom-field/custom-field-types';
 import { Logger } from '../config/logger/vendure-logger';
 import { VendureConfig } from '../config/vendure-config';
+import { VendureEntity } from './base/base.entity';
 
 /**
  * The maximum length of the "length" argument of a MySQL varchar column.
@@ -33,7 +39,8 @@ function registerCustomFieldsForEntity(
     entityName: keyof CustomFields,
     // eslint-disable-next-line @typescript-eslint/prefer-function-type
     ctor: { new (): any },
-    translation = false,
+    translation: boolean,
+    targetEntity: Function,
 ) {
     const customFields = config.customFields && config.customFields[entityName];
     const dbEngine = config.dbConnectionOptions.type;
@@ -101,6 +108,25 @@ function registerCustomFieldsForEntity(
                         // constraint if an index is defined on the column. For postgres/sqlite it is
                         // sufficient to add the `unique: true` property to the column options.
                         Index({ unique: true })(instance, name);
+                    }
+                    if (customField.type === 'string' && customField.encryptionSecret) {
+                        @EventSubscriber()
+                        class DynamicSubscriber implements EntitySubscriberInterface {
+                            listenTo() {
+                                return targetEntity;
+                            }
+
+                            afterLoad(entity: any, event?: LoadEvent<any>): Promise<any> | void {}
+
+                            beforeInsert(event: any) {
+                                console.log(`beforeInsert: ${event}`);
+                            }
+                            beforeUpdate(event: any) {
+                                console.log(`beforeUpdate: ${event}`);
+                            }
+                        }
+
+                        (config.dbConnectionOptions.subscribers as any[]).push(DynamicSubscriber);
                     }
                 }
             };
@@ -245,7 +271,13 @@ export function registerCustomEntityFields(config: VendureConfig) {
             const customFieldsMetadata = getCustomFieldsMetadata(entityName);
             const customFieldsClass = customFieldsMetadata.type();
             if (customFieldsClass && typeof customFieldsClass !== 'string') {
-                registerCustomFieldsForEntity(config, entityName, customFieldsClass as any);
+                registerCustomFieldsForEntity(
+                    config,
+                    entityName,
+                    customFieldsClass as any,
+                    false,
+                    customFieldsMetadata.target as Function,
+                );
             }
             const translationsMetadata = metadataArgsStorage
                 .filterRelations(customFieldsMetadata.target)
@@ -263,6 +295,7 @@ export function registerCustomEntityFields(config: VendureConfig) {
                         entityName,
                         customFieldsTranslationClass as any,
                         true,
+                        customFieldsMetadata.target as Function,
                     );
                 }
             } else {

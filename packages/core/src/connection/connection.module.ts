@@ -5,6 +5,7 @@ import { DataSourceOptions } from 'typeorm';
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
 import { TypeOrmLogger } from '../config/logger/typeorm-logger';
+import { EncryptedCustomFieldSubscriber } from './subscribers';
 
 import { TransactionSubscriber } from './transaction-subscriber';
 import { TransactionWrapper } from './transaction-wrapper';
@@ -14,7 +15,12 @@ let defaultTypeOrmModule: DynamicModule;
 
 @Module({
     imports: [ConfigModule],
-    providers: [TransactionalConnection, TransactionSubscriber, TransactionWrapper],
+    providers: [
+        TransactionalConnection,
+        TransactionSubscriber,
+        TransactionWrapper,
+        EncryptedCustomFieldSubscriber,
+    ],
     exports: [TransactionalConnection, TransactionSubscriber, TransactionWrapper],
 })
 export class ConnectionModule {
