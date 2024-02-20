@@ -1562,6 +1562,26 @@ export type Discount = {
   type: AdjustmentType;
 };
 
+export type DuplicateEntityError = ErrorResult & {
+  __typename?: 'DuplicateEntityError';
+  duplicationError: Scalars['String']['output'];
+  errorCode: ErrorCode;
+  message: Scalars['String']['output'];
+};
+
+export type DuplicateEntityInput = {
+  duplicatorInput: ConfigurableOperationInput;
+  entityId: Scalars['ID']['input'];
+  entityName: Scalars['String']['input'];
+};
+
+export type DuplicateEntityResult = DuplicateEntityError | DuplicateEntitySuccess;
+
+export type DuplicateEntitySuccess = {
+  __typename?: 'DuplicateEntitySuccess';
+  newEntityId: Scalars['ID']['output'];
+};
+
 /** Returned when attempting to create a Customer with an email address already registered to an existing User. */
 export type EmailAddressConflictError = ErrorResult & {
   __typename?: 'EmailAddressConflictError';
@@ -1582,6 +1602,15 @@ export type EntityCustomFields = {
   entityName: Scalars['String']['output'];
 };
 
+export type EntityDuplicatorDefinition = {
+  __typename?: 'EntityDuplicatorDefinition';
+  args: Array<ConfigArgDefinition>;
+  code: Scalars['String']['output'];
+  description: Scalars['String']['output'];
+  forEntities: Array<Scalars['String']['output']>;
+  requiresPermission: Array<Permission>;
+};
+
 export enum ErrorCode {
   ALREADY_REFUNDED_ERROR = 'ALREADY_REFUNDED_ERROR',
   CANCEL_ACTIVE_ORDER_ERROR = 'CANCEL_ACTIVE_ORDER_ERROR',
@@ -1591,6 +1620,7 @@ export enum ErrorCode {
   COUPON_CODE_INVALID_ERROR = 'COUPON_CODE_INVALID_ERROR',
   COUPON_CODE_LIMIT_ERROR = 'COUPON_CODE_LIMIT_ERROR',
   CREATE_FULFILLMENT_ERROR = 'CREATE_FULFILLMENT_ERROR',
+  DUPLICATE_ENTITY_ERROR = 'DUPLICATE_ENTITY_ERROR',
   EMAIL_ADDRESS_CONFLICT_ERROR = 'EMAIL_ADDRESS_CONFLICT_ERROR',
   EMPTY_ORDER_LINE_SELECTION_ERROR = 'EMPTY_ORDER_LINE_SELECTION_ERROR',
   FACET_IN_USE_ERROR = 'FACET_IN_USE_ERROR',
@@ -2822,6 +2852,11 @@ export type Mutation = {
   deleteZone: DeletionResponse;
   /** Delete a Zone */
   deleteZones: Array<DeletionResponse>;
+  /**
+   * Duplicate an existing entity using a specific EntityDuplicator.
+   * Since v2.2.0.
+   */
+  duplicateEntity: DuplicateEntityResult;
   flushBufferedJobs: Success;
   importProducts?: Maybe<ImportInfo>;
   /** Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})` */
@@ -3444,6 +3479,11 @@ export type MutationDeleteZoneArgs = {
 
 export type MutationDeleteZonesArgs = {
   ids: Array<Scalars['ID']['input']>;
+};
+
+
+export type MutationDuplicateEntityArgs = {
+  input: DuplicateEntityInput;
 };
 
 
@@ -5037,6 +5077,8 @@ export type Query = {
   customers: CustomerList;
   /** Returns a list of eligible shipping methods for the draft Order */
   eligibleShippingMethodsForDraftOrder: Array<ShippingMethodQuote>;
+  /** Returns all configured EntityDuplicators. */
+  entityDuplicators: Array<EntityDuplicatorDefinition>;
   facet?: Maybe<Facet>;
   facetValues: FacetValueList;
   facets: FacetList;
@@ -8298,6 +8340,8 @@ type ErrorResult_CouponCodeLimitError_Fragment = { __typename?: 'CouponCodeLimit
 
 type ErrorResult_CreateFulfillmentError_Fragment = { __typename?: 'CreateFulfillmentError', errorCode: ErrorCode, message: string };
 
+type ErrorResult_DuplicateEntityError_Fragment = { __typename?: 'DuplicateEntityError', errorCode: ErrorCode, message: string };
+
 type ErrorResult_EmailAddressConflictError_Fragment = { __typename?: 'EmailAddressConflictError', errorCode: ErrorCode, message: string };
 
 type ErrorResult_EmptyOrderLineSelectionError_Fragment = { __typename?: 'EmptyOrderLineSelectionError', errorCode: ErrorCode, message: string };
@@ -8368,7 +8412,7 @@ type ErrorResult_RefundStateTransitionError_Fragment = { __typename?: 'RefundSta
 
 type ErrorResult_SettlePaymentError_Fragment = { __typename?: 'SettlePaymentError', errorCode: ErrorCode, message: string };
 
-export type ErrorResultFragment = ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_CancelPaymentError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment | ErrorResult_CouponCodeExpiredError_Fragment | ErrorResult_CouponCodeInvalidError_Fragment | ErrorResult_CouponCodeLimitError_Fragment | ErrorResult_CreateFulfillmentError_Fragment | ErrorResult_EmailAddressConflictError_Fragment | ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_FacetInUseError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_GuestCheckoutError_Fragment | ErrorResult_IneligibleShippingMethodError_Fragment | ErrorResult_InsufficientStockError_Fragment | ErrorResult_InsufficientStockOnHandError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_InvalidFulfillmentHandlerError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_ManualPaymentStateError_Fragment | ErrorResult_MimeTypeError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_NegativeQuantityError_Fragment | ErrorResult_NoActiveOrderError_Fragment | ErrorResult_NoChangesSpecifiedError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_OrderLimitError_Fragment | ErrorResult_OrderModificationError_Fragment | ErrorResult_OrderModificationStateError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_PaymentMethodMissingError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_RefundAmountError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_RefundPaymentIdMissingError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_SettlePaymentError_Fragment;
+export type ErrorResultFragment = ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_CancelPaymentError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment | ErrorResult_CouponCodeExpiredError_Fragment | ErrorResult_CouponCodeInvalidError_Fragment | ErrorResult_CouponCodeLimitError_Fragment | ErrorResult_CreateFulfillmentError_Fragment | ErrorResult_DuplicateEntityError_Fragment | ErrorResult_EmailAddressConflictError_Fragment | ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_FacetInUseError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_GuestCheckoutError_Fragment | ErrorResult_IneligibleShippingMethodError_Fragment | ErrorResult_InsufficientStockError_Fragment | ErrorResult_InsufficientStockOnHandError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_InvalidFulfillmentHandlerError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_ManualPaymentStateError_Fragment | ErrorResult_MimeTypeError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_NegativeQuantityError_Fragment | ErrorResult_NoActiveOrderError_Fragment | ErrorResult_NoChangesSpecifiedError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_OrderLimitError_Fragment | ErrorResult_OrderModificationError_Fragment | ErrorResult_OrderModificationStateError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_PaymentMethodMissingError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_RefundAmountError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_RefundPaymentIdMissingError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_SettlePaymentError_Fragment;
 
 export type ShippingMethodFragment = { __typename?: 'ShippingMethod', id: string, createdAt: any, updatedAt: any, code: string, name: string, description: string, fulfillmentHandlerCode: string, checker: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> }, calculator: { __typename?: 'ConfigurableOperation', code: string, args: Array<{ __typename?: 'ConfigArg', name: string, value: string }> }, translations: Array<{ __typename?: 'ShippingMethodTranslation', id: string, languageCode: LanguageCode, name: string, description: string }> };
 
@@ -8425,6 +8469,18 @@ export type AssetPreviewQueryQueryVariables = Exact<{
 
 
 export type AssetPreviewQueryQuery = { asset?: { __typename?: 'Asset', id: string, createdAt: any, updatedAt: any, name: string, fileSize: number, mimeType: string, type: AssetType, preview: string, source: string, width: number, height: number, tags: Array<{ __typename?: 'Tag', id: string, value: string }>, focalPoint?: { __typename?: 'Coordinate', x: number, y: number } | null } | null };
+
+export type GetEntityDuplicatorsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetEntityDuplicatorsQuery = { entityDuplicators: Array<{ __typename?: 'EntityDuplicatorDefinition', code: string, description: string, forEntities: Array<string>, requiresPermission: Array<Permission>, args: Array<{ __typename?: 'ConfigArgDefinition', name: string, type: string, required: boolean, defaultValue?: any | null, list: boolean, ui?: any | null, label?: string | null, description?: string | null }> }> };
+
+export type DuplicateEntityMutationVariables = Exact<{
+  input: DuplicateEntityInput;
+}>;
+
+
+export type DuplicateEntityMutation = { duplicateEntity: { __typename?: 'DuplicateEntityError', errorCode: ErrorCode, message: string, duplicationError: string } | { __typename?: 'DuplicateEntitySuccess', newEntityId: string } };
 
 export type GetProductVariantsForMultiSelectorQueryVariables = Exact<{
   options: ProductVariantListOptions;
@@ -9128,6 +9184,8 @@ export const DeleteShippingMethodsDocument = {"kind":"Document","definitions":[{
 export const TestShippingMethodDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TestShippingMethod"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TestShippingMethodInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"testShippingMethod"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"eligible"}},{"kind":"Field","name":{"kind":"Name","value":"quote"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"priceWithTax"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}}]}}]}}]}}]} as unknown as DocumentNode<TestShippingMethodQuery, TestShippingMethodQueryVariables>;
 export const TestEligibleShippingMethodsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"TestEligibleShippingMethods"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"TestEligibleShippingMethodsInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"testEligibleShippingMethods"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"priceWithTax"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}}]}}]}}]} as unknown as DocumentNode<TestEligibleShippingMethodsQuery, TestEligibleShippingMethodsQueryVariables>;
 export const AssetPreviewQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AssetPreviewQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"asset"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"Asset"}},{"kind":"Field","name":{"kind":"Name","value":"tags"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"Tag"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"Asset"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Asset"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"fileSize"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"preview"}},{"kind":"Field","name":{"kind":"Name","value":"source"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"focalPoint"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"x"}},{"kind":"Field","name":{"kind":"Name","value":"y"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"Tag"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Tag"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]} as unknown as DocumentNode<AssetPreviewQueryQuery, AssetPreviewQueryQueryVariables>;
+export const GetEntityDuplicatorsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetEntityDuplicators"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"entityDuplicators"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"forEntities"}},{"kind":"Field","name":{"kind":"Name","value":"requiresPermission"}},{"kind":"Field","name":{"kind":"Name","value":"args"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"required"}},{"kind":"Field","name":{"kind":"Name","value":"defaultValue"}},{"kind":"Field","name":{"kind":"Name","value":"list"}},{"kind":"Field","name":{"kind":"Name","value":"ui"}},{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]}}]} as unknown as DocumentNode<GetEntityDuplicatorsQuery, GetEntityDuplicatorsQueryVariables>;
+export const DuplicateEntityDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"DuplicateEntity"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DuplicateEntityInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"duplicateEntity"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DuplicateEntitySuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"newEntityId"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ErrorResult"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"errorCode"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DuplicateEntityError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"duplicationError"}}]}}]}}]}}]} as unknown as DocumentNode<DuplicateEntityMutation, DuplicateEntityMutationVariables>;
 export const GetProductVariantsForMultiSelectorDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetProductVariantsForMultiSelector"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"options"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ProductVariantListOptions"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"productVariants"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"options"},"value":{"kind":"Variable","name":{"kind":"Name","value":"options"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"productId"}},{"kind":"Field","name":{"kind":"Name","value":"enabled"}},{"kind":"Field","name":{"kind":"Name","value":"languageCode"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}},{"kind":"Field","name":{"kind":"Name","value":"priceWithTax"}},{"kind":"Field","name":{"kind":"Name","value":"trackInventory"}},{"kind":"Field","name":{"kind":"Name","value":"outOfStockThreshold"}},{"kind":"Field","name":{"kind":"Name","value":"stockLevels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"stockLocationId"}},{"kind":"Field","name":{"kind":"Name","value":"stockOnHand"}},{"kind":"Field","name":{"kind":"Name","value":"stockAllocated"}},{"kind":"Field","name":{"kind":"Name","value":"stockLocation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"useGlobalOutOfStockThreshold"}},{"kind":"Field","name":{"kind":"Name","value":"sku"}},{"kind":"Field","name":{"kind":"Name","value":"featuredAsset"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"Asset"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalItems"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"Asset"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Asset"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"fileSize"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"preview"}},{"kind":"Field","name":{"kind":"Name","value":"source"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"focalPoint"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"x"}},{"kind":"Field","name":{"kind":"Name","value":"y"}}]}}]}}]} as unknown as DocumentNode<GetProductVariantsForMultiSelectorQuery, GetProductVariantsForMultiSelectorQueryVariables>;
 export const GetZoneSelectorListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetZoneSelectorList"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"options"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ZoneListOptions"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"zones"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"options"},"value":{"kind":"Variable","name":{"kind":"Name","value":"options"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalItems"}}]}}]}}]} as unknown as DocumentNode<GetZoneSelectorListQuery, GetZoneSelectorListQueryVariables>;
 export const RelationAssetInputQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"RelationAssetInputQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"asset"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"Asset"}},{"kind":"Field","name":{"kind":"Name","value":"tags"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"Tag"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"Asset"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Asset"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"fileSize"}},{"kind":"Field","name":{"kind":"Name","value":"mimeType"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"preview"}},{"kind":"Field","name":{"kind":"Name","value":"source"}},{"kind":"Field","name":{"kind":"Name","value":"width"}},{"kind":"Field","name":{"kind":"Name","value":"height"}},{"kind":"Field","name":{"kind":"Name","value":"focalPoint"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"x"}},{"kind":"Field","name":{"kind":"Name","value":"y"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"Tag"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Tag"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]} as unknown as DocumentNode<RelationAssetInputQueryQuery, RelationAssetInputQueryQueryVariables>;

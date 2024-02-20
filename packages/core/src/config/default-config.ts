@@ -25,6 +25,7 @@ import { DefaultStockDisplayStrategy } from './catalog/default-stock-display-str
 import { DefaultStockLocationStrategy } from './catalog/default-stock-location-strategy';
 import { AutoIncrementIdStrategy } from './entity/auto-increment-id-strategy';
 import { DefaultMoneyStrategy } from './entity/default-money-strategy';
+import { defaultEntityDuplicators } from './entity/entity-duplicators/index';
 import { defaultFulfillmentProcess } from './fulfillment/default-fulfillment-process';
 import { manualFulfillmentHandler } from './fulfillment/manual-fulfillment-handler';
 import { DefaultLogger } from './logger/default-logger';
@@ -130,6 +131,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     },
     entityOptions: {
         moneyStrategy: new DefaultMoneyStrategy(),
+        entityDuplicators: defaultEntityDuplicators,
         channelCacheTtl: 30000,
         zoneCacheTtl: 30000,
         taxRateCacheTtl: 30000,

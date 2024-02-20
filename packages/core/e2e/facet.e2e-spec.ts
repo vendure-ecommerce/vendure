@@ -5,9 +5,9 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import { FACET_VALUE_FRAGMENT, FACET_WITH_VALUES_FRAGMENT } from './graphql/fragments';
+import { FACET_VALUE_FRAGMENT } from './graphql/fragments';
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
     ChannelFragment,
@@ -15,7 +15,6 @@ import {
     DeletionResult,
     FacetWithValuesFragment,
     GetFacetWithValueListDocument,
-    GetFacetWithValuesDocument,
     LanguageCode,
 } from './graphql/generated-e2e-admin-types';
 import {
@@ -24,6 +23,7 @@ import {
     CREATE_FACET,
     GET_FACET_LIST,
     GET_FACET_LIST_SIMPLE,
+    GET_FACET_WITH_VALUES,
     GET_PRODUCT_WITH_VARIANTS,
     UPDATE_FACET,
     UPDATE_PRODUCT,
@@ -809,15 +809,6 @@ describe('Facet resolver', () => {
         });
     });
 });
-
-export const GET_FACET_WITH_VALUES = gql`
-    query GetFacetWithValues($id: ID!) {
-        facet(id: $id) {
-            ...FacetWithValues
-        }
-    }
-    ${FACET_WITH_VALUES_FRAGMENT}
-`;
 
 export const GET_FACET_WITH_VALUE_LIST = gql`
     query GetFacetWithValueList($id: ID!) {

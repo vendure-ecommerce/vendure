@@ -24,6 +24,7 @@ import { ProductVariantPriceUpdateStrategy } from './catalog/product-variant-pri
 import { StockDisplayStrategy } from './catalog/stock-display-strategy';
 import { StockLocationStrategy } from './catalog/stock-location-strategy';
 import { CustomFields } from './custom-field/custom-field-types';
+import { EntityDuplicator } from './entity/entity-duplicator';
 import { EntityIdStrategy } from './entity/entity-id-strategy';
 import { MoneyStrategy } from './entity/money-strategy';
 import { EntityMetadataModifier } from './entity-metadata/entity-metadata-modifier';
@@ -960,6 +961,15 @@ export interface EntityOptions {
      * @default AutoIncrementIdStrategy
      */
     entityIdStrategy?: EntityIdStrategy<any>;
+    /**
+     * @description
+     * An array of {@link EntityDuplicator} instances which are used to duplicate entities
+     * when using the `duplicateEntity` mutation.
+     *
+     * @since 2.2.0
+     * @default defaultEntityDuplicators
+     */
+    entityDuplicators?: Array<EntityDuplicator<any>>;
     /**
      * @description
      * Defines the strategy used to store and round monetary values.

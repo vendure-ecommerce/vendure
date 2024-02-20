@@ -34,6 +34,7 @@ import {
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
     GET_ASSET_LIST,
+    GET_COLLECTION,
     GET_COLLECTIONS,
     UPDATE_COLLECTION,
     UPDATE_PRODUCT,
@@ -2399,22 +2400,6 @@ describe('Collection resolver', () => {
         return match.id;
     }
 });
-
-export const GET_COLLECTION = gql`
-    query GetCollection($id: ID, $slug: String, $variantListOptions: ProductVariantListOptions) {
-        collection(id: $id, slug: $slug) {
-            ...Collection
-            productVariants(options: $variantListOptions) {
-                items {
-                    id
-                    name
-                    price
-                }
-            }
-        }
-    }
-    ${COLLECTION_FRAGMENT}
-`;
 
 export const GET_COLLECTION_LIST = gql`
     query GetCollectionListAdmin($options: CollectionListOptions) {

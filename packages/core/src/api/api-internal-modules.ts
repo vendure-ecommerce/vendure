@@ -20,6 +20,7 @@ import { CountryResolver } from './resolvers/admin/country.resolver';
 import { CustomerGroupResolver } from './resolvers/admin/customer-group.resolver';
 import { CustomerResolver } from './resolvers/admin/customer.resolver';
 import { DraftOrderResolver } from './resolvers/admin/draft-order.resolver';
+import { DuplicateEntityResolver } from './resolvers/admin/duplicate-entity.resolver';
 import { FacetResolver } from './resolvers/admin/facet.resolver';
 import { GlobalSettingsResolver } from './resolvers/admin/global-settings.resolver';
 import { ImportResolver } from './resolvers/admin/import.resolver';
@@ -97,6 +98,7 @@ const adminResolvers = [
     CustomerGroupResolver,
     CustomerResolver,
     DraftOrderResolver,
+    DuplicateEntityResolver,
     FacetResolver,
     GlobalSettingsResolver,
     ImportResolver,

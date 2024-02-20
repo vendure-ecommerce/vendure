@@ -1,5 +1,5 @@
 <div class="card" *ngIf="operation">
-    <div class="card-block">{{ interpolateDescription() }}</div>
+    <div class="card-block" *ngIf="hideDescription !== true">{{ interpolateDescription() }}</div>
     <div class="card-block" *ngIf="operation.args?.length">
         <form [formGroup]="form" *ngIf="operation" class="operation-inputs">
             <div *ngFor="let arg of operation.args; trackBy: trackByName" class="arg-row">

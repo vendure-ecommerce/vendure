@@ -24,7 +24,7 @@ export const assignProductVariantsToChannelBulkAction: BulkAction<
     ProductVariantListComponent
 > = {
     location: 'product-variant-list',
-    label: _('catalog.assign-to-channel'),
+    label: _('common.assign-to-channel'),
     icon: 'layers',
     requiresPermission: userPermissions =>
         userPermissions.includes(Permission.UpdateCatalog) ||
