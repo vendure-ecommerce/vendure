@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
+    Asset,
     ChannelService,
     EntityHydrator,
     mergeConfig,
@@ -21,7 +22,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
-import { HydrationTestPlugin } from './fixtures/test-plugins/hydration-test-plugin';
+import { AdditionalConfig, HydrationTestPlugin } from './fixtures/test-plugins/hydration-test-plugin';
 import { UpdateChannelMutation, UpdateChannelMutationVariables } from './graphql/generated-e2e-admin-types';
 import {
     AddItemToOrderDocument,
@@ -50,6 +51,14 @@ describe('Entity hydration', () => {
             customerCount: 2,
         });
         await adminClient.asSuperAdmin();
+
+        const connection = server.app.get(TransactionalConnection).rawConnection;
+        const asset = await connection.getRepository(Asset).findOne({ where: {} });
+        await connection.getRepository(AdditionalConfig).save(
+            new AdditionalConfig({
+                backgroundImage: asset,
+            }),
+        );
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -240,6 +249,45 @@ describe('Entity hydration', () => {
         expect(hydrateChannel.customFields.thumb.id).toBe('T_2');
     });
 
+    it('hydrates a nested custom field', async () => {
+        await adminClient.query<UpdateChannelMutation, UpdateChannelMutationVariables>(UPDATE_CHANNEL, {
+            input: {
+                id: 'T_1',
+                customFields: {
+                    additionalConfigId: 'T_1',
+                },
+            },
+        });
+
+        const { hydrateChannelWithNestedRelation } = await adminClient.query<{
+            hydrateChannelWithNestedRelation: any;
+        }>(GET_HYDRATED_CHANNEL_NESTED, {
+            id: 'T_1',
+        });
+
+        expect(hydrateChannelWithNestedRelation.customFields.additionalConfig).toBeDefined();
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/2682
+    it('hydrates a nested custom field where the first level is null', async () => {
+        await adminClient.query<UpdateChannelMutation, UpdateChannelMutationVariables>(UPDATE_CHANNEL, {
+            input: {
+                id: 'T_1',
+                customFields: {
+                    additionalConfigId: null,
+                },
+            },
+        });
+
+        const { hydrateChannelWithNestedRelation } = await adminClient.query<{
+            hydrateChannelWithNestedRelation: any;
+        }>(GET_HYDRATED_CHANNEL_NESTED, {
+            id: 'T_1',
+        });
+
+        expect(hydrateChannelWithNestedRelation.customFields.additionalConfig).toBeNull();
+    });
+
     // https://github.com/vendure-ecommerce/vendure/issues/2013
     describe('hydration of OrderLine ProductVariantPrices', () => {
         let order: Order | undefined;
@@ -376,5 +424,11 @@ const GET_HYDRATED_ORDER_QUANTITIES = gql`
 const GET_HYDRATED_CHANNEL = gql`
     query GetHydratedChannel($id: ID!) {
         hydrateChannel(id: $id)
+    }
+`;
+
+const GET_HYDRATED_CHANNEL_NESTED = gql`
+    query GetHydratedChannelNested($id: ID!) {
+        hydrateChannelWithNestedRelation(id: $id)
     }
 `;
