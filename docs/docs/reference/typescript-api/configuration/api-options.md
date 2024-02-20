@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ApiOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="64" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="66" packageName="@vendure/core" />
 
 The ApiOptions define how the Vendure GraphQL APIs are exposed, as well as allowing the API layer
 to be extended with middleware.

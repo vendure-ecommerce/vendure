@@ -19,6 +19,7 @@ const specFileToIgnore = [
     'shop-definitions',
     'custom-fields.e2e-spec',
     'custom-field-relations.e2e-spec',
+    'custom-field-permissions.e2e-spec',
     'order-item-price-calculation-strategy.e2e-spec',
     'list-query-builder.e2e-spec',
     'shop-order.e2e-spec',

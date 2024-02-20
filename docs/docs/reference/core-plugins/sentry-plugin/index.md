@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SentryPlugin
 
-<GenerationInfo sourceFile="packages/sentry-plugin/src/sentry-plugin.ts" sourceLine="109" packageName="@vendure/sentry-plugin" />
+<GenerationInfo sourceFile="packages/sentry-plugin/src/sentry-plugin.ts" sourceLine="108" packageName="@vendure/sentry-plugin" />
 
 This plugin integrates the [Sentry](https://sentry.io) error tracking & performance monitoring
 service with your Vendure server. In addition to capturing errors, it also provides built-in

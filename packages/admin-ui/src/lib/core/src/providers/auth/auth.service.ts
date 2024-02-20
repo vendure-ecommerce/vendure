@@ -7,6 +7,7 @@ import { AttemptLoginMutation, CurrentUserFragment } from '../../common/generate
 import { DataService } from '../../data/providers/data.service';
 import { ServerConfigService } from '../../data/server-config';
 import { LocalStorageService } from '../local-storage/local-storage.service';
+import { PermissionsService } from '../permissions/permissions.service';
 
 /**
  * This service handles logic relating to authentication of the current user.
@@ -19,6 +20,7 @@ export class AuthService {
         private localStorageService: LocalStorageService,
         private dataService: DataService,
         private serverConfigService: ServerConfigService,
+        private permissionsService: PermissionsService,
     ) {}
 
     /**
@@ -39,7 +41,8 @@ export class AuthService {
             }),
             switchMap(login => {
                 if (login.__typename === 'CurrentUser') {
-                    const { id } = this.getActiveChannel(login.channels);
+                    const activeChannel = this.getActiveChannel(login.channels);
+                    this.permissionsService.setCurrentUserPermissions(activeChannel.permissions);
                     return this.dataService.administrator.getActiveAdministrator().single$.pipe(
                         switchMap(({ activeAdministrator }) => {
                             if (activeAdministrator) {
@@ -47,7 +50,7 @@ export class AuthService {
                                     .loginSuccess(
                                         activeAdministrator.id,
                                         `${activeAdministrator.firstName} ${activeAdministrator.lastName}`,
-                                        id,
+                                        activeChannel.id,
                                         login.channels,
                                     )
                                     .pipe(map(() => login));
@@ -107,8 +110,8 @@ export class AuthService {
                     return of(false) as any;
                 }
                 this.setChannelToken(me.channels);
-
-                const { id } = this.getActiveChannel(me.channels);
+                const activeChannel = this.getActiveChannel(me.channels);
+                this.permissionsService.setCurrentUserPermissions(activeChannel.permissions);
                 return this.dataService.administrator.getActiveAdministrator().single$.pipe(
                     switchMap(({ activeAdministrator }) => {
                         if (activeAdministrator) {
@@ -116,7 +119,7 @@ export class AuthService {
                                 .loginSuccess(
                                     activeAdministrator.id,
                                     `${activeAdministrator.firstName} ${activeAdministrator.lastName}`,
-                                    id,
+                                    activeChannel.id,
                                     me.channels,
                                 )
                                 .pipe(map(() => true));

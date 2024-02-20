@@ -26,8 +26,8 @@ Plugins which rely on external services (web services, databases etc.) can make 
 service to add a check for that dependency to the Vendure health check.
 
 
-Since v1.6.0, the preferred way to implement a custom health check is by creating a new
-<a href='/reference/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a> and then passing it to the `systemOptions.healthChecks` array.
+Since v1.6.0, the preferred way to implement a custom health check is by creating a new <a href='/reference/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a>
+and then passing it to the `systemOptions.healthChecks` array.
 See the <a href='/reference/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a> docs for an example configuration.
 
 The alternative way to register a health check is by injecting this service directly into your

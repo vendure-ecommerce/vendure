@@ -173,6 +173,7 @@ import { LanguageCodeSelectorComponent } from './components/language-code-select
 import { DataTableFilterPresetsComponent } from './components/data-table-filter-presets/data-table-filter-presets.component';
 import { AddFilterPresetButtonComponent } from './components/data-table-filter-presets/add-filter-preset-button.component';
 import { RenameFilterPresetDialogComponent } from './components/data-table-filter-presets/rename-filter-preset-dialog.component';
+import { ActionBarDropdownMenuComponent } from './components/action-bar-dropdown-menu/action-bar-dropdown-menu.component';
 
 const IMPORTS = [
     ClarityModule,
@@ -192,6 +193,7 @@ const DECLARATIONS = [
     ActionBarComponent,
     ActionBarLeftComponent,
     ActionBarRightComponent,
+    ActionBarDropdownMenuComponent,
     AssetPreviewComponent,
     AssetPreviewDialogComponent,
     AssetSearchInputComponent,

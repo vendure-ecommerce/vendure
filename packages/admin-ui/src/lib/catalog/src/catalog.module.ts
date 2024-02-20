@@ -59,6 +59,7 @@ import { ProductListComponent } from './components/product-list/product-list.com
 import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
 import { ProductVariantDetailComponent } from './components/product-variant-detail/product-variant-detail.component';
 import {
+    assignFacetValuesToProductVariantsBulkAction,
     assignProductVariantsToChannelBulkAction,
     deleteProductVariantsBulkAction,
     removeProductVariantsFromChannelBulkAction,
@@ -133,6 +134,7 @@ export class CatalogModule {
         bulkActionRegistryService.registerBulkAction(removeProductVariantsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteProductsBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteProductVariantsBulkAction);
+        bulkActionRegistryService.registerBulkAction(assignFacetValuesToProductVariantsBulkAction);
 
         bulkActionRegistryService.registerBulkAction(assignFacetsToChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(removeFacetsFromChannelBulkAction);

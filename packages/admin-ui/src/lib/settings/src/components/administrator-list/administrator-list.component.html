@@ -2,7 +2,7 @@
     <vdr-action-bar>
         <vdr-ab-left> </vdr-ab-left>
         <vdr-ab-right>
-            <vdr-action-bar-items locationId="administrator-list"></vdr-action-bar-items>
+            <vdr-action-bar-items locationId="administrator-list" />
             <a
                 class="btn btn-primary"
                 *vdrIfPermissions="['CreateAdministrator']"
@@ -11,6 +11,7 @@
                 <clr-icon shape="plus"></clr-icon>
                 {{ 'admin.create-new-administrator' | translate }}
             </a>
+            <vdr-action-bar-dropdown-menu locationId="administrator-list" />
         </vdr-ab-right>
     </vdr-action-bar>
 </vdr-page-block>

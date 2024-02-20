@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## HistoryService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/history.service.ts" sourceLine="241" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/history.service.ts" sourceLine="248" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/history-entry#historyentry'>HistoryEntry</a> entities. Histories are timelines of actions
 related to a particular Customer or Order, recording significant events such as creation, state changes,

@@ -261,6 +261,20 @@ console.log(customer.avatar);
 
 All custom fields share some common properties:
 
+- [`name`](#name)
+- [`type`](#type)
+- [`list`](#list)
+- [`label`](#label)
+- [`description`](#description)
+- [`public`](#public)
+- [`readonly`](#readonly)
+- [`internal`](#internal)
+- [`defaultValue`](#defaultvalue)
+- [`nullable`](#nullable)
+- [`unique`](#unique)
+- [`validate`](#validate)
+- [`requiresPermission`](#requirespermission)
+
 #### name
 
 <CustomFieldProperty required={true} type="string"/>
@@ -577,9 +591,59 @@ const config = {
 };
 ```
 
+#### requiresPermission
+
+<CustomFieldProperty required={false} type="Permission | Permission[] | string | string[]" />
+
+Since v2.2.0, you can restrict access to custom field data by specifying a permission or permissions which are required to read and update the field.
+For instance, you might want to add a particular custom field to the `Product` entity, but you do not want all administrators to be able
+to view or update the field.
+
+In the Admin UI, the custom field will not be displayed if the current administrator lacks the required permission.
+
+In the GraphQL API, if the current user does not have the required permission, then the field will always return `null`. 
+Attempting to set the value of a field for which the user does not have the required permission will cause the mutation to fail
+with an error.
+
+```ts title="src/vendure-config.ts"
+import { Permission } from '@vendure/core';
+
+const config = {
+    // ...
+    customFields: {
+        Product: [
+            {
+                name: 'internalNotes',
+                type: 'text',
+                // highlight-start
+                requiresPermission: Permission.SuperAdmin,
+                // highlight-end
+            },
+            {
+                name: 'shippingType',
+                type: 'string',
+                // highlight-start
+                // You can also use an array of permissions, 
+                // and the user must have at least one of the permissions
+                // to access the field.
+                requiresPermission: [
+                    Permission.SuperAdmin, 
+                    Permission.ReadShippingMethod,
+                ],
+                // highlight-end
+            },
+        ]
+    }
+};
+```
+
 ### Properties for `string` fields
 
 In addition to the common properties, the `string` custom fields have some type-specific properties:
+
+- [`pattern`](#pattern)
+- [`options`](#options)
+- [`length`](#length)
 
 #### pattern
 
@@ -659,6 +723,9 @@ const config = {
 
 In addition to the common properties, the `localeString` custom fields have some type-specific properties:
 
+- [`pattern`](#pattern-1)
+- [`length`](#length-1)
+
 #### pattern
 
 <CustomFieldProperty required={false} type="string" />
@@ -674,6 +741,10 @@ Same as the `length` property for `string` fields.
 ### Properties for `int` & `float` fields
 
 In addition to the common properties, the `int` & `float` custom fields have some type-specific properties:
+
+- [`min`](#min)
+- [`max`](#max)
+- [`step`](#step)
 
 #### min
 
@@ -747,6 +818,10 @@ In addition to the common properties, the `datetime` custom fields have some typ
 The min, max & step properties for datetime fields are intended to be used as described in
 [the MDN datetime-local docs](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes)
 
+- [`min`](#min-1)
+- [`max`](#max-1)
+- [`step`](#step-1)
+
 #### min
 
 <CustomFieldProperty required={false} type="string" />
@@ -800,6 +875,11 @@ The step value. See [the MDN datetime-local docs](https://developer.mozilla.org/
 ### Properties for `relation` fields
 
 In addition to the common properties, the `relation` custom fields have some type-specific properties:
+
+- [`entity`](#entity)
+- [`eager`](#eager)
+- [`graphQLType`](#graphqltype)
+- [`inverseSide`](#inverseside)
 
 #### entity
 

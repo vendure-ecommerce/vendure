@@ -1,3 +1,47 @@
+## 2.2.0-next.3 (2024-02-14)
+
+
+#### Features
+
+* **admin-ui** Add bulk facet value editing to product variant list ([5ad41bf](https://github.com/vendure-ecommerce/vendure/commit/5ad41bf))
+* **core** Introduce new `ProductVariantPriceEvent` ([aa4eeb8](https://github.com/vendure-ecommerce/vendure/commit/aa4eeb8))
+* **core** Introduce new `ProductVariantPriceUpdateStrategy` ([9099f35](https://github.com/vendure-ecommerce/vendure/commit/9099f35)), closes [#2651](https://github.com/vendure-ecommerce/vendure/issues/2651)
+
+## 2.2.0-next.2 (2024-02-07)
+
+
+#### Fixes
+
+* **admin-ui** Add missing RTL compatibility to some admin-ui components (#2451) ([96eb96e](https://github.com/vendure-ecommerce/vendure/commit/96eb96e)), closes [#2451](https://github.com/vendure-ecommerce/vendure/issues/2451)
+* **admin-ui** Fix alignment of order modification history item ([e4a172c](https://github.com/vendure-ecommerce/vendure/commit/e4a172c))
+* **admin-ui** Improve styling of form field wrapper ([5263c2d](https://github.com/vendure-ecommerce/vendure/commit/5263c2d))
+* **admin-ui** Improved support for modifying OrderLine custom fields ([0750fb1](https://github.com/vendure-ecommerce/vendure/commit/0750fb1)), closes [#2641](https://github.com/vendure-ecommerce/vendure/issues/2641)
+* **core** Fix undefined reference error in product variant resolver ([5afa6bc](https://github.com/vendure-ecommerce/vendure/commit/5afa6bc))
+
+#### Features
+
+* **admin-ui** Allow customer to be reassigned to order ([a9a596e](https://github.com/vendure-ecommerce/vendure/commit/a9a596e)), closes [#2505](https://github.com/vendure-ecommerce/vendure/issues/2505)
+* **admin-ui** Allow order shipping method to be modified ([7f34329](https://github.com/vendure-ecommerce/vendure/commit/7f34329)), closes [#978](https://github.com/vendure-ecommerce/vendure/issues/978)
+* **admin-ui** Enable multiple refunds on an order modification ([9b3aa65](https://github.com/vendure-ecommerce/vendure/commit/9b3aa65)), closes [#2393](https://github.com/vendure-ecommerce/vendure/issues/2393)
+* **admin-ui** Improve layout & styling of order payment cards ([4a8b91a](https://github.com/vendure-ecommerce/vendure/commit/4a8b91a))
+* **admin-ui** Improve styling of order/customer history timeline ([aeebbdd](https://github.com/vendure-ecommerce/vendure/commit/aeebbdd))
+* **admin-ui** Improved refund dialog ([ccbf9ec](https://github.com/vendure-ecommerce/vendure/commit/ccbf9ec)), closes [#2393](https://github.com/vendure-ecommerce/vendure/issues/2393)
+* **admin-ui** Support custom fields on custom entities ([74aeb86](https://github.com/vendure-ecommerce/vendure/commit/74aeb86)), closes [#1848](https://github.com/vendure-ecommerce/vendure/issues/1848)
+* **admin-ui** Updated order modification screen with improved UX ([ac4c762](https://github.com/vendure-ecommerce/vendure/commit/ac4c762))
+* **core** Add support for custom fields on ProductVariantPrice (#2654) ([e7f0fe2](https://github.com/vendure-ecommerce/vendure/commit/e7f0fe2)), closes [#2654](https://github.com/vendure-ecommerce/vendure/issues/2654)
+* **core** Add `amount` field to `RefundOrderInput` ([fe43b4a](https://github.com/vendure-ecommerce/vendure/commit/fe43b4a)), closes [#2393](https://github.com/vendure-ecommerce/vendure/issues/2393)
+* **core** Add `gracefulShutdownTimeout` to DefaultJobQueuePlugin ([cba06e0](https://github.com/vendure-ecommerce/vendure/commit/cba06e0))
+* **core** Add cancellation handling to built-in jobs ([c8022be](https://github.com/vendure-ecommerce/vendure/commit/c8022be)), closes [#1127](https://github.com/vendure-ecommerce/vendure/issues/1127) [#2650](https://github.com/vendure-ecommerce/vendure/issues/2650)
+* **core** Allow order shipping method to be modified ([400d78a](https://github.com/vendure-ecommerce/vendure/commit/400d78a)), closes [#978](https://github.com/vendure-ecommerce/vendure/issues/978)
+* **core** Enable multiple refunds on an order modification ([cf91a9e](https://github.com/vendure-ecommerce/vendure/commit/cf91a9e)), closes [#2393](https://github.com/vendure-ecommerce/vendure/issues/2393)
+* **core** Expose entityCustomFields query ([01f9d44](https://github.com/vendure-ecommerce/vendure/commit/01f9d44)), closes [#1848](https://github.com/vendure-ecommerce/vendure/issues/1848)
+* **core** Implement `setOrderCustomer` mutation ([26e77d7](https://github.com/vendure-ecommerce/vendure/commit/26e77d7)), closes [#2505](https://github.com/vendure-ecommerce/vendure/issues/2505)
+* **core** Improve cancellation mechanism of DefaultJobQueuePlugin ([cba069b](https://github.com/vendure-ecommerce/vendure/commit/cba069b)), closes [#1127](https://github.com/vendure-ecommerce/vendure/issues/1127) [#2650](https://github.com/vendure-ecommerce/vendure/issues/2650)
+* **core** Introduce ErrorHandlerStrategy ([066e524](https://github.com/vendure-ecommerce/vendure/commit/066e524))
+* **core** Pass RequestContext to custom field validate function ([2314ff6](https://github.com/vendure-ecommerce/vendure/commit/2314ff6)), closes [#2408](https://github.com/vendure-ecommerce/vendure/issues/2408)
+* **job-queue-plugin** Implement cancellation mechanism in BullMQJobQueuePlugin ([d0e97ca](https://github.com/vendure-ecommerce/vendure/commit/d0e97ca)), closes [#1127](https://github.com/vendure-ecommerce/vendure/issues/1127) [#2650](https://github.com/vendure-ecommerce/vendure/issues/2650)
+* **sentry-plugin** Use ErrorHandlerStrategy for better error coverage ([82ddf94](https://github.com/vendure-ecommerce/vendure/commit/82ddf94))
+
 ## 2.2.0-next.1 (2024-01-16)
 
 

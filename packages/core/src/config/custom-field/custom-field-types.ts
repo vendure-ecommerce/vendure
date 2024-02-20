@@ -7,6 +7,7 @@ import {
     LocaleStringCustomFieldConfig as GraphQLLocaleStringCustomFieldConfig,
     LocaleTextCustomFieldConfig as GraphQLLocaleTextCustomFieldConfig,
     LocalizedString,
+    Permission,
     RelationCustomFieldConfig as GraphQLRelationCustomFieldConfig,
     StringCustomFieldConfig as GraphQLStringCustomFieldConfig,
     TextCustomFieldConfig as GraphQLTextCustomFieldConfig,
@@ -33,17 +34,26 @@ export type DefaultValueType<T extends CustomFieldType> =
 
 export type BaseTypedCustomFieldConfig<T extends CustomFieldType, C extends CustomField> = Omit<
     C,
-    '__typename' | 'list'
+    '__typename' | 'list' | 'requiresPermission'
 > & {
     type: T;
     /**
      * @description
-     * Whether or not the custom field is available via the Shop API.
+     * Whether the custom field is available via the Shop API.
      * @default true
      */
     public?: boolean;
     nullable?: boolean;
     unique?: boolean;
+    /**
+     * @description
+     * The permission(s) required to read or write to this field.
+     * If the user has at least one of these permissions, they will be
+     * able to access the field.
+     *
+     * @since 2.2.0
+     */
+    requiresPermission?: Array<Permission | string> | Permission | string;
     ui?: UiComponentConfig<DefaultFormComponentId | string>;
 };
 

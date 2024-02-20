@@ -51,6 +51,18 @@ export interface PollingJobQueueStrategyConfig {
      * @default () => 1000
      */
     backoffStrategy?: BackoffStrategy;
+    /**
+     * @description
+     * The timeout in ms which the queue will use when attempting a graceful shutdown.
+     * That means, when the server is shut down but a job is running, the job queue will
+     * wait for the job to complete before allowing the server to shut down. If the job
+     * does not complete within this timeout window, the job will be forced to stop
+     * and the server will shut down anyway.
+     *
+     * @since 2.2.0
+     * @default 20_000
+     */
+    gracefulShutdownTimeout?: number;
 }
 
 const STOP_SIGNAL = Symbol('STOP_SIGNAL');
@@ -150,10 +162,10 @@ class ActiveQueue<Data extends JobData<Data> = object> {
         void runNextJobs();
     }
 
-    async stop(): Promise<void> {
+    async stop(stopActiveQueueTimeout = 20_000): Promise<void> {
         this.running = false;
         clearTimeout(this.timer);
-        await this.awaitRunningJobsOrTimeout();
+        await this.awaitRunningJobsOrTimeout(stopActiveQueueTimeout);
         Logger.info(`Stopped queue: ${this.queueName}`);
         this.subscription.unsubscribe();
         // Allow any job status changes to be persisted
@@ -163,9 +175,8 @@ class ActiveQueue<Data extends JobData<Data> = object> {
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
-    private awaitRunningJobsOrTimeout(): Promise<void> {
+    private awaitRunningJobsOrTimeout(stopActiveQueueTimeout = 20_000): Promise<void> {
         const start = +new Date();
-        const stopActiveQueueTimeout = 20_000;
         let timeout: ReturnType<typeof setTimeout>;
         return new Promise(resolve => {
             let lastStatusUpdate = +new Date();
@@ -233,8 +244,9 @@ export abstract class PollingJobQueueStrategy extends InjectableJobQueueStrategy
     public pollInterval: number | ((queueName: string) => number);
     public setRetries: (queueName: string, job: Job) => number;
     public backOffStrategy?: BackoffStrategy;
+    public gracefulShutdownTimeout: number;
 
-    private activeQueues = new QueueNameProcessStorage<ActiveQueue<any>>();
+    protected activeQueues = new QueueNameProcessStorage<ActiveQueue<any>>();
 
     constructor(config?: PollingJobQueueStrategyConfig);
     constructor(concurrency?: number, pollInterval?: number);
@@ -246,10 +258,12 @@ export abstract class PollingJobQueueStrategy extends InjectableJobQueueStrategy
             this.pollInterval = concurrencyOrConfig.pollInterval ?? 200;
             this.backOffStrategy = concurrencyOrConfig.backoffStrategy ?? (() => 1000);
             this.setRetries = concurrencyOrConfig.setRetries ?? ((_, job) => job.retries);
+            this.gracefulShutdownTimeout = concurrencyOrConfig.gracefulShutdownTimeout ?? 20_000;
         } else {
             this.concurrency = concurrencyOrConfig ?? 1;
             this.pollInterval = maybePollInterval ?? 200;
             this.setRetries = (_, job) => job.retries;
+            this.gracefulShutdownTimeout = 20_000;
         }
     }
 
@@ -277,7 +291,7 @@ export abstract class PollingJobQueueStrategy extends InjectableJobQueueStrategy
         if (!active) {
             return;
         }
-        await active.stop();
+        await active.stop(this.gracefulShutdownTimeout);
     }
 
     async cancelJob(jobId: ID): Promise<Job | undefined> {

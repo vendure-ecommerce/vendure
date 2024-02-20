@@ -6,6 +6,7 @@ import { map, shareReplay, tap } from 'rxjs/operators';
 import { UserStatusFragment } from '../../common/generated-types';
 import { DataService } from '../../data/providers/data.service';
 import { LocalStorageService } from '../local-storage/local-storage.service';
+import { PermissionsService } from '../permissions/permissions.service';
 
 @Injectable({
     providedIn: 'root',
@@ -13,7 +14,11 @@ import { LocalStorageService } from '../local-storage/local-storage.service';
 export class ChannelService {
     defaultChannelIsActive$: Observable<boolean>;
 
-    constructor(private dataService: DataService, private localStorageService: LocalStorageService) {
+    constructor(
+        private dataService: DataService,
+        private localStorageService: LocalStorageService,
+        private permissionsService: PermissionsService,
+    ) {
         this.defaultChannelIsActive$ = this.dataService.client
             .userStatus()
             .mapStream(({ userStatus }) => {
@@ -30,6 +35,7 @@ export class ChannelService {
                 const activeChannel = userStatus.channels.find(c => c.id === channelId);
                 if (activeChannel) {
                     this.localStorageService.set('activeChannelToken', activeChannel.token);
+                    this.permissionsService.setCurrentUserPermissions(activeChannel.permissions);
                 }
             }),
         );

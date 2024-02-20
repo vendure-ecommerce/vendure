@@ -9,6 +9,7 @@ import { distinctUntilChanged, filter, map, shareReplay, switchMap, takeUntil, t
 import { DataService } from '../data/providers/data.service';
 import { ServerConfigService } from '../data/server-config';
 import { BreadcrumbValue } from '../providers/breadcrumb/breadcrumb.service';
+import { PermissionsService } from '../providers/permissions/permissions.service';
 
 import { DeactivateAware } from './deactivate-aware';
 import { CustomFieldConfig, CustomFields, LanguageCode } from './generated-types';
@@ -70,6 +71,7 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
         protected router: Router,
         protected serverConfigService: ServerConfigService,
         protected dataService: DataService,
+        protected permissionsService: PermissionsService,
     ) {}
 
     init() {
@@ -149,7 +151,12 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
     }
 
     protected getCustomFieldConfig(key: Exclude<keyof CustomFields, '__typename'>): CustomFieldConfig[] {
-        return this.serverConfigService.getCustomFieldsFor(key);
+        return this.serverConfigService.getCustomFieldsFor(key).filter(f => {
+            if (f.requiresPermission?.length) {
+                return this.permissionsService.userHasPermissions(f.requiresPermission);
+            }
+            return true;
+        });
     }
 
     protected setQueryParam(key: string, value: any) {
@@ -184,7 +191,13 @@ export abstract class TypedBaseDetailComponent<
     protected entity: ResultOf<T>[Field];
 
     protected constructor() {
-        super(inject(ActivatedRoute), inject(Router), inject(ServerConfigService), inject(DataService));
+        super(
+            inject(ActivatedRoute),
+            inject(Router),
+            inject(ServerConfigService),
+            inject(DataService),
+            inject(PermissionsService),
+        );
     }
 
     override init() {

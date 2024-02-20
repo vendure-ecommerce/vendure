@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## IfPermissionsDirective
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/directives/if-permissions.directive.ts" sourceLine="33" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/directives/if-permissions.directive.ts" sourceLine="26" packageName="@vendure/admin-ui" />
 
 Conditionally shows/hides templates based on the current active user having the specified permission.
 Based on the ngIf source. Also support "else" templates:
@@ -28,7 +28,7 @@ must match (logical AND)
 
 ```ts title="Signature"
 class IfPermissionsDirective extends IfDirectiveBase<Array<Permission[] | null>> {
-    constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<any>, dataService: DataService, changeDetectorRef: ChangeDetectorRef)
+    constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<any>, changeDetectorRef: ChangeDetectorRef, permissionsService: PermissionsService)
 }
 ```
 * Extends: <code>IfDirectiveBase&#60;Array&#60;<a href='/reference/typescript-api/common/permission#permission'>Permission</a>[] | null&#62;&#62;</code>
@@ -39,7 +39,7 @@ class IfPermissionsDirective extends IfDirectiveBase<Array<Permission[] | null>>
 
 ### constructor
 
-<MemberInfo kind="method" type={`(_viewContainer: ViewContainerRef, templateRef: TemplateRef&#60;any&#62;, dataService: <a href='/reference/admin-ui-api/services/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => IfPermissionsDirective`}   />
+<MemberInfo kind="method" type={`(_viewContainer: ViewContainerRef, templateRef: TemplateRef&#60;any&#62;, changeDetectorRef: ChangeDetectorRef, permissionsService: PermissionsService) => IfPermissionsDirective`}   />
 
 
 
