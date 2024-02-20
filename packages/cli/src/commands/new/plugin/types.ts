@@ -4,6 +4,7 @@ export interface GeneratePluginOptions {
     withApiExtensions: boolean;
     withAdminUi: boolean;
     customEntityName: string;
+    pluginDir: string;
 }
 
 export type TemplateContext = GeneratePluginOptions & {

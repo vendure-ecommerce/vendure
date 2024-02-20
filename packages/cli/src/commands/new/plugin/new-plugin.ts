@@ -16,19 +16,15 @@ import { GeneratePluginOptions, TemplateContext } from './types';
 const cancelledMessage = 'Plugin setup cancelled.';
 
 export async function newPlugin() {
-    const options: GeneratePluginOptions = { name: '', customEntityName: '' } as any;
+    const options: GeneratePluginOptions = { name: '', customEntityName: '', pluginDir: '' } as any;
     intro('Scaffolding a new Vendure plugin!');
     if (!options.name) {
         const name = await text({
-            message: 'What is the name of the plugin?',
+            message: 'What is the name of the bobby plugin?',
             initialValue: '',
             validate: input => {
                 if (!/^[a-z][a-z-0-9]+$/.test(input)) {
                     return 'The plugin name must be lowercase and contain only letters, numbers and dashes';
-                }
-                const proposedPluginDir = getPluginDirName(input);
-                if (fs.existsSync(proposedPluginDir)) {
-                    return `A directory named "${proposedPluginDir}" already exists. Cannot create plugin in this directory.`;
                 }
             },
         });
@@ -75,23 +71,27 @@ export async function newPlugin() {
         }
     }
     const pluginDir = getPluginDirName(options.name);
-    const confirmation = await confirm({
-        message: `Create new plugin in ${pluginDir}?`,
+    const confirmation = await text({
+        message: 'Plugin location',
+        initialValue: pluginDir,
+        placeholder: '',
+        validate: input => {
+            if (fs.existsSync(input)) {
+                return `A directory named "${input}" already exists. Please specify a different directory.`;
+            }
+        },
     });
 
     if (isCancel(confirmation)) {
         cancel(cancelledMessage);
         process.exit(0);
     } else {
-        if (confirmation === true) {
-            await generatePlugin(options);
-        } else {
-            cancel(cancelledMessage);
-        }
+        options.pluginDir = confirmation;
+        generatePlugin(options);
     }
 }
 
-export async function generatePlugin(options: GeneratePluginOptions) {
+export function generatePlugin(options: GeneratePluginOptions) {
     const nameWithoutPlugin = options.name.replace(/-?plugin$/i, '');
     const normalizedName = nameWithoutPlugin + '-plugin';
     const templateContext: TemplateContext = {
@@ -167,7 +167,7 @@ export async function generatePlugin(options: GeneratePluginOptions) {
         });
     }
 
-    const pluginDir = getPluginDirName(options.name);
+    const pluginDir = options.pluginDir;
     fs.ensureDirSync(pluginDir);
     files.forEach(file => {
         const filePath = path.join(pluginDir, file.path);
@@ -180,6 +180,17 @@ export async function generatePlugin(options: GeneratePluginOptions) {
 }
 
 function getPluginDirName(name: string) {
+    const cwd = process.cwd();
+    const pathParts = cwd.split(path.sep);
+    const currentlyInPluginsDir = pathParts[pathParts.length - 1] === 'plugins';
+    const currentlyInRootDir = fs.pathExistsSync(path.join(cwd, 'package.json'));
     const nameWithoutPlugin = name.replace(/-?plugin$/i, '');
-    return path.join(process.cwd(), paramCase(nameWithoutPlugin));
+
+    if (currentlyInPluginsDir) {
+        return path.join(cwd, paramCase(nameWithoutPlugin));
+    }
+    if (currentlyInRootDir) {
+        return path.join(cwd, 'src', 'plugins', paramCase(nameWithoutPlugin));
+    }
+    return path.join(cwd, paramCase(nameWithoutPlugin));
 }
