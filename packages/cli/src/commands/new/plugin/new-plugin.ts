@@ -1,7 +1,9 @@
-import { cancel, confirm, intro, isCancel, multiselect, outro, text } from '@clack/prompts';
+import { cancel, intro, isCancel, multiselect, outro, text } from '@clack/prompts';
 import { camelCase, constantCase, paramCase, pascalCase } from 'change-case';
 import * as fs from 'fs-extra';
 import path from 'path';
+
+import { Scaffolder } from '../../../utilities/scaffolder';
 
 import { renderAdminResolver, renderAdminResolverWithEntity } from './scaffold/api/admin.resolver';
 import { renderApiExtensions } from './scaffold/api/api-extensions';
@@ -20,7 +22,7 @@ export async function newPlugin() {
     intro('Scaffolding a new Vendure plugin!');
     if (!options.name) {
         const name = await text({
-            message: 'What is the name of the bobby plugin?',
+            message: 'What is the name of the plugin?',
             initialValue: '',
             validate: input => {
                 if (!/^[a-z][a-z-0-9]+$/.test(input)) {
@@ -110,70 +112,33 @@ export function generatePlugin(options: GeneratePluginOptions) {
         },
     };
 
-    const files: Array<{ render: (context: TemplateContext) => string; path: string }> = [
-        {
-            render: renderPlugin,
-            path: paramCase(nameWithoutPlugin) + '.plugin.ts',
-        },
-        {
-            render: renderTypes,
-            path: 'types.ts',
-        },
-        {
-            render: renderConstants,
-            path: 'constants.ts',
-        },
-    ];
+    const scaffolder = new Scaffolder<TemplateContext>();
+    scaffolder.addFile(renderPlugin, paramCase(nameWithoutPlugin) + '.plugin.ts');
+    scaffolder.addFile(renderTypes, 'types.ts');
+    scaffolder.addFile(renderConstants, 'constants.ts');
 
     if (options.withApiExtensions) {
-        files.push({
-            render: renderApiExtensions,
-            path: 'api/api-extensions.ts',
-        });
+        scaffolder.addFile(renderApiExtensions, 'api/api-extensions.ts');
         if (options.withCustomEntity) {
-            files.push({
-                render: renderShopResolverWithEntity,
-                path: 'api/shop.resolver.ts',
-            });
-            files.push({
-                render: renderAdminResolverWithEntity,
-                path: 'api/admin.resolver.ts',
-            });
+            scaffolder.addFile(renderShopResolverWithEntity, 'api/shop.resolver.ts');
+            scaffolder.addFile(renderAdminResolverWithEntity, 'api/admin.resolver.ts');
         } else {
-            files.push({
-                render: renderShopResolver,
-                path: 'api/shop.resolver.ts',
-            });
-            files.push({
-                render: renderAdminResolver,
-                path: 'api/admin.resolver.ts',
-            });
+            scaffolder.addFile(renderShopResolver, 'api/shop.resolver.ts');
+            scaffolder.addFile(renderAdminResolver, 'api/admin.resolver.ts');
         }
     }
 
     if (options.withCustomEntity) {
-        files.push({
-            render: renderEntity,
-            path: `entities/${templateContext.entity.fileName}.ts`,
-        });
-        files.push({
-            render: renderServiceWithEntity,
-            path: `services/${templateContext.service.fileName}.ts`,
-        });
+        scaffolder.addFile(renderEntity, `entities/${templateContext.entity.fileName}.ts`);
+        scaffolder.addFile(renderServiceWithEntity, `services/${templateContext.service.fileName}.ts`);
     } else {
-        files.push({
-            render: renderService,
-            path: `services/${templateContext.service.fileName}.ts`,
-        });
+        scaffolder.addFile(renderService, `services/${templateContext.service.fileName}.ts`);
     }
 
     const pluginDir = options.pluginDir;
-    fs.ensureDirSync(pluginDir);
-    files.forEach(file => {
-        const filePath = path.join(pluginDir, file.path);
-        const rendered = file.render(templateContext).trim();
-        fs.ensureFileSync(filePath);
-        fs.writeFileSync(filePath, rendered);
+    scaffolder.createScaffold({
+        dir: pluginDir,
+        context: templateContext,
     });
 
     outro('✅ Plugin scaffolding complete!');

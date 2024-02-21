@@ -21,7 +21,8 @@
     "scripts": {
         "build": "rimraf dist && tsc -p ./tsconfig.cli.json",
         "watch": "tsc -p ./tsconfig.cli.json --watch",
-        "ci": "yarn build"
+        "ci": "yarn build",
+        "test": "vitest --config ./vitest.config.ts --run"
     },
     "publishConfig": {
         "access": "public"
@@ -38,7 +39,8 @@
         "change-case": "^4.1.2",
         "commander": "^11.0.0",
         "fs-extra": "^11.1.1",
-        "picocolors": "^1.0.0"
+        "picocolors": "^1.0.0",
+        "ts-morph": "^21.0.1"
     },
     "devDependencies": {
         "typescript": "4.9.5"
