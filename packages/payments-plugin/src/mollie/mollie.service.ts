@@ -9,6 +9,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import {
     ActiveOrderService,
+    assertFound,
     EntityHydrator,
     ErrorResult,
     Injector,
@@ -24,7 +25,7 @@ import {
     ProductVariantService,
     RequestContext,
 } from '@vendure/core';
-import { OrderStateMachine } from '@vendure/core/dist/service/helpers/order-state-machine/order-state-machine';
+import { OrderStateMachine } from '@vendure/core/';
 import { totalCoveredByPayments } from '@vendure/core/dist/service/helpers/utils/order-utils';
 
 import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
@@ -145,9 +146,10 @@ export class MollieService {
             }
             redirectUrl = paymentMethodRedirectUrl;
         }
+        // FIXME: Do we still need to manually do all the above checks like has-customer etc?
         if (order.state !== 'ArrangingPayment' && order.state !== 'ArrangingAdditionalPayment') {
-            // TODO get order state machine and check if transitionable to ArrangingPayment
-            // const orderStateMachine = this.injector.get(OrderStateMachine);
+            // Check if order is transitionable to ArrangingPayment, because that will happen after Mollie payment
+            await this.canTransitionTo(ctx, order, 'ArrangingPayment');
         }
         const variantsWithInsufficientSaleableStock = await this.getVariantsWithInsufficientStock(ctx, order);
         if (variantsWithInsufficientSaleableStock.length) {
@@ -403,6 +405,13 @@ export class MollieService {
             }
         }
         return variantsWithInsufficientSaleableStock;
+    }
+
+    private async canTransitionTo(ctx: RequestContext, order: Order, state: OrderState) {
+        // Fetch new order object, because `transition()` mutates the order object
+        const orderCopy = await assertFound(this.orderService.findOne(ctx, order.id));
+        const orderStateMachine = this.injector.get(OrderStateMachine);
+        await orderStateMachine.transition(ctx, orderCopy, state);
     }
 
     private async getPaymentMethod(

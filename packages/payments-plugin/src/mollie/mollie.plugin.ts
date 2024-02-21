@@ -214,6 +214,10 @@ export interface MolliePluginOptions {
     providers: [MollieService, { provide: PLUGIN_INIT_OPTIONS, useFactory: () => MolliePlugin.options }],
     configuration: (config: RuntimeVendureConfig) => {
         config.paymentOptions.paymentMethodHandlers.push(molliePaymentHandler);
+        // config.customFields.Order.push({
+        //     name: 'activeMollieOrderId',
+        //     type: 'string',
+        // })
         return config;
     },
     shopApiExtensions: {
