@@ -39,7 +39,8 @@ export function parseSortParams<T extends VendureEntity>(
         if (matchingColumn) {
             output[`${alias}.${matchingColumn.propertyPath}`] = order as any;
         } else if (translationColumns.find(c => c.propertyName === key)) {
-            const translationsAlias = `${alias}__translations`;
+            const translationsAlias = connection.namingStrategy.joinTableName(alias, 'translations', '', '');
+
             const pathParts = [translationsAlias];
             const isLocaleStringCustomField =
                 customFields?.find(f => f.name === key)?.type === 'localeString';

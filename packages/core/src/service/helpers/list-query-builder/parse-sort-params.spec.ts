@@ -74,7 +74,7 @@ describe('parseSortParams()', () => {
         const result = parseSortParams(connection as any, Product, sortParams);
         expect(result).toEqual({
             'product.id': 'ASC',
-            'productTranslations.name': 'DESC',
+            'product__translations.name': 'DESC',
         });
     });
 
@@ -112,7 +112,7 @@ describe('parseSortParams()', () => {
             productCustomFields,
         );
         expect(result).toEqual({
-            'productTranslations.customFields.shortName': 'ASC',
+            'product__translations.customFields.shortName': 'ASC',
         });
     });
 

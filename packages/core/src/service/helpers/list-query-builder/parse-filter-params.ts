@@ -67,7 +67,12 @@ export function parseFilterParams<
             if (columns.find(c => c.propertyName === key)) {
                 fieldName = `${alias}.${key}`;
             } else if (translationColumns.find(c => c.propertyName === key)) {
-                const translationsAlias = `${alias}__translations`;
+                const translationsAlias = connection.namingStrategy.joinTableName(
+                    alias,
+                    'translations',
+                    '',
+                    '',
+                );
                 fieldName = `${translationsAlias}.${key}`;
             } else if (calculatedColumnExpression) {
                 fieldName = escapeCalculatedColumnExpression(connection, calculatedColumnExpression);

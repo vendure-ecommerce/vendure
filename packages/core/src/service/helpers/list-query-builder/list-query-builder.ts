@@ -268,16 +268,11 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         const qb = repo.createQueryBuilder(alias);
 
         qb.setFindOptions({
-            relations: unique([
-                ...minimumRequiredRelations,
-                ...(extendedOptions?.relations ?? []),
-                // ...qb.expressionMap.mainAlias!.metadata.relations.map(r => r.propertyName),
-            ]),
+            relations: unique([...minimumRequiredRelations, ...(extendedOptions?.relations ?? [])]),
             take,
             skip,
             where: extendedOptions.where || {},
             relationLoadStrategy: 'query',
-            loadEagerRelations: true,
         });
 
         // join the tables required by calculated columns
@@ -559,7 +554,12 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         }
 
         if (translationColumns.length && sortingOnTranslatableKey) {
-            const translationsAlias = `${alias}__translations`;
+            const translationsAlias = qb.connection.namingStrategy.joinTableName(
+                alias,
+                'translations',
+                '',
+                '',
+            );
 
             qb.andWhere(
                 new Brackets(qb1 => {
