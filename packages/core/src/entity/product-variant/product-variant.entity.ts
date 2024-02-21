@@ -70,7 +70,7 @@ export class ProductVariant
     currencyCode: CurrencyCode;
 
     @Calculated({
-        expression: 'productvariant_productVariantPrices.price',
+        expression: 'productvariant__productVariantPrices.price',
     })
     get price(): number {
         if (this.listPrice == null) {
@@ -86,7 +86,7 @@ export class ProductVariant
         // results due to this expression not taking taxes into account. This is because the tax
         // rate is calculated at run-time in the application layer based on the current context,
         // and is unknown to the database.
-        expression: 'productvariant_productVariantPrices.price',
+        expression: 'productvariant__productVariantPrices.price',
     })
     get priceWithTax(): number {
         if (this.listPrice == null) {
