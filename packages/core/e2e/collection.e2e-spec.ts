@@ -253,7 +253,7 @@ describe('Collection resolver', () => {
                 'accessories',
             );
             expect(createCollection.translations.find(t => t.languageCode === LanguageCode.de)?.slug).toBe(
-                'zubehor',
+                'zubehoer',
             );
         });
 
