@@ -2,7 +2,7 @@ import createMollieClient, {
     Order as MollieOrder,
     OrderStatus,
     PaymentMethod as MollieClientMethod,
-    Locale,
+    MollieClient,
 } from '@mollie/api-client';
 import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/orders/parameters';
 import { Inject, Injectable } from '@nestjs/common';
@@ -29,6 +29,7 @@ import { OrderStateMachine } from '@vendure/core/';
 import { totalCoveredByPayments } from '@vendure/core/dist/service/helpers/utils/order-utils';
 
 import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
+import { OrderWithMollieReference } from './custom-fields';
 import {
     ErrorCode,
     MolliePaymentIntentError,
@@ -36,7 +37,14 @@ import {
     MolliePaymentIntentResult,
     MolliePaymentMethod,
 } from './graphql/generated-shop-types';
-import { amountToCents, getLocale, toAmount, toMollieAddress, toMollieOrderLines } from './mollie.helpers';
+import {
+    amountToCents,
+    getLocale,
+    isAmountEqual,
+    toAmount,
+    toMollieAddress,
+    toMollieOrderLines,
+} from './mollie.helpers';
 import { MolliePluginOptions } from './mollie.plugin';
 
 interface OrderStatusInput {
@@ -87,10 +95,11 @@ export class MollieService {
                 `molliePaymentMethodCode has to be one of "${allowedMethods.join(',')}"`,
             );
         }
-        const [order, paymentMethod] = await Promise.all([
-            this.activeOrderService.getActiveOrder(ctx, undefined),
-            this.getPaymentMethod(ctx, paymentMethodCode),
-        ]);
+        const [order, paymentMethod]: [OrderWithMollieReference | undefined, PaymentMethod | undefined] =
+            await Promise.all([
+                this.activeOrderService.getActiveOrder(ctx, undefined),
+                this.getPaymentMethod(ctx, paymentMethodCode),
+            ]);
         if (!order) {
             return new PaymentIntentError('No active order found for session');
         }
@@ -202,7 +211,28 @@ export class MollieService {
         if (molliePaymentMethodCode) {
             orderInput.method = molliePaymentMethodCode as MollieClientMethod;
         }
+        if (order.customFields?.mollieOrderId) {
+            // A payment was already started, so we try to reuse the existing order
+
+            // FIXME make this failsafe: reusing should never throw and fail payment intent creation
+            const existingMollieOrder = await mollieClient.orders.get(order.customFields.mollieOrderId);
+            const checkoutUrl = existingMollieOrder.getCheckoutUrl();
+            const amountsMatch = isAmountEqual(order.currencyCode, amountToPay, existingMollieOrder.amount);
+            if (checkoutUrl && amountsMatch) {
+                return {
+                    url: checkoutUrl,
+                };
+            }
+            // Otherwise, cancel existing Mollie order asynchronously, because we don't care if it fails
+            this.cancelMollieOrder(mollieClient, order.customFields.mollieOrderId).catch(e => {
+                Logger.warn(`Failed to cancel existing Mollie order: ${(e as Error).message}`, loggerCtx);
+            });
+        }
         const mollieOrder = await mollieClient.orders.create(orderInput);
+        // Save async, because this shouldn't impact intent creation
+        this.orderService.updateCustomFields(ctx, order.id, { mollieOrderId: mollieOrder.id }).catch(e => {
+            Logger.error(`Failed to save Mollie order ID: ${(e as Error).message}`, loggerCtx);
+        });
         Logger.info(`Created Mollie order ${mollieOrder.id} for order ${order.code}`, loggerCtx);
         const url = mollieOrder.getCheckoutUrl();
         if (!url) {
@@ -405,6 +435,34 @@ export class MollieService {
             }
         }
         return variantsWithInsufficientSaleableStock;
+    }
+
+    /**
+     * Tries to cancel an existing Mollie order
+     * An order might not be cancellable when it has open payments, and open payments can't be cancelled
+     * It takes at least 15 minutes for a payment to expire can be cancelled: https://docs.mollie.com/payments/status-changes#when-does-a-payment-expire
+     */
+    async cancelMollieOrder(client: MollieClient, mollieOrderId: string): Promise<void> {
+        const mollieOrder = await client.orders.get(mollieOrderId);
+        if (mollieOrder.isCancelable) {
+            await client.orders.cancel(mollieOrder.id);
+        } else {
+            // Try to cancel all payments
+            const payments = await mollieOrder.getPayments();
+            await Promise.all(
+                payments.map(async payment => {
+                    if (!payment.isCancelable) {
+                        throw Error(
+                            `Payment ${payment.id} for Mollie order '${mollieOrderId}' is not cancellable`,
+                        );
+                    }
+                    await client.payments.cancel(payment.id);
+                }),
+            );
+            // Try to cancel order again
+            await client.orders.cancel(mollieOrder.id);
+        }
+        Logger.info(`Cancelled Mollie order ${mollieOrder.id}`, loggerCtx);
     }
 
     private async canTransitionTo(ctx: RequestContext, order: Order, state: OrderState) {

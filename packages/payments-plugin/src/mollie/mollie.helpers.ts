@@ -1,7 +1,7 @@
 import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/orders/parameters';
 import { Amount } from '@mollie/api-client/dist/types/src/data/global';
 import { OrderAddress as MollieOrderAddress } from '@mollie/api-client/dist/types/src/data/orders/data';
-import { Customer, Order } from '@vendure/core';
+import { CurrencyCode, Customer, Order } from '@vendure/core';
 import currency from 'currency.js';
 
 import { OrderAddress } from './graphql/generated-shop-types';
@@ -52,14 +52,16 @@ export function toMollieOrderLines(order: Order, alreadyPaid: number): CreatePar
         })),
     );
     // Add surcharges
-    lines.push(...order.surcharges.map(surcharge => ({
-        name: surcharge.description,
-        quantity: 1,
-        unitPrice: toAmount(surcharge.priceWithTax, order.currencyCode),
-        totalAmount: toAmount(surcharge.priceWithTax, order.currencyCode),
-        vatRate: String(surcharge.taxRate),
-        vatAmount: toAmount(surcharge.priceWithTax - surcharge.price, order.currencyCode),
-    })));
+    lines.push(
+        ...order.surcharges.map(surcharge => ({
+            name: surcharge.description,
+            quantity: 1,
+            unitPrice: toAmount(surcharge.priceWithTax, order.currencyCode),
+            totalAmount: toAmount(surcharge.priceWithTax, order.currencyCode),
+            vatRate: String(surcharge.taxRate),
+            vatAmount: toAmount(surcharge.priceWithTax - surcharge.price, order.currencyCode),
+        })),
+    );
     // Deduct amount already paid
     if (alreadyPaid) {
         lines.push({
@@ -85,7 +87,18 @@ export function toAmount(value: number, orderCurrency: string): Amount {
 }
 
 /**
- * Return to number of cents
+ * Checks if the Vendure order amount due is the same as the given Mollie amount.
+ * E.g. does '1000 EUR' equal { value: '10.00', currency: 'EUR'}?
+ */
+export function isAmountEqual(orderCurrency: CurrencyCode, amountDue: number, mollieAmount: Amount): boolean {
+    if (orderCurrency !== mollieAmount.currency) {
+        return false;
+    }
+    return amountToCents(mollieAmount) === amountDue;
+}
+
+/**
+ * Return to number of cents. E.g. '10.00' => 1000
  */
 export function amountToCents(amount: Amount): number {
     return currency(amount.value).intValue;
@@ -99,7 +112,6 @@ export function amountToCents(amount: Amount): number {
 export function calculateLineTaxAmount(taxRate: number, orderLinePriceWithTax: number): number {
     const taxMultiplier = taxRate / 100;
     return orderLinePriceWithTax * (taxMultiplier / (1 + taxMultiplier)); // I.E. €99,99 * (0,2 ÷ 1,2) with a 20% taxrate
-
 }
 
 /**

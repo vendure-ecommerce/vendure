@@ -31,6 +31,7 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
 
 /**
  * This should only be used to locally test the Mollie payment plugin
+ * Make sure you have `MOLLIE_APIKEY=test_xxxx` in your .env file
  */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 async function runMollieDevServer(useDynamicRedirectUrl: boolean) {
@@ -114,8 +115,7 @@ async function runMollieDevServer(useDynamicRedirectUrl: boolean) {
         channel: await server.app.get(ChannelService).getDefaultChannel(),
     });
     await setShipping(shopClient);
-    // Add pre payment to order
-    const order = await server.app.get(OrderService).findOne(ctx, 1);
+    // Create payment intent
     const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
         input: {
             redirectUrl: `${tunnel.url}/admin/orders?filter=open&page=1&dynamicRedirectUrl=true`,
@@ -128,6 +128,17 @@ async function runMollieDevServer(useDynamicRedirectUrl: boolean) {
     }
     // eslint-disable-next-line no-console
     console.log('\x1b[41m', `Mollie payment link: ${createMolliePaymentIntent.url as string}`, '\x1b[0m');
+
+    // Create another intent after 10s, should cancel the previous Mollie order
+    await new Promise(resolve => setTimeout(resolve, 10000));
+    const { createMolliePaymentIntent: secondIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
+        input: {
+            redirectUrl: `${tunnel.url}/admin/orders?filter=open&page=1&dynamicRedirectUrl=true`,
+            paymentMethodCode: 'mollie',
+        },
+    });
+    // eslint-disable-next-line no-console
+    console.log('\x1b[41m', `Second payment link: ${secondIntent.url as string}`, '\x1b[0m');
 }
 
 (async () => {
