@@ -139,7 +139,7 @@ let order: TestOrderFragmentFragment;
 let serverPort: number;
 const SURCHARGE_AMOUNT = -20000;
 
-describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
+describe('Mollie payments with useDynamicRedirectUrl=false', () => {
     beforeAll(async () => {
         const devConfig = mergeConfig(testConfig(), {
             plugins: [MolliePlugin.init({ vendureHost: mockData.host })],
@@ -637,7 +637,7 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
     });
 });
 
-describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
+describe('Mollie payments with useDynamicRedirectUrl=true', () => {
     beforeAll(async () => {
         const devConfig = mergeConfig(testConfig(), {
             plugins: [MolliePlugin.init({ vendureHost: mockData.host, useDynamicRedirectUrl: true })],
