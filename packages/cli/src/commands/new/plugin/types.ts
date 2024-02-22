@@ -7,7 +7,7 @@ export interface GeneratePluginOptions {
     pluginDir: string;
 }
 
-export type TemplateContext = GeneratePluginOptions & {
+export type NewPluginTemplateContext = GeneratePluginOptions & {
     pluginName: string;
     pluginInitOptionsName: string;
     service: {

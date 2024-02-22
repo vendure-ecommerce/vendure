@@ -1,10 +1,10 @@
 import fs from 'fs-extra';
 import path from 'path';
-import { Project, QuoteKind } from 'ts-morph';
+import { Project } from 'ts-morph';
 import { describe, expect, it } from 'vitest';
-import { defaultManipulationSettings } from '../../../../../constants';
 
-import { getVendureConfig } from '../../../../../utilities/utils';
+import { defaultManipulationSettings } from '../../../../../constants';
+import { getVendureConfig } from '../../../../../utilities/ast-utils';
 
 import { updateAdminUiPluginInit } from './update-admin-ui-plugin-init';
 

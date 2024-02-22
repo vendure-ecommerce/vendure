@@ -3,8 +3,6 @@ import spawn from 'cross-spawn';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { Logger } from './logger';
-
 export interface PackageToInstall {
     pkg: string;
     version?: string;
@@ -59,7 +57,7 @@ export async function installPackages(dependencies: string[], isDev: boolean) {
                 args.push('--save-dev');
             }
         }
-        const child = spawn(command, args, { stdio: Logger.logLevel === 'verbose' ? 'inherit' : 'ignore' });
+        const child = spawn(command, args, { stdio: 'ignore' });
         child.on('close', code => {
             if (code !== 0) {
                 const message = 'An error occurred when installing dependencies.';

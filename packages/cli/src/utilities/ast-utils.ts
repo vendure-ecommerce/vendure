@@ -1,32 +1,8 @@
-import { cancel, isCancel, select } from '@clack/prompts';
 import fs from 'fs-extra';
 import path from 'node:path';
-import {
-    ClassDeclaration,
-    Node,
-    ObjectLiteralExpression,
-    Project,
-    QuoteKind,
-    SourceFile,
-    VariableDeclaration,
-} from 'ts-morph';
-import { defaultManipulationSettings } from '../constants';
+import { Node, ObjectLiteralExpression, Project, SourceFile, VariableDeclaration } from 'ts-morph';
 
-export async function selectPluginClass(project: Project, cancelledMessage: string) {
-    const pluginClasses = getPluginClasses(project);
-    const targetPlugin = await select({
-        message: 'To which plugin would you like to add the feature?',
-        options: pluginClasses.map(c => ({
-            value: c,
-            label: c.getName() as string,
-        })),
-    });
-    if (isCancel(targetPlugin)) {
-        cancel(cancelledMessage);
-        process.exit(0);
-    }
-    return targetPlugin as ClassDeclaration;
-}
+import { defaultManipulationSettings } from '../constants';
 
 export function getTsMorphProject() {
     const tsConfigPath = path.join(process.cwd(), 'tsconfig.json');
@@ -79,14 +55,20 @@ export function getVendureConfig(project: Project, options: { checkFileName?: bo
 
 export function addImportsToFile(
     sourceFile: SourceFile,
-    options: { moduleSpecifier: string; namedImports?: string[]; namespaceImport?: string; order?: number },
+    options: {
+        moduleSpecifier: string | SourceFile;
+        namedImports?: string[];
+        namespaceImport?: string;
+        order?: number;
+    },
 ) {
     const existingDeclaration = sourceFile.getImportDeclaration(
         declaration => declaration.getModuleSpecifier().getLiteralValue() === options.moduleSpecifier,
     );
+    const moduleSpecifier = getModuleSpecifierString(options.moduleSpecifier, sourceFile);
     if (!existingDeclaration) {
         const importDeclaration = sourceFile.addImportDeclaration({
-            moduleSpecifier: options.moduleSpecifier,
+            moduleSpecifier,
             ...(options.namespaceImport ? { namespaceImport: options.namespaceImport } : {}),
             ...(options.namedImports ? { namedImports: options.namedImports } : {}),
         });
@@ -112,6 +94,27 @@ export function addImportsToFile(
     }
 }
 
+function getModuleSpecifierString(moduleSpecifier: string | SourceFile, sourceFile: SourceFile): string {
+    if (typeof moduleSpecifier === 'string') {
+        return moduleSpecifier;
+    }
+    return getRelativeImportPath({ from: moduleSpecifier, to: sourceFile });
+}
+
+export function getRelativeImportPath(locations: { from: SourceFile; to: SourceFile }): string {
+    return convertPathToRelativeImport(
+        path.relative(
+            locations.to.getSourceFile().getDirectory().getPath(),
+            locations.from.getSourceFile().getFilePath(),
+        ),
+    );
+}
+
+export function createSourceFileFromTemplate(project: Project, templatePath: string) {
+    const template = fs.readFileSync(templatePath, 'utf-8');
+    return project.createSourceFile('temp.ts', template);
+}
+
 export function kebabize(str: string) {
     return str
         .split('')
@@ -121,4 +124,13 @@ export function kebabize(str: string) {
                 : letter;
         })
         .join('');
+}
+
+function convertPathToRelativeImport(filePath: string): string {
+    // Normalize the path separators
+    const normalizedPath = filePath.replace(/\\/g, '/');
+
+    // Remove the file extension
+    const parsedPath = path.parse(normalizedPath);
+    return `./${parsedPath.dir}/${parsedPath.name}`.replace(/\/\//g, '/');
 }

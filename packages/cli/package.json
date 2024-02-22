@@ -19,7 +19,7 @@
     "license": "MIT",
     "type": "commonjs",
     "scripts": {
-        "build": "rimraf dist && tsc -p ./tsconfig.cli.json",
+        "build": "rimraf dist && tsc -p ./tsconfig.cli.json && ts-node ./build.ts",
         "watch": "tsc -p ./tsconfig.cli.json --watch",
         "ci": "yarn build",
         "test": "vitest --config ./vitest.config.ts --run"

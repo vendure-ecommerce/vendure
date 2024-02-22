@@ -1,10 +1,10 @@
 import fs from 'fs-extra';
 import path from 'path';
-import { Project, QuoteKind } from 'ts-morph';
+import { Project } from 'ts-morph';
 import { describe, expect, it } from 'vitest';
-import { defaultManipulationSettings } from '../../../../../constants';
 
-import { getPluginClasses } from '../../../../../utilities/utils';
+import { defaultManipulationSettings } from '../../../../../constants';
+import { getPluginClasses } from '../../../../../utilities/ast-utils';
 
 import { addUiExtensionStaticProp } from './add-ui-extension-static-prop';
 

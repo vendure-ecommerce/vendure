@@ -3,17 +3,18 @@ import { camelCase, constantCase, paramCase, pascalCase } from 'change-case';
 import * as fs from 'fs-extra';
 import path from 'path';
 
+import { getCustomEntityName } from '../../../shared/shared-prompts';
+import { renderEntity } from '../../../shared/shared-scaffold/entity';
 import { Scaffolder } from '../../../utilities/scaffolder';
 
 import { renderAdminResolver, renderAdminResolverWithEntity } from './scaffold/api/admin.resolver';
 import { renderApiExtensions } from './scaffold/api/api-extensions';
 import { renderShopResolver, renderShopResolverWithEntity } from './scaffold/api/shop.resolver';
 import { renderConstants } from './scaffold/constants';
-import { renderEntity } from './scaffold/entities/entity';
 import { renderPlugin } from './scaffold/plugin';
 import { renderService, renderServiceWithEntity } from './scaffold/services/service';
 import { renderTypes } from './scaffold/types';
-import { GeneratePluginOptions, TemplateContext } from './types';
+import { GeneratePluginOptions, NewPluginTemplateContext } from './types';
 
 const cancelledMessage = 'Plugin setup cancelled.';
 
@@ -51,26 +52,7 @@ export async function newPlugin() {
         options.withApiExtensions = features.includes('apiExtensions');
     }
     if (options.withCustomEntity) {
-        const entityName = await text({
-            message: 'What is the name of the custom entity?',
-            initialValue: '',
-            placeholder: '',
-            validate: input => {
-                if (!input) {
-                    return 'The custom entity name cannot be empty';
-                }
-                const pascalCaseRegex = /^[A-Z][a-zA-Z0-9]*$/;
-                if (!pascalCaseRegex.test(input)) {
-                    return 'The custom entity name must be in PascalCase, e.g. "ProductReview"';
-                }
-            },
-        });
-        if (isCancel(entityName)) {
-            cancel(cancelledMessage);
-            process.exit(0);
-        } else {
-            options.customEntityName = pascalCase(entityName);
-        }
+        options.customEntityName = await getCustomEntityName(cancelledMessage);
     }
     const pluginDir = getPluginDirName(options.name);
     const confirmation = await text({
@@ -96,7 +78,7 @@ export async function newPlugin() {
 export function generatePlugin(options: GeneratePluginOptions) {
     const nameWithoutPlugin = options.name.replace(/-?plugin$/i, '');
     const normalizedName = nameWithoutPlugin + '-plugin';
-    const templateContext: TemplateContext = {
+    const templateContext: NewPluginTemplateContext = {
         ...options,
         pluginName: pascalCase(normalizedName),
         pluginInitOptionsName: constantCase(normalizedName) + '_OPTIONS',
@@ -112,7 +94,7 @@ export function generatePlugin(options: GeneratePluginOptions) {
         },
     };
 
-    const scaffolder = new Scaffolder<TemplateContext>();
+    const scaffolder = new Scaffolder<NewPluginTemplateContext>();
     scaffolder.addFile(renderPlugin, paramCase(nameWithoutPlugin) + '.plugin.ts');
     scaffolder.addFile(renderTypes, 'types.ts');
     scaffolder.addFile(renderConstants, 'constants.ts');

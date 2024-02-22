@@ -1,6 +1,6 @@
-import { TemplateContext } from '../../types';
+import { NewPluginTemplateContext } from '../../types';
 
-export function renderAdminResolverWithEntity(context: TemplateContext) {
+export function renderAdminResolverWithEntity(context: NewPluginTemplateContext) {
     return /* language=TypeScript */ `
 import { Args, Resolver, Mutation } from '@nestjs/graphql';
 import { Allow, Ctx, RequestContext, Transaction, Permission } from '@vendure/core';
@@ -37,7 +37,7 @@ export class AdminResolver {
 }`;
 }
 
-export function renderAdminResolver(context: TemplateContext) {
+export function renderAdminResolver(context: NewPluginTemplateContext) {
     return /* language=TypeScript */ `
 import { Args, Query, Mutation, Resolver } from '@nestjs/graphql';
 import { Ctx, PaginatedList, RequestContext, Transaction } from '@vendure/core';

@@ -1,6 +1,7 @@
-import { cancel, isCancel, select } from '@clack/prompts';
+import { cancel, isCancel, log, select } from '@clack/prompts';
 import { Command } from 'commander';
 
+import { addEntity } from './entity/add-entity';
 import { addUiExtensions } from './ui-extensions/add-ui-extensions';
 
 const cancelledMessage = 'Add feature cancelled.';
@@ -14,15 +15,22 @@ export function registerAddCommand(program: Command) {
                 message: 'Which feature would you like to add?',
                 options: [
                     { value: 'uiExtensions', label: 'Set up Admin UI extensions' },
-                    { value: 'other', label: 'Other' },
+                    { value: 'entity', label: 'Add a new entity to a plugin' },
                 ],
             });
             if (isCancel(featureType)) {
                 cancel(cancelledMessage);
                 process.exit(0);
             }
-            if (featureType === 'uiExtensions') {
-                await addUiExtensions();
+            try {
+                if (featureType === 'uiExtensions') {
+                    await addUiExtensions();
+                }
+                if (featureType === 'entity') {
+                    await addEntity();
+                }
+            } catch (e: any) {
+                log.error(e.message as string);
             }
             process.exit(0);
         });

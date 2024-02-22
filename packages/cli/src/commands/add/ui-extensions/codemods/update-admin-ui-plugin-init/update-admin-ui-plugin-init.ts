@@ -1,6 +1,6 @@
 import { Node, ObjectLiteralExpression, StructureKind, SyntaxKind } from 'ts-morph';
 
-import { addImportsToFile } from '../../../../../utilities/utils';
+import { addImportsToFile } from '../../../../../utilities/ast-utils';
 
 export function updateAdminUiPluginInit(
     vendureConfig: ObjectLiteralExpression,

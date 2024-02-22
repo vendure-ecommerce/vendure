@@ -1,6 +1,6 @@
-import { TemplateContext } from '../../types';
+import { NewPluginTemplateContext } from '../../types';
 
-export function renderShopResolverWithEntity(context: TemplateContext) {
+export function renderShopResolverWithEntity(context: NewPluginTemplateContext) {
     return /* language=TypeScript */ `
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import { Ctx, PaginatedList, RequestContext, ListQueryOptions } from '@vendure/core';
@@ -28,7 +28,7 @@ export class ShopResolver {
 }`;
 }
 
-export function renderShopResolver(context: TemplateContext) {
+export function renderShopResolver(context: NewPluginTemplateContext) {
     return /* language=TypeScript */ `
 import { Args, Query, Mutation, Resolver } from '@nestjs/graphql';
 import { Ctx, PaginatedList, RequestContext, Transaction } from '@vendure/core';

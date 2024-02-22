@@ -1,11 +1,11 @@
 import { note, outro, spinner, log } from '@clack/prompts';
 import path from 'path';
 import { ClassDeclaration } from 'ts-morph';
-import { Logger } from '../../../utilities/logger';
-import { determineVendureVersion, installRequiredPackages } from '../../../utilities/package-utils';
 
+import { selectPluginClass } from '../../../shared/shared-prompts';
+import { getRelativeImportPath, getTsMorphProject, getVendureConfig } from '../../../utilities/ast-utils';
+import { determineVendureVersion, installRequiredPackages } from '../../../utilities/package-utils';
 import { Scaffolder } from '../../../utilities/scaffolder';
-import { getTsMorphProject, getVendureConfig, selectPluginClass } from '../../../utilities/utils';
 
 import { addUiExtensionStaticProp } from './codemods/add-ui-extension-static-prop/add-ui-extension-static-prop';
 import { updateAdminUiPluginInit } from './codemods/update-admin-ui-plugin-init/update-admin-ui-plugin-init';
@@ -40,12 +40,7 @@ export async function addUiExtensions() {
             },
         ]);
     } catch (e: any) {
-        log.error(
-            `Failed to install dependencies: ${
-                e.message as string
-            }. Run with --log-level=verbose to see more details.`,
-        );
-        Logger.verbose(e.stack);
+        log.error(`Failed to install dependencies: ${e.message as string}.`);
     }
     installSpinner.stop('Dependencies installed');
 
@@ -66,12 +61,10 @@ export async function addUiExtensions() {
         );
     } else {
         const pluginClassName = pluginClass.getName() as string;
-        const pluginPath = convertPathToRelativeImport(
-            path.relative(
-                vendureConfig.getSourceFile().getDirectory().getPath(),
-                pluginClass.getSourceFile().getFilePath(),
-            ),
-        );
+        const pluginPath = getRelativeImportPath({
+            to: vendureConfig.getSourceFile(),
+            from: pluginClass.getSourceFile(),
+        });
         const updated = updateAdminUiPluginInit(vendureConfig, { pluginClassName, pluginPath });
         if (updated) {
             log.success('Updated VendureConfig file');
@@ -97,13 +90,4 @@ function pluginAlreadyHasUiExtensionProp(pluginClass: ClassDeclaration) {
     if (uiProperty.isStatic()) {
         return true;
     }
-}
-
-function convertPathToRelativeImport(filePath: string) {
-    // Normalize the path separators
-    const normalizedPath = filePath.replace(/\\/g, '/');
-
-    // Remove the file extension
-    const parsedPath = path.parse(normalizedPath);
-    return `./${parsedPath.dir}/${parsedPath.name}`;
 }

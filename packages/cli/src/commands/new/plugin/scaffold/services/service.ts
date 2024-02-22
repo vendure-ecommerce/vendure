@@ -1,8 +1,8 @@
 import { paramCase } from 'change-case';
 
-import { TemplateContext } from '../../types';
+import { NewPluginTemplateContext } from '../../types';
 
-export function renderService(context: TemplateContext) {
+export function renderService(context: NewPluginTemplateContext) {
     return /* language=TypeScript */ `
 import { Inject, Injectable } from '@nestjs/common';
 import { RequestContext, TransactionalConnection } from '@vendure/core';
@@ -27,7 +27,7 @@ export class ${context.service.className} {
 `;
 }
 
-export function renderServiceWithEntity(context: TemplateContext) {
+export function renderServiceWithEntity(context: NewPluginTemplateContext) {
     return /* language=TypeScript */ `
 import { Inject, Injectable } from '@nestjs/common';
 import { ListQueryBuilder, ListQueryOptions, PaginatedList, RequestContext, TransactionalConnection } from '@vendure/core';

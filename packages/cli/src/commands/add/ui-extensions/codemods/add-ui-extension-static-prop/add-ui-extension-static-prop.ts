@@ -1,6 +1,6 @@
 import { ClassDeclaration } from 'ts-morph';
 
-import { addImportsToFile, kebabize } from '../../../../../utilities/utils';
+import { addImportsToFile, kebabize } from '../../../../../utilities/ast-utils';
 
 /**
  * @description
