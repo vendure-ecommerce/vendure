@@ -51,6 +51,7 @@ export * from './order/default-stock-allocation-strategy';
 export * from './order/default-guest-checkout-strategy';
 export * from './order/guest-checkout-strategy';
 export * from './order/merge-orders-strategy';
+export * from './order/order-by-code-access-strategy';
 export * from './order/order-code-strategy';
 export * from './order/order-item-price-calculation-strategy';
 export * from './order/order-merge-strategy';
