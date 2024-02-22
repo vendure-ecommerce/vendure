@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 import { defaultManipulationSettings } from '../../../../../constants';
 import { getVendureConfig } from '../../../../../utilities/ast-utils';
+import { expectSourceFileContentToMatch } from '../../../../../utilities/testing-utils';
 
 import { updateAdminUiPluginInit } from './update-admin-ui-plugin-init';
 
@@ -20,9 +21,10 @@ describe('updateAdminUiPluginInit', () => {
             pluginPath: './plugins/test-plugin/test.plugin',
         });
 
-        const result = project.getSourceFiles()[0].getText();
-        const expected = fs.readFileSync(path.join(__dirname, 'fixtures', 'no-app-prop.expected'), 'utf-8');
-        expect(result).toBe(expected);
+        expectSourceFileContentToMatch(
+            project.getSourceFiles()[0],
+            path.join(__dirname, 'fixtures', 'no-app-prop.expected'),
+        );
     });
 
     it('adds to existing ui extensions array', () => {
@@ -36,11 +38,9 @@ describe('updateAdminUiPluginInit', () => {
             pluginPath: './plugins/test-plugin/test.plugin',
         });
 
-        const result = project.getSourceFiles()[0].getText();
-        const expected = fs.readFileSync(
+        expectSourceFileContentToMatch(
+            project.getSourceFiles()[0],
             path.join(__dirname, 'fixtures', 'existing-app-prop.expected'),
-            'utf-8',
         );
-        expect(result).toBe(expected);
     });
 });

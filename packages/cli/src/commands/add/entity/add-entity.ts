@@ -35,7 +35,7 @@ export async function addEntity() {
     };
 
     const entitiesDir = path.join(pluginClass.getSourceFile().getDirectory().getPath(), 'entities');
-    const entityTemplatePath = path.join(__dirname, 'scaffold/entity.template.ts');
+    const entityTemplatePath = path.join(__dirname, 'templates/entity.template.ts');
     const entityFile = createSourceFileFromTemplate(project, entityTemplatePath);
     entityFile.move(path.join(entitiesDir, `${context.entity.fileName}.ts`));
     entityFile.getClasses()[0].rename(`${context.entity.className}CustomFields`);

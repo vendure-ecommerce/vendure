@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 
 import { defaultManipulationSettings } from '../../../../../constants';
 import { getPluginClasses } from '../../../../../utilities/ast-utils';
+import { expectSourceFileContentToMatch } from '../../../../../utilities/testing-utils';
 
 import { addUiExtensionStaticProp } from './add-ui-extension-static-prop';
 
@@ -18,8 +19,9 @@ describe('addUiExtensionStaticProp', () => {
         expect(pluginClasses.length).toBe(1);
         addUiExtensionStaticProp(pluginClasses[0]);
 
-        const result = pluginClasses[0].getSourceFile().getText();
-        const expected = fs.readFileSync(path.join(__dirname, 'fixtures', 'no-ui-prop.expected'), 'utf-8');
-        expect(result).toBe(expected);
+        expectSourceFileContentToMatch(
+            pluginClasses[0].getSourceFile(),
+            path.join(__dirname, 'fixtures', 'no-ui-prop.expected'),
+        );
     });
 });
