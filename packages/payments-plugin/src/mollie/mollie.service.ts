@@ -12,6 +12,7 @@ import {
     assertFound,
     EntityHydrator,
     ErrorResult,
+    ID,
     Injector,
     LanguageCode,
     Logger,
@@ -155,10 +156,10 @@ export class MollieService {
             }
             redirectUrl = paymentMethodRedirectUrl;
         }
-        // FIXME: Do we still need to manually do all the above checks like has-customer etc?
+        // FIXME: The manual checks above can be removed, now that we do a canTransition check?
         if (order.state !== 'ArrangingPayment' && order.state !== 'ArrangingAdditionalPayment') {
             // Check if order is transitionable to ArrangingPayment, because that will happen after Mollie payment
-            await this.canTransitionTo(ctx, order, 'ArrangingPayment');
+            await this.canTransitionTo(ctx, order.id, 'ArrangingPayment');
         }
         const variantsWithInsufficientSaleableStock = await this.getVariantsWithInsufficientStock(ctx, order);
         if (variantsWithInsufficientSaleableStock.length) {
@@ -213,19 +214,23 @@ export class MollieService {
         }
         if (order.customFields?.mollieOrderId) {
             // A payment was already started, so we try to reuse the existing order
-
-            // FIXME make this failsafe: reusing should never throw and fail payment intent creation
-            const existingMollieOrder = await mollieClient.orders.get(order.customFields.mollieOrderId);
-            const checkoutUrl = existingMollieOrder.getCheckoutUrl();
-            const amountsMatch = isAmountEqual(order.currencyCode, amountToPay, existingMollieOrder.amount);
-            if (checkoutUrl && amountsMatch) {
+            const checkoutUrl = await this.getExistingCheckout(
+                mollieClient,
+                order,
+                amountToPay,
+                order.customFields.mollieOrderId,
+            ).catch(e => {
+                Logger.warn(`Failed to reuse existing Mollie order: ${(e as Error).message}`, loggerCtx);
+            });
+            if (checkoutUrl) {
+                Logger.info(`Reusing existing Mollie order '${order.customFields.mollieOrderId}'`, loggerCtx);
                 return {
                     url: checkoutUrl,
                 };
             }
-            // Otherwise, cancel existing Mollie order asynchronously, because we don't care if it fails
+            // Otherwise, try to cancel existing Mollie order in the background
             this.cancelMollieOrder(mollieClient, order.customFields.mollieOrderId).catch(e => {
-                Logger.warn(`Failed to cancel existing Mollie order: ${(e as Error).message}`, loggerCtx);
+                Logger.info(`Failed to cancel existing Mollie order: ${(e as Error).message}`, loggerCtx);
             });
         }
         const mollieOrder = await mollieClient.orders.create(orderInput);
@@ -439,8 +444,8 @@ export class MollieService {
 
     /**
      * Tries to cancel an existing Mollie order
-     * An order might not be cancellable when it has open payments, and open payments can't be cancelled
-     * It takes at least 15 minutes for a payment to expire can be cancelled: https://docs.mollie.com/payments/status-changes#when-does-a-payment-expire
+     * An order might not be cancellable when it has open payments
+     * It takes at least 15 minutes for a payment to expire and be cancallable: https://docs.mollie.com/payments/status-changes#when-does-a-payment-expire
      */
     async cancelMollieOrder(client: MollieClient, mollieOrderId: string): Promise<void> {
         const mollieOrder = await client.orders.get(mollieOrderId);
@@ -465,9 +470,31 @@ export class MollieService {
         Logger.info(`Cancelled Mollie order ${mollieOrder.id}`, loggerCtx);
     }
 
-    private async canTransitionTo(ctx: RequestContext, order: Order, state: OrderState) {
+    /**
+     * Checks if we can reuse the existing Mollie order, and returns the checkoutUrl if possible.
+     * If no checkout URL returned, the checkout could not be reused.
+     */
+    private async getExistingCheckout(
+        mollieClient: MollieClient,
+        vendureOrder: Order,
+        amountToPay: number,
+        mollieOrderId: string,
+    ): Promise<string | undefined> {
+        const existingMollieOrder = await mollieClient.orders.get(mollieOrderId);
+        const checkoutUrl = existingMollieOrder.getCheckoutUrl();
+        const amountsMatch = isAmountEqual(
+            vendureOrder.currencyCode,
+            amountToPay,
+            existingMollieOrder.amount,
+        );
+        if (checkoutUrl && amountsMatch) {
+            return checkoutUrl;
+        }
+    }
+
+    private async canTransitionTo(ctx: RequestContext, orderId: ID, state: OrderState) {
         // Fetch new order object, because `transition()` mutates the order object
-        const orderCopy = await assertFound(this.orderService.findOne(ctx, order.id));
+        const orderCopy = await assertFound(this.orderService.findOne(ctx, orderId));
         const orderStateMachine = this.injector.get(OrderStateMachine);
         await orderStateMachine.transition(ctx, orderCopy, state);
     }
