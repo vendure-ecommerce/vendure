@@ -8,14 +8,11 @@ import {
     Input,
     Output,
 } from '@angular/core';
-import {
-    Asset,
-    AssetPickerDialogComponent,
-    AssetPreviewDialogComponent,
-    ModalService,
-    Permission,
-} from '@vendure/admin-ui/core';
 import { unique } from '@vendure/common/lib/unique';
+import { Asset, Permission } from '../../../common/generated-types';
+import { ModalService } from '../../../providers/modal/modal.service';
+import { AssetPickerDialogComponent } from '../asset-picker-dialog/asset-picker-dialog.component';
+import { AssetPreviewDialogComponent } from '../asset-preview-dialog/asset-preview-dialog.component';
 
 export interface AssetChange {
     assets: Asset[];
