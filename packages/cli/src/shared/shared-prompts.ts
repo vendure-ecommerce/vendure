@@ -8,7 +8,6 @@ export async function getCustomEntityName(cancelledMessage: string) {
     const entityName = await text({
         message: 'What is the name of the custom entity?',
         initialValue: '',
-        placeholder: '',
         validate: input => {
             if (!input) {
                 return 'The custom entity name cannot be empty';
@@ -34,6 +33,7 @@ export async function selectPluginClass(project: Project, cancelledMessage: stri
             value: c,
             label: c.getName() as string,
         })),
+        maxItems: 10,
     });
     if (isCancel(targetPlugin)) {
         cancel(cancelledMessage);

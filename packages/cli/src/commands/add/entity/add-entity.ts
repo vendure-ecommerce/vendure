@@ -1,11 +1,9 @@
-import { outro, spinner } from '@clack/prompts';
+import { outro, spinner, text } from '@clack/prompts';
 import { paramCase } from 'change-case';
 import path from 'path';
 
 import { getCustomEntityName, selectPluginClass } from '../../../shared/shared-prompts';
-import { renderEntity } from '../../../shared/shared-scaffold/entity';
-import { createSourceFileFromTemplate, getTsMorphProject } from '../../../utilities/ast-utils';
-import { Scaffolder } from '../../../utilities/scaffolder';
+import { createFile, getTsMorphProject } from '../../../utilities/ast-utils';
 
 import { addEntityToPlugin } from './codemods/add-entity-to-plugin/add-entity-to-plugin';
 
@@ -35,8 +33,7 @@ export async function addEntity() {
     };
 
     const entitiesDir = path.join(pluginClass.getSourceFile().getDirectory().getPath(), 'entities');
-    const entityTemplatePath = path.join(__dirname, 'templates/entity.template.ts');
-    const entityFile = createSourceFileFromTemplate(project, entityTemplatePath);
+    const entityFile = createFile(project, path.join(__dirname, 'templates/entity.template.ts'));
     entityFile.move(path.join(entitiesDir, `${context.entity.fileName}.ts`));
     entityFile.getClasses()[0].rename(`${context.entity.className}CustomFields`);
     entityFile.getClasses()[1].rename(context.entity.className);

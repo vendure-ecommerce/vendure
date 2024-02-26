@@ -3,7 +3,7 @@ import { Project } from 'ts-morph';
 import { describe, expect, it } from 'vitest';
 
 import { defaultManipulationSettings } from '../../../../../constants';
-import { createSourceFileFromTemplate, getPluginClasses } from '../../../../../utilities/ast-utils';
+import { createFile, getPluginClasses } from '../../../../../utilities/ast-utils';
 import { expectSourceFileContentToMatch } from '../../../../../utilities/testing-utils';
 
 import { addEntityToPlugin } from './add-entity-to-plugin';
@@ -17,7 +17,7 @@ describe('addEntityToPlugin', () => {
         const pluginClasses = getPluginClasses(project);
         expect(pluginClasses.length).toBe(1);
         const entityTemplatePath = path.join(__dirname, '../../templates/entity.template.ts');
-        const entityFile = createSourceFileFromTemplate(project, entityTemplatePath);
+        const entityFile = createFile(project, entityTemplatePath);
         entityFile.move(path.join(__dirname, 'fixtures', 'entity.ts'));
         addEntityToPlugin(pluginClasses[0], entityFile);
 

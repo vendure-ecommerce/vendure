@@ -1,16 +1,18 @@
-import { note, outro, spinner, log } from '@clack/prompts';
+import { log, note, outro, spinner } from '@clack/prompts';
 import path from 'path';
 import { ClassDeclaration } from 'ts-morph';
 
 import { selectPluginClass } from '../../../shared/shared-prompts';
-import { getRelativeImportPath, getTsMorphProject, getVendureConfig } from '../../../utilities/ast-utils';
+import {
+    createFile,
+    getRelativeImportPath,
+    getTsMorphProject,
+    getVendureConfig,
+} from '../../../utilities/ast-utils';
 import { determineVendureVersion, installRequiredPackages } from '../../../utilities/package-utils';
-import { Scaffolder } from '../../../utilities/scaffolder';
 
 import { addUiExtensionStaticProp } from './codemods/add-ui-extension-static-prop/add-ui-extension-static-prop';
 import { updateAdminUiPluginInit } from './codemods/update-admin-ui-plugin-init/update-admin-ui-plugin-init';
-import { renderProviders } from './scaffold/providers';
-import { renderRoutes } from './scaffold/routes';
 
 export async function addUiExtensions() {
     const projectSpinner = spinner();
@@ -44,16 +46,14 @@ export async function addUiExtensions() {
     }
     installSpinner.stop('Dependencies installed');
 
-    const scaffolder = new Scaffolder();
-    scaffolder.addFile(renderProviders, 'providers.ts');
-    scaffolder.addFile(renderRoutes, 'routes.ts');
+    const pluginDir = pluginClass.getSourceFile().getDirectory().getPath();
+    const providersFile = createFile(project, path.join(__dirname, 'templates/providers.template.ts'));
+    providersFile.move(path.join(pluginDir, 'ui', 'providers.ts'));
+    const routesFile = createFile(project, path.join(__dirname, 'templates/routes.template.ts'));
+    routesFile.move(path.join(pluginDir, 'ui', 'routes.ts'));
+
     log.success('Created UI extension scaffold');
 
-    const pluginDir = pluginClass.getSourceFile().getDirectory().getPath();
-    scaffolder.createScaffold({
-        dir: path.join(pluginDir, 'ui'),
-        context: {},
-    });
     const vendureConfig = getVendureConfig(project);
     if (!vendureConfig) {
         log.warning(

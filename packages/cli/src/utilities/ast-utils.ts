@@ -1,10 +1,18 @@
+import { log } from '@clack/prompts';
 import fs from 'fs-extra';
 import path from 'node:path';
-import { Node, ObjectLiteralExpression, Project, SourceFile, VariableDeclaration } from 'ts-morph';
+import {
+    Node,
+    ObjectLiteralExpression,
+    Project,
+    ProjectOptions,
+    SourceFile,
+    VariableDeclaration,
+} from 'ts-morph';
 
 import { defaultManipulationSettings } from '../constants';
 
-export function getTsMorphProject() {
+export function getTsMorphProject(options: ProjectOptions = {}) {
     const tsConfigPath = path.join(process.cwd(), 'tsconfig.json');
     if (!fs.existsSync(tsConfigPath)) {
         throw new Error('No tsconfig.json found in current directory');
@@ -15,6 +23,7 @@ export function getTsMorphProject() {
         compilerOptions: {
             skipLibCheck: true,
         },
+        ...options,
     });
 }
 
@@ -110,9 +119,16 @@ export function getRelativeImportPath(locations: { from: SourceFile; to: SourceF
     );
 }
 
-export function createSourceFileFromTemplate(project: Project, templatePath: string) {
+export function createFile(project: Project, templatePath: string) {
     const template = fs.readFileSync(templatePath, 'utf-8');
-    return project.createSourceFile('temp.ts', template);
+    try {
+        return project.createSourceFile(path.join('/.vendure-cli-temp/', templatePath), template, {
+            overwrite: true,
+        });
+    } catch (e: any) {
+        log.error(e.message);
+        process.exit(1);
+    }
 }
 
 export function kebabize(str: string) {
