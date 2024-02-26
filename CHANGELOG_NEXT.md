@@ -1,3 +1,10 @@
+## 2.2.0-next.5 (2024-02-26)
+
+
+#### Fixes
+
+* **core** Correctly return custom field relation scalar fields ([1280cf3](https://github.com/vendure-ecommerce/vendure/commit/1280cf3))
+
 ## 2.2.0-next.4 (2024-02-26)
 
 
