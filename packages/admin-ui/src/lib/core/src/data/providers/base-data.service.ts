@@ -66,7 +66,7 @@ export class BaseDataService {
     private prepareCustomFields<V>(mutation: DocumentNode, variables: V): V {
         const entity = isEntityCreateOrUpdateMutation(mutation);
         if (entity) {
-            const customFieldConfig = this.customFields[entity];
+            const customFieldConfig = this.customFields.get(entity);
             if (variables && customFieldConfig) {
                 let variablesClone = simpleDeepClone(variables as any);
                 variablesClone = removeReadonlyCustomFields(variablesClone, customFieldConfig);
