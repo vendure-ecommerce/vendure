@@ -3,8 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "engines": {
-    "node": ">= 20",
-    "yarn": "1.19.0"
+    "node": ">= 20"
   },
   "scripts": {
     "watch": "lerna run watch --parallel",
