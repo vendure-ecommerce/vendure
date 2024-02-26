@@ -103,7 +103,7 @@ export class DataTableComponent<T> implements AfterContentInit, OnChanges, OnIni
     /** @deprecated pass a SelectionManager instance instead */
     @Input() allSelected: boolean;
     /** @deprecated pass a SelectionManager instance instead */
-    @Input() isRowSelectedFn: (item: T) => boolean;
+    @Input() isRowSelectedFn: ((item: T) => boolean) | undefined;
     /** @deprecated pass a SelectionManager instance instead */
     @Output() allSelectChange = new EventEmitter<void>();
     /** @deprecated pass a SelectionManager instance instead */
