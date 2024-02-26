@@ -114,7 +114,6 @@ export const productDuplicator = new EntityDuplicator({
                                 customFields: translation.customFields,
                             };
                         }),
-                        options: [],
                     });
                     const options: CreateProductOptionInput[] = optionGroup.options.map(option => {
                         return {

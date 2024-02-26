@@ -8,7 +8,10 @@ import { RequestContext } from '../../api/common/request-context';
 import { ProductOptionGroup } from '../../entity';
 import { VendureEntityEvent } from '../vendure-entity-event';
 
-type ProductOptionGroupInputTypes = CreateProductOptionGroupInput | UpdateProductOptionGroupInput | ID;
+type ProductOptionGroupInputTypes =
+    | Omit<CreateProductOptionGroupInput, 'options'>
+    | UpdateProductOptionGroupInput
+    | ID;
 
 /**
  * @description

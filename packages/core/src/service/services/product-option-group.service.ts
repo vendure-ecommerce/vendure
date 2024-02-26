@@ -92,7 +92,7 @@ export class ProductOptionGroupService {
 
     async create(
         ctx: RequestContext,
-        input: CreateProductOptionGroupInput,
+        input: Omit<CreateProductOptionGroupInput, 'options'>,
     ): Promise<Translated<ProductOptionGroup>> {
         const group = await this.translatableSaver.create({
             ctx,
