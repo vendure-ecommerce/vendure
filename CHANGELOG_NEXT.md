@@ -3,10 +3,8 @@
 
 #### Fixes
 
-* **admin-ui** Add missing Swedish translation (#2672) ([cce90d6](https://github.com/vendure-ecommerce/vendure/commit/cce90d6)), closes [#2672](https://github.com/vendure-ecommerce/vendure/issues/2672)
-* **admin-ui** Fix saving entities with custom field relations ([80f1f95](https://github.com/vendure-ecommerce/vendure/commit/80f1f95))
+* **admin-ui** Fix saving entities with custom field relations ([80f1f95](https://github.com/vendure-ecommerce/vendure/commit/80f1f95)) (this was a regression introduced in next.3)
 * **core** Fix typing on ProductOptionGroupService.create() method ([8fe24da](https://github.com/vendure-ecommerce/vendure/commit/8fe24da)), closes [#2577](https://github.com/vendure-ecommerce/vendure/issues/2577)
-* **payments-plugin** Improve Mollie ignore order states (#2670) ([f02fc56](https://github.com/vendure-ecommerce/vendure/commit/f02fc56)), closes [#2670](https://github.com/vendure-ecommerce/vendure/issues/2670)
 
 #### Features
 
