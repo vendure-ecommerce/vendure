@@ -215,6 +215,9 @@ describe('Custom fields', () => {
                                     type
                                     list
                                 }
+                                ... on RelationCustomFieldConfig {
+                                    scalarFields
+                                }
                             }
                         }
                     }
@@ -241,7 +244,25 @@ describe('Custom fields', () => {
                 { name: 'validateFn2', type: 'string', list: false },
                 { name: 'validateFn3', type: 'string', list: false },
                 { name: 'validateFn4', type: 'string', list: false },
-                { name: 'validateRelation', type: 'relation', list: false },
+                {
+                    name: 'validateRelation',
+                    type: 'relation',
+                    list: false,
+                    scalarFields: [
+                        'id',
+                        'createdAt',
+                        'updatedAt',
+                        'name',
+                        'type',
+                        'fileSize',
+                        'mimeType',
+                        'width',
+                        'height',
+                        'source',
+                        'preview',
+                        'customFields',
+                    ],
+                },
                 { name: 'stringWithOptions', type: 'string', list: false },
                 { name: 'nullableStringWithOptions', type: 'string', list: false },
                 { name: 'nonPublic', type: 'string', list: false },
@@ -273,6 +294,9 @@ describe('Custom fields', () => {
                                     type
                                     list
                                 }
+                                ... on RelationCustomFieldConfig {
+                                    scalarFields
+                                }
                             }
                         }
                     }
@@ -303,7 +327,25 @@ describe('Custom fields', () => {
                 { name: 'validateFn2', type: 'string', list: false },
                 { name: 'validateFn3', type: 'string', list: false },
                 { name: 'validateFn4', type: 'string', list: false },
-                { name: 'validateRelation', type: 'relation', list: false },
+                {
+                    name: 'validateRelation',
+                    type: 'relation',
+                    list: false,
+                    scalarFields: [
+                        'id',
+                        'createdAt',
+                        'updatedAt',
+                        'name',
+                        'type',
+                        'fileSize',
+                        'mimeType',
+                        'width',
+                        'height',
+                        'source',
+                        'preview',
+                        'customFields',
+                    ],
+                },
                 { name: 'stringWithOptions', type: 'string', list: false },
                 { name: 'nullableStringWithOptions', type: 'string', list: false },
                 { name: 'nonPublic', type: 'string', list: false },

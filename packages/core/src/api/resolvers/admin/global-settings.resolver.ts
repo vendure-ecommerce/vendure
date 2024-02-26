@@ -141,7 +141,7 @@ export class GlobalSettingsResolver {
                     .map(c => {
                         // In the VendureConfig, the relation entity is specified
                         // as the class, but the GraphQL API exposes it as a string.
-                        const customFieldConfig: GraphQLCustomFieldConfig = c as any;
+                        const customFieldConfig: GraphQLCustomFieldConfig = { ...c } as any;
                         if (this.isRelationGraphQLType(customFieldConfig) && this.isRelationConfigType(c)) {
                             customFieldConfig.entity = c.entity.name;
                             customFieldConfig.scalarFields = this.getScalarFieldsOfType(
