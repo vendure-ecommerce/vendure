@@ -205,7 +205,7 @@ export async function preBootstrapConfig(
     }
 
     const entities = await getAllEntities(userConfig);
-    const { coreSubscribersMap } = await import('./connection/subscribers.js');
+    const { coreSubscribersMap } = await import('./entity/subscribers.js');
     await setConfig({
         dbConnectionOptions: {
             entities,

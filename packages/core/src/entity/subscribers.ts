@@ -1,8 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { EntitySubscriberInterface, EventSubscriber, InsertEvent, LoadEvent, UpdateEvent } from 'typeorm';
+import { EntitySubscriberInterface, EventSubscriber, InsertEvent } from 'typeorm';
 
 import { CalculatedColumnDefinition, CALCULATED_PROPERTIES } from '../common/calculated-decorator';
-import { ConfigService } from '../config/index';
 
 interface EntityPrototype {
     [CALCULATED_PROPERTIES]: CalculatedColumnDefinition[];
@@ -49,30 +47,9 @@ export class CalculatedPropertySubscriber implements EntitySubscriberInterface {
     }
 }
 
-@Injectable()
-@EventSubscriber()
-export class EncryptedCustomFieldSubscriber implements EntitySubscriberInterface {
-    // constructor(private configService: ConfigService) {}
-
-    listenTo(): Function | string {}
-
-    afterLoad(entity: any, event?: LoadEvent<any>): Promise<any> | void {
-        // console.log(`afterLoad: ${entity}`);
-    }
-
-    beforeInsert(event: InsertEvent<any>): Promise<any> | void {
-        // console.log(`beforeInsert: ${event}`);
-    }
-
-    beforeUpdate(event: UpdateEvent<any>): Promise<any> | void {
-        // console.log(`beforeUpdate: ${event}`);
-    }
-}
-
 /**
  * A map of the core TypeORM Subscribers.
  */
 export const coreSubscribersMap = {
     CalculatedPropertySubscriber,
-    // EncryptedCustomFieldSubscriber,
 };

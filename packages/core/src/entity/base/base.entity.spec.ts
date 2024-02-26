@@ -2,7 +2,7 @@ import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { describe, expect, it } from 'vitest';
 
 import { Calculated } from '../../common/index';
-import { CalculatedPropertySubscriber } from '../../connection/subscribers';
+import { CalculatedPropertySubscriber } from '../subscribers';
 
 import { VendureEntity } from './base.entity';
 
