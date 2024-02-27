@@ -34,9 +34,7 @@ import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
  * Make sure you have `MOLLIE_APIKEY=test_xxxx` in your .env file
  */
 /* eslint-disable @typescript-eslint/no-floating-promises */
-async function runMollieDevServer(useDynamicRedirectUrl: boolean) {
-    // eslint-disable-next-line no-console
-    console.log('Starting Mollie dev server with dynamic redirectUrl: ', useDynamicRedirectUrl);
+async function runMollieDevServer() {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     require('dotenv').config();
 
@@ -50,7 +48,7 @@ async function runMollieDevServer(useDynamicRedirectUrl: boolean) {
                 route: 'admin',
                 port: 5001,
             }),
-            MolliePlugin.init({ vendureHost: tunnel.url, useDynamicRedirectUrl }),
+            MolliePlugin.init({ vendureHost: tunnel.url }),
         ],
         logger: new DefaultLogger({ level: LogLevel.Debug }),
         apiOptions: {
@@ -92,7 +90,7 @@ async function runMollieDevServer(useDynamicRedirectUrl: boolean) {
                     arguments: [
                         {
                             name: 'redirectUrl',
-                            value: `${tunnel.url}/admin/orders?filter=open&page=1&dynamicRedirectUrl=false`,
+                            value: `${tunnel.url}/admin/orders?filter=open&page=1`,
                         },
                         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         { name: 'apiKey', value: process.env.MOLLIE_APIKEY! },
@@ -118,7 +116,7 @@ async function runMollieDevServer(useDynamicRedirectUrl: boolean) {
     // Create payment intent
     const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
         input: {
-            redirectUrl: `${tunnel.url}/admin/orders?filter=open&page=1&dynamicRedirectUrl=true`,
+            redirectUrl: `${tunnel.url}/admin/orders?filter=open&page=1`,
             paymentMethodCode: 'mollie',
             //            molliePaymentMethodCode: 'klarnapaylater'
         },
@@ -133,7 +131,7 @@ async function runMollieDevServer(useDynamicRedirectUrl: boolean) {
     await new Promise(resolve => setTimeout(resolve, 10000));
     const { createMolliePaymentIntent: secondIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
         input: {
-            redirectUrl: `${tunnel.url}/admin/orders?filter=open&page=1&dynamicRedirectUrl=true`,
+            redirectUrl: `${tunnel.url}/admin/orders?filter=open&page=1`,
             paymentMethodCode: 'mollie',
         },
     });
@@ -142,6 +140,5 @@ async function runMollieDevServer(useDynamicRedirectUrl: boolean) {
 }
 
 (async () => {
-    // Change the value of the parameter to true to test with the dynamic redirectUrl functionality
-    await runMollieDevServer(false);
+    await runMollieDevServer();
 })();

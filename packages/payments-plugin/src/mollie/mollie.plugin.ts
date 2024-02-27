@@ -8,13 +8,14 @@ import {
     VendurePlugin,
 } from '@vendure/core';
 
+import { shopApiExtensions, adminApiExtensions } from './api-extensions';
 import { PLUGIN_INIT_OPTIONS } from './constants';
 import { orderCustomFields } from './custom-fields';
-import { shopSchema } from './mollie-shop-schema';
+import { MollieCommonResolver } from './mollie.common-resolver';
 import { MollieController } from './mollie.controller';
 import { molliePaymentHandler } from './mollie.handler';
-import { MollieResolver } from './mollie.resolver';
 import { MollieService } from './mollie.service';
+import { MollieShopResolver } from './mollie.shop-resolver';
 
 export type AdditionalEnabledPaymentMethodsParams = Partial<Omit<ListParameters, 'resource'>>;
 
@@ -32,18 +33,6 @@ export interface MolliePluginOptions {
      * This is used by Mollie to send webhook events to the Vendure server
      */
     vendureHost: string;
-
-    /**
-     * @description
-     * For backwards compatibility, by default set to false.
-     * This option will be deprecated in a future version.
-     * When enabled, the `redirectUrl` can be passed via the `createPaymentIntent` mutation
-     * instead of being configured in the Payment Method.
-     *
-     * @default false
-     * @since 2.0.0
-     */
-    useDynamicRedirectUrl?: boolean;
 
     /**
      * @description
@@ -113,34 +102,23 @@ export interface MolliePluginOptions {
  *     // ...
  *
  *     plugins: [
- *       MolliePlugin.init({ vendureHost: 'https://yourhost.io/', useDynamicRedirectUrl: true }),
+ *       MolliePlugin.init({ vendureHost: 'https://yourhost.io/' }),
  *     ]
  *     ```
  * 2. Run a database migration to add the `mollieOrderId` custom field to the order entity.
  * 3. Create a new PaymentMethod in the Admin UI, and select "Mollie payments" as the handler.
  * 4. Set your Mollie apiKey in the `API Key` field.
  *
- * ## Specifying the redirectUrl
- *
- * Currently, there are two ways to specify the `redirectUrl` to which the customer is redirected after completing the payment:
- * 1. Configure the `redirectUrl` in the PaymentMethod.
- * 2. Pass the `redirectUrl` as an argument to the `createPaymentIntent` mutation.
- *
- * Which method is used depends on the value of the `useDynamicRedirectUrl` option while initializing the plugin.
- * By default, this option is set to `false` for backwards compatibility. In a future version, this option will be deprecated.
- * Upon deprecation, the `redirectUrl` will always be passed as an argument to the `createPaymentIntent` mutation.
- *
  * ## Storefront usage
  *
  * In your storefront you add a payment to an order using the `createMolliePaymentIntent` mutation. In this example, our Mollie
  * PaymentMethod was given the code "mollie-payment-method". The `redirectUrl``is the url that is used to redirect the end-user
- * back to your storefront after completing the payment. When using the first method specified in `Specifying the redirectUrl`,
- * the order code is appened to the `redirectUrl`. For the second method, the order code is not appended to the specified `redirectUrl`.
+ * back to your storefront after completing the payment.
  *
  * ```GraphQL
  * mutation CreateMolliePaymentIntent {
  *   createMolliePaymentIntent(input: {
- *     redirectUrl: "https://storefront/order"
+ *     redirectUrl: "https://storefront/order/1234XYZ"
  *     paymentMethodCode: "mollie-payment-method"
  *     molliePaymentMethodCode: "ideal"
  *   }) {
@@ -184,10 +162,10 @@ export interface MolliePluginOptions {
  *  }
  * }
  * ```
- * You can pass `MolliePaymentMethod.code` to the `createMolliePaymentIntent` mutation to skip the method selection.
+ * You can pass `creditcard` for example, to the `createMolliePaymentIntent` mutation to skip the method selection.
  *
  * After completing payment on the Mollie platform,
- * the user is redirected to the configured redirect url + orderCode: `https://storefront/order/CH234X5`
+ * the user is redirected to the given redirect url, e.g. `https://storefront/order/CH234X5`
  *
  * ## Pay later methods
  * Mollie supports pay-later methods like 'Klarna Pay Later'. For pay-later methods, the status of an order is
@@ -219,10 +197,14 @@ export interface MolliePluginOptions {
         return config;
     },
     shopApiExtensions: {
-        schema: shopSchema,
-        resolvers: [MollieResolver],
+        schema: shopApiExtensions,
+        resolvers: [MollieCommonResolver, MollieShopResolver],
     },
-    compatibility: '^2.0.0',
+    adminApiExtensions: {
+        schema: adminApiExtensions,
+        resolvers: [MollieCommonResolver],
+    },
+    compatibility: '^2.2.0',
 })
 export class MolliePlugin {
     static options: MolliePluginOptions;
@@ -231,7 +213,6 @@ export class MolliePlugin {
      * @description
      * Initialize the mollie payment plugin
      * @param vendureHost is needed to pass to mollie for callback
-     * @param useDynamicRedirectUrl to indicate if the redirectUrl can be passed via the `createPaymentIntent` mutation, versus being configured in the Payment Method.
      */
     static init(options: MolliePluginOptions): typeof MolliePlugin {
         this.options = options;

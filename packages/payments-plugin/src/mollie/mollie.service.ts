@@ -38,6 +38,7 @@ import {
     MolliePaymentIntentResult,
     MolliePaymentMethod,
 } from './graphql/generated-shop-types';
+import { molliePaymentHandler } from './mollie.handler';
 import {
     amountToCents,
     getLocale,
@@ -89,7 +90,6 @@ export class MollieService {
         input: MolliePaymentIntentInput,
     ): Promise<MolliePaymentIntentResult> {
         const { paymentMethodCode, molliePaymentMethodCode } = input;
-        let redirectUrl: string;
         const allowedMethods = Object.values(MollieClientMethod) as string[];
         if (molliePaymentMethodCode && !allowedMethods.includes(molliePaymentMethodCode)) {
             return new InvalidInputError(
@@ -97,11 +97,11 @@ export class MollieService {
             );
         }
         const [order, paymentMethod] = await Promise.all([
-            this.activeOrderService.getActiveOrder(ctx, undefined),
+            this.getOrder(ctx, input.orderId),
             this.getPaymentMethod(ctx, paymentMethodCode),
         ]);
-        if (!order) {
-            return new PaymentIntentError('No active order found for session');
+        if (order instanceof PaymentIntentError) {
+            return order;
         }
         await this.entityHydrator.hydrate(ctx, order, {
             relations: [
@@ -134,23 +134,23 @@ export class MollieService {
             );
         }
         if (!paymentMethod) {
-            return new PaymentIntentError(`No paymentMethod found with code ${paymentMethodCode}`);
+            return new PaymentIntentError(`No paymentMethod found with code ${String(paymentMethodCode)}`);
         }
-        if (this.options.useDynamicRedirectUrl === true) {
-            if (!input.redirectUrl) {
-                return new InvalidInputError('Cannot create payment intent without redirectUrl specified');
-            }
-            redirectUrl = input.redirectUrl;
-        } else {
-            const paymentMethodRedirectUrl = paymentMethod.handler.args.find(
-                arg => arg.name === 'redirectUrl',
-            )?.value;
-            if (!paymentMethodRedirectUrl) {
+        let redirectUrl = input.redirectUrl;
+        if (!redirectUrl) {
+            // Use fallback redirect if no redirectUrl is given
+            let fallbackRedirect = paymentMethod.handler.args.find(arg => arg.name === 'redirectUrl')?.value;
+            if (!fallbackRedirect) {
                 return new PaymentIntentError(
-                    'Cannot create payment intent without redirectUrl specified in paymentMethod',
+                    'No redirect URl was given and no fallback redirect is configured',
                 );
             }
-            redirectUrl = paymentMethodRedirectUrl;
+            redirectUrl = fallbackRedirect;
+            // remove appending slash if present
+            fallbackRedirect = fallbackRedirect.endsWith('/')
+                ? fallbackRedirect.slice(0, -1)
+                : fallbackRedirect;
+            redirectUrl = `${fallbackRedirect}/${order.code}`;
         }
         const apiKey = paymentMethod.handler.args.find(arg => arg.name === 'apiKey')?.value;
         if (!apiKey) {
@@ -161,10 +161,6 @@ export class MollieService {
             return new PaymentIntentError(`Paymentmethod ${paymentMethod.code} has no apiKey configured`);
         }
         const mollieClient = createMollieClient({ apiKey });
-        redirectUrl =
-            redirectUrl.endsWith('/') && this.options.useDynamicRedirectUrl !== true
-                ? redirectUrl.slice(0, -1)
-                : redirectUrl; // remove appending slash
         const vendureHost = this.options.vendureHost.endsWith('/')
             ? this.options.vendureHost.slice(0, -1)
             : this.options.vendureHost; // remove appending slash
@@ -182,8 +178,7 @@ export class MollieService {
         const orderInput: CreateParameters = {
             orderNumber: order.code,
             amount: toAmount(amountToPay, order.currencyCode),
-            redirectUrl:
-                this.options.useDynamicRedirectUrl === true ? redirectUrl : `${redirectUrl}/${order.code}`,
+            redirectUrl,
             webhookUrl: `${vendureHost}/payments/mollie/${ctx.channel.token}/${paymentMethod.id}`,
             billingAddress,
             locale: getLocale(billingAddress.country, ctx.languageCode),
@@ -463,16 +458,19 @@ export class MollieService {
         vendureOrder: Order,
         amountToPay: number,
         mollieOrderId: string,
+        redirectUrl?: string,
     ): Promise<string | undefined> {
         const existingMollieOrder = await mollieClient.orders.get(mollieOrderId);
         const checkoutUrl = existingMollieOrder.getCheckoutUrl();
+        // When redirect url changed, we need to create a new order
+        const redirectIsTheSame = existingMollieOrder.redirectUrl === redirectUrl;
         const amountsMatch = isAmountEqual(
             vendureOrder.currencyCode,
             amountToPay,
             existingMollieOrder.amount,
         );
-        if (amountsMatch) {
-            return checkoutUrl ?? undefined;
+        if (amountsMatch && redirectIsTheSame && checkoutUrl) {
+            return checkoutUrl;
         }
     }
 
@@ -489,9 +487,32 @@ export class MollieService {
 
     private async getPaymentMethod(
         ctx: RequestContext,
-        paymentMethodCode: string,
+        paymentMethodCode?: string | null,
     ): Promise<PaymentMethod | undefined> {
-        const paymentMethods = await this.paymentMethodService.findAll(ctx);
-        return paymentMethods.items.find(pm => pm.code === paymentMethodCode);
+        if (paymentMethodCode) {
+            const { items } = await this.paymentMethodService.findAll(ctx, {
+                filter: {
+                    code: { eq: paymentMethodCode },
+                },
+            });
+            return items.find(pm => pm.code === paymentMethodCode);
+        } else {
+            const { items } = await this.paymentMethodService.findAll(ctx);
+            return items.find(pm => pm.handler.code === molliePaymentHandler.code);
+        }
+    }
+
+    /**
+     * Get order by id, or active order if no orderId is given
+     */
+    private async getOrder(ctx: RequestContext, orderId?: ID | null): Promise<Order | PaymentIntentError> {
+        if (orderId) {
+            return await assertFound(this.orderService.findOne(ctx, orderId));
+        }
+        const order = await this.activeOrderService.getActiveOrder(ctx, undefined);
+        if (!order) {
+            return new PaymentIntentError('No active order found for session');
+        }
+        return order;
     }
 }
