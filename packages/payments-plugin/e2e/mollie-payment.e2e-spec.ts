@@ -277,7 +277,7 @@ describe('Mollie payments with useDynamicRedirectUrl=false', () => {
                     },
                 },
             );
-            expect(result.message).toContain('The following variants are out of stock');
+            expect(result.message).toContain('insufficient stock of Pinelab stickers');
             // Set stock back to not tracking
             ({ updateProductVariants } = await adminClient.query(UPDATE_PRODUCT_VARIANTS, {
                 input: {
@@ -333,6 +333,31 @@ describe('Mollie payments with useDynamicRedirectUrl=false', () => {
             expect(createMolliePaymentIntent).toEqual({
                 url: 'https://www.mollie.com/payscreen/select-method/mock-payment',
             });
+        });
+
+        it('Should reuse payment url when amount is the same', async () => {
+            // Should only fetch the order from Mollie, not create a new one
+            nock('https://api.mollie.com/')
+                .get('/v2/orders/ord_mockId')
+                .reply(200, {
+                    ...mockData.mollieOrderResponse,
+                    amount: {
+                        value: '1009.90',
+                        currency: 'USD',
+                    },
+                    _links: {
+                        // Mock a new checkout url, to test that this one is actually reused
+                        checkout: {
+                            href: 'https://this-means-reuse-succeeded',
+                        },
+                    },
+                });
+            const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
+                input: {
+                    paymentMethodCode: mockData.methodCode,
+                },
+            });
+            expect(createMolliePaymentIntent).toEqual({ url: 'https://this-means-reuse-succeeded' });
         });
 
         it('Should get payment url with deducted amount if a payment is already made', async () => {

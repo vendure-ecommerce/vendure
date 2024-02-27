@@ -113,29 +113,26 @@ export class MollieService {
                 'payments',
             ],
         });
-        if (!order.lines?.length) {
-            return new PaymentIntentError('Cannot create payment intent for empty order');
+        if (order.state !== 'ArrangingPayment' && order.state !== 'ArrangingAdditionalPayment') {
+            // Pre-check if order is transitionable to ArrangingPayment, because that will happen after Mollie payment
+            try {
+                await this.canTransitionTo(ctx, order.id, 'ArrangingPayment');
+            } catch (e) {
+                if ((e as Error).message) {
+                    return new PaymentIntentError((e as Error).message);
+                }
+                throw e;
+            }
         }
-        if (!order.customer) {
-            return new PaymentIntentError('Cannot create payment intent for order without customer');
-        }
-        if (!order.customer.firstName.length) {
+        if (!order.customer?.firstName.length) {
             return new PaymentIntentError(
                 'Cannot create payment intent for order with customer that has no firstName set',
             );
         }
-        if (!order.customer.lastName.length) {
+        if (!order.customer?.lastName.length) {
             return new PaymentIntentError(
                 'Cannot create payment intent for order with customer that has no lastName set',
             );
-        }
-        if (!order.customer.emailAddress.length) {
-            return new PaymentIntentError(
-                'Cannot create payment intent for order with customer that has no emailAddress set',
-            );
-        }
-        if (!order.shippingLines?.length) {
-            return new PaymentIntentError('Cannot create payment intent for order without shippingMethod');
         }
         if (!paymentMethod) {
             return new PaymentIntentError(`No paymentMethod found with code ${paymentMethodCode}`);
@@ -155,19 +152,6 @@ export class MollieService {
                 );
             }
             redirectUrl = paymentMethodRedirectUrl;
-        }
-        // FIXME: The manual checks above can be removed, now that we do a canTransition check?
-        if (order.state !== 'ArrangingPayment' && order.state !== 'ArrangingAdditionalPayment') {
-            // Check if order is transitionable to ArrangingPayment, because that will happen after Mollie payment
-            await this.canTransitionTo(ctx, order.id, 'ArrangingPayment');
-        }
-        const variantsWithInsufficientSaleableStock = await this.getVariantsWithInsufficientStock(ctx, order);
-        if (variantsWithInsufficientSaleableStock.length) {
-            return new PaymentIntentError(
-                `The following variants are out of stock: ${variantsWithInsufficientSaleableStock
-                    .map(v => v.name)
-                    .join(', ')}`,
-            );
         }
         const apiKey = paymentMethod.handler.args.find(arg => arg.name === 'apiKey')?.value;
         if (!apiKey) {
@@ -487,11 +471,15 @@ export class MollieService {
             amountToPay,
             existingMollieOrder.amount,
         );
-        if (checkoutUrl && amountsMatch) {
-            return checkoutUrl;
+        if (amountsMatch) {
+            return checkoutUrl ?? undefined;
         }
     }
 
+    /**
+     * Dry run a transition to a given state.
+     * As long as we don't call 'finalize', the transition never completes.
+     */
     private async canTransitionTo(ctx: RequestContext, orderId: ID, state: OrderState) {
         // Fetch new order object, because `transition()` mutates the order object
         const orderCopy = await assertFound(this.orderService.findOne(ctx, orderId));
