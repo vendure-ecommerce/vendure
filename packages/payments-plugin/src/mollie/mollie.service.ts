@@ -96,11 +96,10 @@ export class MollieService {
                 `molliePaymentMethodCode has to be one of "${allowedMethods.join(',')}"`,
             );
         }
-        const [order, paymentMethod]: [OrderWithMollieReference | undefined, PaymentMethod | undefined] =
-            await Promise.all([
-                this.activeOrderService.getActiveOrder(ctx, undefined),
-                this.getPaymentMethod(ctx, paymentMethodCode),
-            ]);
+        const [order, paymentMethod] = await Promise.all([
+            this.activeOrderService.getActiveOrder(ctx, undefined),
+            this.getPaymentMethod(ctx, paymentMethodCode),
+        ]);
         if (!order) {
             return new PaymentIntentError('No active order found for session');
         }
@@ -196,24 +195,25 @@ export class MollieService {
         if (molliePaymentMethodCode) {
             orderInput.method = molliePaymentMethodCode as MollieClientMethod;
         }
-        if (order.customFields?.mollieOrderId) {
+        const existingMollieOrderId = (order as OrderWithMollieReference).customFields.mollieOrderId;
+        if (existingMollieOrderId) {
             // A payment was already started, so we try to reuse the existing order
             const checkoutUrl = await this.getExistingCheckout(
                 mollieClient,
                 order,
                 amountToPay,
-                order.customFields.mollieOrderId,
+                existingMollieOrderId,
             ).catch(e => {
                 Logger.warn(`Failed to reuse existing Mollie order: ${(e as Error).message}`, loggerCtx);
             });
             if (checkoutUrl) {
-                Logger.info(`Reusing existing Mollie order '${order.customFields.mollieOrderId}'`, loggerCtx);
+                Logger.info(`Reusing existing Mollie order '${existingMollieOrderId}'`, loggerCtx);
                 return {
                     url: checkoutUrl,
                 };
             }
             // Otherwise, try to cancel existing Mollie order in the background
-            this.cancelMollieOrder(mollieClient, order.customFields.mollieOrderId).catch(e => {
+            this.cancelMollieOrder(mollieClient, existingMollieOrderId).catch(e => {
                 Logger.info(`Failed to cancel existing Mollie order: ${(e as Error).message}`, loggerCtx);
             });
         }
