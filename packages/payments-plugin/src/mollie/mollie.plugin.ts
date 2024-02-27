@@ -203,7 +203,7 @@ export interface MolliePluginOptions {
  * for example by opening your storefront in another browser tab.
  * This could result in an order being in `ArrangingAdditionalPayment` status after the customer finished payment.
  * You should check if there is still an active order with status `ArrangingAdditionalPayment` on your order confirmation page,
- * and if so, allow your customer to pay for the additional items.
+ * and if so, allow your customer to pay for the additional items by creating another Mollie payment.
  *
  * @docsCategory core plugins/PaymentsPlugin
  * @docsPage MolliePlugin
