@@ -3,20 +3,18 @@ import {
     ChannelService,
     DefaultLogger,
     DefaultSearchPlugin,
-    Logger,
     LogLevel,
     mergeConfig,
-    OrderService,
-    PaymentService,
-    RequestContext,
+    RequestContext
 } from '@vendure/core';
 import { createTestEnvironment, registerInitializer, SqljsInitializer, testConfig } from '@vendure/testing';
+import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
 import gql from 'graphql-tag';
 import localtunnel from 'localtunnel';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { MolliePlugin } from '../package/mollie';
+import { MolliePlugin } from '../src/mollie';
 import { molliePaymentHandler } from '../package/mollie/mollie.handler';
 
 import { CREATE_PAYMENT_METHOD } from './graphql/admin-queries';
@@ -47,6 +45,11 @@ async function runMollieDevServer() {
             AdminUiPlugin.init({
                 route: 'admin',
                 port: 5001,
+                app: compileUiExtensions({
+                    outputPath: path.join(__dirname, "__admin-ui"),
+                    extensions: [MolliePlugin.uiExtensions],
+                    devMode: true
+                  })
             }),
             MolliePlugin.init({ vendureHost: tunnel.url }),
         ],

@@ -10,7 +10,7 @@
     "private": false,
     "scripts": {
         "watch": "tsc -p ./tsconfig.build.json --watch",
-        "build": "rimraf package && tsc -p ./tsconfig.build.json",
+        "build": "rimraf package && tsc -p ./tsconfig.build.json && yarn copyfiles -u 1 'src/**/ui/**/*' package/",
         "e2e": "cross-env PACKAGE=payments-plugin vitest --config ../../e2e-common/vitest.config.ts --run",
         "e2e:watch": "cross-env PACKAGE=payments-plugin vitest --config ../../e2e-common/vitest.config.ts",
         "lint": "eslint --fix .",
@@ -54,6 +54,7 @@
         "nock": "^13.1.4",
         "rimraf": "^3.0.2",
         "stripe": "^13.3.0",
-        "typescript": "4.9.5"
+        "typescript": "4.9.5",
+        "copyfiles": "2.4.1"
     }
 }

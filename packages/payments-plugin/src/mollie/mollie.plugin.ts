@@ -1,3 +1,4 @@
+
 import type { ListParameters } from '@mollie/api-client/dist/types/src/binders/methods/parameters';
 import {
     Injector,
@@ -7,6 +8,8 @@ import {
     RuntimeVendureConfig,
     VendurePlugin,
 } from '@vendure/core';
+import type { AdminUiExtension } from '@vendure/ui-devkit/compiler';
+import * as path from 'path';
 
 import { shopApiExtensions, adminApiExtensions } from './api-extensions';
 import { PLUGIN_INIT_OPTIONS } from './constants';
@@ -217,5 +220,11 @@ export class MolliePlugin {
     static init(options: MolliePluginOptions): typeof MolliePlugin {
         this.options = options;
         return MolliePlugin;
+    }
+
+    static uiExtensions: AdminUiExtension = {
+        id: 'mollie-extension',
+        extensionPath: path.join(__dirname, './ui'),
+        providers: ['providers.ts'],
     }
 }
