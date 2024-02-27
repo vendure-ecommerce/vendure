@@ -1,7 +1,17 @@
 import { Injectable } from '@angular/core';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { BehaviorSubject, combineLatest, interval, isObservable, Observable, Subject, switchMap } from 'rxjs';
-import { map, startWith, take } from 'rxjs/operators';
+import {
+    BehaviorSubject,
+    combineLatest,
+    first,
+    interval,
+    isObservable,
+    Observable,
+    of,
+    Subject,
+    switchMap,
+} from 'rxjs';
+import { filter, map, startWith, take } from 'rxjs/operators';
 import { Permission } from '../../common/generated-types';
 import { PermissionsService } from '../permissions/permissions.service';
 
@@ -94,17 +104,24 @@ export class AlertsService {
     }
 
     configureAlert<T>(config: AlertConfig<T>) {
-        if (this.hasSufficientPermissions(config.requiredPermissions)) {
-            this.alertsMap.set(config.id, new Alert(config));
-            this.configUpdated.next();
-        }
+        this.hasSufficientPermissions(config.requiredPermissions)
+            .pipe(first())
+            .subscribe(hasPermissions => {
+                if (hasPermissions) {
+                    this.alertsMap.set(config.id, new Alert(config));
+                    this.configUpdated.next();
+                }
+            });
     }
 
     hasSufficientPermissions(permissions?: Permission[]) {
         if (!permissions || permissions.length === 0) {
-            return true;
+            return of(true);
         }
-        return this.permissionsService.userHasPermissions(permissions);
+        return this.permissionsService.currentUserPermissions$.pipe(
+            filter(permissions => permissions.length > 0),
+            map(() => this.permissionsService.userHasPermissions(permissions)),
+        );
     }
 
     refresh(id?: string) {
