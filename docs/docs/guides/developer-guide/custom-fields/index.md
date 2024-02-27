@@ -104,7 +104,7 @@ mutation {
 The custom fields will also extend the filter and sort options available to the `products` list query:
 
 ```graphql
-mutation {
+query {
     products(options: {
         // highlight-start
         filter: {
