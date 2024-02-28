@@ -130,7 +130,7 @@ async function runMollieDevServer(useDynamicRedirectUrl: boolean) {
     console.log('\x1b[41m', `Mollie payment link: ${createMolliePaymentIntent.url as string}`, '\x1b[0m');
 
     // Create another intent after 10s, should cancel the previous Mollie order
-    await new Promise(resolve => setTimeout(resolve, 10000));
+    await new Promise(resolve => setTimeout(resolve, 1000));
     const { createMolliePaymentIntent: secondIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
         input: {
             redirectUrl: `${tunnel.url}/admin/orders?filter=open&page=1&dynamicRedirectUrl=true`,

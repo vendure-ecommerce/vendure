@@ -47,6 +47,8 @@ import {
     toMollieOrderLines,
 } from './mollie.helpers';
 import { MolliePluginOptions } from './mollie.plugin';
+import { ManageOrderLineInput } from './manage-order-lines';
+import { e } from 'vitest/dist/types-63abf2e0';
 
 interface OrderStatusInput {
     paymentMethodId: string;
@@ -56,13 +58,13 @@ interface OrderStatusInput {
 class PaymentIntentError implements MolliePaymentIntentError {
     errorCode = ErrorCode.ORDER_PAYMENT_STATE_ERROR;
 
-    constructor(public message: string) {}
+    constructor(public message: string) { }
 }
 
 class InvalidInputError implements MolliePaymentIntentError {
     errorCode = ErrorCode.INELIGIBLE_PAYMENT_METHOD_ERROR;
 
-    constructor(public message: string) {}
+    constructor(public message: string) { }
 }
 
 @Injectable()
@@ -174,7 +176,7 @@ export class MollieService {
         if (!billingAddress) {
             return new InvalidInputError(
                 "Order doesn't have a complete shipping address or billing address. " +
-                    'At least city, postalCode, streetline1 and country are needed to create a payment intent.',
+                'At least city, postalCode, streetline1 and country are needed to create a payment intent.',
             );
         }
         const alreadyPaid = totalCoveredByPayments(order);
@@ -197,26 +199,19 @@ export class MollieService {
         }
         const existingMollieOrderId = (order as OrderWithMollieReference).customFields.mollieOrderId;
         if (existingMollieOrderId) {
-            // A payment was already started, so we try to reuse the existing order
-            const checkoutUrl = await this.getExistingCheckout(
-                mollieClient,
-                order,
-                amountToPay,
-                existingMollieOrderId,
-            ).catch(e => {
-                Logger.warn(`Failed to reuse existing Mollie order: ${(e as Error).message}`, loggerCtx);
+            // Update order and return its checkoutUrl
+            const updateMollieOrder = await this.updateMollieOrder(mollieClient, orderInput, existingMollieOrderId).catch(e => {
+                Logger.error(`Failed to update Mollie order '${existingMollieOrderId}' for '${order.code}': ${(e as Error).message}`, loggerCtx);
             });
+            const checkoutUrl = updateMollieOrder?.getCheckoutUrl();
             if (checkoutUrl) {
-                Logger.info(`Reusing existing Mollie order '${existingMollieOrderId}'`, loggerCtx);
+                Logger.info(`Updated Mollie order ${updateMollieOrder?.id as string} for order '${order.code}'`, loggerCtx);
                 return {
                     url: checkoutUrl,
                 };
             }
-            // Otherwise, try to cancel existing Mollie order in the background
-            this.cancelMollieOrder(mollieClient, existingMollieOrderId).catch(e => {
-                Logger.info(`Failed to cancel existing Mollie order: ${(e as Error).message}`, loggerCtx);
-            });
         }
+        // Otherwise create a new Mollie order
         const mollieOrder = await mollieClient.orders.create(orderInput);
         // Save async, because this shouldn't impact intent creation
         this.orderService.updateCustomFields(ctx, order.id, { mollieOrderId: mollieOrder.id }).catch(e => {
@@ -341,7 +336,7 @@ export class MollieService {
             if (transitionToStateResult instanceof OrderStateTransitionError) {
                 throw Error(
                     `Error transitioning order ${order.code} from ${transitionToStateResult.fromState} ` +
-                        `to ${transitionToStateResult.toState}: ${transitionToStateResult.message}`,
+                    `to ${transitionToStateResult.toState}: ${transitionToStateResult.message}`,
                 );
             }
         }
@@ -379,8 +374,7 @@ export class MollieService {
         const result = await this.orderService.settlePayment(ctx, payment.id);
         if ((result as ErrorResult).message) {
             throw Error(
-                `Error settling payment ${payment.id} for order ${order.code}: ${
-                    (result as ErrorResult).errorCode
+                `Error settling payment ${payment.id} for order ${order.code}: ${(result as ErrorResult).errorCode
                 } - ${(result as ErrorResult).message}`,
             );
         }
@@ -427,53 +421,73 @@ export class MollieService {
     }
 
     /**
-     * Tries to cancel an existing Mollie order
-     * An order might not be cancellable when it has open payments
-     * It takes at least 15 minutes for a payment to expire and be cancallable: https://docs.mollie.com/payments/status-changes#when-does-a-payment-expire
+     * Update an existing Mollie order based on the given Vendure order.
      */
-    async cancelMollieOrder(client: MollieClient, mollieOrderId: string): Promise<void> {
-        const mollieOrder = await client.orders.get(mollieOrderId);
-        if (mollieOrder.isCancelable) {
-            await client.orders.cancel(mollieOrder.id);
-        } else {
-            // Try to cancel all payments
-            const payments = await mollieOrder.getPayments();
-            await Promise.all(
-                payments.map(async payment => {
-                    if (!payment.isCancelable) {
-                        throw Error(
-                            `Payment ${payment.id} for Mollie order '${mollieOrderId}' is not cancellable`,
-                        );
-                    }
-                    await client.payments.cancel(payment.id);
-                }),
-            );
-            // Try to cancel order again
-            await client.orders.cancel(mollieOrder.id);
-        }
-        Logger.info(`Cancelled Mollie order ${mollieOrder.id}`, loggerCtx);
+    async updateMollieOrder(
+        mollieClient: MollieClient,
+        mollieOrderInput: CreateParameters,
+        mollieOrderId: string,
+    ): Promise<MollieOrder> {
+        const existingMollieOrder = await mollieClient.orders.get(mollieOrderId);
+        const [order] = await Promise.all([
+            this.updateMollieOrderData(mollieClient, existingMollieOrder, mollieOrderInput),
+            this.updateMollieOrderLines(mollieClient, existingMollieOrder, mollieOrderInput.lines),
+        ]);
+        return order;
     }
 
     /**
-     * Checks if we can reuse the existing Mollie order, and returns the checkoutUrl if possible.
-     * If no checkout URL returned, the checkout could not be reused.
+     * Update the Mollie Order data itself, excluding the order lines.
+     * So, addresses, redirect url etc
      */
-    private async getExistingCheckout(
+    private async updateMollieOrderData(
         mollieClient: MollieClient,
-        vendureOrder: Order,
-        amountToPay: number,
-        mollieOrderId: string,
-    ): Promise<string | undefined> {
-        const existingMollieOrder = await mollieClient.orders.get(mollieOrderId);
-        const checkoutUrl = existingMollieOrder.getCheckoutUrl();
-        const amountsMatch = isAmountEqual(
-            vendureOrder.currencyCode,
-            amountToPay,
-            existingMollieOrder.amount,
-        );
-        if (amountsMatch) {
-            return checkoutUrl ?? undefined;
+        existingMollieOrder: MollieOrder,
+        mollieOrderInput: CreateParameters
+    ): Promise<MollieOrder> {
+        return await mollieClient.orders.update(existingMollieOrder.id, {
+            billingAddress: mollieOrderInput.billingAddress,
+            shippingAddress: mollieOrderInput.shippingAddress,
+            redirectUrl: mollieOrderInput.redirectUrl,
+        });
+    }
+
+    /**
+     * Compare existing order lines with the new input,
+     * and update, add and cancel the order lines accordingly
+     */
+    private async updateMollieOrderLines(
+        apiKey: string,
+        existingMollieOrder: MollieOrder,
+        newMollieOrderLines: CreateParameters['lines']
+    ): Promise<void> {
+        const manageOrderLinesInput: ManageOrderLineInput = {
+            orderId: existingMollieOrder.id,
+            operations: []
         }
+        // Update or add new order lines
+        newMollieOrderLines.forEach((newLine, index) => {
+            const existingLine = existingMollieOrder.lines[index];
+            if (existingLine) {
+                manageOrderLinesInput.operations.push({
+                    operation: 'update',
+                    data: newLine
+                })
+            } else {
+                manageOrderLinesInput.operations.push({
+                    operation: 'add',
+                    data: line
+                })
+            }
+        })
+        // Add update operations for existing order lines
+
+
+        // TODO compare existing order lines with the new input
+        // Check if quantity, name and price are the same, if so, do nothing
+        // If quantity, name or price is different, update the order line
+        // If order line is missing, add it
+        // Cancel any orderlines that are in the mollie order, but not in the input
     }
 
     /**
