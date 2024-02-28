@@ -40,6 +40,7 @@ import {
 } from './graphql/generated-shop-types';
 import {
     amountToCents,
+    areOrderLinesEqual,
     getLocale,
     isAmountEqual,
     toAmount,
@@ -468,7 +469,8 @@ export class MollieService {
         // Update or add new order lines
         newMollieOrderLines.forEach((newLine, index) => {
             const existingLine = existingMollieOrder.lines[index];
-            if (existingLine) {
+            if (existingLine && !areOrderLinesEqual(existingLine, newLine)) {
+                // Update if exists but not equal
                 manageOrderLinesInput.operations.push({
                     operation: 'update',
                     data: newLine
