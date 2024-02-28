@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## HttpHealthCheckStrategy
 
-<GenerationInfo sourceFile="packages/core/src/health-check/http-health-check-strategy.ts" sourceLine="36" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/health-check/http-health-check-strategy.ts" sourceLine="37" packageName="@vendure/core" />
 
 A <a href='/reference/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a> used to check health by pinging a url. Internally it uses
 the [NestJS HttpHealthIndicator](https://docs.nestjs.com/recipes/terminus#http-healthcheck).

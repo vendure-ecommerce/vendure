@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ElasticsearchOptions
 
-<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="30" packageName="@vendure/elasticsearch-plugin" />
+<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="29" packageName="@vendure/elasticsearch-plugin" />
 
 Configuration options for the <a href='/reference/core-plugins/elasticsearch-plugin/#elasticsearchplugin'>ElasticsearchPlugin</a>.
 
@@ -27,7 +27,8 @@ interface ElasticsearchOptions {
     indexMappingProperties?: {
         [indexName: string]: object;
     };
-    batchSize?: number;
+    reindexProductsChunkSize?: number;
+    reindexBulkOperationSizeLimit?: number;
     searchConfig?: SearchConfig;
     customProductMappings?: {
         [fieldName: string]: CustomMapping<[Product, ProductVariant[], LanguageCode, Injector]>;
@@ -157,11 +158,18 @@ indexMappingProperties: {
   }
 }
 ```
-### batchSize
+### reindexProductsChunkSize
 
-<MemberInfo kind="property" type={`number`} default="2000"   />
+<MemberInfo kind="property" type={`number`} default="2500"  since="2.1.7"  />
 
-Batch size for bulk operations (e.g. when rebuilding the indices).
+Products limit chunk size for each loop iteration when indexing products.
+### reindexBulkOperationSizeLimit
+
+<MemberInfo kind="property" type={`number`} default="3000"  since="2.1.7"  />
+
+Index operations are performed in bulk, with each bulk operation containing a number of individual
+index operations. This option sets the maximum number of operations in the memory buffer before a
+bulk operation is executed.
 ### searchConfig
 
 <MemberInfo kind="property" type={`<a href='/reference/core-plugins/elasticsearch-plugin/elasticsearch-options#searchconfig'>SearchConfig</a>`}   />
@@ -364,7 +372,7 @@ extend input SearchResultSortParameter {
 
 ## SearchConfig
 
-<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="385" packageName="@vendure/elasticsearch-plugin" />
+<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="394" packageName="@vendure/elasticsearch-plugin" />
 
 Configuration options for the internal Elasticsearch query which is generated when performing a search.
 
@@ -645,7 +653,7 @@ searchConfig: {
 
 ## BoostFieldsConfig
 
-<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="670" packageName="@vendure/elasticsearch-plugin" />
+<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="679" packageName="@vendure/elasticsearch-plugin" />
 
 Configuration for [boosting](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-multi-match-query.html#field-boost)
 the scores of given fields when performing a search against a term.

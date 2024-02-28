@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PollingJobQueueStrategy
 
-<GenerationInfo sourceFile="packages/core/src/job-queue/polling-job-queue-strategy.ts" sourceLine="192" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/job-queue/polling-job-queue-strategy.ts" sourceLine="224" packageName="@vendure/core" />
 
 This class allows easier implementation of <a href='/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a> in a polling style.
 Instead of providing <a href='/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a> `start()` you should provide a `next` method.
@@ -25,6 +25,7 @@ class PollingJobQueueStrategy extends InjectableJobQueueStrategy {
     public pollInterval: number | ((queueName: string) => number);
     public setRetries: (queueName: string, job: Job) => number;
     public backOffStrategy?: BackoffStrategy;
+    protected activeQueues = new QueueNameProcessStorage<ActiveQueue<any>>();
     constructor(config?: PollingJobQueueStrategyConfig)
     constructor(concurrency?: number, pollInterval?: number)
     constructor(concurrencyOrConfig?: number | PollingJobQueueStrategyConfig, maybePollInterval?: number)
@@ -60,6 +61,11 @@ class PollingJobQueueStrategy extends InjectableJobQueueStrategy {
 ### backOffStrategy
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/job-queue/types#backoffstrategy'>BackoffStrategy</a>`}   />
+
+
+### activeQueues
+
+<MemberInfo kind="property" type={``}   />
 
 
 ### constructor
