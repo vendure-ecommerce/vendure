@@ -287,14 +287,16 @@ export class ProductService {
             return variantResult;
         }
         for (const optionGroup of product.optionGroups) {
-            const groupResult = await this.productOptionGroupService.deleteGroupAndOptionsFromProduct(
-                ctx,
-                optionGroup.id,
-                productId,
-            );
-            if (groupResult.result === DeletionResult.NOT_DELETED) {
-                await this.connection.rollBackTransaction(ctx);
-                return groupResult;
+            if (!optionGroup.deletedAt) {
+                const groupResult = await this.productOptionGroupService.deleteGroupAndOptionsFromProduct(
+                    ctx,
+                    optionGroup.id,
+                    productId,
+                );
+                if (groupResult.result === DeletionResult.NOT_DELETED) {
+                    await this.connection.rollBackTransaction(ctx);
+                    return groupResult;
+                }
             }
         }
         return {
