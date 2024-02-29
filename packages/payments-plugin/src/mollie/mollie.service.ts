@@ -41,7 +41,6 @@ import {
     amountToCents,
     areOrderLinesEqual,
     getLocale,
-    isAmountEqual,
     toAmount,
     toMollieAddress,
     toMollieOrderLines,

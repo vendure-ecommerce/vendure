@@ -87,17 +87,6 @@ export function toAmount(value: number, orderCurrency: string): Amount {
 }
 
 /**
- * Checks if the Vendure order amount due is the same as the given Mollie amount.
- * E.g. does '1000 EUR' equal { value: '10.00', currency: 'EUR'}?
- */
-export function isAmountEqual(orderCurrency: CurrencyCode, amountDue: number, mollieAmount: Amount): boolean {
-    if (orderCurrency !== mollieAmount.currency) {
-        return false;
-    }
-    return amountToCents(mollieAmount) === amountDue;
-}
-
-/**
  * Return to number of cents. E.g. '10.00' => 1000
  */
 export function amountToCents(amount: Amount): number {
