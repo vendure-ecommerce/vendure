@@ -1,8 +1,7 @@
-import createMollieClient, {
+import {
     Order as MollieOrder,
     OrderStatus,
     PaymentMethod as MollieClientMethod,
-    MollieClient,
 } from '@mollie/api-client';
 import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/orders/parameters';
 import { Inject, Injectable } from '@nestjs/common';
@@ -48,8 +47,7 @@ import {
     toMollieOrderLines,
 } from './mollie.helpers';
 import { MolliePluginOptions } from './mollie.plugin';
-import { ManageOrderLineInput } from './manage-order-lines';
-import { e } from 'vitest/dist/types-63abf2e0';
+import { createExtendedMollieClient, ExtendedMollieClient, ManageOrderLineInput } from './extended-mollie-client';
 
 interface OrderStatusInput {
     paymentMethodId: string;
@@ -163,7 +161,7 @@ export class MollieService {
             );
             return new PaymentIntentError(`Paymentmethod ${paymentMethod.code} has no apiKey configured`);
         }
-        const mollieClient = createMollieClient({ apiKey });
+        const mollieClient = createExtendedMollieClient({ apiKey });
         redirectUrl =
             redirectUrl.endsWith('/') && this.options.useDynamicRedirectUrl !== true
                 ? redirectUrl.slice(0, -1)
@@ -206,7 +204,7 @@ export class MollieService {
             });
             const checkoutUrl = updateMollieOrder?.getCheckoutUrl();
             if (checkoutUrl) {
-                Logger.info(`Updated Mollie order ${updateMollieOrder?.id as string} for order '${order.code}'`, loggerCtx);
+                Logger.info(`Updated Mollie order '${updateMollieOrder?.id as string}' for order '${order.code}'`, loggerCtx);
                 return {
                     url: checkoutUrl,
                 };
@@ -249,7 +247,7 @@ export class MollieService {
         if (!apiKey) {
             throw Error(`No apiKey found for payment ${paymentMethod.id} for channel ${ctx.channel.token}`);
         }
-        const client = createMollieClient({ apiKey });
+        const client = createExtendedMollieClient({ apiKey });
         const mollieOrder = await client.orders.get(orderId);
         if (mollieOrder.metadata?.languageCode) {
             // Recreate ctx with the original languageCode
@@ -391,7 +389,7 @@ export class MollieService {
             throw Error(`No apiKey configured for payment method ${paymentMethodCode}`);
         }
 
-        const client = createMollieClient({ apiKey });
+        const client = createExtendedMollieClient({ apiKey });
         const activeOrder = await this.activeOrderService.getActiveOrder(ctx, undefined);
         const additionalParams = await this.options.enabledPaymentMethodsParams?.(
             this.injector,
@@ -425,7 +423,7 @@ export class MollieService {
      * Update an existing Mollie order based on the given Vendure order.
      */
     async updateMollieOrder(
-        mollieClient: MollieClient,
+        mollieClient: ExtendedMollieClient,
         mollieOrderInput: CreateParameters,
         mollieOrderId: string,
     ): Promise<MollieOrder> {
@@ -442,7 +440,7 @@ export class MollieService {
      * So, addresses, redirect url etc
      */
     private async updateMollieOrderData(
-        mollieClient: MollieClient,
+        mollieClient: ExtendedMollieClient,
         existingMollieOrder: MollieOrder,
         mollieOrderInput: CreateParameters
     ): Promise<MollieOrder> {
@@ -455,15 +453,16 @@ export class MollieService {
 
     /**
      * Compare existing order lines with the new input,
-     * and update, add and cancel the order lines accordingly
+     * and update, add or cancel the order lines accordingly.
+     *
+     * We compare and update order lines based on their index, because there is no unique identifier
      */
     private async updateMollieOrderLines(
-        apiKey: string,
+        mollieClient: ExtendedMollieClient,
         existingMollieOrder: MollieOrder,
         newMollieOrderLines: CreateParameters['lines']
-    ): Promise<void> {
+    ): Promise<MollieOrder> {
         const manageOrderLinesInput: ManageOrderLineInput = {
-            orderId: existingMollieOrder.id,
             operations: []
         }
         // Update or add new order lines
@@ -473,23 +472,30 @@ export class MollieService {
                 // Update if exists but not equal
                 manageOrderLinesInput.operations.push({
                     operation: 'update',
-                    data: newLine
+                    data: {
+                        ...newLine,
+                        id: existingLine.id
+                    }
                 })
             } else {
+                // Add new line if it doesn't exist
                 manageOrderLinesInput.operations.push({
                     operation: 'add',
-                    data: line
+                    data: newLine
                 })
             }
-        })
-        // Add update operations for existing order lines
-
-
-        // TODO compare existing order lines with the new input
-        // Check if quantity, name and price are the same, if so, do nothing
-        // If quantity, name or price is different, update the order line
-        // If order line is missing, add it
-        // Cancel any orderlines that are in the mollie order, but not in the input
+        });
+        // Cancel any order lines that are in the existing Mollie order, but not in the new input
+        existingMollieOrder.lines.forEach((existingLine, index) => {
+            const newLine = newMollieOrderLines[index];
+            if (!newLine) {
+                manageOrderLinesInput.operations.push({
+                    operation: 'cancel',
+                    data: { id: existingLine.id }
+                })
+            }
+        });
+        return await mollieClient.manageOrderLines(existingMollieOrder.id, manageOrderLinesInput);
     }
 
     /**

@@ -34,7 +34,7 @@ export function toMollieOrderLines(order: Order, alreadyPaid: number): CreatePar
         quantity: line.quantity,
         unitPrice: toAmount(line.proratedLinePriceWithTax / line.quantity, order.currencyCode), // totalAmount has to match unitPrice * quantity
         totalAmount: toAmount(line.proratedLinePriceWithTax, order.currencyCode),
-        vatRate: String(line.taxRate),
+        vatRate: line.taxRate.toFixed(2),
         vatAmount: toAmount(
             calculateLineTaxAmount(line.taxRate, line.proratedLinePriceWithTax),
             order.currencyCode,
