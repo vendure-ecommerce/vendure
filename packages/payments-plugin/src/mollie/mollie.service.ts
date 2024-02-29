@@ -424,13 +424,13 @@ export class MollieService {
      */
     async updateMollieOrder(
         mollieClient: ExtendedMollieClient,
-        mollieOrderInput: CreateParameters,
+        newMollieOrderInput: CreateParameters,
         mollieOrderId: string,
     ): Promise<MollieOrder> {
         const existingMollieOrder = await mollieClient.orders.get(mollieOrderId);
         const [order] = await Promise.all([
-            this.updateMollieOrderData(mollieClient, existingMollieOrder, mollieOrderInput),
-            this.updateMollieOrderLines(mollieClient, existingMollieOrder, mollieOrderInput.lines),
+            this.updateMollieOrderData(mollieClient, existingMollieOrder, newMollieOrderInput),
+            this.updateMollieOrderLines(mollieClient, existingMollieOrder, newMollieOrderInput.lines),
         ]);
         return order;
     }
@@ -442,12 +442,12 @@ export class MollieService {
     private async updateMollieOrderData(
         mollieClient: ExtendedMollieClient,
         existingMollieOrder: MollieOrder,
-        mollieOrderInput: CreateParameters
+        newMollieOrderInput: CreateParameters
     ): Promise<MollieOrder> {
         return await mollieClient.orders.update(existingMollieOrder.id, {
-            billingAddress: mollieOrderInput.billingAddress,
-            shippingAddress: mollieOrderInput.shippingAddress,
-            redirectUrl: mollieOrderInput.redirectUrl,
+            billingAddress: newMollieOrderInput.billingAddress,
+            shippingAddress: newMollieOrderInput.shippingAddress,
+            redirectUrl: newMollieOrderInput.redirectUrl,
         });
     }
 

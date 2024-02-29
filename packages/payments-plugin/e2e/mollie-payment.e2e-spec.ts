@@ -335,29 +335,40 @@ describe('Mollie payments with useDynamicRedirectUrl=false', () => {
             });
         });
 
-        it('Should reuse payment url when amount is the same', async () => {
-            // Should only fetch the order from Mollie, not create a new one
+        it('Should update existing Mollie order', async () => {
+            // Should fetch the existing order from Mollie
             nock('https://api.mollie.com/')
                 .get('/v2/orders/ord_mockId')
-                .reply(200, {
-                    ...mockData.mollieOrderResponse,
-                    amount: {
-                        value: '1009.90',
-                        currency: 'USD',
-                    },
-                    _links: {
-                        // Mock a new checkout url, to test that this one is actually reused
-                        checkout: {
-                            href: 'https://this-means-reuse-succeeded',
-                        },
-                    },
-                });
+                .reply(200, mockData.mollieOrderResponse);
+            // Should patch existing order
+            nock('https://api.mollie.com/')
+            .patch(`/v2/orders/${mockData.mollieOrderResponse.id}`)
+            .reply(200, mockData.mollieOrderResponse);
+            // Should patch existing order lines
+            let molliePatchRequest: any | undefined;
+            nock('https://api.mollie.com/')
+                .patch(`/v2/orders/${mockData.mollieOrderResponse.id}/lines`, body => {
+                    molliePatchRequest = body;
+                    return true;
+                })
+                .reply(200, mockData.mollieOrderResponse);
             const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
                 input: {
                     paymentMethodCode: mockData.methodCode,
                 },
             });
-            expect(createMolliePaymentIntent).toEqual({ url: 'https://this-means-reuse-succeeded' });
+            // We expect the patch request to add 3 order lines, because the mock response has 0 lines
+            expect(createMolliePaymentIntent.url).toBeDefined();
+            expect(molliePatchRequest.operations).toBeDefined();
+            expect(molliePatchRequest.operations[0].operation).toBe('add');
+            expect(molliePatchRequest.operations[0].data).toHaveProperty('name');
+            expect(molliePatchRequest.operations[0].data).toHaveProperty('quantity');
+            expect(molliePatchRequest.operations[0].data).toHaveProperty('unitPrice');
+            expect(molliePatchRequest.operations[0].data).toHaveProperty('totalAmount');
+            expect(molliePatchRequest.operations[0].data).toHaveProperty('vatRate');
+            expect(molliePatchRequest.operations[0].data).toHaveProperty('vatAmount');
+            expect(molliePatchRequest.operations[1].operation).toBe('add');
+            expect(molliePatchRequest.operations[2].operation).toBe('add');
         });
 
         it('Should get payment url with deducted amount if a payment is already made', async () => {
