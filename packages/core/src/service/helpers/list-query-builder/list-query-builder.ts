@@ -7,6 +7,7 @@ import {
     FindOneOptions,
     FindOptionsWhere,
     getMetadataArgsStorage,
+    QueryBuilder,
     Repository,
     SelectQueryBuilder,
     WhereExpressionBuilder,
@@ -263,30 +264,18 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         const alias = (extendedOptions.entityAlias || entity.name).toLowerCase();
         const minimumRequiredRelations = this.getMinimumRequiredRelations(repo, options, extendedOptions);
         const qb = repo.createQueryBuilder(alias);
+
         let relations = unique([...minimumRequiredRelations, ...(extendedOptions?.relations ?? [])]);
 
-        if (alias === 'collection' && (relations.includes('parent') || relations.includes('children'))) {
-            for (const relation of relations) {
-                if (relation !== 'parent' && relation !== 'children') {
-                    continue;
-                }
-                const relationIsAlreadyJoined = qb.expressionMap.joinAttributes.find(
-                    ja => ja.entityOrProperty === `${alias}.${relation}`,
-                );
-                if (!relationIsAlreadyJoined) {
-                    const propertyPath = relation.includes('.') ? relation : `${alias}.${relation}`;
-                    const relationAlias = relation.includes('.')
-                        ? relation.split('.').reverse()[0]
-                        : relation;
-                    qb.leftJoinAndSelect(propertyPath, `${alias}_${relationAlias}`);
-                    qb.leftJoinAndSelect(
-                        `${alias}_${relationAlias}.translations`,
-                        `${alias}_${relationAlias}_translations`,
-                    );
-                }
-            }
-            relations = relations.filter(relation => relation !== 'parent' && relation !== 'children');
-        }
+        // Special case for the 'collection' entity, which has a complex nested structure
+        // and requires special handling to ensure that only the necessary relations are joined.
+        // This is bypassed an issue in TypeORM where it would join the same relation multiple times.
+        // See https://github.com/typeorm/typeorm/issues/9936 for more context.
+        this.joinNestedCollectionRelations(qb, alias, relations);
+
+        // Remove any relations which are related to the 'collection' tree, as these are handled separately
+        // to avoid duplicate joins.
+        relations = relations.filter(relation => !this.isCollectionTreeRelated(relation, alias));
 
         qb.setFindOptions({
             relations,
@@ -632,5 +621,106 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
             const driver = this.connection.rawConnection.driver as SqljsDriver;
             driver.databaseConnection.create_function('regexp', regexpFn);
         }
+    }
+
+    /**
+     * These methods are designed to address specific challenges encountered with TypeORM
+     * when dealing with complex relation structures, particularly around the 'collection'
+     * entity and its nested relations ('parent', 'children'). The need for these custom
+     * implementations arises from limitations in handling deeply nested relations and ensuring
+     * efficient query generation without duplicate joins, as discussed in TypeORM issue #9936.
+     * See https://github.com/typeorm/typeorm/issues/9936 for more context.
+     */
+
+    /**
+     * Determines if a relation path is directly related to 'collection' or its nested relations.
+     * Essential for identifying relations relevant for processing in complex nested structures,
+     * improving query efficiency by ensuring only necessary joins are made.
+     *
+     * @param relationPath The path of the relation to check.
+     * @returns True if the relation is related to 'collection', false otherwise.
+     */
+    private shouldProcessRelation(relationPath: string) {
+        return relationPath.startsWith('collection') || relationPath.includes('.collection');
+    }
+
+    /**
+     * Checks if a relation is associated with the 'collection' tree, focusing on 'parent' and 'children'.
+     * Crucial for operations on hierarchical collections, allowing selective processing of these relations.
+     *
+     * @param relation The relation name to check.
+     * @param alias Optional. The base entity alias, used if the base is 'collection'.
+     * @returns True if part of the 'collection' tree, false otherwise.
+     */
+    private isCollectionTreeRelated(relation: string, alias?: string) {
+        if (alias === 'collection') {
+            return relation.includes('parent') || relation.includes('children');
+        }
+        return (
+            relation.startsWith('collection') &&
+            (relation.includes('.parent') || relation.includes('.children'))
+        );
+    }
+
+    /**
+     * Verifies if a relation has already been joined in a query builder to prevent duplicate joins.
+     * Ensures query efficiency and correctness by maintaining unique joins.
+     *
+     * @param qb The query builder instance.
+     * @param alias The join alias to check for uniqueness.
+     * @returns True if the relation has already been joined, false otherwise.
+     */
+    private isRelationAlreadyJoined<T extends VendureEntity>(qb: SelectQueryBuilder<T>, alias: string) {
+        return qb.expressionMap.joinAttributes.some(ja => ja.alias.name === alias);
+    }
+
+    /**
+     * Joins nested 'collection' relations and their translations, focusing on 'parent' and 'children'.
+     * Optimizes data retrieval in hierarchical structures by efficiently fetching relevant data.
+     *
+     * @param qb The query builder for joins.
+     * @param baseAlias The base entity alias, special-cased for 'collection'.
+     * @param relations Relation paths to join.
+     */
+    private joinNestedCollectionRelations<T extends VendureEntity>(
+        qb: SelectQueryBuilder<T>,
+        baseAlias: string,
+        relations: string[],
+    ) {
+        const isCollectionAlias = baseAlias === 'collection';
+        let currentAlias = baseAlias;
+
+        relations.forEach(relationPath => {
+            if (!isCollectionAlias && !this.shouldProcessRelation(relationPath)) {
+                return;
+            }
+
+            currentAlias = baseAlias;
+            const relationParts = relationPath.split('.');
+            let fullPath = '';
+
+            relationParts.forEach((part, index) => {
+                fullPath += (fullPath ? '.' : '') + part;
+                const uniqueSuffix = fullPath.replace(/\./g, '_');
+                const relationAlias = `${baseAlias}__${uniqueSuffix}`;
+
+                if (!this.isRelationAlreadyJoined(qb, relationAlias)) {
+                    qb.leftJoinAndSelect(`${currentAlias}.${part}`, relationAlias);
+                }
+
+                if (
+                    (isCollectionAlias || part === 'collection') &&
+                    this.isCollectionTreeRelated(part, baseAlias)
+                ) {
+                    const translationAlias = `${relationAlias}__translations`;
+                    if (!this.isRelationAlreadyJoined(qb, translationAlias)) {
+                        qb.leftJoinAndSelect(`${relationAlias}.translations`, translationAlias);
+                    }
+                }
+                if (this.isCollectionTreeRelated(part, baseAlias)) {
+                    currentAlias = relationAlias;
+                }
+            });
+        });
     }
 }
