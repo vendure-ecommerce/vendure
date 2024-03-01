@@ -17,6 +17,9 @@ import { getCalculatedColumns } from './get-calculated-columns';
  * @param connection
  * @param entity
  * @param sortParams
+ * @param customPropertyMap
+ * @param entityAlias
+ * @param customFields
  */
 export function parseSortParams<T extends VendureEntity>(
     connection: Connection,

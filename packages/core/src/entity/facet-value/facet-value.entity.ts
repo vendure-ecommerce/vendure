@@ -9,6 +9,8 @@ import { Channel } from '../channel/channel.entity';
 import { CustomFacetValueFields } from '../custom-entity-fields';
 import { EntityId } from '../entity-id.decorator';
 import { Facet } from '../facet/facet.entity';
+import { Product } from '../product/product.entity';
+import { ProductVariant } from '../product-variant/product-variant.entity';
 
 import { FacetValueTranslation } from './facet-value-translation.entity';
 
@@ -40,7 +42,13 @@ export class FacetValue extends VendureEntity implements Translatable, HasCustom
     @Column(type => CustomFacetValueFields)
     customFields: CustomFacetValueFields;
 
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.facetValues)
     @JoinTable()
     channels: Channel[];
+
+    @ManyToMany(() => Product, product => product.facetValues)
+    products: Product[];
+
+    @ManyToMany(type => ProductVariant, productVariant => productVariant.facetValues)
+    productVariants: ProductVariant[];
 }

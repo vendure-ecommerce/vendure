@@ -112,7 +112,7 @@ export class ProductVariant
     assets: ProductVariantAsset[];
 
     @Index()
-    @ManyToOne(type => TaxCategory)
+    @ManyToOne(type => TaxCategory, taxCategory => taxCategory.productVariants)
     taxCategory: TaxCategory;
 
     @OneToMany(type => ProductVariantPrice, price => price.variant, { eager: true })
@@ -157,7 +157,7 @@ export class ProductVariant
     @JoinTable()
     options: ProductOption[];
 
-    @ManyToMany(type => FacetValue)
+    @ManyToMany(type => FacetValue, facetValue => facetValue.productVariants)
     @JoinTable()
     facetValues: FacetValue[];
 
@@ -167,7 +167,7 @@ export class ProductVariant
     @ManyToMany(type => Collection, collection => collection.productVariants)
     collections: Collection[];
 
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.productVariants)
     @JoinTable()
     channels: Channel[];
 }

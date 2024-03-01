@@ -6,6 +6,7 @@ import {
     Brackets,
     FindOneOptions,
     FindOptionsWhere,
+    getMetadataArgsStorage,
     Repository,
     SelectQueryBuilder,
     WhereExpressionBuilder,
@@ -13,22 +14,18 @@ import {
 import { BetterSqlite3Driver } from 'typeorm/driver/better-sqlite3/BetterSqlite3Driver';
 import { SqljsDriver } from 'typeorm/driver/sqljs/SqljsDriver';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
-import { snakeCase } from 'typeorm/util/StringUtils';
 
-import { ApiType } from '../../../api/common/get-api-type';
-import { RequestContext } from '../../../api/common/request-context';
-import { UserInputError } from '../../../common/error/errors';
+import { ApiType, RequestContext } from '../../../api';
 import {
     FilterParameter,
     ListQueryOptions,
     NullOptionals,
     SortParameter,
-} from '../../../common/types/common-types';
-import { ConfigService } from '../../../config/config.service';
-import { CustomFields } from '../../../config/custom-field/custom-field-types';
-import { Logger } from '../../../config/logger/vendure-logger';
-import { TransactionalConnection } from '../../../connection/transactional-connection';
-import { VendureEntity } from '../../../entity/base/base.entity';
+    UserInputError,
+} from '../../../common';
+import { ConfigService, CustomFields, Logger } from '../../../config';
+import { TransactionalConnection } from '../../../connection';
+import { VendureEntity } from '../../../entity';
 
 import { getColumnMetadata, getEntityAlias } from './connection-utils';
 import { getCalculatedColumns } from './get-calculated-columns';
@@ -247,7 +244,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         return false;
     }
 
-    /**
+    /*
      * @description
      * Creates and configures a SelectQueryBuilder for queries that return paginated lists of entities.
      */
@@ -263,12 +260,36 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         const repo = extendedOptions.ctx
             ? this.connection.getRepository(extendedOptions.ctx, entity)
             : this.connection.rawConnection.getRepository(entity);
-        const alias = extendedOptions.entityAlias || entity.name.toLowerCase();
+        const alias = (extendedOptions.entityAlias || entity.name).toLowerCase();
         const minimumRequiredRelations = this.getMinimumRequiredRelations(repo, options, extendedOptions);
         const qb = repo.createQueryBuilder(alias);
+        let relations = unique([...minimumRequiredRelations, ...(extendedOptions?.relations ?? [])]);
+
+        if (alias === 'collection' && (relations.includes('parent') || relations.includes('children'))) {
+            for (const relation of relations) {
+                if (relation !== 'parent' && relation !== 'children') {
+                    continue;
+                }
+                const relationIsAlreadyJoined = qb.expressionMap.joinAttributes.find(
+                    ja => ja.entityOrProperty === `${alias}.${relation}`,
+                );
+                if (!relationIsAlreadyJoined) {
+                    const propertyPath = relation.includes('.') ? relation : `${alias}.${relation}`;
+                    const relationAlias = relation.includes('.')
+                        ? relation.split('.').reverse()[0]
+                        : relation;
+                    qb.leftJoinAndSelect(propertyPath, `${alias}_${relationAlias}`);
+                    qb.leftJoinAndSelect(
+                        `${alias}_${relationAlias}.translations`,
+                        `${alias}_${relationAlias}_translations`,
+                    );
+                }
+            }
+            relations = relations.filter(relation => relation !== 'parent' && relation !== 'children');
+        }
 
         qb.setFindOptions({
-            relations: unique([...minimumRequiredRelations, ...(extendedOptions?.relations ?? [])]),
+            relations,
             take,
             skip,
             where: extendedOptions.where || {},
@@ -277,7 +298,6 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
 
         // join the tables required by calculated columns
         this.joinCalculatedColumnRelations(qb, entity, options);
-
         const { customPropertyMap, entityAlias } = extendedOptions;
         if (customPropertyMap) {
             this.normalizeCustomPropertyMap(customPropertyMap, options, qb);
@@ -321,7 +341,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         }
 
         if (extendedOptions.channelId) {
-            qb.leftJoin(`${alias}.channels`, 'lqb__channel').andWhere('lqb__channel.id = :channelId', {
+            qb.innerJoin(`${alias}.channels`, 'lqb__channel', 'lqb__channel.id = :channelId', {
                 channelId: extendedOptions.channelId,
             });
         }
@@ -426,29 +446,6 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         return !!(options.sort?.[property] || options.filter?.[property]);
     }
 
-    private assignDeep<T>(relation: string | keyof T, source: T, target: T) {
-        if (typeof relation === 'string') {
-            const parts = relation.split('.');
-            let resolvedTarget: any = target;
-            let resolvedSource: any = source;
-
-            for (const part of parts.slice(0, parts.length - 1)) {
-                if (!resolvedTarget[part]) {
-                    resolvedTarget[part] = {};
-                }
-                if (!resolvedSource[part]) {
-                    return;
-                }
-                resolvedTarget = resolvedTarget[part];
-                resolvedSource = resolvedSource[part];
-            }
-
-            resolvedTarget[parts[parts.length - 1]] = resolvedSource[parts[parts.length - 1]];
-        } else {
-            target[relation] = source[relation];
-        }
-    }
-
     /**
      * If a customPropertyMap is provided, we need to take the path provided and convert it to the actual
      * relation aliases being used by the SelectQueryBuilder.
@@ -470,17 +467,20 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
 
             const relationMetadata =
                 qb.expressionMap.mainAlias?.metadata.findRelationWithPropertyPath(entityPart);
-            const relationAlias =
-                qb.expressionMap.aliases.find(a => a.metadata.tableNameWithoutPrefix === entityPart) ??
-                qb.expressionMap.joinAttributes.find(ja => ja.relationCache === relationMetadata)?.alias;
-            if (relationAlias) {
-                customPropertyMap[property] = `${relationAlias.name}.${columnPart}`;
-            } else {
+
+            if (!relationMetadata?.propertyName) {
                 Logger.error(
                     `The customPropertyMap entry "${property}:${value}" could not be resolved to a related table`,
                 );
                 delete customPropertyMap[property];
+                return;
             }
+
+            customPropertyMap[property] = `${relationMetadata.propertyName}.${columnPart}`;
+            qb.leftJoinAndSelect(
+                `${qb.alias}.${relationMetadata.propertyName}`,
+                relationMetadata.propertyName,
+            );
         }
     }
 

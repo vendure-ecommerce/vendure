@@ -90,7 +90,7 @@ export class Collection
     @EntityId({ nullable: true })
     parentId: ID;
 
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.collections)
     @JoinTable()
     channels: Channel[];
 }
