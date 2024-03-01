@@ -132,7 +132,7 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
      * If you are loading too much data with nested joins it's better to load relations
      * using separate queries.
      *
-     * Default strategy is "join", but default can be customized in connection options.
+     * Default strategy is "query", but default can be customized in connection options.
      * @since 2.2.0
      * @default 'query'
      */
