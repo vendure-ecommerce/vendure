@@ -125,6 +125,18 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
      * @default false
      */
     ignoreQueryLimits?: boolean;
+
+    /**
+     @description
+     * Specifies how relations must be loaded - using "joins" or separate queries.
+     * If you are loading too much data with nested joins it's better to load relations
+     * using separate queries.
+     *
+     * Default strategy is "join", but default can be customized in connection options.
+     * @since 2.2.0
+     * @default 'query'
+     */
+    relationLoadStrategy?: 'join' | 'query';
 };
 
 /**
@@ -282,7 +294,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
             take,
             skip,
             where: extendedOptions.where || {},
-            relationLoadStrategy: 'query',
+            relationLoadStrategy: extendedOptions?.relationLoadStrategy || 'query',
         });
 
         // join the tables required by calculated columns
