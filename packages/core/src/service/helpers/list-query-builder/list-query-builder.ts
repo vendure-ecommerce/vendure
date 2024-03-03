@@ -297,6 +297,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
             skip,
             where: extendedOptions.where || {},
             relationLoadStrategy: extendedOptions?.relationLoadStrategy || 'query',
+            loadEagerRelations: true,
         });
 
         // join the tables required by calculated columns
@@ -307,22 +308,16 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         }
         const customFieldsForType = this.configService.customFields[entity.name as keyof CustomFields];
         const sortParams = Object.assign({}, options.sort, extendedOptions.orderBy);
-        this.applyTranslationConditions(qb, entity, sortParams, extendedOptions.ctx, alias);
+        this.applyTranslationConditions(qb, entity, sortParams, extendedOptions.ctx);
         const sort = parseSortParams(
-            rawConnection,
+            qb.connection,
             entity,
             sortParams,
             customPropertyMap,
-            entityAlias,
+            qb.alias,
             customFieldsForType,
         );
-        const filter = parseFilterParams(
-            rawConnection,
-            entity,
-            options.filter,
-            customPropertyMap,
-            entityAlias,
-        );
+        const filter = parseFilterParams(qb.connection, entity, options.filter, customPropertyMap, qb.alias);
 
         if (filter.length) {
             const filterOperator = options.filterOperator ?? LogicalOperator.AND;
@@ -537,16 +532,11 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         entity: Type<T>,
         sortParams: NullOptionals<SortParameter<T>> & FindOneOptions<T>['order'],
         ctx?: RequestContext,
-        entityAlias?: string,
     ) {
         const languageCode = ctx?.languageCode || this.configService.defaultLanguageCode;
 
-        const {
-            columns,
-            translationColumns,
-            alias: defaultAlias,
-        } = getColumnMetadata(this.connection.rawConnection, entity);
-        const alias = entityAlias ?? defaultAlias;
+        const { translationColumns } = getColumnMetadata(qb.connection, entity);
+        const alias = qb.alias;
 
         const sortKeys = Object.keys(sortParams);
         let sortingOnTranslatableKey = false;

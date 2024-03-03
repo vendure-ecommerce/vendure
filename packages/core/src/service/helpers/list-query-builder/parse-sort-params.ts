@@ -1,6 +1,7 @@
 import { Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
-import { Connection, OrderByCondition } from 'typeorm';
+import { OrderByCondition } from 'typeorm';
+import { DataSource } from 'typeorm/data-source/DataSource';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 
 import { UserInputError } from '../../../common/error/errors';
@@ -22,7 +23,7 @@ import { getCalculatedColumns } from './get-calculated-columns';
  * @param customFields
  */
 export function parseSortParams<T extends VendureEntity>(
-    connection: Connection,
+    connection: DataSource,
     entity: Type<T>,
     sortParams?: NullOptionals<SortParameter<T>> | null,
     customPropertyMap?: { [name: string]: string },
