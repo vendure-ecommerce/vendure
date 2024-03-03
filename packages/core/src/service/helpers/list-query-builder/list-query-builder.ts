@@ -7,8 +7,6 @@ import {
     EntityMetadata,
     FindOneOptions,
     FindOptionsWhere,
-    getMetadataArgsStorage,
-    QueryBuilder,
     Repository,
     SelectQueryBuilder,
     WhereExpressionBuilder,
@@ -16,7 +14,6 @@ import {
 import { EntityTarget } from 'typeorm/common/EntityTarget';
 import { BetterSqlite3Driver } from 'typeorm/driver/better-sqlite3/BetterSqlite3Driver';
 import { SqljsDriver } from 'typeorm/driver/sqljs/SqljsDriver';
-import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { ApiType, RequestContext } from '../../../api';
 import {
@@ -289,6 +286,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
 
         // join the tables required by calculated columns
         this.joinCalculatedColumnRelations(qb, entity, options);
+
         const { customPropertyMap, entityAlias } = extendedOptions;
         if (customPropertyMap) {
             this.normalizeCustomPropertyMap(customPropertyMap, options, qb);
