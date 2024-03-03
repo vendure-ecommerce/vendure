@@ -4,6 +4,7 @@ import { ID, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 import {
     Brackets,
+    EntityMetadata,
     FindOneOptions,
     FindOptionsWhere,
     getMetadataArgsStorage,
@@ -12,6 +13,7 @@ import {
     SelectQueryBuilder,
     WhereExpressionBuilder,
 } from 'typeorm';
+import { EntityTarget } from 'typeorm/common/EntityTarget';
 import { BetterSqlite3Driver } from 'typeorm/driver/better-sqlite3/BetterSqlite3Driver';
 import { SqljsDriver } from 'typeorm/driver/sqljs/SqljsDriver';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
@@ -129,10 +131,10 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
     /**
      @description
      * Specifies how relations must be loaded - using "joins" or separate queries.
-     * If you are loading too much data with nested joins it's better to load relations
-     * using separate queries.
-     *
-     * Default strategy is "query", but default can be customized in connection options.
+      * If you are loading too much data with nested joins it's better to load relations
+      * using separate queries.
+      *
+      * Default strategy is "query", but default can be customized in connection options.
      * @since 2.2.0
      * @default 'query'
      */
@@ -283,11 +285,11 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         // and requires special handling to ensure that only the necessary relations are joined.
         // This is bypassed an issue in TypeORM where it would join the same relation multiple times.
         // See https://github.com/typeorm/typeorm/issues/9936 for more context.
-        this.joinNestedCollectionRelations(qb, alias, relations);
+        const processedRelations = this.joinTreeRelationsDynamically(qb, entity, relations);
 
         // Remove any relations which are related to the 'collection' tree, as these are handled separately
         // to avoid duplicate joins.
-        relations = relations.filter(relation => !this.isCollectionTreeRelated(relation, alias));
+        relations = relations.filter(relationPath => !processedRelations.has(relationPath));
 
         qb.setFindOptions({
             relations,
@@ -636,103 +638,115 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
     }
 
     /**
-     * These methods are designed to address specific challenges encountered with TypeORM
+     * These method are designed to address specific challenges encountered with TypeORM
      * when dealing with complex relation structures, particularly around the 'collection'
-     * entity and its nested relations ('parent', 'children'). The need for these custom
+     * entity and other similar entities, and they nested relations ('parent', 'children'). The need for these custom
      * implementations arises from limitations in handling deeply nested relations and ensuring
      * efficient query generation without duplicate joins, as discussed in TypeORM issue #9936.
      * See https://github.com/typeorm/typeorm/issues/9936 for more context.
      */
 
     /**
-     * Determines if a relation path is directly related to 'collection' or its nested relations.
-     * Essential for identifying relations relevant for processing in complex nested structures,
-     * improving query efficiency by ensuring only necessary joins are made.
-     *
-     * @param relationPath The path of the relation to check.
-     * @returns True if the relation is related to 'collection', false otherwise.
-     */
-    private shouldProcessRelation(relationPath: string) {
-        return relationPath.startsWith('collection') || relationPath.includes('.collection');
-    }
-
-    /**
-     * Checks if a relation is associated with the 'collection' tree, focusing on 'parent' and 'children'.
-     * Crucial for operations on hierarchical collections, allowing selective processing of these relations.
-     *
-     * @param relation The relation name to check.
-     * @param alias Optional. The base entity alias, used if the base is 'collection'.
-     * @returns True if part of the 'collection' tree, false otherwise.
-     */
-    private isCollectionTreeRelated(relation: string, alias?: string) {
-        if (alias === 'collection') {
-            return relation.includes('parent') || relation.includes('children');
-        }
-        return (
-            relation.startsWith('collection') &&
-            (relation.includes('.parent') || relation.includes('.children'))
-        );
-    }
-
-    /**
      * Verifies if a relation has already been joined in a query builder to prevent duplicate joins.
-     * Ensures query efficiency and correctness by maintaining unique joins.
+     * This method ensures query efficiency and correctness by maintaining unique joins within the query builder.
      *
-     * @param qb The query builder instance.
-     * @param alias The join alias to check for uniqueness.
-     * @returns True if the relation has already been joined, false otherwise.
+     * @param {SelectQueryBuilder<T>} qb The query builder instance where the joins are being added.
+     * @param {string} alias The join alias to check for uniqueness. This alias is used to determine if the relation
+     *                       has already been joined to avoid adding duplicate join statements.
+     * @returns boolean Returns true if the relation has already been joined (based on the alias), false otherwise.
+     * @template T extends VendureEntity The entity type for which the query builder is configured.
      */
-    private isRelationAlreadyJoined<T extends VendureEntity>(qb: SelectQueryBuilder<T>, alias: string) {
+    private isRelationAlreadyJoined<T extends VendureEntity>(
+        qb: SelectQueryBuilder<T>,
+        alias: string,
+    ): boolean {
         return qb.expressionMap.joinAttributes.some(ja => ja.alias.name === alias);
     }
 
     /**
-     * Joins nested 'collection' relations and their translations, focusing on 'parent' and 'children'.
-     * Optimizes data retrieval in hierarchical structures by efficiently fetching relevant data.
+     * Dynamically joins tree relations and their eager relations to a query builder. This method is specifically
+     * designed for entities utilizing TypeORM tree decorators (@TreeParent, @TreeChildren) and aims to address
+     * the challenge of efficiently managing deeply nested relations and avoiding duplicate joins. The method
+     * automatically handles the joining of related entities marked with tree relation decorators and eagerly
+     * loaded relations, ensuring efficient data retrieval and query generation.
      *
-     * @param qb The query builder for joins.
-     * @param baseAlias The base entity alias, special-cased for 'collection'.
-     * @param relations Relation paths to join.
+     * The method iterates over the requested relations paths, joining each relation dynamically. For tree relations,
+     * it also recursively joins all associated eager relations. This approach avoids the manual specification of joins
+     * and leverages TypeORM's relation metadata to automate the process.
+     *
+     * @param {SelectQueryBuilder<T>} qb The query builder instance to which the relations will be joined.
+     * @param {EntityTarget<T>} entity The target entity class or schema name. This parameter is used to access
+     *                                 the entity's metadata and analyze its relations.
+     * @param {string[]} requestedRelations An array of strings representing the relation paths to be dynamically joined.
+     *                                      Each string in the array should denote a path to a relation (e.g., 'parent.parent.children').
+     * @returns {Set<string>} A Set containing the paths of relations that were dynamically joined. This set can be used
+     *                        to track which relations have been processed and potentially avoid duplicate processing.
+     * @template T extends VendureEntity The type of the entity for which relations are being joined. This type parameter
+     *                                    should extend VendureEntity to ensure compatibility with Vendure's data access layer.
      */
-    private joinNestedCollectionRelations<T extends VendureEntity>(
+    private joinTreeRelationsDynamically<T extends VendureEntity>(
         qb: SelectQueryBuilder<T>,
-        baseAlias: string,
-        relations: string[],
-    ) {
-        const isCollectionAlias = baseAlias === 'collection';
-        let currentAlias = baseAlias;
+        entity: EntityTarget<T>,
+        requestedRelations: string[] = [],
+    ): Set<string> {
+        const metadata = qb.connection.getMetadata(entity);
+        const processedRelations = new Set<string>();
+        const sourceMetadataIsTreeType = metadata.treeType;
 
-        relations.forEach(relationPath => {
-            if (!isCollectionAlias && !this.shouldProcessRelation(relationPath)) {
-                return;
+        if (!sourceMetadataIsTreeType) {
+            return processedRelations;
+        }
+        const processRelation = (
+            currentMetadata: EntityMetadata,
+            currentPath: string,
+            currentAlias: string,
+        ) => {
+            const parts = currentPath.split('.');
+            const part = parts.shift();
+
+            if (!part || !currentMetadata) return;
+
+            const relationMetadata = currentMetadata.findRelationWithPropertyPath(part);
+            if (relationMetadata) {
+                const isEager = relationMetadata.isEager;
+                let joinConnector = '_';
+                if (isEager) {
+                    joinConnector = '__';
+                }
+                const nextAlias = `${currentAlias}${joinConnector}${part}`;
+                const nextPath = parts.join('.');
+
+                if (!this.isRelationAlreadyJoined(qb, nextAlias)) {
+                    qb.leftJoinAndSelect(`${currentAlias}.${part}`, nextAlias);
+                }
+
+                const isTreeParent = relationMetadata.isTreeParent;
+                const isTreeChildren = relationMetadata.isTreeChildren;
+                const isTree = isTreeParent || isTreeChildren;
+
+                if (isTree) {
+                    relationMetadata.inverseEntityMetadata.relations.forEach(subRelation => {
+                        if (subRelation.isEager) {
+                            processRelation(
+                                relationMetadata.inverseEntityMetadata,
+                                subRelation.propertyPath,
+                                nextAlias,
+                            );
+                        }
+                    });
+                }
+
+                if (nextPath) {
+                    processRelation(relationMetadata.inverseEntityMetadata, nextPath, nextAlias);
+                }
+                processedRelations.add(currentPath);
             }
+        };
 
-            currentAlias = baseAlias;
-            const relationParts = relationPath.split('.');
-            let fullPath = '';
-
-            relationParts.forEach((part, index) => {
-                fullPath += (fullPath ? '.' : '') + part;
-                const uniqueSuffix = fullPath.replace(/\./g, '_');
-                const relationAlias = `${baseAlias}__${uniqueSuffix}`;
-
-                if (!this.isRelationAlreadyJoined(qb, relationAlias)) {
-                    qb.leftJoinAndSelect(`${currentAlias}.${part}`, relationAlias);
-                }
-
-                if (
-                    (isCollectionAlias || part === 'collection') &&
-                    this.isCollectionTreeRelated(part, baseAlias)
-                ) {
-                    const translationAlias = `${relationAlias}__translations`;
-                    if (!this.isRelationAlreadyJoined(qb, translationAlias)) {
-                        qb.leftJoinAndSelect(`${relationAlias}.translations`, translationAlias);
-                    }
-                }
-                if (this.isCollectionTreeRelated(part, baseAlias)) {
-                    currentAlias = relationAlias;
-                }
-            });
+        requestedRelations.forEach(relationPath => {
+            processRelation(metadata, relationPath, qb.alias);
         });
+
+        return processedRelations;
     }
 }
