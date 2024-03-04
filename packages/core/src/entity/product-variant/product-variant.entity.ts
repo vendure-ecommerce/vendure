@@ -103,7 +103,7 @@ export class ProductVariant
     taxRateApplied: TaxRate;
 
     @Index()
-    @ManyToOne(type => Asset, { onDelete: 'SET NULL' })
+    @ManyToOne(type => Asset, asset => asset.featuredInVariants, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
 
     @OneToMany(type => ProductVariantAsset, productVariantAsset => productVariantAsset.productVariant, {
@@ -153,7 +153,7 @@ export class ProductVariant
     @OneToMany(type => StockMovement, stockMovement => stockMovement.productVariant)
     stockMovements: StockMovement[];
 
-    @ManyToMany(type => ProductOption)
+    @ManyToMany(type => ProductOption, productOption => productOption.productVariants)
     @JoinTable()
     options: ProductOption[];
 

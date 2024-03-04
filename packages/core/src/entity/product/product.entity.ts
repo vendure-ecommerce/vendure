@@ -44,7 +44,7 @@ export class Product
     enabled: boolean;
 
     @Index()
-    @ManyToOne(type => Asset, { onDelete: 'SET NULL' })
+    @ManyToOne(type => Asset, asset => asset.featuredInProducts, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
 
     @OneToMany(type => ProductAsset, productAsset => productAsset.product)
