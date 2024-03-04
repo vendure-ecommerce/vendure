@@ -99,17 +99,29 @@ export class OrderModifier {
      * @description
      * Ensure that the ProductVariant has sufficient saleable stock to add the given
      * quantity to an Order.
+     *
+     * - `existingOrderLineQuantity` is used when adding an item to the order, since if an OrderLine
+     * already exists then we will be adding the new quantity to the existing quantity.
+     * - `quantityInOtherOrderLines` is used when we have more than 1 OrderLine containing the same
+     * ProductVariant. This occurs when there are custom fields defined on the OrderLine and the lines
+     * have differing values for one or more custom fields. In this case, we need to take _all_ of these
+     * OrderLines into account when constraining the quantity. See https://github.com/vendure-ecommerce/vendure/issues/2702
+     * for more on this.
      */
     async constrainQuantityToSaleable(
         ctx: RequestContext,
         variant: ProductVariant,
         quantity: number,
-        existingQuantity = 0,
+        existingOrderLineQuantity = 0,
+        quantityInOtherOrderLines = 0,
     ) {
-        let correctedQuantity = quantity + existingQuantity;
+        let correctedQuantity = quantity + existingOrderLineQuantity;
         const saleableStockLevel = await this.productVariantService.getSaleableStockLevel(ctx, variant);
-        if (saleableStockLevel < correctedQuantity) {
-            correctedQuantity = Math.max(saleableStockLevel - existingQuantity, 0);
+        if (saleableStockLevel < correctedQuantity + quantityInOtherOrderLines) {
+            correctedQuantity = Math.max(
+                saleableStockLevel - existingOrderLineQuantity - quantityInOtherOrderLines,
+                0,
+            );
         }
         return correctedQuantity;
     }
