@@ -13,6 +13,7 @@ export * from './helpers/order-merger/order-merger';
 export * from './helpers/order-modifier/order-modifier';
 export * from './helpers/order-splitter/order-splitter';
 export * from './helpers/order-state-machine/order-state';
+export * from './helpers/order-state-machine/order-state-machine';
 export * from './helpers/password-cipher/password-cipher';
 export * from './helpers/payment-state-machine/payment-state';
 export * from './helpers/product-price-applicator/product-price-applicator';

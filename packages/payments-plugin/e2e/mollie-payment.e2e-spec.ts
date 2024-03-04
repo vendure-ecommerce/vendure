@@ -1,5 +1,13 @@
 import { OrderStatus } from '@mollie/api-client';
-import { ChannelService, LanguageCode, mergeConfig, OrderService, RequestContext } from '@vendure/core';
+import {
+    ChannelService,
+    EventBus,
+    LanguageCode,
+    mergeConfig,
+    OrderPlacedEvent,
+    OrderService,
+    RequestContext,
+} from '@vendure/core';
 import {
     SettlePaymentMutation,
     SettlePaymentMutationVariables,
@@ -69,6 +77,9 @@ const mockData = {
             ],
         },
         resource: 'order',
+        metadata: {
+            languageCode: 'nl',
+        },
         mode: 'test',
         method: 'test-method',
         profileId: '123',
@@ -128,7 +139,7 @@ let order: TestOrderFragmentFragment;
 let serverPort: number;
 const SURCHARGE_AMOUNT = -20000;
 
-describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
+describe('Mollie payments with useDynamicRedirectUrl=false', () => {
     beforeAll(async () => {
         const devConfig = mergeConfig(testConfig(), {
             plugins: [MolliePlugin.init({ vendureHost: mockData.host })],
@@ -266,7 +277,7 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
                     },
                 },
             );
-            expect(result.message).toContain('The following variants are out of stock');
+            expect(result.message).toContain('insufficient stock of Pinelab stickers');
             // Set stock back to not tracking
             ({ updateProductVariants } = await adminClient.query(UPDATE_PRODUCT_VARIANTS, {
                 input: {
@@ -322,6 +333,42 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
             expect(createMolliePaymentIntent).toEqual({
                 url: 'https://www.mollie.com/payscreen/select-method/mock-payment',
             });
+        });
+
+        it('Should update existing Mollie order', async () => {
+            // Should fetch the existing order from Mollie
+            nock('https://api.mollie.com/')
+                .get('/v2/orders/ord_mockId')
+                .reply(200, mockData.mollieOrderResponse);
+            // Should patch existing order
+            nock('https://api.mollie.com/')
+            .patch(`/v2/orders/${mockData.mollieOrderResponse.id}`)
+            .reply(200, mockData.mollieOrderResponse);
+            // Should patch existing order lines
+            let molliePatchRequest: any | undefined;
+            nock('https://api.mollie.com/')
+                .patch(`/v2/orders/${mockData.mollieOrderResponse.id}/lines`, body => {
+                    molliePatchRequest = body;
+                    return true;
+                })
+                .reply(200, mockData.mollieOrderResponse);
+            const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
+                input: {
+                    paymentMethodCode: mockData.methodCode,
+                },
+            });
+            // We expect the patch request to add 3 order lines, because the mock response has 0 lines
+            expect(createMolliePaymentIntent.url).toBeDefined();
+            expect(molliePatchRequest.operations).toBeDefined();
+            expect(molliePatchRequest.operations[0].operation).toBe('add');
+            expect(molliePatchRequest.operations[0].data).toHaveProperty('name');
+            expect(molliePatchRequest.operations[0].data).toHaveProperty('quantity');
+            expect(molliePatchRequest.operations[0].data).toHaveProperty('unitPrice');
+            expect(molliePatchRequest.operations[0].data).toHaveProperty('totalAmount');
+            expect(molliePatchRequest.operations[0].data).toHaveProperty('vatRate');
+            expect(molliePatchRequest.operations[0].data).toHaveProperty('vatAmount');
+            expect(molliePatchRequest.operations[1].operation).toBe('add');
+            expect(molliePatchRequest.operations[2].operation).toBe('add');
         });
 
         it('Should get payment url with deducted amount if a payment is already made', async () => {
@@ -385,7 +432,15 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
             expect(adminOrder.state).toBe('ArrangingPayment');
         });
 
+        let orderPlacedEvent: OrderPlacedEvent | undefined;
+
         it('Should place order after paying outstanding amount', async () => {
+            server.app
+                .get(EventBus)
+                .ofType(OrderPlacedEvent)
+                .subscribe(event => {
+                    orderPlacedEvent = event;
+                });
             nock('https://api.mollie.com/')
                 .get('/v2/orders/ord_mockId')
                 .reply(200, {
@@ -400,7 +455,7 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
                 body: JSON.stringify({ id: mockData.mollieOrderResponse.id }),
                 headers: { 'Content-Type': 'application/json' },
             });
-            const { orderByCode } = await shopClient.query<GetOrderByCode.Query, GetOrderByCode.Variables>(
+            const { orderByCode } = await shopClient.query<GetOrderByCodeQuery, GetOrderByCodeQueryVariables>(
                 GET_ORDER_BY_CODE,
                 {
                     code: order.code,
@@ -409,6 +464,11 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             order = orderByCode!;
             expect(order.state).toBe('PaymentSettled');
+        });
+
+        it('Should have preserved original languageCode ', async () => {
+            // We've set the languageCode to 'nl' in the mock response's metadata
+            expect(orderPlacedEvent?.ctx.languageCode).toBe('nl');
         });
 
         it('Should have Mollie metadata on payment', async () => {
@@ -435,14 +495,14 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
                 order.lines[0].id,
                 1,
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                order!.payments[1].id,
+                order!.payments![1].id,
                 SURCHARGE_AMOUNT,
             );
             expect(refund.state).toBe('Failed');
         });
 
         it('Should successfully refund the Mollie payment', async () => {
-            let mollieRequest;
+            let mollieRequest: any;
             nock('https://api.mollie.com/')
                 .get('/v2/orders/ord_mockId?embed=payments')
                 .reply(200, mockData.mollieOrderResponse);
@@ -547,8 +607,8 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
 
     it('Should add an unusable Mollie paymentMethod (missing redirectUrl)', async () => {
         const { createPaymentMethod } = await adminClient.query<
-            CreatePaymentMethod.Mutation,
-            CreatePaymentMethod.Variables
+            CreatePaymentMethodMutation,
+            CreatePaymentMethodMutationVariables
         >(CREATE_PAYMENT_METHOD, {
             input: {
                 code: mockData.methodCodeBroken,
@@ -575,13 +635,13 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
 
     it('Should prepare an order', async () => {
         await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
-        const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(
-            ADD_ITEM_TO_ORDER,
-            {
-                productVariantId: 'T_5',
-                quantity: 10,
-            },
-        );
+        const { addItemToOrder } = await shopClient.query<
+            AddItemToOrderMutation,
+            AddItemToOrderMutationVariables
+        >(ADD_ITEM_TO_ORDER, {
+            productVariantId: 'T_5',
+            quantity: 10,
+        });
         order = addItemToOrder as TestOrderFragmentFragment;
         // Add surcharge
         const ctx = new RequestContext({
@@ -613,7 +673,7 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
     });
 });
 
-describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
+describe('Mollie payments with useDynamicRedirectUrl=true', () => {
     beforeAll(async () => {
         const devConfig = mergeConfig(testConfig(), {
             plugins: [MolliePlugin.init({ vendureHost: mockData.host, useDynamicRedirectUrl: true })],
@@ -632,7 +692,7 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
         await adminClient.asSuperAdmin();
         ({
             customers: { items: customers },
-        } = await adminClient.query<GetCustomerList.Query, GetCustomerList.Variables>(GET_CUSTOMER_LIST, {
+        } = await adminClient.query<GetCustomerListQuery, GetCustomerListQueryVariables>(GET_CUSTOMER_LIST, {
             options: {
                 take: 2,
             },
@@ -654,13 +714,13 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
 
     it('Should prepare an order', async () => {
         await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
-        const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(
-            ADD_ITEM_TO_ORDER,
-            {
-                productVariantId: 'T_5',
-                quantity: 10,
-            },
-        );
+        const { addItemToOrder } = await shopClient.query<
+            AddItemToOrderMutation,
+            AddItemToOrderMutationVariables
+        >(ADD_ITEM_TO_ORDER, {
+            productVariantId: 'T_5',
+            quantity: 10,
+        });
         order = addItemToOrder as TestOrderFragmentFragment;
         // Add surcharge
         const ctx = new RequestContext({
@@ -678,8 +738,8 @@ describe('Mollie payments (with useDynamicRedirectUrl set to true)', () => {
 
     it('Should add a working Mollie paymentMethod without specifying redirectUrl', async () => {
         const { createPaymentMethod } = await adminClient.query<
-            CreatePaymentMethod.Mutation,
-            CreatePaymentMethod.Variables
+            CreatePaymentMethodMutation,
+            CreatePaymentMethodMutationVariables
         >(CREATE_PAYMENT_METHOD, {
             input: {
                 code: mockData.methodCode,

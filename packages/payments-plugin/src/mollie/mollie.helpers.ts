@@ -1,7 +1,7 @@
 import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/orders/parameters';
 import { Amount } from '@mollie/api-client/dist/types/src/data/global';
 import { OrderAddress as MollieOrderAddress } from '@mollie/api-client/dist/types/src/data/orders/data';
-import { Customer, Order } from '@vendure/core';
+import { CurrencyCode, Customer, Order } from '@vendure/core';
 import currency from 'currency.js';
 
 import { OrderAddress } from './graphql/generated-shop-types';
@@ -34,7 +34,7 @@ export function toMollieOrderLines(order: Order, alreadyPaid: number): CreatePar
         quantity: line.quantity,
         unitPrice: toAmount(line.proratedLinePriceWithTax / line.quantity, order.currencyCode), // totalAmount has to match unitPrice * quantity
         totalAmount: toAmount(line.proratedLinePriceWithTax, order.currencyCode),
-        vatRate: String(line.taxRate),
+        vatRate: line.taxRate.toFixed(2),
         vatAmount: toAmount(
             calculateLineTaxAmount(line.taxRate, line.proratedLinePriceWithTax),
             order.currencyCode,
@@ -52,14 +52,16 @@ export function toMollieOrderLines(order: Order, alreadyPaid: number): CreatePar
         })),
     );
     // Add surcharges
-    lines.push(...order.surcharges.map(surcharge => ({
-        name: surcharge.description,
-        quantity: 1,
-        unitPrice: toAmount(surcharge.priceWithTax, order.currencyCode),
-        totalAmount: toAmount(surcharge.priceWithTax, order.currencyCode),
-        vatRate: String(surcharge.taxRate),
-        vatAmount: toAmount(surcharge.priceWithTax - surcharge.price, order.currencyCode),
-    })));
+    lines.push(
+        ...order.surcharges.map(surcharge => ({
+            name: surcharge.description,
+            quantity: 1,
+            unitPrice: toAmount(surcharge.priceWithTax, order.currencyCode),
+            totalAmount: toAmount(surcharge.priceWithTax, order.currencyCode),
+            vatRate: String(surcharge.taxRate),
+            vatAmount: toAmount(surcharge.priceWithTax - surcharge.price, order.currencyCode),
+        })),
+    );
     // Deduct amount already paid
     if (alreadyPaid) {
         lines.push({
@@ -85,7 +87,7 @@ export function toAmount(value: number, orderCurrency: string): Amount {
 }
 
 /**
- * Return to number of cents
+ * Return to number of cents. E.g. '10.00' => 1000
  */
 export function amountToCents(amount: Amount): number {
     return currency(amount.value).intValue;
@@ -99,7 +101,6 @@ export function amountToCents(amount: Amount): number {
 export function calculateLineTaxAmount(taxRate: number, orderLinePriceWithTax: number): number {
     const taxMultiplier = taxRate / 100;
     return orderLinePriceWithTax * (taxMultiplier / (1 + taxMultiplier)); // I.E. €99,99 * (0,2 ÷ 1,2) with a 20% taxrate
-
 }
 
 /**
@@ -147,4 +148,16 @@ export function getLocale(countryCode: string, channelLanguage: string): string 
     }
     // If no order locale and no channel locale, return a default, otherwise order creation will fail
     return allowedLocales[0];
+}
+
+export function areOrderLinesEqual(line1: CreateParameters['lines'][0], line2: CreateParameters['lines'][0]): boolean {
+    return (
+        line1.name === line2.name &&
+        line1.quantity === line2.quantity &&
+        line1.unitPrice.value === line2.unitPrice.value &&
+        line1.unitPrice.currency === line2.unitPrice.currency &&
+        line1.totalAmount.value === line2.totalAmount.value &&
+        line1.vatRate === line2.vatRate &&
+        line1.vatAmount.value === line2.vatAmount.value
+    );
 }
