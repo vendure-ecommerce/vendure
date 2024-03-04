@@ -72,6 +72,8 @@
     "assign-variants-to-channel": "समान विविधताहरूलाई च्यानलमा लगाउनुहोस्",
     "auto-update-option-variant-name": "विकल्प परिविकल्पको नाम आफ्नो आपदेट गर्नका लागि स्वचालित गर्नुहोस्",
     "auto-update-product-variant-name": "समान विविधताका नाम आफ्नो आपदेट गर्नका लागि स्वचालित गर्नुहोस्",
+    "calculated-price": "गणना गरिएको मुल्य",
+    "calculated-price-tooltip": "उपर सेट गरिएको मूल्यलाई परिवर्तन गर्दछ जुन कस्टम मूल्य गणना गर्नुहोस्:",
     "cannot-create-variants-without-options": "कम्ति दुई समान विकल्पसम्म विकल्प संग समावेश गरिएको पर्याप्त छेनपछि समान विविधता सिर्जना गर्न सकिदैन",
     "channel-price-preview": "च्यानल मूल्य पूर्वावलोकन",
     "collection": "",

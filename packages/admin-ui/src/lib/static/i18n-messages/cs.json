@@ -72,6 +72,8 @@
     "assign-variants-to-channel": "Přiřadit varianty do kanálu",
     "auto-update-option-variant-name": "Automaticky aktualizovat jména variant pomocí této",
     "auto-update-product-variant-name": "Automaticky aktualizovat jména variant",
+    "calculated-price": "Vypočtená cena",
+    "calculated-price-tooltip": "Je zde konfigurován vlastní výpočet ceny, který upravuje cenu nastavenou výše:",
     "cannot-create-variants-without-options": "",
     "channel-price-preview": "Náhled ceny v kanálu",
     "collection": "",

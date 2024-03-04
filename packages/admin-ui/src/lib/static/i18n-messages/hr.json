@@ -72,6 +72,8 @@
     "assign-variants-to-channel": "Dodijeli varijante proizvoda kanalu",
     "auto-update-option-variant-name": "Automatski ažuriraj nazive varijanti proizvoda koristeći ovu opciju",
     "auto-update-product-variant-name": "Automatski ažuriraj nazive varijanti proizvoda",
+    "calculated-price": "Izračunata cijena",
+    "calculated-price-tooltip": "Postoji prilagođeni izračun cijene koji mijenja gore postavljenu cijenu:",
     "cannot-create-variants-without-options": "Nije moguće stvoriti varijante proizvoda dok nije definirana grupa opcija s najmanje dvije opcije proizvoda",
     "channel-price-preview": "Pregled cijene za kanal",
     "collection": "Kolekcija",

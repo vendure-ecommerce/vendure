@@ -72,6 +72,8 @@
     "assign-variants-to-channel": "הקצה וריאנטים של מוצר לערוץ",
     "auto-update-option-variant-name": "עדכן אוטומטית את שמות וריאנטים של המוצר באמצעות האפשרות הזאת",
     "auto-update-product-variant-name": "עדכן אוטומטית את שמות וריאנטים של המוצר",
+    "calculated-price": "מחיר מחושב",
+    "calculated-price-tooltip": "יש חישוב מחיר מותאם אישית מוגדר שמשנה את המחיר שהוגדר למעלה:",
     "cannot-create-variants-without-options": "לא ניתן ליצור וריאנטים של מוצר ללא הגדרת קבוצת אפשרויות עם לפחות שתי אפשרויות מוצר",
     "channel-price-preview": "תצוגה מקדימה של מחיר הערוץ",
     "collection": "אוסף",

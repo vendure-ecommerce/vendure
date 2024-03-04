@@ -66,6 +66,7 @@ import { ProductVariantsEditorComponent } from './components/product-variants-ed
 import { ProductVariantsTableComponent } from './components/product-variants-table/product-variants-table.component';
 import { UpdateProductOptionDialogComponent } from './components/update-product-option-dialog/update-product-option-dialog.component';
 import { VariantPriceDetailComponent } from './components/variant-price-detail/variant-price-detail.component';
+import { VariantPriceStrategyDetailComponent } from './components/variant-price-strategy-detail/variant-price-strategy-detail.component';
 
 const CATALOG_COMPONENTS = [
     ProductListComponent,
@@ -76,6 +77,7 @@ const CATALOG_COMPONENTS = [
     ApplyFacetDialogComponent,
     AssetListComponent,
     VariantPriceDetailComponent,
+    VariantPriceStrategyDetailComponent,
     CollectionListComponent,
     CollectionDetailComponent,
     CollectionTreeComponent,

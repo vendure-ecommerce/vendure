@@ -72,6 +72,8 @@
     "assign-variants-to-channel": "",
     "auto-update-option-variant-name": "",
     "auto-update-product-variant-name": "",
+    "calculated-price": "Obliczona cena",
+    "calculated-price-tooltip": "Istnieje skonfigurowane niestandardowe obliczenie ceny, które modyfikuje powyższą cenę:",
     "cannot-create-variants-without-options": "",
     "channel-price-preview": "Podgląd cen kanału",
     "collection": "",

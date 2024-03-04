@@ -72,6 +72,8 @@
     "assign-variants-to-channel": "Додати варіанти товару в канал",
     "auto-update-option-variant-name": "Автоматично оновлювати назви варіантів товару, використовуючи цю опцію",
     "auto-update-product-variant-name": "Автоматично оновлювати назви варіантів товару",
+    "calculated-price": "Розрахована ціна",
+    "calculated-price-tooltip": "Є настроєний спеціальний розрахунок ціни, який змінює встановлену вище ціну:",
     "cannot-create-variants-without-options": "Не можна створити варіант без опцій",
     "channel-price-preview": "Попередній перегляд цін каналу",
     "collection": "Колекція",

@@ -195,6 +195,11 @@
                         [taxCategoryId]="detailForm.get('taxCategoryId')!.value"
                     />
                 </div>
+                <vdr-variant-price-strategy-detail
+                    [channelPriceIncludesTax]="channelPriceIncludesTax$ | async"
+                    [channelDefaultCurrencyCode]="channelDefaultCurrencyCode"
+                    [variant]="variant"
+                />
                 <ng-container *ngIf="unusedCurrencyCodes$ | async as unusedCurrencyCodes">
                     <div *ngIf="unusedCurrencyCodes.length">
                         <vdr-dropdown>
