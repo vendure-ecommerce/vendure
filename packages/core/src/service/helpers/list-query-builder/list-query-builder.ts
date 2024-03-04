@@ -287,7 +287,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         // join the tables required by calculated columns
         this.joinCalculatedColumnRelations(qb, entity, options);
 
-        const { customPropertyMap, entityAlias } = extendedOptions;
+        const { customPropertyMap } = extendedOptions;
         if (customPropertyMap) {
             this.normalizeCustomPropertyMap(customPropertyMap, options, qb);
         }
