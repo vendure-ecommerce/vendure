@@ -155,7 +155,7 @@ function registerCustomFieldsForEntity(
 
             const relationFieldsCount = customFields.filter(f => f.type === 'relation').length;
             const nonLocaleStringFieldsCount = customFields.filter(
-                f => f.type !== 'localeString' && f.type !== 'relation',
+                f => f.type !== 'localeString' && f.type !== 'localeText' && f.type !== 'relation',
             ).length;
 
             if (0 < relationFieldsCount && nonLocaleStringFieldsCount === 0) {
