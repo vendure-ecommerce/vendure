@@ -25,4 +25,5 @@ export const defaultAvailableLanguages = [
     LanguageCode.fa,
     LanguageCode.ne,
     LanguageCode.hr,
+    LanguageCode.sv,
 ];
