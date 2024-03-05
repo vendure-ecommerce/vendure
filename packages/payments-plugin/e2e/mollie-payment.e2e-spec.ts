@@ -80,9 +80,6 @@ const mockData = {
         metadata: {
             languageCode: 'nl',
         },
-        metadata: {
-            languageCode: 'nl',
-        },
         mode: 'test',
         method: 'test-method',
         profileId: '123',

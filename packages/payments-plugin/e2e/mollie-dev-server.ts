@@ -14,8 +14,8 @@ import localtunnel from 'localtunnel';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { MolliePlugin } from '../src/mollie';
 import { molliePaymentHandler } from '../package/mollie/mollie.handler';
+import { MolliePlugin } from '../src/mollie';
 
 import { CREATE_PAYMENT_METHOD } from './graphql/admin-queries';
 import {

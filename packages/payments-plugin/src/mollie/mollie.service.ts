@@ -30,6 +30,7 @@ import { totalCoveredByPayments } from '@vendure/core/dist/service/helpers/utils
 
 import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
 import { OrderWithMollieReference } from './custom-fields';
+import { createExtendedMollieClient, ExtendedMollieClient, ManageOrderLineInput } from './extended-mollie-client';
 import {
     ErrorCode,
     MolliePaymentIntentError,
@@ -40,14 +41,13 @@ import {
 import { molliePaymentHandler } from './mollie.handler';
 import {
     amountToCents,
+    areOrderLinesEqual,
     getLocale,
-    isAmountEqual,
     toAmount,
     toMollieAddress,
     toMollieOrderLines,
 } from './mollie.helpers';
 import { MolliePluginOptions } from './mollie.plugin';
-import { createExtendedMollieClient, ExtendedMollieClient, ManageOrderLineInput } from './extended-mollie-client';
 
 interface OrderStatusInput {
     paymentMethodId: string;
