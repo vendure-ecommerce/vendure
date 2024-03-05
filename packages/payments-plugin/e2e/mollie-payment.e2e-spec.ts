@@ -321,7 +321,7 @@ describe('Mollie payments', () => {
             expect(mollieRequest.amount.value).toEqual(totalLineAmount.toFixed(2));
         });
 
-        it('Should use fallback redirect when no redirect is given', async () => {
+        it('Should use fallback redirect appended with order code, when no redirect is given', async () => {
             let mollieRequest: any | undefined;
             nock('https://api.mollie.com/')
                 .post('/v2/orders', body => {
