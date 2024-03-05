@@ -1,4 +1,3 @@
-
 import type { ListParameters } from '@mollie/api-client/dist/types/src/binders/methods/parameters';
 import {
     Injector,
@@ -111,6 +110,8 @@ export interface MolliePluginOptions {
  * 2. Run a database migration to add the `mollieOrderId` custom field to the order entity.
  * 3. Create a new PaymentMethod in the Admin UI, and select "Mollie payments" as the handler.
  * 4. Set your Mollie apiKey in the `API Key` field.
+ * 5. Set the `Fallback redirectUrl` to the url that the customer should be redirected to after completing the payment.
+ * You can override this url by passing the `redirectUrl` as an argument to the `createMolliePaymentIntent` mutation.
  *
  * ## Storefront usage
  *
@@ -226,5 +227,5 @@ export class MolliePlugin {
         id: 'mollie-extension',
         extensionPath: path.join(__dirname, './ui'),
         providers: ['providers.ts'],
-    }
+    };
 }
