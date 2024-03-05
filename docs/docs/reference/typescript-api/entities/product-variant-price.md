@@ -11,13 +11,13 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ProductVariantPrice
 
-<GenerationInfo sourceFile="packages/core/src/entity/product-variant/product-variant-price.entity.ts" sourceLine="18" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/product-variant/product-variant-price.entity.ts" sourceLine="20" packageName="@vendure/core" />
 
 A ProductVariantPrice is a Channel-specific price for a ProductVariant. For every Channel to
 which a ProductVariant is assigned, there will be a corresponding ProductVariantPrice entity.
 
 ```ts title="Signature"
-class ProductVariantPrice extends VendureEntity {
+class ProductVariantPrice extends VendureEntity implements HasCustomFields {
     constructor(input?: DeepPartial<ProductVariantPrice>)
     @Money() price: number;
     @EntityId({ nullable: true }) channelId: ID;
@@ -26,9 +26,14 @@ class ProductVariantPrice extends VendureEntity {
     @Index()
     @ManyToOne(type => ProductVariant, variant => variant.productVariantPrices, { onDelete: 'CASCADE' })
     variant: ProductVariant;
+    @Column(type => CustomProductVariantPriceFields)
+    customFields: CustomProductVariantPriceFields;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+
+
+* Implements: <code>HasCustomFields</code>
 
 
 
@@ -57,6 +62,11 @@ class ProductVariantPrice extends VendureEntity {
 ### variant
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>`}   />
+
+
+### customFields
+
+<MemberInfo kind="property" type={`CustomProductVariantPriceFields`}   />
 
 
 

@@ -24,11 +24,12 @@ import {
     LanguageCode,
 } from './graphql/generated-admin-types';
 import { AddItemToOrderMutation, AddItemToOrderMutationVariables } from './graphql/generated-shop-types';
-import { ADD_ITEM_TO_ORDER } from './graphql/shop-queries';
+import { ADD_ITEM_TO_ORDER, ADJUST_ORDER_LINE } from './graphql/shop-queries';
 import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
 
 /**
  * This should only be used to locally test the Mollie payment plugin
+ * Make sure you have `MOLLIE_APIKEY=test_xxxx` in your .env file
  * Make sure you have `MOLLIE_APIKEY=test_xxxx` in your .env file
  */
 /* eslint-disable @typescript-eslint/no-floating-promises */
@@ -103,19 +104,19 @@ async function runMollieDevServer() {
             },
         },
     );
-    // Prepare order for payment
+    // Prepare order with 2 items
     await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
+    // Add another item to the order
+    await shopClient.query<AddItemToOrderMutation, AddItemToOrderMutationVariables>(ADD_ITEM_TO_ORDER, {
+        productVariantId: 'T_4',
+        quantity: 1,
+    });
     await shopClient.query<AddItemToOrderMutation, AddItemToOrderMutationVariables>(ADD_ITEM_TO_ORDER, {
         productVariantId: 'T_5',
         quantity: 1,
     });
-    const ctx = new RequestContext({
-        apiType: 'admin',
-        isAuthorized: true,
-        authorizedAsOwnerOnly: false,
-        channel: await server.app.get(ChannelService).getDefaultChannel(),
-    });
     await setShipping(shopClient);
+    // Create payment intent
     // Create payment intent
     const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
         input: {
@@ -130,11 +131,18 @@ async function runMollieDevServer() {
     // eslint-disable-next-line no-console
     console.log('\x1b[41m', `Mollie payment link: ${createMolliePaymentIntent.url as string}`, '\x1b[0m');
 
-    // Create another intent after 10s, should cancel the previous Mollie order
-    await new Promise(resolve => setTimeout(resolve, 10000));
+    // Remove first orderLine
+    await shopClient.query(ADJUST_ORDER_LINE, {
+        orderLineId: 'T_1',
+        quantity: 0,
+    });
+    await setShipping(shopClient);
+
+    // Create another intent after Xs, should update the mollie order
+    await new Promise(resolve => setTimeout(resolve, 5000));
     const { createMolliePaymentIntent: secondIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
         input: {
-            redirectUrl: `${tunnel.url}/admin/orders?filter=open&page=1`,
+            redirectUrl: `${tunnel.url}/admin/orders?filter=open&page=1&dynamicRedirectUrl=true`,
             paymentMethodCode: 'mollie',
         },
     });

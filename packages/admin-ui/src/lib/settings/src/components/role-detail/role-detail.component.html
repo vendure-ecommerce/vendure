@@ -2,7 +2,7 @@
     <vdr-action-bar>
         <vdr-ab-left></vdr-ab-left>
         <vdr-ab-right>
-            <vdr-action-bar-items locationId="role-detail"></vdr-action-bar-items>
+            <vdr-action-bar-items locationId="role-detail" />
             <button
                 class="btn btn-primary"
                 *ngIf="isNew$ | async; else updateButton"
@@ -21,6 +21,7 @@
                     {{ 'common.update' | translate }}
                 </button>
             </ng-template>
+            <vdr-action-bar-dropdown-menu locationId="role-detail" />
         </vdr-ab-right>
     </vdr-action-bar>
 </vdr-page-block>

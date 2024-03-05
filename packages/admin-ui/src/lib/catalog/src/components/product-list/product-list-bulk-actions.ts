@@ -4,6 +4,7 @@ import {
     createBulkRemoveFromChannelAction,
     DataService,
     DeletionResult,
+    DuplicateEntityDialogComponent,
     GetProductListQuery,
     isMultiChannel,
     ItemOf,
@@ -80,7 +81,7 @@ export const assignProductsToChannelBulkAction: BulkAction<
     ProductListComponent
 > = {
     location: 'product-list',
-    label: _('catalog.assign-to-channel'),
+    label: _('common.assign-to-channel'),
     icon: 'layers',
     requiresPermission: userPermissions =>
         userPermissions.includes(Permission.UpdateCatalog) ||
@@ -133,7 +134,6 @@ export const assignFacetValuesToProductsBulkAction: BulkAction<
         userPermissions.includes(Permission.UpdateProduct),
     onClick: ({ injector, selection, hostComponent, clearSelection }) => {
         const modalService = injector.get(ModalService);
-        const dataService = injector.get(DataService);
         const notificationService = injector.get(NotificationService);
         const mode = 'product';
         const ids = unique(selection.map(p => p.id));
@@ -152,6 +152,33 @@ export const assignFacetValuesToProductsBulkAction: BulkAction<
                         entity: mode === 'product' ? 'Products' : 'ProductVariants',
                     });
                     clearSelection();
+                }
+            });
+    },
+};
+
+export const duplicateProductsBulkAction: BulkAction<
+    ItemOf<GetProductListQuery, 'products'>,
+    ProductListComponent
+> = {
+    location: 'product-list',
+    label: _('common.duplicate'),
+    icon: 'copy',
+    onClick: ({ injector, selection, hostComponent, clearSelection }) => {
+        const modalService = injector.get(ModalService);
+        modalService
+            .fromComponent(DuplicateEntityDialogComponent<ItemOf<GetProductListQuery, 'products'>>, {
+                locals: {
+                    entities: selection,
+                    entityName: 'Product',
+                    title: _('catalog.duplicate-products'),
+                    getEntityName: entity => entity.name,
+                },
+            })
+            .subscribe(result => {
+                if (result) {
+                    clearSelection();
+                    hostComponent.refresh();
                 }
             });
     },

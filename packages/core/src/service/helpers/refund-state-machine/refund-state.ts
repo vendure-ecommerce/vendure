@@ -26,7 +26,7 @@ export const refundStateTransitions: Transitions<RefundState> = {
 
 /**
  * @description
- * The data which is passed to the state transition handlers of the RefundStateMachine.
+ * The data which is passed to the state transition handler of the RefundStateMachine.
  *
  * @docsCategory payment
  */

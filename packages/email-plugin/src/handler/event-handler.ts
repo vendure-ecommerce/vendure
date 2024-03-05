@@ -2,9 +2,9 @@ import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Type } from '@vendure/common/lib/shared-types';
 import { Injector, Logger } from '@vendure/core';
 
-import { serializeAttachments } from './attachment-utils';
-import { loggerCtx } from './constants';
-import { EmailEventListener } from './event-listener';
+import { serializeAttachments } from '../attachment-utils';
+import { loggerCtx } from '../constants';
+import { EmailEventListener } from '../event-listener';
 import {
     EmailAttachment,
     EmailTemplateConfig,
@@ -15,7 +15,7 @@ import {
     SetAttachmentsFn,
     SetOptionalAddressFieldsFn,
     SetTemplateVarsFn,
-} from './types';
+} from '../types';
 
 /**
  * @description
@@ -118,7 +118,7 @@ import {
  *   // Add an instance of the plugin to the plugins array
  *   plugins: [
  *     EmailPlugin.init({
- *       handlers: [...defaultEmailHandlers, quoteRequestedHandler],
+ *       handler: [...defaultEmailHandlers, quoteRequestedHandler],
  *       templatePath: path.join(__dirname, 'vendure/email/templates'),
  *       // ... etc
  *     }),

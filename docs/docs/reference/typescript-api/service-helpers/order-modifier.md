@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrderModifier
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/order-modifier/order-modifier.ts" sourceLine="80" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/order-modifier/order-modifier.ts" sourceLine="81" packageName="@vendure/core" />
 
 This helper is responsible for modifying the contents of an Order.
 
@@ -24,13 +24,14 @@ of these Order-related methods into a more clearly-delineated set of classes.
 
 ```ts title="Signature"
 class OrderModifier {
-    constructor(connection: TransactionalConnection, configService: ConfigService, orderCalculator: OrderCalculator, paymentService: PaymentService, countryService: CountryService, stockMovementService: StockMovementService, productVariantService: ProductVariantService, customFieldRelationService: CustomFieldRelationService, promotionService: PromotionService, eventBus: EventBus, entityHydrator: EntityHydrator, historyService: HistoryService, translator: TranslatorService)
+    constructor(connection: TransactionalConnection, configService: ConfigService, orderCalculator: OrderCalculator, paymentService: PaymentService, countryService: CountryService, stockMovementService: StockMovementService, productVariantService: ProductVariantService, customFieldRelationService: CustomFieldRelationService, promotionService: PromotionService, eventBus: EventBus, shippingCalculator: ShippingCalculator, historyService: HistoryService, translator: TranslatorService)
     constrainQuantityToSaleable(ctx: RequestContext, variant: ProductVariant, quantity: number, existingQuantity:  = 0) => ;
     getExistingOrderLine(ctx: RequestContext, order: Order, productVariantId: ID, customFields?: { [key: string]: any }) => Promise<OrderLine | undefined>;
     getOrCreateOrderLine(ctx: RequestContext, order: Order, productVariantId: ID, customFields?: { [key: string]: any }) => ;
     updateOrderLineQuantity(ctx: RequestContext, orderLine: OrderLine, quantity: number, order: Order) => Promise<OrderLine>;
     cancelOrderByOrderLines(ctx: RequestContext, input: CancelOrderInput, lineInputs: OrderLineInput[]) => ;
     modifyOrder(ctx: RequestContext, input: ModifyOrderInput, order: Order) => Promise<JustErrorResults<ModifyOrderResult> | { order: Order; modification: OrderModification }>;
+    setShippingMethods(ctx: RequestContext, order: Order, shippingMethodIds: ID[]) => ;
 }
 ```
 
@@ -38,7 +39,7 @@ class OrderModifier {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, orderCalculator: <a href='/reference/typescript-api/service-helpers/order-calculator#ordercalculator'>OrderCalculator</a>, paymentService: <a href='/reference/typescript-api/services/payment-service#paymentservice'>PaymentService</a>, countryService: <a href='/reference/typescript-api/services/country-service#countryservice'>CountryService</a>, stockMovementService: <a href='/reference/typescript-api/services/stock-movement-service#stockmovementservice'>StockMovementService</a>, productVariantService: <a href='/reference/typescript-api/services/product-variant-service#productvariantservice'>ProductVariantService</a>, customFieldRelationService: CustomFieldRelationService, promotionService: <a href='/reference/typescript-api/services/promotion-service#promotionservice'>PromotionService</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, entityHydrator: <a href='/reference/typescript-api/data-access/entity-hydrator#entityhydrator'>EntityHydrator</a>, historyService: <a href='/reference/typescript-api/services/history-service#historyservice'>HistoryService</a>, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>) => OrderModifier`}   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, orderCalculator: <a href='/reference/typescript-api/service-helpers/order-calculator#ordercalculator'>OrderCalculator</a>, paymentService: <a href='/reference/typescript-api/services/payment-service#paymentservice'>PaymentService</a>, countryService: <a href='/reference/typescript-api/services/country-service#countryservice'>CountryService</a>, stockMovementService: <a href='/reference/typescript-api/services/stock-movement-service#stockmovementservice'>StockMovementService</a>, productVariantService: <a href='/reference/typescript-api/services/product-variant-service#productvariantservice'>ProductVariantService</a>, customFieldRelationService: CustomFieldRelationService, promotionService: <a href='/reference/typescript-api/services/promotion-service#promotionservice'>PromotionService</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, shippingCalculator: <a href='/reference/typescript-api/shipping/shipping-calculator#shippingcalculator'>ShippingCalculator</a>, historyService: <a href='/reference/typescript-api/services/history-service#historyservice'>HistoryService</a>, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>) => OrderModifier`}   />
 
 
 ### constrainQuantityToSaleable
@@ -74,6 +75,11 @@ Returns the actual quantity that the OrderLine was updated to (which may be less
 ### modifyOrder
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: ModifyOrderInput, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => Promise&#60;JustErrorResults&#60;ModifyOrderResult&#62; | { order: <a href='/reference/typescript-api/entities/order#order'>Order</a>; modification: <a href='/reference/typescript-api/entities/order-modification#ordermodification'>OrderModification</a> }&#62;`}   />
+
+
+### setShippingMethods
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, shippingMethodIds: <a href='/reference/typescript-api/common/id#id'>ID</a>[]) => `}   />
 
 
 

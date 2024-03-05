@@ -50,7 +50,7 @@ export class AppModule implements NestModule, OnApplicationShutdown {
     }
 
     /**
-     * Groups middleware handlers together in an object with the route as the key.
+     * Groups middleware handler together in an object with the route as the key.
      */
     private groupMiddlewareByRoute(middlewareArray: Middleware[]): { [route: string]: MiddlewareHandler[] } {
         const result = {} as { [route: string]: MiddlewareHandler[] };

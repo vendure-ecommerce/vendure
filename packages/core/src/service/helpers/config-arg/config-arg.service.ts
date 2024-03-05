@@ -5,6 +5,7 @@ import { ConfigurableOperationDef } from '../../../common/configurable-operation
 import { UserInputError } from '../../../common/error/errors';
 import { CollectionFilter } from '../../../config/catalog/collection-filter';
 import { ConfigService } from '../../../config/config.service';
+import { EntityDuplicator } from '../../../config/entity/entity-duplicator';
 import { FulfillmentHandler } from '../../../config/fulfillment/fulfillment-handler';
 import { PaymentMethodEligibilityChecker } from '../../../config/payment/payment-method-eligibility-checker';
 import { PaymentMethodHandler } from '../../../config/payment/payment-method-handler';
@@ -15,6 +16,7 @@ import { ShippingEligibilityChecker } from '../../../config/shipping-method/ship
 
 export type ConfigDefTypeMap = {
     CollectionFilter: CollectionFilter;
+    EntityDuplicator: EntityDuplicator;
     FulfillmentHandler: FulfillmentHandler;
     PaymentMethodEligibilityChecker: PaymentMethodEligibilityChecker;
     PaymentMethodHandler: PaymentMethodHandler;
@@ -36,6 +38,7 @@ export class ConfigArgService {
     constructor(private configService: ConfigService) {
         this.definitionsByType = {
             CollectionFilter: this.configService.catalogOptions.collectionFilters,
+            EntityDuplicator: this.configService.entityOptions.entityDuplicators,
             FulfillmentHandler: this.configService.shippingOptions.fulfillmentHandlers,
             PaymentMethodEligibilityChecker:
                 this.configService.paymentOptions.paymentMethodEligibilityCheckers || [],
@@ -87,17 +90,6 @@ export class ConfigArgService {
                 output.push(match);
             }
         }
-        return output;
-    }
-
-    private parseOperationArgs(
-        input: ConfigurableOperationInput,
-        checkerOrCalculator: ShippingEligibilityChecker | ShippingCalculator,
-    ): ConfigurableOperation {
-        const output: ConfigurableOperation = {
-            code: input.code,
-            args: input.arguments,
-        };
         return output;
     }
 

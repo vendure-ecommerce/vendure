@@ -10,6 +10,7 @@ import { QueryResult } from '../data/query-result';
 import { ServerConfigService } from '../data/server-config';
 import { DataTableFilterCollection } from '../providers/data-table/data-table-filter-collection';
 import { DataTableSortCollection } from '../providers/data-table/data-table-sort-collection';
+import { PermissionsService } from '../providers/permissions/permissions.service';
 import { CustomFieldConfig, CustomFields, LanguageCode } from './generated-types';
 import { SelectionManager } from './utilities/selection-manager';
 
@@ -178,7 +179,6 @@ export class BaseListComponent<ResultType, ItemType, VariableType extends Record
         valueOrOptions?: any,
         maybeOptions?: { replaceUrl?: boolean; queryParamsHandling?: QueryParamsHandling },
     ) {
-        const paramsObject = typeof keyOrHash === 'string' ? { [keyOrHash]: valueOrOptions } : keyOrHash;
         const options = (typeof keyOrHash === 'string' ? maybeOptions : valueOrOptions) ?? {};
         this.router.navigate(['./'], {
             queryParams: typeof keyOrHash === 'string' ? { [keyOrHash]: valueOrOptions } : keyOrHash,
@@ -211,6 +211,7 @@ export class TypedBaseListComponent<
     protected dataService = inject(DataService);
     protected router = inject(Router);
     protected serverConfigService = inject(ServerConfigService);
+    protected permissionsService = inject(PermissionsService);
     private refreshStreams: Array<Observable<any>> = [];
     private collections: Array<DataTableFilterCollection | DataTableSortCollection<any>> = [];
     constructor() {
@@ -263,6 +264,11 @@ export class TypedBaseListComponent<
     }
 
     getCustomFieldConfig(key: Exclude<keyof CustomFields, '__typename'> | string): CustomFieldConfig[] {
-        return this.serverConfigService.getCustomFieldsFor(key);
+        return this.serverConfigService.getCustomFieldsFor(key).filter(f => {
+            if (f.requiresPermission?.length) {
+                return this.permissionsService.userHasPermissions(f.requiresPermission);
+            }
+            return true;
+        });
     }
 }

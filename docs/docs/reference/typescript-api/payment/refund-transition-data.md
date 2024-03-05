@@ -13,7 +13,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/service/helpers/refund-state-machine/refund-state.ts" sourceLine="33" packageName="@vendure/core" />
 
-The data which is passed to the state transition handlers of the RefundStateMachine.
+The data which is passed to the state transition handler of the RefundStateMachine.
 
 ```ts title="Signature"
 interface RefundTransitionData {

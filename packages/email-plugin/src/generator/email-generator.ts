@@ -1,6 +1,6 @@
 import { InjectableStrategy, VendureEvent } from '@vendure/core';
 
-import { EmailDetails, EmailPluginOptions } from './types';
+import { EmailDetails, EmailPluginOptions } from '../types';
 
 /**
  * @description

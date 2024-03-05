@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CustomFields
 
-<GenerationInfo sourceFile="packages/core/src/config/custom-field/custom-field-types.ts" sourceLine="147" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/custom-field/custom-field-types.ts" sourceLine="161" packageName="@vendure/core" />
 
 Most entities can have additional fields added to them by defining an array of <a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>
 objects on against the corresponding key.
@@ -35,7 +35,7 @@ bootstrap({
 ```
 
 ```ts title="Signature"
-interface CustomFields {
+type CustomFields = {
     Address?: CustomFieldConfig[];
     Administrator?: CustomFieldConfig[];
     Asset?: CustomFieldConfig[];
@@ -54,6 +54,7 @@ interface CustomFields {
     ProductOption?: CustomFieldConfig[];
     ProductOptionGroup?: CustomFieldConfig[];
     ProductVariant?: CustomFieldConfig[];
+    ProductVariantPrice?: CustomFieldConfig[];
     Promotion?: CustomFieldConfig[];
     Region?: CustomFieldConfig[];
     Seller?: CustomFieldConfig[];
@@ -63,146 +64,5 @@ interface CustomFields {
     TaxRate?: CustomFieldConfig[];
     User?: CustomFieldConfig[];
     Zone?: CustomFieldConfig[];
-}
+} & { [entity: string]: CustomFieldConfig[] }
 ```
-
-<div className="members-wrapper">
-
-### Address
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### Administrator
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### Asset
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### Channel
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### Collection
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### Customer
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### CustomerGroup
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### Facet
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### FacetValue
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### Fulfillment
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### GlobalSettings
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### Order
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### OrderLine
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### PaymentMethod
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### Product
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### ProductOption
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### ProductOptionGroup
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### ProductVariant
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### Promotion
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### Region
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### Seller
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### ShippingMethod
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### StockLocation
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### TaxCategory
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### TaxRate
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### User
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-### Zone
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
-
-
-
-
-</div>

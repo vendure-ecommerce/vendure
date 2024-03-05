@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## BaseDetailComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/base-detail.component.ts" sourceLine="56" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/base-detail.component.ts" sourceLine="57" packageName="@vendure/admin-ui" />
 
 A base class for entity detail views. It should be used in conjunction with the
 <a href='/reference/admin-ui-api/list-detail-views/base-entity-resolver#baseentityresolver'>BaseEntityResolver</a>.
@@ -59,7 +59,7 @@ class BaseDetailComponent<Entity extends { id: string; updatedAt?: string }> imp
     id: string;
     abstract detailForm: UntypedFormGroup;
     protected destroy$ = new Subject<void>();
-    constructor(route: ActivatedRoute, router: Router, serverConfigService: ServerConfigService, dataService: DataService)
+    constructor(route: ActivatedRoute, router: Router, serverConfigService: ServerConfigService, dataService: DataService, permissionsService: PermissionsService)
     init() => ;
     setUpStreams() => ;
     destroy() => ;
@@ -119,7 +119,7 @@ class BaseDetailComponent<Entity extends { id: string; updatedAt?: string }> imp
 
 ### constructor
 
-<MemberInfo kind="method" type={`(route: ActivatedRoute, router: Router, serverConfigService: ServerConfigService, dataService: <a href='/reference/admin-ui-api/services/data-service#dataservice'>DataService</a>) => BaseDetailComponent`}   />
+<MemberInfo kind="method" type={`(route: ActivatedRoute, router: Router, serverConfigService: ServerConfigService, dataService: <a href='/reference/admin-ui-api/services/data-service#dataservice'>DataService</a>, permissionsService: PermissionsService) => BaseDetailComponent`}   />
 
 
 ### init

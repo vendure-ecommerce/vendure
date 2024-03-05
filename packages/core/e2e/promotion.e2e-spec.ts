@@ -11,7 +11,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { PROMOTION_FRAGMENT } from './graphql/fragments';
 import * as Codegen from './graphql/generated-e2e-admin-types';
@@ -21,6 +21,7 @@ import {
     CREATE_CHANNEL,
     CREATE_PROMOTION,
     DELETE_PROMOTION,
+    GET_PROMOTION,
     REMOVE_PROMOTIONS_FROM_CHANNEL,
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -438,15 +439,6 @@ export const GET_PROMOTION_LIST = gql`
                 ...Promotion
             }
             totalItems
-        }
-    }
-    ${PROMOTION_FRAGMENT}
-`;
-
-export const GET_PROMOTION = gql`
-    query GetPromotion($id: ID!) {
-        promotion(id: $id) {
-            ...Promotion
         }
     }
     ${PROMOTION_FRAGMENT}

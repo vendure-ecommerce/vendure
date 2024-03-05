@@ -4,9 +4,10 @@ export interface GeneratePluginOptions {
     withApiExtensions: boolean;
     withAdminUi: boolean;
     customEntityName: string;
+    pluginDir: string;
 }
 
-export type TemplateContext = GeneratePluginOptions & {
+export type NewPluginTemplateContext = GeneratePluginOptions & {
     pluginName: string;
     pluginInitOptionsName: string;
     service: {

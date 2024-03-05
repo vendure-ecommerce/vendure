@@ -34,7 +34,7 @@ export function toMollieOrderLines(order: Order, alreadyPaid: number): CreatePar
         quantity: line.quantity,
         unitPrice: toAmount(line.proratedLinePriceWithTax / line.quantity, order.currencyCode), // totalAmount has to match unitPrice * quantity
         totalAmount: toAmount(line.proratedLinePriceWithTax, order.currencyCode),
-        vatRate: String(line.taxRate),
+        vatRate: line.taxRate.toFixed(2),
         vatAmount: toAmount(
             calculateLineTaxAmount(line.taxRate, line.proratedLinePriceWithTax),
             order.currencyCode,
@@ -84,17 +84,6 @@ export function toAmount(value: number, orderCurrency: string): Amount {
         value: (value / 100).toFixed(2),
         currency: orderCurrency,
     };
-}
-
-/**
- * Checks if the Vendure order amount due is the same as the given Mollie amount.
- * E.g. does '1000 EUR' equal { value: '10.00', currency: 'EUR'}?
- */
-export function isAmountEqual(orderCurrency: CurrencyCode, amountDue: number, mollieAmount: Amount): boolean {
-    if (orderCurrency !== mollieAmount.currency) {
-        return false;
-    }
-    return amountToCents(mollieAmount) === amountDue;
 }
 
 /**
@@ -159,4 +148,16 @@ export function getLocale(countryCode: string, channelLanguage: string): string 
     }
     // If no order locale and no channel locale, return a default, otherwise order creation will fail
     return allowedLocales[0];
+}
+
+export function areOrderLinesEqual(line1: CreateParameters['lines'][0], line2: CreateParameters['lines'][0]): boolean {
+    return (
+        line1.name === line2.name &&
+        line1.quantity === line2.quantity &&
+        line1.unitPrice.value === line2.unitPrice.value &&
+        line1.unitPrice.currency === line2.unitPrice.currency &&
+        line1.totalAmount.value === line2.totalAmount.value &&
+        line1.vatRate === line2.vatRate &&
+        line1.vatAmount.value === line2.vatAmount.value
+    );
 }

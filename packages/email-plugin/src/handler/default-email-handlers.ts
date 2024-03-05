@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
     AccountRegistrationEvent,
-    AssetStorageStrategy,
     ConfigService,
     EntityHydrator,
     IdentifierChangeRequestEvent,
@@ -15,8 +14,9 @@ import {
 } from '@vendure/core';
 import { Request } from 'express';
 
+import { EmailEventListener } from '../event-listener';
+
 import { EmailEventHandler } from './event-handler';
-import { EmailEventListener } from './event-listener';
 import {
     mockAccountRegistrationEvent,
     mockEmailAddressChangeEvent,

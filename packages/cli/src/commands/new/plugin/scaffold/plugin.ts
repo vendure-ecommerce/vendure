@@ -1,8 +1,8 @@
 import { constantCase, pascalCase } from 'change-case';
 
-import { TemplateContext } from '../types';
+import { NewPluginTemplateContext } from '../types';
 
-export function renderPlugin(context: TemplateContext) {
+export function renderPlugin(context: NewPluginTemplateContext) {
     const { pluginName, pluginInitOptionsName } = context;
     const optionalImports: string[] = [];
     const optionalMetadata: string[] = [];

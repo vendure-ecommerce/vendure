@@ -20,9 +20,11 @@ import { PasswordValidationStrategy } from './auth/password-validation-strategy'
 import { CollectionFilter } from './catalog/collection-filter';
 import { ProductVariantPriceCalculationStrategy } from './catalog/product-variant-price-calculation-strategy';
 import { ProductVariantPriceSelectionStrategy } from './catalog/product-variant-price-selection-strategy';
+import { ProductVariantPriceUpdateStrategy } from './catalog/product-variant-price-update-strategy';
 import { StockDisplayStrategy } from './catalog/stock-display-strategy';
 import { StockLocationStrategy } from './catalog/stock-location-strategy';
 import { CustomFields } from './custom-field/custom-field-types';
+import { EntityDuplicator } from './entity/entity-duplicator';
 import { EntityIdStrategy } from './entity/entity-id-strategy';
 import { MoneyStrategy } from './entity/money-strategy';
 import { EntityMetadataModifier } from './entity-metadata/entity-metadata-modifier';
@@ -696,6 +698,16 @@ export interface CatalogOptions {
     productVariantPriceCalculationStrategy?: ProductVariantPriceCalculationStrategy;
     /**
      * @description
+     * Defines the strategy which determines what happens to a ProductVariant's prices
+     * when one of the prices gets updated. For instance, this can be used to synchronize
+     * prices across multiple Channels.
+     *
+     * @default DefaultProductVariantPriceUpdateStrategy
+     * @since 2.2.0
+     */
+    productVariantPriceUpdateStrategy?: ProductVariantPriceUpdateStrategy;
+    /**
+     * @description
      * Defines how the `ProductVariant.stockLevel` value is obtained. It is usually not desirable
      * to directly expose stock levels over a public API, as this could be considered a leak of
      * sensitive information. However, the storefront will usually want to display _some_ indication
@@ -949,6 +961,15 @@ export interface EntityOptions {
      * @default AutoIncrementIdStrategy
      */
     entityIdStrategy?: EntityIdStrategy<any>;
+    /**
+     * @description
+     * An array of {@link EntityDuplicator} instances which are used to duplicate entities
+     * when using the `duplicateEntity` mutation.
+     *
+     * @since 2.2.0
+     * @default defaultEntityDuplicators
+     */
+    entityDuplicators?: Array<EntityDuplicator<any>>;
     /**
      * @description
      * Defines the strategy used to store and round monetary values.

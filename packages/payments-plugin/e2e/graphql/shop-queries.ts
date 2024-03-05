@@ -185,6 +185,25 @@ export const ADD_ITEM_TO_ORDER = gql`
     ${TEST_ORDER_FRAGMENT}
 `;
 
+export const ADJUST_ORDER_LINE = gql`
+    mutation AdjustOrderLine($orderLineId: ID!, $quantity: Int!) {
+        adjustOrderLine(orderLineId: $orderLineId, quantity: $quantity) {
+            ...TestOrderFragment
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+            ... on InsufficientStockError {
+                quantityAvailable
+                order {
+                    ...TestOrderFragment
+                }
+            }
+        }
+    }
+    ${TEST_ORDER_FRAGMENT}
+`;
+
 export const GET_ORDER_BY_CODE = gql`
     query GetOrderByCode($code: String!) {
         orderByCode(code: $code) {

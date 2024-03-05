@@ -1,6 +1,8 @@
 import { Args, Info, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import {
     CustomFields as GraphQLCustomFields,
+    CustomFieldConfig as GraphQLCustomFieldConfig,
+    RelationCustomFieldConfig as GraphQLRelationCustomFieldConfig,
     EntityCustomFields,
     MutationUpdateGlobalSettingsArgs,
     Permission,
@@ -23,7 +25,11 @@ import { getAllPermissionsMetadata } from '../../../common/constants';
 import { ErrorResultUnion } from '../../../common/error/error-result';
 import { ChannelDefaultLanguageError } from '../../../common/error/generated-graphql-admin-errors';
 import { ConfigService } from '../../../config/config.service';
-import { CustomFields } from '../../../config/custom-field/custom-field-types';
+import {
+    CustomFieldConfig,
+    CustomFields,
+    RelationCustomFieldConfig,
+} from '../../../config/custom-field/custom-field-types';
 import { GlobalSettings } from '../../../entity/global-settings/global-settings.entity';
 import { ChannelService } from '../../../service/services/channel.service';
 import { GlobalSettingsService } from '../../../service/services/global-settings.service';
@@ -123,18 +129,41 @@ export class GlobalSettingsResolver {
                     // Do not expose custom fields marked as "internal".
                     .filter(c => !c.internal)
                     .map(c => ({ ...c, list: !!c.list as any }))
-                    .map((c: any) => {
+                    .map(c => {
+                        const { requiresPermission } = c;
+                        c.requiresPermission = Array.isArray(requiresPermission)
+                            ? requiresPermission
+                            : !!requiresPermission
+                            ? [requiresPermission]
+                            : [];
+                        return c;
+                    })
+                    .map(c => {
                         // In the VendureConfig, the relation entity is specified
                         // as the class, but the GraphQL API exposes it as a string.
-                        if (c.type === 'relation') {
-                            c.entity = c.entity.name;
-                            c.scalarFields = this.getScalarFieldsOfType(info, c.graphQLType || c.entity);
+                        const customFieldConfig: GraphQLCustomFieldConfig = { ...c } as any;
+                        if (this.isRelationGraphQLType(customFieldConfig) && this.isRelationConfigType(c)) {
+                            customFieldConfig.entity = c.entity.name;
+                            customFieldConfig.scalarFields = this.getScalarFieldsOfType(
+                                info,
+                                c.graphQLType || c.entity.name,
+                            );
                         }
-                        return c;
+                        return customFieldConfig;
                     });
                 return { entityName: entityType, customFields: customFieldsConfig };
             })
             .filter(notNullOrUndefined);
+    }
+
+    private isRelationGraphQLType(
+        config: GraphQLCustomFieldConfig,
+    ): config is GraphQLRelationCustomFieldConfig {
+        return config.type === 'relation';
+    }
+
+    private isRelationConfigType(config: CustomFieldConfig): config is RelationCustomFieldConfig {
+        return config.type === 'relation';
     }
 
     private getScalarFieldsOfType(info: GraphQLResolveInfo, typeName: string): string[] {

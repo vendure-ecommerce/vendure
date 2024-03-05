@@ -23,6 +23,7 @@ class TypedBaseListComponent<T extends TypedDocumentNode<any, Vars>, Field exten
     protected dataService = inject(DataService);
     protected router = inject(Router);
     protected serverConfigService = inject(ServerConfigService);
+    protected permissionsService = inject(PermissionsService);
     constructor()
     configure(config: {
         document: T;
@@ -34,7 +35,7 @@ class TypedBaseListComponent<T extends TypedDocumentNode<any, Vars>, Field exten
     createFilterCollection() => DataTableFilterCollection<NonNullable<NonNullable<Vars['options']>['filter']>>;
     createSortCollection() => DataTableSortCollection<NonNullable<NonNullable<Vars['options']>['sort']>>;
     setLanguage(code: LanguageCode) => ;
-    getCustomFieldConfig(key: Exclude<keyof CustomFields, '__typename'>) => CustomFieldConfig[];
+    getCustomFieldConfig(key: Exclude<keyof CustomFields, '__typename'> | string) => CustomFieldConfig[];
 }
 ```
 * Extends: <code><a href='/reference/admin-ui-api/list-detail-views/base-list-component#baselistcomponent'>BaseListComponent</a>&#60;ResultOf&#60;T&#62;, ItemOf&#60;ResultOf&#60;T&#62;, Field&#62;, VariablesOf&#60;T&#62;&#62;</code>
@@ -71,6 +72,11 @@ class TypedBaseListComponent<T extends TypedDocumentNode<any, Vars>, Field exten
 <MemberInfo kind="property" type={``}   />
 
 
+### permissionsService
+
+<MemberInfo kind="property" type={``}   />
+
+
 ### constructor
 
 <MemberInfo kind="method" type={`() => TypedBaseListComponent`}   />
@@ -103,7 +109,7 @@ class TypedBaseListComponent<T extends TypedDocumentNode<any, Vars>, Field exten
 
 ### getCustomFieldConfig
 
-<MemberInfo kind="method" type={`(key: Exclude&#60;keyof <a href='/reference/typescript-api/custom-fields/#customfields'>CustomFields</a>, '__typename'&#62;) => <a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
+<MemberInfo kind="method" type={`(key: Exclude&#60;keyof <a href='/reference/typescript-api/custom-fields/#customfields'>CustomFields</a>, '__typename'&#62; | string) => <a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]`}   />
 
 
 

@@ -17,7 +17,7 @@ The RequestContext holds information relevant to the current request, which may 
 required at various points of the stack.
 
 It is a good practice to inject the RequestContext (using the <a href='/reference/typescript-api/request/ctx-decorator#ctx'>Ctx</a> decorator) into
-_all_ resolvers & REST handlers, and then pass it through to the service layer.
+_all_ resolvers & REST handler, and then pass it through to the service layer.
 
 This allows the service layer to access information about the current user, the active language,
 the active Channel, and so on. In addition, the <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a> relies on the

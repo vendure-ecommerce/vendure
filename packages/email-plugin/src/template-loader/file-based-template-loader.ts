@@ -2,7 +2,9 @@ import { Injector, RequestContext } from '@vendure/core';
 import fs from 'fs/promises';
 import path from 'path';
 
-import { LoadTemplateInput, Partial, TemplateLoader } from './types';
+import { LoadTemplateInput, Partial } from '../types';
+
+import { TemplateLoader } from './template-loader';
 
 /**
  * @description

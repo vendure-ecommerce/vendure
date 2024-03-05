@@ -4,10 +4,11 @@ import { Injector, RequestContext, SerializedRequestContext, VendureEvent } from
 import { Attachment } from 'nodemailer/lib/mailer';
 import SESTransport from 'nodemailer/lib/ses-transport';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
+import { EmailEventHandler } from './handler/event-handler';
 
-import { EmailGenerator } from './email-generator';
-import { EmailSender } from './email-sender';
-import { EmailEventHandler } from './event-handler';
+import { EmailGenerator } from './generator/email-generator';
+import { EmailSender } from './sender/email-sender';
+import { TemplateLoader } from './template-loader/template-loader';
 
 /**
  * @description
@@ -178,7 +179,7 @@ export interface SMTPTransportOptions extends SMTPTransport.Options {
  *   // Add an instance of the plugin to the plugins array
  *   plugins: [
  *     EmailPlugin.init({
- *       handlers: defaultEmailHandlers,
+ *       handler: defaultEmailHandlers,
  *       templatePath: path.join(__dirname, 'static/email/templates'),
  *       transport: {
  *         type: 'ses',
@@ -360,47 +361,6 @@ export interface LoadTemplateInput {
 export interface Partial {
     name: string;
     content: string;
-}
-
-/**
- * @description
- * Loads email templates based on the given request context, type and template name
- * and return the template as a string.
- *
- * @example
- * ```ts
- * import { EmailPlugin, TemplateLoader } from '\@vendure/email-plugin';
- *
- * class MyTemplateLoader implements TemplateLoader {
- *      loadTemplate(injector, ctx, { type, templateName }){
- *          return myCustomTemplateFunction(ctx);
- *      }
- * }
- *
- * // In vendure-config.ts:
- * ...
- * EmailPlugin.init({
- *     templateLoader: new MyTemplateLoader()
- *     ...
- * })
- * ```
- *
- * @docsCategory core plugins/EmailPlugin
- * @docsPage TemplateLoader
- * @docsWeight 0
- */
-export interface TemplateLoader {
-    /**
-     * @description
-     * Load template and return it's content as a string
-     */
-    loadTemplate(injector: Injector, ctx: RequestContext, input: LoadTemplateInput): Promise<string>;
-    /**
-     * @description
-     * Load partials and return their contents.
-     * This method is only called during initialization, i.e. during server startup.
-     */
-    loadPartials?(): Promise<Partial[]>;
 }
 
 /**

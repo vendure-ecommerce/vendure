@@ -3,6 +3,7 @@ import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import {
     BehaviorSubject,
     combineLatest,
+    first,
     interval,
     isObservable,
     Observable,
@@ -10,9 +11,9 @@ import {
     Subject,
     switchMap,
 } from 'rxjs';
-import { filter, first, map, mapTo, startWith, take } from 'rxjs/operators';
+import { filter, map, startWith, take } from 'rxjs/operators';
 import { Permission } from '../../common/generated-types';
-import { DataService } from '../../data/providers/data.service';
+import { PermissionsService } from '../permissions/permissions.service';
 
 export interface AlertConfig<T = any> {
     id: string;
@@ -86,9 +87,9 @@ export class AlertsService {
     private alertsMap = new Map<string, Alert<any>>();
     private configUpdated = new Subject<void>();
 
-    constructor(private dataService: DataService) {
+    constructor(private permissionsService: PermissionsService) {
         const alerts$ = this.configUpdated.pipe(
-            mapTo([...this.alertsMap.values()]),
+            map(() => [...this.alertsMap.values()]),
             startWith([...this.alertsMap.values()]),
         );
 
@@ -105,8 +106,8 @@ export class AlertsService {
     configureAlert<T>(config: AlertConfig<T>) {
         this.hasSufficientPermissions(config.requiredPermissions)
             .pipe(first())
-            .subscribe(hasSufficientPermissions => {
-                if (hasSufficientPermissions) {
+            .subscribe(hasPermissions => {
+                if (hasPermissions) {
                     this.alertsMap.set(config.id, new Alert(config));
                     this.configUpdated.next();
                 }
@@ -117,11 +118,9 @@ export class AlertsService {
         if (!permissions || permissions.length === 0) {
             return of(true);
         }
-        return this.dataService.client.userStatus().stream$.pipe(
-            filter(({ userStatus }) => userStatus.isLoggedIn),
-            map(({ userStatus }) =>
-                permissions.some(permission => userStatus.permissions.includes(permission)),
-            ),
+        return this.permissionsService.currentUserPermissions$.pipe(
+            filter(permissions => permissions.length > 0),
+            map(() => this.permissionsService.userHasPermissions(permissions)),
         );
     }
 

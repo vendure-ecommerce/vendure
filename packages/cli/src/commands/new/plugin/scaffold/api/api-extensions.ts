@@ -1,8 +1,8 @@
 import { constantCase, pascalCase } from 'change-case';
 
-import { TemplateContext } from '../../types';
+import { NewPluginTemplateContext } from '../../types';
 
-export function renderApiExtensions(context: TemplateContext) {
+export function renderApiExtensions(context: NewPluginTemplateContext) {
     if (!context.withApiExtensions) {
         return '';
     }

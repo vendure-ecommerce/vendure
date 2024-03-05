@@ -54,7 +54,7 @@ describe('EventBus', () => {
             expect(handler).toHaveBeenCalledWith(event3);
         });
 
-        it('multiple handlers are called', async () => {
+        it('multiple handler are called', async () => {
             const handler1 = vi.fn();
             const handler2 = vi.fn();
             const handler3 = vi.fn();
@@ -156,7 +156,7 @@ describe('EventBus', () => {
             expect(handler).toHaveBeenCalledWith(event3);
         });
 
-        it('multiple handlers are called', async () => {
+        it('multiple handler are called', async () => {
             const handler1 = vi.fn();
             const handler2 = vi.fn();
             const handler3 = vi.fn();

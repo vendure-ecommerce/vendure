@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EmailEventHandler
 
-<GenerationInfo sourceFile="packages/email-plugin/src/event-handler.ts" sourceLine="131" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/handler/event-handler.ts" sourceLine="131" packageName="@vendure/email-plugin" />
 
 The EmailEventHandler defines how the EmailPlugin will respond to a given event.
 
@@ -114,7 +114,7 @@ const config: VendureConfig = {
   // Add an instance of the plugin to the plugins array
   plugins: [
     EmailPlugin.init({
-      handlers: [...defaultEmailHandlers, quoteRequestedHandler],
+      handler: [...defaultEmailHandlers, quoteRequestedHandler],
       templatePath: path.join(__dirname, 'vendure/email/templates'),
       // ... etc
     }),

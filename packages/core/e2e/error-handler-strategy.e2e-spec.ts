@@ -99,7 +99,7 @@ describe('ErrorHandlerStrategy', () => {
         await server.destroy();
     });
 
-    it('no error handlers have initially been called', async () => {
+    it('no error handler have initially been called', async () => {
         expect(TestErrorHandlerStrategy.serverErrorSpy).toHaveBeenCalledTimes(0);
         expect(TestErrorHandlerStrategy.workerErrorSpy).toHaveBeenCalledTimes(0);
     });

@@ -47,15 +47,17 @@ export const assignShippingMethodsToChannelBulkAction = createBulkAssignToChanne
         userPermissions.includes(Permission.UpdateShippingMethod) ||
         userPermissions.includes(Permission.UpdateSettings),
     getItemName: item => item.name,
-    bulkAssignToChannel: (dataService, shippingMethodIds, channelId) =>
-        dataService
-            .mutate(AssignShippingMethodsToChannelDocument, {
-                input: {
-                    channelId,
-                    shippingMethodIds,
-                },
-            })
-            .pipe(map(res => res.assignShippingMethodsToChannel)),
+    bulkAssignToChannel: (dataService, shippingMethodIds, channelIds) =>
+        channelIds.map(channelId =>
+            dataService
+                .mutate(AssignShippingMethodsToChannelDocument, {
+                    input: {
+                        channelId,
+                        shippingMethodIds,
+                    },
+                })
+                .pipe(map(res => res.assignShippingMethodsToChannel)),
+        ),
 });
 
 export const removeShippingMethodsFromChannelBulkAction = createBulkRemoveFromChannelAction<

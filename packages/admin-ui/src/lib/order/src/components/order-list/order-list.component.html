@@ -1,13 +1,14 @@
 <vdr-page-block>
     <vdr-action-bar>
         <vdr-ab-right>
-            <vdr-action-bar-items locationId="order-list"></vdr-action-bar-items>
+            <vdr-action-bar-items locationId="order-list" />
             <ng-container *ngIf="canCreateDraftOrder">
                 <a class="btn" *vdrIfPermissions="['CreateOrder']" [routerLink]="['./draft/create']">
                     <clr-icon shape="plus"></clr-icon>
                     {{ 'catalog.create-draft-order' | translate }}
                 </a>
             </ng-container>
+            <vdr-action-bar-dropdown-menu locationId="order-list" />
         </vdr-ab-right>
     </vdr-action-bar>
 </vdr-page-block>

@@ -1,13 +1,23 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
+import { pick } from '@vendure/common/lib/pick';
+import { mergeConfig } from '@vendure/core';
+import {
+    createErrorResultGuard,
+    createTestEnvironment,
+    E2E_DEFAULT_CHANNEL_TOKEN,
+    ErrorResultGuard,
+} from '@vendure/testing';
 import path from 'path';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { ProductVariantPrice, ProductVariantPriceUpdateStrategy, RequestContext } from '../src/index';
 
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
+    AssignProductsToChannelDocument,
+    CreateChannelDocument,
     CreateProductDocument,
     CreateProductVariantsDocument,
     CurrencyCode,
@@ -25,8 +35,48 @@ import {
 } from './graphql/generated-e2e-shop-types';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
+class TestProductVariantPriceUpdateStrategy implements ProductVariantPriceUpdateStrategy {
+    static syncAcrossChannels = false;
+    static onCreatedSpy = vi.fn();
+    static onUpdatedSpy = vi.fn();
+    static onDeletedSpy = vi.fn();
+
+    onPriceCreated(ctx: RequestContext, price: ProductVariantPrice, prices: ProductVariantPrice[]) {
+        TestProductVariantPriceUpdateStrategy.onCreatedSpy(price, prices);
+        return [];
+    }
+
+    onPriceUpdated(ctx: RequestContext, updatedPrice: ProductVariantPrice, prices: ProductVariantPrice[]) {
+        TestProductVariantPriceUpdateStrategy.onUpdatedSpy(updatedPrice, prices);
+        if (TestProductVariantPriceUpdateStrategy.syncAcrossChannels) {
+            return prices
+                .filter(p => p.currencyCode === updatedPrice.currencyCode)
+                .map(p => ({
+                    id: p.id,
+                    price: updatedPrice.price,
+                }));
+        } else {
+            return [];
+        }
+    }
+
+    onPriceDeleted(ctx: RequestContext, deletedPrice: ProductVariantPrice, prices: ProductVariantPrice[]) {
+        TestProductVariantPriceUpdateStrategy.onDeletedSpy(deletedPrice, prices);
+        return [];
+    }
+}
+
 describe('Product prices', () => {
-    const { server, adminClient, shopClient } = createTestEnvironment({ ...testConfig() });
+    const { server, adminClient, shopClient } = createTestEnvironment(
+        mergeConfig(
+            { ...testConfig() },
+            {
+                catalogOptions: {
+                    productVariantPriceUpdateStrategy: new TestProductVariantPriceUpdateStrategy(),
+                },
+            },
+        ),
+    );
 
     let multiPriceProduct: Codegen.CreateProductMutation['createProduct'];
     let multiPriceVariant: NonNullable<
@@ -35,6 +85,10 @@ describe('Product prices', () => {
 
     const orderResultGuard: ErrorResultGuard<TestOrderFragmentFragment | UpdatedOrderFragment> =
         createErrorResultGuard(input => !!input.lines);
+
+    const createChannelResultGuard: ErrorResultGuard<{ id: string }> = createErrorResultGuard(
+        input => !!input.id,
+    );
 
     beforeAll(async () => {
         await server.init({
@@ -294,4 +348,252 @@ describe('Product prices', () => {
             expect(addItemToOrder.currencyCode).toBe('EUR');
         });
     });
+
+    describe('ProductVariantPriceUpdateStrategy', () => {
+        const SECOND_CHANNEL_TOKEN = 'second_channel_token';
+        const THIRD_CHANNEL_TOKEN = 'third_channel_token';
+        beforeAll(async () => {
+            const { createChannel: channel2Result } = await adminClient.query(CreateChannelDocument, {
+                input: {
+                    code: 'second-channel',
+                    token: SECOND_CHANNEL_TOKEN,
+                    defaultLanguageCode: LanguageCode.en,
+                    currencyCode: CurrencyCode.GBP,
+                    pricesIncludeTax: true,
+                    defaultShippingZoneId: 'T_1',
+                    defaultTaxZoneId: 'T_1',
+                },
+            });
+            createChannelResultGuard.assertSuccess(channel2Result);
+
+            const { createChannel: channel3Result } = await adminClient.query(CreateChannelDocument, {
+                input: {
+                    code: 'third-channel',
+                    token: THIRD_CHANNEL_TOKEN,
+                    defaultLanguageCode: LanguageCode.en,
+                    currencyCode: CurrencyCode.GBP,
+                    pricesIncludeTax: true,
+                    defaultShippingZoneId: 'T_1',
+                    defaultTaxZoneId: 'T_1',
+                },
+            });
+            createChannelResultGuard.assertSuccess(channel3Result);
+
+            await adminClient.query(AssignProductsToChannelDocument, {
+                input: {
+                    channelId: channel2Result.id,
+                    productIds: [multiPriceProduct.id],
+                },
+            });
+
+            await adminClient.query(AssignProductsToChannelDocument, {
+                input: {
+                    channelId: channel3Result.id,
+                    productIds: [multiPriceProduct.id],
+                },
+            });
+        });
+
+        it('onPriceCreated() is called when a new price is created', async () => {
+            await adminClient.asSuperAdmin();
+            const onCreatedSpy = TestProductVariantPriceUpdateStrategy.onCreatedSpy;
+            onCreatedSpy.mockClear();
+            await adminClient.query(UpdateChannelDocument, {
+                input: {
+                    id: 'T_1',
+                    availableCurrencyCodes: [
+                        CurrencyCode.USD,
+                        CurrencyCode.GBP,
+                        CurrencyCode.EUR,
+                        CurrencyCode.MYR,
+                    ],
+                },
+            });
+            await adminClient.query(UpdateProductVariantsDocument, {
+                input: {
+                    id: multiPriceVariant.id,
+                    prices: [{ currencyCode: CurrencyCode.MYR, price: 5500 }],
+                },
+            });
+
+            expect(onCreatedSpy).toHaveBeenCalledTimes(1);
+            expect(onCreatedSpy.mock.calls[0][0].currencyCode).toBe(CurrencyCode.MYR);
+            expect(onCreatedSpy.mock.calls[0][0].price).toBe(5500);
+            expect(onCreatedSpy.mock.calls[0][1].length).toBe(4);
+            expect(getOrderedPricesArray(onCreatedSpy.mock.calls[0][1])).toEqual([
+                {
+                    channelId: 1,
+                    currencyCode: 'USD',
+                    id: 35,
+                    price: 1200,
+                },
+                {
+                    channelId: 1,
+                    currencyCode: 'GBP',
+                    id: 36,
+                    price: 900,
+                },
+                {
+                    channelId: 2,
+                    currencyCode: 'GBP',
+                    id: 44,
+                    price: 1440,
+                },
+                {
+                    channelId: 3,
+                    currencyCode: 'GBP',
+                    id: 45,
+                    price: 1440,
+                },
+            ]);
+        });
+
+        it('onPriceUpdated() is called when a new price is created', async () => {
+            adminClient.setChannelToken(THIRD_CHANNEL_TOKEN);
+
+            TestProductVariantPriceUpdateStrategy.syncAcrossChannels = true;
+            const onUpdatedSpy = TestProductVariantPriceUpdateStrategy.onUpdatedSpy;
+            onUpdatedSpy.mockClear();
+
+            await adminClient.query(UpdateProductVariantsDocument, {
+                input: {
+                    id: multiPriceVariant.id,
+                    prices: [
+                        {
+                            currencyCode: CurrencyCode.GBP,
+                            price: 4242,
+                        },
+                    ],
+                },
+            });
+
+            expect(onUpdatedSpy).toHaveBeenCalledTimes(1);
+            expect(onUpdatedSpy.mock.calls[0][0].currencyCode).toBe(CurrencyCode.GBP);
+            expect(onUpdatedSpy.mock.calls[0][0].price).toBe(4242);
+            expect(onUpdatedSpy.mock.calls[0][1].length).toBe(5);
+            expect(getOrderedPricesArray(onUpdatedSpy.mock.calls[0][1])).toEqual([
+                {
+                    channelId: 1,
+                    currencyCode: 'USD',
+                    id: 35,
+                    price: 1200,
+                },
+                {
+                    channelId: 1,
+                    currencyCode: 'GBP',
+                    id: 36,
+                    price: 900,
+                },
+                {
+                    channelId: 2,
+                    currencyCode: 'GBP',
+                    id: 44,
+                    price: 1440,
+                },
+                {
+                    channelId: 3,
+                    currencyCode: 'GBP',
+                    id: 45,
+                    price: 4242,
+                },
+                {
+                    channelId: 1,
+                    currencyCode: 'MYR',
+                    id: 46,
+                    price: 5500,
+                },
+            ]);
+        });
+
+        it('syncing prices in other channels', async () => {
+            const { product: productChannel3 } = await adminClient.query(GetProductWithVariantsDocument, {
+                id: multiPriceProduct.id,
+            });
+            expect(productChannel3?.variants[0].prices).toEqual([
+                { currencyCode: CurrencyCode.GBP, price: 4242 },
+            ]);
+
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { product: productChannel2 } = await adminClient.query(GetProductWithVariantsDocument, {
+                id: multiPriceProduct.id,
+            });
+            expect(productChannel2?.variants[0].prices).toEqual([
+                { currencyCode: CurrencyCode.GBP, price: 4242 },
+            ]);
+
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const { product: productDefaultChannel } = await adminClient.query(
+                GetProductWithVariantsDocument,
+                {
+                    id: multiPriceProduct.id,
+                },
+            );
+            expect(productDefaultChannel?.variants[0].prices).toEqual([
+                { currencyCode: CurrencyCode.USD, price: 1200 },
+                { currencyCode: CurrencyCode.GBP, price: 4242 },
+                { currencyCode: CurrencyCode.MYR, price: 5500 },
+            ]);
+        });
+
+        it('onPriceDeleted() is called when a price is deleted', async () => {
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const onDeletedSpy = TestProductVariantPriceUpdateStrategy.onDeletedSpy;
+            onDeletedSpy.mockClear();
+
+            const result = await adminClient.query(UpdateProductVariantsDocument, {
+                input: {
+                    id: multiPriceVariant.id,
+                    prices: [
+                        {
+                            currencyCode: CurrencyCode.MYR,
+                            price: 4242,
+                            delete: true,
+                        },
+                    ],
+                },
+            });
+
+            expect(result.updateProductVariants[0]?.prices).toEqual([
+                { currencyCode: CurrencyCode.USD, price: 1200 },
+                { currencyCode: CurrencyCode.GBP, price: 4242 },
+            ]);
+
+            expect(onDeletedSpy).toHaveBeenCalledTimes(1);
+            expect(onDeletedSpy.mock.calls[0][0].currencyCode).toBe(CurrencyCode.MYR);
+            expect(onDeletedSpy.mock.calls[0][0].price).toBe(5500);
+            expect(onDeletedSpy.mock.calls[0][1].length).toBe(4);
+            expect(getOrderedPricesArray(onDeletedSpy.mock.calls[0][1])).toEqual([
+                {
+                    channelId: 1,
+                    currencyCode: 'USD',
+                    id: 35,
+                    price: 1200,
+                },
+                {
+                    channelId: 1,
+                    currencyCode: 'GBP',
+                    id: 36,
+                    price: 4242,
+                },
+                {
+                    channelId: 2,
+                    currencyCode: 'GBP',
+                    id: 44,
+                    price: 4242,
+                },
+                {
+                    channelId: 3,
+                    currencyCode: 'GBP',
+                    id: 45,
+                    price: 4242,
+                },
+            ]);
+        });
+    });
 });
+
+function getOrderedPricesArray(input: ProductVariantPrice[]) {
+    return input
+        .map(p => pick(p, ['channelId', 'currencyCode', 'price', 'id']))
+        .sort((a, b) => (a.id < b.id ? -1 : 1));
+}

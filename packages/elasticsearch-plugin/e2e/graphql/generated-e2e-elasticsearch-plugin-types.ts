@@ -307,6 +307,7 @@ export type BooleanCustomFieldConfig = CustomField & {
   name: Scalars['String']['output'];
   nullable?: Maybe<Scalars['Boolean']['output']>;
   readonly?: Maybe<Scalars['Boolean']['output']>;
+  requiresPermission?: Maybe<Array<Permission>>;
   type: Scalars['String']['output'];
   ui?: Maybe<Scalars['JSON']['output']>;
 };
@@ -1272,6 +1273,7 @@ export type CustomField = {
   name: Scalars['String']['output'];
   nullable?: Maybe<Scalars['Boolean']['output']>;
   readonly?: Maybe<Scalars['Boolean']['output']>;
+  requiresPermission?: Maybe<Array<Permission>>;
   type: Scalars['String']['output'];
   ui?: Maybe<Scalars['JSON']['output']>;
 };
@@ -1301,6 +1303,7 @@ export type CustomFields = {
   ProductOption: Array<CustomFieldConfig>;
   ProductOptionGroup: Array<CustomFieldConfig>;
   ProductVariant: Array<CustomFieldConfig>;
+  ProductVariantPrice: Array<CustomFieldConfig>;
   Promotion: Array<CustomFieldConfig>;
   Region: Array<CustomFieldConfig>;
   Seller: Array<CustomFieldConfig>;
@@ -1463,6 +1466,7 @@ export type DateTimeCustomFieldConfig = CustomField & {
   name: Scalars['String']['output'];
   nullable?: Maybe<Scalars['Boolean']['output']>;
   readonly?: Maybe<Scalars['Boolean']['output']>;
+  requiresPermission?: Maybe<Array<Permission>>;
   step?: Maybe<Scalars['Int']['output']>;
   type: Scalars['String']['output'];
   ui?: Maybe<Scalars['JSON']['output']>;
@@ -1505,6 +1509,24 @@ export type Discount = {
   type: AdjustmentType;
 };
 
+export type DuplicateEntityError = ErrorResult & {
+  duplicationError: Scalars['String']['output'];
+  errorCode: ErrorCode;
+  message: Scalars['String']['output'];
+};
+
+export type DuplicateEntityInput = {
+  duplicatorInput: ConfigurableOperationInput;
+  entityId: Scalars['ID']['input'];
+  entityName: Scalars['String']['input'];
+};
+
+export type DuplicateEntityResult = DuplicateEntityError | DuplicateEntitySuccess;
+
+export type DuplicateEntitySuccess = {
+  newEntityId: Scalars['ID']['output'];
+};
+
 /** Returned when attempting to create a Customer with an email address already registered to an existing User. */
 export type EmailAddressConflictError = ErrorResult & {
   errorCode: ErrorCode;
@@ -1522,6 +1544,14 @@ export type EntityCustomFields = {
   entityName: Scalars['String']['output'];
 };
 
+export type EntityDuplicatorDefinition = {
+  args: Array<ConfigArgDefinition>;
+  code: Scalars['String']['output'];
+  description: Scalars['String']['output'];
+  forEntities: Array<Scalars['String']['output']>;
+  requiresPermission: Array<Permission>;
+};
+
 export enum ErrorCode {
   ALREADY_REFUNDED_ERROR = 'ALREADY_REFUNDED_ERROR',
   CANCEL_ACTIVE_ORDER_ERROR = 'CANCEL_ACTIVE_ORDER_ERROR',
@@ -1531,6 +1561,7 @@ export enum ErrorCode {
   COUPON_CODE_INVALID_ERROR = 'COUPON_CODE_INVALID_ERROR',
   COUPON_CODE_LIMIT_ERROR = 'COUPON_CODE_LIMIT_ERROR',
   CREATE_FULFILLMENT_ERROR = 'CREATE_FULFILLMENT_ERROR',
+  DUPLICATE_ENTITY_ERROR = 'DUPLICATE_ENTITY_ERROR',
   EMAIL_ADDRESS_CONFLICT_ERROR = 'EMAIL_ADDRESS_CONFLICT_ERROR',
   EMPTY_ORDER_LINE_SELECTION_ERROR = 'EMPTY_ORDER_LINE_SELECTION_ERROR',
   FACET_IN_USE_ERROR = 'FACET_IN_USE_ERROR',
@@ -1754,6 +1785,7 @@ export type FloatCustomFieldConfig = CustomField & {
   name: Scalars['String']['output'];
   nullable?: Maybe<Scalars['Boolean']['output']>;
   readonly?: Maybe<Scalars['Boolean']['output']>;
+  requiresPermission?: Maybe<Array<Permission>>;
   step?: Maybe<Scalars['Float']['output']>;
   type: Scalars['String']['output'];
   ui?: Maybe<Scalars['JSON']['output']>;
@@ -1947,6 +1979,7 @@ export type IntCustomFieldConfig = CustomField & {
   name: Scalars['String']['output'];
   nullable?: Maybe<Scalars['Boolean']['output']>;
   readonly?: Maybe<Scalars['Boolean']['output']>;
+  requiresPermission?: Maybe<Array<Permission>>;
   step?: Maybe<Scalars['Int']['output']>;
   type: Scalars['String']['output'];
   ui?: Maybe<Scalars['JSON']['output']>;
@@ -2402,6 +2435,7 @@ export type LocaleStringCustomFieldConfig = CustomField & {
   nullable?: Maybe<Scalars['Boolean']['output']>;
   pattern?: Maybe<Scalars['String']['output']>;
   readonly?: Maybe<Scalars['Boolean']['output']>;
+  requiresPermission?: Maybe<Array<Permission>>;
   type: Scalars['String']['output'];
   ui?: Maybe<Scalars['JSON']['output']>;
 };
@@ -2414,6 +2448,7 @@ export type LocaleTextCustomFieldConfig = CustomField & {
   name: Scalars['String']['output'];
   nullable?: Maybe<Scalars['Boolean']['output']>;
   readonly?: Maybe<Scalars['Boolean']['output']>;
+  requiresPermission?: Maybe<Array<Permission>>;
   type: Scalars['String']['output'];
   ui?: Maybe<Scalars['JSON']['output']>;
 };
@@ -2712,6 +2747,7 @@ export type Mutation = {
   deleteZone: DeletionResponse;
   /** Delete a Zone */
   deleteZones: Array<DeletionResponse>;
+  duplicateEntity: DuplicateEntityResult;
   flushBufferedJobs: Success;
   importProducts?: Maybe<ImportInfo>;
   /** Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})` */
@@ -3322,6 +3358,11 @@ export type MutationDeleteZoneArgs = {
 
 export type MutationDeleteZonesArgs = {
   ids: Array<Scalars['ID']['input']>;
+};
+
+
+export type MutationDuplicateEntityArgs = {
+  input: DuplicateEntityInput;
 };
 
 
@@ -4599,6 +4640,7 @@ export type ProductVariantListOptions = {
 
 export type ProductVariantPrice = {
   currencyCode: CurrencyCode;
+  customFields?: Maybe<Scalars['JSON']['output']>;
   price: Scalars['Money']['output'];
 };
 
@@ -4817,6 +4859,7 @@ export type Query = {
   customers: CustomerList;
   /** Returns a list of eligible shipping methods for the draft Order */
   eligibleShippingMethodsForDraftOrder: Array<ShippingMethodQuote>;
+  entityDuplicators: Array<EntityDuplicatorDefinition>;
   facet?: Maybe<Facet>;
   facetValues: FacetValueList;
   facets: FacetList;
@@ -5272,6 +5315,7 @@ export type RelationCustomFieldConfig = CustomField & {
   name: Scalars['String']['output'];
   nullable?: Maybe<Scalars['Boolean']['output']>;
   readonly?: Maybe<Scalars['Boolean']['output']>;
+  requiresPermission?: Maybe<Array<Permission>>;
   scalarFields: Array<Scalars['String']['output']>;
   type: Scalars['String']['output'];
   ui?: Maybe<Scalars['JSON']['output']>;
@@ -5758,6 +5802,7 @@ export type StringCustomFieldConfig = CustomField & {
   options?: Maybe<Array<StringFieldOption>>;
   pattern?: Maybe<Scalars['String']['output']>;
   readonly?: Maybe<Scalars['Boolean']['output']>;
+  requiresPermission?: Maybe<Array<Permission>>;
   type: Scalars['String']['output'];
   ui?: Maybe<Scalars['JSON']['output']>;
 };
@@ -5986,6 +6031,7 @@ export type TextCustomFieldConfig = CustomField & {
   name: Scalars['String']['output'];
   nullable?: Maybe<Scalars['Boolean']['output']>;
   readonly?: Maybe<Scalars['Boolean']['output']>;
+  requiresPermission?: Maybe<Array<Permission>>;
   type: Scalars['String']['output'];
   ui?: Maybe<Scalars['JSON']['output']>;
 };

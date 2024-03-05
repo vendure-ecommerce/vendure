@@ -1,6 +1,6 @@
 import { Type } from '@vendure/common/lib/shared-types';
 
-import { EmailEventHandler } from './event-handler';
+import { EmailEventHandler } from './handler/event-handler';
 import { EventWithContext } from './types';
 
 /**

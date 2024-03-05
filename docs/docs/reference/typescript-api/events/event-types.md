@@ -1210,6 +1210,36 @@ class ProductVariantEvent extends VendureEntityEvent<ProductVariant[], ProductVa
 </div>
 
 
+## ProductVariantPriceEvent
+
+<GenerationInfo sourceFile="packages/core/src/event-bus/events/product-variant-price-event.ts" sourceLine="17" packageName="@vendure/core" since="2.2.0" />
+
+This event is fired whenever a <a href='/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a> is added, updated or deleted.
+
+```ts title="Signature"
+class ProductVariantPriceEvent extends VendureEntityEvent<
+    ProductVariantPrice[],
+    ProductVariantInputTypes
+> {
+    constructor(ctx: RequestContext, entity: ProductVariantPrice[], type: 'created' | 'updated' | 'deleted', input?: ProductVariantInputTypes)
+}
+```
+* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;     <a href='/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>[],     ProductVariantInputTypes &#62;</code>
+
+
+
+<div className="members-wrapper">
+
+### constructor
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>[], type: 'created' | 'updated' | 'deleted', input?: ProductVariantInputTypes) => ProductVariantPriceEvent`}   />
+
+
+
+
+</div>
+
+
 ## PromotionEvent
 
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/promotion-event.ts" sourceLine="18" packageName="@vendure/core" />

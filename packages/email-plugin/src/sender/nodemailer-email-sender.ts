@@ -9,15 +9,16 @@ import path from 'path';
 import { Stream } from 'stream';
 import { format } from 'util';
 
-import { loggerCtx } from './constants';
-import { EmailSender } from './email-sender';
+import { loggerCtx } from '../constants';
 import {
     EmailDetails,
     EmailTransportOptions,
     SendmailTransportOptions,
     SESTransportOptions,
     SMTPTransportOptions,
-} from './types';
+} from '../types';
+
+import { EmailSender } from './email-sender';
 
 export type StreamTransportInfo = {
     envelope: {

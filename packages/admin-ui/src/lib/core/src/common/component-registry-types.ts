@@ -98,7 +98,8 @@ export type PageLocationId =
 
 /**
  * @description
- * The valid locationIds for registering action bar items.
+ * The valid locationIds for registering action bar items. For a list of
+ * values, see {@link PageLocationId}.
  *
  * @docsCategory action-bar
  */

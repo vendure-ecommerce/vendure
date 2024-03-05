@@ -61,6 +61,7 @@ export class ConfigurableInputComponent
     @Input() readonly = false;
     @Input() removable = true;
     @Input() position = 0;
+    @Input() hideDescription = false;
     @Output() remove = new EventEmitter<ConfigurableOperation>();
     argValues: { [name: string]: any } = {};
     onChange: (val: any) => void;

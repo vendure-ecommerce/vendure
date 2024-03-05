@@ -3,6 +3,7 @@ import {
     Channel,
     ChannelService,
     configureDefaultOrderProcess,
+    DefaultProductVariantPriceUpdateStrategy,
     LanguageCode,
     PaymentMethod,
     PaymentMethodService,
@@ -141,6 +142,10 @@ import { MultivendorPluginOptions } from './types';
         });
         config.orderOptions.process = [customDefaultOrderProcess, multivendorOrderProcess];
         config.orderOptions.orderSellerStrategy = new MultivendorSellerStrategy();
+        config.catalogOptions.productVariantPriceUpdateStrategy =
+            new DefaultProductVariantPriceUpdateStrategy({
+                syncPricesAcrossChannels: true,
+            });
         config.shippingOptions.shippingEligibilityCheckers.push(multivendorShippingEligibilityChecker);
         config.shippingOptions.shippingLineAssignmentStrategy =
             new MultivendorShippingLineAssignmentStrategy();

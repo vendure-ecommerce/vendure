@@ -28,6 +28,7 @@ import { CollectionBreadcrumbPipe } from './components/collection-list/collectio
 import {
     assignCollectionsToChannelBulkAction,
     deleteCollectionsBulkAction,
+    duplicateCollectionsBulkAction,
     moveCollectionsBulkAction,
     removeCollectionsFromChannelBulkAction,
 } from './components/collection-list/collection-list-bulk-actions';
@@ -42,6 +43,7 @@ import { FacetDetailComponent } from './components/facet-detail/facet-detail.com
 import {
     assignFacetsToChannelBulkAction,
     deleteFacetsBulkAction,
+    duplicateFacetsBulkAction,
     removeFacetsFromChannelBulkAction,
 } from './components/facet-list/facet-list-bulk-actions';
 import { FacetListComponent } from './components/facet-list/facet-list.component';
@@ -53,12 +55,14 @@ import {
     assignFacetValuesToProductsBulkAction,
     assignProductsToChannelBulkAction,
     deleteProductsBulkAction,
+    duplicateProductsBulkAction,
     removeProductsFromChannelBulkAction,
 } from './components/product-list/product-list-bulk-actions';
 import { ProductListComponent } from './components/product-list/product-list.component';
 import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
 import { ProductVariantDetailComponent } from './components/product-variant-detail/product-variant-detail.component';
 import {
+    assignFacetValuesToProductVariantsBulkAction,
     assignProductVariantsToChannelBulkAction,
     deleteProductVariantsBulkAction,
     removeProductVariantsFromChannelBulkAction,
@@ -131,16 +135,20 @@ export class CatalogModule {
         bulkActionRegistryService.registerBulkAction(assignProductVariantsToChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(removeProductsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(removeProductVariantsFromChannelBulkAction);
+        bulkActionRegistryService.registerBulkAction(duplicateProductsBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteProductsBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteProductVariantsBulkAction);
+        bulkActionRegistryService.registerBulkAction(assignFacetValuesToProductVariantsBulkAction);
 
         bulkActionRegistryService.registerBulkAction(assignFacetsToChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(removeFacetsFromChannelBulkAction);
+        bulkActionRegistryService.registerBulkAction(duplicateFacetsBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteFacetsBulkAction);
 
         bulkActionRegistryService.registerBulkAction(moveCollectionsBulkAction);
         bulkActionRegistryService.registerBulkAction(assignCollectionsToChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(removeCollectionsFromChannelBulkAction);
+        bulkActionRegistryService.registerBulkAction(duplicateCollectionsBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteCollectionsBulkAction);
 
         pageService.registerPageTab({

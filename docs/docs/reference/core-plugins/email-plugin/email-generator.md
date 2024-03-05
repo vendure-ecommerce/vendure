@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EmailGenerator
 
-<GenerationInfo sourceFile="packages/email-plugin/src/email-generator.ts" sourceLine="13" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/generator/email-generator.ts" sourceLine="13" packageName="@vendure/email-plugin" />
 
 An EmailGenerator generates the subject and body details of an email.
 
@@ -50,7 +50,7 @@ interpolated email text.
 
 ## HandlebarsMjmlGenerator
 
-<GenerationInfo sourceFile="packages/email-plugin/src/handlebars-mjml-generator.ts" sourceLine="23" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/generator/handlebars-mjml-generator.ts" sourceLine="17" packageName="@vendure/email-plugin" />
 
 Uses Handlebars (https://handlebarsjs.com/) to output MJML (https://mjml.io) which is then
 compiled down to responsive email HTML.

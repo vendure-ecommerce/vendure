@@ -11,13 +11,13 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrderService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/order.service.ts" sourceLine="137" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/order.service.ts" sourceLine="135" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/order#order'>Order</a> entities.
 
 ```ts title="Signature"
 class OrderService {
-    constructor(connection: TransactionalConnection, configService: ConfigService, productVariantService: ProductVariantService, customerService: CustomerService, countryService: CountryService, orderCalculator: OrderCalculator, shippingCalculator: ShippingCalculator, orderStateMachine: OrderStateMachine, orderMerger: OrderMerger, paymentService: PaymentService, paymentStateMachine: PaymentStateMachine, paymentMethodService: PaymentMethodService, fulfillmentService: FulfillmentService, listQueryBuilder: ListQueryBuilder, stockMovementService: StockMovementService, refundStateMachine: RefundStateMachine, historyService: HistoryService, promotionService: PromotionService, eventBus: EventBus, channelService: ChannelService, orderModifier: OrderModifier, customFieldRelationService: CustomFieldRelationService, requestCache: RequestContextCacheService, translator: TranslatorService, stockLevelService: StockLevelService)
+    constructor(connection: TransactionalConnection, configService: ConfigService, productVariantService: ProductVariantService, customerService: CustomerService, countryService: CountryService, orderCalculator: OrderCalculator, shippingCalculator: ShippingCalculator, orderStateMachine: OrderStateMachine, orderMerger: OrderMerger, paymentService: PaymentService, paymentMethodService: PaymentMethodService, fulfillmentService: FulfillmentService, listQueryBuilder: ListQueryBuilder, refundStateMachine: RefundStateMachine, historyService: HistoryService, promotionService: PromotionService, eventBus: EventBus, channelService: ChannelService, orderModifier: OrderModifier, customFieldRelationService: CustomFieldRelationService, requestCache: RequestContextCacheService, translator: TranslatorService, stockLevelService: StockLevelService)
     getOrderProcessStates() => OrderProcessState[];
     findAll(ctx: RequestContext, options?: OrderListOptions, relations?: RelationPaths<Order>) => Promise<PaginatedList<Order>>;
     findOne(ctx: RequestContext, orderId: ID, relations?: RelationPaths<Order>) => Promise<Order | undefined>;
@@ -34,6 +34,7 @@ class OrderService {
     create(ctx: RequestContext, userId?: ID) => Promise<Order>;
     createDraft(ctx: RequestContext) => ;
     updateCustomFields(ctx: RequestContext, orderId: ID, customFields: any) => ;
+    updateOrderCustomer(ctx: RequestContext, { customerId, orderId, note }: SetOrderCustomerInput) => ;
     addItemToOrder(ctx: RequestContext, orderId: ID, productVariantId: ID, quantity: number, customFields?: { [key: string]: any }) => Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>>;
     adjustOrderLine(ctx: RequestContext, orderId: ID, orderLineId: ID, quantity: number, customFields?: { [key: string]: any }) => Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>>;
     removeItemFromOrder(ctx: RequestContext, orderId: ID, orderLineId: ID) => Promise<ErrorResultUnion<RemoveOrderItemsResult, Order>>;
@@ -63,7 +64,7 @@ class OrderService {
     cancelOrder(ctx: RequestContext, input: CancelOrderInput) => Promise<ErrorResultUnion<CancelOrderResult, Order>>;
     refundOrder(ctx: RequestContext, input: RefundOrderInput) => Promise<ErrorResultUnion<RefundOrderResult, Refund>>;
     settleRefund(ctx: RequestContext, input: SettleRefundInput) => Promise<Refund>;
-    addCustomerToOrder(ctx: RequestContext, orderId: ID, customer: Customer) => Promise<Order>;
+    addCustomerToOrder(ctx: RequestContext, orderIdOrOrder: ID | Order, customer: Customer) => Promise<Order>;
     addNoteToOrder(ctx: RequestContext, input: AddNoteToOrderInput) => Promise<Order>;
     updateOrderNote(ctx: RequestContext, input: UpdateOrderNoteInput) => Promise<HistoryEntry>;
     deleteOrderNote(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
@@ -77,7 +78,7 @@ class OrderService {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, productVariantService: <a href='/reference/typescript-api/services/product-variant-service#productvariantservice'>ProductVariantService</a>, customerService: <a href='/reference/typescript-api/services/customer-service#customerservice'>CustomerService</a>, countryService: <a href='/reference/typescript-api/services/country-service#countryservice'>CountryService</a>, orderCalculator: <a href='/reference/typescript-api/service-helpers/order-calculator#ordercalculator'>OrderCalculator</a>, shippingCalculator: <a href='/reference/typescript-api/shipping/shipping-calculator#shippingcalculator'>ShippingCalculator</a>, orderStateMachine: OrderStateMachine, orderMerger: OrderMerger, paymentService: <a href='/reference/typescript-api/services/payment-service#paymentservice'>PaymentService</a>, paymentStateMachine: PaymentStateMachine, paymentMethodService: <a href='/reference/typescript-api/services/payment-method-service#paymentmethodservice'>PaymentMethodService</a>, fulfillmentService: <a href='/reference/typescript-api/services/fulfillment-service#fulfillmentservice'>FulfillmentService</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, stockMovementService: <a href='/reference/typescript-api/services/stock-movement-service#stockmovementservice'>StockMovementService</a>, refundStateMachine: RefundStateMachine, historyService: <a href='/reference/typescript-api/services/history-service#historyservice'>HistoryService</a>, promotionService: <a href='/reference/typescript-api/services/promotion-service#promotionservice'>PromotionService</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, channelService: <a href='/reference/typescript-api/services/channel-service#channelservice'>ChannelService</a>, orderModifier: <a href='/reference/typescript-api/service-helpers/order-modifier#ordermodifier'>OrderModifier</a>, customFieldRelationService: CustomFieldRelationService, requestCache: RequestContextCacheService, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>, stockLevelService: <a href='/reference/typescript-api/services/stock-level-service#stocklevelservice'>StockLevelService</a>) => OrderService`}   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, productVariantService: <a href='/reference/typescript-api/services/product-variant-service#productvariantservice'>ProductVariantService</a>, customerService: <a href='/reference/typescript-api/services/customer-service#customerservice'>CustomerService</a>, countryService: <a href='/reference/typescript-api/services/country-service#countryservice'>CountryService</a>, orderCalculator: <a href='/reference/typescript-api/service-helpers/order-calculator#ordercalculator'>OrderCalculator</a>, shippingCalculator: <a href='/reference/typescript-api/shipping/shipping-calculator#shippingcalculator'>ShippingCalculator</a>, orderStateMachine: OrderStateMachine, orderMerger: OrderMerger, paymentService: <a href='/reference/typescript-api/services/payment-service#paymentservice'>PaymentService</a>, paymentMethodService: <a href='/reference/typescript-api/services/payment-method-service#paymentmethodservice'>PaymentMethodService</a>, fulfillmentService: <a href='/reference/typescript-api/services/fulfillment-service#fulfillmentservice'>FulfillmentService</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, refundStateMachine: RefundStateMachine, historyService: <a href='/reference/typescript-api/services/history-service#historyservice'>HistoryService</a>, promotionService: <a href='/reference/typescript-api/services/promotion-service#promotionservice'>PromotionService</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, channelService: <a href='/reference/typescript-api/services/channel-service#channelservice'>ChannelService</a>, orderModifier: <a href='/reference/typescript-api/service-helpers/order-modifier#ordermodifier'>OrderModifier</a>, customFieldRelationService: CustomFieldRelationService, requestCache: RequestContextCacheService, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>, stockLevelService: <a href='/reference/typescript-api/services/stock-level-service#stocklevelservice'>StockLevelService</a>) => OrderService`}   />
 
 
 ### getOrderProcessStates
@@ -164,6 +165,12 @@ User's Customer account.
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, customFields: any) => `}   />
 
 Updates the custom fields of an Order.
+### updateOrderCustomer
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, { customerId, orderId, note }: SetOrderCustomerInput) => `}  since="2.2.0"  />
+
+Updates the Customer which is assigned to a given Order. The target Customer must be assigned to the same
+Channels as the Order, otherwise an error will be thrown.
 ### addItemToOrder
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>, quantity: number, customFields?: { [key: string]: any }) => Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;UpdateOrderItemsResult, <a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;&#62;`}   />
@@ -340,7 +347,7 @@ Creates a {@link Refund} against the order and in doing so invokes the `createRe
 Settles a Refund by transitioning it to the `Settled` state.
 ### addCustomerToOrder
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, customer: <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>) => Promise&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderIdOrOrder: <a href='/reference/typescript-api/common/id#id'>ID</a> | <a href='/reference/typescript-api/entities/order#order'>Order</a>, customer: <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>) => Promise&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;`}   />
 
 Associates a Customer with the Order.
 ### addNoteToOrder

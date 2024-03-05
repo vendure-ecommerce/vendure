@@ -9,7 +9,7 @@
             ></vdr-language-selector>
         </vdr-ab-left>
         <vdr-ab-right>
-            <vdr-action-bar-items locationId="collection-detail"></vdr-action-bar-items>
+            <vdr-action-bar-items locationId="collection-detail" />
             <button
                 class="btn btn-primary"
                 *ngIf="isNew$ | async; else updateButton"
@@ -27,8 +27,9 @@
                 >
                     {{ 'common.update' | translate }}
                 </button>
-            </ng-template></vdr-ab-right
-        >
+            </ng-template>
+            <vdr-action-bar-dropdown-menu locationId="collection-detail" />
+        </vdr-ab-right>
     </vdr-action-bar>
 </vdr-page-block>
 <form class="form" [formGroup]="detailForm">
@@ -138,10 +139,7 @@
                 ></vdr-assets>
             </vdr-card>
             <vdr-card [title]="'catalog.filters' | translate">
-                <vdr-form-field
-                    [label]="'catalog.filter-inheritance' | translate"
-                    for="inheritFilters"
-                >
+                <vdr-form-field [label]="'catalog.filter-inheritance' | translate" for="inheritFilters">
                     <clr-toggle-wrapper>
                         <input
                             type="checkbox"

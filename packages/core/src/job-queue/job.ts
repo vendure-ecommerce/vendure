@@ -206,7 +206,7 @@ export class Job<T extends JobData<T> = any> {
 
     /**
      * @description
-     * Used to register event handlers for job events
+     * Used to register event handler for job events
      */
     on(eventType: JobEventType, listener: JobEventListener<T>) {
         this.eventListeners[eventType].push(listener);

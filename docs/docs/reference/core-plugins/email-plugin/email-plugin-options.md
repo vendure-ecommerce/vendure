@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EmailPluginOptions
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="40" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="41" packageName="@vendure/email-plugin" />
 
 Configuration for the EmailPlugin.
 
@@ -83,7 +83,7 @@ better match with custom email sending functionality.
 
 ## EmailPluginDevModeOptions
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="110" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="111" packageName="@vendure/email-plugin" />
 
 Configuration for running the EmailPlugin in development mode.
 

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DefaultJobQueuePlugin
 
-<GenerationInfo sourceFile="packages/core/src/plugin/default-job-queue-plugin/default-job-queue-plugin.ts" sourceLine="171" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/plugin/default-job-queue-plugin/default-job-queue-plugin.ts" sourceLine="183" packageName="@vendure/core" />
 
 A plugin which configures Vendure to use the SQL database to persist the JobQueue jobs using the <a href='/reference/typescript-api/job-queue/sql-job-queue-strategy#sqljobqueuestrategy'>SqlJobQueueStrategy</a>. If you add this
 plugin to an existing Vendure installation, you'll need to run a [database migration](/guides/developer-guide/migrations), since this
@@ -133,6 +133,7 @@ interface DefaultJobQueueOptions {
     backoffStrategy?: BackoffStrategy;
     setRetries?: (queueName: string, job: Job) => number;
     useDatabaseForBuffer?: boolean;
+    gracefulShutdownTimeout?: number;
 }
 ```
 
@@ -186,6 +187,15 @@ recommended for production.
 
 When enabled, a new `JobRecordBuffer` database entity will be defined which will
 require a migration when first enabling this option.
+### gracefulShutdownTimeout
+
+<MemberInfo kind="property" type={`number`} default="20_000"  since="2.2.0"  />
+
+The timeout in ms which the queue will use when attempting a graceful shutdown.
+That means when the server is shut down but a job is running, the job queue will
+wait for the job to complete before allowing the server to shut down. If the job
+does not complete within this timeout window, the job will be forced to stop
+and the server will shut down anyway.
 
 
 </div>

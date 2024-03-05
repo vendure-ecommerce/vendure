@@ -80,6 +80,9 @@ const mockData = {
         metadata: {
             languageCode: 'nl',
         },
+        metadata: {
+            languageCode: 'nl',
+        },
         mode: 'test',
         method: 'test-method',
         profileId: '123',
@@ -342,29 +345,40 @@ describe('Payment intent creation', () => {
         });
     });
 
-    it('Should reuse payment url when amount is the same', async () => {
-        // Should only fetch the order from Mollie, not create a new one
+    it('Should update existing Mollie order', async () => {
+        // Should fetch the existing order from Mollie
         nock('https://api.mollie.com/')
             .get('/v2/orders/ord_mockId')
-            .reply(200, {
-                ...mockData.mollieOrderResponse,
-                amount: {
-                    value: '1009.90',
-                    currency: 'USD',
-                },
-                _links: {
-                    // Mock a new checkout url, to test that this one is actually reused
-                    checkout: {
-                        href: 'https://this-means-reuse-succeeded',
-                    },
-                },
-            });
+            .reply(200, mockData.mollieOrderResponse);
+        // Should patch existing order
+        nock('https://api.mollie.com/')
+        .patch(`/v2/orders/${mockData.mollieOrderResponse.id}`)
+        .reply(200, mockData.mollieOrderResponse);
+        // Should patch existing order lines
+        let molliePatchRequest: any | undefined;
+        nock('https://api.mollie.com/')
+            .patch(`/v2/orders/${mockData.mollieOrderResponse.id}/lines`, body => {
+                molliePatchRequest = body;
+                return true;
+            })
+            .reply(200, mockData.mollieOrderResponse);
         const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
             input: {
                 paymentMethodCode: mockData.methodCode,
             },
         });
-        expect(createMolliePaymentIntent).toEqual({ url: 'https://this-means-reuse-succeeded' });
+        // We expect the patch request to add 3 order lines, because the mock response has 0 lines
+        expect(createMolliePaymentIntent.url).toBeDefined();
+        expect(molliePatchRequest.operations).toBeDefined();
+        expect(molliePatchRequest.operations[0].operation).toBe('add');
+        expect(molliePatchRequest.operations[0].data).toHaveProperty('name');
+        expect(molliePatchRequest.operations[0].data).toHaveProperty('quantity');
+        expect(molliePatchRequest.operations[0].data).toHaveProperty('unitPrice');
+        expect(molliePatchRequest.operations[0].data).toHaveProperty('totalAmount');
+        expect(molliePatchRequest.operations[0].data).toHaveProperty('vatRate');
+        expect(molliePatchRequest.operations[0].data).toHaveProperty('vatAmount');
+        expect(molliePatchRequest.operations[1].operation).toBe('add');
+        expect(molliePatchRequest.operations[2].operation).toBe('add');
     });
 
     it('Should get payment url with deducted amount if a payment is already made', async () => {
@@ -609,5 +623,33 @@ describe('Handle pay-later methods', () => {
         order = orderByCode!;
         expect(createShipmentBody).toBeDefined();
         expect(order.state).toBe('PaymentSettled');
+    });
+
+    it('Should add an unusable Mollie paymentMethod (missing redirectUrl)', async () => {
+        const { createPaymentMethod } = await adminClient.query<
+            CreatePaymentMethodMutation,
+            CreatePaymentMethodMutationVariables
+        >(CREATE_PAYMENT_METHOD, {
+            input: {
+                code: mockData.methodCodeBroken,
+
+                enabled: true,
+                handler: {
+                    code: molliePaymentHandler.code,
+                    arguments: [
+                        { name: 'apiKey', value: mockData.apiKey },
+                        { name: 'autoCapture', value: 'false' },
+                    ],
+                },
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'Mollie payment test',
+                        description: 'This is a Mollie test payment method',
+                    },
+                ],
+            },
+        });
+        expect(createPaymentMethod.code).toBe(mockData.methodCodeBroken);
     });
 });

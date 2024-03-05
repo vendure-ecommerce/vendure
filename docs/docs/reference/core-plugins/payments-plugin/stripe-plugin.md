@@ -243,6 +243,7 @@ export const config: VendureConfig = {
     }),
   ],
 };
+```
 
 Note: If the `paymentIntentCreateParams` is also used and returns a `metadata` key, then the values
 returned by both functions will be merged.

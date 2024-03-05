@@ -1,3 +1,47 @@
+## 2.2.0-next.5 (2024-02-26)
+
+
+#### Fixes
+
+* **core** Correctly return custom field relation scalar fields ([1280cf3](https://github.com/vendure-ecommerce/vendure/commit/1280cf3))
+
+## 2.2.0-next.4 (2024-02-26)
+
+
+#### Fixes
+
+* **admin-ui** Fix saving entities with custom field relations ([80f1f95](https://github.com/vendure-ecommerce/vendure/commit/80f1f95)) (this was a regression introduced in next.3)
+* **core** Fix typing on ProductOptionGroupService.create() method ([8fe24da](https://github.com/vendure-ecommerce/vendure/commit/8fe24da)), closes [#2577](https://github.com/vendure-ecommerce/vendure/issues/2577)
+
+#### Features
+
+* **admin-ui** Add React RichTextEditor component & hook (#2675) ([68e0fa5](https://github.com/vendure-ecommerce/vendure/commit/68e0fa5)), closes [#2675](https://github.com/vendure-ecommerce/vendure/issues/2675)
+* **admin-ui** Add support for custom action bar dropdown menus ([4d8bc74](https://github.com/vendure-ecommerce/vendure/commit/4d8bc74)), closes [#2678](https://github.com/vendure-ecommerce/vendure/issues/2678)
+* **admin-ui** Add support for permissions on custom fields ([94e0c42](https://github.com/vendure-ecommerce/vendure/commit/94e0c42)), closes [#2671](https://github.com/vendure-ecommerce/vendure/issues/2671)
+* **admin-ui** Channel aware picker ([fd92b4c](https://github.com/vendure-ecommerce/vendure/commit/fd92b4c))
+* **admin-ui** Expose `entity$` observable on action bar context ([3f07179](https://github.com/vendure-ecommerce/vendure/commit/3f07179))
+* **admin-ui** Implement UI for entity duplication ([7aa0d16](https://github.com/vendure-ecommerce/vendure/commit/7aa0d16)), closes [#627](https://github.com/vendure-ecommerce/vendure/issues/627)
+* **cli** Allow new plugin dir to be specified ([4ae12e7](https://github.com/vendure-ecommerce/vendure/commit/4ae12e7))
+* **cli** Implement "add entity" command ([ad87531](https://github.com/vendure-ecommerce/vendure/commit/ad87531))
+* **cli** Implement "add" command for ui extensions ([795b013](https://github.com/vendure-ecommerce/vendure/commit/795b013))
+* **core** Add support for permissions on custom fields ([1c9f8f9](https://github.com/vendure-ecommerce/vendure/commit/1c9f8f9)), closes [#2671](https://github.com/vendure-ecommerce/vendure/issues/2671)
+* **core** Implement collection duplicator ([d457851](https://github.com/vendure-ecommerce/vendure/commit/d457851)), closes [#627](https://github.com/vendure-ecommerce/vendure/issues/627)
+* **core** Implement facet duplicator ([8d20847](https://github.com/vendure-ecommerce/vendure/commit/8d20847)), closes [#627](https://github.com/vendure-ecommerce/vendure/issues/627)
+* **core** Implement internal support for entity duplication ([477fe93](https://github.com/vendure-ecommerce/vendure/commit/477fe93)), closes [#627](https://github.com/vendure-ecommerce/vendure/issues/627)
+* **core** Implement product duplicator ([6ac43d9](https://github.com/vendure-ecommerce/vendure/commit/6ac43d9)), closes [#627](https://github.com/vendure-ecommerce/vendure/issues/627)
+* **core** Implement promotion duplicator ([da58b0b](https://github.com/vendure-ecommerce/vendure/commit/da58b0b)), closes [#627](https://github.com/vendure-ecommerce/vendure/issues/627)
+* **core** Update TypeScript version to v5.1.6 ([2f51929](https://github.com/vendure-ecommerce/vendure/commit/2f51929))
+* **email-plugin** Publish EmailSendEvent after send attempted ([e4175e7](https://github.com/vendure-ecommerce/vendure/commit/e4175e7))
+
+## 2.2.0-next.3 (2024-02-14)
+
+
+#### Features
+
+* **admin-ui** Add bulk facet value editing to product variant list ([5ad41bf](https://github.com/vendure-ecommerce/vendure/commit/5ad41bf))
+* **core** Introduce new `ProductVariantPriceEvent` ([aa4eeb8](https://github.com/vendure-ecommerce/vendure/commit/aa4eeb8))
+* **core** Introduce new `ProductVariantPriceUpdateStrategy` ([9099f35](https://github.com/vendure-ecommerce/vendure/commit/9099f35)), closes [#2651](https://github.com/vendure-ecommerce/vendure/issues/2651)
+
 ## 2.2.0-next.2 (2024-02-07)
 
 

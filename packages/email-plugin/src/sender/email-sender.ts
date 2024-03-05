@@ -1,6 +1,6 @@
 import { InjectableStrategy } from '@vendure/core';
 
-import { EmailDetails, EmailTransportOptions } from './types';
+import { EmailDetails, EmailTransportOptions } from '../types';
 
 /**
  * @description
@@ -30,7 +30,7 @@ import { EmailDetails, EmailTransportOptions } from './types';
  *   // ...
  *   plugins: [
  *     EmailPlugin.init({
- *        // ... template, handlers config omitted
+ *        // ... template, handler config omitted
  *       transport: { type: 'none' },
  *        emailSender: new SendgridEmailSender(),
  *     }),
