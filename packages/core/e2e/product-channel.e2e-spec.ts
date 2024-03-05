@@ -5,6 +5,8 @@ import {
     E2E_DEFAULT_CHANNEL_TOKEN,
     ErrorResultGuard,
 } from '@vendure/testing';
+import { fail } from 'assert';
+import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -36,6 +38,8 @@ import {
     UpdateProductDocument,
     UpdateProductVariantsDocument,
 } from './graphql/generated-e2e-admin-types';
+import { AddItemToOrderMutation, AddItemToOrderMutationVariables } from './graphql/generated-e2e-shop-types';
+import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('ChannelAware Products and ProductVariants', () => {
@@ -43,6 +47,9 @@ describe('ChannelAware Products and ProductVariants', () => {
     const SECOND_CHANNEL_TOKEN = 'second_channel_token';
     const THIRD_CHANNEL_TOKEN = 'third_channel_token';
     let secondChannelAdminRole: CreateRoleMutation['createRole'];
+    const orderResultGuard: ErrorResultGuard<{ lines: Array<{ id: string }> }> = createErrorResultGuard(
+        input => !!input.lines,
+    );
 
     beforeAll(async () => {
         await server.init({
@@ -215,6 +222,99 @@ describe('ChannelAware Products and ProductVariants', () => {
             });
 
             expect(removeProductsFromChannel[0].channels.map(c => c.id)).toEqual(['T_1']);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/2716
+        it('querying an Order with a variant that was since removed from the channel', async () => {
+            await adminClient.query(AssignProductsToChannelDocument, {
+                input: {
+                    channelId: 'T_2',
+                    productIds: [product1.id],
+                    priceFactor: 1,
+                },
+            });
+
+            // Create an order in the second channel with the variant just assigned
+            shopClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrderMutation,
+                AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: product1.variants[0].id,
+                quantity: 1,
+            });
+            orderResultGuard.assertSuccess(addItemToOrder);
+
+            // Now remove that variant from the second channel
+            await adminClient.query(RemoveProductsFromChannelDocument, {
+                input: {
+                    productIds: [product1.id],
+                    channelId: 'T_2',
+                },
+            });
+
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+
+            // If no price fields are requested on the ProductVariant, then the query will
+            // succeed even if the ProductVariant is no longer assigned to the channel.
+            const GET_ORDER_WITHOUT_VARIANT_PRICE = `
+            query GetOrderWithoutVariantPrice($id: ID!) {
+              order(id: $id) {
+                id
+                lines {
+                  id
+                  linePrice
+                  productVariant {
+                    id
+                    name
+                  }
+                }
+              }
+            }`;
+            const { order } = await adminClient.query(gql(GET_ORDER_WITHOUT_VARIANT_PRICE), {
+                id: addItemToOrder.id,
+            });
+
+            expect(order).toEqual({
+                id: 'T_1',
+                lines: [
+                    {
+                        id: 'T_1',
+                        linePrice: 129900,
+                        productVariant: {
+                            id: 'T_1',
+                            name: 'Laptop 13 inch 8GB',
+                        },
+                    },
+                ],
+            });
+
+            try {
+                // The API will only throw if one of the price fields is requested in the query
+                const GET_ORDER_WITH_VARIANT_PRICE = `
+                query GetOrderWithVariantPrice($id: ID!) {
+                  order(id: $id) {
+                    id
+                    lines {
+                      id
+                      linePrice
+                      productVariant {
+                        id
+                        name
+                        price
+                      }
+                    }
+                  }
+                }`;
+                await adminClient.query(gql(GET_ORDER_WITH_VARIANT_PRICE), {
+                    id: addItemToOrder.id,
+                });
+                fail(`Should have thrown`);
+            } catch (e: any) {
+                expect(e.message).toContain(
+                    'No price information was found for ProductVariant ID "1" in the Channel "second-channel"',
+                );
+            }
         });
     });
 

@@ -651,7 +651,7 @@ export class ProductVariantService {
                         );
                         variant.taxCategory = variantWithTaxCategory.taxCategory;
                     }
-                    resolve(await this.applyChannelPriceAndTax(variant, ctx));
+                    resolve(await this.applyChannelPriceAndTax(variant, ctx, undefined, true));
                 } catch (e: any) {
                     reject(e);
                 }
@@ -691,8 +691,9 @@ export class ProductVariantService {
         variant: ProductVariant,
         ctx: RequestContext,
         order?: Order,
+        throwIfNoPriceFound = false,
     ): Promise<ProductVariant> {
-        return this.productPriceApplicator.applyChannelPriceAndTax(variant, ctx, order);
+        return this.productPriceApplicator.applyChannelPriceAndTax(variant, ctx, order, throwIfNoPriceFound);
     }
 
     /**
