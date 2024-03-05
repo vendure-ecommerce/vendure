@@ -622,8 +622,10 @@ describe('Handle pay-later methods', () => {
         expect(order.state).toBe('PaymentSettled');
     });
 
-    it('Should add an unusable Mollie paymentMethod (missing redirectUrl)', async () => {
-        const { createPaymentMethod } = await adminClient.query<
+    it('Should fail to add payment method without redirect url', async () => {
+        let error = ''
+        try {
+            const { createPaymentMethod } = await adminClient.query<
             CreatePaymentMethodMutation,
             CreatePaymentMethodMutationVariables
         >(CREATE_PAYMENT_METHOD, {
@@ -647,6 +649,9 @@ describe('Handle pay-later methods', () => {
                 ],
             },
         });
-        expect(createPaymentMethod.code).toBe(mockData.methodCodeBroken);
+        } catch(e: any) {
+            error = e.message
+        }
+        expect(error).toBe('The argument "redirectUrl" is required');
     });
 });
