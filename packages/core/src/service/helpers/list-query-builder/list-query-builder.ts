@@ -254,7 +254,6 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         extendedOptions: ExtendedListQueryOptions<T> = {},
     ): SelectQueryBuilder<T> {
         const apiType = extendedOptions.ctx?.apiType ?? 'shop';
-        const rawConnection = this.connection.rawConnection;
         const { take, skip } = this.parseTakeSkipParams(apiType, options, extendedOptions.ignoreQueryLimits);
 
         const repo = extendedOptions.ctx
@@ -435,7 +434,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
      *
      * This method mutates the customPropertyMap object.
      */
-    private normalizeCustomPropertyMap(
+    private normalizeCustomPropertyMap<T extends VendureEntity>(
         customPropertyMap: { [name: string]: string },
         options: ListQueryOptions<any>,
         qb: SelectQueryBuilder<any>,
@@ -445,7 +444,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                 continue;
             }
             const parts = customPropertyMap[property].split('.');
-            const entityPart = 2 <= parts.length ? parts[parts.length - 2] : qb.alias;
+            const entityPart = 2 <= parts.length ? parts.slice(0, -1).join('.') : qb.alias;
             const columnPart = parts[parts.length - 1];
 
             const relationMetadata =
@@ -459,11 +458,16 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                 return;
             }
 
-            customPropertyMap[property] = `${relationMetadata.propertyName}.${columnPart}`;
-            qb.leftJoinAndSelect(
-                `${qb.alias}.${relationMetadata.propertyName}`,
+            const alias = qb.connection.namingStrategy.joinTableName(
+                qb.alias,
                 relationMetadata.propertyName,
+                '',
+                '',
             );
+            customPropertyMap[property] = `${alias}.${columnPart}`;
+            if (!this.isRelationAlreadyJoined(qb, alias)) {
+                qb.leftJoinAndSelect(`${qb.alias}.${relationMetadata.propertyName}`, alias);
+            }
         }
     }
 

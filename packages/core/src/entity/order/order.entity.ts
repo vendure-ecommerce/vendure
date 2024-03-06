@@ -91,7 +91,7 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     orderPlacedAt?: Date;
 
     @Index()
-    @ManyToOne(type => Customer)
+    @ManyToOne(type => Customer, customer => customer.orders)
     customer?: Customer;
 
     @EntityId({ nullable: true })
@@ -122,7 +122,7 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
      * Promotions applied to the order. Only gets populated after the payment process has completed,
      * i.e. the Order is no longer active.
      */
-    @ManyToMany(type => Promotion)
+    @ManyToMany(type => Promotion, promotion => promotion.orders)
     @JoinTable()
     promotions: Promotion[];
 
@@ -133,7 +133,7 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     @OneToMany(type => Payment, payment => payment.order)
     payments: Payment[];
 
-    @ManyToMany(type => Fulfillment)
+    @ManyToMany(type => Fulfillment, fulfillment => fulfillment.orders)
     @JoinTable()
     fulfillments: Fulfillment[];
 
