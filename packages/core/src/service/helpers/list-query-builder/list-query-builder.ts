@@ -673,16 +673,18 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
     ): Set<string> {
         const metadata = qb.connection.getMetadata(entity);
         const processedRelations = new Set<string>();
-        const sourceMetadataIsTreeType = metadata.treeType;
 
-        if (!sourceMetadataIsTreeType) {
-            return processedRelations;
-        }
         const processRelation = (
             currentMetadata: EntityMetadata,
+            currentParentIsTreeType: boolean,
             currentPath: string,
             currentAlias: string,
         ) => {
+            const currentMetadataIsTreeType = metadata.treeType;
+            if (!currentParentIsTreeType && !currentMetadataIsTreeType) {
+                return;
+            }
+
             const parts = currentPath.split('.');
             const part = parts.shift();
 
@@ -711,6 +713,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                         if (subRelation.isEager) {
                             processRelation(
                                 relationMetadata.inverseEntityMetadata,
+                                !!relationMetadata.inverseEntityMetadata.treeType,
                                 subRelation.propertyPath,
                                 nextAlias,
                             );
@@ -719,14 +722,19 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                 }
 
                 if (nextPath) {
-                    processRelation(relationMetadata.inverseEntityMetadata, nextPath, nextAlias);
+                    processRelation(
+                        relationMetadata.inverseEntityMetadata,
+                        !!relationMetadata.inverseEntityMetadata.treeType,
+                        nextPath,
+                        nextAlias,
+                    );
                 }
                 processedRelations.add(currentPath);
             }
         };
 
         requestedRelations.forEach(relationPath => {
-            processRelation(metadata, relationPath, qb.alias);
+            processRelation(metadata, !!metadata.treeType, relationPath, qb.alias);
         });
 
         return processedRelations;
