@@ -259,7 +259,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         const repo = extendedOptions.ctx
             ? this.connection.getRepository(extendedOptions.ctx, entity)
             : this.connection.rawConnection.getRepository(entity);
-        const alias = (extendedOptions.entityAlias || entity.name).toLowerCase();
+        const alias = extendedOptions.entityAlias || entity.name.toLowerCase();
         const minimumRequiredRelations = this.getMinimumRequiredRelations(repo, options, extendedOptions);
         const qb = repo.createQueryBuilder(alias);
 
@@ -323,7 +323,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         }
 
         if (extendedOptions.channelId) {
-            qb.innerJoin(`${alias}.channels`, 'lqb__channel', 'lqb__channel.id = :channelId', {
+            qb.innerJoin(`${qb.alias}.channels`, 'lqb__channel', 'lqb__channel.id = :channelId', {
                 channelId: extendedOptions.channelId,
             });
         }
@@ -542,6 +542,9 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                 '',
                 '',
             );
+            if (!this.isRelationAlreadyJoined(qb, translationsAlias)) {
+                qb.leftJoinAndSelect(`${alias}.translations`, translationsAlias);
+            }
 
             qb.andWhere(
                 new Brackets(qb1 => {
