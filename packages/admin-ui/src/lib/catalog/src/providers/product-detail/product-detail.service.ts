@@ -100,10 +100,10 @@ export class ProductDetailService {
                   groups.map(c =>
                       this.dataService.product
                           .createProductOptionGroups({
-                              code: normalizeString(c.name, '-'),
+                              code: normalizeString(c.name, '-', languageCode),
                               translations: [{ languageCode, name: c.name }],
                               options: c.values.map(v => ({
-                                  code: normalizeString(v, '-'),
+                                  code: normalizeString(v, '-', languageCode),
                                   translations: [{ languageCode, name: v }],
                               })),
                           })

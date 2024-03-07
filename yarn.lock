@@ -5518,6 +5518,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/slug@^5.0.8":
+  version "5.0.8"
+  resolved "https://registry.yarnpkg.com/@types/slug/-/slug-5.0.8.tgz#76d40f033a8a99793f3dcbfb3f187ab9014f9d47"
+  integrity sha512-mblTWR1OST257k1gZ3QvqG+ERSr8Ea6dyM1FH6Jtm4jeXi0/r0/95VNctofuiywPxCVQuE8AuFoqmvJ4iVUlXQ==
+
 "@types/sockjs@^0.3.33":
   version "0.3.33"
   resolved "https://registry.yarnpkg.com/@types/sockjs/-/sockjs-0.3.33.tgz#570d3a0b99ac995360e3136fd6045113b1bd236f"
@@ -16903,6 +16908,11 @@ slick@^1.12.2:
   version "1.12.2"
   resolved "https://registry.yarnpkg.com/slick/-/slick-1.12.2.tgz#bd048ddb74de7d1ca6915faa4a57570b3550c2d7"
   integrity sha512-4qdtOGcBjral6YIBCWJ0ljFSKNLz9KkhbWtuGvUyRowl1kxfuE1x/Z/aJcaiilpb3do9bl5K7/1h9XC5wWpY/A==
+
+slug@^8.2.3:
+  version "8.2.3"
+  resolved "https://registry.yarnpkg.com/slug/-/slug-8.2.3.tgz#9aa33e532ae9ccddaf55a42abd9bf6a89d5e44d2"
+  integrity sha512-fXjhAZszNecz855GUNIwW0+sFPi9WV4bMiEKDOCA4wcq1ts1UnUVNy/F78B0Aat7/W3rA+se//33ILKNMrbeYQ==
 
 smart-buffer@^4.2.0:
   version "4.2.0"

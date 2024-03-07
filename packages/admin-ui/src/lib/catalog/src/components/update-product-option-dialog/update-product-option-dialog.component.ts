@@ -77,7 +77,7 @@ export class UpdateProductOptionDialogComponent
 
     updateCode(nameValue: string) {
         if (!this.codeInputTouched && !this.productOption.code) {
-            this.code = normalizeString(nameValue, '-');
+            this.code = normalizeString(nameValue, '-', this.activeLanguage);
         }
     }
 }

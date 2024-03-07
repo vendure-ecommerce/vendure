@@ -18,7 +18,11 @@
     "files": [
         "lib/**/*"
     ],
+    "dependencies": {
+        "slug": "^8.2.3"
+    },
     "devDependencies": {
+        "@types/slug": "^5.0.8",
         "rimraf": "^3.0.2",
         "typescript": "4.9.5"
     }

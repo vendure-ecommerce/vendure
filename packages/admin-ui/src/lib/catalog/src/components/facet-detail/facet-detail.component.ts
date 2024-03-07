@@ -120,7 +120,7 @@ export class FacetDetailComponent
         if (!currentCode) {
             const codeControl = this.detailForm.get(['facet', 'code']);
             if (codeControl && codeControl.pristine) {
-                codeControl.setValue(normalizeString(nameValue, '-'));
+                codeControl.setValue(normalizeString(nameValue, '-', this.languageCode));
             }
         }
     }
@@ -129,7 +129,7 @@ export class FacetDetailComponent
         if (!currentCode) {
             const codeControl = this.detailForm.get(['values', valueId, 'code']);
             if (codeControl && codeControl.pristine) {
-                codeControl.setValue(normalizeString(nameValue, '-'));
+                codeControl.setValue(normalizeString(nameValue, '-', this.languageCode));
             }
         }
     }

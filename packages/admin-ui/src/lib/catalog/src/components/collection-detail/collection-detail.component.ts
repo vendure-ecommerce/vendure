@@ -147,7 +147,7 @@ export class CollectionDetailComponent
         const currentTranslation = this.entity ? findTranslation(this.entity, this.languageCode) : undefined;
         const currentSlugIsEmpty = !currentTranslation || !currentTranslation.slug;
         if (slugControl && slugControl.pristine && currentSlugIsEmpty) {
-            slugControl.setValue(normalizeString(`${nameValue}`, '-'));
+            slugControl.setValue(normalizeString(`${nameValue}`, '-', this.languageCode));
         }
     }
 

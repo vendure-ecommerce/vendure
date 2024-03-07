@@ -141,7 +141,7 @@ export class ShippingMethodDetailComponent
         if (!currentCode) {
             const codeControl = this.detailForm.get(['code']);
             if (codeControl && codeControl.pristine) {
-                codeControl.setValue(normalizeString(nameValue, '-'));
+                codeControl.setValue(normalizeString(nameValue, '-', this.languageCode));
             }
         }
     }

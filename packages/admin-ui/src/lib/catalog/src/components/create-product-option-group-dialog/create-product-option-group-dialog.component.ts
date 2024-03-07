@@ -29,7 +29,7 @@ export class CreateProductOptionGroupDialogComponent implements Dialog<CreatePro
         const nameControl = this.form.get('name');
         const codeControl = this.form.get('code');
         if (nameControl && codeControl && codeControl.pristine) {
-            codeControl.setValue(normalizeString(`${nameControl.value}`, '-'));
+            codeControl.setValue(normalizeString(`${nameControl.value}`, '-', this.languageCode));
         }
     }
 

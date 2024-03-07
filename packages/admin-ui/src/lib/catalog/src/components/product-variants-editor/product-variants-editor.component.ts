@@ -238,7 +238,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
             this.dataService.product
                 .addOptionToGroup({
                     productOptionGroupId: group.id,
-                    code: normalizeString(optionName, '-'),
+                    code: normalizeString(optionName, '-', this.languageCode),
                     translations: [{ name: optionName, languageCode: this.languageCode }],
                 })
                 .subscribe(({ createProductOption }) => {
