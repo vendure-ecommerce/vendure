@@ -108,19 +108,19 @@ export class Channel extends VendureEntity {
 
     @Column() pricesIncludeTax: boolean;
 
-    @ManyToMany(type => Product, product => product.channels)
+    @ManyToMany(type => Product, product => product.channels, { onDelete: 'CASCADE' })
     products: Product[];
 
-    @ManyToMany(type => ProductVariant, productVariant => productVariant.channels)
+    @ManyToMany(type => ProductVariant, productVariant => productVariant.channels, { onDelete: 'CASCADE' })
     productVariants: ProductVariant[];
 
-    @ManyToMany(type => FacetValue, facetValue => facetValue.channels)
+    @ManyToMany(type => FacetValue, facetValue => facetValue.channels, { onDelete: 'CASCADE' })
     facetValues: FacetValue[];
 
-    @ManyToMany(type => Facet, facet => facet.channels)
+    @ManyToMany(type => Facet, facet => facet.channels, { onDelete: 'CASCADE' })
     facets: Facet[];
 
-    @ManyToMany(type => Collection, collection => collection.channels)
+    @ManyToMany(type => Collection, collection => collection.channels, { onDelete: 'CASCADE' })
     collections: Collection[];
 
     private generateToken(): string {
