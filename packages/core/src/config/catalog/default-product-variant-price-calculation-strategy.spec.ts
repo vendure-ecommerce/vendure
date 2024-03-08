@@ -1,7 +1,7 @@
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { roundMoney } from '../../common/round-money';
-import { ProductVariant } from '../../entity/index';
+import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import {
     createRequestContext,
     MockTaxRateService,

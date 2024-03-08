@@ -51,7 +51,7 @@ import { Release } from '../../../entity/stock-movement/release.entity';
 import { Sale } from '../../../entity/stock-movement/sale.entity';
 import { Surcharge } from '../../../entity/surcharge/surcharge.entity';
 import { EventBus } from '../../../event-bus/event-bus';
-import { OrderLineEvent } from '../../../event-bus/index';
+import { OrderLineEvent } from '../../../event-bus/events/order-line-event';
 import { CountryService } from '../../services/country.service';
 import { HistoryService } from '../../services/history.service';
 import { PaymentService } from '../../services/payment.service';

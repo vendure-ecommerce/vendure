@@ -10,15 +10,14 @@ import {
     RemovePaymentMethodsFromChannelInput,
     UpdatePaymentMethodInput,
 } from '@vendure/common/lib/generated-types';
-import { omit } from '@vendure/common/lib/omit';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
-import { RelationPaths } from '../../api/index';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { ForbiddenError, UserInputError } from '../../common/error/errors';
-import { Translated } from '../../common/index';
 import { ListQueryOptions } from '../../common/types/common-types';
+import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { PaymentMethodEligibilityChecker } from '../../config/payment/payment-method-eligibility-checker';
@@ -34,7 +33,6 @@ import { CustomFieldRelationService } from '../helpers/custom-field-relation/cus
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { TranslatorService } from '../helpers/translator/translator.service';
-import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { ChannelService } from './channel.service';
 import { RoleService } from './role.service';

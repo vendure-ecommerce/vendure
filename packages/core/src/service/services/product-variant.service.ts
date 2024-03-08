@@ -23,8 +23,8 @@ import { roundMoney } from '../../common/round-money';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { idsAreEqual } from '../../common/utils';
+import { UpdatedProductVariantPrice } from '../../config/catalog/product-variant-price-update-strategy';
 import { ConfigService } from '../../config/config.service';
-import { UpdatedProductVariantPrice } from '../../config/index';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import {
     Channel,

@@ -26,7 +26,7 @@ import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 import { camelCase } from 'typeorm/util/StringUtils';
 
 import { RequestContext } from '../../api/common/request-context';
-import { RelationPaths } from '../../api/index';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { isGraphQlErrorResult } from '../../common/error/error-result';
 import { ForbiddenError, InternalServerError } from '../../common/error/errors';
 import { MimeTypeError } from '../../common/error/generated-graphql-admin-errors';

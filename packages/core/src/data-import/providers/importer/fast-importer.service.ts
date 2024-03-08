@@ -23,9 +23,10 @@ import { ProductVariantAsset } from '../../../entity/product-variant/product-var
 import { ProductVariantPrice } from '../../../entity/product-variant/product-variant-price.entity';
 import { ProductVariantTranslation } from '../../../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
+import { RequestContextService } from '../../../service/helpers/request-context/request-context.service';
 import { TranslatableSaver } from '../../../service/helpers/translatable-saver/translatable-saver';
-import { RequestContextService, StockMovementService } from '../../../service/index';
 import { ChannelService } from '../../../service/services/channel.service';
+import { StockMovementService } from '../../../service/services/stock-movement.service';
 
 /**
  * @description

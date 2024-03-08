@@ -20,7 +20,7 @@ import {
     UiComponentConfig,
 } from '@vendure/common/lib/shared-types';
 
-import { RequestContext } from '../../api/index';
+import { RequestContext } from '../../api/common/request-context';
 import { Injector } from '../../common/injector';
 import { VendureEntity } from '../../entity/base/base.entity';
 

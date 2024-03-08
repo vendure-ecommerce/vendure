@@ -9,15 +9,13 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { In } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { InternalServerError } from '../../common/error/errors';
-import { idsAreEqual } from '../../common/index';
-import { ConfigService } from '../../config/index';
+import { idsAreEqual } from '../../common/utils';
+import { ConfigService } from '../../config/config.service';
 import { ShippingCalculator } from '../../config/shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from '../../config/shipping-method/shipping-eligibility-checker';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { StockLevel, StockLocation } from '../../entity/index';
-import { Order } from '../../entity/order/order.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
+import { Order } from '../../entity/order/order.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
 import { Allocation } from '../../entity/stock-movement/allocation.entity';

@@ -19,7 +19,7 @@ import {
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { EntityNotFoundError } from '../../../common/error/errors';
-import { ErrorResultUnion } from '../../../common/index';
+import { ErrorResultUnion } from '../../../common/error/error-result';
 import { Translated } from '../../../common/types/locale-types';
 import { ConfigService } from '../../../config/config.service';
 import { Facet } from '../../../entity/facet/facet.entity';

@@ -11,7 +11,7 @@ import {
     Logger,
 } from '../../../config';
 import { manualFulfillmentHandler } from '../../../config/fulfillment/manual-fulfillment-handler';
-import { TransactionalConnection } from '../../../connection/index';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { Channel, Collection, FacetValue, TaxCategory, User } from '../../../entity';
 import {
     CollectionService,

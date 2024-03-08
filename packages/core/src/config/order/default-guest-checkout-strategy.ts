@@ -1,9 +1,9 @@
 import { CreateCustomerInput, SetCustomerForOrderResult } from '@vendure/common/lib/generated-shop-types';
 
 import { RequestContext } from '../../api/common/request-context';
+import { ErrorResultUnion } from '../../common/error/error-result';
 import { AlreadyLoggedInError, GuestCheckoutError } from '../../common/error/generated-graphql-shop-errors';
-import { ErrorResultUnion, Injector } from '../../common/index';
-import { InjectableStrategy } from '../../common/types/injectable-strategy';
+import { Injector } from '../../common/injector';
 import { Customer, Order } from '../../entity/index';
 import { CustomerService } from '../../service/services/customer.service';
 

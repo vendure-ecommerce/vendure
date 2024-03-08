@@ -21,15 +21,16 @@ import {
     MutationSetDraftOrderShippingMethodArgs,
     Permission,
     QueryEligibleShippingMethodsForDraftOrderArgs,
-    SetCustomerForDraftOrderResult,
     ShippingMethodQuote,
 } from '@vendure/common/lib/generated-types';
 
-import { ErrorResultUnion, isGraphQlErrorResult, UserInputError } from '../../../common/index';
+import { ErrorResultUnion, isGraphQlErrorResult } from '../../../common/error/error-result';
+import { UserInputError } from '../../../common/error/errors';
 import { TransactionalConnection } from '../../../connection/index';
 import { Customer } from '../../../entity/customer/customer.entity';
 import { Order } from '../../../entity/order/order.entity';
-import { CustomerService, OrderService } from '../../../service/index';
+import { CustomerService } from '../../../service/services/customer.service';
+import { OrderService } from '../../../service/services/order.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';

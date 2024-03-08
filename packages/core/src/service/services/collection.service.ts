@@ -22,7 +22,7 @@ import { debounceTime } from 'rxjs/operators';
 import { In, IsNull } from 'typeorm';
 
 import { RequestContext, SerializedRequestContext } from '../../api/common/request-context';
-import { RelationPaths } from '../../api/index';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { ForbiddenError, IllegalOperationError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';

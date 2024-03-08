@@ -12,7 +12,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 
 import { Seller } from '../../../entity/seller/seller.entity';
-import { SellerService } from '../../../service/index';
+import { SellerService } from '../../../service/services/seller.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';

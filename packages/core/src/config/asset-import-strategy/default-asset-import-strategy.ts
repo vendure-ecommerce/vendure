@@ -7,7 +7,7 @@ import { delay, retryWhen, take, tap } from 'rxjs/operators';
 import { Readable } from 'stream';
 import { URL } from 'url';
 
-import { Injector } from '../../common/index';
+import { Injector } from '../../common/injector';
 import { ConfigService } from '../config.service';
 import { Logger } from '../logger/vendure-logger';
 

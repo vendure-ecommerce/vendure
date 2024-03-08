@@ -13,8 +13,8 @@ import {
     QueryPaymentMethodsArgs,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
-import { Translated } from '../../../common/index';
 
+import { Translated } from '../../../common/types/locale-types';
 import { PaymentMethod } from '../../../entity/payment-method/payment-method.entity';
 import { PaymentMethodService } from '../../../service/services/payment-method.service';
 import { RequestContext } from '../../common/request-context';

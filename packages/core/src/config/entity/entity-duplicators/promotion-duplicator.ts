@@ -1,16 +1,15 @@
 import {
-    CreateFacetInput,
     CreatePromotionInput,
-    FacetTranslationInput,
     LanguageCode,
     Permission,
     PromotionTranslationInput,
 } from '@vendure/common/lib/generated-types';
 
-import { Injector, isGraphQlErrorResult } from '../../../common/index';
-import { TransactionalConnection } from '../../../connection/index';
-import { Facet, Promotion } from '../../../entity/index';
-import { FacetService, FacetValueService, PromotionService } from '../../../service/index';
+import { isGraphQlErrorResult } from '../../../common/error/error-result';
+import { Injector } from '../../../common/injector';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
+import { Promotion } from '../../../entity/promotion/promotion.entity';
+import { PromotionService } from '../../../service/services/promotion.service';
 import { EntityDuplicator } from '../entity-duplicator';
 
 let connection: TransactionalConnection;

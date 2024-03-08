@@ -23,7 +23,7 @@ import { PaginatedList } from '@vendure/common/lib/shared-types';
 import { ErrorResultUnion } from '../../../common/error/error-result';
 import { Address } from '../../../entity/address/address.entity';
 import { Customer } from '../../../entity/customer/customer.entity';
-import { CustomerGroupService } from '../../../service/index';
+import { CustomerGroupService } from '../../../service/services/customer-group.service';
 import { CustomerService } from '../../../service/services/customer.service';
 import { OrderService } from '../../../service/services/order.service';
 import { RequestContext } from '../../common/request-context';

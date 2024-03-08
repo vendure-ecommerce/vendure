@@ -1,6 +1,6 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 
-import { TransactionalConnection } from '../../../connection/index';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { Fulfillment } from '../../../entity/fulfillment/fulfillment.entity';
 import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { FulfillmentLine } from '../../../entity/order-line-reference/fulfillment-line.entity';

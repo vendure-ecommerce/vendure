@@ -14,7 +14,7 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { In } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { RelationPaths } from '../../api/index';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { ErrorResultUnion, FacetInUseError, ForbiddenError, UserInputError } from '../../common';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';

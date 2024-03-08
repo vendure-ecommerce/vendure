@@ -4,12 +4,12 @@ import { GraphQLSchema } from 'graphql';
 import { GraphQLDateTime, GraphQLJSON } from 'graphql-scalars';
 
 import { REQUEST_CONTEXT_KEY } from '../../common/constants';
+import { InternalServerError } from '../../common/error/errors';
 import {
     adminErrorOperationTypeResolvers,
     ErrorResult,
 } from '../../common/error/generated-graphql-admin-errors';
 import { shopErrorOperationTypeResolvers } from '../../common/error/generated-graphql-shop-errors';
-import { InternalServerError } from '../../common/index';
 import { Translatable } from '../../common/types/locale-types';
 import { ConfigService } from '../../config/config.service';
 import { CustomFieldConfig, RelationCustomFieldConfig } from '../../config/custom-field/custom-field-types';

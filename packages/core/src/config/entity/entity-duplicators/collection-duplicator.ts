@@ -5,10 +5,10 @@ import {
     Permission,
 } from '@vendure/common/lib/generated-types';
 
-import { Injector } from '../../../common/index';
-import { TransactionalConnection } from '../../../connection/index';
-import { Collection } from '../../../entity/index';
-import { CollectionService } from '../../../service/index';
+import { Injector } from '../../../common/injector';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
+import { Collection } from '../../../entity/collection/collection.entity';
+import { CollectionService } from '../../../service/services/collection.service';
 import { EntityDuplicator } from '../entity-duplicator';
 
 let connection: TransactionalConnection;

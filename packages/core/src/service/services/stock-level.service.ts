@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ID } from '@vendure/common/lib/shared-types';
 
-import { RequestContext } from '../../api/index';
-import { AvailableStock, ConfigService } from '../../config/index';
-import { TransactionalConnection } from '../../connection/index';
-import { ProductVariant, StockLevel } from '../../entity/index';
+import { RequestContext } from '../../api/common/request-context';
+import { AvailableStock } from '../../config/catalog/stock-location-strategy';
+import { ConfigService } from '../../config/config.service';
+import { TransactionalConnection } from '../../connection/transactional-connection';
+import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
+import { StockLevel } from '../../entity/stock-level/stock-level.entity';
 
 import { StockLocationService } from './stock-location.service';
 

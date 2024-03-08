@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UpdateGlobalSettingsInput } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../api/common/request-context';
-import { RequestContextCacheService } from '../../cache/index';
+import { RequestContextCacheService } from '../../cache/request-context-cache.service';
 import { InternalServerError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';

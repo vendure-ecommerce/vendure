@@ -8,15 +8,16 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { IsNull } from 'typeorm';
 
-import { Injector, InternalServerError } from '../../../common/index';
-import { TransactionalConnection } from '../../../connection/index';
-import { Product, ProductOptionGroup, ProductVariant } from '../../../entity/index';
-import {
-    ProductOptionGroupService,
-    ProductOptionService,
-    ProductService,
-    ProductVariantService,
-} from '../../../service/index';
+import { InternalServerError } from '../../../common/error/errors';
+import { Injector } from '../../../common/injector';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
+import { Product } from '../../../entity/product/product.entity';
+import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
+import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
+import { ProductOptionGroupService } from '../../../service/services/product-option-group.service';
+import { ProductOptionService } from '../../../service/services/product-option.service';
+import { ProductVariantService } from '../../../service/services/product-variant.service';
+import { ProductService } from '../../../service/services/product.service';
 import { EntityDuplicator } from '../entity-duplicator';
 
 let connection: TransactionalConnection;

@@ -1,4 +1,4 @@
-import { RequestContext } from '../../api/index';
+import { RequestContext } from '../../api/common/request-context';
 import { Order } from '../../entity/order/order.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';

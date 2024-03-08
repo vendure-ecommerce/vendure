@@ -11,18 +11,20 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
-import { RelationPaths, RequestContext } from '../../api/index';
-import { RequestContextCacheService } from '../../cache/index';
+import { RequestContext } from '../../api/common/request-context';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
+import { RequestContextCacheService } from '../../cache/request-context-cache.service';
 import {
     EntityNotFoundError,
     ForbiddenError,
-    idsAreEqual,
-    ListQueryOptions,
     UserInputError,
-} from '../../common/index';
-import { ConfigService } from '../../config/index';
-import { TransactionalConnection } from '../../connection/index';
-import { OrderLine, StockLevel } from '../../entity/index';
+} from '../../common/error/errors';
+import { ListQueryOptions } from '../../common/types/common-types';
+import { idsAreEqual } from '../../common/utils';
+import { ConfigService } from '../../config/config.service';
+import { TransactionalConnection } from '../../connection/transactional-connection';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
+import { StockLevel } from '../../entity/stock-level/stock-level.entity';
 import { StockLocation } from '../../entity/stock-location/stock-location.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { RequestContextService } from '../helpers/request-context/request-context.service';

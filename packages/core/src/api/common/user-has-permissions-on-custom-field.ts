@@ -1,6 +1,6 @@
 import { Permission } from '@vendure/common/lib/generated-types';
 
-import { CustomFieldConfig } from '../../config/index';
+import { CustomFieldConfig } from '../../config/custom-field/custom-field-types';
 
 import { RequestContext } from './request-context';
 

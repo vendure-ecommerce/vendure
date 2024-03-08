@@ -5,7 +5,7 @@ import {
     Permission,
 } from '@vendure/common/lib/generated-types';
 
-import { EntityDuplicatorService } from '../../../service/index';
+import { EntityDuplicatorService } from '../../../service/helpers/entity-duplicator/entity-duplicator.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
