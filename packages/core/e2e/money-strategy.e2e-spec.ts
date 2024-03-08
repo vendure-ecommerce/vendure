@@ -102,7 +102,7 @@ describe('Custom MoneyStrategy', () => {
         cheapVariantId = productVariants.items[0].id;
         expensiveVariantId = productVariants.items[1].id;
 
-        expect(CustomMoneyStrategy.transformerFromSpy).toHaveBeenCalledTimes(6);
+        expect(CustomMoneyStrategy.transformerFromSpy).toHaveBeenCalledTimes(2);
     });
 
     // https://github.com/vendure-ecommerce/vendure/issues/838

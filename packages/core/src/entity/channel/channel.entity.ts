@@ -1,10 +1,15 @@
 import { CurrencyCode, LanguageCode } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
-import { Column, Entity, Index, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, ManyToMany, ManyToOne } from 'typeorm';
 
 import { VendureEntity } from '../base/base.entity';
+import { Collection } from '../collection/collection.entity';
 import { CustomChannelFields } from '../custom-entity-fields';
 import { EntityId } from '../entity-id.decorator';
+import { Facet } from '../facet/facet.entity';
+import { FacetValue } from '../facet-value/facet-value.entity';
+import { Product } from '../product/product.entity';
+import { ProductVariant } from '../product-variant/product-variant.entity';
 import { Seller } from '../seller/seller.entity';
 import { Zone } from '../zone/zone.entity';
 
@@ -102,6 +107,21 @@ export class Channel extends VendureEntity {
     customFields: CustomChannelFields;
 
     @Column() pricesIncludeTax: boolean;
+
+    @ManyToMany(type => Product, product => product.channels)
+    products: Product[];
+
+    @ManyToMany(type => ProductVariant, productVariant => productVariant.channels)
+    productVariants: ProductVariant[];
+
+    @ManyToMany(type => FacetValue, facetValue => facetValue.channels)
+    facetValues: FacetValue[];
+
+    @ManyToMany(type => Facet, facet => facet.channels)
+    facets: Facet[];
+
+    @ManyToMany(type => Collection, collection => collection.channels)
+    collections: Collection[];
 
     private generateToken(): string {
         const randomString = () => Math.random().toString(36).substr(3, 10);

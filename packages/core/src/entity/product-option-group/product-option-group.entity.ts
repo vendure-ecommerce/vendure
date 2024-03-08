@@ -40,7 +40,7 @@ export class ProductOptionGroup
     options: ProductOption[];
 
     @Index()
-    @ManyToOne(type => Product)
+    @ManyToOne(type => Product, product => product.optionGroups)
     product: Product;
 
     @Column(type => CustomProductOptionGroupFields)

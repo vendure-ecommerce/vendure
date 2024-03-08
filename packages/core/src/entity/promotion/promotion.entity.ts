@@ -111,6 +111,9 @@ export class Promotion
     @JoinTable()
     channels: Channel[];
 
+    @ManyToMany(type => Order, order => order.promotions)
+    orders: Order[];
+
     @Column(type => CustomPromotionFields)
     customFields: CustomPromotionFields;
 

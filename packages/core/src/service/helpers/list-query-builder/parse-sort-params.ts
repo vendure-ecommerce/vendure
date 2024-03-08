@@ -1,6 +1,7 @@
 import { Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
-import { Connection, OrderByCondition } from 'typeorm';
+import { OrderByCondition } from 'typeorm';
+import { DataSource } from 'typeorm/data-source/DataSource';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 
 import { UserInputError } from '../../../common/error/errors';
@@ -17,9 +18,12 @@ import { getCalculatedColumns } from './get-calculated-columns';
  * @param connection
  * @param entity
  * @param sortParams
+ * @param customPropertyMap
+ * @param entityAlias
+ * @param customFields
  */
 export function parseSortParams<T extends VendureEntity>(
-    connection: Connection,
+    connection: DataSource,
     entity: Type<T>,
     sortParams?: NullOptionals<SortParameter<T>> | null,
     customPropertyMap?: { [name: string]: string },
@@ -39,7 +43,8 @@ export function parseSortParams<T extends VendureEntity>(
         if (matchingColumn) {
             output[`${alias}.${matchingColumn.propertyPath}`] = order as any;
         } else if (translationColumns.find(c => c.propertyName === key)) {
-            const translationsAlias = connection.namingStrategy.eagerJoinRelationAlias(alias, 'translations');
+            const translationsAlias = connection.namingStrategy.joinTableName(alias, 'translations', '', '');
+
             const pathParts = [translationsAlias];
             const isLocaleStringCustomField =
                 customFields?.find(f => f.name === key)?.type === 'localeString';

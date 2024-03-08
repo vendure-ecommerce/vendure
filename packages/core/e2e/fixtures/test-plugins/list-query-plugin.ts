@@ -35,7 +35,7 @@ export class CustomFieldRelationTestEntity extends VendureEntity {
     @Column()
     data: string;
 
-    @ManyToOne(() => TestEntity)
+    @ManyToOne(() => TestEntity, testEntity => testEntity.customFields.relation)
     parent: Relation<TestEntity>;
 }
 
@@ -48,7 +48,7 @@ export class CustomFieldOtherRelationTestEntity extends VendureEntity {
     @Column()
     data: string;
 
-    @ManyToOne(() => TestEntity)
+    @ManyToOne(() => TestEntity, testEntity => testEntity.customFields.otherRelation)
     parent: Relation<TestEntity>;
 }
 

@@ -170,8 +170,9 @@ export class CollectionService implements OnModuleInit {
         });
 
         if (options?.topLevelOnly === true) {
-            qb.leftJoin('collection.parent', 'parent');
-            qb.andWhere('parent.isRoot = :isRoot', { isRoot: true });
+            qb.innerJoin('collection.parent', 'parent_filter', 'parent_filter.isRoot = :isRoot', {
+                isRoot: true,
+            });
         }
 
         return qb.getManyAndCount().then(async ([collections, totalItems]) => {

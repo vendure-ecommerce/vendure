@@ -1,4 +1,5 @@
 import { Type } from '@vendure/common/lib/shared-types';
+import { fail } from 'assert';
 import { DefaultNamingStrategy } from 'typeorm';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { RelationMetadata } from 'typeorm/metadata/RelationMetadata';
@@ -73,7 +74,7 @@ describe('parseSortParams()', () => {
         const result = parseSortParams(connection as any, Product, sortParams);
         expect(result).toEqual({
             'product.id': 'ASC',
-            'product_translations.name': 'DESC',
+            'product__translations.name': 'DESC',
         });
     });
 
@@ -111,7 +112,7 @@ describe('parseSortParams()', () => {
             productCustomFields,
         );
         expect(result).toEqual({
-            'product_translations.customFields.shortName': 'ASC',
+            'product__translations.customFields.shortName': 'ASC',
         });
     });
 
