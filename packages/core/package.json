@@ -21,7 +21,7 @@
     "scripts": {
         "tsc:watch": "tsc -p ./build/tsconfig.build.json --watch",
         "gulp:watch": "gulp -f ./build/gulpfile.ts watch",
-        "build": "rimraf dist && tsc -p ./build/tsconfig.build.json && gulp -f ./build/gulpfile.ts build",
+        "build": "rimraf dist && tsc -p ./build/tsconfig.build.json && tsc -p ./build/tsconfig.cli.json && gulp -f ./build/gulpfile.ts build",
         "watch": "concurrently yarn:tsc:watch yarn:gulp:watch",
         "lint": "eslint --fix .",
         "test": "vitest --config vitest.config.mts --run",
