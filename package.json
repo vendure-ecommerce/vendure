@@ -44,7 +44,7 @@
     "conventional-changelog-core": "^7.0.0",
     "cross-env": "^7.0.3",
     "find": "^0.3.0",
-    "graphql": "16.8.0",
+    "graphql": "16.8.1",
     "husky": "^4.3.0",
     "klaw-sync": "^6.0.0",
     "lerna": "^8.1.2",

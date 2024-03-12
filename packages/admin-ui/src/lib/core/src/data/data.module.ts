@@ -4,7 +4,7 @@ import { ApolloClientOptions, InMemoryCache } from '@apollo/client/core';
 import { setContext } from '@apollo/client/link/context';
 import { ApolloLink } from '@apollo/client/link/core';
 import { ApolloModule, APOLLO_OPTIONS } from 'apollo-angular';
-import { createUploadLink } from 'apollo-upload-client';
+import createUploadLink from 'apollo-upload-client/createUploadLink.mjs';
 
 import { getAppConfig } from '../app.config';
 import { introspectionResult } from '../common/introspection-result-wrapper';
