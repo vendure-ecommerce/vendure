@@ -1,8 +1,6 @@
-import { stitchSchemas, ValidationLevel } from '@graphql-tools/stitch';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import {
     buildSchema,
-    getNamedType,
     GraphQLEnumType,
     GraphQLField,
     GraphQLInputField,
@@ -26,6 +24,10 @@ import {
     // hazard issue when testing this file in vitest. See https://github.com/vitejs/vite/issues/7879
 } from 'graphql/index.js';
 
+// Using require here to prevent issues when running vitest tests also.
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { stitchSchemas, ValidationLevel } = require('@graphql-tools/stitch');
+
 /**
  * Generates ListOptions inputs for queries which return PaginatedList types.
  */
@@ -37,10 +39,13 @@ export function generateListOptions(typeDefsOrSchema: string | GraphQLSchema): G
     }
     const logicalOperatorEnum = schema.getType('LogicalOperator');
     const objectTypes = Object.values(schema.getTypeMap()).filter(isObjectType);
-    const allFields = objectTypes.reduce((fields, type) => {
-        const typeFields = Object.values(type.getFields()).filter(f => isListQueryType(f.type));
-        return [...fields, ...typeFields];
-    }, [] as Array<GraphQLField<any, any>>);
+    const allFields = objectTypes.reduce(
+        (fields, type) => {
+            const typeFields = Object.values(type.getFields()).filter(f => isListQueryType(f.type));
+            return [...fields, ...typeFields];
+        },
+        [] as Array<GraphQLField<any, any>>,
+    );
     const generatedTypes: GraphQLNamedType[] = [];
 
     for (const query of allFields) {
