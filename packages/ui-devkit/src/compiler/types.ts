@@ -136,8 +136,28 @@ export interface AdminUiExtension
      * relative to the `extensionPath` which exports an array of Angular route definitions.
      */
     routes?: Array<{
+        /**
+         * @description
+         * The name of the route. This will be used as the path in the URL.
+         */
         route: string;
+        /**
+         * @description
+         * The path to the file which exports an array of Angular route definitions.
+         */
         filePath: string;
+        /**
+         * @description
+         * All extensions will be mounted under the `/extensions/` route. This option allows you to specify a
+         * custom prefix rather than `/extensions/`. For example, setting this to `custom` would cause the extension
+         * to be mounted at `/custom/<route>` instead.
+         *
+         * A common use case for this is to mount the extension at the root of the Admin UI, by setting this to an empty string.
+         * This is useful when the extension is intended to replace the default Admin UI, rather than extend it.
+         *
+         * @since 2.2.0
+         */
+        prefix?: string;
     }>;
 
     /**
