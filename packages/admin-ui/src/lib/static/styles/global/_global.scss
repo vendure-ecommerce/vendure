@@ -1,6 +1,12 @@
 html, body:not([cds-text]) {
     font-size: var(--font-size-sm);
     font-family: Inter, sans-serif !important;
+    line-height: var(--cds-global-typography-body-line-height);
+    color: var(--color-text-100);
+}
+
+body p:not([cds-text]) {
+    font-family: Inter, sans-serif !important;
 }
 
 .page-block {

@@ -2,7 +2,7 @@
 
 // Default Vendure light theme. The Clarity component custom properties
 // are left as their defaults.
-:root {
+:root [cds-theme="light"] {
     // Colors
     --color-grey-100: #fafafa;
     --color-grey-200: #f2f3f5;
@@ -118,6 +118,8 @@
     --color-text-100: var(--clr-global-font-color);
     --color-text-200: var(--clr-global-font-color-secondary);
     --color-text-300: var(--color-grey-400);
+    --clr-global-font-color: hsl(198, 0%, 40%);
+    --clr-list-item-color: var(--clr-global-font-color);
     --color-text-inverse: white;
     --color-text-active: var(--color-primary-800);
 
@@ -186,6 +188,7 @@
 
     --color-dropdown-item-focus-outline: rgba(77, 207, 255, 0.53);
 
+
     // Layout
     --layout-content-max-width: 1400px;
     --left-nav-width: 0px;
@@ -231,6 +234,13 @@
     --font-size-base: 16px;
     --font-size-lg: 18px;
     --font-size-xl: 20px;
+    --cds-global-typography-body-line-height: 24px;
+    --cds-alias-typography-body-line-height: 16px;
+    --cds-alias-typography-body-letter-spacing: normal;
+    --cds-alias-typography-display-letter-spacing: normal;
+    --cds-alias-typography-secondary-font-size: 13px;
+    --cds-alias-typography-font-size-3: var(--font-size-sm);
+    --cds-global-typography-font-size-4: var(--cds-alias-typography-secondary-font-size);
 
     // spacing
     --space-unit: 8px;
@@ -240,4 +250,5 @@
     --clr-link-hover-color: var(--color-weight-700);
     --clr-link-active-color: var(--color-weight-700);
     --clr-link-color: var(--color-weight-700);
+    --clr-list-item-color: var(--color-weight-700);
 }

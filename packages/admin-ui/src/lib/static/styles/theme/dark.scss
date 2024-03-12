@@ -1,7 +1,7 @@
 // Vendure dark theme
 // Based on this dark theme example from Scott Mathis:
 // https://github.com/mathisscott/clarity-theming-starter/blob/20f4680b43a9a7fd3d43a6ba36f717fdafc6e570/src/_dark-theme.scss
-[data-theme="dark"] {
+[data-theme="dark"][cds-theme] {
     --color-grey-100: hsl(211, 10%, 90%);
     --color-grey-200: hsl(211, 10%, 67%);
     --color-grey-300: hsl(211, 10%, 47%);
@@ -281,9 +281,10 @@
     */
     --clr-dropdown-active-text-color: hsl(0, 0%, 100%);
     --clr-dropdown-bg-color: hsl(198, 28%, 18%);
+    --clr-dropdown-border-color: rgb(62, 97, 116);
     --clr-dropdown-text-color: hsl(203, 16%, 72%);
     --clr-dropdown-item-color: hsl(203, 16%, 72%);
-    --clr-dropdown-border-color: var(--color-weight-200);
+    --clr-dropdown-item-hover-color: hsl(203, 16%, 72%);
     --clr-dropdown-child-border-color: hsl(0, 0%, 0%);
     --clr-dropdown-bg-active-color: var(--clr-global-selection-color);
     --clr-dropdown-bg-hover-color: var(--clr-global-hover-bg-color);

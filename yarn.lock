@@ -2549,7 +2549,7 @@
   resolved "https://registry.yarnpkg.com/@cds/city/-/city-1.1.0.tgz#5b7323750d3d64671ce2e3a804bcf260fbea1154"
   integrity sha512-S9K+Q39BGOghyLHmR0Wdcmu1i1noSUk8HcvMj+3IaohZw02WFd99aPTQDHJeseXrXZP3CNovaSlePI0R11NcFg==
 
-"@cds/core@^6.6.0":
+"@cds/core@^6.9.2":
   version "6.9.2"
   resolved "https://registry.yarnpkg.com/@cds/core/-/core-6.9.2.tgz#0c5c5e2e9a86f1bddf3f0fba6bc17a73826a00e9"
   integrity sha512-Tx5L8/kLueBoSpu18w9eLonqFk1CVromp9bBXk6FLVVmYghE/lSt/WsYi6c0xyv7rJZpcHoGS/gh5p9Erelk3Q==
@@ -2578,10 +2578,10 @@
     picocolors "^1.0.0"
     sisteransi "^1.0.5"
 
-"@clr/angular@^15.11.0":
-  version "15.14.5"
-  resolved "https://registry.yarnpkg.com/@clr/angular/-/angular-15.14.5.tgz#8bc5cf997e9fb2fe0419f3dd03633f77bcac9483"
-  integrity sha512-fMnkCrr3gyhVFWZiOdT8wdL+Hj/1A3YeQuz/g51DbDQdt8j2piFA5ivt5mHLuqMZWcpPX7zgDIVS7pu12FwjzQ==
+"@clr/angular@^17.0.1":
+  version "17.0.1"
+  resolved "https://registry.yarnpkg.com/@clr/angular/-/angular-17.0.1.tgz#6b035762254a36dba3d2619b76c00add20161fb2"
+  integrity sha512-36zROmGf0r5OArVrEunzKKKRtxSgvQGd6TgmPjSg8OMgyDr2l8jexJHooF0Hx3uXvd84rt0QoYuajMb+emOVNg==
   dependencies:
     tslib "^2.3.0"
 
@@ -2613,10 +2613,10 @@
   resolved "https://registry.yarnpkg.com/@clr/icons/-/icons-13.0.2.tgz#600b530fe8e0d654de81f97d2b64db5905266eb6"
   integrity sha512-bdcSuFvQAbIIp8Q2Fm55BjHW5cawP4xEOkZf2IEIin0d9ViRcAJNjACBCOMDhx2up7nPZsXwN2gL8zJhL7TSZQ==
 
-"@clr/ui@^15.11.0":
-  version "15.14.5"
-  resolved "https://registry.yarnpkg.com/@clr/ui/-/ui-15.14.5.tgz#77ea445a1814379955c34e33157596f1c5ba606c"
-  integrity sha512-Of2qpedwLE3dZh2virgk3w/kWMli+ugfXHfBVIg+HSmIlJCcmunPEGvh+u+GpgqtcETOIgitkZ54RmvuOrGL9Q==
+"@clr/ui@^17.0.1":
+  version "17.0.1"
+  resolved "https://registry.yarnpkg.com/@clr/ui/-/ui-17.0.1.tgz#17b49aa925db54b4bbcda6e7b7bb8d53effcfd70"
+  integrity sha512-t7BncCbYUlyGnNiSJqSnNtvbnpmChVT2Km0JboZR03EqxfnYKWI/0AlpEKcQx3JYAWRL4xxYGExbLxOB8B13ZA==
 
 "@colors/colors@1.5.0":
   version "1.5.0"

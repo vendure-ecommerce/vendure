@@ -6,7 +6,7 @@
     white-space: nowrap;
     align-items: center;
     padding: var(--space-unit) calc(var(--space-unit) * 1.5);
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-sm) !important;
     gap: var(--space-unit);
     border: none;
     border-radius: var(--border-radius-sm);
@@ -15,6 +15,7 @@
     0px 2px 6px rgba(0, 0, 0, 0.03), 0px 2px 11px rgba(0, 0, 0, 0.04);
     background-color: var(--color-button-bg);
     color: var(--color-weight-700);
+    line-height: var(--cds-global-typography-body-line-height) !important;
 
     &:link,
     &:visited {
