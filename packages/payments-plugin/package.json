@@ -44,16 +44,16 @@
     },
     "devDependencies": {
         "@mollie/api-client": "^3.7.0",
-        "@types/braintree": "^2.22.15",
-        "@types/localtunnel": "2.0.1",
+        "@types/braintree": "^3.3.11",
+        "@types/localtunnel": "2.0.4",
         "@vendure/common": "2.2.0-next.5",
         "@vendure/core": "2.2.0-next.5",
         "@vendure/testing": "2.2.0-next.5",
-        "braintree": "^3.16.0",
+        "braintree": "^3.22.0",
         "localtunnel": "2.0.2",
-        "nock": "^13.1.4",
-        "rimraf": "^3.0.2",
-        "stripe": "^13.3.0",
+        "nock": "^13.5.4",
+        "rimraf": "^5.0.5",
+        "stripe": "^14.20.0",
         "typescript": "5.3.3"
     }
 }

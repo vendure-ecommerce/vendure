@@ -19,7 +19,7 @@
         "lib/**/*"
     ],
     "devDependencies": {
-        "rimraf": "^3.0.2",
+        "rimraf": "^5.0.5",
         "typescript": "5.3.3"
     }
 }

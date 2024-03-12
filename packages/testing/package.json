@@ -37,7 +37,6 @@
     },
     "dependencies": {
         "@graphql-typed-document-node/core": "^3.2.0",
-        "@types/node-fetch": "^2.6.4",
         "@vendure/common": "2.2.0-next.5",
         "faker": "^4.1.0",
         "form-data": "^4.0.0",
@@ -47,12 +46,14 @@
         "sql.js": "1.8.0"
     },
     "devDependencies": {
-        "@types/mysql": "^2.15.15",
-        "@types/pg": "^7.14.5",
+        "@types/node-fetch": "^2.6.4",
+        "@types/mysql": "^2.15.26",
+        "@types/pg": "^8.11.2",
         "@vendure/core": "2.2.0-next.5",
+        "@types/faker": "^5.5.9",
         "mysql": "^2.18.1",
-        "pg": "^8.4.0",
-        "rimraf": "^3.0.0",
+        "pg": "^8.11.3",
+        "rimraf": "^5.0.5",
         "typescript": "5.3.3"
     }
 }

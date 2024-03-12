@@ -1,7 +1,5 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-
 import { ConfigArgDef } from '../../common/configurable-operation';
 import { UserInputError } from '../../common/error/errors';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
