@@ -11,7 +11,7 @@ import {
 } from '@vendure/core';
 import { createHash } from 'crypto';
 import express, { NextFunction, Request, Response } from 'express';
-import { fromBuffer } from 'file-type';
+import { fileTypeFromBuffer } from 'file-type';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -244,7 +244,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                 const file = await AssetServerPlugin.assetStorage.readFileToBuffer(key);
                 let mimeType = this.getMimeType(key);
                 if (!mimeType) {
-                    mimeType = (await fromBuffer(file))?.mime || 'application/octet-stream';
+                    mimeType = (await fileTypeFromBuffer(file))?.mime || 'application/octet-stream';
                 }
                 res.contentType(mimeType);
                 res.setHeader('content-security-policy', "default-src 'self'");
@@ -289,7 +289,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                         }
                         let mimeType = this.getMimeType(cachedFileName);
                         if (!mimeType) {
-                            mimeType = (await fromBuffer(imageBuffer))?.mime || 'image/jpeg';
+                            mimeType = (await fileTypeFromBuffer(imageBuffer))?.mime || 'image/jpeg';
                         }
                         res.set('Content-Type', mimeType);
                         res.setHeader('content-security-policy', "default-src 'self'");
