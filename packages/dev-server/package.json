@@ -21,7 +21,7 @@
         "@vendure/core": "2.2.0-next.5",
         "@vendure/elasticsearch-plugin": "2.2.0-next.5",
         "@vendure/email-plugin": "2.2.0-next.5",
-        "typescript": "5.1.6"
+        "typescript": "5.3.3"
     },
     "devDependencies": {
         "@types/csv-stringify": "^3.1.0",
