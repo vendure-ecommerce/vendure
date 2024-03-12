@@ -11,7 +11,6 @@ import {
 } from '@vendure/core';
 import { createHash } from 'crypto';
 import express, { NextFunction, Request, Response } from 'express';
-import { fileTypeFromBuffer } from 'file-type';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -22,6 +21,11 @@ import { HashedAssetNamingStrategy } from './hashed-asset-naming-strategy';
 import { SharpAssetPreviewStrategy } from './sharp-asset-preview-strategy';
 import { transformImage } from './transform-image';
 import { AssetServerOptions, ImageTransformPreset } from './types';
+
+async function getFileType(buffer: Buffer) {
+    const { fileTypeFromBuffer } = await import('file-type');
+    return fileTypeFromBuffer(buffer);
+}
 
 /**
  * @description
@@ -95,6 +99,16 @@ import { AssetServerOptions, ImageTransformPreset } from './types';
  * * `avif`
  *
  * The `format` parameter can also be combined with presets (see below).
+ *
+ * ### Quality
+ *
+ * Since v2.2.0, the image quality can be specified by adding the `q` query parameter:
+ *
+ * `http://localhost:3000/assets/some-asset.jpg?q=75`
+ *
+ * This applies to the `jpg`, `webp` and `avif` formats. The default quality value for `jpg` and `webp` is 80, and for `avif` is 50.
+ *
+ * The `q` parameter can also be combined with presets (see below).
  *
  * ### Transform presets
  *
@@ -244,7 +258,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                 const file = await AssetServerPlugin.assetStorage.readFileToBuffer(key);
                 let mimeType = this.getMimeType(key);
                 if (!mimeType) {
-                    mimeType = (await fileTypeFromBuffer(file))?.mime || 'application/octet-stream';
+                    mimeType = (await getFileType(file))?.mime || 'application/octet-stream';
                 }
                 res.contentType(mimeType);
                 res.setHeader('content-security-policy', "default-src 'self'");
@@ -289,7 +303,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                         }
                         let mimeType = this.getMimeType(cachedFileName);
                         if (!mimeType) {
-                            mimeType = (await fileTypeFromBuffer(imageBuffer))?.mime || 'image/jpeg';
+                            mimeType = (await getFileType(imageBuffer))?.mime || 'image/jpeg';
                         }
                         res.set('Content-Type', mimeType);
                         res.setHeader('content-security-policy', "default-src 'self'");
@@ -307,26 +321,37 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
     }
 
     private getFileNameFromRequest(req: Request): string {
-        const { w, h, mode, preset, fpx, fpy, format } = req.query;
+        const { w, h, mode, preset, fpx, fpy, format, q } = req.query;
         /* eslint-disable @typescript-eslint/restrict-template-expressions */
         const focalPoint = fpx && fpy ? `_fpx${fpx}_fpy${fpy}` : '';
+        const quality = q ? `_q${q}` : '';
         const imageFormat = getValidFormat(format);
-        let imageParamHash: string | null = null;
+        let imageParamsString = '';
         if (w || h) {
             const width = w || '';
             const height = h || '';
-            imageParamHash = this.md5(`_transform_w${width}_h${height}_m${mode}${focalPoint}${imageFormat}`);
+            imageParamsString = `_transform_w${width}_h${height}_m${mode}`;
         } else if (preset) {
             if (this.presets && !!this.presets.find(p => p.name === preset)) {
-                imageParamHash = this.md5(`_transform_pre_${preset}${focalPoint}${imageFormat}`);
+                imageParamsString = `_transform_pre_${preset}`;
             }
-        } else if (imageFormat) {
-            imageParamHash = this.md5(`_transform_${imageFormat}`);
         }
+
+        if (focalPoint) {
+            imageParamsString += focalPoint;
+        }
+        if (imageFormat) {
+            imageParamsString += imageFormat;
+        }
+        if (quality) {
+            imageParamsString += quality;
+        }
+
         /* eslint-enable @typescript-eslint/restrict-template-expressions */
 
         const decodedReqPath = decodeURIComponent(req.path);
-        if (imageParamHash) {
+        if (imageParamsString !== '') {
+            const imageParamHash = this.md5(imageParamsString);
             return path.join(this.cacheDir, this.addSuffix(decodedReqPath, imageParamHash, imageFormat));
         } else {
             return decodedReqPath;
