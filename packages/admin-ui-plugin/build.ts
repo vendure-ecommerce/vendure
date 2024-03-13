@@ -9,7 +9,7 @@ console.log('Building admin-ui from source...');
 fs.removeSync(compiledUiDir);
 
 const adminUiDir = path.join(__dirname, '../admin-ui');
-const buildProcess = spawn('yarn', [`--cwd "${adminUiDir}"`, 'run', 'build:app'], {
+const buildProcess = spawn('npm', [`--cwd "${adminUiDir}"`, 'run', 'build:app'], {
     cwd: adminUiDir,
     shell: true,
     stdio: 'inherit',

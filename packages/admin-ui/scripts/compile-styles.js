@@ -11,7 +11,7 @@ const result = sass.renderSync({
     includePaths: [
         path.join(__dirname, '../src/lib/static/styles'),
         path.join(__dirname, '../src/lib/static/fonts'),
-        path.join(__dirname, '../../../node_modules'),
+        path.join(__dirname, '../node_modules'),
     ],
     outputStyle: 'compressed',
     outFile,
@@ -21,7 +21,7 @@ fs.writeFileSync(outFile, result.css, 'utf8');
 
 function importer(url, prev) {
     let file = url;
-    // Handle the imports prefixed with ~
+    // Handle the imports prefixed with
     // which are usually resolved by Webpack.
     if (/^~@clr/.test(url)) {
         const sansTilde = url.substr(1);
