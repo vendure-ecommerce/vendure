@@ -114,29 +114,7 @@
             "buildTarget": "vendure-admin:build"
           }
         },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "src/test.ts",
-            "polyfills": "src/lib/static/polyfills.ts",
-            "tsConfig": "src/tsconfig.spec.json",
-            "karmaConfig": "src/karma.conf.js",
-            "styles": [
-              "src/lib/static/styles/styles.scss"
-            ],
-            "scripts": [],
-            "assets": [
-              "src/lib/static/favicon.ico",
-              "src/lib/static/assets"
-            ],
-            "stylePreprocessorOptions": {
-              "includePaths": [
-                "./src/lib/static/styles",
-                "./src/lib/static/fonts"
-              ]
-            }
-          }
-        },
+
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
@@ -165,6 +143,9 @@
               "tsConfig": "./tsconfig.lib.prod.json"
             }
           }
+        },
+        "test": {
+          "builder": "@analogjs/platform:vitest"
         }
       }
     }
