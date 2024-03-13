@@ -26,7 +26,9 @@ jobs:
       with:
         node-version: ${{ env.node }}
     - name: npm install
-      run: npm install
+      run: |
+        npm install
+        npm install --os=linux --cpu=x64 sharp
     - name: Build
       run: npm run build
   unit-tests:
@@ -39,7 +41,9 @@ jobs:
         with:
           node-version: ${{ env.node }}
       - name: npm install
-        run: npm install
+        run: |
+          npm install
+          npm install --os=linux --cpu=x64 sharp
       - name: Build
         run: lerna run ci
       - name: Unit tests
@@ -98,7 +102,9 @@ jobs:
         with:
           node-version: ${{ env.node }}
       - name: npm install
-        run: npm install
+        run: |
+          npm install
+          npm install --os=linux --cpu=x64 sharp
       - name: Build
         run: lerna run ci
       - name: df

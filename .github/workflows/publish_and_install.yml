@@ -48,7 +48,7 @@ jobs:
       run: npm install -g @angular/cli
     - name: npm install
       run: |
-        npm install --network-timeout 1000000
+        npm install
       env:
         CI: true
     - name: Publish to Verdaccio
