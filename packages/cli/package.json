@@ -21,7 +21,7 @@
     "scripts": {
         "build": "rimraf dist && tsc -p ./tsconfig.cli.json && ts-node ./build.ts",
         "watch": "tsc -p ./tsconfig.cli.json --watch",
-        "ci": "yarn build",
+        "ci": "npm run build",
         "test": "vitest --config vitest.config.mts --run"
     },
     "publishConfig": {

@@ -7,9 +7,9 @@ This package is not published to npm. It is used in development of the Vendure s
 To run the server, run the `start` script. The database configuration can be specified by the `DB=<type>` environment variable:
 
 ```bash
-DB=mysql yarn start
-DB=postgres yarn start
-DB=sqlite yarn start
+DB=mysql npm run start
+DB=postgres npm run start
+DB=sqlite npm run start
 ```
 
 The default if no db is specified is mysql.
@@ -21,7 +21,7 @@ Test data can be populated by running the `populate` script. This uses the same 
 Specify the database as above to populate that database:
 
 ```bash
-DB=sqlite yarn populate
+DB=sqlite npm run populate
 ```
 
 ## Testing custom ui extension compilation
@@ -33,7 +33,7 @@ this package's `package.json` devDependencies:
  "@vendure/admin-ui": "./packages/admin-ui/package",
 ```
 
-and then run `yarn`. Make sure you already built the admin-ui package first.
+and then run `npm install`. Make sure you already built the admin-ui package first.
 
 
 ## Load testing
@@ -55,7 +55,7 @@ The npm scripts `load-test:1k`, `load-test:10k` and `load-test:100k` will popula
 An individual test script may be by specifying the script name as an argument:
 
 ```
-yarn load-test:1k deep-query.js
+npm run load-test:1k deep-query.js
 ```
 
 ## pg_stat_statements

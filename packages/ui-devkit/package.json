@@ -28,7 +28,7 @@
     "scripts": {
         "build:client": "rimraf ./client && rollup -c rollup.config.mjs --configProduction",
         "build:compiler": "rimraf ./compiler && tsc -p tsconfig.compiler.json",
-        "build": "yarn build:client && yarn build:compiler",
+        "build": "npm run build:client && npm run build:compiler",
         "watch": "rimraf ./lib && rollup -c rollup.config.mjs -w",
         "lint": "eslint --fix ."
     },
@@ -36,27 +36,27 @@
         "url": "https://github.com/vendure-ecommerce/vendure/issues"
     },
     "dependencies": {
-        "@angular-devkit/build-angular": "^16.2.0",
-        "@angular/cli": "^16.2.0",
-        "@angular/compiler": "^16.2.2",
-        "@angular/compiler-cli": "^16.2.2",
+        "@angular-devkit/build-angular": "^17.2.3",
+        "@angular/cli": "^17.2.3",
+        "@angular/compiler": "^17.2.4",
+        "@angular/compiler-cli": "^17.2.4",
         "@vendure/admin-ui": "2.2.0-next.5",
         "@vendure/common": "2.2.0-next.5",
         "chalk": "^4.1.0",
-        "chokidar": "^3.5.3",
-        "fs-extra": "^11.1.1",
+        "chokidar": "^3.6.0",
+        "fs-extra": "^11.2.0",
         "glob": "^9.2.1",
         "rxjs": "^7.8.1"
     },
     "devDependencies": {
         "@rollup/plugin-node-resolve": "^15.2.3",
+        "@rollup/plugin-terser": "^0.4.4",
         "@types/fs-extra": "^11.0.4",
         "@vendure/core": "2.2.0-next.5",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "rimraf": "^5.0.5",
         "rollup": "^4.13.0",
-        "rollup-plugin-terser": "^7.0.2",
         "rollup-plugin-typescript2": "^0.36.0",
         "tslib": "^2.6.2",
         "typescript": "5.3.3"
