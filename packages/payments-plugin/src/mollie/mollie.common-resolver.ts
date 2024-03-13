@@ -1,18 +1,16 @@
-import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, ResolveField, Resolver } from '@nestjs/graphql';
 import { Allow, Ctx, Permission, RequestContext } from '@vendure/core';
 
 import {
     MolliePaymentIntent,
     MolliePaymentIntentError,
     MolliePaymentIntentInput,
-    MolliePaymentIntentResult,
-    MolliePaymentMethod,
-    MolliePaymentMethodsInput,
+    MolliePaymentIntentResult
 } from './graphql/generated-shop-types';
 import { MollieService } from './mollie.service';
 
 @Resolver()
-export class MollieResolver {
+export class MollieCommonResolver {
     constructor(private mollieService: MollieService) {}
 
     @Mutation()
@@ -32,14 +30,5 @@ export class MollieResolver {
         } else {
             return 'MolliePaymentIntent';
         }
-    }
-
-    @Query()
-    @Allow(Permission.Public)
-    async molliePaymentMethods(
-        @Ctx() ctx: RequestContext,
-        @Args('input') { paymentMethodCode }: MolliePaymentMethodsInput,
-    ): Promise<MolliePaymentMethod[]> {
-        return this.mollieService.getEnabledPaymentMethods(ctx, paymentMethodCode);
     }
 }
