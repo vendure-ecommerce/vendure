@@ -48,8 +48,7 @@ jobs:
       run: npm install -g @angular/cli
     - name: npm install
       run: |
-        npm config set unsafe-perm true
-        npm install --network-timeout 1000000 --prefer-offline
+        npm install --network-timeout 1000000
       env:
         CI: true
     - name: Publish to Verdaccio

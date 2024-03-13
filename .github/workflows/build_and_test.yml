@@ -39,7 +39,7 @@ jobs:
         with:
           node-version: ${{ env.node }}
       - name: npm install
-        run: npm install --prefer-offline
+        run: npm install
       - name: Build
         run: lerna run ci
       - name: Unit tests
@@ -98,7 +98,7 @@ jobs:
         with:
           node-version: ${{ env.node }}
       - name: npm install
-        run: npm install --prefer-offline
+        run: npm install
       - name: Build
         run: lerna run ci
       - name: df
