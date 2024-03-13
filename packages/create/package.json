@@ -13,8 +13,8 @@
     "scripts": {
         "dev": "ts-node src/create-vendure-app.ts",
         "copy-assets": "rimraf assets && ts-node ./build.ts",
-        "build": "yarn copy-assets && rimraf lib && tsc -p ./tsconfig.build.json",
-        "watch": "yarn copy-assets && rimraf lib && tsc -p ./tsconfig.build.json -w",
+        "build": "npm run copy-assets && rimraf lib && tsc -p ./tsconfig.build.json",
+        "watch": "npm run copy-assets && rimraf lib && tsc -p ./tsconfig.build.json -w",
         "lint": "eslint --fix ."
     },
     "homepage": "https://www.vendure.io/",

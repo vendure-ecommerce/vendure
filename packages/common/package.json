@@ -8,7 +8,7 @@
         "build": "rimraf lib && tsc -p ./tsconfig.build.json",
         "lint": "eslint --fix .",
         "test": "vitest --run",
-        "ci": "yarn build"
+        "ci": "npm run build"
     },
     "homepage": "https://www.vendure.io/",
     "funding": "https://github.com/sponsors/michaelbromley",
