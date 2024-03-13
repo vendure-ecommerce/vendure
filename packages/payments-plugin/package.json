@@ -14,9 +14,9 @@
         "e2e": "cross-env PACKAGE=payments-plugin vitest --config ../../e2e-common/vitest.config.mts --run",
         "e2e:watch": "cross-env PACKAGE=payments-plugin vitest --config ../../e2e-common/vitest.config.mts",
         "lint": "eslint --fix .",
-        "ci": "yarn build",
-        "dev-server:mollie": "yarn build && DB=sqlite node -r ts-node/register e2e/mollie-dev-server.ts",
-        "dev-server:stripe": "yarn build && DB=sqlite node -r ts-node/register e2e/stripe-dev-server.ts"
+        "ci": "npm run build",
+        "dev-server:mollie": "npm run build && DB=sqlite node -r ts-node/register e2e/mollie-dev-server.ts",
+        "dev-server:stripe": "npm run build && DB=sqlite node -r ts-node/register e2e/stripe-dev-server.ts"
     },
     "homepage": "https://www.vendure.io/",
     "funding": "https://github.com/sponsors/michaelbromley",
