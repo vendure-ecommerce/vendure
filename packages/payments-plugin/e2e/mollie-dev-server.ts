@@ -5,7 +5,7 @@ import {
     DefaultSearchPlugin,
     LogLevel,
     mergeConfig,
-    RequestContext
+    RequestContext,
 } from '@vendure/core';
 import { createTestEnvironment, registerInitializer, SqljsInitializer, testConfig } from '@vendure/testing';
 import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
@@ -46,11 +46,6 @@ async function runMollieDevServer() {
             AdminUiPlugin.init({
                 route: 'admin',
                 port: 5001,
-                app: compileUiExtensions({
-                    outputPath: path.join(__dirname, "__admin-ui"),
-                    extensions: [MolliePlugin.uiExtensions],
-                    devMode: true
-                  })
             }),
             MolliePlugin.init({ vendureHost: tunnel.url }),
         ],
