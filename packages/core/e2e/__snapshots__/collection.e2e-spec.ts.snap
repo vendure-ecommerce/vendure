@@ -38,7 +38,7 @@ exports[`Collection resolver > createCollection > creates a root collection 1`] 
       "args": [
         {
           "name": "facetValueIds",
-          "value": "[\\"T_1\\"]",
+          "value": "["T_1"]",
         },
         {
           "name": "containsAny",
@@ -107,7 +107,7 @@ exports[`Collection resolver > updateCollection > updates with assets 1`] = `
       "args": [
         {
           "name": "facetValueIds",
-          "value": "[\\"T_3\\"]",
+          "value": "["T_3"]",
         },
         {
           "name": "containsAny",

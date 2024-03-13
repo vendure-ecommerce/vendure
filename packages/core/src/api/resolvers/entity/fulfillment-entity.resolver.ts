@@ -1,6 +1,6 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 
-import { RequestContextCacheService } from '../../../cache/index';
+import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
 import { Fulfillment } from '../../../entity/fulfillment/fulfillment.entity';
 import { FulfillmentService } from '../../../service/services/fulfillment.service';
 import { RequestContext } from '../../common/request-context';

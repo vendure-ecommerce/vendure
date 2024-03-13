@@ -277,7 +277,7 @@ export function createBaseDetailResolveFn<
     R extends Field,
 >(config: {
     query: T;
-    entityKey: R;
+    entityKey: R | string;
     variables?: T extends TypedDocumentNode<any, infer V> ? Omit<V, 'id'> : never;
 }): ResolveFn<{
     entity: Observable<ResultOf<T>[Field] | null>;

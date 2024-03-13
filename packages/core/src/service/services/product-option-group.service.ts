@@ -8,7 +8,7 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { FindManyOptions, Like } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { RelationPaths } from '../../api/index';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { Logger } from '../../config/logger/vendure-logger';

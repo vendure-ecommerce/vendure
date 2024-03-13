@@ -18,10 +18,10 @@
         "access": "public"
     },
     "peerDependencies": {
-        "@sentry/node": "^7.85.0"
+        "@sentry/node": "^7.106.1"
     },
     "devDependencies": {
-        "@sentry/node": "^7.85.0",
+        "@sentry/node": "^7.106.1",
         "@vendure/common": "2.2.0-next.5",
         "@vendure/core": "2.2.0-next.5"
     }

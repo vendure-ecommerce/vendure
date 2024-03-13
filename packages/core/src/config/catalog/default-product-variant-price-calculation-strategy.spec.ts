@@ -1,7 +1,7 @@
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { roundMoney } from '../../common/round-money';
-import { ProductVariant } from '../../entity/index';
+import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import {
     createRequestContext,
     MockTaxRateService,
@@ -15,10 +15,8 @@ import {
 } from '../../testing/order-test-utils';
 import { ensureConfigLoaded } from '../config-helpers';
 
-import { DefaultProductVariantPriceCalculationStrategy } from './default-product-variant-price-calculation-strategy';
-
 describe('DefaultProductVariantPriceCalculationStrategy', () => {
-    let strategy: DefaultProductVariantPriceCalculationStrategy;
+    let strategy: import('./default-product-variant-price-calculation-strategy').DefaultProductVariantPriceCalculationStrategy;
     const inputPrice = 6543;
     const productVariant = new ProductVariant({});
 
@@ -27,6 +25,10 @@ describe('DefaultProductVariantPriceCalculationStrategy', () => {
     });
 
     beforeEach(async () => {
+        // Dynamic import to avoid vitest circular dependency issue
+        const { DefaultProductVariantPriceCalculationStrategy } = await import(
+            './default-product-variant-price-calculation-strategy.js'
+        );
         strategy = new DefaultProductVariantPriceCalculationStrategy();
         const mockInjector = {
             get: () => {

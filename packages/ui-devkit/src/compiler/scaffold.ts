@@ -183,8 +183,9 @@ function generateLazyExtensionRoutes(extensions: AdminUiExtensionWithId[]): stri
             }
         }
         for (const route of extension.routes ?? []) {
+            const prefix = route.prefix === '' ? '' : `${route.prefix ?? 'extensions'}/`;
             routes.push(`  {
-    path: 'extensions/${route.route}',
+    path: '${prefix}${route.route}',
     loadChildren: () => import('./extensions/${extension.id}/${path.basename(route.filePath, '.ts')}'),
   }`);
         }

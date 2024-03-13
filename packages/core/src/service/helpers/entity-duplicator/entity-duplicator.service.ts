@@ -3,13 +3,13 @@ import {
     DuplicateEntityInput,
     DuplicateEntityResult,
     EntityDuplicatorDefinition,
-    Permission,
 } from '@vendure/common/lib/generated-types';
 
-import { RequestContext } from '../../../api/index';
-import { DuplicateEntityError } from '../../../common/index';
-import { ConfigService, Logger } from '../../../config/index';
-import { TransactionalConnection } from '../../../connection/index';
+import { RequestContext } from '../../../api/common/request-context';
+import { DuplicateEntityError } from '../../../common/error/generated-graphql-admin-errors';
+import { ConfigService } from '../../../config/config.service';
+import { Logger } from '../../../config/logger/vendure-logger';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { ConfigArgService } from '../config-arg/config-arg.service';
 
 /**
@@ -37,7 +37,7 @@ export class EntityDuplicatorService {
             ...x.toGraphQlType(ctx),
             __typename: 'EntityDuplicatorDefinition',
             forEntities: x.forEntities,
-            requiresPermission: x.requiresPermission as Permission[],
+            requiresPermission: x.requiresPermission,
         }));
     }
 

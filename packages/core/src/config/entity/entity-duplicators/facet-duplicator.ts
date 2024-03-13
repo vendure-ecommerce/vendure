@@ -5,10 +5,11 @@ import {
     Permission,
 } from '@vendure/common/lib/generated-types';
 
-import { Injector } from '../../../common/index';
-import { TransactionalConnection } from '../../../connection/index';
-import { Facet } from '../../../entity/index';
-import { FacetService, FacetValueService } from '../../../service/index';
+import { Injector } from '../../../common/injector';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
+import { Facet } from '../../../entity/facet/facet.entity';
+import { FacetValueService } from '../../../service/services/facet-value.service';
+import { FacetService } from '../../../service/services/facet.service';
 import { EntityDuplicator } from '../entity-duplicator';
 
 let connection: TransactionalConnection;

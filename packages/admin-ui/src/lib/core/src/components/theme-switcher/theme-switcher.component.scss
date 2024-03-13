@@ -9,14 +9,14 @@ button.theme-toggle {
     padding-inline-start: 20px;
     border: none;
     background: transparent;
-    color: var(--clr-dropdown-item-color);
+    color: var(--color-text-200);
     cursor: pointer;
 }
 
 .theme-icon {
     position: absolute;
     top: 0px;
-    left: 6px;
+    left: 4px;
     z-index: 0;
     opacity: 0.2;
     color: var(--color-text-300);
@@ -24,7 +24,7 @@ button.theme-toggle {
 
     &.active {
         z-index: 1;
-        left: 0px;
+        left: -2px;
         opacity: 1;
     }
 

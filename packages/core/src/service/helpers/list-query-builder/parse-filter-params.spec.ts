@@ -66,7 +66,7 @@ describe('parseFilterParams()', () => {
             },
         };
         const result = parseFilterParams(connection as any, Product, filterParams);
-        expect(result[0].clause).toBe('product_translations.name = :arg1');
+        expect(result[0].clause).toBe('product__translations.name = :arg1');
         expect(result[0].parameters).toEqual({ arg1: 'foo' });
         expect(result[1].clause).toBe('product.id = :arg2');
         expect(result[1].parameters).toEqual({ arg2: '123' });

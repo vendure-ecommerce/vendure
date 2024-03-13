@@ -3,7 +3,7 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { lastValueFrom, Observable, Observer } from 'rxjs';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
 
-import { RelationPaths } from '../api/index';
+import { RelationPaths } from '../api/decorators/relations.decorator';
 import { VendureEntity } from '../entity/base/base.entity';
 
 /**

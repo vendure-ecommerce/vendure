@@ -49,7 +49,7 @@ export const molliePaymentHandler = new PaymentMethodHandler({
             description: [
                 {
                     languageCode: LanguageCode.en,
-                    value: 'Redirect URl to use when no url is given by the storefront. Order code is appended to this URL',
+                    value: 'Redirect URL to use when no URL is given by the storefront. Order code is appended to this URL',
                 },
             ],
         },

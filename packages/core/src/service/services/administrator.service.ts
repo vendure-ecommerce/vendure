@@ -8,10 +8,10 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { In, IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { RelationPaths } from '../../api/index';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
-import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/index';
 import { ListQueryOptions } from '../../common/types/common-types';
+import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/utils';
 import { ConfigService } from '../../config';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Administrator } from '../../entity/administrator/administrator.entity';

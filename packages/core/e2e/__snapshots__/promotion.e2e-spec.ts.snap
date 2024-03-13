@@ -50,7 +50,7 @@ exports[`Promotion resolver > createPromotion 1`] = `
       "args": [
         {
           "name": "facetValueIds",
-          "value": "[\\"T_1\\"]",
+          "value": "["T_1"]",
         },
       ],
       "code": "promo_action",
@@ -82,7 +82,7 @@ exports[`Promotion resolver > updatePromotion 1`] = `
       "args": [
         {
           "name": "facetValueIds",
-          "value": "[\\"T_1\\"]",
+          "value": "["T_1"]",
         },
       ],
       "code": "promo_action",

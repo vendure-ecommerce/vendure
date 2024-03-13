@@ -8,8 +8,8 @@ import {
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
-import { assertFound } from '../../common/index';
 import { ListQueryOptions } from '../../common/types/common-types';
+import { assertFound } from '../../common/utils';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Seller } from '../../entity/seller/seller.entity';
 import { EventBus, SellerEvent } from '../../event-bus/index';

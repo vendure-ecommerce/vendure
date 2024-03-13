@@ -1,6 +1,6 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 
-import { TransactionalConnection } from '../../../connection/index';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { Administrator } from '../../../entity/administrator/administrator.entity';
 import { User } from '../../../entity/user/user.entity';
 import { RequestContext } from '../../common/request-context';

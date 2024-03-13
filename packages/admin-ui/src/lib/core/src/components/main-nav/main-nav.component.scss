@@ -45,13 +45,15 @@ nav.main-nav {
         align-items: center;
         line-height: 100%;
         border-inline-end: 2px solid transparent;
-        font-size: var(--font-size-sm);
+
         padding: var(--space-unit) 0;
         transition: border 0.1s, color 0.1s;
 
         a:link,
         a:visited {
             color: var(--color-weight-700);
+            font-size: var(--font-size-sm);
+            line-height: 14px;
         }
         &:hover {
             color: var(--color-left-nav-text-hover);

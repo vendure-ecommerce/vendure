@@ -1,14 +1,14 @@
 import { ConfigArg, Permission } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 
-import { RequestContext } from '../../api/index';
+import { RequestContext } from '../../api/common/request-context';
 import {
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
     ConfigurableOperationDefOptions,
 } from '../../common/configurable-operation';
-import { VendureEntity } from '../../entity/index';
+import { VendureEntity } from '../../entity/base/base.entity';
 
 /**
  * @description

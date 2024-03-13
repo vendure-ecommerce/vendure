@@ -1,8 +1,9 @@
 import { ID } from '@vendure/common/lib/shared-types';
 
-import { RequestContext } from '../../api/index';
-import { idsAreEqual, Injector } from '../../common/index';
-import { TransactionalConnection } from '../../connection/index';
+import { RequestContext } from '../../api/common/request-context';
+import { Injector } from '../../common/injector';
+import { idsAreEqual } from '../../common/utils';
+import { TransactionalConnection } from '../../connection/transactional-connection';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { StockLevel } from '../../entity/stock-level/stock-level.entity';
 import { StockLocation } from '../../entity/stock-location/stock-location.entity';

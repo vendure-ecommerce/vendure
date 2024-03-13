@@ -106,13 +106,11 @@ describe('ErrorHandlerStrategy', () => {
 
     it('invokes the server handler', async () => {
         try {
-            await adminClient.query(
-                gql`
-                    mutation {
-                        createServerError
-                    }
-                `,
-            );
+            await adminClient.query(gql`
+                mutation {
+                    createServerError
+                }
+            `);
         } catch (e: any) {
             expect(e.message).toBe('server error');
         }
@@ -125,23 +123,22 @@ describe('ErrorHandlerStrategy', () => {
     });
 
     it('invokes the worker handler', async () => {
-        await adminClient.query(
-            gql`
-                mutation {
-                    createWorkerError {
-                        id
-                    }
+        await adminClient.query(gql`
+            mutation {
+                createWorkerError {
+                    id
                 }
-            `,
-        );
+            }
+        `);
         await awaitRunningJobs(adminClient);
         expect(TestErrorHandlerStrategy.serverErrorSpy).toHaveBeenCalledTimes(0);
         expect(TestErrorHandlerStrategy.workerErrorSpy).toHaveBeenCalledTimes(1);
 
         expect(TestErrorHandlerStrategy.workerErrorSpy.mock.calls[0][0]).toBeInstanceOf(Error);
         expect(TestErrorHandlerStrategy.workerErrorSpy.mock.calls[0][0].message).toBe('worker error');
-        expect(TestErrorHandlerStrategy.workerErrorSpy.mock.calls[0][1].job).toContain({
-            queueName: 'test-queue',
-        });
+        expect(TestErrorHandlerStrategy.workerErrorSpy.mock.calls[0][1].job).toHaveProperty(
+            'queueName',
+            'test-queue',
+        );
     });
 });

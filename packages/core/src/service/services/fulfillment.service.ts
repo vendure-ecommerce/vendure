@@ -6,7 +6,7 @@ import { unique } from '@vendure/common/lib/unique';
 import { In, Not } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { RelationPaths } from '../../api/index';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
 import {
     CreateFulfillmentError,
     FulfillmentStateTransitionError,

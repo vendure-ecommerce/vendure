@@ -5,7 +5,9 @@ import { getNamedType, GraphQLResolveInfo, GraphQLSchema, isObjectType } from 'g
 import { getMetadataArgsStorage } from 'typeorm';
 
 import { CalculatedColumnDefinition, CALCULATED_PROPERTIES } from '../../common/calculated-decorator';
-import { EntityRelationPaths, InternalServerError, TtlCache } from '../../common/index';
+import { InternalServerError } from '../../common/error/errors';
+import { TtlCache } from '../../common/ttl-cache';
+import { EntityRelationPaths } from '../../common/types/entity-relation-paths';
 import { VendureEntity } from '../../entity/base/base.entity';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires

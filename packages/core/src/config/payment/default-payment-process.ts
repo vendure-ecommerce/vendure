@@ -1,7 +1,7 @@
 import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 
+import { PaymentState } from '../../service/helpers/payment-state-machine/payment-state';
 import { orderTotalIsCovered } from '../../service/helpers/utils/order-utils';
-import { PaymentState } from '../../service/index';
 
 import { PaymentProcess } from './payment-process';
 

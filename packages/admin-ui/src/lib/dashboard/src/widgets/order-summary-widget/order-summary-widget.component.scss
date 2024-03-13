@@ -15,7 +15,8 @@
     text-transform: uppercase;
 }
 .date-range {
-    margin-top: 0;
+    margin-top: calc(var(--space-unit) * 3);
+    font-size: var(--font-size-xs);
 }
 .footer {
     margin-top: 24px;

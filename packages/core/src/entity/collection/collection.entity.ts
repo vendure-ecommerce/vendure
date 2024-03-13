@@ -61,7 +61,7 @@ export class Collection
     translations: Array<Translation<Collection>>;
 
     @Index()
-    @ManyToOne(type => Asset, { onDelete: 'SET NULL' })
+    @ManyToOne(type => Asset, asset => asset.featuredInCollections, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
 
     @OneToMany(type => CollectionAsset, collectionAsset => collectionAsset.collection)
@@ -90,7 +90,7 @@ export class Collection
     @EntityId({ nullable: true })
     parentId: ID;
 
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.collections)
     @JoinTable()
     channels: Channel[];
 }

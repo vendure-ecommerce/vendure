@@ -14,10 +14,10 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { RelationPaths } from '../../api/index';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { EntityNotFoundError, ForbiddenError, UserInputError } from '../../common/error/errors';
-import { Translated } from '../../common/index';
 import { ListQueryOptions } from '../../common/types/common-types';
+import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Logger } from '../../config/logger/vendure-logger';

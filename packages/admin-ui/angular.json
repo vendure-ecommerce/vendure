@@ -94,24 +94,24 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "vendure-admin:build"
+            "buildTarget": "vendure-admin:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "vendure-admin:build:production"
+              "buildTarget": "vendure-admin:build:production"
             },
             "plugin": {
-              "browserTarget": "vendure-admin:build:plugin-watch"
+              "buildTarget": "vendure-admin:build:plugin-watch"
             },
             "plugin-dev": {
-              "browserTarget": "vendure-admin:build:plugin-dev-watch"
+              "buildTarget": "vendure-admin:build:plugin-dev-watch"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "vendure-admin:build"
+            "buildTarget": "vendure-admin:build"
           }
         },
         "test": {

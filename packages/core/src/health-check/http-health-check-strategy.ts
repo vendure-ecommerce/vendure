@@ -3,7 +3,7 @@ import { HealthCheckError, HealthIndicatorFunction, HealthIndicatorResult } from
 import { HealthIndicator } from '@nestjs/terminus/dist/health-indicator/index';
 import fetch from 'node-fetch';
 
-import { Injector } from '../common/index';
+import { Injector } from '../common/injector';
 import { HealthCheckStrategy } from '../config/system/health-check-strategy';
 
 export interface HttpHealthCheckOptions {

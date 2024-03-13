@@ -4,7 +4,6 @@
     "outDir": "../cli"
   },
   "files": [
-    "../src/cli/vendure-cli.ts",
     "../src/cli/index.ts",
     "../typings.d.ts"
   ]

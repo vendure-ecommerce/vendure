@@ -1,10 +1,11 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToMany, OneToMany } from 'typeorm';
 
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { FulfillmentState } from '../../service/helpers/fulfillment-state-machine/fulfillment-state';
 import { VendureEntity } from '../base/base.entity';
 import { CustomFulfillmentFields } from '../custom-entity-fields';
+import { Order } from '../order/order.entity';
 import { FulfillmentLine } from '../order-line-reference/fulfillment-line.entity';
 
 /**
@@ -33,6 +34,9 @@ export class Fulfillment extends VendureEntity implements HasCustomFields {
 
     @OneToMany(type => FulfillmentLine, fulfillmentLine => fulfillmentLine.fulfillment)
     lines: FulfillmentLine[];
+
+    @ManyToMany(type => Order, order => order.fulfillments)
+    orders: Order[];
 
     @Column(type => CustomFulfillmentFields)
     customFields: CustomFulfillmentFields;

@@ -2,7 +2,7 @@ import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 
-import { RequestContext } from '../../api/index';
+import { RequestContext } from '../../api/common/request-context';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Order } from '../../entity/order/order.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
@@ -414,13 +414,12 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
                     order.orderPlacedAt = new Date();
                     await Promise.all(
                         order.lines.map(line => {
-                            line.orderPlacedQuantity = line.quantity
+                            line.orderPlacedQuantity = line.quantity;
                             connection
                                 .getRepository(ctx, OrderLine)
-                                .update(line.id, { orderPlacedQuantity: line.quantity })
-                            return line
-                        }
-                        ),
+                                .update(line.id, { orderPlacedQuantity: line.quantity });
+                            return line;
+                        }),
                     );
                     eventBus.publish(new OrderPlacedEvent(fromState, toState, ctx, order));
                     await orderSplitter.createSellerOrders(ctx, order);

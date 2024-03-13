@@ -70,7 +70,7 @@ export class ProductVariant
     currencyCode: CurrencyCode;
 
     @Calculated({
-        expression: 'productvariant_productVariantPrices.price',
+        expression: 'productvariant__productVariantPrices.price',
     })
     get price(): number {
         if (this.listPrice == null) {
@@ -86,7 +86,7 @@ export class ProductVariant
         // results due to this expression not taking taxes into account. This is because the tax
         // rate is calculated at run-time in the application layer based on the current context,
         // and is unknown to the database.
-        expression: 'productvariant_productVariantPrices.price',
+        expression: 'productvariant__productVariantPrices.price',
     })
     get priceWithTax(): number {
         if (this.listPrice == null) {
@@ -103,7 +103,7 @@ export class ProductVariant
     taxRateApplied: TaxRate;
 
     @Index()
-    @ManyToOne(type => Asset, { onDelete: 'SET NULL' })
+    @ManyToOne(type => Asset, asset => asset.featuredInVariants, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
 
     @OneToMany(type => ProductVariantAsset, productVariantAsset => productVariantAsset.productVariant, {
@@ -112,7 +112,7 @@ export class ProductVariant
     assets: ProductVariantAsset[];
 
     @Index()
-    @ManyToOne(type => TaxCategory)
+    @ManyToOne(type => TaxCategory, taxCategory => taxCategory.productVariants)
     taxCategory: TaxCategory;
 
     @OneToMany(type => ProductVariantPrice, price => price.variant, { eager: true })
@@ -153,11 +153,11 @@ export class ProductVariant
     @OneToMany(type => StockMovement, stockMovement => stockMovement.productVariant)
     stockMovements: StockMovement[];
 
-    @ManyToMany(type => ProductOption)
+    @ManyToMany(type => ProductOption, productOption => productOption.productVariants)
     @JoinTable()
     options: ProductOption[];
 
-    @ManyToMany(type => FacetValue)
+    @ManyToMany(type => FacetValue, facetValue => facetValue.productVariants)
     @JoinTable()
     facetValues: FacetValue[];
 
@@ -167,7 +167,7 @@ export class ProductVariant
     @ManyToMany(type => Collection, collection => collection.productVariants)
     collections: Collection[];
 
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.productVariants)
     @JoinTable()
     channels: Channel[];
 }

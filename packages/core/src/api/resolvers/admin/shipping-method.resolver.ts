@@ -16,7 +16,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
-import { Translated } from '../../../common/index';
+import { Translated } from '../../../common/types/locale-types';
 import { ShippingMethod } from '../../../entity/shipping-method/shipping-method.entity';
 import { OrderTestingService } from '../../../service/services/order-testing.service';
 import { ShippingMethodService } from '../../../service/services/shipping-method.service';

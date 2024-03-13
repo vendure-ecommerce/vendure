@@ -1,7 +1,8 @@
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 
-import { Job, JobBuffer } from '../../../job-queue/index';
+import { Job } from '../../../job-queue/job';
+import { JobBuffer } from '../../../job-queue/job-buffer/job-buffer';
 import {
     UpdateIndexQueueJobData,
     UpdateProductJobData,

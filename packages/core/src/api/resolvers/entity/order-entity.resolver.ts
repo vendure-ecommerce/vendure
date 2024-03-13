@@ -3,8 +3,7 @@ import { HistoryEntryListOptions, OrderHistoryArgs, SortOrder } from '@vendure/c
 
 import { assertFound, idsAreEqual } from '../../../common/utils';
 import { Order } from '../../../entity/order/order.entity';
-import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
-import { TranslatorService } from '../../../service/index';
+import { TranslatorService } from '../../../service/helpers/translator/translator.service';
 import { HistoryService } from '../../../service/services/history.service';
 import { OrderService } from '../../../service/services/order.service';
 import { ShippingMethodService } from '../../../service/services/shipping-method.service';

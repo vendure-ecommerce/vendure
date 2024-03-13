@@ -144,6 +144,14 @@ export const config: VendureConfig = {
 
 Note that by specifying `route: 'greet'`, we are "mounting" the routes at the `/extensions/greet` path.
 
+:::info
+
+The `/extensions/` prefix is used to avoid conflicts with built-in routes. From Vendure v2.2.0 it is possible to customize
+this prefix using the `prefix` property. See the section on [overriding built-in routes](#overriding-built-in-routes) for 
+more information.
+
+:::
+
 The `filePath` property is relative to the directory specified in the `extensionPath` property. In this case, the `routes.ts` file is located at `src/plugins/greeter/ui/routes.ts`.
 
 Now go to the Admin UI app in your browser and log in. You should now be able to manually enter the URL `http://localhost:3000/admin/extensions/greet` and you should see the component with the "Hello!" header:
@@ -590,6 +598,112 @@ export function Test() {
         </div>
     );
 }
+```
+
+</TabItem>
+</Tabs>
+
+## Overriding built-in routes
+
+From Vendure v2.2.0, it is possible to override any of the built-in Admin UI routes. This is useful if you want to completely
+replace a built-in route with your own custom component.
+
+To do so, you'll need to specify the route `prefix` to be `''`, and then specify a `route` property which matches
+a built-in route. 
+
+For example, let's say we want to override the product detail page. The full path of that route is:
+
+```
+/catalog/products/:id
+```
+
+```ts title="src/vendure-config.ts"
+import { VendureConfig } from '@vendure/core';
+import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
+import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
+import * as path from 'path';
+
+export const config: VendureConfig = {
+    // ...
+    plugins: [
+        AdminUiPlugin.init({
+            port: 3002,
+            app: compileUiExtensions({
+                outputPath: path.join(__dirname, '../admin-ui'),
+                extensions: [
+                    {
+                        id: 'my-plugin',
+                        extensionPath: path.join(__dirname, 'plugins/my-plugin/ui'),
+                        routes: [
+                            {
+                                // Setting the prefix to '' means that we won't add the
+                                // default `/extensions/` prefix to the route
+                                prefix: '',
+                                // This part matches the built-in route path for the 
+                                // "catalog" module
+                                route: 'catalog',
+                                filePath: 'routes.ts',
+                            },
+                        ],
+                    },
+                ],
+            }),
+        }),
+    ],
+};
+```
+
+Then in the `routes.ts` file, you can define a route which matches the built-in route:
+
+<Tabs groupId="framework">
+<TabItem value="Angular" label="Angular" default>
+
+```ts title="src/plugins/my-plugin/ui/routes.ts"
+import { GetProductDetailDocument, registerRouteComponent } from '@vendure/admin-ui/core';
+import { MyProductDetailComponent } from './components/product-detail/product-detail.component';
+
+export default [
+    registerRouteComponent({
+        component: MyProductDetailComponent,
+        // The path must then match the remainder
+        // of the built-in route path
+        path: 'products/:id',
+        // We can re-use the GraphQL query from the core to get
+        // access to the same data in our component
+        query: GetProductDetailDocument,
+        entityKey: 'product',
+        getBreadcrumbs: entity => [
+            { label: 'breadcrumb.products', link: ['/catalog/products'] },
+            { label: entity?.name ?? 'catalog.create-new-product', link: ['.'] },
+        ],
+    }),
+];
+```
+
+</TabItem>
+<TabItem value="React" label="React">
+
+```ts title="src/plugins/my-plugin/ui/routes.ts"
+import { GetProductDetailDocument } from '@vendure/admin-ui/core';
+import { registerReactRouteComponent } from '@vendure/admin-ui/react';
+import { MyProductDetail } from './components/ProductDetail';
+
+export default [
+    registerReactRouteComponent({
+        component: MyProductDetail,
+        // The path must then match the remainder
+        // of the built-in route path
+        path: 'products/:id',
+        // We can re-use the GraphQL query from the core to get
+        // access to the same data in our component
+        query: GetProductDetailDocument,
+        entityKey: 'product',
+        getBreadcrumbs: entity => [
+            { label: 'breadcrumb.products', link: ['/catalog/products'] },
+            { label: entity?.name ?? 'catalog.create-new-product', link: ['.'] },
+        ],
+    }),
+];
 ```
 
 </TabItem>
