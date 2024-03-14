@@ -355,7 +355,7 @@ export class PaymentService {
                     ? await handler.createRefund(
                           ctx,
                           input,
-                          total,
+                          constrainedTotal,
                           order,
                           paymentToRefund,
                           paymentMethod.handler.args,
