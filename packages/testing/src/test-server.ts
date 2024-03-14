@@ -109,7 +109,7 @@ export class TestServer {
     ): Promise<INestApplication> {
         const config = await preBootstrapConfig(userConfig);
         Logger.useLogger(config.logger);
-        const appModule = await import('@vendure/core/dist/app.module');
+        const appModule = await import('@vendure/core/dist/app.module.js');
         try {
             DefaultLogger.hideNestBoostrapLogs();
             const app = await NestFactory.create(appModule.AppModule, {
