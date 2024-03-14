@@ -1,3 +1,49 @@
+## 2.2.0-next.6 (2024-03-14)
+
+
+#### Fixes
+
+* **admin-ui** Fix alerts service registration ([04dcaab](https://github.com/vendure-ecommerce/vendure/commit/04dcaab))
+* **core** Fix amount being sent to payment handler refund method ([b6a5691](https://github.com/vendure-ecommerce/vendure/commit/b6a5691))
+
+#### Features
+
+* **admin-ui** Update Angular to v17.2 ([6f6a7af](https://github.com/vendure-ecommerce/vendure/commit/6f6a7af))
+* **admin-ui** Update Clarity UI library to v17 ([44cfd95](https://github.com/vendure-ecommerce/vendure/commit/44cfd95))
+* **asset-server-plugin** Add `q` query param for dynamic quality ([b96289b](https://github.com/vendure-ecommerce/vendure/commit/b96289b))
+* **asset-server-plugin** Update Sharp to v0.33.2 ([f3d45a0](https://github.com/vendure-ecommerce/vendure/commit/f3d45a0))
+* **core** Export order state machine ([138d9ff](https://github.com/vendure-ecommerce/vendure/commit/138d9ff))
+* **core** Update NestJS to latest version (v10.3.3) ([573ae18](https://github.com/vendure-ecommerce/vendure/commit/573ae18))
+* **core** Update TypeORM to v0.3.20 ([0afc94e](https://github.com/vendure-ecommerce/vendure/commit/0afc94e))
+* **payments-plugin** Accepted states ([124f169](https://github.com/vendure-ecommerce/vendure/commit/124f169))
+* **payments-plugin** Admin ui dropdown button ([af80f26](https://github.com/vendure-ecommerce/vendure/commit/af80f26))
+* **payments-plugin** Backend admin api implemented ([5390a4c](https://github.com/vendure-ecommerce/vendure/commit/5390a4c))
+* **payments-plugin** Cleaner usage of type ([5a720bb](https://github.com/vendure-ecommerce/vendure/commit/5a720bb))
+* **payments-plugin** Correct test naming ([07d9b4d](https://github.com/vendure-ecommerce/vendure/commit/07d9b4d))
+* **payments-plugin** Docs ([f7dcc31](https://github.com/vendure-ecommerce/vendure/commit/f7dcc31))
+* **payments-plugin** E2e test fixed ([1e65032](https://github.com/vendure-ecommerce/vendure/commit/1e65032))
+* **payments-plugin** fixed e2e tests ([d842837](https://github.com/vendure-ecommerce/vendure/commit/d842837))
+* **payments-plugin** Forgot to add files ([9e51be2](https://github.com/vendure-ecommerce/vendure/commit/9e51be2))
+* **payments-plugin** Live testing of duplicate payments ([9c1df83](https://github.com/vendure-ecommerce/vendure/commit/9c1df83))
+* **payments-plugin** Mollie locale preservation #2270 and type fixes ([9e58097](https://github.com/vendure-ecommerce/vendure/commit/9e58097)), closes [#2270](https://github.com/vendure-ecommerce/vendure/issues/2270)
+* **payments-plugin** more manual merge fixes ([ddea675](https://github.com/vendure-ecommerce/vendure/commit/ddea675))
+* **payments-plugin** Plugin docs ([028dcf9](https://github.com/vendure-ecommerce/vendure/commit/028dcf9))
+* **payments-plugin** Prevent duplicate Mollie payments (#2691) ([34b61cd](https://github.com/vendure-ecommerce/vendure/commit/34b61cd)), closes [#2691](https://github.com/vendure-ecommerce/vendure/issues/2691)
+* **payments-plugin** Readded describe for more readable gh diff ([d7a38ab](https://github.com/vendure-ecommerce/vendure/commit/d7a38ab))
+* **payments-plugin** Removed copyfiles dependency ([fb519ed](https://github.com/vendure-ecommerce/vendure/commit/fb519ed))
+* **payments-plugin** Removed ui for now ([3dfd0ba](https://github.com/vendure-ecommerce/vendure/commit/3dfd0ba))
+* **payments-plugin** Reusing existing order if possible ([4642f9f](https://github.com/vendure-ecommerce/vendure/commit/4642f9f))
+* **payments-plugin** Setup of preventing duplicate payments ([0cb2df8](https://github.com/vendure-ecommerce/vendure/commit/0cb2df8))
+* **payments-plugin** Test case readability ([7009425](https://github.com/vendure-ecommerce/vendure/commit/7009425))
+* **payments-plugin** Ui extension removal ([e8ae5f6](https://github.com/vendure-ecommerce/vendure/commit/e8ae5f6))
+* **payments-plugin** Unstaged files ([1ef282a](https://github.com/vendure-ecommerce/vendure/commit/1ef282a))
+* **payments-plugin** wip ([fb4cace](https://github.com/vendure-ecommerce/vendure/commit/fb4cace))
+* **ui-devkit** Add `prefix` option to route config to allow overrides ([babe4f4](https://github.com/vendure-ecommerce/vendure/commit/babe4f4)), closes [#2705](https://github.com/vendure-ecommerce/vendure/issues/2705)
+
+
+### BREAKING CHANGE
+
+* MolliePlugin - A new mollieOrderId has been added in order to prevent duplicate payments in Mollie. This will require a DB migration to add the custom field to your DB schema.
 ## 2.2.0-next.5 (2024-02-26)
 
 
