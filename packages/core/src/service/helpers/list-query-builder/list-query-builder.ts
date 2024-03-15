@@ -696,7 +696,17 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
             currentAlias: string,
         ) => {
             const currentMetadataIsTreeType = metadata.treeType;
-            if (!currentParentIsTreeType && !currentMetadataIsTreeType) {
+            let currentMetadataHasOneOrMoreSelfReferencingRelations = false;
+            // Check if the current entity has one or more self-referencing relations
+            // to determine if it is a tree type or has tree relations.
+            for (const relation of currentMetadata.relations) {
+                if (relation.inverseEntityMetadata === currentMetadata) {
+                    currentMetadataHasOneOrMoreSelfReferencingRelations = true;
+                    break;
+                }
+            }
+
+            if (!currentParentIsTreeType && !currentMetadataIsTreeType && !currentMetadataHasOneOrMoreSelfReferencingRelations) {
                 return;
             }
 
