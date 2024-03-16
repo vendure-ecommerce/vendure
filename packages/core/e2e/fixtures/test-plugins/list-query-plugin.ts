@@ -212,9 +212,8 @@ export class ListQueryResolver {
                         item.activePrice = item.prices.find(p => p.channelId === 1)!.price;
                     }
                 }
-                const i = items.map(i => translateDeep(i, ctx.languageCode, ['parent']));
                 return {
-                    items: i,
+                    items: items.map(i => translateDeep(i, ctx.languageCode, ['parent'])),
                     totalItems,
                 };
             });
