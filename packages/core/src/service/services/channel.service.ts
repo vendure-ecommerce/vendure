@@ -11,17 +11,12 @@ import {
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
-import { FindOneOptions } from 'typeorm';
+import { FindOptionsWhere } from 'typeorm';
 
 import { RelationPaths } from '../../api';
 import { RequestContext } from '../../api/common/request-context';
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
-import {
-    ChannelNotFoundError,
-    EntityNotFoundError,
-    InternalServerError,
-    UserInputError,
-} from '../../common/error/errors';
+import { ChannelNotFoundError, EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
 import { LanguageNotAvailableError } from '../../common/error/generated-graphql-admin-errors';
 import { createSelfRefreshingCache, SelfRefreshingCache } from '../../common/self-refreshing-cache';
 import { ChannelAware, ListQueryOptions } from '../../common/types/common-types';
@@ -125,6 +120,42 @@ export class ChannelService {
     }
 
     /**
+     * This method is used to bypass a bug with Typeorm when working with ManyToMany relationships.
+     * For some reason, a regular query does not return all the channels that an entity has.
+     * This is a most optimized way to get all the channels that an entity has.
+     *
+     * @param ctx - The RequestContext object.
+     * @param entityType - The type of the entity.
+     * @param entityId - The ID of the entity.
+     * @returns A promise that resolves to an array of objects, each containing a channel ID.
+     * @private
+     */
+    private async getAssignedEntityChannels<T extends ChannelAware & VendureEntity>(ctx: RequestContext, entityType: Type<T>, entityId: T['id']): Promise<{ channelId: ID }[]> {
+        const repository = this.connection.getRepository(ctx, entityType);
+
+        const metadata = repository.metadata;
+        const channelsRelation = metadata.findRelationWithPropertyPath('channels');
+
+        if (!channelsRelation) {
+            throw new InternalServerError(`Could not find the channels relation for entity ${metadata.name}`);
+        }
+
+        const junctionTableName = channelsRelation.junctionEntityMetadata?.tableName;
+        const junctionColumnName = channelsRelation.junctionEntityMetadata?.columns[0].databaseName;
+        const inverseJunctionColumnName = channelsRelation.junctionEntityMetadata?.inverseColumns[0].databaseName;
+
+        if (!junctionTableName || !junctionColumnName || !inverseJunctionColumnName) {
+            throw new InternalServerError(`Could not find necessary join table information for the channels relation of entity ${metadata.name}`);
+        }
+
+        return await this.connection.getRepository(ctx, entityType).createQueryBuilder()
+            .select(`channel.${inverseJunctionColumnName}`, 'channelId')
+            .from(junctionTableName, 'channel')
+            .where(`channel.${junctionColumnName} = :entityId`, { entityId })
+            .execute();
+    }
+
+    /**
      * @description
      * Assigns the entity to the given Channels and saves.
      */
@@ -134,7 +165,7 @@ export class ChannelService {
         entityId: ID,
         channelIds: ID[],
     ): Promise<T> {
-        const relations = ['channels'];
+        const relations = [];
         // This is a work-around for https://github.com/vendure-ecommerce/vendure/issues/1391
         // A better API would be to allow the consumer of this method to supply an entity instance
         // so that this join could be done prior to invoking this method.
@@ -143,13 +174,24 @@ export class ChannelService {
             relations.push('lines', 'shippingLines');
         }
         const entity = await this.connection.getEntityOrThrow(ctx, entityType, entityId, {
+            loadEagerRelations: false,
+            relationLoadStrategy: 'query',
+            where: {
+                id: entityId,
+            } as FindOptionsWhere<T>,
             relations,
         });
-        for (const id of channelIds) {
-            const channel = await this.connection.getEntityOrThrow(ctx, Channel, id);
-            entity.channels.push(channel);
-        }
-        await this.connection.getRepository(ctx, entityType).save(entity as any, { reload: false });
+        const assignedChannels = await this.getAssignedEntityChannels(ctx, entityType, entityId);
+
+        const newChannelIds = channelIds.filter(id => !assignedChannels.some(ec => idsAreEqual(ec.channelId, id)))
+
+        await this.connection
+            .getRepository(ctx, entityType)
+            .createQueryBuilder()
+            .relation('channels')
+            .of(entity.id)
+            .add(newChannelIds);
+
         this.eventBus.publish(new ChangeChannelEvent(ctx, entity, channelIds, 'assigned', entityType));
         return entity;
     }
@@ -165,16 +207,28 @@ export class ChannelService {
         channelIds: ID[],
     ): Promise<T | undefined> {
         const entity = await this.connection.getRepository(ctx, entityType).findOne({
-            where: { id: entityId },
-            relations: ['channels'],
-        } as FindOneOptions<T>);
+            loadEagerRelations: false,
+            relationLoadStrategy: 'query',
+            where: {
+                id: entityId,
+            } as FindOptionsWhere<T>,
+        })
         if (!entity) {
             return;
         }
-        for (const id of channelIds) {
-            entity.channels = entity.channels.filter(c => !idsAreEqual(c.id, id));
+        const assignedChannels = await this.getAssignedEntityChannels(ctx, entityType, entityId);
+
+        const existingChannelIds = channelIds.filter(id => assignedChannels.some(ec => idsAreEqual(ec.channelId, id)));
+
+        if (!existingChannelIds.length) {
+            return
         }
-        await this.connection.getRepository(ctx, entityType).save(entity as any, { reload: false });
+        await this.connection
+            .getRepository(ctx, entityType)
+            .createQueryBuilder()
+            .relation('channels')
+            .of(entity.id)
+            .remove(existingChannelIds);
         this.eventBus.publish(new ChangeChannelEvent(ctx, entity, channelIds, 'removed', entityType));
         return entity;
     }
