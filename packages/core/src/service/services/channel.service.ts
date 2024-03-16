@@ -11,17 +11,12 @@ import {
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
-import { FindOneOptions, FindOptionsWhere } from 'typeorm';
+import { FindOptionsWhere } from 'typeorm';
 
 import { RelationPaths } from '../../api';
 import { RequestContext } from '../../api/common/request-context';
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
-import {
-    ChannelNotFoundError,
-    EntityNotFoundError,
-    InternalServerError,
-    UserInputError,
-} from '../../common/error/errors';
+import { ChannelNotFoundError, EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
 import { LanguageNotAvailableError } from '../../common/error/generated-graphql-admin-errors';
 import { createSelfRefreshingCache, SelfRefreshingCache } from '../../common/self-refreshing-cache';
 import { ChannelAware, ListQueryOptions } from '../../common/types/common-types';
@@ -136,17 +131,28 @@ export class ChannelService {
      * @private
      */
     private async getAssignedEntityChannels<T extends ChannelAware & VendureEntity>(ctx: RequestContext, entityType: Type<T>, entityId: T['id']): Promise<{ channelId: ID }[]> {
-        const entityMetadata = this.connection.rawConnection.getMetadata(entityType);
-        const channelsRelation = entityMetadata.relations.find(r => r.type === Channel);
+        const repository = this.connection.getRepository(ctx, entityType);
+
+        const metadata = repository.metadata;
+        const channelsRelation = metadata.findRelationWithPropertyPath('channels');
+
         if (!channelsRelation) {
-            throw new InternalServerError(`Could not find the join table for the channels relation of entity ${entityMetadata.targetName}`);
+            throw new InternalServerError(`Could not find the channels relation for entity ${metadata.name}`);
         }
-        const junctionColumnName = channelsRelation.joinColumns.find(jc => jc.referencedColumn?.entityMetadata === entityMetadata)?.databaseName;
-        if (!junctionColumnName) {
-            throw new InternalServerError(`Could not find the junction column for the channels relation of entity ${entityMetadata.targetName}`);
+
+        const junctionTableName = channelsRelation.junctionEntityMetadata?.tableName;
+        const junctionColumnName = channelsRelation.junctionEntityMetadata?.columns[0].databaseName;
+        const inverseJunctionColumnName = channelsRelation.junctionEntityMetadata?.inverseColumns[0].databaseName;
+
+        if (!junctionTableName || !junctionColumnName || !inverseJunctionColumnName) {
+            throw new InternalServerError(`Could not find necessary join table information for the channels relation of entity ${metadata.name}`);
         }
-        const sqlToGetAssignedChannelIds = `SELECT "channelId" as "channelId" FROM "${channelsRelation?.joinTableName}" WHERE "${junctionColumnName}" = $1`;
-        return await this.connection.getRepository(ctx, entityType).query(sqlToGetAssignedChannelIds, [entityId]);
+
+        return await this.connection.getRepository(ctx, entityType).createQueryBuilder()
+            .select(`channel.${inverseJunctionColumnName}`, 'channelId')
+            .from(junctionTableName, 'channel')
+            .where(`channel.${junctionColumnName} = :entityId`, { entityId })
+            .execute();
     }
 
     /**
