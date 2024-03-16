@@ -9,7 +9,7 @@ import {
     FindOptionsUtils,
     ObjectLiteral,
     ObjectType,
-    Repository,
+    Repository, SelectQueryBuilder,
 } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 
@@ -22,6 +22,9 @@ import { VendureEntity } from '../entity/base/base.entity';
 
 import { TransactionWrapper } from './transaction-wrapper';
 import { GetEntityOrThrowOptions } from './types';
+import { DataSource } from 'typeorm/data-source/DataSource';
+import { InjectDataSource } from '@nestjs/typeorm/dist/common/typeorm.decorators';
+import { joinTreeRelationsDynamically } from '../service/helpers/utils/tree-relations-qb-joiner';
 
 /**
  * @description
@@ -38,7 +41,7 @@ import { GetEntityOrThrowOptions } from './types';
 @Injectable()
 export class TransactionalConnection {
     constructor(
-        @InjectConnection() private connection: Connection,
+        @InjectDataSource() private dataSource: DataSource,
         private transactionWrapper: TransactionWrapper,
     ) {}
 
@@ -48,8 +51,8 @@ export class TransactionalConnection {
      * performed with this connection will not be performed within any outer
      * transactions.
      */
-    get rawConnection(): Connection {
-        return this.connection;
+    get rawConnection(): DataSource {
+        return this.dataSource;
     }
 
     /**
@@ -275,16 +278,28 @@ export class TransactionalConnection {
         channelId: ID,
         options: FindOneOptions<T> = {},
     ) {
-        const qb = this.getRepository(ctx, entity).createQueryBuilder('entity').setFindOptions(options);
-        if (options.loadEagerRelations !== false) {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
+        const qb = this.getRepository(ctx, entity).createQueryBuilder('entity')
+
+        if (Array.isArray(options.relations) && options.relations.length > 0) {
+            const joinedRelations = joinTreeRelationsDynamically(qb, entity, options.relations);
+            // Remove any relations which are related to the 'collection' tree, as these are handled separately
+            // to avoid duplicate joins.
+            options.relations = options.relations.filter(relationPath => !joinedRelations.has(relationPath));
         }
+        qb.setFindOptions({
+            relationLoadStrategy: 'query', // default to query strategy for maximum performance
+            ...options
+        });
+
+        FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata)
+
         qb.leftJoin('entity.channels', '__channel')
             .andWhere('entity.id = :id', { id })
             .andWhere('__channel.id = :channelId', { channelId });
 
-        return qb.getOne().then(result => result ?? undefined);
+        return qb.getOne().then(result => {
+            return result ?? undefined
+        });
     }
 
     /**
@@ -305,11 +320,26 @@ export class TransactionalConnection {
             return Promise.resolve([]);
         }
 
-        const qb = this.getRepository(ctx, entity).createQueryBuilder('entity').setFindOptions(options);
-        if (options.loadEagerRelations !== false) {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
+        const qb = this.getRepository(ctx, entity).createQueryBuilder('entity');
+
+        if (Array.isArray(options.relations) && options.relations.length > 0) {
+            const joinedRelations = joinTreeRelationsDynamically(
+                qb as SelectQueryBuilder<VendureEntity>,
+                entity,
+                options.relations,
+            );
+            // Remove any relations which are related to the 'collection' tree, as these are handled separately
+            // to avoid duplicate joins.
+            options.relations = options.relations.filter(relationPath => !joinedRelations.has(relationPath));
         }
+
+        qb.setFindOptions({
+            relationLoadStrategy: 'query', // default to query strategy for maximum performance
+            ...options
+        });
+
+        FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata)
+
         return qb
             .leftJoin('entity.channels', 'channel')
             .andWhere('entity.id IN (:...ids)', { ids })

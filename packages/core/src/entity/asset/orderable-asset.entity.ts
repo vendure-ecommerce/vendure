@@ -24,7 +24,7 @@ export abstract class OrderableAsset extends VendureEntity implements Orderable 
     assetId: ID;
 
     @Index()
-    @ManyToOne(type => Asset, { eager: true, onDelete: 'CASCADE' })
+    @ManyToOne(type => Asset,  { eager: true, onDelete: 'CASCADE' })
     asset: Asset;
 
     @Column()
