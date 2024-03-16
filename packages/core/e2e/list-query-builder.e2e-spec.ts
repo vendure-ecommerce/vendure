@@ -1285,7 +1285,11 @@ describe('ListQueryBuilder', () => {
                     id: 'T_1',
                     label: 'A',
                     name: 'apple',
-                    parent: { id: 'T_2'},
+                    parent: {
+                        id: 'T_2',
+                        label: 'B',
+                        name: 'bike',
+                    },
                     orderRelation: {
                         customer: {
                             firstName: 'Hayden',
@@ -1298,7 +1302,11 @@ describe('ListQueryBuilder', () => {
                     id: 'T_4',
                     label: 'D',
                     name: 'dog',
-                    parent: { id: 'T_2'},
+                    parent: {
+                        id: 'T_2',
+                        label: 'B',
+                        name: 'bike',
+                    },
                     orderRelation: {
                         customer: {
                             firstName: 'Hayden',
@@ -1416,6 +1424,8 @@ const GET_LIST_WITH_ORDERS = gql`
                 name
                 parent {
                     id
+                    label
+                    name
                 }
                 orderRelation {
                     id

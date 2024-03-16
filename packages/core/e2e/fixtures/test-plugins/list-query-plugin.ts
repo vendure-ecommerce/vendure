@@ -212,8 +212,9 @@ export class ListQueryResolver {
                         item.activePrice = item.prices.find(p => p.channelId === 1)!.price;
                     }
                 }
+                const i = items.map(i => translateDeep(i, ctx.languageCode, ['parent']));
                 return {
-                    items: items.map(i => translateDeep(i, ctx.languageCode)),
+                    items: i,
                     totalItems,
                 };
             });
@@ -222,7 +223,7 @@ export class ListQueryResolver {
     @Query()
     testEntitiesGetMany(@Ctx() ctx: RequestContext, @Args() args: any) {
         return this.listQueryBuilder
-            .build(TestEntity, args.options, { ctx, relations: ['prices'] })
+            .build(TestEntity, args.options, { ctx, relations: ['prices', 'parent'] })
             .getMany()
             .then(items => {
                 for (const item of items) {
@@ -231,7 +232,7 @@ export class ListQueryResolver {
                         item.activePrice = item.prices.find(p => p.channelId === 1)!.price;
                     }
                 }
-                return items.map(i => translateDeep(i, ctx.languageCode));
+                return items.map(i => translateDeep(i, ctx.languageCode, ['parent']));
             });
     }
 }

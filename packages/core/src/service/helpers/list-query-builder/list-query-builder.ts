@@ -661,6 +661,29 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
     }
 
     /**
+     * @description
+     * Check if the current entity has one or more self-referencing relations
+     * to determine if it is a tree type or has tree relations.
+     * @param metadata
+     * @private
+     */
+    private isTreeEntityMetadata(metadata: EntityMetadata): boolean {
+        if (metadata.treeType !== undefined) {
+            return true;
+        }
+
+        for (const relation of metadata.relations) {
+            if (relation.isTreeParent || relation.isTreeChildren) {
+                return true;
+            }
+            if (relation.inverseEntityMetadata === metadata) {
+                return true;
+            }
+        }
+        return false
+    }
+
+    /**
      * Dynamically joins tree relations and their eager relations to a query builder. This method is specifically
      * designed for entities utilizing TypeORM tree decorators (@TreeParent, @TreeChildren) and aims to address
      * the challenge of efficiently managing deeply nested relations and avoiding duplicate joins. The method
@@ -686,27 +709,16 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         entity: EntityTarget<T>,
         requestedRelations: string[] = [],
     ): Set<string> {
-        const metadata = qb.connection.getMetadata(entity);
+        const sourceMetadata = qb.connection.getMetadata(entity);
+        const isTreeSourceMetadata = this.isTreeEntityMetadata(sourceMetadata)
         const processedRelations = new Set<string>();
 
         const processRelation = (
             currentMetadata: EntityMetadata,
-            currentParentIsTreeType: boolean,
             currentPath: string,
             currentAlias: string,
         ) => {
-            const currentMetadataIsTreeType = metadata.treeType;
-            let currentMetadataHasOneOrMoreSelfReferencingRelations = false;
-            // Check if the current entity has one or more self-referencing relations
-            // to determine if it is a tree type or has tree relations.
-            for (const relation of currentMetadata.relations) {
-                if (relation.inverseEntityMetadata === currentMetadata) {
-                    currentMetadataHasOneOrMoreSelfReferencingRelations = true;
-                    break;
-                }
-            }
-
-            if (!currentParentIsTreeType && !currentMetadataIsTreeType && !currentMetadataHasOneOrMoreSelfReferencingRelations) {
+            if (!this.isTreeEntityMetadata(currentMetadata) && !isTreeSourceMetadata) {
                 return;
             }
 
@@ -729,16 +741,13 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                     qb.leftJoinAndSelect(`${currentAlias}.${part}`, nextAlias);
                 }
 
-                const isTreeParent = relationMetadata.isTreeParent;
-                const isTreeChildren = relationMetadata.isTreeChildren;
-                const isTree = isTreeParent || isTreeChildren;
+                const isTree = this.isTreeEntityMetadata(relationMetadata.inverseEntityMetadata);
 
                 if (isTree) {
                     relationMetadata.inverseEntityMetadata.relations.forEach(subRelation => {
                         if (subRelation.isEager) {
                             processRelation(
                                 relationMetadata.inverseEntityMetadata,
-                                !!relationMetadata.inverseEntityMetadata.treeType,
                                 subRelation.propertyPath,
                                 nextAlias,
                             );
@@ -749,7 +758,6 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                 if (nextPath) {
                     processRelation(
                         relationMetadata.inverseEntityMetadata,
-                        !!relationMetadata.inverseEntityMetadata.treeType,
                         nextPath,
                         nextAlias,
                     );
@@ -759,7 +767,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         };
 
         requestedRelations.forEach(relationPath => {
-            processRelation(metadata, !!metadata.treeType, relationPath, qb.alias);
+            processRelation(sourceMetadata, relationPath, qb.alias);
         });
 
         return processedRelations;
