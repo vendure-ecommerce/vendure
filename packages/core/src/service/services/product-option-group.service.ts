@@ -133,6 +133,8 @@ export class ProductOptionGroupService {
      */
     async deleteGroupAndOptionsFromProduct(ctx: RequestContext, id: ID, productId: ID) {
         const optionGroup = await this.connection.getEntityOrThrow(ctx, ProductOptionGroup, id, {
+            relationLoadStrategy: 'query',
+            loadEagerRelations: false,
             relations: ['options', 'product'],
         });
         const deletedOptionGroup = new ProductOptionGroup(optionGroup);
@@ -165,6 +167,8 @@ export class ProductOptionGroupService {
             // hard delete
 
             const product = await this.connection.getRepository(ctx, Product).findOne({
+                relationLoadStrategy: 'query',
+                loadEagerRelations: false,
                 where: { id: productId },
                 relations: ['optionGroups'],
             });
