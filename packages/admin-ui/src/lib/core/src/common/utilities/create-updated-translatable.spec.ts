@@ -1,8 +1,10 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
+import { describe, expect, it, beforeEach } from 'vitest';
 
 import { CustomFieldConfig, LanguageCode, ProductDetailFragment } from '../generated-types';
 
 import { createUpdatedTranslatable } from './create-updated-translatable';
+import { fail } from 'assert';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 describe('createUpdatedTranslatable()', () => {
