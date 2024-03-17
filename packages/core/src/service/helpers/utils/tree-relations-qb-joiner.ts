@@ -82,7 +82,7 @@ export function joinTreeRelationsDynamically<T extends VendureEntity>(
         currentPath: string,
         currentAlias: string,
     ) => {
-        const currentMetadataIsTree = isTreeEntityMetadata(currentMetadata) && sourceMetadataIsTree;
+        const currentMetadataIsTree = isTreeEntityMetadata(currentMetadata) || sourceMetadataIsTree;
         if (!currentMetadataIsTree && !parentMetadataIsTree) {
             return;
         }
