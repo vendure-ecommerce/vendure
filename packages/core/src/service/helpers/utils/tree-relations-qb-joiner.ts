@@ -58,7 +58,7 @@ function isTreeEntityMetadata(metadata: EntityMetadata): boolean {
  *                                 the entity's metadata and analyze its relations.
  * @param {string[]} requestedRelations An array of strings representing the relation paths to be dynamically joined.
  *                                      Each string in the array should denote a path to a relation (e.g., 'parent.parent.children').
- * @returns {Set<string>} A Set containing the paths of relations that were dynamically joined. This set can be used
+ * @returns {Map<string, string>} A Map containing the paths of relations that were dynamically joined with their aliases. This map can be used
  *                        to track which relations have been processed and potentially avoid duplicate processing.
  * @template T extends VendureEntity The type of the entity for which relations are being joined. This type parameter
  *                                    should extend VendureEntity to ensure compatibility with Vendure's data access layer.
@@ -67,21 +67,23 @@ export function joinTreeRelationsDynamically<T extends VendureEntity>(
     qb: SelectQueryBuilder<T>,
     entity: EntityTarget<T>,
     requestedRelations: string[] = [],
-): Set<string> {
-    const processedRelations = new Set<string>();
+): Map<string, string> {
+    const joinedRelations = new Map<string, string>();
     if (!requestedRelations.length) {
-        return processedRelations;
+        return joinedRelations;
     }
 
     const sourceMetadata = qb.connection.getMetadata(entity);
-    const isTreeSourceMetadata = isTreeEntityMetadata(sourceMetadata)
+    const sourceMetadataIsTree = isTreeEntityMetadata(sourceMetadata)
 
     const processRelation = (
         currentMetadata: EntityMetadata,
+        parentMetadataIsTree: boolean,
         currentPath: string,
         currentAlias: string,
     ) => {
-        if (!isTreeEntityMetadata(currentMetadata) && !isTreeSourceMetadata) {
+        const currentMetadataIsTree = isTreeEntityMetadata(currentMetadata) && sourceMetadataIsTree;
+        if (!currentMetadataIsTree && !parentMetadataIsTree) {
             return;
         }
 
@@ -104,13 +106,14 @@ export function joinTreeRelationsDynamically<T extends VendureEntity>(
                 qb.leftJoinAndSelect(`${currentAlias}.${part}`, nextAlias);
             }
 
-            const isTree = isTreeEntityMetadata(relationMetadata.inverseEntityMetadata);
+            const inverseEntityMetadataIsTree = isTreeEntityMetadata(relationMetadata.inverseEntityMetadata);
 
-            if (isTree) {
+            if (parentMetadataIsTree || inverseEntityMetadataIsTree || currentMetadataIsTree) {
                 relationMetadata.inverseEntityMetadata.relations.forEach(subRelation => {
                     if (subRelation.isEager) {
                         processRelation(
                             relationMetadata.inverseEntityMetadata,
+                            currentMetadataIsTree,
                             subRelation.propertyPath,
                             nextAlias,
                         );
@@ -118,20 +121,21 @@ export function joinTreeRelationsDynamically<T extends VendureEntity>(
                 });
             }
 
-            if (nextPath) {
+            if (nextPath && nextPath !== "") {
                 processRelation(
                     relationMetadata.inverseEntityMetadata,
+                    currentMetadataIsTree,
                     nextPath,
                     nextAlias,
                 );
             }
-            processedRelations.add(currentPath);
+            joinedRelations.set(currentPath, nextAlias);
         }
     };
 
     requestedRelations.forEach(relationPath => {
-        processRelation(sourceMetadata, relationPath, qb.alias);
+        processRelation(sourceMetadata, sourceMetadataIsTree, relationPath, qb.alias);
     });
 
-    return processedRelations;
+    return joinedRelations;
 }
