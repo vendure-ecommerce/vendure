@@ -589,10 +589,20 @@ export class OrderService {
                 orderLine,
             );
         }
+        const existingQuantityInOtherLines = summate(
+            order.lines.filter(
+                l =>
+                    idsAreEqual(l.productVariantId, orderLine.productVariantId) &&
+                    !idsAreEqual(l.id, orderLineId),
+            ),
+            'quantity',
+        );
         const correctedQuantity = await this.orderModifier.constrainQuantityToSaleable(
             ctx,
             orderLine.productVariant,
             quantity,
+            0,
+            existingQuantityInOtherLines,
         );
         let updatedOrderLines = [orderLine];
         if (correctedQuantity === 0) {
