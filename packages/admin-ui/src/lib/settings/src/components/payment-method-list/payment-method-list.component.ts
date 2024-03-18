@@ -1,27 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { GetPaymentMethodListDocument, TypedBaseListComponent } from '@vendure/admin-ui/core';
-import { gql } from 'apollo-angular';
-
-export const GET_PAYMENT_METHOD_LIST = gql`
-    query GetPaymentMethodList($options: PaymentMethodListOptions!) {
-        paymentMethods(options: $options) {
-            items {
-                ...PaymentMethodListItem
-            }
-            totalItems
-        }
-    }
-    fragment PaymentMethodListItem on PaymentMethod {
-        id
-        createdAt
-        updatedAt
-        name
-        description
-        code
-        enabled
-    }
-`;
 
 @Component({
     selector: 'vdr-payment-method-list',

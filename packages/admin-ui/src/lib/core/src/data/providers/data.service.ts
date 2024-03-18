@@ -18,6 +18,7 @@ import { ProductDataService } from './product-data.service';
 import { PromotionDataService } from './promotion-data.service';
 import { SettingsDataService } from './settings-data.service';
 import { ShippingMethodDataService } from './shipping-method-data.service';
+import { PaymentMethodDataService } from './payment-method-data.service';
 
 /**
  * @description
@@ -43,6 +44,7 @@ export class DataService {
     /** @internal */ settings: SettingsDataService;
     /** @internal */ customer: CustomerDataService;
     /** @internal */ shippingMethod: ShippingMethodDataService;
+    /** @internal */ paymentMethod: PaymentMethodDataService;
 
     /** @internal */
     constructor(private baseDataService: BaseDataService) {
@@ -57,6 +59,7 @@ export class DataService {
         this.settings = new SettingsDataService(baseDataService);
         this.customer = new CustomerDataService(baseDataService);
         this.shippingMethod = new ShippingMethodDataService(baseDataService);
+        this.paymentMethod = new PaymentMethodDataService(baseDataService);
     }
 
     /**

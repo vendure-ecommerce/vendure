@@ -11,11 +11,9 @@ import {
     findTranslation,
     getConfigArgValue,
     getCustomFieldsDefaults,
-    GetPaymentMethodDetailDocument,
-    GetPaymentMethodDetailQuery,
+    GetPaymentMethodDocument,
     LanguageCode,
     NotificationService,
-    PAYMENT_METHOD_FRAGMENT,
     PaymentMethodFragment,
     Permission,
     toConfigurableOperationInput,
@@ -23,18 +21,8 @@ import {
     UpdatePaymentMethodInput,
 } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
-import { gql } from 'apollo-angular';
 import { combineLatest } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
-
-export const GET_PAYMENT_METHOD_DETAIL = gql`
-    query GetPaymentMethodDetail($id: ID!) {
-        paymentMethod(id: $id) {
-            ...PaymentMethod
-        }
-    }
-    ${PAYMENT_METHOD_FRAGMENT}
-`;
 
 @Component({
     selector: 'vdr-payment-method-detail',
@@ -43,7 +31,7 @@ export const GET_PAYMENT_METHOD_DETAIL = gql`
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaymentMethodDetailComponent
-    extends TypedBaseDetailComponent<typeof GetPaymentMethodDetailDocument, 'paymentMethod'>
+    extends TypedBaseDetailComponent<typeof GetPaymentMethodDocument, 'paymentMethod'>
     implements OnInit, OnDestroy
 {
     customFields = this.getCustomFieldConfig('PaymentMethod');
@@ -52,8 +40,8 @@ export class PaymentMethodDetailComponent
         name: ['', Validators.required],
         description: '',
         enabled: [true, Validators.required],
-        checker: {} as NonNullable<GetPaymentMethodDetailQuery['paymentMethod']>['checker'],
-        handler: {} as NonNullable<GetPaymentMethodDetailQuery['paymentMethod']>['handler'],
+        checker: {} as NonNullable<PaymentMethodFragment>['checker'],
+        handler: {} as NonNullable<PaymentMethodFragment>['handler'],
         customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
     });
     checkers: ConfigurableOperationDefinition[] = [];
@@ -75,7 +63,7 @@ export class PaymentMethodDetailComponent
 
     ngOnInit() {
         this.init();
-        this.dataService.settings.getPaymentMethodOperations().single$.subscribe(data => {
+        this.dataService.paymentMethod.getPaymentMethodOperations().single$.subscribe(data => {
             this.checkers = data.paymentMethodEligibilityCheckers;
             this.handlers = data.paymentMethodHandlers;
             this.changeDetector.markForCheck();
@@ -159,7 +147,7 @@ export class PaymentMethodDetailComponent
             selectedHandler,
             selectedChecker,
         ) as CreatePaymentMethodInput;
-        this.dataService.settings.createPaymentMethod(input).subscribe(
+        this.dataService.paymentMethod.createPaymentMethod(input).subscribe(
             data => {
                 this.notificationService.success(_('common.notify-create-success'), {
                     entity: 'PaymentMethod',
@@ -193,7 +181,7 @@ export class PaymentMethodDetailComponent
                         selectedHandler,
                         selectedChecker,
                     ) as UpdatePaymentMethodInput;
-                    return this.dataService.settings.updatePaymentMethod(input);
+                    return this.dataService.paymentMethod.updatePaymentMethod(input);
                 }),
             )
             .subscribe(
@@ -244,7 +232,7 @@ export class PaymentMethodDetailComponent
     }
 
     protected setFormValues(
-        paymentMethod: NonNullable<GetPaymentMethodDetailQuery['paymentMethod']>,
+        paymentMethod: NonNullable<PaymentMethodFragment>,
         languageCode: LanguageCode,
     ): void {
         const currentTranslation = findTranslation(paymentMethod, languageCode);

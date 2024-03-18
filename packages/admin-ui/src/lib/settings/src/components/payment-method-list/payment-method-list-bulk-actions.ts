@@ -21,7 +21,9 @@ export const deletePaymentMethodsBulkAction = createBulkDeleteAction<
     getItemName: item => item.name,
     shouldRetryItem: (response, item) => !!response.message,
     bulkDelete: (dataService, ids, retrying) =>
-        dataService.settings.deletePaymentMethods(ids, retrying).pipe(map(res => res.deletePaymentMethods)),
+        dataService.paymentMethod
+            .deletePaymentMethods(ids, retrying)
+            .pipe(map(res => res.deletePaymentMethods)),
 });
 
 const ASSIGN_PAYMENT_METHODS_TO_CHANNEL = gql`
