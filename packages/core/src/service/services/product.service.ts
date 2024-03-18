@@ -271,6 +271,8 @@ export class ProductService {
 
     async softDelete(ctx: RequestContext, productId: ID): Promise<DeletionResponse> {
         const product = await this.connection.getEntityOrThrow(ctx, Product, productId, {
+            relationLoadStrategy: 'query',
+            loadEagerRelations: false,
             channelId: ctx.channelId,
             relations: ['variants', 'optionGroups'],
         });
@@ -449,6 +451,8 @@ export class ProductService {
 
     private async getProductWithOptionGroups(ctx: RequestContext, productId: ID): Promise<Product> {
         const product = await this.connection.getRepository(ctx, Product).findOne({
+            relationLoadStrategy: 'query',
+            loadEagerRelations: false,
             where: { id: productId, deletedAt: IsNull() },
             relations: ['optionGroups', 'variants', 'variants.options'],
         });
