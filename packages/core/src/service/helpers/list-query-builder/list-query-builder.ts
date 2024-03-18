@@ -681,7 +681,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
      * @template T extends VendureEntity The type of the entity for which relations are being joined. This type parameter
      *                                    should extend VendureEntity to ensure compatibility with Vendure's data access layer.
      */
-    private joinTreeRelationsDynamically<T extends VendureEntity>(
+    public joinTreeRelationsDynamically<T extends VendureEntity>(
         qb: SelectQueryBuilder<T>,
         entity: EntityTarget<T>,
         requestedRelations: string[] = [],

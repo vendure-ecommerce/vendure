@@ -12,6 +12,8 @@ import { ProductPriceApplicator } from '../product-price-applicator/product-pric
 import { TranslatorService } from '../translator/translator.service';
 
 import { HydrateOptions } from './entity-hydrator-types';
+import { ListQueryBuilder } from '../list-query-builder/list-query-builder';
+import { SelectQueryBuilder } from 'typeorm';
 
 /**
  * @description
@@ -78,6 +80,7 @@ export class EntityHydrator {
         private connection: TransactionalConnection,
         private productPriceApplicator: ProductPriceApplicator,
         private translator: TranslatorService,
+        private listQueryBuilder: ListQueryBuilder,
     ) {}
 
     /**
@@ -116,10 +119,17 @@ export class EntityHydrator {
             }
 
             if (missingRelations.length) {
-                const hydrated = await this.connection.getRepository(ctx, target.constructor).findOne({
+                const hydratedQb: SelectQueryBuilder<any> = this.connection
+                    .getRepository(ctx, target.constructor)
+                    .createQueryBuilder(target.constructor.name)
+                const processedRelations = this.listQueryBuilder
+                    .joinTreeRelationsDynamically(hydratedQb, target.constructor, missingRelations)
+                hydratedQb.setFindOptions({
+                    relationLoadStrategy: 'query',
                     where: { id: target.id },
-                    relations: missingRelations,
+                    relations: missingRelations.filter(relationPath => !processedRelations.has(relationPath)),
                 });
+                const hydrated = await hydratedQb.getOne();
                 const propertiesToAdd = unique(missingRelations.map(relation => relation.split('.')[0]));
                 for (const prop of propertiesToAdd) {
                     (target as any)[prop] = this.mergeDeep((target as any)[prop], (hydrated as any)[prop]);
