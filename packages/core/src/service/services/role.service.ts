@@ -70,7 +70,7 @@ export class RoleService {
         relations?: RelationPaths<Role>,
     ): Promise<PaginatedList<Role>> {
         return this.listQueryBuilder
-            .build(Role, options, { relations: relations ?? ['channels'], ctx })
+            .build(Role, options, { relations: unique([...(relations ?? []), 'channels']), ctx })
             .getManyAndCount()
             .then(async ([items, totalItems]) => {
                 const visibleRoles: Role[] = [];
@@ -92,7 +92,7 @@ export class RoleService {
             .getRepository(ctx, Role)
             .findOne({
                 where: { id: roleId },
-                relations: relations ?? ['channels'],
+                relations: unique([...(relations ?? []), 'channels']),
             })
             .then(async result => {
                 if (result && (await this.activeUserCanReadRole(ctx, result))) {

@@ -269,7 +269,7 @@ export class ReviewsPlugin {}
 
 Let's say you want to add a new field to the `ProductVariant` type to allow the storefront to display some indication of how long a particular product variant would take to deliver, based on data from some external service. 
 
-First we extend the `Product` GraphQL type:
+First we extend the `ProductVariant` GraphQL type:
 
 ```ts title="src/plugins/delivery-time/api/api-extensions.ts"
 import gql from 'graphql-tag';

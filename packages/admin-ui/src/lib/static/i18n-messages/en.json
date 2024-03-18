@@ -71,6 +71,8 @@
     "assign-variants-to-channel": "Assign product variants to channel",
     "auto-update-option-variant-name": "Automatically update the names of ProductVariants using this option",
     "auto-update-product-variant-name": "Automatically update the names of ProductVariants",
+    "calculated-price": "Calculated price",
+    "calculated-price-tooltip": "There is a custom price calculation configured which modifies the price set above:",
     "cannot-create-variants-without-options": "Product variants cannot be created until an option group with at least two product options has been defined",
     "channel-price-preview": "Channel price preview",
     "collection": "Collection",

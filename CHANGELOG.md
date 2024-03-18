@@ -1,3 +1,24 @@
+## <small>2.1.8 (2024-03-05)</small>
+
+
+#### Fixes
+
+* **admin-ui** Add missing Swedish translation (#2672) ([cce90d6](https://github.com/vendure-ecommerce/vendure/commit/cce90d6)), closes [#2672](https://github.com/vendure-ecommerce/vendure/issues/2672)
+* **admin-ui** Add missing translation of breadcrumb tooltips (#2697) ([2a3a796](https://github.com/vendure-ecommerce/vendure/commit/2a3a796)), closes [#2697](https://github.com/vendure-ecommerce/vendure/issues/2697)
+* **admin-ui** Display calculated price when custom price strategy used ([09c66fe](https://github.com/vendure-ecommerce/vendure/commit/09c66fe)), closes [#2506](https://github.com/vendure-ecommerce/vendure/issues/2506)
+* **admin-ui** Export AssetsComponent as a Shared Component (#2695) ([cc85202](https://github.com/vendure-ecommerce/vendure/commit/cc85202)), closes [#2695](https://github.com/vendure-ecommerce/vendure/issues/2695) [#2637](https://github.com/vendure-ecommerce/vendure/issues/2637)
+* **common** Properly replace umlauts and Eszett for German lang (#2616) ([84ba64f](https://github.com/vendure-ecommerce/vendure/commit/84ba64f)), closes [#2616](https://github.com/vendure-ecommerce/vendure/issues/2616)
+* **core** Add missing Order.customer field resolver ([dad7f98](https://github.com/vendure-ecommerce/vendure/commit/dad7f98)), closes [#2715](https://github.com/vendure-ecommerce/vendure/issues/2715)
+* **core** Export OrderByCodeAccessStrategy and DefaultOrderByCodeAccessStrategy (#2692) ([6a4a7e5](https://github.com/vendure-ecommerce/vendure/commit/6a4a7e5)), closes [#2692](https://github.com/vendure-ecommerce/vendure/issues/2692)
+* **core** Fix custom field relation loading edge-case ([93ca4ca](https://github.com/vendure-ecommerce/vendure/commit/93ca4ca)), closes [#2708](https://github.com/vendure-ecommerce/vendure/issues/2708)
+* **core** Fix error when querying Roles without channels field ([b2cb011](https://github.com/vendure-ecommerce/vendure/commit/b2cb011)), closes [#2693](https://github.com/vendure-ecommerce/vendure/issues/2693)
+* **core** Fix querying order variant after removal from channel ([e28ba3d](https://github.com/vendure-ecommerce/vendure/commit/e28ba3d)), closes [#2716](https://github.com/vendure-ecommerce/vendure/issues/2716)
+* **core** Fix renaming of product with readonly custom field (#2684) ([2075d6d](https://github.com/vendure-ecommerce/vendure/commit/2075d6d)), closes [#2684](https://github.com/vendure-ecommerce/vendure/issues/2684)
+* **core** Fix stock constraint error when using OrderLine custom fields ([2f93eb7](https://github.com/vendure-ecommerce/vendure/commit/2f93eb7)), closes [#2702](https://github.com/vendure-ecommerce/vendure/issues/2702)
+* **core** Handle nullable relations in EntityHydrator (#2683) ([4e1f408](https://github.com/vendure-ecommerce/vendure/commit/4e1f408)), closes [#2683](https://github.com/vendure-ecommerce/vendure/issues/2683) [#2682](https://github.com/vendure-ecommerce/vendure/issues/2682)
+* **create** Update scaffolded service type safety for updated Enttity (#2712) ([2e3be51](https://github.com/vendure-ecommerce/vendure/commit/2e3be51)), closes [#2712](https://github.com/vendure-ecommerce/vendure/issues/2712)
+* **payments-plugin** Improve Mollie ignore order states (#2670) ([f02fc56](https://github.com/vendure-ecommerce/vendure/commit/f02fc56)), closes [#2670](https://github.com/vendure-ecommerce/vendure/issues/2670)
+
 ## <small>2.1.7 (2024-02-06)</small>
 
 

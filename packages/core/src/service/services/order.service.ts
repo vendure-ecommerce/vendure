@@ -561,11 +561,20 @@ export class OrderService {
         if (variant.product.enabled === false) {
             throw new EntityNotFoundError('ProductVariant', productVariantId);
         }
+        const existingQuantityInOtherLines = summate(
+            order.lines.filter(
+                l =>
+                    idsAreEqual(l.productVariantId, productVariantId) &&
+                    !idsAreEqual(l.id, existingOrderLine?.id),
+            ),
+            'quantity',
+        );
         const correctedQuantity = await this.orderModifier.constrainQuantityToSaleable(
             ctx,
             variant,
             quantity,
             existingOrderLine?.quantity,
+            existingQuantityInOtherLines,
         );
         if (correctedQuantity === 0) {
             return new InsufficientStockError({ order, quantityAvailable: correctedQuantity });
@@ -621,10 +630,20 @@ export class OrderService {
                 orderLine,
             );
         }
+        const existingQuantityInOtherLines = summate(
+            order.lines.filter(
+                l =>
+                    idsAreEqual(l.productVariantId, orderLine.productVariantId) &&
+                    !idsAreEqual(l.id, orderLineId),
+            ),
+            'quantity',
+        );
         const correctedQuantity = await this.orderModifier.constrainQuantityToSaleable(
             ctx,
             orderLine.productVariant,
             quantity,
+            0,
+            existingQuantityInOtherLines,
         );
         let updatedOrderLines = [orderLine];
         if (correctedQuantity === 0) {

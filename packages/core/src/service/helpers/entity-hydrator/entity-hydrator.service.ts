@@ -2,18 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { Type } from '@vendure/common/lib/shared-types';
 import { isObject } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
+import { SelectQueryBuilder } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { InternalServerError } from '../../../common/error/errors';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
+import { ListQueryBuilder } from '../list-query-builder/list-query-builder';
 import { ProductPriceApplicator } from '../product-price-applicator/product-price-applicator';
 import { TranslatorService } from '../translator/translator.service';
 
 import { HydrateOptions } from './entity-hydrator-types';
-import { ListQueryBuilder } from '../list-query-builder/list-query-builder';
-import { SelectQueryBuilder } from 'typeorm';
 
 /**
  * @description
@@ -121,9 +121,12 @@ export class EntityHydrator {
             if (missingRelations.length) {
                 const hydratedQb: SelectQueryBuilder<any> = this.connection
                     .getRepository(ctx, target.constructor)
-                    .createQueryBuilder(target.constructor.name)
-                const processedRelations = this.listQueryBuilder
-                    .joinTreeRelationsDynamically(hydratedQb, target.constructor, missingRelations)
+                    .createQueryBuilder(target.constructor.name);
+                const processedRelations = this.listQueryBuilder.joinTreeRelationsDynamically(
+                    hydratedQb,
+                    target.constructor,
+                    missingRelations,
+                );
                 hydratedQb.setFindOptions({
                     relationLoadStrategy: 'query',
                     where: { id: target.id },
@@ -132,7 +135,7 @@ export class EntityHydrator {
                 const hydrated = await hydratedQb.getOne();
                 const propertiesToAdd = unique(missingRelations.map(relation => relation.split('.')[0]));
                 for (const prop of propertiesToAdd) {
-                    (target as any)[prop] = this.mergeDeep((target as any)[prop], (hydrated as any)[prop]);
+                    (target as any)[prop] = this.mergeDeep((target as any)[prop], hydrated[prop]);
                 }
 
                 const relationsWithEntities = missingRelations.map(relation => ({
@@ -262,6 +265,8 @@ export class EntityHydrator {
                         visit(item, parts.slice());
                     }
                 }
+            } else if (target === null) {
+                result.push(target);
             } else {
                 if (parts.length === 0) {
                     result.push(target);

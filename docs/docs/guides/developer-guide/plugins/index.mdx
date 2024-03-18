@@ -176,7 +176,7 @@ We'll start by creating a new directory to house our plugin, add create the main
             ├── wishlist.plugin.ts
 ```
 
-```ts title="src/plugins/reviews-plugin/reviews.plugin.ts"
+```ts title="src/plugins/reviews-plugin/wishlist.plugin.ts"
 import { PluginCommonModule, VendurePlugin } from '@vendure/core';
 
 @VendurePlugin({
@@ -509,7 +509,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Allow, Ctx, Permission, RequestContext, Transaction } from '@vendure/core';
 
 import { WishlistItem } from '../entities/wishlist-item.entity';
-import { WishlistService } from '../service/wishlist.service';
+import { WishlistService } from '../services/wishlist.service';
 
 @Resolver()
 export class WishlistShopResolver {

@@ -63,6 +63,8 @@ export class CustomFieldRelationResolverService {
         result: VendureEntity | VendureEntity[] | null,
         fieldDef: RelationCustomFieldConfig,
     ) {
+        if (result == null) return null;
+
         if (fieldDef.entity === ProductVariant) {
             if (Array.isArray(result)) {
                 await Promise.all(result.map(r => this.applyVariantPrices(ctx, r as any)));
