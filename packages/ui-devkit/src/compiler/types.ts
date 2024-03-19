@@ -84,6 +84,38 @@ export interface SassVariableOverridesExtension {
 
 /**
  * @description
+ * Defines a route which will be added to the Admin UI application.
+ *
+ * @docsCategory UiDevkit
+ * @docsPage AdminUiExtension
+ */
+export interface UiExtensionRouteDefinition {
+    /**
+     * @description
+     * The name of the route. This will be used as the path in the URL.
+     */
+    route: string;
+    /**
+     * @description
+     * The path to the file which exports an array of Angular route definitions.
+     */
+    filePath: string;
+    /**
+     * @description
+     * All extensions will be mounted under the `/extensions/` route. This option allows you to specify a
+     * custom prefix rather than `/extensions/`. For example, setting this to `custom` would cause the extension
+     * to be mounted at `/custom/<route>` instead.
+     *
+     * A common use case for this is to mount the extension at the root of the Admin UI, by setting this to an empty string.
+     * This is useful when the extension is intended to replace the default Admin UI, rather than extend it.
+     *
+     * @since 2.2.0
+     */
+    prefix?: string;
+}
+
+/**
+ * @description
  * Defines extensions to the Admin UI application by specifying additional
  * Angular [NgModules](https://angular.io/guide/ngmodules) which are compiled
  * into the application.
@@ -135,30 +167,7 @@ export interface AdminUiExtension
      * Defines routes that will be lazy-loaded at the `/extensions/` route. The filePath should point to a file
      * relative to the `extensionPath` which exports an array of Angular route definitions.
      */
-    routes?: Array<{
-        /**
-         * @description
-         * The name of the route. This will be used as the path in the URL.
-         */
-        route: string;
-        /**
-         * @description
-         * The path to the file which exports an array of Angular route definitions.
-         */
-        filePath: string;
-        /**
-         * @description
-         * All extensions will be mounted under the `/extensions/` route. This option allows you to specify a
-         * custom prefix rather than `/extensions/`. For example, setting this to `custom` would cause the extension
-         * to be mounted at `/custom/<route>` instead.
-         *
-         * A common use case for this is to mount the extension at the root of the Admin UI, by setting this to an empty string.
-         * This is useful when the extension is intended to replace the default Admin UI, rather than extend it.
-         *
-         * @since 2.2.0
-         */
-        prefix?: string;
-    }>;
+    routes?: UiExtensionRouteDefinition[];
 
     /**
      * @description
