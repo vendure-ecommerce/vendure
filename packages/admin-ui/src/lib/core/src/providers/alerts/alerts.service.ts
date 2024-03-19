@@ -1,10 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import {
     BehaviorSubject,
     combineLatest,
     first,
-    interval,
     isObservable,
     Observable,
     of,
@@ -13,15 +12,109 @@ import {
 } from 'rxjs';
 import { filter, map, startWith, take } from 'rxjs/operators';
 import { Permission } from '../../common/generated-types';
+import { DataService } from '../../data/providers/data.service';
+import { ModalService } from '../modal/modal.service';
+import { NotificationService } from '../notification/notification.service';
 import { PermissionsService } from '../permissions/permissions.service';
 
+/**
+ * @description
+ * The context object which is passed to the `check`, `isAlert` and `action` functions of an
+ * {@link AlertConfig} object.
+ */
+export interface AlertContext {
+    /**
+     * @description
+     * The Angular [Injector](https://angular.dev/api/core/Injector) which can be used to get instances
+     * of services and other providers available in the application.
+     */
+    injector: Injector;
+    /**
+     * @description
+     * The [DataService](/reference/admin-ui-api/services/data-service), which provides methods for querying the
+     * server-side data.
+     */
+    dataService: DataService;
+    /**
+     * @description
+     * The [NotificationService](/reference/admin-ui-api/services/notification-service), which provides methods for
+     * displaying notifications to the user.
+     */
+    notificationService: NotificationService;
+    /**
+     * @description
+     * The [ModalService](/reference/admin-ui-api/services/modal-service), which provides methods for
+     * opening modal dialogs.
+     */
+    modalService: ModalService;
+}
+
+/**
+ * @description
+ * A configuration object for an Admin UI alert.
+ *
+ * @since 2.2.0
+ * @docsCategory alerts
+ */
 export interface AlertConfig<T = any> {
+    /**
+     * @description
+     * A unique identifier for the alert.
+     */
     id: string;
-    check: () => T | Promise<T> | Observable<T>;
-    recheckIntervalMs?: number;
-    isAlert: (value: T) => boolean;
-    action: (data: T) => void;
-    label: (data: T) => { text: string; translationVars?: { [key: string]: string | number } };
+    /**
+     * @description
+     * A function which is gets the data used to determine whether the alert should be shown.
+     * Typically, this function will query the server or some other remote data source.
+     *
+     * This function will be called once when the Admin UI app bootstraps, and can be also
+     * set to run at regular intervals by setting the `recheckIntervalMs` property.
+     */
+    check: (context: AlertContext) => T | Promise<T> | Observable<T>;
+    /**
+     * @description
+     * A function which returns an Observable which is used to determine when to re-run the `check`
+     * function. Whenever the observable emits, the `check` function will be called again.
+     *
+     * A basic time-interval-based recheck can be achieved by using the `interval` function from RxJS.
+     *
+     * @example
+     * ```ts
+     * import { interval } from 'rxjs';
+     *
+     * // ...
+     * recheck: () => interval(60_000)
+     * ```
+     *
+     * If this is not set, the `check` function will only be called once when the Admin UI app bootstraps.
+     *
+     * @default undefined
+     */
+    recheck?: (context: AlertContext) => Observable<any>;
+    /**
+     * @description
+     * A function which determines whether the alert should be shown based on the data returned by the `check`
+     * function.
+     */
+    isAlert: (data: T, context: AlertContext) => boolean;
+    /**
+     * @description
+     * A function which is called when the alert is clicked in the Admin UI.
+     */
+    action: (data: T, context: AlertContext) => void;
+    /**
+     * @description
+     * A function which returns the text used in the UI to describe the alert.
+     */
+    label: (
+        data: T,
+        context: AlertContext,
+    ) => { text: string; translationVars?: { [key: string]: string | number } };
+    /**
+     * @description
+     * A list of permissions which the current Administrator must have in order. If the current
+     * Administrator does not have these permissions, none of the other alert functions will be called.
+     */
     requiredPermissions?: Permission[];
 }
 
@@ -36,16 +129,19 @@ export class Alert<T> {
     activeAlert$: Observable<ActiveAlert | undefined>;
     private hasRun$ = new BehaviorSubject(false);
     private data$ = new BehaviorSubject<T | undefined>(undefined);
-    constructor(private config: AlertConfig<T>) {
-        if (this.config.recheckIntervalMs) {
-            interval(this.config.recheckIntervalMs).subscribe(() => this.runCheck());
+    constructor(
+        private config: AlertConfig<T>,
+        private context: AlertContext,
+    ) {
+        if (this.config.recheck) {
+            this.config.recheck(this.context).subscribe(() => this.runCheck());
         }
         this.activeAlert$ = combineLatest(this.data$, this.hasRun$).pipe(
             map(([data, hasRun]) => {
                 if (!data) {
                     return;
                 }
-                const isAlert = this.config.isAlert(data);
+                const isAlert = this.config.isAlert(data, this.context);
                 if (!isAlert) {
                     return;
                 }
@@ -53,12 +149,12 @@ export class Alert<T> {
                     id: this.config.id,
                     runAction: () => {
                         if (!hasRun) {
-                            this.config.action(data);
+                            this.config.action(data, this.context);
                             this.hasRun$.next(true);
                         }
                     },
                     hasRun,
-                    label: this.config.label(data),
+                    label: this.config.label(data, this.context),
                 };
             }),
         );
@@ -67,7 +163,7 @@ export class Alert<T> {
         return this.config.id;
     }
     runCheck() {
-        const result = this.config.check();
+        const result = this.config.check(this.context);
         if (result instanceof Promise) {
             result.then(data => this.data$.next(data));
         } else if (isObservable(result)) {
@@ -87,7 +183,13 @@ export class AlertsService {
     private alertsMap = new Map<string, Alert<any>>();
     private configUpdated = new Subject<void>();
 
-    constructor(private permissionsService: PermissionsService) {
+    constructor(
+        private permissionsService: PermissionsService,
+        private injector: Injector,
+        private dataService: DataService,
+        private notificationService: NotificationService,
+        private modalService: ModalService,
+    ) {
         const alerts$ = this.configUpdated.pipe(
             map(() => [...this.alertsMap.values()]),
             startWith([...this.alertsMap.values()]),
@@ -108,7 +210,7 @@ export class AlertsService {
             .pipe(first())
             .subscribe(hasPermissions => {
                 if (hasPermissions) {
-                    this.alertsMap.set(config.id, new Alert(config));
+                    this.alertsMap.set(config.id, new Alert(config, this.createContext()));
                     this.configUpdated.next();
                 }
             });
@@ -130,5 +232,14 @@ export class AlertsService {
         } else {
             this.alertsMap.forEach(config => config.runCheck());
         }
+    }
+
+    protected createContext(): AlertContext {
+        return {
+            injector: this.injector,
+            dataService: this.dataService,
+            notificationService: this.notificationService,
+            modalService: this.modalService,
+        };
     }
 }

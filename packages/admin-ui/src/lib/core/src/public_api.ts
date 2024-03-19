@@ -81,6 +81,7 @@ export * from './extension/add-nav-menu-item';
 export * from './extension/components/angular-route.component';
 export * from './extension/components/route.component';
 export * from './extension/providers/page-metadata.service';
+export * from './extension/register-alert';
 export * from './extension/register-bulk-action';
 export * from './extension/register-custom-detail-component';
 export * from './extension/register-dashboard-widget';
