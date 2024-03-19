@@ -160,10 +160,15 @@ export class EventBus implements OnModuleDestroy {
      * This is useful when you need assurance that the event handler has successfully completed, and you want
      * the triggering code to fail if the handler fails.
      *
+     * ::: warning
      * This API should be used with caution, as errors or performance issues in the handler can cause the
      * associated operation to be slow or fail entirely. For this reason, any handler which takes longer than
      * 100ms to execute will log a warning. Any non-trivial task to be performed in a blocking event handler
      * should be offloaded to a background job using the {@link JobQueueService}.
+     *
+     * Also, be aware that the handler will be executed in the _same database transaction_ as the code which published
+     * the event (as long as you pass the `ctx` object from the event to any TransactionalConnection calls).
+     * :::
      *
      * @example
      * ```ts
