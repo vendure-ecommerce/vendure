@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import ts, { HeritageClause, JSDocTag, SyntaxKind } from 'typescript';
+import ts, { HeritageClause, JSDocTag, Modifier, NodeArray, SyntaxKind } from 'typescript';
 
 import { notNullOrUndefined } from '../../packages/common/src/shared-utils';
 
@@ -78,14 +78,19 @@ export class TypescriptDocsParser {
     private getStatementsWithSourceLocation(
         sourceFiles: ts.SourceFile[],
     ): Array<{ statement: ts.Statement; sourceFile: string; sourceLine: number }> {
-        return sourceFiles.reduce((st, sf) => {
-            const statementsWithSources = sf.statements.map(statement => {
-                const sourceFile = path.relative(path.join(__dirname, '..'), sf.fileName).replace(/\\/g, '/');
-                const sourceLine = sf.getLineAndCharacterOfPosition(statement.getStart()).line + 1;
-                return { statement, sourceFile, sourceLine };
-            });
-            return [...st, ...statementsWithSources];
-        }, [] as Array<{ statement: ts.Statement; sourceFile: string; sourceLine: number }>);
+        return sourceFiles.reduce(
+            (st, sf) => {
+                const statementsWithSources = sf.statements.map(statement => {
+                    const sourceFile = path
+                        .relative(path.join(__dirname, '..'), sf.fileName)
+                        .replace(/\\/g, '/');
+                    const sourceLine = sf.getLineAndCharacterOfPosition(statement.getStart()).line + 1;
+                    return { statement, sourceFile, sourceLine };
+                });
+                return [...st, ...statementsWithSources];
+            },
+            [] as Array<{ statement: ts.Statement; sourceFile: string; sourceLine: number }>,
+        );
     }
 
     /**
@@ -237,9 +242,11 @@ export class TypescriptDocsParser {
         members: ts.NodeArray<ts.TypeElement | ts.ClassElement | ts.EnumMember>,
     ): Array<PropertyInfo | MethodInfo> {
         const result: Array<PropertyInfo | MethodInfo> = [];
+        const hasModifiers = (member: any): member is { modifiers: NodeArray<Modifier> } =>
+            Array.isArray(member.modifiers);
 
         for (const member of members) {
-            const modifiers = member.modifiers ? member.modifiers.map(m => m.getText()) : [];
+            const modifiers = hasModifiers(member) ? member.modifiers.map(m => m.getText()) : [];
             const isPrivate = modifiers.includes('private');
             if (
                 !isPrivate &&
@@ -255,8 +262,8 @@ export class TypescriptDocsParser {
                 const name = member.name
                     ? member.name.getText()
                     : ts.isIndexSignatureDeclaration(member)
-                    ? '[index]'
-                    : 'constructor';
+                      ? '[index]'
+                      : 'constructor';
                 let description = '';
                 let type = '';
                 let defaultValue = '';
@@ -292,7 +299,7 @@ export class TypescriptDocsParser {
                     fullText,
                     name,
                     description: this.restoreTokens(description),
-                    type,
+                    type: type.replace(/`/g, '\\`'),
                     modifiers,
                     since,
                     experimental,
