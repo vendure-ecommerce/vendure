@@ -61,7 +61,7 @@ export class SellerService {
             input,
             seller,
         );
-        this.eventBus.publish(new SellerEvent(ctx, sellerWithRelations, 'created', input));
+        await this.eventBus.publish(new SellerEvent(ctx, sellerWithRelations, 'created', input));
         return assertFound(this.findOne(ctx, seller.id));
     }
 
@@ -75,7 +75,7 @@ export class SellerService {
             input,
             seller,
         );
-        this.eventBus.publish(new SellerEvent(ctx, sellerWithRelations, 'updated', input));
+        await this.eventBus.publish(new SellerEvent(ctx, sellerWithRelations, 'updated', input));
         return seller;
     }
 
@@ -83,7 +83,7 @@ export class SellerService {
         const seller = await this.connection.getEntityOrThrow(ctx, Seller, id);
         await this.connection.getRepository(ctx, Seller).remove(seller);
         const deletedSeller = new Seller(seller);
-        this.eventBus.publish(new SellerEvent(ctx, deletedSeller, 'deleted', id));
+        await this.eventBus.publish(new SellerEvent(ctx, deletedSeller, 'deleted', id));
         return {
             result: DeletionResult.DELETED,
         };

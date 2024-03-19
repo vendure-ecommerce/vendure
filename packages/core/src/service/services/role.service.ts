@@ -231,7 +231,7 @@ export class RoleService {
         }
         await this.checkActiveUserHasSufficientPermissions(ctx, targetChannels, input.permissions);
         const role = await this.createRoleForChannels(ctx, input, targetChannels);
-        this.eventBus.publish(new RoleEvent(ctx, role, 'created', input));
+        await this.eventBus.publish(new RoleEvent(ctx, role, 'created', input));
         return role;
     }
 
@@ -265,7 +265,7 @@ export class RoleService {
             updatedRole.channels = targetChannels;
         }
         await this.connection.getRepository(ctx, Role).save(updatedRole, { reload: false });
-        this.eventBus.publish(new RoleEvent(ctx, role, 'updated', input));
+        await this.eventBus.publish(new RoleEvent(ctx, role, 'updated', input));
         return await assertFound(this.findOne(ctx, role.id));
     }
 
@@ -279,7 +279,7 @@ export class RoleService {
         }
         const deletedRole = new Role(role);
         await this.connection.getRepository(ctx, Role).remove(role);
-        this.eventBus.publish(new RoleEvent(ctx, deletedRole, 'deleted', id));
+        await this.eventBus.publish(new RoleEvent(ctx, deletedRole, 'deleted', id));
         return {
             result: DeletionResult.DELETED,
         };

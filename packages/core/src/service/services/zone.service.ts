@@ -120,7 +120,7 @@ export class ZoneService {
         }
         const newZone = await this.connection.getRepository(ctx, Zone).save(zone);
         await this.zones.refresh(ctx);
-        this.eventBus.publish(new ZoneEvent(ctx, newZone, 'created', input));
+        await this.eventBus.publish(new ZoneEvent(ctx, newZone, 'created', input));
         return assertFound(this.findOne(ctx, newZone.id));
     }
 
@@ -129,7 +129,7 @@ export class ZoneService {
         const updatedZone = patchEntity(zone, input);
         await this.connection.getRepository(ctx, Zone).save(updatedZone, { reload: false });
         await this.zones.refresh(ctx);
-        this.eventBus.publish(new ZoneEvent(ctx, zone, 'updated', input));
+        await this.eventBus.publish(new ZoneEvent(ctx, zone, 'updated', input));
         return assertFound(this.findOne(ctx, zone.id));
     }
 
@@ -168,7 +168,7 @@ export class ZoneService {
         } else {
             await this.connection.getRepository(ctx, Zone).remove(zone);
             await this.zones.refresh(ctx);
-            this.eventBus.publish(new ZoneEvent(ctx, deletedZone, 'deleted', id));
+            await this.eventBus.publish(new ZoneEvent(ctx, deletedZone, 'deleted', id));
             return {
                 result: DeletionResult.DELETED,
                 message: '',
@@ -188,7 +188,7 @@ export class ZoneService {
         zone.members = members;
         await this.connection.getRepository(ctx, Zone).save(zone, { reload: false });
         await this.zones.refresh(ctx);
-        this.eventBus.publish(new ZoneMembersEvent(ctx, zone, 'assigned', memberIds));
+        await this.eventBus.publish(new ZoneMembersEvent(ctx, zone, 'assigned', memberIds));
         return assertFound(this.findOne(ctx, zone.id));
     }
 
@@ -202,7 +202,7 @@ export class ZoneService {
         zone.members = zone.members.filter(country => !memberIds.includes(country.id));
         await this.connection.getRepository(ctx, Zone).save(zone, { reload: false });
         await this.zones.refresh(ctx);
-        this.eventBus.publish(new ZoneMembersEvent(ctx, zone, 'removed', memberIds));
+        await this.eventBus.publish(new ZoneMembersEvent(ctx, zone, 'removed', memberIds));
         return assertFound(this.findOne(ctx, zone.id));
     }
 

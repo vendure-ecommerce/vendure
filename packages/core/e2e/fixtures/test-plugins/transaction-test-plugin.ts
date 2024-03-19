@@ -20,7 +20,10 @@ import { ReplaySubject, Subscription } from 'rxjs';
 import { vi } from 'vitest';
 
 export class TestEvent extends VendureEvent {
-    constructor(public ctx: RequestContext, public administrator: Administrator) {
+    constructor(
+        public ctx: RequestContext,
+        public administrator: Administrator,
+    ) {
         super();
     }
 }
@@ -58,7 +61,10 @@ class TestUserService {
 
 @Injectable()
 class TestAdminService {
-    constructor(private connection: TransactionalConnection, private userService: TestUserService) {}
+    constructor(
+        private connection: TransactionalConnection,
+        private userService: TestUserService,
+    ) {}
 
     async createAdministrator(ctx: RequestContext, emailAddress: string, fail: boolean) {
         const user = await this.userService.createUser(ctx, emailAddress);
@@ -91,7 +97,7 @@ class TestResolver {
     @Transaction()
     async createTestAdministrator(@Ctx() ctx: RequestContext, @Args() args: any) {
         const admin = await this.testAdminService.createAdministrator(ctx, args.emailAddress, args.fail);
-        this.eventBus.publish(new TestEvent(ctx, admin));
+        await this.eventBus.publish(new TestEvent(ctx, admin));
         return admin;
     }
 
@@ -113,7 +119,7 @@ class TestResolver {
     @Transaction()
     async createTestAdministrator4(@Ctx() ctx: RequestContext, @Args() args: any) {
         const admin = await this.testAdminService.createAdministrator(ctx, args.emailAddress, args.fail);
-        this.eventBus.publish(new TestEvent(ctx, admin));
+        await this.eventBus.publish(new TestEvent(ctx, admin));
         await new Promise(resolve => setTimeout(resolve, 50));
         return admin;
     }
@@ -157,8 +163,8 @@ class TestResolver {
                             i < args.n * args.failFactor,
                         ),
                     )
-                    .then(admin => {
-                        this.eventBus.publish(new TestEvent(ctx, admin));
+                    .then(async admin => {
+                        await this.eventBus.publish(new TestEvent(ctx, admin));
                         return admin;
                     }),
             );
@@ -310,7 +316,10 @@ export class TransactionTestPlugin implements OnApplicationBootstrap {
     static errorHandler = vi.fn();
     static eventHandlerComplete$ = new ReplaySubject(1);
 
-    constructor(private eventBus: EventBus, private connection: TransactionalConnection) {}
+    constructor(
+        private eventBus: EventBus,
+        private connection: TransactionalConnection,
+    ) {}
 
     static reset() {
         this.eventHandlerComplete$ = new ReplaySubject(1);

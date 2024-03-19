@@ -105,6 +105,11 @@ export class EventBus implements OnModuleDestroy {
     /**
      * @description
      * Publish an event which any subscribers can react to.
+     *
+     * @example
+     * ```ts
+     * await eventBus.publish(new SomeEvent());
+     * ```
      */
     async publish<T extends VendureEvent>(event: T): Promise<void> {
         this.eventStream.next(event);

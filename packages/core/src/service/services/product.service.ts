@@ -235,7 +235,7 @@ export class ProductService {
         });
         await this.customFieldRelationService.updateRelations(ctx, Product, input, product);
         await this.assetService.updateEntityAssets(ctx, product, input);
-        this.eventBus.publish(new ProductEvent(ctx, product, 'created', input));
+        await this.eventBus.publish(new ProductEvent(ctx, product, 'created', input));
         return assertFound(this.findOne(ctx, product.id));
     }
 
@@ -265,7 +265,7 @@ export class ProductService {
             },
         });
         await this.customFieldRelationService.updateRelations(ctx, Product, input, updatedProduct);
-        this.eventBus.publish(new ProductEvent(ctx, updatedProduct, 'updated', input));
+        await this.eventBus.publish(new ProductEvent(ctx, updatedProduct, 'updated', input));
         return assertFound(this.findOne(ctx, updatedProduct.id));
     }
 
@@ -278,7 +278,7 @@ export class ProductService {
         });
         product.deletedAt = new Date();
         await this.connection.getRepository(ctx, Product).save(product, { reload: false });
-        this.eventBus.publish(new ProductEvent(ctx, product, 'deleted', productId));
+        await this.eventBus.publish(new ProductEvent(ctx, product, 'deleted', productId));
 
         const variantResult = await this.productVariantService.softDelete(
             ctx,
@@ -335,7 +335,7 @@ export class ProductService {
             .getRepository(ctx, Product)
             .find({ where: { id: In(input.productIds) } });
         for (const product of products) {
-            this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'assigned'));
+            await this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'assigned'));
         }
         return this.findByIds(
             ctx,
@@ -361,7 +361,7 @@ export class ProductService {
             .getRepository(ctx, Product)
             .find({ where: { id: In(input.productIds) } });
         for (const product of products) {
-            this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'removed'));
+            await this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'removed'));
         }
         return this.findByIds(
             ctx,
@@ -397,7 +397,9 @@ export class ProductService {
         }
 
         await this.connection.getRepository(ctx, Product).save(product, { reload: false });
-        this.eventBus.publish(new ProductOptionGroupChangeEvent(ctx, product, optionGroupId, 'assigned'));
+        await this.eventBus.publish(
+            new ProductOptionGroupChangeEvent(ctx, product, optionGroupId, 'assigned'),
+        );
         return assertFound(this.findOne(ctx, productId));
     }
 
@@ -445,7 +447,9 @@ export class ProductService {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             throw new InternalServerError(result.message!);
         }
-        this.eventBus.publish(new ProductOptionGroupChangeEvent(ctx, product, optionGroupId, 'removed'));
+        await this.eventBus.publish(
+            new ProductOptionGroupChangeEvent(ctx, product, optionGroupId, 'removed'),
+        );
         return assertFound(this.findOne(ctx, productId));
     }
 

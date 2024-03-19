@@ -207,7 +207,7 @@ export class OrderModifier {
         );
         order.lines.push(lineWithRelations);
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
-        this.eventBus.publish(new OrderLineEvent(ctx, order, lineWithRelations, 'created'));
+        await this.eventBus.publish(new OrderLineEvent(ctx, order, lineWithRelations, 'created'));
         return lineWithRelations;
     }
 
@@ -250,7 +250,7 @@ export class OrderModifier {
             }
         }
         await this.connection.getRepository(ctx, OrderLine).save(orderLine);
-        this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'updated'));
+        await this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'updated'));
         return orderLine;
     }
 
@@ -403,8 +403,8 @@ export class OrderModifier {
         const refundInputArray = Array.isArray(input.refunds)
             ? input.refunds
             : input.refund
-            ? [input.refund]
-            : [];
+              ? [input.refund]
+              : [];
         const refundInputs: RefundOrderInput[] = refundInputArray.map(refund => ({
             lines: [],
             adjustment: 0,

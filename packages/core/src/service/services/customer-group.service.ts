@@ -107,7 +107,7 @@ export class CustomerGroupService {
         }
         const savedCustomerGroup = await assertFound(this.findOne(ctx, newCustomerGroup.id));
         await this.customFieldRelationService.updateRelations(ctx, CustomerGroup, input, savedCustomerGroup);
-        this.eventBus.publish(new CustomerGroupEvent(ctx, savedCustomerGroup, 'created', input));
+        await this.eventBus.publish(new CustomerGroupEvent(ctx, savedCustomerGroup, 'created', input));
         return assertFound(this.findOne(ctx, savedCustomerGroup.id));
     }
 
@@ -121,7 +121,7 @@ export class CustomerGroupService {
             input,
             updatedCustomerGroup,
         );
-        this.eventBus.publish(new CustomerGroupEvent(ctx, customerGroup, 'updated', input));
+        await this.eventBus.publish(new CustomerGroupEvent(ctx, customerGroup, 'updated', input));
         return assertFound(this.findOne(ctx, customerGroup.id));
     }
 
@@ -130,7 +130,7 @@ export class CustomerGroupService {
         try {
             const deletedGroup = new CustomerGroup(group);
             await this.connection.getRepository(ctx, CustomerGroup).remove(group);
-            this.eventBus.publish(new CustomerGroupEvent(ctx, deletedGroup, 'deleted', id));
+            await this.eventBus.publish(new CustomerGroupEvent(ctx, deletedGroup, 'deleted', id));
             return {
                 result: DeletionResult.DELETED,
             };
@@ -163,7 +163,7 @@ export class CustomerGroupService {
         }
 
         await this.connection.getRepository(ctx, Customer).save(customers, { reload: false });
-        this.eventBus.publish(new CustomerGroupChangeEvent(ctx, customers, group, 'assigned'));
+        await this.eventBus.publish(new CustomerGroupChangeEvent(ctx, customers, group, 'assigned'));
 
         return assertFound(this.findOne(ctx, group.id));
     }
@@ -189,7 +189,7 @@ export class CustomerGroupService {
             });
         }
         await this.connection.getRepository(ctx, Customer).save(customers, { reload: false });
-        this.eventBus.publish(new CustomerGroupChangeEvent(ctx, customers, group, 'removed'));
+        await this.eventBus.publish(new CustomerGroupChangeEvent(ctx, customers, group, 'removed'));
         return assertFound(this.findOne(ctx, group.id));
     }
 

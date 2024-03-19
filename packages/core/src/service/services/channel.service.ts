@@ -16,7 +16,12 @@ import { FindOptionsWhere } from 'typeorm';
 import { RelationPaths } from '../../api';
 import { RequestContext } from '../../api/common/request-context';
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
-import { ChannelNotFoundError, EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
+import {
+    ChannelNotFoundError,
+    EntityNotFoundError,
+    InternalServerError,
+    UserInputError,
+} from '../../common/error/errors';
 import { LanguageNotAvailableError } from '../../common/error/generated-graphql-admin-errors';
 import { createSelfRefreshingCache, SelfRefreshingCache } from '../../common/self-refreshing-cache';
 import { ChannelAware, ListQueryOptions } from '../../common/types/common-types';
@@ -115,7 +120,7 @@ export class ChannelService {
         const defaultChannel = await this.getDefaultChannel(ctx);
         const channelIds = unique([ctx.channelId, defaultChannel.id]);
         entity.channels = channelIds.map(id => ({ id })) as any;
-        this.eventBus.publish(new ChangeChannelEvent(ctx, entity, [ctx.channelId], 'assigned'));
+        await this.eventBus.publish(new ChangeChannelEvent(ctx, entity, [ctx.channelId], 'assigned'));
         return entity;
     }
 
@@ -130,7 +135,11 @@ export class ChannelService {
      * @returns A promise that resolves to an array of objects, each containing a channel ID.
      * @private
      */
-    private async getAssignedEntityChannels<T extends ChannelAware & VendureEntity>(ctx: RequestContext, entityType: Type<T>, entityId: T['id']): Promise<{ channelId: ID }[]> {
+    private async getAssignedEntityChannels<T extends ChannelAware & VendureEntity>(
+        ctx: RequestContext,
+        entityType: Type<T>,
+        entityId: T['id'],
+    ): Promise<Array<{ channelId: ID }>> {
         const repository = this.connection.getRepository(ctx, entityType);
 
         const metadata = repository.metadata;
@@ -142,13 +151,18 @@ export class ChannelService {
 
         const junctionTableName = channelsRelation.junctionEntityMetadata?.tableName;
         const junctionColumnName = channelsRelation.junctionEntityMetadata?.columns[0].databaseName;
-        const inverseJunctionColumnName = channelsRelation.junctionEntityMetadata?.inverseColumns[0].databaseName;
+        const inverseJunctionColumnName =
+            channelsRelation.junctionEntityMetadata?.inverseColumns[0].databaseName;
 
         if (!junctionTableName || !junctionColumnName || !inverseJunctionColumnName) {
-            throw new InternalServerError(`Could not find necessary join table information for the channels relation of entity ${metadata.name}`);
+            throw new InternalServerError(
+                `Could not find necessary join table information for the channels relation of entity ${metadata.name}`,
+            );
         }
 
-        return await this.connection.getRepository(ctx, entityType).createQueryBuilder()
+        return await this.connection
+            .getRepository(ctx, entityType)
+            .createQueryBuilder()
             .select(`channel.${inverseJunctionColumnName}`, 'channelId')
             .from(junctionTableName, 'channel')
             .where(`channel.${junctionColumnName} = :entityId`, { entityId })
@@ -183,7 +197,9 @@ export class ChannelService {
         });
         const assignedChannels = await this.getAssignedEntityChannels(ctx, entityType, entityId);
 
-        const newChannelIds = channelIds.filter(id => !assignedChannels.some(ec => idsAreEqual(ec.channelId, id)))
+        const newChannelIds = channelIds.filter(
+            id => !assignedChannels.some(ec => idsAreEqual(ec.channelId, id)),
+        );
 
         await this.connection
             .getRepository(ctx, entityType)
@@ -192,7 +208,7 @@ export class ChannelService {
             .of(entity.id)
             .add(newChannelIds);
 
-        this.eventBus.publish(new ChangeChannelEvent(ctx, entity, channelIds, 'assigned', entityType));
+        await this.eventBus.publish(new ChangeChannelEvent(ctx, entity, channelIds, 'assigned', entityType));
         return entity;
     }
 
@@ -212,16 +228,18 @@ export class ChannelService {
             where: {
                 id: entityId,
             } as FindOptionsWhere<T>,
-        })
+        });
         if (!entity) {
             return;
         }
         const assignedChannels = await this.getAssignedEntityChannels(ctx, entityType, entityId);
 
-        const existingChannelIds = channelIds.filter(id => assignedChannels.some(ec => idsAreEqual(ec.channelId, id)));
+        const existingChannelIds = channelIds.filter(id =>
+            assignedChannels.some(ec => idsAreEqual(ec.channelId, id)),
+        );
 
         if (!existingChannelIds.length) {
-            return
+            return;
         }
         await this.connection
             .getRepository(ctx, entityType)
@@ -229,7 +247,7 @@ export class ChannelService {
             .relation('channels')
             .of(entity.id)
             .remove(existingChannelIds);
-        this.eventBus.publish(new ChangeChannelEvent(ctx, entity, channelIds, 'removed', entityType));
+        await this.eventBus.publish(new ChangeChannelEvent(ctx, entity, channelIds, 'removed', entityType));
         return entity;
     }
 
@@ -337,7 +355,7 @@ export class ChannelService {
         }
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, newChannel);
         await this.allChannels.refresh(ctx);
-        this.eventBus.publish(new ChannelEvent(ctx, newChannel, 'created', input));
+        await this.eventBus.publish(new ChannelEvent(ctx, newChannel, 'created', input));
         return newChannel;
     }
 
@@ -433,7 +451,7 @@ export class ChannelService {
         await this.connection.getRepository(ctx, Channel).save(updatedChannel, { reload: false });
         await this.customFieldRelationService.updateRelations(ctx, Channel, input, updatedChannel);
         await this.allChannels.refresh(ctx);
-        this.eventBus.publish(new ChannelEvent(ctx, channel, 'updated', input));
+        await this.eventBus.publish(new ChannelEvent(ctx, channel, 'updated', input));
         return assertFound(this.findOne(ctx, channel.id));
     }
 
@@ -445,7 +463,7 @@ export class ChannelService {
         await this.connection.getRepository(ctx, ProductVariantPrice).delete({
             channelId: id,
         });
-        this.eventBus.publish(new ChannelEvent(ctx, deletedChannel, 'deleted', id));
+        await this.eventBus.publish(new ChannelEvent(ctx, deletedChannel, 'deleted', id));
 
         return {
             result: DeletionResult.DELETED,

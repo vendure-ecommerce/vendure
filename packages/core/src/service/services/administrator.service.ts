@@ -141,7 +141,7 @@ export class AdministratorService {
             input,
             createdAdministrator,
         );
-        this.eventBus.publish(new AdministratorEvent(ctx, createdAdministrator, 'created', input));
+        await this.eventBus.publish(new AdministratorEvent(ctx, createdAdministrator, 'created', input));
         return createdAdministrator;
     }
 
@@ -193,8 +193,8 @@ export class AdministratorService {
             for (const roleId of input.roleIds) {
                 updatedAdministrator = await this.assignRole(ctx, administrator.id, roleId);
             }
-            this.eventBus.publish(new RoleChangeEvent(ctx, administrator, addIds, 'assigned'));
-            this.eventBus.publish(new RoleChangeEvent(ctx, administrator, removeIds, 'removed'));
+            await this.eventBus.publish(new RoleChangeEvent(ctx, administrator, addIds, 'assigned'));
+            await this.eventBus.publish(new RoleChangeEvent(ctx, administrator, removeIds, 'removed'));
         }
         await this.customFieldRelationService.updateRelations(
             ctx,
@@ -202,7 +202,7 @@ export class AdministratorService {
             input,
             updatedAdministrator,
         );
-        this.eventBus.publish(new AdministratorEvent(ctx, administrator, 'updated', input));
+        await this.eventBus.publish(new AdministratorEvent(ctx, administrator, 'updated', input));
         return updatedAdministrator;
     }
 
@@ -262,7 +262,7 @@ export class AdministratorService {
         await this.connection.getRepository(ctx, Administrator).update({ id }, { deletedAt: new Date() });
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         await this.userService.softDelete(ctx, administrator.user.id);
-        this.eventBus.publish(new AdministratorEvent(ctx, administrator, 'deleted', id));
+        await this.eventBus.publish(new AdministratorEvent(ctx, administrator, 'deleted', id));
         return {
             result: DeletionResult.DELETED,
         };

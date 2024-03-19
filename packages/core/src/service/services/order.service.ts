@@ -424,7 +424,7 @@ export class OrderService {
         }
         await this.channelService.assignToCurrentChannel(newOrder, ctx);
         const order = await this.connection.getRepository(ctx, Order).save(newOrder);
-        this.eventBus.publish(new OrderEvent(ctx, order, 'created'));
+        await this.eventBus.publish(new OrderEvent(ctx, order, 'created'));
         const transitionResult = await this.transitionToState(ctx, order.id, 'AddingItems');
         if (isGraphQlErrorResult(transitionResult)) {
             // this should never occur, so we will throw rather than return
@@ -438,7 +438,7 @@ export class OrderService {
         newOrder.active = false;
         await this.channelService.assignToCurrentChannel(newOrder, ctx);
         const order = await this.connection.getRepository(ctx, Order).save(newOrder);
-        this.eventBus.publish(new OrderEvent(ctx, order, 'created'));
+        await this.eventBus.publish(new OrderEvent(ctx, order, 'created'));
         const transitionResult = await this.transitionToState(ctx, order.id, 'Draft');
         if (isGraphQlErrorResult(transitionResult)) {
             // this should never occur, so we will throw rather than return
@@ -473,7 +473,7 @@ export class OrderService {
         order = patchEntity(order, { customFields });
         await this.customFieldRelationService.updateRelations(ctx, Order, { customFields }, order);
         const updatedOrder = await this.connection.getRepository(ctx, Order).save(order);
-        this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated'));
+        await this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated'));
         return updatedOrder;
     }
 
@@ -507,7 +507,7 @@ export class OrderService {
         }
 
         const updatedOrder = await this.addCustomerToOrder(ctx, order.id, targetCustomer);
-        this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated'));
+        await this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated'));
         await this.historyService.createHistoryEntryForOrder({
             ctx,
             orderId,
@@ -650,7 +650,7 @@ export class OrderService {
             order.lines = order.lines.filter(l => !idsAreEqual(l.id, orderLine.id));
             const deletedOrderLine = new OrderLine(orderLine);
             await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
-            this.eventBus.publish(new OrderLineEvent(ctx, order, deletedOrderLine, 'deleted'));
+            await this.eventBus.publish(new OrderLineEvent(ctx, order, deletedOrderLine, 'deleted'));
             updatedOrderLines = [];
         } else {
             await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, correctedQuantity, order);
@@ -688,7 +688,7 @@ export class OrderService {
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
         const deletedOrderLine = new OrderLine(orderLine);
         await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
-        this.eventBus.publish(new OrderLineEvent(ctx, order, deletedOrderLine, 'deleted'));
+        await this.eventBus.publish(new OrderLineEvent(ctx, order, deletedOrderLine, 'deleted'));
         return updatedOrder;
     }
 
@@ -781,7 +781,7 @@ export class OrderService {
             type: HistoryEntryType.ORDER_COUPON_APPLIED,
             data: { couponCode, promotionId: validationResult.id },
         });
-        this.eventBus.publish(new CouponCodeEvent(ctx, couponCode, orderId, 'assigned'));
+        await this.eventBus.publish(new CouponCodeEvent(ctx, couponCode, orderId, 'assigned'));
         return this.applyPriceAdjustments(ctx, order);
     }
 
@@ -807,7 +807,7 @@ export class OrderService {
                 type: HistoryEntryType.ORDER_COUPON_REMOVED,
                 data: { couponCode },
             });
-            this.eventBus.publish(new CouponCodeEvent(ctx, couponCode, orderId, 'removed'));
+            await this.eventBus.publish(new CouponCodeEvent(ctx, couponCode, orderId, 'removed'));
             const result = await this.applyPriceAdjustments(ctx, order);
             await this.connection.getRepository(ctx, OrderLine).save(affectedOrderLines);
             return result;
@@ -961,7 +961,7 @@ export class OrderService {
             return new OrderStateTransitionError({ transitionError, fromState, toState: state });
         }
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
-        this.eventBus.publish(new OrderStateTransitionEvent(fromState, state, ctx, order));
+        await this.eventBus.publish(new OrderStateTransitionEvent(fromState, state, ctx, order));
         await finalize();
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         return order;
@@ -1438,7 +1438,7 @@ export class OrderService {
         );
         await this.connection.getRepository(ctx, Refund).save(refund);
         await finalize();
-        this.eventBus.publish(
+        await this.eventBus.publish(
             new RefundStateTransitionEvent(fromState, toState, ctx, refund, refund.payment.order),
         );
         return refund;

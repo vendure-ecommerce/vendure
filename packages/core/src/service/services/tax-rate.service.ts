@@ -97,8 +97,8 @@ export class TaxRateService {
         }
         const newTaxRate = await this.connection.getRepository(ctx, TaxRate).save(taxRate);
         await this.updateActiveTaxRates(ctx);
-        this.eventBus.publish(new TaxRateModificationEvent(ctx, newTaxRate));
-        this.eventBus.publish(new TaxRateEvent(ctx, newTaxRate, 'created', input));
+        await this.eventBus.publish(new TaxRateModificationEvent(ctx, newTaxRate));
+        await this.eventBus.publish(new TaxRateEvent(ctx, newTaxRate, 'created', input));
         return assertFound(this.findOne(ctx, newTaxRate.id));
     }
 
@@ -132,8 +132,8 @@ export class TaxRateService {
         // TaxRate when updating its own tax rate cache.
         await this.connection.commitOpenTransaction(ctx);
 
-        this.eventBus.publish(new TaxRateModificationEvent(ctx, updatedTaxRate));
-        this.eventBus.publish(new TaxRateEvent(ctx, updatedTaxRate, 'updated', input));
+        await this.eventBus.publish(new TaxRateModificationEvent(ctx, updatedTaxRate));
+        await this.eventBus.publish(new TaxRateEvent(ctx, updatedTaxRate, 'updated', input));
 
         return assertFound(this.findOne(ctx, taxRate.id));
     }
@@ -143,7 +143,7 @@ export class TaxRateService {
         const deletedTaxRate = new TaxRate(taxRate);
         try {
             await this.connection.getRepository(ctx, TaxRate).remove(taxRate);
-            this.eventBus.publish(new TaxRateEvent(ctx, deletedTaxRate, 'deleted', id));
+            await this.eventBus.publish(new TaxRateEvent(ctx, deletedTaxRate, 'deleted', id));
             return {
                 result: DeletionResult.DELETED,
             };

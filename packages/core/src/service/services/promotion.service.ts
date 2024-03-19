@@ -148,7 +148,7 @@ export class PromotionService {
             input,
             newPromotion,
         );
-        this.eventBus.publish(new PromotionEvent(ctx, promotionWithRelations, 'created', input));
+        await this.eventBus.publish(new PromotionEvent(ctx, promotionWithRelations, 'created', input));
         return assertFound(this.findOne(ctx, newPromotion.id));
     }
 
@@ -187,7 +187,7 @@ export class PromotionService {
             },
         });
         await this.customFieldRelationService.updateRelations(ctx, Promotion, input, updatedPromotion);
-        this.eventBus.publish(new PromotionEvent(ctx, promotion, 'updated', input));
+        await this.eventBus.publish(new PromotionEvent(ctx, promotion, 'updated', input));
         return assertFound(this.findOne(ctx, updatedPromotion.id));
     }
 
@@ -196,7 +196,7 @@ export class PromotionService {
         await this.connection
             .getRepository(ctx, Promotion)
             .update({ id: promotionId }, { deletedAt: new Date() });
-        this.eventBus.publish(new PromotionEvent(ctx, promotion, 'deleted', promotionId));
+        await this.eventBus.publish(new PromotionEvent(ctx, promotion, 'deleted', promotionId));
 
         return {
             result: DeletionResult.DELETED,
