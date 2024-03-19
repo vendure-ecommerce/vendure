@@ -390,6 +390,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">UNKNOWN_ERROR</div>
 <div class="graphql-code-line ">MIME_TYPE_ERROR</div>
 <div class="graphql-code-line ">LANGUAGE_NOT_AVAILABLE_ERROR</div>
+<div class="graphql-code-line ">DUPLICATE_ENTITY_ERROR</div>
 <div class="graphql-code-line ">FACET_IN_USE_ERROR</div>
 <div class="graphql-code-line ">CHANNEL_DEFAULT_LANGUAGE_ERROR</div>
 <div class="graphql-code-line ">SETTLE_PAYMENT_ERROR</div>
@@ -406,6 +407,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">NOTHING_TO_REFUND_ERROR</div>
 <div class="graphql-code-line ">ALREADY_REFUNDED_ERROR</div>
 <div class="graphql-code-line ">QUANTITY_TOO_GREAT_ERROR</div>
+<div class="graphql-code-line ">REFUND_AMOUNT_ERROR</div>
 <div class="graphql-code-line ">REFUND_STATE_TRANSITION_ERROR</div>
 <div class="graphql-code-line ">PAYMENT_STATE_TRANSITION_ERROR</div>
 <div class="graphql-code-line ">FULFILLMENT_STATE_TRANSITION_ERROR</div>
@@ -477,6 +479,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">ORDER_COUPON_APPLIED</div>
 <div class="graphql-code-line ">ORDER_COUPON_REMOVED</div>
 <div class="graphql-code-line ">ORDER_MODIFIED</div>
+<div class="graphql-code-line ">ORDER_CUSTOMER_UPDATED</div>
 <div class="graphql-code-line top-level">&#125;</div>
 
 </div>

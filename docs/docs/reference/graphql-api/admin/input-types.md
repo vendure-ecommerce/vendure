@@ -168,6 +168,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">reason: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
 
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">The amount to be refunded to this particular Payment. This was introduced in</div>
+
+<div class="graphql-code-line comment">v2.2.0 as the preferred way to specify the refund amount. The `lines`, <code>shipping</code> and `adjustment`</div>
+
+<div class="graphql-code-line comment">fields will be removed in a future version.</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">amount: <a href="/reference/graphql-api/admin/object-types#money">Money</a></div>
+
 
 <div class="graphql-code-line top-level">&#125;</div>
 
@@ -850,17 +859,6 @@ import MemberDescription from '@site/src/components/MemberDescription';
 ## CreateAddressInput
 
 <div class="graphql-code-block">
-<div class="graphql-code-line top-level comment">"""</div>
-<div class="graphql-code-line top-level comment">Input used to create an Address.</div>
-
-<div class="graphql-code-line top-level comment"></div>
-
-<div class="graphql-code-line top-level comment">The countryCode must correspond to a <code>code</code> property of a Country that has been defined in the</div>
-
-<div class="graphql-code-line top-level comment">Vendure server. The <code>code</code> property is typically a 2-character ISO code such as "GB", "US", "DE" etc.</div>
-
-<div class="graphql-code-line top-level comment">If an invalid code is passed, the mutation will fail.</div>
-<div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">input <span class="graphql-code-identifier">CreateAddressInput</span>
  &#123;</div>
 <div class="graphql-code-line ">fullName: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
@@ -1724,6 +1722,22 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 </div>
 
+## DuplicateEntityInput
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">DuplicateEntityInput</span>
+ &#123;</div>
+<div class="graphql-code-line ">entityName: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">entityId: <a href="/reference/graphql-api/admin/object-types#id">ID</a>!</div>
+
+<div class="graphql-code-line ">duplicatorInput: <a href="/reference/graphql-api/admin/input-types#configurableoperationinput">ConfigurableOperationInput</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
+
 ## FacetFilterParameter
 
 <div class="graphql-code-block">
@@ -2236,11 +2250,23 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">note: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
 
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Deprecated in v2.2.0. Use <code>refunds</code> instead to allow multiple refunds to be</div>
+
+<div class="graphql-code-line comment">applied in the case that multiple payment methods have been used on the order.</div>
+<div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line ">refund: <a href="/reference/graphql-api/admin/input-types#administratorrefundinput">AdministratorRefundInput</a></div>
+
+<div class="graphql-code-line ">refunds: [<a href="/reference/graphql-api/admin/input-types#administratorrefundinput">AdministratorRefundInput</a>!]</div>
 
 <div class="graphql-code-line ">options: <a href="/reference/graphql-api/admin/input-types#modifyorderoptions">ModifyOrderOptions</a></div>
 
 <div class="graphql-code-line ">couponCodes: [<a href="/reference/graphql-api/admin/object-types#string">String</a>!]</div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Added in v2.2</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">shippingMethodIds: [<a href="/reference/graphql-api/admin/object-types#id">ID</a>!]</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -3159,6 +3185,17 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">adjustment: <a href="/reference/graphql-api/admin/object-types#money">Money</a>!</div>
 
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">If an amount is specified, this value will be used to create a Refund rather than calculating the</div>
+
+<div class="graphql-code-line comment">amount automatically. This was added in v2.2 and will be the preferred way to specify the refund</div>
+
+<div class="graphql-code-line comment">amount in the future. The `lines`, <code>shipping</code> and <code>adjustment</code> fields will likely be removed in a future</div>
+
+<div class="graphql-code-line comment">version.</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">amount: <a href="/reference/graphql-api/admin/object-types#money">Money</a></div>
+
 <div class="graphql-code-line ">paymentId: <a href="/reference/graphql-api/admin/object-types#id">ID</a>!</div>
 
 <div class="graphql-code-line ">reason: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
@@ -3474,6 +3511,22 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/admin/enums#sortorder">SortOrder</a></div>
 
 <div class="graphql-code-line ">name: <a href="/reference/graphql-api/admin/enums#sortorder">SortOrder</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
+
+## SetOrderCustomerInput
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">SetOrderCustomerInput</span>
+ &#123;</div>
+<div class="graphql-code-line ">orderId: <a href="/reference/graphql-api/admin/object-types#id">ID</a>!</div>
+
+<div class="graphql-code-line ">customerId: <a href="/reference/graphql-api/admin/object-types#id">ID</a>!</div>
+
+<div class="graphql-code-line ">note: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -4080,17 +4133,6 @@ import MemberDescription from '@site/src/components/MemberDescription';
 ## UpdateAddressInput
 
 <div class="graphql-code-block">
-<div class="graphql-code-line top-level comment">"""</div>
-<div class="graphql-code-line top-level comment">Input used to update an Address.</div>
-
-<div class="graphql-code-line top-level comment"></div>
-
-<div class="graphql-code-line top-level comment">The countryCode must correspond to a <code>code</code> property of a Country that has been defined in the</div>
-
-<div class="graphql-code-line top-level comment">Vendure server. The <code>code</code> property is typically a 2-character ISO code such as "GB", "US", "DE" etc.</div>
-
-<div class="graphql-code-line top-level comment">If an invalid code is passed, the mutation will fail.</div>
-<div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">input <span class="graphql-code-identifier">UpdateAddressInput</span>
  &#123;</div>
 <div class="graphql-code-line ">id: <a href="/reference/graphql-api/admin/object-types#id">ID</a>!</div>

@@ -183,17 +183,6 @@ import MemberDescription from '@site/src/components/MemberDescription';
 ## CreateAddressInput
 
 <div class="graphql-code-block">
-<div class="graphql-code-line top-level comment">"""</div>
-<div class="graphql-code-line top-level comment">Input used to create an Address.</div>
-
-<div class="graphql-code-line top-level comment"></div>
-
-<div class="graphql-code-line top-level comment">The countryCode must correspond to a <code>code</code> property of a Country that has been defined in the</div>
-
-<div class="graphql-code-line top-level comment">Vendure server. The <code>code</code> property is typically a 2-character ISO code such as "GB", "US", "DE" etc.</div>
-
-<div class="graphql-code-line top-level comment">If an invalid code is passed, the mutation will fail.</div>
-<div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">input <span class="graphql-code-identifier">CreateAddressInput</span>
  &#123;</div>
 <div class="graphql-code-line ">fullName: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
@@ -1207,17 +1196,6 @@ import MemberDescription from '@site/src/components/MemberDescription';
 ## UpdateAddressInput
 
 <div class="graphql-code-block">
-<div class="graphql-code-line top-level comment">"""</div>
-<div class="graphql-code-line top-level comment">Input used to update an Address.</div>
-
-<div class="graphql-code-line top-level comment"></div>
-
-<div class="graphql-code-line top-level comment">The countryCode must correspond to a <code>code</code> property of a Country that has been defined in the</div>
-
-<div class="graphql-code-line top-level comment">Vendure server. The <code>code</code> property is typically a 2-character ISO code such as "GB", "US", "DE" etc.</div>
-
-<div class="graphql-code-line top-level comment">If an invalid code is passed, the mutation will fail.</div>
-<div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">input <span class="graphql-code-identifier">UpdateAddressInput</span>
  &#123;</div>
 <div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>

@@ -1228,6 +1228,16 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
+## duplicateEntity
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">duplicateEntity(input: <a href="/reference/graphql-api/admin/input-types#duplicateentityinput">DuplicateEntityInput</a>!): <a href="/reference/graphql-api/admin/object-types#duplicateentityresult">DuplicateEntityResult</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
 ## flushBufferedJobs
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
@@ -1584,6 +1594,19 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
 <div class="graphql-code-line ">setOrderCustomFields(input: <a href="/reference/graphql-api/admin/input-types#updateorderinput">UpdateOrderInput</a>!): <a href="/reference/graphql-api/admin/object-types#order">Order</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## setOrderCustomer
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Allows a different Customer to be assigned to an Order. Added in v2.2.0.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
+ &#123;</div>
+<div class="graphql-code-line ">setOrderCustomer(input: <a href="/reference/graphql-api/admin/input-types#setordercustomerinput">SetOrderCustomerInput</a>!): <a href="/reference/graphql-api/admin/object-types#order">Order</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>

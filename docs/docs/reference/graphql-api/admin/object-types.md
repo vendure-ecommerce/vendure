@@ -282,6 +282,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
 
+<div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/admin/enums#permission">Permission</a>!]</div>
+
 <div class="graphql-code-line ">ui: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
 
 
@@ -649,15 +651,6 @@ import MemberDescription from '@site/src/components/MemberDescription';
 ## Country
 
 <div class="graphql-code-block">
-<div class="graphql-code-line top-level comment">"""</div>
-<div class="graphql-code-line top-level comment">A Country of the world which your shop operates in.</div>
-
-<div class="graphql-code-line top-level comment"></div>
-
-<div class="graphql-code-line top-level comment">The <code>code</code> field is typically a 2-character ISO code such as "GB", "US", "DE" etc. This code is used in certain inputs such as</div>
-
-<div class="graphql-code-line top-level comment">`UpdateAddressInput` and <code>CreateAddressInput</code> to specify the country.</div>
-<div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Country</span>
  &#123;</div>
 <div class="graphql-code-line ">id: <a href="/reference/graphql-api/admin/object-types#id">ID</a>!</div>
@@ -855,6 +848,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 ## CustomFields
 
 <div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">This type is deprecated in v2.2 in favor of the EntityCustomFields type,</div>
+
+<div class="graphql-code-line top-level comment">which allows custom fields to be defined on user-supplies entities.</div>
+<div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">CustomFields</span>
  &#123;</div>
 <div class="graphql-code-line ">Address: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>
@@ -892,6 +890,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">ProductOptionGroup: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>
 
 <div class="graphql-code-line ">ProductVariant: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>
+
+<div class="graphql-code-line ">ProductVariantPrice: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>
 
 <div class="graphql-code-line ">Promotion: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>
 
@@ -1036,6 +1036,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
 
+<div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/admin/enums#permission">Permission</a>!]</div>
+
 <div class="graphql-code-line ">min: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
 
 <div class="graphql-code-line ">max: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
@@ -1080,6 +1082,41 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
+## DuplicateEntityError
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">DuplicateEntityError</span>
+ &#123;</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/admin/enums#errorcode">ErrorCode</a>!</div>
+
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">duplicationError: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## DuplicateEntityResult
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">union <span class="graphql-code-identifier">DuplicateEntityResult</span>
+ =</div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/admin/object-types#duplicateentitysuccess">DuplicateEntitySuccess</a> | <a href="/reference/graphql-api/admin/object-types#duplicateentityerror">DuplicateEntityError</a></div>
+
+</div>
+
+## DuplicateEntitySuccess
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">DuplicateEntitySuccess</span>
+ &#123;</div>
+<div class="graphql-code-line ">newEntityId: <a href="/reference/graphql-api/admin/object-types#id">ID</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
 ## EmailAddressConflictError
 
 <div class="graphql-code-block">
@@ -1107,6 +1144,38 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/admin/enums#errorcode">ErrorCode</a>!</div>
 
 <div class="graphql-code-line ">message: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## EntityCustomFields
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">EntityCustomFields</span>
+ &#123;</div>
+<div class="graphql-code-line ">entityName: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">customFields: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## EntityDuplicatorDefinition
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">EntityDuplicatorDefinition</span>
+ &#123;</div>
+<div class="graphql-code-line ">code: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">args: [<a href="/reference/graphql-api/admin/object-types#configargdefinition">ConfigArgDefinition</a>!]!</div>
+
+<div class="graphql-code-line ">description: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">forEntities: [<a href="/reference/graphql-api/admin/object-types#string">String</a>!]!</div>
+
+<div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/admin/enums#permission">Permission</a>!]!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1307,6 +1376,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">internal: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
 
 <div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/admin/enums#permission">Permission</a>!]</div>
 
 <div class="graphql-code-line ">min: <a href="/reference/graphql-api/admin/object-types#float">Float</a></div>
 
@@ -1587,6 +1658,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
 
+<div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/admin/enums#permission">Permission</a>!]</div>
+
 <div class="graphql-code-line ">min: <a href="/reference/graphql-api/admin/object-types#int">Int</a></div>
 
 <div class="graphql-code-line ">max: <a href="/reference/graphql-api/admin/object-types#int">Int</a></div>
@@ -1777,6 +1850,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
 
+<div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/admin/enums#permission">Permission</a>!]</div>
+
 <div class="graphql-code-line ">pattern: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
 
 <div class="graphql-code-line ">ui: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
@@ -1805,6 +1880,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">internal: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
 
 <div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/admin/enums#permission">Permission</a>!]</div>
 
 <div class="graphql-code-line ">ui: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
 
@@ -1911,7 +1988,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">ModifyOrderResult</span>
  =</div>
-<div class="graphql-code-line "><a href="/reference/graphql-api/admin/object-types#order">Order</a> | <a href="/reference/graphql-api/admin/object-types#nochangesspecifiederror">NoChangesSpecifiedError</a> | <a href="/reference/graphql-api/admin/object-types#ordermodificationstateerror">OrderModificationStateError</a> | <a href="/reference/graphql-api/admin/object-types#paymentmethodmissingerror">PaymentMethodMissingError</a> | <a href="/reference/graphql-api/admin/object-types#refundpaymentidmissingerror">RefundPaymentIdMissingError</a> | <a href="/reference/graphql-api/admin/object-types#orderlimiterror">OrderLimitError</a> | <a href="/reference/graphql-api/admin/object-types#negativequantityerror">NegativeQuantityError</a> | <a href="/reference/graphql-api/admin/object-types#insufficientstockerror">InsufficientStockError</a> | <a href="/reference/graphql-api/admin/object-types#couponcodeexpirederror">CouponCodeExpiredError</a> | <a href="/reference/graphql-api/admin/object-types#couponcodeinvaliderror">CouponCodeInvalidError</a> | <a href="/reference/graphql-api/admin/object-types#couponcodelimiterror">CouponCodeLimitError</a></div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/admin/object-types#order">Order</a> | <a href="/reference/graphql-api/admin/object-types#nochangesspecifiederror">NoChangesSpecifiedError</a> | <a href="/reference/graphql-api/admin/object-types#ordermodificationstateerror">OrderModificationStateError</a> | <a href="/reference/graphql-api/admin/object-types#paymentmethodmissingerror">PaymentMethodMissingError</a> | <a href="/reference/graphql-api/admin/object-types#refundpaymentidmissingerror">RefundPaymentIdMissingError</a> | <a href="/reference/graphql-api/admin/object-types#orderlimiterror">OrderLimitError</a> | <a href="/reference/graphql-api/admin/object-types#negativequantityerror">NegativeQuantityError</a> | <a href="/reference/graphql-api/admin/object-types#insufficientstockerror">InsufficientStockError</a> | <a href="/reference/graphql-api/admin/object-types#couponcodeexpirederror">CouponCodeExpiredError</a> | <a href="/reference/graphql-api/admin/object-types#couponcodeinvaliderror">CouponCodeInvalidError</a> | <a href="/reference/graphql-api/admin/object-types#couponcodelimiterror">CouponCodeLimitError</a> | <a href="/reference/graphql-api/admin/object-types#ineligibleshippingmethoderror">IneligibleShippingMethodError</a></div>
 
 </div>
 
@@ -3001,6 +3078,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">price: <a href="/reference/graphql-api/admin/object-types#money">Money</a>!</div>
 
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
+
 
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
@@ -3196,6 +3275,24 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
+## RefundAmountError
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Returned if <code>amount</code> is greater than the maximum un-refunded amount of the Payment</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">RefundAmountError</span>
+ &#123;</div>
+<div class="graphql-code-line ">errorCode: <a href="/reference/graphql-api/admin/enums#errorcode">ErrorCode</a>!</div>
+
+<div class="graphql-code-line ">message: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">maximumRefundable: <a href="/reference/graphql-api/admin/object-types#int">Int</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
 ## RefundLine
 
 <div class="graphql-code-block">
@@ -3220,7 +3317,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">RefundOrderResult</span>
  =</div>
-<div class="graphql-code-line "><a href="/reference/graphql-api/admin/object-types#refund">Refund</a> | <a href="/reference/graphql-api/admin/object-types#quantitytoogreaterror">QuantityTooGreatError</a> | <a href="/reference/graphql-api/admin/object-types#nothingtorefunderror">NothingToRefundError</a> | <a href="/reference/graphql-api/admin/object-types#orderstatetransitionerror">OrderStateTransitionError</a> | <a href="/reference/graphql-api/admin/object-types#multipleordererror">MultipleOrderError</a> | <a href="/reference/graphql-api/admin/object-types#paymentordermismatcherror">PaymentOrderMismatchError</a> | <a href="/reference/graphql-api/admin/object-types#refundorderstateerror">RefundOrderStateError</a> | <a href="/reference/graphql-api/admin/object-types#alreadyrefundederror">AlreadyRefundedError</a> | <a href="/reference/graphql-api/admin/object-types#refundstatetransitionerror">RefundStateTransitionError</a></div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/admin/object-types#refund">Refund</a> | <a href="/reference/graphql-api/admin/object-types#quantitytoogreaterror">QuantityTooGreatError</a> | <a href="/reference/graphql-api/admin/object-types#nothingtorefunderror">NothingToRefundError</a> | <a href="/reference/graphql-api/admin/object-types#orderstatetransitionerror">OrderStateTransitionError</a> | <a href="/reference/graphql-api/admin/object-types#multipleordererror">MultipleOrderError</a> | <a href="/reference/graphql-api/admin/object-types#paymentordermismatcherror">PaymentOrderMismatchError</a> | <a href="/reference/graphql-api/admin/object-types#refundorderstateerror">RefundOrderStateError</a> | <a href="/reference/graphql-api/admin/object-types#alreadyrefundederror">AlreadyRefundedError</a> | <a href="/reference/graphql-api/admin/object-types#refundstatetransitionerror">RefundStateTransitionError</a> | <a href="/reference/graphql-api/admin/object-types#refundamounterror">RefundAmountError</a></div>
 
 </div>
 
@@ -3321,6 +3418,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">internal: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
 
 <div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/admin/enums#permission">Permission</a>!]</div>
 
 <div class="graphql-code-line ">entity: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
 
@@ -3612,7 +3711,14 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">moneyStrategyPrecision: <a href="/reference/graphql-api/admin/object-types#int">Int</a>!</div>
 
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">This field is deprecated in v2.2 in favor of the entityCustomFields field,</div>
+
+<div class="graphql-code-line comment">which allows custom fields to be defined on user-supplies entities.</div>
+<div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line ">customFieldConfig: <a href="/reference/graphql-api/admin/object-types#customfields">CustomFields</a>!</div>
+
+<div class="graphql-code-line ">entityCustomFields: [<a href="/reference/graphql-api/admin/object-types#entitycustomfields">EntityCustomFields</a>!]!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -3938,6 +4044,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
 
+<div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/admin/enums#permission">Permission</a>!]</div>
+
 <div class="graphql-code-line ">pattern: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
 
 <div class="graphql-code-line ">options: [<a href="/reference/graphql-api/admin/object-types#stringfieldoption">StringFieldOption</a>!]</div>
@@ -4169,6 +4277,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">internal: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
 
 <div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/admin/enums#permission">Permission</a>!]</div>
 
 <div class="graphql-code-line ">ui: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
 
