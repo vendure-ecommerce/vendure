@@ -35,14 +35,14 @@ class ProductVariant extends VendureEntity implements Translatable, HasCustomFie
     priceWithTax: number
     taxRateApplied: TaxRate;
     @Index()
-    @ManyToOne(type => Asset, { onDelete: 'SET NULL' })
+    @ManyToOne(type => Asset, asset => asset.featuredInVariants, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
     @OneToMany(type => ProductVariantAsset, productVariantAsset => productVariantAsset.productVariant, {
         onDelete: 'SET NULL',
     })
     assets: ProductVariantAsset[];
     @Index()
-    @ManyToOne(type => TaxCategory)
+    @ManyToOne(type => TaxCategory, taxCategory => taxCategory.productVariants)
     taxCategory: TaxCategory;
     @OneToMany(type => ProductVariantPrice, price => price.variant, { eager: true })
     productVariantPrices: ProductVariantPrice[];
@@ -63,17 +63,17 @@ class ProductVariant extends VendureEntity implements Translatable, HasCustomFie
     stockLevels: StockLevel[];
     @OneToMany(type => StockMovement, stockMovement => stockMovement.productVariant)
     stockMovements: StockMovement[];
-    @ManyToMany(type => ProductOption)
+    @ManyToMany(type => ProductOption, productOption => productOption.productVariants)
     @JoinTable()
     options: ProductOption[];
-    @ManyToMany(type => FacetValue)
+    @ManyToMany(type => FacetValue, facetValue => facetValue.productVariants)
     @JoinTable()
     facetValues: FacetValue[];
     @Column(type => CustomProductVariantFields)
     customFields: CustomProductVariantFields;
     @ManyToMany(type => Collection, collection => collection.productVariants)
     collections: Collection[];
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.productVariants)
     @JoinTable()
     channels: Channel[];
 }

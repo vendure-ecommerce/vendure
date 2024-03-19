@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Channel
 
-<GenerationInfo sourceFile="packages/core/src/entity/channel/channel.entity.ts" sourceLine="31" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/channel/channel.entity.ts" sourceLine="36" packageName="@vendure/core" />
 
 A Channel represents a distinct sales channel and configures defaults for that
 channel.
@@ -63,6 +63,16 @@ class Channel extends VendureEntity {
     @Column(type => CustomChannelFields)
     customFields: CustomChannelFields;
     @Column() pricesIncludeTax: boolean;
+    @ManyToMany(type => Product, product => product.channels, { onDelete: 'CASCADE' })
+    products: Product[];
+    @ManyToMany(type => ProductVariant, productVariant => productVariant.channels, { onDelete: 'CASCADE' })
+    productVariants: ProductVariant[];
+    @ManyToMany(type => FacetValue, facetValue => facetValue.channels, { onDelete: 'CASCADE' })
+    facetValues: FacetValue[];
+    @ManyToMany(type => Facet, facet => facet.channels, { onDelete: 'CASCADE' })
+    facets: Facet[];
+    @ManyToMany(type => Collection, collection => collection.channels, { onDelete: 'CASCADE' })
+    collections: Collection[];
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
@@ -153,6 +163,31 @@ out of stock.
 ### pricesIncludeTax
 
 <MemberInfo kind="property" type={`boolean`}   />
+
+
+### products
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product#product'>Product</a>[]`}   />
+
+
+### productVariants
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[]`}   />
+
+
+### facetValues
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>[]`}   />
+
+
+### facets
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/facet#facet'>Facet</a>[]`}   />
+
+
+### collections
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/collection#collection'>Collection</a>[]`}   />
 
 
 

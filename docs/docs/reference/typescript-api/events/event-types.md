@@ -1121,7 +1121,7 @@ class ProductOptionGroupChangeEvent extends VendureEvent {
 
 ## ProductOptionGroupEvent
 
-<GenerationInfo sourceFile="packages/core/src/event-bus/events/product-option-group-event.ts" sourceLine="21" packageName="@vendure/core" since="1.4" />
+<GenerationInfo sourceFile="packages/core/src/event-bus/events/product-option-group-event.ts" sourceLine="24" packageName="@vendure/core" since="1.4" />
 
 This event is fired whenever a <a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a> is added or updated.
 

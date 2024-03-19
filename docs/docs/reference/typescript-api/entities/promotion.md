@@ -46,6 +46,8 @@ class Promotion extends AdjustmentSource implements ChannelAware, SoftDeletable,
     @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];
+    @ManyToMany(type => Order, order => order.promotions)
+    orders: Order[];
     @Column(type => CustomPromotionFields)
     customFields: CustomPromotionFields;
     @Column('simple-json') conditions: ConfigurableOperation[];
@@ -129,6 +131,11 @@ class Promotion extends AdjustmentSource implements ChannelAware, SoftDeletable,
 ### channels
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]`}   />
+
+
+### orders
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order#order'>Order</a>[]`}   />
 
 
 ### customFields

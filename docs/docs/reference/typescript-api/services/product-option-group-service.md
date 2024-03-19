@@ -21,7 +21,7 @@ class ProductOptionGroupService {
     findAll(ctx: RequestContext, filterTerm?: string, relations?: RelationPaths<ProductOptionGroup>) => Promise<Array<Translated<ProductOptionGroup>>>;
     findOne(ctx: RequestContext, id: ID, relations?: RelationPaths<ProductOptionGroup>) => Promise<Translated<ProductOptionGroup> | undefined>;
     getOptionGroupsByProductId(ctx: RequestContext, id: ID) => Promise<Array<Translated<ProductOptionGroup>>>;
-    create(ctx: RequestContext, input: CreateProductOptionGroupInput) => Promise<Translated<ProductOptionGroup>>;
+    create(ctx: RequestContext, input: Omit<CreateProductOptionGroupInput, 'options'>) => Promise<Translated<ProductOptionGroup>>;
     update(ctx: RequestContext, input: UpdateProductOptionGroupInput) => Promise<Translated<ProductOptionGroup>>;
     deleteGroupAndOptionsFromProduct(ctx: RequestContext, id: ID, productId: ID) => ;
 }
@@ -51,7 +51,7 @@ class ProductOptionGroupService {
 
 ### create
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: CreateProductOptionGroupInput) => Promise&#60;Translated&#60;<a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>&#62;&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: Omit&#60;CreateProductOptionGroupInput, 'options'&#62;) => Promise&#60;Translated&#60;<a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>&#62;&#62;`}   />
 
 
 ### update

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## GuestCheckoutStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/guest-checkout-strategy.ts" sourceLine="32" packageName="@vendure/core" since="2.0.0" />
+<GenerationInfo sourceFile="packages/core/src/config/order/guest-checkout-strategy.ts" sourceLine="33" packageName="@vendure/core" since="2.0.0" />
 
 A strategy that determines how to deal with guest checkouts - i.e. when a customer
 checks out without being logged in. For example, a strategy could be used to implement

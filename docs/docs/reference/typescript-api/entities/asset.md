@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Asset
 
-<GenerationInfo sourceFile="packages/core/src/entity/asset/asset.entity.ts" sourceLine="19" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/asset/asset.entity.ts" sourceLine="22" packageName="@vendure/core" />
 
 An Asset represents a file such as an image which can be associated with certain other entities
 such as Products.
@@ -35,6 +35,12 @@ class Asset extends VendureEntity implements Taggable, ChannelAware, HasCustomFi
     @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];
+    @OneToMany(type => Collection, collection => collection.featuredAsset)
+    featuredInCollections?: Collection[];
+    @OneToMany(type => ProductVariant, productVariant => productVariant.featuredAsset)
+    featuredInVariants?: ProductVariant[];
+    @OneToMany(type => Product, product => product.featuredAsset)
+    featuredInProducts?: Product[];
     @Column(type => CustomAssetFields)
     customFields: CustomAssetFields;
 }
@@ -106,6 +112,21 @@ class Asset extends VendureEntity implements Taggable, ChannelAware, HasCustomFi
 ### channels
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]`}   />
+
+
+### featuredInCollections
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/collection#collection'>Collection</a>[]`}   />
+
+
+### featuredInVariants
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[]`}   />
+
+
+### featuredInProducts
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product#product'>Product</a>[]`}   />
 
 
 ### customFields

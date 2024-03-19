@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Fulfillment
 
-<GenerationInfo sourceFile="packages/core/src/entity/fulfillment/fulfillment.entity.ts" sourceLine="17" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/fulfillment/fulfillment.entity.ts" sourceLine="18" packageName="@vendure/core" />
 
 This entity represents a fulfillment of an Order or part of it, i.e. which <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>s have been
 delivered to the Customer after successful payment.
@@ -28,6 +28,8 @@ class Fulfillment extends VendureEntity implements HasCustomFields {
     handlerCode: string;
     @OneToMany(type => FulfillmentLine, fulfillmentLine => fulfillmentLine.fulfillment)
     lines: FulfillmentLine[];
+    @ManyToMany(type => Order, order => order.fulfillments)
+    orders: Order[];
     @Column(type => CustomFulfillmentFields)
     customFields: CustomFulfillmentFields;
 }
@@ -69,6 +71,11 @@ class Fulfillment extends VendureEntity implements HasCustomFields {
 ### lines
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order-line-reference#fulfillmentline'>FulfillmentLine</a>[]`}   />
+
+
+### orders
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order#order'>Order</a>[]`}   />
 
 
 ### customFields
