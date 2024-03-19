@@ -71,6 +71,8 @@
     "assign-variants-to-channel": "تخصیص نوع محصول به کانال",
     "auto-update-option-variant-name": "با استفاده از این گزینه نام نوع محصول را به صورت خودکار به روز کنید",
     "auto-update-product-variant-name": "به‌روزرسانی خودکار نام‌های نوع محصول",
+    "calculated-price": "قیمت محاسبه شده",
+    "calculated-price-tooltip": "یک محاسبه قیمت سفارشی پیکربندی شده است که قیمت تنظیم شده بالا را اصلاح می کند:",
     "cannot-create-variants-without-options": "تعریف نوع محصول تا زمانی که یک گروه از قابلیت با حداقل دو انتخاب تعریف نشده باشد امکان پذیر نیست",
     "channel-price-preview": "پیش نمایش قیمت کانال",
     "collection": "مجموعه",

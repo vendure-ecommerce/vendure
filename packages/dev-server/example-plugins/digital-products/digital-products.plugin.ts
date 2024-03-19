@@ -43,6 +43,6 @@ import { DigitalShippingLineAssignmentStrategy } from './config/digital-shipping
         config.orderOptions.process.push(digitalOrderProcess);
         return config;
     },
-    compatibility: '~2.0.0',
+    compatibility: '^2.0.0',
 })
 export class DigitalProductsPlugin {}

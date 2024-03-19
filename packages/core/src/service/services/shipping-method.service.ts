@@ -133,7 +133,9 @@ export class ShippingMethodService {
             input,
             newShippingMethod,
         );
-        this.eventBus.publish(new ShippingMethodEvent(ctx, shippingMethodWithRelations, 'created', input));
+        await this.eventBus.publish(
+            new ShippingMethodEvent(ctx, shippingMethodWithRelations, 'created', input),
+        );
         return assertFound(this.findOne(ctx, newShippingMethod.id));
     }
 
@@ -175,7 +177,7 @@ export class ShippingMethodService {
             input,
             updatedShippingMethod,
         );
-        this.eventBus.publish(new ShippingMethodEvent(ctx, shippingMethod, 'updated', input));
+        await this.eventBus.publish(new ShippingMethodEvent(ctx, shippingMethod, 'updated', input));
         return assertFound(this.findOne(ctx, shippingMethod.id));
     }
 
@@ -186,7 +188,7 @@ export class ShippingMethodService {
         });
         shippingMethod.deletedAt = new Date();
         await this.connection.getRepository(ctx, ShippingMethod).save(shippingMethod, { reload: false });
-        this.eventBus.publish(new ShippingMethodEvent(ctx, shippingMethod, 'deleted', id));
+        await this.eventBus.publish(new ShippingMethodEvent(ctx, shippingMethod, 'deleted', id));
         return {
             result: DeletionResult.DELETED,
         };

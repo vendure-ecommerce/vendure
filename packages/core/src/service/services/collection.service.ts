@@ -146,7 +146,7 @@ export class CollectionService implements OnModuleInit {
                         }
                         job.setProgress(Math.ceil((completed / job.data.collectionIds.length) * 100));
                         if (affectedVariantIds.length) {
-                            this.eventBus.publish(
+                            await this.eventBus.publish(
                                 new CollectionModificationEvent(ctx, collection, affectedVariantIds),
                             );
                         }
@@ -472,7 +472,7 @@ export class CollectionService implements OnModuleInit {
             ctx: ctx.serialize(),
             collectionIds: [collection.id],
         });
-        this.eventBus.publish(new CollectionEvent(ctx, collectionWithRelations, 'created', input));
+        await this.eventBus.publish(new CollectionEvent(ctx, collectionWithRelations, 'created', input));
         return assertFound(this.findOne(ctx, collection.id));
     }
 
@@ -500,9 +500,9 @@ export class CollectionService implements OnModuleInit {
             });
         } else {
             const affectedVariantIds = await this.getCollectionProductVariantIds(collection);
-            this.eventBus.publish(new CollectionModificationEvent(ctx, collection, affectedVariantIds));
+            await this.eventBus.publish(new CollectionModificationEvent(ctx, collection, affectedVariantIds));
         }
-        this.eventBus.publish(new CollectionEvent(ctx, collection, 'updated', input));
+        await this.eventBus.publish(new CollectionEvent(ctx, collection, 'updated', input));
         return assertFound(this.findOne(ctx, collection.id));
     }
 
@@ -526,9 +526,11 @@ export class CollectionService implements OnModuleInit {
                     .remove(chunkedDeleteId);
             }
             await this.connection.getRepository(ctx, Collection).remove(coll);
-            this.eventBus.publish(new CollectionModificationEvent(ctx, deletedColl, affectedVariantIds));
+            await this.eventBus.publish(
+                new CollectionModificationEvent(ctx, deletedColl, affectedVariantIds),
+            );
         }
-        this.eventBus.publish(new CollectionEvent(ctx, deletedCollection, 'deleted', id));
+        await this.eventBus.publish(new CollectionEvent(ctx, deletedCollection, 'deleted', id));
         return {
             result: DeletionResult.DELETED,
         };
@@ -869,7 +871,9 @@ export class CollectionService implements OnModuleInit {
                 await this.channelService.removeFromChannels(ctx, Collection, collection.id, [
                     input.channelId,
                 ]);
-                this.eventBus.publish(new CollectionModificationEvent(ctx, collection, affectedVariantIds));
+                await this.eventBus.publish(
+                    new CollectionModificationEvent(ctx, collection, affectedVariantIds),
+                );
             }),
         );
 

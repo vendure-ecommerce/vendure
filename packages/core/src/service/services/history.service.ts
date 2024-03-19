@@ -290,7 +290,7 @@ export class HistoryService {
             administrator,
         });
         const history = await this.connection.getRepository(ctx, OrderHistoryEntry).save(entry);
-        this.eventBus.publish(new HistoryEntryEvent(ctx, history, 'created', 'order', { type, data }));
+        await this.eventBus.publish(new HistoryEntryEvent(ctx, history, 'created', 'order', { type, data }));
         return history;
     }
 
@@ -331,7 +331,9 @@ export class HistoryService {
             administrator,
         });
         const history = await this.connection.getRepository(ctx, CustomerHistoryEntry).save(entry);
-        this.eventBus.publish(new HistoryEntryEvent(ctx, history, 'created', 'customer', { type, data }));
+        await this.eventBus.publish(
+            new HistoryEntryEvent(ctx, history, 'created', 'customer', { type, data }),
+        );
         return history;
     }
 
@@ -354,7 +356,7 @@ export class HistoryService {
             entry.administrator = administrator;
         }
         const newEntry = await this.connection.getRepository(ctx, OrderHistoryEntry).save(entry);
-        this.eventBus.publish(new HistoryEntryEvent(ctx, entry, 'updated', 'order', args));
+        await this.eventBus.publish(new HistoryEntryEvent(ctx, entry, 'updated', 'order', args));
         return newEntry;
     }
 
@@ -362,7 +364,7 @@ export class HistoryService {
         const entry = await this.connection.getEntityOrThrow(ctx, OrderHistoryEntry, id);
         const deletedEntry = new OrderHistoryEntry(entry);
         await this.connection.getRepository(ctx, OrderHistoryEntry).remove(entry);
-        this.eventBus.publish(new HistoryEntryEvent(ctx, deletedEntry, 'deleted', 'order', id));
+        await this.eventBus.publish(new HistoryEntryEvent(ctx, deletedEntry, 'deleted', 'order', id));
     }
 
     async updateCustomerHistoryEntry<T extends keyof CustomerHistoryEntryData>(
@@ -381,7 +383,7 @@ export class HistoryService {
             entry.administrator = administrator;
         }
         const newEntry = await this.connection.getRepository(ctx, CustomerHistoryEntry).save(entry);
-        this.eventBus.publish(new HistoryEntryEvent(ctx, entry, 'updated', 'customer', args));
+        await this.eventBus.publish(new HistoryEntryEvent(ctx, entry, 'updated', 'customer', args));
         return newEntry;
     }
 
@@ -389,7 +391,7 @@ export class HistoryService {
         const entry = await this.connection.getEntityOrThrow(ctx, CustomerHistoryEntry, id);
         const deletedEntry = new CustomerHistoryEntry(entry);
         await this.connection.getRepository(ctx, CustomerHistoryEntry).remove(entry);
-        this.eventBus.publish(new HistoryEntryEvent(ctx, deletedEntry, 'deleted', 'customer', id));
+        await this.eventBus.publish(new HistoryEntryEvent(ctx, deletedEntry, 'deleted', 'customer', id));
     }
 
     private async getAdministratorFromContext(ctx: RequestContext): Promise<Administrator | undefined> {

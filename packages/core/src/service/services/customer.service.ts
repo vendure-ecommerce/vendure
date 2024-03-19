@@ -268,7 +268,7 @@ export class CustomerService {
                 }
             }
         }
-        this.eventBus.publish(new AccountRegistrationEvent(ctx, customer.user));
+        await this.eventBus.publish(new AccountRegistrationEvent(ctx, customer.user));
         await this.channelService.assignToCurrentChannel(customer, ctx);
         const createdCustomer = await this.connection.getRepository(ctx, Customer).save(customer);
         await this.customFieldRelationService.updateRelations(ctx, Customer, input, createdCustomer);
@@ -291,7 +291,7 @@ export class CustomerService {
                 },
             });
         }
-        this.eventBus.publish(new CustomerEvent(ctx, createdCustomer, 'created', input));
+        await this.eventBus.publish(new CustomerEvent(ctx, createdCustomer, 'created', input));
         return createdCustomer;
     }
 
@@ -364,7 +364,7 @@ export class CustomerService {
                 input,
             },
         });
-        this.eventBus.publish(new CustomerEvent(ctx, customer, 'updated', input));
+        await this.eventBus.publish(new CustomerEvent(ctx, customer, 'updated', input));
         return assertFound(this.findOne(ctx, customer.id));
     }
 
@@ -449,7 +449,7 @@ export class CustomerService {
         await this.connection.getRepository(ctx, User).save(user, { reload: false });
         await this.connection.getRepository(ctx, Customer).save(customer, { reload: false });
         if (!user.verified) {
-            this.eventBus.publish(new AccountRegistrationEvent(ctx, user));
+            await this.eventBus.publish(new AccountRegistrationEvent(ctx, user));
         } else {
             await this.historyService.createHistoryEntryForCustomer({
                 customerId: customer.id,
@@ -472,7 +472,7 @@ export class CustomerService {
         const user = await this.userService.getUserByEmailAddress(ctx, emailAddress);
         if (user && !user.verified) {
             await this.userService.setVerificationToken(ctx, user);
-            this.eventBus.publish(new AccountRegistrationEvent(ctx, user));
+            await this.eventBus.publish(new AccountRegistrationEvent(ctx, user));
         }
     }
 
@@ -506,7 +506,7 @@ export class CustomerService {
             },
         });
         const user = assertFound(this.findOneByUserId(ctx, result.id));
-        this.eventBus.publish(new AccountVerifiedEvent(ctx, customer));
+        await this.eventBus.publish(new AccountVerifiedEvent(ctx, customer));
         return user;
     }
 
@@ -518,7 +518,7 @@ export class CustomerService {
     async requestPasswordReset(ctx: RequestContext, emailAddress: string): Promise<void> {
         const user = await this.userService.setPasswordResetToken(ctx, emailAddress);
         if (user) {
-            this.eventBus.publish(new PasswordResetEvent(ctx, user));
+            await this.eventBus.publish(new PasswordResetEvent(ctx, user));
             const customer = await this.findOneByUserId(ctx, user.id);
             if (!customer) {
                 throw new InternalServerError('error.cannot-locate-customer-for-user');
@@ -558,7 +558,7 @@ export class CustomerService {
             type: HistoryEntryType.CUSTOMER_PASSWORD_RESET_VERIFIED,
             data: {},
         });
-        this.eventBus.publish(new PasswordResetVerifiedEvent(ctx, result));
+        await this.eventBus.publish(new PasswordResetVerifiedEvent(ctx, result));
         return result;
     }
 
@@ -602,7 +602,7 @@ export class CustomerService {
         if (this.configService.authOptions.requireVerification) {
             user.getNativeAuthenticationMethod().pendingIdentifier = normalizedEmailAddress;
             await this.userService.setIdentifierChangeToken(ctx, user);
-            this.eventBus.publish(new IdentifierChangeRequestEvent(ctx, user));
+            await this.eventBus.publish(new IdentifierChangeRequestEvent(ctx, user));
             return true;
         } else {
             const oldIdentifier = user.identifier;
@@ -610,7 +610,7 @@ export class CustomerService {
             customer.emailAddress = normalizedEmailAddress;
             await this.connection.getRepository(ctx, User).save(user, { reload: false });
             await this.connection.getRepository(ctx, Customer).save(customer, { reload: false });
-            this.eventBus.publish(new IdentifierChangeEvent(ctx, user, oldIdentifier));
+            await this.eventBus.publish(new IdentifierChangeEvent(ctx, user, oldIdentifier));
             await this.historyService.createHistoryEntryForCustomer({
                 customerId: customer.id,
                 ctx,
@@ -645,7 +645,7 @@ export class CustomerService {
         if (!customer) {
             return false;
         }
-        this.eventBus.publish(new IdentifierChangeEvent(ctx, user, oldIdentifier));
+        await this.eventBus.publish(new IdentifierChangeEvent(ctx, user, oldIdentifier));
         customer.emailAddress = user.identifier;
         await this.connection.getRepository(ctx, Customer).save(customer, { reload: false });
         await this.historyService.createHistoryEntryForCustomer({
@@ -688,7 +688,7 @@ export class CustomerService {
         } else {
             customer = await this.connection.getRepository(ctx, Customer).save(new Customer(input));
             await this.channelService.assignToCurrentChannel(customer, ctx);
-            this.eventBus.publish(new CustomerEvent(ctx, customer, 'created', input));
+            await this.eventBus.publish(new CustomerEvent(ctx, customer, 'created', input));
         }
         return this.connection.getRepository(ctx, Customer).save(customer);
     }
@@ -721,7 +721,7 @@ export class CustomerService {
             data: { address: addressToLine(createdAddress) },
         });
         createdAddress.customer = customer;
-        this.eventBus.publish(new CustomerAddressEvent(ctx, createdAddress, 'created', input));
+        await this.eventBus.publish(new CustomerAddressEvent(ctx, createdAddress, 'created', input));
         return createdAddress;
     }
 
@@ -758,7 +758,7 @@ export class CustomerService {
             },
         });
         updatedAddress.customer = customer;
-        this.eventBus.publish(new CustomerAddressEvent(ctx, updatedAddress, 'updated', input));
+        await this.eventBus.publish(new CustomerAddressEvent(ctx, updatedAddress, 'updated', input));
         return updatedAddress;
     }
 
@@ -788,7 +788,7 @@ export class CustomerService {
         const deletedAddress = new Address(address);
         await this.connection.getRepository(ctx, Address).remove(address);
         address.customer = customer;
-        this.eventBus.publish(new CustomerAddressEvent(ctx, deletedAddress, 'deleted', id));
+        await this.eventBus.publish(new CustomerAddressEvent(ctx, deletedAddress, 'deleted', id));
         return true;
     }
 
@@ -803,7 +803,7 @@ export class CustomerService {
         if (customer.user) {
             await this.userService.softDelete(ctx, customer.user.id);
         }
-        this.eventBus.publish(new CustomerEvent(ctx, customer, 'deleted', customerId));
+        await this.eventBus.publish(new CustomerEvent(ctx, customer, 'deleted', customerId));
         return {
             result: DeletionResult.DELETED,
         };

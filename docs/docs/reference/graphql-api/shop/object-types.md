@@ -470,6 +470,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 ## Country
 
 <div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">A Country of the world which your shop operates in.</div>
+
+<div class="graphql-code-line top-level comment"></div>
+
+<div class="graphql-code-line top-level comment">The <code>code</code> field is typically a 2-character ISO code such as "GB", "US", "DE" etc. This code is used in certain inputs such as</div>
+
+<div class="graphql-code-line top-level comment">`UpdateAddressInput` and <code>CreateAddressInput</code> to specify the country.</div>
+<div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Country</span>
  &#123;</div>
 <div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>

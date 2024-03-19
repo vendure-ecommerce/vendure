@@ -109,7 +109,7 @@ export class PaymentMethodService {
             },
         });
         await this.customFieldRelationService.updateRelations(ctx, PaymentMethod, input, savedPaymentMethod);
-        this.eventBus.publish(new PaymentMethodEvent(ctx, savedPaymentMethod, 'created', input));
+        await this.eventBus.publish(new PaymentMethodEvent(ctx, savedPaymentMethod, 'created', input));
         return assertFound(this.findOne(ctx, savedPaymentMethod.id));
     }
 
@@ -140,7 +140,7 @@ export class PaymentMethodService {
             input,
             updatedPaymentMethod,
         );
-        this.eventBus.publish(new PaymentMethodEvent(ctx, updatedPaymentMethod, 'updated', input));
+        await this.eventBus.publish(new PaymentMethodEvent(ctx, updatedPaymentMethod, 'updated', input));
         await this.connection.getRepository(ctx, PaymentMethod).save(updatedPaymentMethod, { reload: false });
         return assertFound(this.findOne(ctx, updatedPaymentMethod.id));
     }
@@ -168,7 +168,7 @@ export class PaymentMethodService {
             try {
                 const deletedPaymentMethod = new PaymentMethod(paymentMethod);
                 await this.connection.getRepository(ctx, PaymentMethod).remove(paymentMethod);
-                this.eventBus.publish(
+                await this.eventBus.publish(
                     new PaymentMethodEvent(ctx, deletedPaymentMethod, 'deleted', paymentMethodId),
                 );
                 return {
@@ -185,7 +185,9 @@ export class PaymentMethodService {
             // but will remove from the current channel
             paymentMethod.channels = paymentMethod.channels.filter(c => !idsAreEqual(c.id, ctx.channelId));
             await this.connection.getRepository(ctx, PaymentMethod).save(paymentMethod);
-            this.eventBus.publish(new PaymentMethodEvent(ctx, paymentMethod, 'deleted', paymentMethodId));
+            await this.eventBus.publish(
+                new PaymentMethodEvent(ctx, paymentMethod, 'deleted', paymentMethodId),
+            );
             return {
                 result: DeletionResult.DELETED,
             };

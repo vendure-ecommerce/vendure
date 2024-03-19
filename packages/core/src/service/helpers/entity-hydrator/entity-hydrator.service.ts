@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Type } from '@vendure/common/lib/shared-types';
 import { isObject } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
+import { SelectQueryBuilder } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { InternalServerError } from '../../../common/error/errors';
@@ -10,10 +11,9 @@ import { VendureEntity } from '../../../entity/base/base.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { ProductPriceApplicator } from '../product-price-applicator/product-price-applicator';
 import { TranslatorService } from '../translator/translator.service';
+import { joinTreeRelationsDynamically } from '../utils/tree-relations-qb-joiner';
 
 import { HydrateOptions } from './entity-hydrator-types';
-import { SelectQueryBuilder } from 'typeorm';
-import { joinTreeRelationsDynamically } from '../utils/tree-relations-qb-joiner';
 
 /**
  * @description
@@ -120,8 +120,12 @@ export class EntityHydrator {
             if (missingRelations.length) {
                 const hydratedQb: SelectQueryBuilder<any> = this.connection
                     .getRepository(ctx, target.constructor)
-                    .createQueryBuilder(target.constructor.name)
-                const joinedRelations = joinTreeRelationsDynamically(hydratedQb, target.constructor, missingRelations)
+                    .createQueryBuilder(target.constructor.name);
+                const joinedRelations = joinTreeRelationsDynamically(
+                    hydratedQb,
+                    target.constructor,
+                    missingRelations,
+                );
                 hydratedQb.setFindOptions({
                     relationLoadStrategy: 'query',
                     where: { id: target.id },
@@ -130,7 +134,7 @@ export class EntityHydrator {
                 const hydrated = await hydratedQb.getOne();
                 const propertiesToAdd = unique(missingRelations.map(relation => relation.split('.')[0]));
                 for (const prop of propertiesToAdd) {
-                    (target as any)[prop] = this.mergeDeep((target as any)[prop], (hydrated as any)[prop]);
+                    (target as any)[prop] = this.mergeDeep((target as any)[prop], hydrated[prop]);
                 }
 
                 const relationsWithEntities = missingRelations.map(relation => ({
@@ -229,6 +233,7 @@ export class EntityHydrator {
             const entityType = this.getRelationEntityTypeAtPath(target, relation);
             if (entityType === ProductVariant) {
                 relationsToAdd.push([relation, 'taxCategory'].join('.'));
+                relationsToAdd.push([relation, 'productVariantPrices'].join('.'));
             }
         }
         return relationsToAdd;
@@ -260,6 +265,8 @@ export class EntityHydrator {
                         visit(item, parts.slice());
                     }
                 }
+            } else if (target === null) {
+                result.push(target);
             } else {
                 if (parts.length === 0) {
                     result.push(target);

@@ -4,7 +4,7 @@ import path from 'path';
 export const DEFAULT_APP_PATH = path.join(__dirname, '../admin-ui');
 export const loggerCtx = 'AdminUiPlugin';
 export const defaultLanguage = LanguageCode.en;
-export const defaultLocale = 'US';
+export const defaultLocale = undefined;
 
 export const defaultAvailableLanguages = [
     LanguageCode.he,
@@ -25,6 +25,7 @@ export const defaultAvailableLanguages = [
     LanguageCode.fa,
     LanguageCode.ne,
     LanguageCode.hr,
+    LanguageCode.sv,
     LanguageCode.nb,
 ];
 

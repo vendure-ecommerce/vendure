@@ -55,7 +55,7 @@ export class FulltextSearchService {
     ): Promise<Omit<Omit<SearchResponse, 'facetValues'>, 'collections'>> {
         const items = await this._searchStrategy.getSearchResults(ctx, input, enabledOnly);
         const totalItems = await this._searchStrategy.getTotalCount(ctx, input, enabledOnly);
-        this.eventBus.publish(new SearchEvent(ctx, input));
+        await this.eventBus.publish(new SearchEvent(ctx, input));
 
         return {
             items,

@@ -170,7 +170,7 @@ export class FacetService {
             input,
             facet,
         );
-        this.eventBus.publish(new FacetEvent(ctx, facetWithRelations, 'created', input));
+        await this.eventBus.publish(new FacetEvent(ctx, facetWithRelations, 'created', input));
         return assertFound(this.findOne(ctx, facet.id));
     }
 
@@ -187,7 +187,7 @@ export class FacetService {
             },
         });
         await this.customFieldRelationService.updateRelations(ctx, Facet, input, facet);
-        this.eventBus.publish(new FacetEvent(ctx, facet, 'updated', input));
+        await this.eventBus.publish(new FacetEvent(ctx, facet, 'updated', input));
         return assertFound(this.findOne(ctx, facet.id));
     }
 
@@ -216,11 +216,11 @@ export class FacetService {
 
         if (!isInUse) {
             await this.connection.getRepository(ctx, Facet).remove(facet);
-            this.eventBus.publish(new FacetEvent(ctx, deletedFacet, 'deleted', id));
+            await this.eventBus.publish(new FacetEvent(ctx, deletedFacet, 'deleted', id));
             result = DeletionResult.DELETED;
         } else if (force) {
             await this.connection.getRepository(ctx, Facet).remove(facet);
-            this.eventBus.publish(new FacetEvent(ctx, deletedFacet, 'deleted', id));
+            await this.eventBus.publish(new FacetEvent(ctx, deletedFacet, 'deleted', id));
             message = ctx.translate('message.facet-force-deleted', i18nVars);
             result = DeletionResult.DELETED;
         } else {

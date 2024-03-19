@@ -61,7 +61,7 @@ export class TaxCategoryService {
                 .update({ isDefault: true }, { isDefault: false });
         }
         const newTaxCategory = await this.connection.getRepository(ctx, TaxCategory).save(taxCategory);
-        this.eventBus.publish(new TaxCategoryEvent(ctx, newTaxCategory, 'created', input));
+        await this.eventBus.publish(new TaxCategoryEvent(ctx, newTaxCategory, 'created', input));
         return assertFound(this.findOne(ctx, newTaxCategory.id));
     }
 
@@ -77,7 +77,7 @@ export class TaxCategoryService {
                 .update({ isDefault: true }, { isDefault: false });
         }
         await this.connection.getRepository(ctx, TaxCategory).save(updatedTaxCategory, { reload: false });
-        this.eventBus.publish(new TaxCategoryEvent(ctx, taxCategory, 'updated', input));
+        await this.eventBus.publish(new TaxCategoryEvent(ctx, taxCategory, 'updated', input));
         return assertFound(this.findOne(ctx, taxCategory.id));
     }
 
@@ -101,7 +101,7 @@ export class TaxCategoryService {
         try {
             const deletedTaxCategory = new TaxCategory(taxCategory);
             await this.connection.getRepository(ctx, TaxCategory).remove(taxCategory);
-            this.eventBus.publish(new TaxCategoryEvent(ctx, deletedTaxCategory, 'deleted', id));
+            await this.eventBus.publish(new TaxCategoryEvent(ctx, deletedTaxCategory, 'deleted', id));
             return {
                 result: DeletionResult.DELETED,
             };

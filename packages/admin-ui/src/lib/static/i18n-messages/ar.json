@@ -71,6 +71,8 @@
     "assign-variants-to-channel": "تعيين متغيرات المنتج للقناة",
     "auto-update-option-variant-name": "تحديث أسماء ProductVariants تلقائيًا باستخدام هذا الخيار",
     "auto-update-product-variant-name": "تحديث أسماء ProductVariants تلقائيًا",
+    "calculated-price": "السعر المحسوب",
+    "calculated-price-tooltip": "هناك عملية حساب سعر مخصصة تعديلها السعر المحدد أعلاه:",
     "cannot-create-variants-without-options": "لا يمكن إنشاء متغيرات المنتج حتى يتم تحديد مجموعة خيارات مع خيارين على الأقل من المنتجات",
     "channel-price-preview": "معاينة أسعار القناة",
     "collection": "مجموعة",

@@ -80,7 +80,7 @@ export class ProductOptionService {
             input as CreateProductOptionInput,
             option,
         );
-        this.eventBus.publish(new ProductOptionEvent(ctx, optionWithRelations, 'created', input));
+        await this.eventBus.publish(new ProductOptionEvent(ctx, optionWithRelations, 'created', input));
         return assertFound(this.findOne(ctx, option.id));
     }
 
@@ -92,7 +92,7 @@ export class ProductOptionService {
             translationType: ProductOptionTranslation,
         });
         await this.customFieldRelationService.updateRelations(ctx, ProductOption, input, option);
-        this.eventBus.publish(new ProductOptionEvent(ctx, option, 'updated', input));
+        await this.eventBus.publish(new ProductOptionEvent(ctx, option, 'updated', input));
         return assertFound(this.findOne(ctx, option.id));
     }
 
@@ -131,7 +131,7 @@ export class ProductOptionService {
                 Logger.error(e.message, undefined, e.stack);
             }
         }
-        this.eventBus.publish(new ProductOptionEvent(ctx, deletedProductOption, 'deleted', id));
+        await this.eventBus.publish(new ProductOptionEvent(ctx, deletedProductOption, 'deleted', id));
         return {
             result: DeletionResult.DELETED,
         };
