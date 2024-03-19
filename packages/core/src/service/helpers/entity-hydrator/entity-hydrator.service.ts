@@ -234,6 +234,7 @@ export class EntityHydrator {
             const entityType = this.getRelationEntityTypeAtPath(target, relation);
             if (entityType === ProductVariant) {
                 relationsToAdd.push([relation, 'taxCategory'].join('.'));
+                relationsToAdd.push([relation, 'productVariantPrices'].join('.'));
             }
         }
         return relationsToAdd;
