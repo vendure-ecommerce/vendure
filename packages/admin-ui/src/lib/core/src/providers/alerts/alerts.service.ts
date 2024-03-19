@@ -19,8 +19,11 @@ import { PermissionsService } from '../permissions/permissions.service';
 
 /**
  * @description
- * The context object which is passed to the `check`, `isAlert` and `action` functions of an
+ * The context object which is passed to the `check`, `isAlert`, `label` and `action` functions of an
  * {@link AlertConfig} object.
+ *
+ * @since 2.2.0
+ * @docsCategory alerts
  */
 export interface AlertContext {
     /**

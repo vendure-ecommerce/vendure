@@ -133,6 +133,7 @@ const sidebars = {
                     className: 'sidebar-section-header',
                 },
                 'guides/extending-the-admin-ui/nav-menu/index',
+                'guides/extending-the-admin-ui/alerts/index',
                 'guides/extending-the-admin-ui/add-actions-to-pages/index',
                 'guides/extending-the-admin-ui/page-tabs/index',
                 'guides/extending-the-admin-ui/custom-form-inputs/index',
