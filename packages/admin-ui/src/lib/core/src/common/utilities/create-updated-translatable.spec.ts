@@ -1,5 +1,4 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { describe, expect, it, beforeEach } from 'vitest';
 
 import { CustomFieldConfig, LanguageCode, ProductDetailFragment } from '../generated-types';
 
