@@ -91,8 +91,9 @@ export function joinTreeRelationsDynamically<T extends VendureEntity>(
             return;
         }
         parentPath = parentPath?.filter(p => p !== '');
-        const currentMetadataIsTree = isTreeEntityMetadata(currentMetadata) || sourceMetadataIsTree;
-        if (!currentMetadataIsTree && !parentMetadataIsTree) {
+        const currentMetadataIsTree =
+            isTreeEntityMetadata(currentMetadata) || sourceMetadataIsTree || parentMetadataIsTree;
+        if (!currentMetadataIsTree) {
             return;
         }
 
@@ -127,7 +128,7 @@ export function joinTreeRelationsDynamically<T extends VendureEntity>(
 
         const inverseEntityMetadataIsTree = isTreeEntityMetadata(relationMetadata.inverseEntityMetadata);
 
-        if (!parentMetadataIsTree && !inverseEntityMetadataIsTree && !currentMetadataIsTree) {
+        if (!currentMetadataIsTree && !inverseEntityMetadataIsTree) {
             return;
         }
 
@@ -138,7 +139,7 @@ export function joinTreeRelationsDynamically<T extends VendureEntity>(
                 if (subRelation.isEager) {
                     processRelation(
                         relationMetadata.inverseEntityMetadata,
-                        sourceMetadataIsTree,
+                        currentMetadataIsTree,
                         subRelation.propertyPath,
                         nextAlias,
                         [fullPath],
@@ -151,7 +152,7 @@ export function joinTreeRelationsDynamically<T extends VendureEntity>(
         if (nextPath) {
             processRelation(
                 relationMetadata.inverseEntityMetadata,
-                currentMetadataIsTree || parentMetadataIsTree,
+                currentMetadataIsTree,
                 nextPath,
                 nextAlias,
                 [fullPath],
