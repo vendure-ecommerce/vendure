@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
+import { InjectDataSource } from '@nestjs/typeorm/dist/common/typeorm.decorators';
 import { ID, Type } from '@vendure/common/lib/shared-types';
 import {
     Connection,
@@ -9,8 +10,10 @@ import {
     FindOptionsUtils,
     ObjectLiteral,
     ObjectType,
-    Repository, SelectQueryBuilder,
+    Repository,
+    SelectQueryBuilder,
 } from 'typeorm';
+import { DataSource } from 'typeorm/data-source/DataSource';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 
 import { RequestContext } from '../api/common/request-context';
@@ -19,12 +22,10 @@ import { TRANSACTION_MANAGER_KEY } from '../common/constants';
 import { EntityNotFoundError } from '../common/error/errors';
 import { ChannelAware, SoftDeletable } from '../common/types/common-types';
 import { VendureEntity } from '../entity/base/base.entity';
+import { joinTreeRelationsDynamically } from '../service/helpers/utils/tree-relations-qb-joiner';
 
 import { TransactionWrapper } from './transaction-wrapper';
 import { GetEntityOrThrowOptions } from './types';
-import { DataSource } from 'typeorm/data-source/DataSource';
-import { InjectDataSource } from '@nestjs/typeorm/dist/common/typeorm.decorators';
-import { joinTreeRelationsDynamically } from '../service/helpers/utils/tree-relations-qb-joiner';
 
 /**
  * @description
@@ -278,7 +279,7 @@ export class TransactionalConnection {
         channelId: ID,
         options: FindOneOptions<T> = {},
     ) {
-        const qb = this.getRepository(ctx, entity).createQueryBuilder('entity')
+        const qb = this.getRepository(ctx, entity).createQueryBuilder('entity');
 
         if (Array.isArray(options.relations) && options.relations.length > 0) {
             const joinedRelations = joinTreeRelationsDynamically(qb, entity, options.relations);
@@ -288,17 +289,15 @@ export class TransactionalConnection {
         }
         qb.setFindOptions({
             relationLoadStrategy: 'query', // default to query strategy for maximum performance
-            ...options
+            ...options,
         });
-
-        FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata)
 
         qb.leftJoin('entity.channels', '__channel')
             .andWhere('entity.id = :id', { id })
             .andWhere('__channel.id = :channelId', { channelId });
 
         return qb.getOne().then(result => {
-            return result ?? undefined
+            return result ?? undefined;
         });
     }
 
@@ -335,10 +334,8 @@ export class TransactionalConnection {
 
         qb.setFindOptions({
             relationLoadStrategy: 'query', // default to query strategy for maximum performance
-            ...options
+            ...options,
         });
-
-        FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata)
 
         return qb
             .leftJoin('entity.channels', 'channel')

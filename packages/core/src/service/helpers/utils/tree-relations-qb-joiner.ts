@@ -85,7 +85,7 @@ export function joinTreeRelationsDynamically<T extends VendureEntity>(
         currentPath: string,
         currentAlias: string,
         parentPath?: string[],
-        eagerDepth: number = 0, // Текущий уровень глубины для eager связей
+        eagerDepth: number = 0,
     ) => {
         if (currentPath === '') {
             return;
