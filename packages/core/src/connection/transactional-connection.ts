@@ -11,6 +11,7 @@ import {
     ObjectType,
     Repository,
     SelectQueryBuilder,
+    ReplicationMode,
 } from 'typeorm';
 
 import { RequestContext } from '../api/common/request-context';
@@ -73,21 +74,32 @@ export class TransactionalConnection {
     getRepository<Entity extends ObjectLiteral>(
         ctx: RequestContext | undefined,
         target: ObjectType<Entity> | EntitySchema<Entity> | string,
+        replicationMode?: ReplicationMode,
     ): Repository<Entity>;
     getRepository<Entity extends ObjectLiteral>(
         ctxOrTarget: RequestContext | ObjectType<Entity> | EntitySchema<Entity> | string | undefined,
         maybeTarget?: ObjectType<Entity> | EntitySchema<Entity> | string,
+        replicationMode?: ReplicationMode,
     ): Repository<Entity> {
         if (ctxOrTarget instanceof RequestContext) {
             const transactionManager = this.getTransactionManager(ctxOrTarget);
             if (transactionManager) {
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 return transactionManager.getRepository(maybeTarget!);
-            } else {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                return this.rawConnection.getRepository(maybeTarget!);
             }
+
+            if (ctxOrTarget.replicationMode === 'master' || replicationMode === 'master') {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                return this.dataSource.createQueryRunner('master').manager.getRepository(maybeTarget!);
+            }
+
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            return this.rawConnection.getRepository(maybeTarget!);
         } else {
+            if (replicationMode === 'master') {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                return this.dataSource.createQueryRunner(replicationMode).manager.getRepository(maybeTarget!);
+            }
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             return this.rawConnection.getRepository(ctxOrTarget ?? maybeTarget!);
         }
