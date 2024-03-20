@@ -3,18 +3,16 @@ import { InjectConnection } from '@nestjs/typeorm';
 import { InjectDataSource } from '@nestjs/typeorm/dist/common/typeorm.decorators';
 import { ID, Type } from '@vendure/common/lib/shared-types';
 import {
-    Connection,
+    DataSource,
     EntityManager,
     EntitySchema,
     FindOneOptions,
-    FindOptionsUtils,
+    FindManyOptions,
     ObjectLiteral,
     ObjectType,
     Repository,
     SelectQueryBuilder,
 } from 'typeorm';
-import { DataSource } from 'typeorm/data-source/DataSource';
-import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 
 import { RequestContext } from '../api/common/request-context';
 import { TransactionIsolationLevel } from '../api/decorators/transaction.decorator';
