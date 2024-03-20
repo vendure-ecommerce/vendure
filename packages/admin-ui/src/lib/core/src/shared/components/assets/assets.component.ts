@@ -50,7 +50,10 @@ export class AssetsComponent {
     @Input()
     updatePermissions: string | string[] | Permission | Permission[];
 
-    constructor(private modalService: ModalService, private changeDetector: ChangeDetectorRef) {}
+    constructor(
+        private modalService: ModalService,
+        private changeDetector: ChangeDetectorRef,
+    ) {}
 
     selectAssets() {
         this.modalService

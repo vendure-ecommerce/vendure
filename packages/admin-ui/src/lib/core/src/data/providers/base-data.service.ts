@@ -17,7 +17,10 @@ import { isEntityCreateOrUpdateMutation } from '../utils/is-entity-create-or-upd
 
 @Injectable()
 export class BaseDataService {
-    constructor(private apollo: Apollo, private serverConfigService: ServerConfigService) {}
+    constructor(
+        private apollo: Apollo,
+        private serverConfigService: ServerConfigService,
+    ) {}
 
     private get customFields(): Map<string, CustomFieldConfig[]> {
         return this.serverConfigService.customFieldsMap;

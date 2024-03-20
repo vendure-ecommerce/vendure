@@ -9,9 +9,9 @@ import { InternalServerError } from '../../../common/error/errors';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
-import { ListQueryBuilder } from '../list-query-builder/list-query-builder';
 import { ProductPriceApplicator } from '../product-price-applicator/product-price-applicator';
 import { TranslatorService } from '../translator/translator.service';
+import { joinTreeRelationsDynamically } from '../utils/tree-relations-qb-joiner';
 
 import { HydrateOptions } from './entity-hydrator-types';
 
@@ -80,7 +80,6 @@ export class EntityHydrator {
         private connection: TransactionalConnection,
         private productPriceApplicator: ProductPriceApplicator,
         private translator: TranslatorService,
-        private listQueryBuilder: ListQueryBuilder,
     ) {}
 
     /**
@@ -122,7 +121,7 @@ export class EntityHydrator {
                 const hydratedQb: SelectQueryBuilder<any> = this.connection
                     .getRepository(ctx, target.constructor)
                     .createQueryBuilder(target.constructor.name);
-                const processedRelations = this.listQueryBuilder.joinTreeRelationsDynamically(
+                const joinedRelations = joinTreeRelationsDynamically(
                     hydratedQb,
                     target.constructor,
                     missingRelations,
@@ -130,7 +129,7 @@ export class EntityHydrator {
                 hydratedQb.setFindOptions({
                     relationLoadStrategy: 'query',
                     where: { id: target.id },
-                    relations: missingRelations.filter(relationPath => !processedRelations.has(relationPath)),
+                    relations: missingRelations.filter(relationPath => !joinedRelations.has(relationPath)),
                 });
                 const hydrated = await hydratedQb.getOne();
                 const propertiesToAdd = unique(missingRelations.map(relation => relation.split('.')[0]));

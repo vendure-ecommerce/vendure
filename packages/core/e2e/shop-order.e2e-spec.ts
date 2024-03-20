@@ -161,9 +161,8 @@ describe('Shop orders', () => {
             },
         );
 
-        const result = await shopClient.query<CodegenShop.GetAvailableCountriesQuery>(
-            GET_AVAILABLE_COUNTRIES,
-        );
+        const result =
+            await shopClient.query<CodegenShop.GetAvailableCountriesQuery>(GET_AVAILABLE_COUNTRIES);
         expect(result.availableCountries.length).toBe(countries.items.length - 1);
         expect(result.availableCountries.find(c => c.id === AT.id)).toBeUndefined();
     });
@@ -1519,9 +1518,8 @@ describe('Shop orders', () => {
                     id: shippingMethods[1].id,
                 });
 
-                const activeOrderResult = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
-                    GET_ACTIVE_ORDER,
-                );
+                const activeOrderResult =
+                    await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
 
                 const order = activeOrderResult.activeOrder!;
 
@@ -1533,9 +1531,8 @@ describe('Shop orders', () => {
             });
 
             it('shipping method is preserved after adjustOrderLine', async () => {
-                const activeOrderResult = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
-                    GET_ACTIVE_ORDER,
-                );
+                const activeOrderResult =
+                    await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
                 activeOrder = activeOrderResult.activeOrder!;
                 const { adjustOrderLine } = await shopClient.query<
                     CodegenShop.AdjustItemQuantityMutation,
@@ -1709,9 +1706,10 @@ describe('Shop orders', () => {
                 expect(addPaymentToOrder.errorCode).toBe(ErrorCode.PAYMENT_FAILED_ERROR);
                 expect((addPaymentToOrder as any).paymentErrorMessage).toBe('Something went horribly wrong');
 
-                const result = await shopClient.query<CodegenShop.GetActiveOrderPaymentsQuery>(
-                    GET_ACTIVE_ORDER_PAYMENTS,
-                );
+                const result =
+                    await shopClient.query<CodegenShop.GetActiveOrderPaymentsQuery>(
+                        GET_ACTIVE_ORDER_PAYMENTS,
+                    );
                 const payment = result.activeOrder!.payments![1];
                 expect(result.activeOrder!.payments!.length).toBe(2);
                 expect(payment.method).toBe(testErrorPaymentMethod.code);
@@ -2059,9 +2057,8 @@ describe('Shop orders', () => {
                 },
             });
 
-            const { activeOrder } = await shopClient.query<CodegenShop.GetCustomerAddressesQuery>(
-                GET_ACTIVE_ORDER_ADDRESSES,
-            );
+            const { activeOrder } =
+                await shopClient.query<CodegenShop.GetCustomerAddressesQuery>(GET_ACTIVE_ORDER_ADDRESSES);
 
             expect(activeOrder!.customer!.addresses).toEqual([]);
         });
@@ -2087,9 +2084,8 @@ describe('Shop orders', () => {
                 },
             });
 
-            const { activeOrder } = await shopClient.query<CodegenShop.GetCustomerOrdersQuery>(
-                GET_ACTIVE_ORDER_ORDERS,
-            );
+            const { activeOrder } =
+                await shopClient.query<CodegenShop.GetCustomerOrdersQuery>(GET_ACTIVE_ORDER_ORDERS);
 
             expect(activeOrder!.customer!.orders.items).toEqual([]);
         });
@@ -2328,9 +2324,8 @@ describe('Shop orders', () => {
 
         beforeAll(async () => {
             // First we will remove all ShippingMethods and set up 2 specialized ones
-            const { shippingMethods } = await adminClient.query<Codegen.GetShippingMethodListQuery>(
-                GET_SHIPPING_METHOD_LIST,
-            );
+            const { shippingMethods } =
+                await adminClient.query<Codegen.GetShippingMethodListQuery>(GET_SHIPPING_METHOD_LIST);
             for (const method of shippingMethods.items) {
                 await adminClient.query<
                     Codegen.DeleteShippingMethodMutation,
