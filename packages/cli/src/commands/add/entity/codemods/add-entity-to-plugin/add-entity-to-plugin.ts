@@ -1,7 +1,6 @@
 import { ClassDeclaration, Node, SourceFile, SyntaxKind } from 'ts-morph';
 
 import { addImportsToFile } from '../../../../../utilities/ast-utils';
-import { AddEntityTemplateContext } from '../../add-entity';
 
 export function addEntityToPlugin(pluginClass: ClassDeclaration, entitySourceFile: SourceFile) {
     const pluginDecorator = pluginClass.getDecorator('VendurePlugin');

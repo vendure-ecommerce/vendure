@@ -14,17 +14,20 @@ import { determineVendureVersion, installRequiredPackages } from '../../../utili
 import { addUiExtensionStaticProp } from './codemods/add-ui-extension-static-prop/add-ui-extension-static-prop';
 import { updateAdminUiPluginInit } from './codemods/update-admin-ui-plugin-init/update-admin-ui-plugin-init';
 
-export async function addUiExtensions() {
-    const projectSpinner = spinner();
-    projectSpinner.start('Analyzing project...');
+export async function addUiExtensions(providedPluginClass?: ClassDeclaration) {
+    let pluginClass = providedPluginClass;
+    let project = pluginClass?.getProject();
+    if (!pluginClass || !project) {
+        const projectSpinner = spinner();
+        projectSpinner.start('Analyzing project...');
+        await new Promise(resolve => setTimeout(resolve, 100));
+        project = getTsMorphProject();
+        projectSpinner.stop('Project analyzed');
+        pluginClass = await selectPluginClass(project, 'Add UI extensions cancelled');
+    }
 
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const project = getTsMorphProject();
-    projectSpinner.stop('Project analyzed');
-
-    const pluginClass = await selectPluginClass(project, 'Add UI extensions cancelled');
     if (pluginAlreadyHasUiExtensionProp(pluginClass)) {
-        outro('This plugin already has a UI extension configured');
+        outro('This plugin already has UI extensions configured');
         return;
     }
     addUiExtensionStaticProp(pluginClass);
@@ -79,7 +82,9 @@ export async function addUiExtensions() {
     }
 
     project.saveSync();
-    outro('✅  Done!');
+    if (!providedPluginClass) {
+        outro('✅  Done!');
+    }
 }
 
 function pluginAlreadyHasUiExtensionProp(pluginClass: ClassDeclaration) {

@@ -1,6 +1,7 @@
 import { outro, spinner, text } from '@clack/prompts';
 import { paramCase } from 'change-case';
 import path from 'path';
+import { ClassDeclaration } from 'ts-morph';
 
 import { getCustomEntityName, selectPluginClass } from '../../../shared/shared-prompts';
 import { createFile, getTsMorphProject } from '../../../utilities/ast-utils';
@@ -16,14 +17,17 @@ export interface AddEntityTemplateContext {
     };
 }
 
-export async function addEntity() {
-    const projectSpinner = spinner();
-    projectSpinner.start('Analyzing project...');
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const project = getTsMorphProject();
-    projectSpinner.stop('Project analyzed');
-
-    const pluginClass = await selectPluginClass(project, cancelledMessage);
+export async function addEntity(providedPluginClass?: ClassDeclaration) {
+    let pluginClass = providedPluginClass;
+    let project = pluginClass?.getProject();
+    if (!pluginClass || !project) {
+        const projectSpinner = spinner();
+        projectSpinner.start('Analyzing project...');
+        await new Promise(resolve => setTimeout(resolve, 100));
+        project = getTsMorphProject();
+        projectSpinner.stop('Project analyzed');
+        pluginClass = await selectPluginClass(project, cancelledMessage);
+    }
     const customEntityName = await getCustomEntityName(cancelledMessage);
     const context: AddEntityTemplateContext = {
         entity: {
@@ -41,5 +45,8 @@ export async function addEntity() {
     addEntityToPlugin(pluginClass, entityFile);
 
     project.saveSync();
-    outro('✅  Done!');
+
+    if (!providedPluginClass) {
+        outro('✅  Done!');
+    }
 }

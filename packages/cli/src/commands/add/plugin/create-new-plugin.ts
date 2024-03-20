@@ -1,9 +1,12 @@
-import { cancel, intro, isCancel, outro, spinner, text } from '@clack/prompts';
+import { cancel, intro, isCancel, outro, select, spinner, text } from '@clack/prompts';
 import { constantCase, paramCase, pascalCase } from 'change-case';
 import * as fs from 'fs-extra';
 import path from 'path';
+import { ClassDeclaration } from 'ts-morph';
 
 import { createFile, getTsMorphProject } from '../../../utilities/ast-utils';
+import { addEntity } from '../entity/add-entity';
+import { addUiExtensions } from '../ui-extensions/add-ui-extensions';
 
 import { GeneratePluginOptions, NewPluginTemplateContext } from './types';
 
@@ -11,7 +14,7 @@ const cancelledMessage = 'Plugin setup cancelled.';
 
 export async function createNewPlugin() {
     const options: GeneratePluginOptions = { name: '', customEntityName: '', pluginDir: '' } as any;
-    intro('Scaffolding a new Vendure plugin!');
+    intro('Adding a new Vendure plugin!');
     if (!options.name) {
         const name = await text({
             message: 'What is the name of the plugin?',
@@ -45,13 +48,39 @@ export async function createNewPlugin() {
     if (isCancel(confirmation)) {
         cancel(cancelledMessage);
         process.exit(0);
-    } else {
-        options.pluginDir = confirmation;
-        await generatePlugin(options);
     }
+
+    options.pluginDir = confirmation;
+    const generatedResult = await generatePlugin(options);
+
+    let done = false;
+    while (!done) {
+        const featureType = await select({
+            message: `Add features to ${options.name}?`,
+            options: [
+                { value: 'no', label: "[Finish] No, I'm done!" },
+                { value: 'entity', label: '[Plugin: Entity] Add a new entity to the plugin' },
+                { value: 'uiExtensions', label: '[Plugin: UI] Set up Admin UI extensions' },
+            ],
+        });
+        if (isCancel(featureType)) {
+            done = true;
+        }
+        if (featureType === 'no') {
+            done = true;
+        } else if (featureType === 'entity') {
+            await addEntity(generatedResult.pluginClass);
+        } else if (featureType === 'uiExtensions') {
+            await addUiExtensions(generatedResult.pluginClass);
+        }
+    }
+
+    outro('✅ Plugin setup complete!');
 }
 
-export async function generatePlugin(options: GeneratePluginOptions) {
+export async function generatePlugin(
+    options: GeneratePluginOptions,
+): Promise<{ pluginClass: ClassDeclaration }> {
     const nameWithoutPlugin = options.name.replace(/-?plugin$/i, '');
     const normalizedName = nameWithoutPlugin + '-plugin';
     const templateContext: NewPluginTemplateContext = {
@@ -66,7 +95,11 @@ export async function generatePlugin(options: GeneratePluginOptions) {
     const project = getTsMorphProject({ skipAddingFilesFromTsConfig: true });
 
     const pluginFile = createFile(project, path.join(__dirname, 'templates/plugin.template.ts'));
-    pluginFile.getClass('TemplatePlugin')?.rename(templateContext.pluginName);
+    const pluginClass = pluginFile.getClass('TemplatePlugin');
+    if (!pluginClass) {
+        throw new Error('Could not find the plugin class in the generated file');
+    }
+    pluginClass.rename(templateContext.pluginName);
 
     const typesFile = createFile(project, path.join(__dirname, 'templates/types.template.ts'));
 
@@ -83,9 +116,11 @@ export async function generatePlugin(options: GeneratePluginOptions) {
     pluginFile.move(path.join(options.pluginDir, paramCase(nameWithoutPlugin) + '.plugin.ts'));
     constantsFile.move(path.join(options.pluginDir, 'constants.ts'));
 
-    projectSpinner.stop('Done');
+    projectSpinner.stop('Generated plugin scaffold');
     project.saveSync();
-    outro('✅ Plugin scaffolding complete!');
+    return {
+        pluginClass,
+    };
 }
 
 function getPluginDirName(name: string) {
