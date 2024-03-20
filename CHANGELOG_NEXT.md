@@ -10,29 +10,13 @@
 
 #### Features
 
-* **admin-ui** Export AssetsComponent as a Shared Component (#2695) ([cc85202](https://github.com/vendure-ecommerce/vendure/commit/cc85202)), closes [#2695](https://github.com/vendure-ecommerce/vendure/issues/2695) [#2637](https://github.com/vendure-ecommerce/vendure/issues/2637)
 * **admin-ui** Expose `registerAlert` provider for custom UI alerts ([698ea0c](https://github.com/vendure-ecommerce/vendure/commit/698ea0c)), closes [#2503](https://github.com/vendure-ecommerce/vendure/issues/2503)
-* **common** Properly replace umlauts and Eszett for German lang (#2616) ([84ba64f](https://github.com/vendure-ecommerce/vendure/commit/84ba64f)), closes [#2616](https://github.com/vendure-ecommerce/vendure/issues/2616)
 * **core** Implement new blocking event handler API ([1c69499](https://github.com/vendure-ecommerce/vendure/commit/1c69499)), closes [#2735](https://github.com/vendure-ecommerce/vendure/issues/2735)
 
 #### Fixes
 
-* **admin-ui** Add missing translation of breadcrumb tooltips (#2697) ([2a3a796](https://github.com/vendure-ecommerce/vendure/commit/2a3a796)), closes [#2697](https://github.com/vendure-ecommerce/vendure/issues/2697)
-* **admin-ui** Display calculated price when custom price strategy used ([09c66fe](https://github.com/vendure-ecommerce/vendure/commit/09c66fe)), closes [#2506](https://github.com/vendure-ecommerce/vendure/issues/2506)
 * **admin-ui** Fix dark mode layout ([893a913](https://github.com/vendure-ecommerce/vendure/commit/893a913)), closes [#2745](https://github.com/vendure-ecommerce/vendure/issues/2745)
-* **core** Add missing Order.customer field resolver ([dad7f98](https://github.com/vendure-ecommerce/vendure/commit/dad7f98)), closes [#2715](https://github.com/vendure-ecommerce/vendure/issues/2715)
-* **core** Export OrderByCodeAccessStrategy and DefaultOrderByCodeAccessStrategy (#2692) ([6a4a7e5](https://github.com/vendure-ecommerce/vendure/commit/6a4a7e5)), closes [#2692](https://github.com/vendure-ecommerce/vendure/issues/2692)
-* **core** Fix custom field relation for ProductVariant when value is null (#2727) ([b4f8a55](https://github.com/vendure-ecommerce/vendure/commit/b4f8a55)), closes [#2727](https://github.com/vendure-ecommerce/vendure/issues/2727) [#2723](https://github.com/vendure-ecommerce/vendure/issues/2723)
-* **core** Fix custom field relation loading edge-case ([93ca4ca](https://github.com/vendure-ecommerce/vendure/commit/93ca4ca)), closes [#2708](https://github.com/vendure-ecommerce/vendure/issues/2708)
-* **core** Fix error when querying Roles without channels field ([b2cb011](https://github.com/vendure-ecommerce/vendure/commit/b2cb011)), closes [#2693](https://github.com/vendure-ecommerce/vendure/issues/2693)
-* **core** Fix hydration of product variant prices ([7adb115](https://github.com/vendure-ecommerce/vendure/commit/7adb115))
-* **core** Fix querying order variant after removal from channel ([e28ba3d](https://github.com/vendure-ecommerce/vendure/commit/e28ba3d)), closes [#2716](https://github.com/vendure-ecommerce/vendure/issues/2716)
-* **core** Fix renaming of product with readonly custom field (#2684) ([2075d6d](https://github.com/vendure-ecommerce/vendure/commit/2075d6d)), closes [#2684](https://github.com/vendure-ecommerce/vendure/issues/2684)
 * **core** Fix self-referencing relations `Not unique table/alias` (#2740) ([357ba49](https://github.com/vendure-ecommerce/vendure/commit/357ba49)), closes [#2740](https://github.com/vendure-ecommerce/vendure/issues/2740) [#2738](https://github.com/vendure-ecommerce/vendure/issues/2738)
-* **core** Fix stock constraint error for adjustOrderLine when using OrderLine custom fields (#2737) ([8a961b0](https://github.com/vendure-ecommerce/vendure/commit/8a961b0)), closes [#2737](https://github.com/vendure-ecommerce/vendure/issues/2737)
-* **core** Fix stock constraint error when using OrderLine custom fields ([2f93eb7](https://github.com/vendure-ecommerce/vendure/commit/2f93eb7)), closes [#2702](https://github.com/vendure-ecommerce/vendure/issues/2702)
-* **core** Handle nullable relations in EntityHydrator (#2683) ([4e1f408](https://github.com/vendure-ecommerce/vendure/commit/4e1f408)), closes [#2683](https://github.com/vendure-ecommerce/vendure/issues/2683) [#2682](https://github.com/vendure-ecommerce/vendure/issues/2682)
-* **create** Update scaffolded service type safety for updated Enttity (#2712) ([2e3be51](https://github.com/vendure-ecommerce/vendure/commit/2e3be51)), closes [#2712](https://github.com/vendure-ecommerce/vendure/issues/2712)
 
 ## 2.2.0-next.6 (2024-03-14)
 
