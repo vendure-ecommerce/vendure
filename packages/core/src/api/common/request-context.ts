@@ -3,6 +3,7 @@ import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
 import { isObject } from '@vendure/common/lib/shared-utils';
 import { Request } from 'express';
 import { TFunction } from 'i18next';
+import { ReplicationMode } from 'typeorm';
 
 import { idsAreEqual } from '../../common/utils';
 import { CachedSession } from '../../config/session-cache/session-cache-strategy';
@@ -51,6 +52,7 @@ export class RequestContext {
     private readonly _translationFn: TFunction;
     private readonly _apiType: ApiType;
     private readonly _req?: Request;
+    private _replicationMode?: ReplicationMode;
 
     /**
      * @internal
@@ -283,5 +285,13 @@ export class RequestContext {
             return result;
         }
         return copySimpleFieldsToDepth(req, 1);
+    }
+
+    setReplicationMode(mode: ReplicationMode): void {
+        this._replicationMode = mode;
+    }
+
+    get replicationMode(): ReplicationMode | undefined {
+        return this._replicationMode;
     }
 }
