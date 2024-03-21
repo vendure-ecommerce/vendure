@@ -2,6 +2,7 @@ import { log } from '@clack/prompts';
 import fs from 'fs-extra';
 import path from 'node:path';
 import {
+    Directory,
     Node,
     ObjectLiteralExpression,
     Project,
@@ -134,13 +135,14 @@ function getModuleSpecifierString(moduleSpecifier: string | SourceFile, sourceFi
     return getRelativeImportPath({ from: moduleSpecifier, to: sourceFile });
 }
 
-export function getRelativeImportPath(locations: { from: SourceFile; to: SourceFile }): string {
-    return convertPathToRelativeImport(
-        path.relative(
-            locations.to.getSourceFile().getDirectory().getPath(),
-            locations.from.getSourceFile().getFilePath(),
-        ),
-    );
+export function getRelativeImportPath(locations: {
+    from: SourceFile | Directory;
+    to: SourceFile | Directory;
+}): string {
+    const fromPath =
+        locations.from instanceof SourceFile ? locations.from.getFilePath() : locations.from.getPath();
+    const toPath = locations.to instanceof SourceFile ? locations.to.getFilePath() : locations.to.getPath();
+    return convertPathToRelativeImport(path.relative(toPath, fromPath));
 }
 
 export function createFile(project: Project, templatePath: string) {

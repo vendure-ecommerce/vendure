@@ -2,6 +2,7 @@ import { note } from '@clack/prompts';
 import spawn from 'cross-spawn';
 import fs from 'fs-extra';
 import path from 'path';
+import { Project } from 'ts-morph';
 
 export interface PackageToInstall {
     pkg: string;
@@ -9,13 +10,18 @@ export interface PackageToInstall {
     isDevDependency?: boolean;
 }
 
-export function determineVendureVersion(): string | undefined {
-    const packageJson = getPackageJsonContent();
+export function determineVendureVersion(project: Project): string | undefined {
+    const packageJson = getPackageJsonContent(project);
     return packageJson.dependencies['@vendure/core'];
 }
 
-export async function installRequiredPackages(requiredPackages: PackageToInstall[]) {
-    const packageJson = getPackageJsonContent();
+/**
+ * @description
+ * Installs the packages with the appropriate package manager if the package
+ * is not already found in the package.json file.
+ */
+export async function installRequiredPackages(project: Project, requiredPackages: PackageToInstall[]) {
+    const packageJson = getPackageJsonContent(project);
     const packagesToInstall = requiredPackages.filter(({ pkg, version, isDevDependency }) => {
         const hasDependency = isDevDependency
             ? packageJson.devDependencies[pkg]
@@ -24,10 +30,10 @@ export async function installRequiredPackages(requiredPackages: PackageToInstall
     });
 
     const depsToInstall = packagesToInstall
-        .filter(p => !p.isDevDependency)
+        .filter(p => !p.isDevDependency && packageJson.dependencies?.[p.pkg] === undefined)
         .map(p => `${p.pkg}${p.version ? `@${p.version}` : ''}`);
     const devDepsToInstall = packagesToInstall
-        .filter(p => p.isDevDependency)
+        .filter(p => p.isDevDependency && packageJson.devDependencies?.[p.pkg] === undefined)
         .map(p => `${p.pkg}${p.version ? `@${p.version}` : ''}`);
     if (depsToInstall.length) {
         await installPackages(depsToInstall, false);
@@ -72,6 +78,21 @@ export async function installPackages(dependencies: string[], isDev: boolean) {
     });
 }
 
+export function addNpmScriptToPackageJson(project: Project, scriptName: string, script: string) {
+    const packageJson = getPackageJsonContent(project);
+    if (!packageJson) {
+        return;
+    }
+    packageJson.scripts = packageJson.scripts || {};
+    packageJson.scripts[scriptName] = script;
+    const rootDir = project.getDirectory('.');
+    if (!rootDir) {
+        throw new Error('Could not find the root directory of the project');
+    }
+    const packageJsonPath = path.join(rootDir.getPath(), 'package.json');
+    fs.writeJsonSync(packageJsonPath, packageJson, { spaces: 2 });
+}
+
 function determinePackageManagerBasedOnLockFile(): 'yarn' | 'npm' | 'pnpm' {
     const yarnLockPath = path.join(process.cwd(), 'yarn.lock');
     const npmLockPath = path.join(process.cwd(), 'package-lock.json');
@@ -88,8 +109,12 @@ function determinePackageManagerBasedOnLockFile(): 'yarn' | 'npm' | 'pnpm' {
     return 'npm';
 }
 
-function getPackageJsonContent() {
-    const packageJsonPath = path.join(process.cwd(), 'package.json');
+function getPackageJsonContent(project: Project) {
+    const rootDir = project.getDirectory('.');
+    if (!rootDir) {
+        throw new Error('Could not find the root directory of the project');
+    }
+    const packageJsonPath = path.join(rootDir.getPath(), 'package.json');
     if (!fs.existsSync(packageJsonPath)) {
         note(
             `Could not find a package.json in the current directory. Please run this command from the root of a Vendure project.`,

@@ -1,4 +1,4 @@
-import { cancel, isCancel, select, text } from '@clack/prompts';
+import { cancel, isCancel, multiselect, select, text } from '@clack/prompts';
 import { pascalCase } from 'change-case';
 import { ClassDeclaration, Project } from 'ts-morph';
 
@@ -40,4 +40,40 @@ export async function selectPluginClass(project: Project, cancelledMessage: stri
         process.exit(0);
     }
     return targetPlugin as ClassDeclaration;
+}
+
+export async function selectMultiplePluginClasses(project: Project, cancelledMessage: string) {
+    const pluginClasses = getPluginClasses(project);
+    const selectAll = await select({
+        message: 'To which plugin would you like to add the feature?',
+        options: [
+            {
+                value: 'all',
+                label: 'All plugins',
+            },
+            {
+                value: 'specific',
+                label: 'Specific plugins (you will be prompted to select the plugins)',
+            },
+        ],
+    });
+    if (isCancel(selectAll)) {
+        cancel(cancelledMessage);
+        process.exit(0);
+    }
+    if (selectAll === 'all') {
+        return pluginClasses;
+    }
+    const targetPlugins = await multiselect({
+        message: 'Select one or more plugins (use ↑, ↓, space to select)',
+        options: pluginClasses.map(c => ({
+            value: c,
+            label: c.getName() as string,
+        })),
+    });
+    if (isCancel(targetPlugins)) {
+        cancel(cancelledMessage);
+        process.exit(0);
+    }
+    return targetPlugins as ClassDeclaration[];
 }

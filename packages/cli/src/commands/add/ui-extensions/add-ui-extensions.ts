@@ -36,8 +36,8 @@ export async function addUiExtensions(providedPluginClass?: ClassDeclaration) {
     const installSpinner = spinner();
     installSpinner.start(`Installing dependencies...`);
     try {
-        const version = determineVendureVersion();
-        await installRequiredPackages([
+        const version = determineVendureVersion(project);
+        await installRequiredPackages(project, [
             {
                 pkg: '@vendure/ui-devkit',
                 isDevDependency: true,

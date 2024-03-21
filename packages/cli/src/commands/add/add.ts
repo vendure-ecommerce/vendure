@@ -1,6 +1,7 @@
 import { cancel, isCancel, log, select } from '@clack/prompts';
 import { Command } from 'commander';
 
+import { addCodegen } from './codegen/add-codegen';
 import { addEntity } from './entity/add-entity';
 import { createNewPlugin } from './plugin/create-new-plugin';
 import { addUiExtensions } from './ui-extensions/add-ui-extensions';
@@ -18,6 +19,7 @@ export function registerAddCommand(program: Command) {
                     { value: 'plugin', label: '[Plugin] Add a new plugin' },
                     { value: 'entity', label: '[Plugin: Entity] Add a new entity to a plugin' },
                     { value: 'uiExtensions', label: '[Plugin: UI] Set up Admin UI extensions' },
+                    { value: 'codegen', label: '[Project: Codegen] Set up GraphQL code generation' },
                 ],
             });
             if (isCancel(featureType)) {
@@ -33,6 +35,9 @@ export function registerAddCommand(program: Command) {
                 }
                 if (featureType === 'entity') {
                     await addEntity();
+                }
+                if (featureType === 'codegen') {
+                    await addCodegen();
                 }
             } catch (e: any) {
                 log.error(e.message as string);
