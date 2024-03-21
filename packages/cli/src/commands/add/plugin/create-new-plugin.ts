@@ -2,9 +2,9 @@ import { cancel, intro, isCancel, outro, select, spinner, text } from '@clack/pr
 import { constantCase, paramCase, pascalCase } from 'change-case';
 import * as fs from 'fs-extra';
 import path from 'path';
-import { ClassDeclaration } from 'ts-morph';
 
 import { createFile, getTsMorphProject } from '../../../utilities/ast-utils';
+import { VendurePluginDeclaration } from '../../../utilities/vendure-plugin-declaration';
 import { addEntity } from '../entity/add-entity';
 import { addUiExtensions } from '../ui-extensions/add-ui-extensions';
 
@@ -51,7 +51,7 @@ export async function createNewPlugin() {
     }
 
     options.pluginDir = confirmation;
-    const generatedResult = await generatePlugin(options);
+    const plugin = await generatePlugin(options);
 
     let done = false;
     while (!done) {
@@ -69,18 +69,16 @@ export async function createNewPlugin() {
         if (featureType === 'no') {
             done = true;
         } else if (featureType === 'entity') {
-            await addEntity(generatedResult.pluginClass);
+            await addEntity(plugin);
         } else if (featureType === 'uiExtensions') {
-            await addUiExtensions(generatedResult.pluginClass);
+            await addUiExtensions(plugin);
         }
     }
 
     outro('✅ Plugin setup complete!');
 }
 
-export async function generatePlugin(
-    options: GeneratePluginOptions,
-): Promise<{ pluginClass: ClassDeclaration }> {
+export async function generatePlugin(options: GeneratePluginOptions): Promise<VendurePluginDeclaration> {
     const nameWithoutPlugin = options.name.replace(/-?plugin$/i, '');
     const normalizedName = nameWithoutPlugin + '-plugin';
     const templateContext: NewPluginTemplateContext = {
@@ -118,9 +116,7 @@ export async function generatePlugin(
 
     projectSpinner.stop('Generated plugin scaffold');
     project.saveSync();
-    return {
-        pluginClass,
-    };
+    return new VendurePluginDeclaration(pluginClass);
 }
 
 function getPluginDirName(name: string) {

@@ -4,3 +4,5 @@ export const defaultManipulationSettings: Partial<ManipulationSettings> = {
     quoteKind: QuoteKind.Single,
     useTrailingCommas: true,
 };
+
+export const AdminUiExtensionTypeName = 'AdminUiExtension';

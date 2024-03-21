@@ -2,7 +2,7 @@ import { log, note, outro, spinner } from '@clack/prompts';
 import path from 'path';
 import { ClassDeclaration } from 'ts-morph';
 
-import { selectPluginClass } from '../../../shared/shared-prompts';
+import { analyzeProject, selectPlugin } from '../../../shared/shared-prompts';
 import {
     createFile,
     getRelativeImportPath,
@@ -10,28 +10,22 @@ import {
     getVendureConfig,
 } from '../../../utilities/ast-utils';
 import { PackageJson } from '../../../utilities/package-utils';
+import { VendurePluginDeclaration } from '../../../utilities/vendure-plugin-declaration';
 
 import { addUiExtensionStaticProp } from './codemods/add-ui-extension-static-prop/add-ui-extension-static-prop';
 import { updateAdminUiPluginInit } from './codemods/update-admin-ui-plugin-init/update-admin-ui-plugin-init';
 
-export async function addUiExtensions(providedPluginClass?: ClassDeclaration) {
-    let pluginClass = providedPluginClass;
-    let project = pluginClass?.getProject();
-    if (!pluginClass || !project) {
-        const projectSpinner = spinner();
-        projectSpinner.start('Analyzing project...');
-        await new Promise(resolve => setTimeout(resolve, 100));
-        project = getTsMorphProject();
-        projectSpinner.stop('Project analyzed');
-        pluginClass = await selectPluginClass(project, 'Add UI extensions cancelled');
-    }
+export async function addUiExtensions(providedVendurePlugin?: VendurePluginDeclaration) {
+    const project = await analyzeProject({ providedVendurePlugin });
+    const vendurePlugin =
+        providedVendurePlugin ?? (await selectPlugin(project, 'Add UI extensions cancelled'));
     const packageJson = new PackageJson(project);
 
-    if (pluginAlreadyHasUiExtensionProp(pluginClass)) {
+    if (vendurePlugin.hasUiExtensions()) {
         outro('This plugin already has UI extensions configured');
         return;
     }
-    addUiExtensionStaticProp(pluginClass);
+    addUiExtensionStaticProp(vendurePlugin);
 
     log.success('Updated the plugin class');
     const installSpinner = spinner();
@@ -50,7 +44,7 @@ export async function addUiExtensions(providedPluginClass?: ClassDeclaration) {
     }
     installSpinner.stop('Dependencies installed');
 
-    const pluginDir = pluginClass.getSourceFile().getDirectory().getPath();
+    const pluginDir = vendurePlugin.getPluginDir().getPath();
     const providersFile = createFile(project, path.join(__dirname, 'templates/providers.template.ts'));
     providersFile.move(path.join(pluginDir, 'ui', 'providers.ts'));
     const routesFile = createFile(project, path.join(__dirname, 'templates/routes.template.ts'));
@@ -64,10 +58,10 @@ export async function addUiExtensions(providedPluginClass?: ClassDeclaration) {
             `Could not find the VendureConfig declaration in your project. You will need to manually set up the compileUiExtensions function.`,
         );
     } else {
-        const pluginClassName = pluginClass.getName() as string;
+        const pluginClassName = vendurePlugin.name;
         const pluginPath = getRelativeImportPath({
             to: vendureConfig.getSourceFile(),
-            from: pluginClass.getSourceFile(),
+            from: vendurePlugin.classDeclaration.getSourceFile(),
         });
         const updated = updateAdminUiPluginInit(vendureConfig, { pluginClassName, pluginPath });
         if (updated) {
@@ -83,17 +77,7 @@ export async function addUiExtensions(providedPluginClass?: ClassDeclaration) {
     }
 
     project.saveSync();
-    if (!providedPluginClass) {
+    if (!providedVendurePlugin) {
         outro('✅  Done!');
-    }
-}
-
-function pluginAlreadyHasUiExtensionProp(pluginClass: ClassDeclaration) {
-    const uiProperty = pluginClass.getProperty('ui');
-    if (!uiProperty) {
-        return false;
-    }
-    if (uiProperty.isStatic()) {
-        return true;
     }
 }

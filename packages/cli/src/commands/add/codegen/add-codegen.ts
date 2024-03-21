@@ -2,21 +2,19 @@ import { log, note, outro, spinner } from '@clack/prompts';
 import path from 'path';
 import { ClassDeclaration, StructureKind, SyntaxKind } from 'ts-morph';
 
-import { selectMultiplePluginClasses } from '../../../shared/shared-prompts';
+import { analyzeProject, selectMultiplePluginClasses } from '../../../shared/shared-prompts';
 import { createFile, getRelativeImportPath, getTsMorphProject } from '../../../utilities/ast-utils';
 import { PackageJson } from '../../../utilities/package-utils';
+import { VendurePluginDeclaration } from '../../../utilities/vendure-plugin-declaration';
 
-export async function addCodegen(providedPluginClass?: ClassDeclaration) {
-    let pluginClasses = providedPluginClass ? [providedPluginClass] : [];
-    let project = providedPluginClass?.getProject();
-    if (!pluginClasses.length || !project) {
-        const projectSpinner = spinner();
-        projectSpinner.start('Analyzing project...');
-        await new Promise(resolve => setTimeout(resolve, 100));
-        project = getTsMorphProject();
-        projectSpinner.stop('Project analyzed');
-        pluginClasses = await selectMultiplePluginClasses(project, 'Add codegen cancelled');
-    }
+export async function addCodegen(providedVendurePlugin?: VendurePluginDeclaration) {
+    const project = await analyzeProject({
+        providedVendurePlugin,
+        cancelledMessage: 'Add codegen cancelled',
+    });
+    const plugins = providedVendurePlugin
+        ? [providedVendurePlugin]
+        : await selectMultiplePluginClasses(project, 'Add codegen cancelled');
 
     const packageJson = new PackageJson(project);
     const installSpinner = spinner();
@@ -59,9 +57,9 @@ export async function addCodegen(providedPluginClass?: ClassDeclaration) {
     if (!rootDir) {
         throw new Error('Could not find the root directory of the project');
     }
-    for (const pluginClass of pluginClasses) {
+    for (const plugin of plugins) {
         const relativePluginPath = getRelativeImportPath({
-            from: pluginClass.getSourceFile(),
+            from: plugin.classDeclaration.getSourceFile(),
             to: rootDir,
         });
         const generatedTypesPath = `${path.dirname(relativePluginPath)}/gql/generated.ts`;
@@ -88,7 +86,7 @@ export async function addCodegen(providedPluginClass?: ClassDeclaration) {
     ];
     note(nextSteps.join('\n'));
 
-    if (!providedPluginClass) {
+    if (!providedVendurePlugin) {
         outro('✅ Codegen setup complete!');
     }
 }

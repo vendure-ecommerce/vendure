@@ -1,8 +1,9 @@
-import { cancel, isCancel, multiselect, select, text } from '@clack/prompts';
+import { cancel, isCancel, multiselect, select, spinner, text } from '@clack/prompts';
 import { pascalCase } from 'change-case';
 import { ClassDeclaration, Project } from 'ts-morph';
 
-import { getPluginClasses } from '../utilities/ast-utils';
+import { getPluginClasses, getTsMorphProject } from '../utilities/ast-utils';
+import { VendurePluginDeclaration } from '../utilities/vendure-plugin-declaration';
 
 export async function getCustomEntityName(cancelledMessage: string) {
     const entityName = await text({
@@ -25,7 +26,26 @@ export async function getCustomEntityName(cancelledMessage: string) {
     return pascalCase(entityName);
 }
 
-export async function selectPluginClass(project: Project, cancelledMessage: string) {
+export async function analyzeProject(options: {
+    providedVendurePlugin?: VendurePluginDeclaration;
+    cancelledMessage?: string;
+}) {
+    const providedVendurePlugin = options.providedVendurePlugin;
+    let project = providedVendurePlugin?.classDeclaration.getProject();
+    if (!providedVendurePlugin) {
+        const projectSpinner = spinner();
+        projectSpinner.start('Analyzing project...');
+        await new Promise(resolve => setTimeout(resolve, 100));
+        project = getTsMorphProject();
+        projectSpinner.stop('Project analyzed');
+    }
+    return project as Project;
+}
+
+export async function selectPlugin(
+    project: Project,
+    cancelledMessage: string,
+): Promise<VendurePluginDeclaration> {
     const pluginClasses = getPluginClasses(project);
     const targetPlugin = await select({
         message: 'To which plugin would you like to add the feature?',
@@ -39,10 +59,13 @@ export async function selectPluginClass(project: Project, cancelledMessage: stri
         cancel(cancelledMessage);
         process.exit(0);
     }
-    return targetPlugin as ClassDeclaration;
+    return new VendurePluginDeclaration(targetPlugin as ClassDeclaration);
 }
 
-export async function selectMultiplePluginClasses(project: Project, cancelledMessage: string) {
+export async function selectMultiplePluginClasses(
+    project: Project,
+    cancelledMessage: string,
+): Promise<VendurePluginDeclaration[]> {
     const pluginClasses = getPluginClasses(project);
     const selectAll = await select({
         message: 'To which plugin would you like to add the feature?',
@@ -62,7 +85,7 @@ export async function selectMultiplePluginClasses(project: Project, cancelledMes
         process.exit(0);
     }
     if (selectAll === 'all') {
-        return pluginClasses;
+        return pluginClasses.map(pc => new VendurePluginDeclaration(pc));
     }
     const targetPlugins = await multiselect({
         message: 'Select one or more plugins (use ↑, ↓, space to select)',
@@ -75,5 +98,5 @@ export async function selectMultiplePluginClasses(project: Project, cancelledMes
         cancel(cancelledMessage);
         process.exit(0);
     }
-    return targetPlugins as ClassDeclaration[];
+    return (targetPlugins as ClassDeclaration[]).map(pc => new VendurePluginDeclaration(pc));
 }

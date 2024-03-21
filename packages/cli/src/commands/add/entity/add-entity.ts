@@ -1,10 +1,10 @@
-import { outro, spinner, text } from '@clack/prompts';
+import { outro } from '@clack/prompts';
 import { paramCase } from 'change-case';
 import path from 'path';
-import { ClassDeclaration } from 'ts-morph';
 
-import { getCustomEntityName, selectPluginClass } from '../../../shared/shared-prompts';
-import { createFile, getTsMorphProject } from '../../../utilities/ast-utils';
+import { analyzeProject, getCustomEntityName, selectPlugin } from '../../../shared/shared-prompts';
+import { createFile } from '../../../utilities/ast-utils';
+import { VendurePluginDeclaration } from '../../../utilities/vendure-plugin-declaration';
 
 import { addEntityToPlugin } from './codemods/add-entity-to-plugin/add-entity-to-plugin';
 
@@ -17,17 +17,10 @@ export interface AddEntityTemplateContext {
     };
 }
 
-export async function addEntity(providedPluginClass?: ClassDeclaration) {
-    let pluginClass = providedPluginClass;
-    let project = pluginClass?.getProject();
-    if (!pluginClass || !project) {
-        const projectSpinner = spinner();
-        projectSpinner.start('Analyzing project...');
-        await new Promise(resolve => setTimeout(resolve, 100));
-        project = getTsMorphProject();
-        projectSpinner.stop('Project analyzed');
-        pluginClass = await selectPluginClass(project, cancelledMessage);
-    }
+export async function addEntity(providedVendurePlugin?: VendurePluginDeclaration) {
+    const project = await analyzeProject({ providedVendurePlugin, cancelledMessage });
+    const vendurePlugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
+
     const customEntityName = await getCustomEntityName(cancelledMessage);
     const context: AddEntityTemplateContext = {
         entity: {
@@ -36,17 +29,17 @@ export async function addEntity(providedPluginClass?: ClassDeclaration) {
         },
     };
 
-    const entitiesDir = path.join(pluginClass.getSourceFile().getDirectory().getPath(), 'entities');
+    const entitiesDir = path.join(vendurePlugin.getPluginDir().getPath(), 'entities');
     const entityFile = createFile(project, path.join(__dirname, 'templates/entity.template.ts'));
     entityFile.move(path.join(entitiesDir, `${context.entity.fileName}.ts`));
     entityFile.getClasses()[0].rename(`${context.entity.className}CustomFields`);
     entityFile.getClasses()[1].rename(context.entity.className);
 
-    addEntityToPlugin(pluginClass, entityFile);
+    addEntityToPlugin(vendurePlugin.classDeclaration, entityFile);
 
     project.saveSync();
 
-    if (!providedPluginClass) {
+    if (!providedVendurePlugin) {
         outro('✅  Done!');
     }
 }
