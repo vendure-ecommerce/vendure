@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import path from 'path';
 import { Project } from 'ts-morph';
 import { describe, expect, it } from 'vitest';
@@ -5,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { defaultManipulationSettings } from '../../../../../constants';
 import { createFile, getPluginClasses } from '../../../../../utilities/ast-utils';
 import { expectSourceFileContentToMatch } from '../../../../../utilities/testing-utils';
+import { VendurePluginRef } from '../../../../../utilities/vendure-plugin-ref';
 
 import { addEntityToPlugin } from './add-entity-to-plugin';
 
@@ -19,7 +21,8 @@ describe('addEntityToPlugin', () => {
         const entityTemplatePath = path.join(__dirname, '../../templates/entity.template.ts');
         const entityFile = createFile(project, entityTemplatePath);
         entityFile.move(path.join(__dirname, 'fixtures', 'entity.ts'));
-        addEntityToPlugin(pluginClasses[0], entityFile);
+        const entityClass = entityFile.getClass('ScaffoldEntity');
+        addEntityToPlugin(new VendurePluginRef(pluginClasses[0]), entityClass!);
 
         expectSourceFileContentToMatch(
             pluginClasses[0].getSourceFile(),

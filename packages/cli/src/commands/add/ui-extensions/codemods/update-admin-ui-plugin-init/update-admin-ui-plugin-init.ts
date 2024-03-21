@@ -35,7 +35,7 @@ export function updateAdminUiPluginInit(
                 .formatText();
         } else {
             const computeFnCall = appProperty.getFirstChildByKind(SyntaxKind.CallExpression);
-            if (computeFnCall?.getType().getSymbol()?.getName() === AdminUiAppConfigName) {
+            if (computeFnCall?.getType().getText().includes(AdminUiAppConfigName)) {
                 const arg = computeFnCall.getArguments()[0];
                 if (arg && Node.isObjectLiteralExpression(arg)) {
                     const extensionsProp = arg.getProperty('extensions');
