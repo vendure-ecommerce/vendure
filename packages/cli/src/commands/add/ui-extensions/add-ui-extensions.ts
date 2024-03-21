@@ -1,21 +1,16 @@
 import { log, note, outro, spinner } from '@clack/prompts';
 import path from 'path';
-import { ClassDeclaration } from 'ts-morph';
 
 import { analyzeProject, selectPlugin } from '../../../shared/shared-prompts';
-import {
-    createFile,
-    getRelativeImportPath,
-    getTsMorphProject,
-    getVendureConfig,
-} from '../../../utilities/ast-utils';
+import { createFile, getRelativeImportPath } from '../../../utilities/ast-utils';
 import { PackageJson } from '../../../utilities/package-utils';
-import { VendurePluginDeclaration } from '../../../utilities/vendure-plugin-declaration';
+import { VendureConfigRef } from '../../../utilities/vendure-config-ref';
+import { VendurePluginRef } from '../../../utilities/vendure-plugin-ref';
 
 import { addUiExtensionStaticProp } from './codemods/add-ui-extension-static-prop/add-ui-extension-static-prop';
 import { updateAdminUiPluginInit } from './codemods/update-admin-ui-plugin-init/update-admin-ui-plugin-init';
 
-export async function addUiExtensions(providedVendurePlugin?: VendurePluginDeclaration) {
+export async function addUiExtensions(providedVendurePlugin?: VendurePluginRef) {
     const project = await analyzeProject({ providedVendurePlugin });
     const vendurePlugin =
         providedVendurePlugin ?? (await selectPlugin(project, 'Add UI extensions cancelled'));
@@ -52,7 +47,7 @@ export async function addUiExtensions(providedVendurePlugin?: VendurePluginDecla
 
     log.success('Created UI extension scaffold');
 
-    const vendureConfig = getVendureConfig(project);
+    const vendureConfig = new VendureConfigRef(project);
     if (!vendureConfig) {
         log.warning(
             `Could not find the VendureConfig declaration in your project. You will need to manually set up the compileUiExtensions function.`,
@@ -60,7 +55,7 @@ export async function addUiExtensions(providedVendurePlugin?: VendurePluginDecla
     } else {
         const pluginClassName = vendurePlugin.name;
         const pluginPath = getRelativeImportPath({
-            to: vendureConfig.getSourceFile(),
+            to: vendureConfig.sourceFile,
             from: vendurePlugin.classDeclaration.getSourceFile(),
         });
         const updated = updateAdminUiPluginInit(vendureConfig, { pluginClassName, pluginPath });
@@ -76,7 +71,7 @@ export async function addUiExtensions(providedVendurePlugin?: VendurePluginDecla
         }
     }
 
-    project.saveSync();
+    await project.save();
     if (!providedVendurePlugin) {
         outro('✅  Done!');
     }

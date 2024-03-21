@@ -41,6 +41,9 @@ export function registerAddCommand(program: Command) {
                 }
             } catch (e: any) {
                 log.error(e.message as string);
+                if (e.stack) {
+                    log.error(e.stack);
+                }
             }
             process.exit(0);
         });

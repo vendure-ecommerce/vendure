@@ -5,9 +5,9 @@ import { ClassDeclaration, StructureKind, SyntaxKind } from 'ts-morph';
 import { analyzeProject, selectMultiplePluginClasses } from '../../../shared/shared-prompts';
 import { createFile, getRelativeImportPath, getTsMorphProject } from '../../../utilities/ast-utils';
 import { PackageJson } from '../../../utilities/package-utils';
-import { VendurePluginDeclaration } from '../../../utilities/vendure-plugin-declaration';
+import { VendurePluginRef } from '../../../utilities/vendure-plugin-ref';
 
-export async function addCodegen(providedVendurePlugin?: VendurePluginDeclaration) {
+export async function addCodegen(providedVendurePlugin?: VendurePluginRef) {
     const project = await analyzeProject({
         providedVendurePlugin,
         cancelledMessage: 'Add codegen cancelled',
@@ -19,17 +19,24 @@ export async function addCodegen(providedVendurePlugin?: VendurePluginDeclaratio
     const packageJson = new PackageJson(project);
     const installSpinner = spinner();
     installSpinner.start(`Installing dependencies...`);
+    const packagesToInstall = [
+        {
+            pkg: '@graphql-codegen/cli',
+            isDevDependency: true,
+        },
+        {
+            pkg: '@graphql-codegen/typescript',
+            isDevDependency: true,
+        },
+    ];
+    if (plugins.some(p => p.hasUiExtensions())) {
+        packagesToInstall.push({
+            pkg: '@graphql-codegen/client-preset',
+            isDevDependency: true,
+        });
+    }
     try {
-        await packageJson.installPackages([
-            {
-                pkg: '@graphql-codegen/cli',
-                isDevDependency: true,
-            },
-            {
-                pkg: '@graphql-codegen/typescript',
-                isDevDependency: true,
-            },
-        ]);
+        await packageJson.installPackages(packagesToInstall);
     } catch (e: any) {
         log.error(`Failed to install dependencies: ${e.message as string}.`);
     }
@@ -70,6 +77,23 @@ export async function addCodegen(providedVendurePlugin?: VendurePluginDeclaratio
                 initializer: `{ plugins: ['typescript'] }`,
             })
             .formatText();
+
+        if (plugin.hasUiExtensions()) {
+            const uiExtensionsPath = `${path.dirname(relativePluginPath)}/ui`;
+            generatesProp
+                .addProperty({
+                    name: `'${uiExtensionsPath}/gql/'`,
+                    kind: StructureKind.PropertyAssignment,
+                    initializer: `{ 
+                        preset: 'client',
+                        documents: '${uiExtensionsPath}/**/*.ts', 
+                        presetConfig: {
+                            fragmentMasking: false,
+                        },
+                     }`,
+                })
+                .formatText();
+        }
     }
     codegenFile.move(path.join(rootDir.getPath(), 'codegen.ts'));
 
@@ -77,7 +101,7 @@ export async function addCodegen(providedVendurePlugin?: VendurePluginDeclaratio
 
     configSpinner.stop('Configured codegen file');
 
-    project.saveSync();
+    await project.save();
 
     const nextSteps = [
         `You can run codegen by doing the following:`,

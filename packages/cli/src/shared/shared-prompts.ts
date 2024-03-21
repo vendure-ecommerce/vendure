@@ -2,8 +2,9 @@ import { cancel, isCancel, multiselect, select, spinner, text } from '@clack/pro
 import { pascalCase } from 'change-case';
 import { ClassDeclaration, Project } from 'ts-morph';
 
+import { Messages } from '../constants';
 import { getPluginClasses, getTsMorphProject } from '../utilities/ast-utils';
-import { VendurePluginDeclaration } from '../utilities/vendure-plugin-declaration';
+import { VendurePluginRef } from '../utilities/vendure-plugin-ref';
 
 export async function getCustomEntityName(cancelledMessage: string) {
     const entityName = await text({
@@ -27,7 +28,7 @@ export async function getCustomEntityName(cancelledMessage: string) {
 }
 
 export async function analyzeProject(options: {
-    providedVendurePlugin?: VendurePluginDeclaration;
+    providedVendurePlugin?: VendurePluginRef;
     cancelledMessage?: string;
 }) {
     const providedVendurePlugin = options.providedVendurePlugin;
@@ -42,11 +43,12 @@ export async function analyzeProject(options: {
     return project as Project;
 }
 
-export async function selectPlugin(
-    project: Project,
-    cancelledMessage: string,
-): Promise<VendurePluginDeclaration> {
+export async function selectPlugin(project: Project, cancelledMessage: string): Promise<VendurePluginRef> {
     const pluginClasses = getPluginClasses(project);
+    if (pluginClasses.length === 0) {
+        cancel(Messages.NoPluginsFound);
+        process.exit(0);
+    }
     const targetPlugin = await select({
         message: 'To which plugin would you like to add the feature?',
         options: pluginClasses.map(c => ({
@@ -59,14 +61,18 @@ export async function selectPlugin(
         cancel(cancelledMessage);
         process.exit(0);
     }
-    return new VendurePluginDeclaration(targetPlugin as ClassDeclaration);
+    return new VendurePluginRef(targetPlugin as ClassDeclaration);
 }
 
 export async function selectMultiplePluginClasses(
     project: Project,
     cancelledMessage: string,
-): Promise<VendurePluginDeclaration[]> {
+): Promise<VendurePluginRef[]> {
     const pluginClasses = getPluginClasses(project);
+    if (pluginClasses.length === 0) {
+        cancel(Messages.NoPluginsFound);
+        process.exit(0);
+    }
     const selectAll = await select({
         message: 'To which plugin would you like to add the feature?',
         options: [
@@ -85,7 +91,7 @@ export async function selectMultiplePluginClasses(
         process.exit(0);
     }
     if (selectAll === 'all') {
-        return pluginClasses.map(pc => new VendurePluginDeclaration(pc));
+        return pluginClasses.map(pc => new VendurePluginRef(pc));
     }
     const targetPlugins = await multiselect({
         message: 'Select one or more plugins (use ↑, ↓, space to select)',
@@ -98,5 +104,5 @@ export async function selectMultiplePluginClasses(
         cancel(cancelledMessage);
         process.exit(0);
     }
-    return (targetPlugins as ClassDeclaration[]).map(pc => new VendurePluginDeclaration(pc));
+    return (targetPlugins as ClassDeclaration[]).map(pc => new VendurePluginRef(pc));
 }

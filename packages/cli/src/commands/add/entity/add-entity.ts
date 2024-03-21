@@ -4,7 +4,7 @@ import path from 'path';
 
 import { analyzeProject, getCustomEntityName, selectPlugin } from '../../../shared/shared-prompts';
 import { createFile } from '../../../utilities/ast-utils';
-import { VendurePluginDeclaration } from '../../../utilities/vendure-plugin-declaration';
+import { VendurePluginRef } from '../../../utilities/vendure-plugin-ref';
 
 import { addEntityToPlugin } from './codemods/add-entity-to-plugin/add-entity-to-plugin';
 
@@ -17,7 +17,7 @@ export interface AddEntityTemplateContext {
     };
 }
 
-export async function addEntity(providedVendurePlugin?: VendurePluginDeclaration) {
+export async function addEntity(providedVendurePlugin?: VendurePluginRef) {
     const project = await analyzeProject({ providedVendurePlugin, cancelledMessage });
     const vendurePlugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
 
@@ -37,7 +37,7 @@ export async function addEntity(providedVendurePlugin?: VendurePluginDeclaration
 
     addEntityToPlugin(vendurePlugin.classDeclaration, entityFile);
 
-    project.saveSync();
+    await project.save();
 
     if (!providedVendurePlugin) {
         outro('✅  Done!');

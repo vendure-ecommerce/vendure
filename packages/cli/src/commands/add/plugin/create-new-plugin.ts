@@ -3,8 +3,10 @@ import { constantCase, paramCase, pascalCase } from 'change-case';
 import * as fs from 'fs-extra';
 import path from 'path';
 
-import { createFile, getTsMorphProject } from '../../../utilities/ast-utils';
-import { VendurePluginDeclaration } from '../../../utilities/vendure-plugin-declaration';
+import { addImportsToFile, createFile, getTsMorphProject } from '../../../utilities/ast-utils';
+import { VendureConfigRef } from '../../../utilities/vendure-config-ref';
+import { VendurePluginRef } from '../../../utilities/vendure-plugin-ref';
+import { addCodegen } from '../codegen/add-codegen';
 import { addEntity } from '../entity/add-entity';
 import { addUiExtensions } from '../ui-extensions/add-ui-extensions';
 
@@ -53,6 +55,18 @@ export async function createNewPlugin() {
     options.pluginDir = confirmation;
     const plugin = await generatePlugin(options);
 
+    const configSpinner = spinner();
+    configSpinner.start('Updating VendureConfig...');
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const vendureConfig = new VendureConfigRef(plugin.classDeclaration.getProject());
+    vendureConfig.addToPluginsArray(`${plugin.name}.init({})`);
+    addImportsToFile(vendureConfig.sourceFile, {
+        moduleSpecifier: plugin.getSourceFile(),
+        namedImports: [plugin.name],
+    });
+    await vendureConfig.sourceFile.getProject().save();
+    configSpinner.stop('Updated VendureConfig');
+
     let done = false;
     while (!done) {
         const featureType = await select({
@@ -61,6 +75,10 @@ export async function createNewPlugin() {
                 { value: 'no', label: "[Finish] No, I'm done!" },
                 { value: 'entity', label: '[Plugin: Entity] Add a new entity to the plugin' },
                 { value: 'uiExtensions', label: '[Plugin: UI] Set up Admin UI extensions' },
+                {
+                    value: 'codegen',
+                    label: '[Plugin: Codegen] Set up GraphQL code generation for this plugin',
+                },
             ],
         });
         if (isCancel(featureType)) {
@@ -72,13 +90,15 @@ export async function createNewPlugin() {
             await addEntity(plugin);
         } else if (featureType === 'uiExtensions') {
             await addUiExtensions(plugin);
+        } else if (featureType === 'codegen') {
+            await addCodegen(plugin);
         }
     }
 
     outro('✅ Plugin setup complete!');
 }
 
-export async function generatePlugin(options: GeneratePluginOptions): Promise<VendurePluginDeclaration> {
+export async function generatePlugin(options: GeneratePluginOptions): Promise<VendurePluginRef> {
     const nameWithoutPlugin = options.name.replace(/-?plugin$/i, '');
     const normalizedName = nameWithoutPlugin + '-plugin';
     const templateContext: NewPluginTemplateContext = {
@@ -115,8 +135,8 @@ export async function generatePlugin(options: GeneratePluginOptions): Promise<Ve
     constantsFile.move(path.join(options.pluginDir, 'constants.ts'));
 
     projectSpinner.stop('Generated plugin scaffold');
-    project.saveSync();
-    return new VendurePluginDeclaration(pluginClass);
+    await project.save();
+    return new VendurePluginRef(pluginClass);
 }
 
 function getPluginDirName(name: string) {

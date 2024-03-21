@@ -1,15 +1,7 @@
 import { log } from '@clack/prompts';
 import fs from 'fs-extra';
 import path from 'node:path';
-import {
-    Directory,
-    Node,
-    ObjectLiteralExpression,
-    Project,
-    ProjectOptions,
-    SourceFile,
-    VariableDeclaration,
-} from 'ts-morph';
+import { Directory, Node, Project, ProjectOptions, SourceFile } from 'ts-morph';
 
 import { defaultManipulationSettings } from '../constants';
 
@@ -42,49 +34,6 @@ export function getPluginClasses(project: Project) {
             return !!hasPluginDecorator;
         });
     return pluginClasses;
-}
-
-export function getVendureConfig(project: Project, options: { checkFileName?: boolean } = {}) {
-    const checkFileName = options.checkFileName ?? true;
-
-    function isVendureConfigVariableDeclaration(v: VariableDeclaration) {
-        return v.getType().getText(v) === 'VendureConfig';
-    }
-
-    function getVendureConfigSourceFile(sourceFiles: SourceFile[]) {
-        return sourceFiles.find(sf => {
-            return (
-                (checkFileName ? sf.getFilePath().endsWith('vendure-config.ts') : true) &&
-                sf.getVariableDeclarations().find(isVendureConfigVariableDeclaration)
-            );
-        });
-    }
-
-    function findAndAddVendureConfigToProject() {
-        // If the project does not contain a vendure-config.ts file, we'll look for a vendure-config.ts file
-        // in the src directory.
-        const srcDir = project.getDirectory('src');
-        if (srcDir) {
-            const srcDirPath = srcDir.getPath();
-            const srcFiles = fs.readdirSync(srcDirPath);
-
-            const filePath = srcFiles.find(file => file.includes('vendure-config.ts'));
-            if (filePath) {
-                project.addSourceFileAtPath(path.join(srcDirPath, filePath));
-            }
-        }
-    }
-
-    let vendureConfigFile = getVendureConfigSourceFile(project.getSourceFiles());
-    if (!vendureConfigFile) {
-        findAndAddVendureConfigToProject();
-        vendureConfigFile = getVendureConfigSourceFile(project.getSourceFiles());
-    }
-    return vendureConfigFile
-        ?.getVariableDeclarations()
-        .find(isVendureConfigVariableDeclaration)
-        ?.getChildren()
-        .find(Node.isObjectLiteralExpression) as ObjectLiteralExpression;
 }
 
 export function addImportsToFile(
@@ -132,7 +81,7 @@ function getModuleSpecifierString(moduleSpecifier: string | SourceFile, sourceFi
     if (typeof moduleSpecifier === 'string') {
         return moduleSpecifier;
     }
-    return getRelativeImportPath({ from: moduleSpecifier, to: sourceFile });
+    return getRelativeImportPath({ from: sourceFile, to: moduleSpecifier });
 }
 
 export function getRelativeImportPath(locations: {
@@ -142,7 +91,7 @@ export function getRelativeImportPath(locations: {
     const fromPath =
         locations.from instanceof SourceFile ? locations.from.getFilePath() : locations.from.getPath();
     const toPath = locations.to instanceof SourceFile ? locations.to.getFilePath() : locations.to.getPath();
-    return convertPathToRelativeImport(path.relative(toPath, fromPath));
+    return convertPathToRelativeImport(path.relative(path.dirname(fromPath), toPath));
 }
 
 export function createFile(project: Project, templatePath: string) {
