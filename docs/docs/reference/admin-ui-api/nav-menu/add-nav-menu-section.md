@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## addNavMenuSection
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/add-nav-menu-item.ts" sourceLine="28" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/add-nav-menu-item.ts" sourceLine="30" packageName="@vendure/admin-ui" />
 
 Add a section to the main nav menu. Providing the `before` argument will
 move the section before any existing section with the specified id. If
@@ -22,6 +22,8 @@ This should be used in the NgModule `providers` array of your ui extension modul
 *Example*
 
 ```ts title="providers.ts"
+import { addNavMenuSection } from '@vendure/admin-ui/core';
+
 export default [
     addNavMenuSection({
         id: 'reports',

@@ -1,4 +1,4 @@
-mutation SetShippingMethod($id: ID!) {
+mutation SetShippingMethod($id: [ID!]!) {
     setOrderShippingMethod(shippingMethodId: $id) {
         ...on Order {
             code

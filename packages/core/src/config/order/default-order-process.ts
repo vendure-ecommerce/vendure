@@ -413,10 +413,13 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
                     order.active = false;
                     order.orderPlacedAt = new Date();
                     await Promise.all(
-                        order.lines.map(line =>
+                        order.lines.map(line => {
+                            line.orderPlacedQuantity = line.quantity
                             connection
                                 .getRepository(ctx, OrderLine)
-                                .update(line.id, { orderPlacedQuantity: line.quantity }),
+                                .update(line.id, { orderPlacedQuantity: line.quantity })
+                            return line
+                        }
                         ),
                     );
                     eventBus.publish(new OrderPlacedEvent(fromState, toState, ctx, order));

@@ -18,6 +18,6 @@ export class DefaultProductVariantPriceSelectionStrategy implements ProductVaria
     selectPrice(ctx: RequestContext, prices: ProductVariantPrice[]) {
         const pricesInChannel = prices.filter(p => idsAreEqual(p.channelId, ctx.channelId));
         const priceInCurrency = pricesInChannel.find(p => p.currencyCode === ctx.currencyCode);
-        return priceInCurrency || pricesInChannel[0];
+        return priceInCurrency;
     }
 }

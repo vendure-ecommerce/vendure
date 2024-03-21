@@ -299,6 +299,12 @@ export type Coordinate = {
     y: Scalars['Float']['output'];
 };
 
+/**
+ * A Country of the world which your shop operates in.
+ *
+ * The `code` field is typically a 2-character ISO code such as "GB", "US", "DE" etc. This code is used in certain inputs such as
+ * `UpdateAddressInput` and `CreateAddressInput` to specify the country.
+ */
 export type Country = Node &
     Region & {
         code: Scalars['String']['output'];
@@ -342,6 +348,13 @@ export type CouponCodeLimitError = ErrorResult & {
     message: Scalars['String']['output'];
 };
 
+/**
+ * Input used to create an Address.
+ *
+ * The countryCode must correspond to a `code` property of a Country that has been defined in the
+ * Vendure server. The `code` property is typically a 2-character ISO code such as "GB", "US", "DE" etc.
+ * If an invalid code is passed, the mutation will fail.
+ */
 export type CreateAddressInput = {
     city?: InputMaybe<Scalars['String']['input']>;
     company?: InputMaybe<Scalars['String']['input']>;
@@ -2018,6 +2031,7 @@ export type OrderLine = Node & {
     proratedUnitPrice: Scalars['Money']['output'];
     /** The proratedUnitPrice including tax */
     proratedUnitPriceWithTax: Scalars['Money']['output'];
+    /** The quantity of items purchased */
     quantity: Scalars['Int']['output'];
     taxLines: Array<TaxLine>;
     taxRate: Scalars['Float']['output'];
@@ -3137,6 +3151,13 @@ export type TextCustomFieldConfig = CustomField & {
 
 export type TransitionOrderToStateResult = Order | OrderStateTransitionError;
 
+/**
+ * Input used to update an Address.
+ *
+ * The countryCode must correspond to a `code` property of a Country that has been defined in the
+ * Vendure server. The `code` property is typically a 2-character ISO code such as "GB", "US", "DE" etc.
+ * If an invalid code is passed, the mutation will fail.
+ */
 export type UpdateAddressInput = {
     city?: InputMaybe<Scalars['String']['input']>;
     company?: InputMaybe<Scalars['String']['input']>;
@@ -3243,6 +3264,7 @@ export type TestOrderFragmentFragment = {
     shippingWithTax: number;
     total: number;
     totalWithTax: number;
+    currencyCode: CurrencyCode;
     couponCodes: Array<string>;
     discounts: Array<{
         adjustmentSource: string;
@@ -3271,7 +3293,10 @@ export type TestOrderFragmentFragment = {
             type: AdjustmentType;
         }>;
     }>;
-    shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
+    shippingLines: Array<{
+        priceWithTax: number;
+        shippingMethod: { id: string; code: string; description: string };
+    }>;
     customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
     history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
 };
@@ -3283,9 +3308,12 @@ export type UpdatedOrderFragment = {
     active: boolean;
     total: number;
     totalWithTax: number;
+    currencyCode: CurrencyCode;
     lines: Array<{
         id: string;
         quantity: number;
+        unitPrice: number;
+        unitPriceWithTax: number;
         linePrice: number;
         linePriceWithTax: number;
         productVariant: { id: string };
@@ -3324,9 +3352,12 @@ export type AddItemToOrderMutation = {
                   active: boolean;
                   total: number;
                   totalWithTax: number;
+                  currencyCode: CurrencyCode;
                   lines: Array<{
                       id: string;
                       quantity: number;
+                      unitPrice: number;
+                      unitPriceWithTax: number;
                       linePrice: number;
                       linePriceWithTax: number;
                       productVariant: { id: string };
@@ -3355,9 +3386,12 @@ export type AddItemToOrderMutation = {
               active: boolean;
               total: number;
               totalWithTax: number;
+              currencyCode: CurrencyCode;
               lines: Array<{
                   id: string;
                   quantity: number;
+                  unitPrice: number;
+                  unitPriceWithTax: number;
                   linePrice: number;
                   linePriceWithTax: number;
                   productVariant: { id: string };
@@ -3557,6 +3591,7 @@ export type GetActiveOrderQuery = {
         shippingWithTax: number;
         total: number;
         totalWithTax: number;
+        currencyCode: CurrencyCode;
         couponCodes: Array<string>;
         discounts: Array<{
             adjustmentSource: string;
@@ -3585,7 +3620,10 @@ export type GetActiveOrderQuery = {
                 type: AdjustmentType;
             }>;
         }>;
-        shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
+        shippingLines: Array<{
+            priceWithTax: number;
+            shippingMethod: { id: string; code: string; description: string };
+        }>;
         customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
         history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
     } | null;
@@ -3634,6 +3672,7 @@ export type AdjustItemQuantityMutation = {
               shippingWithTax: number;
               total: number;
               totalWithTax: number;
+              currencyCode: CurrencyCode;
               couponCodes: Array<string>;
               discounts: Array<{
                   adjustmentSource: string;
@@ -3662,7 +3701,10 @@ export type AdjustItemQuantityMutation = {
                       type: AdjustmentType;
                   }>;
               }>;
-              shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
+              shippingLines: Array<{
+                  priceWithTax: number;
+                  shippingMethod: { id: string; code: string; description: string };
+              }>;
               customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
               history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
           }
@@ -3687,6 +3729,7 @@ export type RemoveItemFromOrderMutation = {
               shippingWithTax: number;
               total: number;
               totalWithTax: number;
+              currencyCode: CurrencyCode;
               couponCodes: Array<string>;
               discounts: Array<{
                   adjustmentSource: string;
@@ -3715,7 +3758,10 @@ export type RemoveItemFromOrderMutation = {
                       type: AdjustmentType;
                   }>;
               }>;
-              shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
+              shippingLines: Array<{
+                  priceWithTax: number;
+                  shippingMethod: { id: string; code: string; description: string };
+              }>;
               customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
               history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
           }
@@ -3753,6 +3799,7 @@ export type SetShippingMethodMutation = {
               shippingWithTax: number;
               total: number;
               totalWithTax: number;
+              currencyCode: CurrencyCode;
               couponCodes: Array<string>;
               discounts: Array<{
                   adjustmentSource: string;
@@ -3781,7 +3828,10 @@ export type SetShippingMethodMutation = {
                       type: AdjustmentType;
                   }>;
               }>;
-              shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
+              shippingLines: Array<{
+                  priceWithTax: number;
+                  shippingMethod: { id: string; code: string; description: string };
+              }>;
               customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
               history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
           }
@@ -3827,6 +3877,7 @@ export type GetOrderByCodeQuery = {
         shippingWithTax: number;
         total: number;
         totalWithTax: number;
+        currencyCode: CurrencyCode;
         couponCodes: Array<string>;
         discounts: Array<{
             adjustmentSource: string;
@@ -3855,7 +3906,10 @@ export type GetOrderByCodeQuery = {
                 type: AdjustmentType;
             }>;
         }>;
-        shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
+        shippingLines: Array<{
+            priceWithTax: number;
+            shippingMethod: { id: string; code: string; description: string };
+        }>;
         customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
         history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
     } | null;
@@ -3877,6 +3931,7 @@ export type GetOrderShopQuery = {
         shippingWithTax: number;
         total: number;
         totalWithTax: number;
+        currencyCode: CurrencyCode;
         couponCodes: Array<string>;
         discounts: Array<{
             adjustmentSource: string;
@@ -3905,7 +3960,10 @@ export type GetOrderShopQuery = {
                 type: AdjustmentType;
             }>;
         }>;
-        shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
+        shippingLines: Array<{
+            priceWithTax: number;
+            shippingMethod: { id: string; code: string; description: string };
+        }>;
         customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
         history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
     } | null;
@@ -3927,6 +3985,7 @@ export type GetOrderPromotionsByCodeQuery = {
         shippingWithTax: number;
         total: number;
         totalWithTax: number;
+        currencyCode: CurrencyCode;
         couponCodes: Array<string>;
         promotions: Array<{ id: string; name: string }>;
         discounts: Array<{
@@ -3956,7 +4015,10 @@ export type GetOrderPromotionsByCodeQuery = {
                 type: AdjustmentType;
             }>;
         }>;
-        shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
+        shippingLines: Array<{
+            priceWithTax: number;
+            shippingMethod: { id: string; code: string; description: string };
+        }>;
         customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
         history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
     } | null;
@@ -3983,6 +4045,7 @@ export type TransitionToStateMutation = {
               shippingWithTax: number;
               total: number;
               totalWithTax: number;
+              currencyCode: CurrencyCode;
               couponCodes: Array<string>;
               discounts: Array<{
                   adjustmentSource: string;
@@ -4011,7 +4074,10 @@ export type TransitionToStateMutation = {
                       type: AdjustmentType;
                   }>;
               }>;
-              shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
+              shippingLines: Array<{
+                  priceWithTax: number;
+                  shippingMethod: { id: string; code: string; description: string };
+              }>;
               customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
               history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
           }
@@ -4080,6 +4146,7 @@ export type TestOrderWithPaymentsFragment = {
     shippingWithTax: number;
     total: number;
     totalWithTax: number;
+    currencyCode: CurrencyCode;
     couponCodes: Array<string>;
     payments?: Array<{
         id: string;
@@ -4116,7 +4183,10 @@ export type TestOrderWithPaymentsFragment = {
             type: AdjustmentType;
         }>;
     }>;
-    shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
+    shippingLines: Array<{
+        priceWithTax: number;
+        shippingMethod: { id: string; code: string; description: string };
+    }>;
     customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
     history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
 };
@@ -4135,6 +4205,7 @@ export type GetActiveOrderWithPaymentsQuery = {
         shippingWithTax: number;
         total: number;
         totalWithTax: number;
+        currencyCode: CurrencyCode;
         couponCodes: Array<string>;
         payments?: Array<{
             id: string;
@@ -4171,7 +4242,10 @@ export type GetActiveOrderWithPaymentsQuery = {
                 type: AdjustmentType;
             }>;
         }>;
-        shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
+        shippingLines: Array<{
+            priceWithTax: number;
+            shippingMethod: { id: string; code: string; description: string };
+        }>;
         customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
         history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
     } | null;
@@ -4196,6 +4270,7 @@ export type AddPaymentToOrderMutation = {
               shippingWithTax: number;
               total: number;
               totalWithTax: number;
+              currencyCode: CurrencyCode;
               couponCodes: Array<string>;
               payments?: Array<{
                   id: string;
@@ -4232,7 +4307,10 @@ export type AddPaymentToOrderMutation = {
                       type: AdjustmentType;
                   }>;
               }>;
-              shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
+              shippingLines: Array<{
+                  priceWithTax: number;
+                  shippingMethod: { id: string; code: string; description: string };
+              }>;
               customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
               history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
           }
@@ -4275,6 +4353,7 @@ export type GetOrderByCodeWithPaymentsQuery = {
         shippingWithTax: number;
         total: number;
         totalWithTax: number;
+        currencyCode: CurrencyCode;
         couponCodes: Array<string>;
         payments?: Array<{
             id: string;
@@ -4311,7 +4390,10 @@ export type GetOrderByCodeWithPaymentsQuery = {
                 type: AdjustmentType;
             }>;
         }>;
-        shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
+        shippingLines: Array<{
+            priceWithTax: number;
+            shippingMethod: { id: string; code: string; description: string };
+        }>;
         customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
         history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
     } | null;
@@ -4386,6 +4468,7 @@ export type ApplyCouponCodeMutation = {
               shippingWithTax: number;
               total: number;
               totalWithTax: number;
+              currencyCode: CurrencyCode;
               couponCodes: Array<string>;
               discounts: Array<{
                   adjustmentSource: string;
@@ -4414,7 +4497,10 @@ export type ApplyCouponCodeMutation = {
                       type: AdjustmentType;
                   }>;
               }>;
-              shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
+              shippingLines: Array<{
+                  priceWithTax: number;
+                  shippingMethod: { id: string; code: string; description: string };
+              }>;
               customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
               history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
           };
@@ -4436,6 +4522,7 @@ export type RemoveCouponCodeMutation = {
         shippingWithTax: number;
         total: number;
         totalWithTax: number;
+        currencyCode: CurrencyCode;
         couponCodes: Array<string>;
         discounts: Array<{
             adjustmentSource: string;
@@ -4464,7 +4551,10 @@ export type RemoveCouponCodeMutation = {
                 type: AdjustmentType;
             }>;
         }>;
-        shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
+        shippingLines: Array<{
+            priceWithTax: number;
+            shippingMethod: { id: string; code: string; description: string };
+        }>;
         customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
         history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
     } | null;
@@ -4485,6 +4575,7 @@ export type RemoveAllOrderLinesMutation = {
               shippingWithTax: number;
               total: number;
               totalWithTax: number;
+              currencyCode: CurrencyCode;
               couponCodes: Array<string>;
               discounts: Array<{
                   adjustmentSource: string;
@@ -4513,7 +4604,10 @@ export type RemoveAllOrderLinesMutation = {
                       type: AdjustmentType;
                   }>;
               }>;
-              shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
+              shippingLines: Array<{
+                  priceWithTax: number;
+                  shippingMethod: { id: string; code: string; description: string };
+              }>;
               customer?: { id: string; user?: { id: string; identifier: string } | null } | null;
               history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
           }
@@ -4582,6 +4676,7 @@ export const UpdatedOrderFragmentDoc = {
                     { kind: 'Field', name: { kind: 'Name', value: 'active' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'total' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
                     {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'lines' },
@@ -4598,6 +4693,8 @@ export const UpdatedOrderFragmentDoc = {
                                         selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
                                     },
                                 },
+                                { kind: 'Field', name: { kind: 'Name', value: 'unitPrice' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'unitPriceWithTax' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'linePrice' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'linePriceWithTax' } },
                                 {
@@ -4725,6 +4822,7 @@ export const TestOrderFragmentFragmentDoc = {
                     { kind: 'Field', name: { kind: 'Name', value: 'shippingWithTax' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'total' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'couponCodes' } },
                     {
                         kind: 'Field',
@@ -4796,6 +4894,7 @@ export const TestOrderFragmentFragmentDoc = {
                         selectionSet: {
                             kind: 'SelectionSet',
                             selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'priceWithTax' } },
                                 {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'shippingMethod' },
@@ -4904,6 +5003,7 @@ export const TestOrderWithPaymentsFragmentDoc = {
                     { kind: 'Field', name: { kind: 'Name', value: 'shippingWithTax' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'total' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'couponCodes' } },
                     {
                         kind: 'Field',
@@ -4975,6 +5075,7 @@ export const TestOrderWithPaymentsFragmentDoc = {
                         selectionSet: {
                             kind: 'SelectionSet',
                             selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'priceWithTax' } },
                                 {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'shippingMethod' },
@@ -5149,6 +5250,7 @@ export const AddItemToOrderDocument = {
                     { kind: 'Field', name: { kind: 'Name', value: 'active' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'total' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
                     {
                         kind: 'Field',
                         name: { kind: 'Name', value: 'lines' },
@@ -5165,6 +5267,8 @@ export const AddItemToOrderDocument = {
                                         selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
                                     },
                                 },
+                                { kind: 'Field', name: { kind: 'Name', value: 'unitPrice' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'unitPriceWithTax' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'linePrice' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'linePriceWithTax' } },
                                 {
@@ -6240,6 +6344,7 @@ export const GetActiveOrderDocument = {
                     { kind: 'Field', name: { kind: 'Name', value: 'shippingWithTax' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'total' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'couponCodes' } },
                     {
                         kind: 'Field',
@@ -6311,6 +6416,7 @@ export const GetActiveOrderDocument = {
                         selectionSet: {
                             kind: 'SelectionSet',
                             selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'priceWithTax' } },
                                 {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'shippingMethod' },
@@ -6542,6 +6648,7 @@ export const AdjustItemQuantityDocument = {
                     { kind: 'Field', name: { kind: 'Name', value: 'shippingWithTax' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'total' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'couponCodes' } },
                     {
                         kind: 'Field',
@@ -6613,6 +6720,7 @@ export const AdjustItemQuantityDocument = {
                         selectionSet: {
                             kind: 'SelectionSet',
                             selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'priceWithTax' } },
                                 {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'shippingMethod' },
@@ -6749,6 +6857,7 @@ export const RemoveItemFromOrderDocument = {
                     { kind: 'Field', name: { kind: 'Name', value: 'shippingWithTax' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'total' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'couponCodes' } },
                     {
                         kind: 'Field',
@@ -6820,6 +6929,7 @@ export const RemoveItemFromOrderDocument = {
                         selectionSet: {
                             kind: 'SelectionSet',
                             selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'priceWithTax' } },
                                 {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'shippingMethod' },
@@ -6991,6 +7101,7 @@ export const SetShippingMethodDocument = {
                     { kind: 'Field', name: { kind: 'Name', value: 'shippingWithTax' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'total' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'couponCodes' } },
                     {
                         kind: 'Field',
@@ -7062,6 +7173,7 @@ export const SetShippingMethodDocument = {
                         selectionSet: {
                             kind: 'SelectionSet',
                             selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'priceWithTax' } },
                                 {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'shippingMethod' },
@@ -7288,6 +7400,7 @@ export const GetOrderByCodeDocument = {
                     { kind: 'Field', name: { kind: 'Name', value: 'shippingWithTax' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'total' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'couponCodes' } },
                     {
                         kind: 'Field',
@@ -7359,6 +7472,7 @@ export const GetOrderByCodeDocument = {
                         selectionSet: {
                             kind: 'SelectionSet',
                             selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'priceWithTax' } },
                                 {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'shippingMethod' },
@@ -7481,6 +7595,7 @@ export const GetOrderShopDocument = {
                     { kind: 'Field', name: { kind: 'Name', value: 'shippingWithTax' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'total' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'couponCodes' } },
                     {
                         kind: 'Field',
@@ -7552,6 +7667,7 @@ export const GetOrderShopDocument = {
                         selectionSet: {
                             kind: 'SelectionSet',
                             selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'priceWithTax' } },
                                 {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'shippingMethod' },
@@ -7685,6 +7801,7 @@ export const GetOrderPromotionsByCodeDocument = {
                     { kind: 'Field', name: { kind: 'Name', value: 'shippingWithTax' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'total' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'couponCodes' } },
                     {
                         kind: 'Field',
@@ -7756,6 +7873,7 @@ export const GetOrderPromotionsByCodeDocument = {
                         selectionSet: {
                             kind: 'SelectionSet',
                             selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'priceWithTax' } },
                                 {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'shippingMethod' },
@@ -7924,6 +8042,7 @@ export const TransitionToStateDocument = {
                     { kind: 'Field', name: { kind: 'Name', value: 'shippingWithTax' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'total' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'couponCodes' } },
                     {
                         kind: 'Field',
@@ -7995,6 +8114,7 @@ export const TransitionToStateDocument = {
                         selectionSet: {
                             kind: 'SelectionSet',
                             selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'priceWithTax' } },
                                 {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'shippingMethod' },
@@ -8324,6 +8444,7 @@ export const GetActiveOrderWithPaymentsDocument = {
                     { kind: 'Field', name: { kind: 'Name', value: 'shippingWithTax' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'total' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'couponCodes' } },
                     {
                         kind: 'Field',
@@ -8395,6 +8516,7 @@ export const GetActiveOrderWithPaymentsDocument = {
                         selectionSet: {
                             kind: 'SelectionSet',
                             selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'priceWithTax' } },
                                 {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'shippingMethod' },
@@ -8621,6 +8743,7 @@ export const AddPaymentToOrderDocument = {
                     { kind: 'Field', name: { kind: 'Name', value: 'shippingWithTax' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'total' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'couponCodes' } },
                     {
                         kind: 'Field',
@@ -8692,6 +8815,7 @@ export const AddPaymentToOrderDocument = {
                         selectionSet: {
                             kind: 'SelectionSet',
                             selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'priceWithTax' } },
                                 {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'shippingMethod' },
@@ -8881,6 +9005,7 @@ export const GetOrderByCodeWithPaymentsDocument = {
                     { kind: 'Field', name: { kind: 'Name', value: 'shippingWithTax' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'total' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'couponCodes' } },
                     {
                         kind: 'Field',
@@ -8952,6 +9077,7 @@ export const GetOrderByCodeWithPaymentsDocument = {
                         selectionSet: {
                             kind: 'SelectionSet',
                             selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'priceWithTax' } },
                                 {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'shippingMethod' },
@@ -9460,6 +9586,7 @@ export const ApplyCouponCodeDocument = {
                     { kind: 'Field', name: { kind: 'Name', value: 'shippingWithTax' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'total' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'couponCodes' } },
                     {
                         kind: 'Field',
@@ -9531,6 +9658,7 @@ export const ApplyCouponCodeDocument = {
                         selectionSet: {
                             kind: 'SelectionSet',
                             selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'priceWithTax' } },
                                 {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'shippingMethod' },
@@ -9653,6 +9781,7 @@ export const RemoveCouponCodeDocument = {
                     { kind: 'Field', name: { kind: 'Name', value: 'shippingWithTax' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'total' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'couponCodes' } },
                     {
                         kind: 'Field',
@@ -9724,6 +9853,7 @@ export const RemoveCouponCodeDocument = {
                         selectionSet: {
                             kind: 'SelectionSet',
                             selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'priceWithTax' } },
                                 {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'shippingMethod' },
@@ -9843,6 +9973,7 @@ export const RemoveAllOrderLinesDocument = {
                     { kind: 'Field', name: { kind: 'Name', value: 'shippingWithTax' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'total' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
                     { kind: 'Field', name: { kind: 'Name', value: 'couponCodes' } },
                     {
                         kind: 'Field',
@@ -9914,6 +10045,7 @@ export const RemoveAllOrderLinesDocument = {
                         selectionSet: {
                             kind: 'SelectionSet',
                             selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'priceWithTax' } },
                                 {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'shippingMethod' },

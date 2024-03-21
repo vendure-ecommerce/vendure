@@ -1663,7 +1663,7 @@ describe('Promotions applied to Orders', () => {
         });
     });
 
-    describe.only('usage limit', () => {
+    describe('usage limit', () => {
         const TEST_COUPON_CODE = 'TESTCOUPON';
         const orderGuard: ErrorResultGuard<CodegenShop.TestOrderWithPaymentsFragment> =
             createErrorResultGuard(input => !!input.lines);

@@ -4,7 +4,6 @@ export * from './catalog.routes';
 export * from './components/apply-facet-dialog/apply-facet-dialog.component';
 export * from './components/asset-detail/asset-detail.component';
 export * from './components/asset-list/asset-list.component';
-export * from './components/assets/assets.component';
 export * from './components/assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
 export * from './components/bulk-add-facet-values-dialog/bulk-add-facet-values-dialog.component';
 export * from './components/bulk-add-facet-values-dialog/bulk-add-facet-values-dialog.graphql';
@@ -43,6 +42,7 @@ export * from './components/product-variants-editor/product-variants-editor.comp
 export * from './components/product-variants-table/product-variants-table.component';
 export * from './components/update-product-option-dialog/update-product-option-dialog.component';
 export * from './components/variant-price-detail/variant-price-detail.component';
+export * from './components/variant-price-strategy-detail/variant-price-strategy-detail.component';
 export * from './providers/product-detail/product-detail.service';
 export * from './providers/product-detail/replace-last';
 export * from './providers/routing/product-variants-resolver';

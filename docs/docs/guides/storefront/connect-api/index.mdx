@@ -109,6 +109,11 @@ export async function request(query: string, variables: any) {
 
 There are some concrete examples of this approach in the examples later on in this guide.
 
+### Session duration
+
+The duration of a session is determined by the [AuthOptions.sessionDuration](/reference/typescript-api/auth/auth-options#sessionduration) config
+property. Sessions will automatically extend (or "refresh") when a user interacts with the API, so in effect the `sessionDuration` signifies the
+length of time that a session will stay valid since the last API call.
 
 ## Specifying a channel
 
@@ -536,7 +541,7 @@ const requestMiddleware: RequestMiddleware = async (request) => {
 
 // Check all responses for a new session token
 const responseMiddleware: ResponseMiddleware = (response) => {
-    if (!(response instanceof Error) && response.errors) {
+    if (!(response instanceof Error) && !response.errors) {
         const authHeader = response.headers.get('vendure-auth-token');
         if (authHeader) {
             // If the session token has been returned by the Vendure

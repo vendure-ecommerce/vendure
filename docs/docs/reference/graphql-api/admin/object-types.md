@@ -1,8 +1,6 @@
 ---
 title: "Types"
-weight: 3
-date: 2023-07-21T15:33:44.314Z
-showtoc: true
+isDefaultIndex: false
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
@@ -651,6 +649,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 ## Country
 
 <div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">A Country of the world which your shop operates in.</div>
+
+<div class="graphql-code-line top-level comment"></div>
+
+<div class="graphql-code-line top-level comment">The <code>code</code> field is typically a 2-character ISO code such as "GB", "US", "DE" etc. This code is used in certain inputs such as</div>
+
+<div class="graphql-code-line top-level comment">`UpdateAddressInput` and <code>CreateAddressInput</code> to specify the country.</div>
+<div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Country</span>
  &#123;</div>
 <div class="graphql-code-line ">id: <a href="/reference/graphql-api/admin/object-types#id">ID</a>!</div>
@@ -1126,6 +1133,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">values: [<a href="/reference/graphql-api/admin/object-types#facetvalue">FacetValue</a>!]!</div>
 
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Returns a paginated, sortable, filterable list of the Facet's values. Added in v2.1.0.</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">valueList(options: <a href="/reference/graphql-api/admin/input-types#facetvaluelistoptions">FacetValueListOptions</a>): <a href="/reference/graphql-api/admin/object-types#facetvaluelist">FacetValueList</a>!</div>
+
 <div class="graphql-code-line ">translations: [<a href="/reference/graphql-api/admin/object-types#facettranslation">FacetTranslation</a>!]!</div>
 
 <div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
@@ -1199,6 +1211,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/admin/enums#languagecode">LanguageCode</a>!</div>
 
 <div class="graphql-code-line ">facet: <a href="/reference/graphql-api/admin/object-types#facet">Facet</a>!</div>
+
+<div class="graphql-code-line ">facetId: <a href="/reference/graphql-api/admin/object-types#id">ID</a>!</div>
 
 <div class="graphql-code-line ">name: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
 
@@ -2265,6 +2279,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line ">proratedUnitPriceWithTax: <a href="/reference/graphql-api/admin/object-types#money">Money</a>!</div>
 
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">The quantity of items purchased</div>
+<div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line ">quantity: <a href="/reference/graphql-api/admin/object-types#int">Int</a>!</div>
 
 <div class="graphql-code-line comment">"""</div>
@@ -2982,7 +2999,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
  &#123;</div>
 <div class="graphql-code-line ">currencyCode: <a href="/reference/graphql-api/admin/enums#currencycode">CurrencyCode</a>!</div>
 
-<div class="graphql-code-line ">price: <a href="/reference/graphql-api/admin/object-types#int">Int</a>!</div>
+<div class="graphql-code-line ">price: <a href="/reference/graphql-api/admin/object-types#money">Money</a>!</div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -3025,6 +3042,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">couponCode: <a href="/reference/graphql-api/admin/object-types#string">String</a></div>
 
 <div class="graphql-code-line ">perCustomerUsageLimit: <a href="/reference/graphql-api/admin/object-types#int">Int</a></div>
+
+<div class="graphql-code-line ">usageLimit: <a href="/reference/graphql-api/admin/object-types#int">Int</a></div>
 
 <div class="graphql-code-line ">name: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
 

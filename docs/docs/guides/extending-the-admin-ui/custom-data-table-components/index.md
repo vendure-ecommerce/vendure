@@ -33,7 +33,7 @@ import { CustomColumnComponent } from '@vendure/admin-ui/core';
     standalone: true,
 })
 export class SlugLinkComponent implements CustomColumnComponent {
-    @Input() rowItem: any;
+    @Input() rowItem: { slug: string };
 }
 ```
 
@@ -46,8 +46,8 @@ React components will receive the value of the current column as the `rowItem` p
 import { ReactDataTableComponentProps } from '@vendure/admin-ui/react';
 import React from 'react';
 
-export function SlugLink({ rowItem }: ReactDataTableComponentProps) {
-    const slug: string = rowItem.slug;
+export function SlugLink({ rowItem }: ReactDataTableComponentProps<{ slug: string }>) {
+    const slug = rowItem.slug;
     return (
         <a href={`https://example.com/category/${slug}`} target="_blank">
             {slug}
@@ -93,7 +93,7 @@ import { SlugLink } from './components/SlugLink';
 export default [
     registerReactDataTableComponent({
         component: SlugWithLink,
-        tableId: 'collection-list',
+        tableId: 'product-list',
         columnId: 'slug',
         props: {
             // Additional props may be passed to the component

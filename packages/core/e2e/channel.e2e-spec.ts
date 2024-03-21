@@ -28,6 +28,7 @@ import {
     CREATE_ROLE,
     GET_CHANNELS,
     GET_CUSTOMER_LIST,
+    GET_PRODUCT_LIST,
     GET_PRODUCT_WITH_VARIANTS,
     ME,
     UPDATE_CHANNEL,
@@ -124,19 +125,19 @@ describe('Channels', () => {
         });
     });
 
-    it('update currencyCode', async () => {
-        const { updateChannel } = await adminClient.query<
-            Codegen.UpdateChannelMutation,
-            Codegen.UpdateChannelMutationVariables
-        >(UPDATE_CHANNEL, {
-            input: {
-                id: 'T_1',
-                currencyCode: CurrencyCode.MYR,
-            },
-        });
-        channelGuard.assertSuccess(updateChannel);
-        expect(updateChannel.currencyCode).toBe('MYR');
-    });
+    // it('update currencyCode', async () => {
+    //     const { updateChannel } = await adminClient.query<
+    //         Codegen.UpdateChannelMutation,
+    //         Codegen.UpdateChannelMutationVariables
+    //     >(UPDATE_CHANNEL, {
+    //         input: {
+    //             id: 'T_1',
+    //             currencyCode: CurrencyCode.MYR,
+    //         },
+    //     });
+    //     channelGuard.assertSuccess(updateChannel);
+    //     expect(updateChannel.currencyCode).toBe('MYR');
+    // });
 
     it('superadmin has all permissions on new channel', async () => {
         const { me } = await adminClient.query<Codegen.MeQuery>(ME);
@@ -368,6 +369,90 @@ describe('Channels', () => {
         });
         expect(product!.channels.map(c => c.id)).toEqual(['T_1']);
     });
+
+    describe('currencyCode support', () => {
+        beforeAll(async () => {
+            await adminClient.asSuperAdmin();
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+        });
+
+        it('initial currencyCode values', async () => {
+            const { channel } = await adminClient.query<
+                Codegen.GetChannelQuery,
+                Codegen.GetChannelQueryVariables
+            >(GET_CHANNEL, {
+                id: 'T_1',
+            });
+
+            expect(channel?.defaultCurrencyCode).toBe('USD');
+            expect(channel?.availableCurrencyCodes).toEqual(['USD']);
+        });
+
+        it('setting defaultCurrencyCode adds it to availableCurrencyCodes', async () => {
+            const { updateChannel } = await adminClient.query<
+                Codegen.UpdateChannelMutation,
+                Codegen.UpdateChannelMutationVariables
+            >(UPDATE_CHANNEL, {
+                input: {
+                    id: 'T_1',
+                    defaultCurrencyCode: CurrencyCode.MYR,
+                },
+            });
+            channelGuard.assertSuccess(updateChannel);
+            expect(updateChannel.defaultCurrencyCode).toBe('MYR');
+            expect(updateChannel.currencyCode).toBe('MYR');
+            expect(updateChannel.availableCurrencyCodes).toEqual(['USD', 'MYR']);
+        });
+
+        it('setting defaultCurrencyCode adds it to availableCurrencyCodes 2', async () => {
+            // As above, but this time we set the availableCurrencyCodes explicitly
+            // to exclude the defaultCurrencyCode
+            const { updateChannel } = await adminClient.query<
+                Codegen.UpdateChannelMutation,
+                Codegen.UpdateChannelMutationVariables
+            >(UPDATE_CHANNEL, {
+                input: {
+                    id: 'T_1',
+                    defaultCurrencyCode: CurrencyCode.AUD,
+                    availableCurrencyCodes: [CurrencyCode.GBP],
+                },
+            });
+            channelGuard.assertSuccess(updateChannel);
+            expect(updateChannel.defaultCurrencyCode).toBe('AUD');
+            expect(updateChannel.currencyCode).toBe('AUD');
+            expect(updateChannel.availableCurrencyCodes).toEqual(['GBP', 'AUD']);
+        });
+
+        it(
+            'cannot remove the defaultCurrencyCode from availableCurrencyCodes',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<
+                    Codegen.UpdateChannelMutation,
+                    Codegen.UpdateChannelMutationVariables
+                >(UPDATE_CHANNEL, {
+                    input: {
+                        id: 'T_1',
+                        availableCurrencyCodes: [CurrencyCode.GBP],
+                    },
+                });
+            }, 'availableCurrencyCodes must include the defaultCurrencyCode (AUD)'),
+        );
+
+        it(
+            'specifying an unsupported currencyCode throws',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<Codegen.GetProductListQuery, Codegen.GetProductListQueryVariables>(
+                    GET_PRODUCT_LIST,
+                    {
+                        options: {
+                            take: 1,
+                        },
+                    },
+                    { currencyCode: 'JPY' },
+                );
+            }, 'The currency "JPY" is not available in the current Channel'),
+        );
+    });
 });
 
 const DELETE_CHANNEL = gql`
@@ -375,6 +460,22 @@ const DELETE_CHANNEL = gql`
         deleteChannel(id: $id) {
             message
             result
+        }
+    }
+`;
+
+const GET_CHANNEL = gql`
+    query GetChannel($id: ID!) {
+        channel(id: $id) {
+            id
+            code
+            token
+            defaultCurrencyCode
+            availableCurrencyCodes
+            defaultLanguageCode
+            availableLanguageCodes
+            outOfStockThreshold
+            pricesIncludeTax
         }
     }
 `;

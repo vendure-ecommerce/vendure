@@ -8,8 +8,7 @@ import { StateMachineConfig, Transitions } from '../../../common/finite-state-ma
 import { validateTransitionDefinition } from '../../../common/finite-state-machine/validate-transition-definition';
 import { awaitPromiseOrObservable } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
-import { OrderProcess } from '../../../config/order/order-process';
-import { TransactionalConnection } from '../../../connection/transactional-connection';
+import { Logger } from '../../../config/logger/vendure-logger';
 import { Order } from '../../../entity/order/order.entity';
 
 import { OrderState, OrderTransitionData } from './order-state';
@@ -19,7 +18,7 @@ export class OrderStateMachine {
     readonly config: StateMachineConfig<OrderState, OrderTransitionData>;
     private readonly initialState: OrderState = 'Created';
 
-    constructor(private configService: ConfigService, private connection: TransactionalConnection) {
+    constructor(private configService: ConfigService) {
         this.config = this.initConfig();
     }
 
@@ -46,15 +45,20 @@ export class OrderStateMachine {
     private initConfig(): StateMachineConfig<OrderState, OrderTransitionData> {
         const orderProcesses = this.configService.orderOptions.process ?? [];
 
-        const emptyProcess: OrderProcess<any> = { transitions: {} };
         const allTransitions = orderProcesses.reduce(
             (transitions, process) =>
                 mergeTransitionDefinitions(transitions, process.transitions as Transitions<any>),
             {} as Transitions<OrderState>,
         );
 
-        const validationResult = validateTransitionDefinition(allTransitions, 'AddingItems');
-
+        const validationResult = validateTransitionDefinition(allTransitions, this.initialState);
+        if (!validationResult.valid && validationResult.error) {
+            Logger.error(`The order process has an invalid configuration:`);
+            throw new Error(validationResult.error);
+        }
+        if (validationResult.valid && validationResult.error) {
+            Logger.warn(`Order process: ${validationResult.error}`);
+        }
         return {
             transitions: allTransitions,
             onTransitionStart: async (fromState, toState, data) => {

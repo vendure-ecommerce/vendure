@@ -72,6 +72,8 @@
     "assign-variants-to-channel": "Atribuir variação ao canal",
     "auto-update-option-variant-name": "Atualizar automaticamente os nomes das variações do produto usando esta opção",
     "auto-update-product-variant-name": "Atualizar automaticamente os nomes das variações do produto",
+    "calculated-price": "Preço calculado",
+    "calculated-price-tooltip": "Há um cálculo de preço personalizado configurado que modifica o preço definido acima:",
     "cannot-create-variants-without-options": "As variantes do produto não podem ser criadas até que um grupo de opções com pelo menos duas opções de produtos tenha sido definidas",
     "channel-price-preview": "Visualizar preço do canal",
     "collection": "Coleçāo",
@@ -477,7 +479,7 @@
   },
   "error": {
     "403-forbidden": "No momento, você não está autorizado a acessar \"{ path }\". Você não tem permissão ou sua sessão expirou.",
-    "could-not-connect-to-server": "Não foi possível ao servidor Mercado NetBrit no link { url }",
+    "could-not-connect-to-server": "Não foi possível conectar ao servidor Vendure no link { url }",
     "facet-value-form-values-do-not-match": "O número de valores no formulário de etiqueta não corresponde ao número real de valores",
     "health-check-failed": "Falha na verificação de integridade do sistema",
     "no-default-shipping-zone-set": "Este canal não possui zona de entrega padrão. Isso pode causar erros ao calcular as despesas de envio do pedido.",

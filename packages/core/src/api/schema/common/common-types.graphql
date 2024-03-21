@@ -198,6 +198,13 @@ input CreateCustomerInput {
     emailAddress: String!
 }
 
+"""
+Input used to create an Address.
+
+The countryCode must correspond to a `code` property of a Country that has been defined in the
+Vendure server. The `code` property is typically a 2-character ISO code such as "GB", "US", "DE" etc.
+If an invalid code is passed, the mutation will fail.
+"""
 input CreateAddressInput {
     fullName: String
     company: String
@@ -212,6 +219,13 @@ input CreateAddressInput {
     defaultBillingAddress: Boolean
 }
 
+"""
+Input used to update an Address.
+
+The countryCode must correspond to a `code` property of a Country that has been defined in the
+Vendure server. The `code` property is typically a 2-character ISO code such as "GB", "US", "DE" etc.
+If an invalid code is passed, the mutation will fail.
+"""
 input UpdateAddressInput {
     id: ID!
     fullName: String

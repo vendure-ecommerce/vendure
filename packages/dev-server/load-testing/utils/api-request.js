@@ -17,13 +17,16 @@ export class ApiRequest {
     post(variables = {}, authToken) {
         const res = http.post(
             this.apiUrl,
-            {
+            JSON.stringify({
                 query: this.document,
-                variables: JSON.stringify(variables),
-            },
+                variables,
+            }),
             {
                 timeout: 120 * 1000,
-                headers: { Authorization: authToken ? `Bearer ${authToken}` : undefined },
+                headers: {
+                    Authorization: authToken ? `Bearer ${authToken}` : '',
+                    'Content-Type': 'application/json',
+                },
             },
         );
         check(res, {

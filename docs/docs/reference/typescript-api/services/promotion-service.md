@@ -76,12 +76,12 @@ class PromotionService {
 
 ### createPromotion
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: CreatePromotionInput) => Promise&#60;ErrorResultUnion&#60;CreatePromotionResult, <a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a>&#62;&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: CreatePromotionInput) => Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;CreatePromotionResult, <a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a>&#62;&#62;`}   />
 
 
 ### updatePromotion
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdatePromotionInput) => Promise&#60;ErrorResultUnion&#60;UpdatePromotionResult, <a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a>&#62;&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdatePromotionInput) => Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;UpdatePromotionResult, <a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a>&#62;&#62;`}   />
 
 
 ### softDeletePromotion

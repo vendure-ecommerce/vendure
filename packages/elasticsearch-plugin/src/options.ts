@@ -15,7 +15,6 @@ import {
     CustomScriptMapping,
     ElasticSearchInput,
     ElasticSearchSortInput,
-    ElasticSearchSortParameter,
     GraphQlPrimitive,
     PrimitiveTypeVariations,
 } from './types';
@@ -158,12 +157,22 @@ export interface ElasticsearchOptions {
     };
     /**
      * @description
-     * Batch size for bulk operations (e.g. when rebuilding the indices).
+     * Products limit chunk size for each loop iteration when indexing products.
      *
-     * @default
-     * 2000
+     * @default 2500
+     * @since 2.1.7
      */
-    batchSize?: number;
+    reindexProductsChunkSize?: number;
+    /**
+     * @description
+     * Index operations are performed in bulk, with each bulk operation containing a number of individual
+     * index operations. This option sets the maximum number of operations in the memory buffer before a
+     * bulk operation is executed.
+     *
+     * @default 3000
+     * @since 2.1.7
+     */
+    reindexBulkOperationSizeLimit?: number;
     /**
      * @description
      * Configuration of the internal Elasticsearch query.
@@ -710,7 +719,8 @@ export const defaultOptions: ElasticsearchRuntimeOptions = {
     indexPrefix: 'vendure-',
     indexSettings: {},
     indexMappingProperties: {},
-    batchSize: 2000,
+    reindexProductsChunkSize: 2500,
+    reindexBulkOperationSizeLimit: 3000,
     searchConfig: {
         facetValueMaxSize: 50,
         collectionMaxSize: 50,

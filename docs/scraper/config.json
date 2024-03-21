@@ -1,12 +1,12 @@
 {
   "index_name": "vendure-docs",
   "start_urls": [
-    "https://vendure-docs-beta.netlify.app/"
+    "https://docs.vendure.io/"
   ],
   "sitemap_urls": [
-    "https://vendure-docs-beta.netlify.app/sitemap.xml"
+    "https://docs.vendure.io/sitemap.xml"
   ],
-  "allowed_domains":["vendure-docs-beta.netlify.app"],
+  "allowed_domains":["docs.vendure.io"],
   "sitemap_alternate_links": true,
   "stop_urls": [],
   "selectors": {

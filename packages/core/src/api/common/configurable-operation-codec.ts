@@ -43,8 +43,7 @@ export class ConfigurableOperationCodec {
                         const decodedIds = ids.map(id => this.idCodecService.decode(id));
                         arg.value = JSON.stringify(decodedIds);
                     } else {
-                        const decodedId = this.idCodecService.decode(arg.value);
-                        arg.value = JSON.stringify(decodedId);
+                        arg.value = this.idCodecService.decode(arg.value);
                     }
                 }
             }

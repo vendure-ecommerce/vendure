@@ -13,12 +13,14 @@ import { CurrencyCode, LanguageCode } from './graphql/generated-e2e-admin-types'
 import * as Codegen from './graphql/generated-e2e-admin-types';
 import { DeletionResult } from './graphql/generated-e2e-shop-types';
 import {
+    ASSIGN_COLLECTIONS_TO_CHANNEL,
     ASSIGN_PRODUCT_TO_CHANNEL,
     CREATE_ASSETS,
     CREATE_CHANNEL,
     DELETE_ASSET,
     GET_ASSET,
     GET_PRODUCT_WITH_VARIANTS,
+    UPDATE_COLLECTION,
     UPDATE_PRODUCT,
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -298,6 +300,94 @@ describe('Product related assets', () => {
         expect(product!.assets.find(a => a.id === 'T_3')).toBeUndefined();
     });
 });
+
+describe('Collection related assets', () => {
+    let collectionFeaturedAssetId: string;
+    it('Featured asset is available in default channel', async () => {
+        adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+
+        await adminClient.query<Codegen.UpdateCollectionMutation, Codegen.UpdateCollectionMutationVariables>(
+            UPDATE_COLLECTION,
+            {
+                input: {
+                    id: 'T_2',
+                    featuredAssetId: 'T_3',
+                    assetIds: ['T_3'],
+                },
+            },
+        );
+
+        const { collection } = await adminClient.query<
+            Codegen.GetCollectionWithAssetsQuery,
+            Codegen.GetCollectionWithAssetsQueryVariables
+        >(GET_COLLECTION_WITH_ASSETS, {
+            id: 'T_2',
+        });
+        collectionFeaturedAssetId = collection!.featuredAsset!.id;
+        expect(collectionFeaturedAssetId).toBeDefined();
+
+        adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+        const { asset } = await adminClient.query<Codegen.GetAssetQuery, Codegen.GetAssetQueryVariables>(
+            GET_ASSET,
+            {
+                id: collectionFeaturedAssetId,
+            },
+        );
+        expect(asset?.id).toEqual(collectionFeaturedAssetId);
+    });
+
+    it('Featured asset is not available in channel2', async () => {
+        adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+        const { asset } = await adminClient.query<Codegen.GetAssetQuery, Codegen.GetAssetQueryVariables>(
+            GET_ASSET,
+            {
+                id: collectionFeaturedAssetId,
+            },
+        );
+        expect(asset?.id).toBeUndefined();
+    });
+
+    it('Add Collection to channel2', async () => {
+        adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+        const { assignCollectionsToChannel } = await adminClient.query<
+            Codegen.AssignCollectionsToChannelMutation,
+            Codegen.AssignCollectionsToChannelMutationVariables
+        >(ASSIGN_COLLECTIONS_TO_CHANNEL, {
+            input: {
+                channelId: channel2Id,
+                collectionIds: ['T_2'],
+            },
+        });
+        expect(assignCollectionsToChannel[0].id).toEqual('T_2');
+    });
+
+    it('Get featured asset from channel2', async () => {
+        adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+        const { asset } = await adminClient.query<Codegen.GetAssetQuery, Codegen.GetAssetQueryVariables>(
+            GET_ASSET,
+            {
+                id: collectionFeaturedAssetId,
+            },
+        );
+        expect(asset?.id).toEqual(collectionFeaturedAssetId);
+    });
+});
+
+const GET_COLLECTION_WITH_ASSETS = gql`
+    query GetCollectionWithAssets($id: ID!) {
+        collection(id: $id) {
+            id
+            name
+            featuredAsset {
+                ...Asset
+            }
+            assets {
+                ...Asset
+            }
+        }
+    }
+    ${ASSET_FRAGMENT}
+`;
 
 export const ASSIGN_ASSET_TO_CHANNEL = gql`
     mutation assignAssetsToChannel($input: AssignAssetsToChannelInput!) {

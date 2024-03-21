@@ -100,7 +100,7 @@ export type RelationCustomFieldConfig = TypedCustomFieldConfig<
     entity: Type<VendureEntity>;
     graphQLType?: string;
     eager?: boolean;
-    inverseSide?: string | ((object: VendureEntity) => any);
+    inverseSide?: string | ((object: any) => any);
 };
 
 /**

@@ -118,9 +118,9 @@ class ActiveQueue<Data extends JobData<Data> = object> {
                                 },
                             )
                             .finally(() => {
-                                if (!this.running && nextJob.state !== JobState.PENDING) {
-                                    return;
-                                }
+                                // if (!this.running && nextJob.state !== JobState.PENDING) {
+                                //     return;
+                                // }
                                 nextJob.off('progress', onProgress);
                                 return this.onFailOrComplete(nextJob);
                             })
@@ -145,24 +145,54 @@ class ActiveQueue<Data extends JobData<Data> = object> {
         void runNextJobs();
     }
 
-    stop(): Promise<void> {
+    async stop(stopActiveQueueTimeout = 20_000): Promise<void> {
         this.running = false;
-        this.queueStopped$.next(STOP_SIGNAL);
         clearTimeout(this.timer);
+        await this.awaitRunningJobsOrTimeout(stopActiveQueueTimeout);
+        Logger.info(`Stopped queue: ${this.queueName}`);
+        // Allow any job status changes to be persisted
+        // before we permit the application shutdown to continue.
+        // Otherwise, the DB connection will close before our
+        // changes are persisted.
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
 
+    private awaitRunningJobsOrTimeout(stopActiveQueueTimeout = 20_000): Promise<void> {
         const start = +new Date();
-        // Wait for 2 seconds to allow running jobs to complete
-        const maxTimeout = 2000;
-        let pollTimer: any;
+        let timeout: ReturnType<typeof setTimeout>;
         return new Promise(resolve => {
-            const pollActiveJobs = async () => {
-                const timedOut = +new Date() - start > maxTimeout;
-                if (this.activeJobs.length === 0 || timedOut) {
-                    clearTimeout(pollTimer);
+            let lastStatusUpdate = +new Date();
+            const pollActiveJobs = () => {
+                const now = +new Date();
+                const timedOut =
+                    stopActiveQueueTimeout === undefined ? false : now - start > stopActiveQueueTimeout;
+
+                if (this.activeJobs.length === 0) {
+                    clearTimeout(timeout);
                     resolve();
-                } else {
-                    pollTimer = setTimeout(pollActiveJobs, 50);
+                    return;
                 }
+
+                if (timedOut) {
+                    Logger.warn(
+                        `Timed out (${stopActiveQueueTimeout}ms) waiting for ${this.activeJobs.length} active jobs in queue "${this.queueName}" to complete. Forcing stop...`,
+                    );
+                    this.queueStopped$.next(STOP_SIGNAL);
+                    clearTimeout(timeout);
+                    resolve();
+                    return;
+                }
+
+                if (this.activeJobs.length > 0) {
+                    if (now - lastStatusUpdate > 2000) {
+                        Logger.info(
+                            `Stopping queue: ${this.queueName} - waiting for ${this.activeJobs.length} active jobs to complete...`,
+                        );
+                        lastStatusUpdate = now;
+                    }
+                }
+
+                timeout = setTimeout(pollActiveJobs, 200);
             };
             void pollActiveJobs();
         });
@@ -175,7 +205,9 @@ class ActiveQueue<Data extends JobData<Data> = object> {
 
     private removeJobFromActive(job: Job<Data>) {
         const index = this.activeJobs.indexOf(job);
-        this.activeJobs.splice(index, 1);
+        if (index !== -1) {
+            this.activeJobs.splice(index, 1);
+        }
     }
 }
 
@@ -195,7 +227,7 @@ export abstract class PollingJobQueueStrategy extends InjectableJobQueueStrategy
     public setRetries: (queueName: string, job: Job) => number;
     public backOffStrategy?: BackoffStrategy;
 
-    private activeQueues = new QueueNameProcessStorage<ActiveQueue<any>>();
+    protected activeQueues = new QueueNameProcessStorage<ActiveQueue<any>>();
 
     constructor(config?: PollingJobQueueStrategyConfig);
     constructor(concurrency?: number, pollInterval?: number);

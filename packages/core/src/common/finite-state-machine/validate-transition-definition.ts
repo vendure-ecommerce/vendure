@@ -10,6 +10,12 @@ export function validateTransitionDefinition<T extends string>(
     transitions: Transitions<T>,
     initialState: T,
 ): { valid: boolean; error?: string } {
+    if (!transitions[initialState]) {
+        return {
+            valid: false,
+            error: `The initial state "${initialState}" is not defined`,
+        };
+    }
     const states = Object.keys(transitions) as T[];
     const result: { [State in T]: ValidationResult } = states.reduce((res, state) => {
         return {
@@ -21,7 +27,7 @@ export function validateTransitionDefinition<T extends string>(
     // walk the state graph starting with the initialState and
     // check whether all states are reachable.
     function allStatesReached(): boolean {
-        return Object.values(result).every((r) => (r as ValidationResult).reachable);
+        return Object.values(result).every(r => (r as ValidationResult).reachable);
     }
     function walkGraph(state: T) {
         const candidates = transitions[state].to;
@@ -30,24 +36,32 @@ export function validateTransitionDefinition<T extends string>(
             return true;
         }
         for (const candidate of candidates) {
+            if (result[candidate] === undefined) {
+                throw new Error(`The state "${state}" has a transition to an unknown state "${candidate}"`);
+            }
             if (!result[candidate].reachable) {
                 walkGraph(candidate);
             }
         }
     }
-    walkGraph(initialState);
-
-    if (!allStatesReached()) {
+    try {
+        walkGraph(initialState);
+    } catch (e: any) {
         return {
             valid: false,
-            error: `The following states are unreachable: ${Object.entries(result)
-                .filter(([s, v]) => !(v as ValidationResult).reachable)
-                .map(([s]) => s)
-                .join(', ')}`,
-        };
-    } else {
-        return {
-            valid: true,
+            error: e.message,
         };
     }
+
+    const error = !allStatesReached()
+        ? `The following states are unreachable: ${Object.entries(result)
+              .filter(([s, v]) => !(v as ValidationResult).reachable)
+              .map(([s]) => s)
+              .join(', ')}`
+        : undefined;
+
+    return {
+        valid: true,
+        error,
+    };
 }

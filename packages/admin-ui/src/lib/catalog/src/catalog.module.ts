@@ -9,7 +9,6 @@ import {
     GetFacetDetailDocument,
     GetProductDetailDocument,
     GetProductVariantDetailDocument,
-    GetStockLocationDetailDocument,
     PageService,
     SharedModule,
 } from '@vendure/admin-ui/core';
@@ -18,7 +17,6 @@ import { createRoutes } from './catalog.routes';
 import { ApplyFacetDialogComponent } from './components/apply-facet-dialog/apply-facet-dialog.component';
 import { AssetDetailComponent } from './components/asset-detail/asset-detail.component';
 import { AssetListComponent } from './components/asset-list/asset-list.component';
-import { AssetsComponent } from './components/assets/assets.component';
 import { AssignProductsToChannelDialogComponent } from './components/assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
 import { BulkAddFacetValuesDialogComponent } from './components/bulk-add-facet-values-dialog/bulk-add-facet-values-dialog.component';
 import { CollectionContentsComponent } from './components/collection-contents/collection-contents.component';
@@ -57,17 +55,18 @@ import {
 import { ProductListComponent } from './components/product-list/product-list.component';
 import { ProductOptionsEditorComponent } from './components/product-options-editor/product-options-editor.component';
 import { ProductVariantDetailComponent } from './components/product-variant-detail/product-variant-detail.component';
-import { ProductVariantListComponent } from './components/product-variant-list/product-variant-list.component';
 import {
     assignProductVariantsToChannelBulkAction,
-    removeProductVariantsFromChannelBulkAction,
     deleteProductVariantsBulkAction,
+    removeProductVariantsFromChannelBulkAction,
 } from './components/product-variant-list/product-variant-list-bulk-actions';
+import { ProductVariantListComponent } from './components/product-variant-list/product-variant-list.component';
 import { ProductVariantQuickJumpComponent } from './components/product-variant-quick-jump/product-variant-quick-jump.component';
 import { ProductVariantsEditorComponent } from './components/product-variants-editor/product-variants-editor.component';
 import { ProductVariantsTableComponent } from './components/product-variants-table/product-variants-table.component';
 import { UpdateProductOptionDialogComponent } from './components/update-product-option-dialog/update-product-option-dialog.component';
 import { VariantPriceDetailComponent } from './components/variant-price-detail/variant-price-detail.component';
+import { VariantPriceStrategyDetailComponent } from './components/variant-price-strategy-detail/variant-price-strategy-detail.component';
 
 const CATALOG_COMPONENTS = [
     ProductListComponent,
@@ -77,8 +76,8 @@ const CATALOG_COMPONENTS = [
     GenerateProductVariantsComponent,
     ApplyFacetDialogComponent,
     AssetListComponent,
-    AssetsComponent,
     VariantPriceDetailComponent,
+    VariantPriceStrategyDetailComponent,
     CollectionListComponent,
     CollectionDetailComponent,
     CollectionTreeComponent,
@@ -118,10 +117,12 @@ const CATALOG_COMPONENTS = [
     ],
 })
 export class CatalogModule {
-    constructor(
-        private bulkActionRegistryService: BulkActionRegistryService,
-        private pageService: PageService,
-    ) {
+    private static hasRegisteredTabsAndBulkActions = false;
+
+    constructor(bulkActionRegistryService: BulkActionRegistryService, pageService: PageService) {
+        if (CatalogModule.hasRegisteredTabsAndBulkActions) {
+            return;
+        }
         bulkActionRegistryService.registerBulkAction(assignFacetValuesToProductsBulkAction);
         bulkActionRegistryService.registerBulkAction(assignProductsToChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(assignProductVariantsToChannelBulkAction);
@@ -170,30 +171,6 @@ export class CatalogModule {
             route: 'variants',
             component: ProductVariantListComponent,
         });
-        // pageService.registerPageTab({
-        //     priority: 0,
-        //     location: 'stock-location-detail',
-        //     tab: _('catalog.stock-location'),
-        //     route: '',
-        //     component: detailComponentWithResolver({
-        //         component: StockLocationDetailComponent,
-        //         query: GetStockLocationDetailDocument,
-        //         entityKey: 'stockLocation',
-        //         getBreadcrumbs: entity => [
-        //             {
-        //                 label: entity ? entity.name : _('catalog.create-new-stock-location'),
-        //                 link: [entity?.id],
-        //             },
-        //         ],
-        //     }),
-        // });
-        // pageService.registerPageTab({
-        //     priority: 0,
-        //     location: 'product-list',
-        //     tab: _('catalog.stock-locations'),
-        //     route: 'stock-locations',
-        //     component: StockLocationListComponent,
-        // });
         pageService.registerPageTab({
             priority: 0,
             location: 'product-variant-detail',
@@ -287,5 +264,6 @@ export class CatalogModule {
                 ],
             }),
         });
+        CatalogModule.hasRegisteredTabsAndBulkActions = true;
     }
 }

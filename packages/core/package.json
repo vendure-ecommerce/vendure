@@ -1,6 +1,6 @@
 {
     "name": "@vendure/core",
-    "version": "2.1.0",
+    "version": "2.1.8",
     "description": "A modern, headless ecommerce framework",
     "repository": {
         "type": "git",
@@ -27,6 +27,7 @@
         "test": "vitest --config ./vitest.config.ts --run",
         "e2e": "cross-env PACKAGE=core vitest --config ../../e2e-common/vitest.config.ts --run",
         "e2e:watch": "cross-env PACKAGE=core vitest --config ../../e2e-common/vitest.config.ts",
+        "bench": "cross-env PACKAGE=core vitest --config ../../e2e-common/vitest.config.bench.ts --run",
         "ci": "yarn build"
     },
     "publishConfig": {
@@ -50,7 +51,7 @@
         "@nestjs/testing": "10.2.1",
         "@nestjs/typeorm": "10.0.0",
         "@types/fs-extra": "^9.0.1",
-        "@vendure/common": "^2.1.0",
+        "@vendure/common": "^2.1.8",
         "bcrypt": "^5.1.1",
         "body-parser": "^1.20.2",
         "chalk": "^4.1.2",
@@ -93,7 +94,7 @@
         "@types/progress": "^2.0.3",
         "@types/prompts": "^2.0.9",
         "@types/semver": "^7.3.13",
-        "better-sqlite3": "^7.1.1",
+        "better-sqlite3": "^9.1.1",
         "gulp": "^4.0.2",
         "mysql": "^2.18.1",
         "pg": "^8.10.0",

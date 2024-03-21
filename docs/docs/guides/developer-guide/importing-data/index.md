@@ -182,9 +182,10 @@ The `@vendure/core` package exposes a [`populate()` function](/reference/typescr
 ```ts title="src/my-populate-script.ts"
 import { bootstrap, DefaultJobQueuePlugin } from '@vendure/core';
 import { populate } from '@vendure/core/cli';
+import path from "path";
 
-import { config } from './vendure-config.ts';
-import { initialData } from './my-initial-data.ts';
+import { config } from './vendure-config';
+import { initialData } from './my-initial-data';
 
 const productsCsvFile = path.join(__dirname, 'path/to/products.csv')
 
@@ -198,7 +199,7 @@ const populateConfig = {
 }
 
 populate(
-    () => bootstrap(config),
+    () => bootstrap(populateConfig),
     initialData,
     productsCsvFile,
     'my-channel-token' // optional - used to assign imported 
@@ -310,7 +311,8 @@ import {
     LanguageCode,
     ParsedProductWithVariants,
     RequestContext, RequestContextService,
-    TransactionalConnection, User
+    TransactionalConnection, User,
+    SearchService,
 } from '@vendure/core';
 import { createClient, OldCommerceProduct } from '@old-commerce/client';
 
@@ -342,6 +344,9 @@ async function importData() {
 
     // Most service methods require a RequestContext, so we'll create one here.
     const ctx = await getSuperadminContext(app);
+
+    // To reindex after importing products
+    const searchService = app.get(SearchService);
 
     // Fetch all the products to import from the OldCommerce API
     const productsToImport: OldCommerceProduct[] = await client.getAllProducts();
@@ -385,6 +390,9 @@ async function importData() {
     await importer.importProducts(ctx, importRows, progress => {
         console.log(`Imported ${progress.imported} of ${importRows.length} products`);
     });
+
+    // Rebuild search index 
+    await searchService.reindex(ctx);
 
     // Close the app
     await app.close();

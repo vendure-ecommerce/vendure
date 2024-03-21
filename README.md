@@ -6,6 +6,9 @@ An open-source headless commerce platform built on [Node.js](https://nodejs.org)
 ![Publish & Install](https://github.com/vendure-ecommerce/vendure/workflows/Publish%20&%20Install/badge.svg)
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
 
+![vendure_github_banner (1)](https://github.com/vendure-ecommerce/vendure/assets/6275952/0e25b1c7-a648-44a1-ba00-60012f0e7aaa)
+
+
 ### [www.vendure.io](https://www.vendure.io/)
 
 * [Getting Started](https://docs.vendure.io/getting-started/): Get Vendure up and running locally in a matter of minutes with a single command
@@ -47,9 +50,6 @@ The root directory has a `package.json` which contains build-related dependencie
 * Building & deploying the docs 
 * Generating TypeScript types from the GraphQL schema
 * Linting, formatting & testing tasks to run on git commit & push
-
-> Note:
-> When you do `yarn` for the first time, you will need to manually create the `package` folder under [/packages/admin-ui](/packages/admin-ui).
 
 ### 2. Build all packages
 

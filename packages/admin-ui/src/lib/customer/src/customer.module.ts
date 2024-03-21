@@ -57,10 +57,12 @@ import { CustomerGroupDetailComponent } from './components/customer-group-detail
     exports: [AddressCardComponent],
 })
 export class CustomerModule {
-    constructor(
-        private bulkActionRegistryService: BulkActionRegistryService,
-        private pageService: PageService,
-    ) {
+    private static hasRegisteredTabsAndBulkActions = false;
+
+    constructor(bulkActionRegistryService: BulkActionRegistryService, pageService: PageService) {
+        if (CustomerModule.hasRegisteredTabsAndBulkActions) {
+            return;
+        }
         bulkActionRegistryService.registerBulkAction(deleteCustomersBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteCustomerGroupsBulkAction);
         bulkActionRegistryService.registerBulkAction(removeCustomerGroupMembersBulkAction);
@@ -122,5 +124,6 @@ export class CustomerModule {
                 ],
             }),
         });
+        CustomerModule.hasRegisteredTabsAndBulkActions = true;
     }
 }

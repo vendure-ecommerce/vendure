@@ -21,6 +21,7 @@ export const shopSchema = gql`
         minimumAmount: MollieAmount
         maximumAmount: MollieAmount
         image: MolliePaymentMethodImages
+        status: String
     }
     type MolliePaymentIntent {
         url: String!

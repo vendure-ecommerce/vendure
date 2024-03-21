@@ -84,6 +84,18 @@ services:
       - pgadmin_data:/var/lib/pgadmin
     links:
       - "postgres:pgsql-server"
+  keycloak:
+    image: quay.io/keycloak/keycloak
+    ports:
+      - "9000:8080"
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    command:
+      - start-dev
+      - --import-realm
+    volumes:
+      - keycloak_data:/opt/keycloak/data
 volumes:
   postgres_data:
     driver: local
@@ -94,4 +106,6 @@ volumes:
   mysql_data:
     driver: local
   phpmyadmin_data:
+    driver: local
+  keycloak_data:
     driver: local

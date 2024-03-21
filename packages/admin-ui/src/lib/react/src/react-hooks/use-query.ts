@@ -112,7 +112,7 @@ export function useMutation<T, V extends Record<string, any> = Record<string, an
     return [execute, rest] as [typeof execute, typeof rest];
 }
 
-function useDataService<T, V extends Record<string, any> = Record<string, any>>(
+export function useDataService<T, V extends Record<string, any> = Record<string, any>>(
     operation: (dataService: DataService, variables?: V) => Observable<T>,
 ) {
     const context = useContext(HostedComponentContext);

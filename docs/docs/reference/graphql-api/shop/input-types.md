@@ -1,8 +1,6 @@
 ---
 title: "Input Objects"
-weight: 4
-date: 2023-07-21T15:33:42.677Z
-showtoc: true
+isDefaultIndex: false
 generated: true
 ---
 <!-- This file was generated from the Vendure source. Do not modify. Instead, re-run the "docs:build" script -->
@@ -181,6 +179,17 @@ import MemberDescription from '@site/src/components/MemberDescription';
 ## CreateAddressInput
 
 <div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Input used to create an Address.</div>
+
+<div class="graphql-code-line top-level comment"></div>
+
+<div class="graphql-code-line top-level comment">The countryCode must correspond to a <code>code</code> property of a Country that has been defined in the</div>
+
+<div class="graphql-code-line top-level comment">Vendure server. The <code>code</code> property is typically a 2-character ISO code such as "GB", "US", "DE" etc.</div>
+
+<div class="graphql-code-line top-level comment">If an invalid code is passed, the mutation will fail.</div>
+<div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">input <span class="graphql-code-identifier">CreateAddressInput</span>
  &#123;</div>
 <div class="graphql-code-line ">fullName: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
@@ -471,6 +480,87 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">and: <a href="/reference/graphql-api/shop/object-types#id">ID</a></div>
 
 <div class="graphql-code-line ">or: [<a href="/reference/graphql-api/shop/object-types#id">ID</a>!]</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
+
+## FacetValueFilterParameter
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">FacetValueFilterParameter</span>
+ &#123;</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/input-types#idoperators">IDOperators</a></div>
+
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/input-types#dateoperators">DateOperators</a></div>
+
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/input-types#dateoperators">DateOperators</a></div>
+
+<div class="graphql-code-line ">languageCode: <a href="/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">facetId: <a href="/reference/graphql-api/shop/input-types#idoperators">IDOperators</a></div>
+
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+<div class="graphql-code-line ">code: <a href="/reference/graphql-api/shop/input-types#stringoperators">StringOperators</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
+
+## FacetValueListOptions
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">FacetValueListOptions</span>
+ &#123;</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Skips the first n results, for use in pagination</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">skip: <a href="/reference/graphql-api/shop/object-types#int">Int</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Takes n results, for use in pagination</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">take: <a href="/reference/graphql-api/shop/object-types#int">Int</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Specifies which properties to sort the results by</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">sort: <a href="/reference/graphql-api/shop/input-types#facetvaluesortparameter">FacetValueSortParameter</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Allows the results to be filtered</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">filter: <a href="/reference/graphql-api/shop/input-types#facetvaluefilterparameter">FacetValueFilterParameter</a></div>
+
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line comment">Specifies whether multiple "filter" arguments should be combines with a logical AND or OR operation. Defaults to AND.</div>
+<div class="graphql-code-line comment">"""</div>
+<div class="graphql-code-line ">filterOperator: <a href="/reference/graphql-api/shop/enums#logicaloperator">LogicalOperator</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+
+</div>
+
+## FacetValueSortParameter
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">FacetValueSortParameter</span>
+ &#123;</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">createdAt: <a href="/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">updatedAt: <a href="/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">facetId: <a href="/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
+
+<div class="graphql-code-line ">code: <a href="/reference/graphql-api/shop/enums#sortorder">SortOrder</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -1083,6 +1173,17 @@ import MemberDescription from '@site/src/components/MemberDescription';
 ## UpdateAddressInput
 
 <div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Input used to update an Address.</div>
+
+<div class="graphql-code-line top-level comment"></div>
+
+<div class="graphql-code-line top-level comment">The countryCode must correspond to a <code>code</code> property of a Country that has been defined in the</div>
+
+<div class="graphql-code-line top-level comment">Vendure server. The <code>code</code> property is typically a 2-character ISO code such as "GB", "US", "DE" etc.</div>
+
+<div class="graphql-code-line top-level comment">If an invalid code is passed, the mutation will fail.</div>
+<div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">input <span class="graphql-code-identifier">UpdateAddressInput</span>
  &#123;</div>
 <div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>

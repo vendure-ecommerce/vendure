@@ -11,15 +11,14 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EmailPlugin
 
-<GenerationInfo sourceFile="packages/email-plugin/src/plugin.ts" sourceLine="277" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/plugin.ts" sourceLine="276" packageName="@vendure/email-plugin" />
 
 The EmailPlugin creates and sends transactional emails based on Vendure events. By default, it uses an [MJML](https://mjml.io/)-based
 email generator to generate the email body and [Nodemailer](https://nodemailer.com/about/) to send the emails.
 
 ## High-level description
-Vendure has an internal events system (see <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>) that allows plugins to subscribe to events. The EmailPlugin is configured with
-<a href='/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>s that listen for a specific event and when it is published, the handler defines which template to use to generate
-the resulting email.
+Vendure has an internal events system (see <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>) that allows plugins to subscribe to events. The EmailPlugin is configured with <a href='/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>s
+that listen for a specific event and when it is published, the handler defines which template to use to generate the resulting email.
 
 The plugin comes with a set of default handlers for the following events:
 - Order confirmation
@@ -88,7 +87,7 @@ language which makes the task of creating responsive email markup simple. By def
 
 Dynamic data such as the recipient's name or order items are specified using [Handlebars syntax](https://handlebarsjs.com/):
 
-```HTML
+```html
 <p>Dear {{ order.customer.firstName }} {{ order.customer.lastName }},</p>
 
 <p>Thank you for your order!</p>
@@ -136,12 +135,12 @@ import { CustomerService } from '@vendure/core';
 
 // This allows you to then customize each handler to your needs.
 // For example, let's set a new subject line to the order confirmation:
-orderConfirmationHandler
+const myOrderConfirmationHandler = orderConfirmationHandler
   .setSubject(`We received your order!`);
 
 // Another example: loading additional data and setting new
 // template variables.
-passwordResetHandler
+const myPasswordResetHandler = passwordResetHandler
   .loadData(async ({ event, injector }) => {
     const customerService = injector.get(CustomerService);
     const customer = await customerService.findOneByUserId(event.ctx, event.user.id);
@@ -156,9 +155,9 @@ passwordResetHandler
 // individually
 EmailPlugin.init({
   handlers: [
-    orderConfirmationHandler,
+    myOrderConfirmationHandler,
+    myPasswordResetHandler,
     emailVerificationHandler,
-    passwordResetHandler,
     emailAddressChangeHandler,
   ],
   // ...
@@ -187,10 +186,10 @@ const config: VendureConfig = {
           return injector.get(MyTransportService).getSettings(ctx);
         } else {
           return {
-             type: 'smtp',
-             host: 'smtp.example.com',
-             // ... etc.
-           }
+            type: 'smtp',
+            host: 'smtp.example.com',
+            // ... etc.
+          }
         }
       }
     }),

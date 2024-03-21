@@ -28,6 +28,11 @@ export function addCustomFields(documentNode: DocumentNode, customFields: Custom
             entityType = 'Address';
         }
 
+        if (entityType === ('Country' as any)) {
+            // Country is an alias of Region
+            entityType = 'Region';
+        }
+
         const customFieldsForType = customFields[entityType];
         if (customFieldsForType && customFieldsForType.length) {
             (fragmentDef.selectionSet.selections as SelectionNode[]).push({

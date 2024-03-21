@@ -2,18 +2,25 @@ import { Collection, PluginCommonModule, VendureEntity, VendurePlugin } from '@v
 import gql from 'graphql-tag';
 import { DeepPartial, Entity, ManyToMany, OneToMany } from 'typeorm';
 
+declare module '@vendure/core/dist/entity/custom-entity-fields' {
+    interface CustomCollectionFields {
+        customEntity: TestCustomEntity;
+        customEntityList: TestCustomEntity[];
+    }
+}
+
 @Entity()
 export class TestCustomEntity extends VendureEntity {
     constructor(input?: DeepPartial<TestCustomEntity>) {
         super(input);
     }
 
-    @ManyToMany(() => Collection, x => (x as any).customFields?.customEntityList, {
+    @ManyToMany(() => Collection, c => c.customFields?.customEntityList, {
         eager: true,
     })
     customEntityListInverse: Collection[];
 
-    @OneToMany(() => Collection, (a: Collection) => (a.customFields as any).customEntity)
+    @OneToMany(() => Collection, c => c.customFields.customEntity)
     customEntityInverse: Collection[];
 }
 

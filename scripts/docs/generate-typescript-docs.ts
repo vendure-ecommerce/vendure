@@ -50,6 +50,14 @@ const sections: DocsSectionConfig[] = [
         outputPath: '',
     },
     {
+        sourceDirs: ['packages/stellate-plugin/src/'],
+        outputPath: '',
+    },
+    {
+        sourceDirs: ['packages/sentry-plugin/src/'],
+        outputPath: '',
+    },
+    {
         sourceDirs: ['packages/admin-ui/src/lib/', 'packages/ui-devkit/src/'],
         exclude: [/generated-types/],
         outputPath: 'admin-ui-api',
@@ -64,7 +72,7 @@ if (watchMode) {
     sections.forEach(section => {
         section.sourceDirs.forEach(dir => {
             fs.watch(dir, { recursive: true }, (eventType, file) => {
-                if (extname(file) === '.ts') {
+                if (file && extname(file) === '.ts') {
                     console.log(`Changes detected in ${dir}`);
                     generateTypescriptDocs([section], true);
                 }

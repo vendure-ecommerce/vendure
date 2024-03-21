@@ -470,7 +470,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, 'The custom field "stringWithOptions" value ["tiny"] is invalid. Valid options are [\'small\', \'medium\', \'large\']'),
+            }, "The custom field \"stringWithOptions\" value [\"tiny\"] is invalid. Valid options are ['small', 'medium', 'large']"),
         );
 
         it('valid string option', async () => {
@@ -949,6 +949,36 @@ describe('Custom fields', () => {
                 `);
             }, 'Field "internalString" is not defined by type "ProductFilterParameter"'),
         );
+    });
+
+    describe('product on productVariant entity', () => {
+        it('is translated', async () => {
+            const { productVariants } = await adminClient.query(gql`
+                query {
+                    productVariants(productId: "T_1") {
+                        items {
+                            product {
+                                name
+                                id
+                                customFields {
+                                    localeStringWithDefault
+                                    stringWithDefault
+                                }
+                            }
+                        }
+                    }
+                }
+            `);
+
+            expect(productVariants.items[0].product).toEqual({
+                id: 'T_1',
+                name: 'Laptop',
+                customFields: {
+                    localeStringWithDefault: 'hola',
+                    stringWithDefault: 'hello',
+                },
+            });
+        });
     });
 
     describe('unique constraint', () => {

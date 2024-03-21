@@ -33,6 +33,9 @@ Then run `npm install` or `yarn install` depending on which package manager you 
 
 If you are using UI extensions to create your own custom Admin UI using the [`compileUiExtensions`](/reference/admin-ui-api/ui-devkit/compile-ui-extensions/) function, then you'll need to **delete and re-compile your admin-ui directory after upgrading** (this is the directory specified by the [`outputPath`](/reference/admin-ui-api/ui-devkit/ui-extension-compiler-options#outputpath) property).
 
+If you also have an `.angular` directory in your project, you should delete this too after the update to ensure that any stale cached files are removed.
+
+
 ## Versioning Policy & Breaking changes
 
 Vendure generally follows the [SemVer convention](https://semver.org/) for version numbering. This means that breaking API changes will only be introduced with changes to the major version (the first of the 3 digits in the version).

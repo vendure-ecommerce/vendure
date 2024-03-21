@@ -39,9 +39,25 @@ export class CustomFieldRelationTestEntity extends VendureEntity {
     parent: Relation<TestEntity>;
 }
 
+@Entity()
+export class CustomFieldOtherRelationTestEntity extends VendureEntity {
+    constructor(input: Partial<CustomFieldOtherRelationTestEntity>) {
+        super(input);
+    }
+
+    @Column()
+    data: string;
+
+    @ManyToOne(() => TestEntity)
+    parent: Relation<TestEntity>;
+}
+
 class TestEntityCustomFields {
     @OneToMany(() => CustomFieldRelationTestEntity, child => child.parent)
     relation: Relation<CustomFieldRelationTestEntity[]>;
+
+    @OneToMany(() => CustomFieldOtherRelationTestEntity, child => child.parent)
+    otherRelation: Relation<CustomFieldOtherRelationTestEntity[]>;
 }
 
 @Entity()
@@ -143,7 +159,7 @@ export class TestEntityTranslation extends VendureEntity implements Translation<
     @ManyToOne(type => TestEntity, base => base.translations)
     base: TestEntity;
 
-    customFields: {};
+    customFields: never;
 }
 
 @Entity()
@@ -171,7 +187,12 @@ export class ListQueryResolver {
         return this.listQueryBuilder
             .build(TestEntity, args.options, {
                 ctx,
-                relations: ['orderRelation', 'orderRelation.customer', 'customFields.relation'],
+                relations: [
+                    'orderRelation',
+                    'orderRelation.customer',
+                    'customFields.relation',
+                    'customFields.otherRelation',
+                ],
                 customPropertyMap: {
                     customerLastName: 'orderRelation.customer.lastName',
                 },
@@ -222,8 +243,14 @@ const apiExtensions = gql`
         data: String!
     }
 
+    type CustomFieldOtherRelationTestEntity implements Node {
+        id: ID!
+        data: String!
+    }
+
     type TestEntityCustomFields {
         relation: [CustomFieldRelationTestEntity!]!
+        otherRelation: [CustomFieldOtherRelationTestEntity!]!
     }
 
     type TestEntity implements Node {
@@ -272,7 +299,13 @@ const apiExtensions = gql`
 
 @VendurePlugin({
     imports: [PluginCommonModule],
-    entities: [TestEntity, TestEntityPrice, TestEntityTranslation, CustomFieldRelationTestEntity],
+    entities: [
+        TestEntity,
+        TestEntityPrice,
+        TestEntityTranslation,
+        CustomFieldRelationTestEntity,
+        CustomFieldOtherRelationTestEntity,
+    ],
     adminApiExtensions: {
         schema: apiExtensions,
         resolvers: [ListQueryResolver],
@@ -405,6 +438,12 @@ export class ListQueryPlugin implements OnApplicationBootstrap {
                     for (const nestedContent of nestedData[testEntity.label]) {
                         await this.connection.getRepository(CustomFieldRelationTestEntity).save(
                             new CustomFieldRelationTestEntity({
+                                parent: testEntity,
+                                data: nestedContent.data,
+                            }),
+                        );
+                        await this.connection.getRepository(CustomFieldOtherRelationTestEntity).save(
+                            new CustomFieldOtherRelationTestEntity({
                                 parent: testEntity,
                                 data: nestedContent.data,
                             }),

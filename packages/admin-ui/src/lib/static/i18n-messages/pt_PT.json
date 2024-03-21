@@ -72,6 +72,8 @@
     "assign-variants-to-channel": "Atribuir variante ao canal",
     "auto-update-option-variant-name": "Utilizar esta opção para actualizar automaticamente os nomes das variantes",
     "auto-update-product-variant-name": "Actualizar automaticamente os nomes das variantes do produto",
+    "calculated-price": "Preço calculado",
+    "calculated-price-tooltip": "Existe um cálculo de preço personalizado configurado que modifica o preço definido acima:",
     "cannot-create-variants-without-options": "",
     "channel-price-preview": "Visualizar preço do canal",
     "collection": "",

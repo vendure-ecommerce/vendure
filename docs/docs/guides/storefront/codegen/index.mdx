@@ -1,5 +1,5 @@
 ---
-title: "GraphQL Code Generation"
+title: "Storefront GraphQL Code Generation"
 ---
 
 Code generation means the automatic generation of TypeScript types based on your GraphQL schema and your GraphQL operations.
@@ -9,7 +9,7 @@ write any types for your API calls.
 To do this, we will use [Graphql Code Generator](https://the-guild.dev/graphql/codegen).
 
 :::note
-Code generation can be used when building a storefront _as well as_ when building backend plugins.
+This guide is for adding codegen to your storefront. For a guide on adding codegen to your backend Vendure plugins or UI extensions, see the [Plugin Codegen](/guides/how-to/codegen/) guide.
 :::
 
 ## Installation
@@ -54,7 +54,11 @@ const config: CodegenConfig = {
         scalars: {
             // This tells codegen that the `Money` scalar is a number
             Money: 'number',
-        }
+        },
+        namingConvention: {
+            // This ensures generated enums do not conflict with the built-in types.
+            enumValues: 'keep',
+        },
       }
       // highlight-end
     },

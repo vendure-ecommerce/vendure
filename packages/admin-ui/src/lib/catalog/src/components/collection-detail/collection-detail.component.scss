@@ -17,6 +17,9 @@ clr-checkbox-wrapper {
         font-size: 0.65rem;
         display: inline-block;
         margin-inline-end: 10px;
+        &:last-child {
+            font-weight: 600;
+        }
     }
     li:not(:last-child)::after {
         content: '›';

@@ -147,6 +147,10 @@ export async function preBootstrapConfig(
     });
 
     let config = getConfig();
+    // The logger is set here so that we are able to log any messages prior to the final
+    // logger (which may depend on config coming from a plugin) being set.
+    Logger.useLogger(config.logger);
+    config = await runPluginConfigurations(config);
     const entityIdStrategy = config.entityOptions.entityIdStrategy ?? config.entityIdStrategy;
     setEntityIdStrategy(entityIdStrategy, entities);
     const moneyStrategy = config.entityOptions.moneyStrategy;
@@ -156,7 +160,6 @@ export async function preBootstrapConfig(
         process.exitCode = 1;
         throw new Error('CustomFields config error:\n- ' + customFieldValidationResult.errors.join('\n- '));
     }
-    config = await runPluginConfigurations(config);
     registerCustomEntityFields(config);
     await runEntityMetadataModifiers(config);
     setExposedHeaders(config);

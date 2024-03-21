@@ -60,7 +60,18 @@ interface NavMenuSection {
 
 <MemberInfo kind="property" type={`string | ((userPermissions: string[]) =&#62; boolean)`}   />
 
-Control the display of this item based on the user permissions.
+Control the display of this item based on the user permissions. Note: if you attempt to pass a
+<a href='/reference/typescript-api/auth/permission-definition#permissiondefinition'>PermissionDefinition</a> object, you will get a compilation error. Instead, pass the plain
+string version. For example, if the permission is defined as:
+```ts
+export const MyPermission = new PermissionDefinition('ProductReview');
+```
+then the generated permission strings will be:
+
+- `CreateProductReview`
+- `ReadProductReview`
+- `UpdateProductReview`
+- `DeleteProductReview`
 ### collapsible
 
 <MemberInfo kind="property" type={`boolean`}   />

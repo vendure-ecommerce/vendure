@@ -52,7 +52,7 @@
             </div>
             <ng-template #noGroups>
                 <span class="color-weight-400">
-                {{ 'customer.not-a-member-of-any-groups' | translate }}
+                    {{ 'customer.not-a-member-of-any-groups' | translate }}
                 </span>
             </ng-template>
             <div>
@@ -138,23 +138,29 @@
         ></vdr-custom-detail-component-host>
         <ng-container *ngIf="!(isNew$ | async)">
             <vdr-card [title]="'customer.addresses' | translate">
-                <vdr-address-card
-                    *ngFor="let addressForm of getAddressFormControls()"
-                    [class.to-delete]="addressesToDeleteIds.has(addressForm.value.id)"
-                    [availableCountries]="availableCountries$ | async"
-                    [isDefaultBilling]="defaultBillingAddressId === addressForm.value.id"
-                    [isDefaultShipping]="defaultShippingAddressId === addressForm.value.id"
-                    [addressForm]="addressForm"
-                    [customFields]="addressCustomFields"
-                    [editable]="
-                        (['UpdateCustomer'] | hasPermission) &&
-                        !addressesToDeleteIds.has(addressForm.value.id)
-                    "
-                    (setAsDefaultBilling)="setDefaultBillingAddressId($event)"
-                    (setAsDefaultShipping)="setDefaultShippingAddressId($event)"
-                    (deleteAddress)="toggleDeleteAddress($event)"
-                ></vdr-address-card>
-                <button class="btn btn-secondary mt-2" (click)="addAddress()" *vdrIfPermissions="'UpdateCustomer'">
+                <div class="form-grid">
+                    <vdr-address-card
+                        *ngFor="let addressForm of getAddressFormControls()"
+                        [class.to-delete]="addressesToDeleteIds.has(addressForm.value.id)"
+                        [availableCountries]="availableCountries$ | async"
+                        [isDefaultBilling]="defaultBillingAddressId === addressForm.value.id"
+                        [isDefaultShipping]="defaultShippingAddressId === addressForm.value.id"
+                        [addressForm]="addressForm"
+                        [customFields]="addressCustomFields"
+                        [editable]="
+                            (['UpdateCustomer'] | hasPermission) &&
+                            !addressesToDeleteIds.has(addressForm.value.id)
+                        "
+                        (setAsDefaultBilling)="setDefaultBillingAddressId($event)"
+                        (setAsDefaultShipping)="setDefaultShippingAddressId($event)"
+                        (deleteAddress)="toggleDeleteAddress($event)"
+                    ></vdr-address-card>
+                </div>
+                <button
+                    class="btn btn-secondary mt-2"
+                    (click)="addAddress()"
+                    *vdrIfPermissions="'UpdateCustomer'"
+                >
                     <clr-icon shape="plus"></clr-icon>
                     {{ 'customer.create-new-address' | translate }}
                 </button>
@@ -175,7 +181,11 @@
                             {{ order.id }}
                         </ng-template>
                     </vdr-dt2-column>
-                    <vdr-dt2-column [heading]="'common.created-at' | translate" id="created-at" [hiddenByDefault]="true">
+                    <vdr-dt2-column
+                        [heading]="'common.created-at' | translate"
+                        id="created-at"
+                        [hiddenByDefault]="true"
+                    >
                         <ng-template let-order="item">
                             {{ order.createdAt | localeDate : 'short' }}
                         </ng-template>
@@ -188,7 +198,11 @@
                             </a>
                         </ng-template>
                     </vdr-dt2-column>
-                    <vdr-dt2-column [heading]="'order.order-type' | translate" id="order-type" [hiddenByDefault]="true">
+                    <vdr-dt2-column
+                        [heading]="'order.order-type' | translate"
+                        id="order-type"
+                        [hiddenByDefault]="true"
+                    >
                         <ng-template let-order="item">
                             <vdr-chip>{{ order.type }}</vdr-chip>
                         </ng-template>

@@ -11,3 +11,4 @@ dev-config-override.ts
 vendure.log
 scripts/dev-test
 custom-admin-ui
+docker-compose.*.yml

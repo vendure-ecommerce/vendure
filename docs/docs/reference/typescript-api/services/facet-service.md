@@ -91,7 +91,7 @@ Returns the Facet which contains the given FacetValue id.
 Assigns Facets to the specified Channel
 ### removeFacetsFromChannel
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: RemoveFacetsFromChannelInput) => Promise&#60;Array&#60;ErrorResultUnion&#60;RemoveFacetFromChannelResult, <a href='/reference/typescript-api/entities/facet#facet'>Facet</a>&#62;&#62;&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: RemoveFacetsFromChannelInput) => Promise&#60;Array&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;RemoveFacetFromChannelResult, <a href='/reference/typescript-api/entities/facet#facet'>Facet</a>&#62;&#62;&#62;`}   />
 
 Remove Facets from the specified Channel
 

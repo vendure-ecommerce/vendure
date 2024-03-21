@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import {
     AssignProductsToChannelInput,
     CreateProductInput,
-    CustomerListOptions,
     DeletionResponse,
     DeletionResult,
     ProductListOptions,
@@ -41,12 +40,9 @@ import { TranslatorService } from '../helpers/translator/translator.service';
 
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
-import { CollectionService } from './collection.service';
 import { FacetValueService } from './facet-value.service';
 import { ProductOptionGroupService } from './product-option-group.service';
 import { ProductVariantService } from './product-variant.service';
-import { RoleService } from './role.service';
-import { TaxRateService } from './tax-rate.service';
 
 /**
  * @description
@@ -61,12 +57,9 @@ export class ProductService {
     constructor(
         private connection: TransactionalConnection,
         private channelService: ChannelService,
-        private roleService: RoleService,
         private assetService: AssetService,
         private productVariantService: ProductVariantService,
         private facetValueService: FacetValueService,
-        private taxRateService: TaxRateService,
-        private collectionService: CollectionService,
         private listQueryBuilder: ListQueryBuilder,
         private translatableSaver: TranslatableSaver,
         private eventBus: EventBus,
@@ -120,12 +113,7 @@ export class ProductService {
             effectiveRelations.push('facetValues.facet');
         }
         const product = await this.connection.findOneInChannel(ctx, Product, productId, ctx.channelId, {
-            // relations: unique(effectiveRelations),
-            relations: {
-                facetValues: {
-                    facet: true,
-                },
-            },
+            relations: unique(effectiveRelations),
             where: {
                 deletedAt: IsNull(),
             },

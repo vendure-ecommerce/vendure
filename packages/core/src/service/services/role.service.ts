@@ -70,12 +70,21 @@ export class RoleService {
         relations?: RelationPaths<Role>,
     ): Promise<PaginatedList<Role>> {
         return this.listQueryBuilder
-            .build(Role, options, { relations: relations ?? ['channels'], ctx })
+            .build(Role, options, { relations: unique([...(relations ?? []), 'channels']), ctx })
             .getManyAndCount()
-            .then(([items, totalItems]) => ({
-                items,
-                totalItems,
-            }));
+            .then(async ([items, totalItems]) => {
+                const visibleRoles: Role[] = [];
+                for (const item of items) {
+                    const canRead = await this.activeUserCanReadRole(ctx, item);
+                    if (canRead) {
+                        visibleRoles.push(item);
+                    }
+                }
+                return {
+                    items: visibleRoles,
+                    totalItems,
+                };
+            });
     }
 
     findOne(ctx: RequestContext, roleId: ID, relations?: RelationPaths<Role>): Promise<Role | undefined> {
@@ -83,9 +92,13 @@ export class RoleService {
             .getRepository(ctx, Role)
             .findOne({
                 where: { id: roleId },
-                relations: relations ?? ['channels'],
+                relations: unique([...(relations ?? []), 'channels']),
             })
-            .then(result => result ?? undefined);
+            .then(async result => {
+                if (result && (await this.activeUserCanReadRole(ctx, result))) {
+                    return result;
+                }
+            });
     }
 
     getChannelsForRole(ctx: RequestContext, roleId: ID): Promise<Channel[]> {
@@ -154,6 +167,21 @@ export class RoleService {
             }
         }
         return false;
+    }
+
+    private async activeUserCanReadRole(ctx: RequestContext, role: Role): Promise<boolean> {
+        const permissionsRequired = getChannelPermissions([role]);
+        for (const channelPermissions of permissionsRequired) {
+            const activeUserHasRequiredPermissions = await this.userHasAllPermissionsOnChannel(
+                ctx,
+                channelPermissions.id,
+                channelPermissions.permissions,
+            );
+            if (!activeUserHasRequiredPermissions) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

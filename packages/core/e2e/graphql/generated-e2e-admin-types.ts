@@ -590,6 +590,12 @@ export type CoordinateInput = {
     y: Scalars['Float']['input'];
 };
 
+/**
+ * A Country of the world which your shop operates in.
+ *
+ * The `code` field is typically a 2-character ISO code such as "GB", "US", "DE" etc. This code is used in certain inputs such as
+ * `UpdateAddressInput` and `CreateAddressInput` to specify the country.
+ */
 export type Country = Node &
     Region & {
         code: Scalars['String']['output'];
@@ -675,6 +681,13 @@ export type CouponCodeLimitError = ErrorResult & {
     message: Scalars['String']['output'];
 };
 
+/**
+ * Input used to create an Address.
+ *
+ * The countryCode must correspond to a `code` property of a Country that has been defined in the
+ * Vendure server. The `code` property is typically a 2-character ISO code such as "GB", "US", "DE" etc.
+ * If an invalid code is passed, the mutation will fail.
+ */
 export type CreateAddressInput = {
     city?: InputMaybe<Scalars['String']['input']>;
     company?: InputMaybe<Scalars['String']['input']>;
@@ -3703,6 +3716,7 @@ export type OrderLine = Node & {
     proratedUnitPrice: Scalars['Money']['output'];
     /** The proratedUnitPrice including tax */
     proratedUnitPriceWithTax: Scalars['Money']['output'];
+    /** The quantity of items purchased */
     quantity: Scalars['Int']['output'];
     taxLines: Array<TaxLine>;
     taxRate: Scalars['Float']['output'];
@@ -4414,7 +4428,7 @@ export type ProductVariantListOptions = {
 
 export type ProductVariantPrice = {
     currencyCode: CurrencyCode;
-    price: Scalars['Int']['output'];
+    price: Scalars['Money']['output'];
 };
 
 /**
@@ -5740,6 +5754,13 @@ export type UpdateActiveAdministratorInput = {
     password?: InputMaybe<Scalars['String']['input']>;
 };
 
+/**
+ * Input used to update an Address.
+ *
+ * The countryCode must correspond to a `code` property of a Country that has been defined in the
+ * Vendure server. The `code` property is typically a 2-character ISO code such as "GB", "US", "DE" etc.
+ * If an invalid code is passed, the mutation will fail.
+ */
 export type UpdateAddressInput = {
     city?: InputMaybe<Scalars['String']['input']>;
     company?: InputMaybe<Scalars['String']['input']>;
@@ -6192,6 +6213,35 @@ export type Q2QueryVariables = Exact<{ [key: string]: never }>;
 
 export type Q2Query = { product?: { id: string; name: string } | null };
 
+export type GetCollectionWithAssetsQueryVariables = Exact<{
+    id: Scalars['ID']['input'];
+}>;
+
+export type GetCollectionWithAssetsQuery = {
+    collection?: {
+        id: string;
+        name: string;
+        featuredAsset?: {
+            id: string;
+            name: string;
+            fileSize: number;
+            mimeType: string;
+            type: AssetType;
+            preview: string;
+            source: string;
+        } | null;
+        assets: Array<{
+            id: string;
+            name: string;
+            fileSize: number;
+            mimeType: string;
+            type: AssetType;
+            preview: string;
+            source: string;
+        }>;
+    } | null;
+};
+
 export type AssignAssetsToChannelMutationVariables = Exact<{
     input: AssignAssetsToChannelInput;
 }>;
@@ -6270,6 +6320,24 @@ export type DeleteChannelMutationVariables = Exact<{
 }>;
 
 export type DeleteChannelMutation = { deleteChannel: { message?: string | null; result: DeletionResult } };
+
+export type GetChannelQueryVariables = Exact<{
+    id: Scalars['ID']['input'];
+}>;
+
+export type GetChannelQuery = {
+    channel?: {
+        id: string;
+        code: string;
+        token: string;
+        defaultCurrencyCode: CurrencyCode;
+        availableCurrencyCodes: Array<CurrencyCode>;
+        defaultLanguageCode: LanguageCode;
+        availableLanguageCodes?: Array<LanguageCode> | null;
+        outOfStockThreshold?: number | null;
+        pricesIncludeTax: boolean;
+    } | null;
+};
 
 export type UpdateGlobalLanguagesMutationVariables = Exact<{
     input: UpdateGlobalSettingsInput;
@@ -6537,49 +6605,6 @@ export type PreviewCollectionVariantsQuery = {
     previewCollectionVariants: { totalItems: number; items: Array<{ id: string; name: string }> };
 };
 
-export type AssignCollectionsToChannelMutationVariables = Exact<{
-    input: AssignCollectionsToChannelInput;
-}>;
-
-export type AssignCollectionsToChannelMutation = {
-    assignCollectionsToChannel: Array<{
-        id: string;
-        name: string;
-        slug: string;
-        description: string;
-        isPrivate: boolean;
-        languageCode?: LanguageCode | null;
-        featuredAsset?: {
-            id: string;
-            name: string;
-            fileSize: number;
-            mimeType: string;
-            type: AssetType;
-            preview: string;
-            source: string;
-        } | null;
-        assets: Array<{
-            id: string;
-            name: string;
-            fileSize: number;
-            mimeType: string;
-            type: AssetType;
-            preview: string;
-            source: string;
-        }>;
-        filters: Array<{ code: string; args: Array<{ name: string; value: string }> }>;
-        translations: Array<{
-            id: string;
-            languageCode: LanguageCode;
-            name: string;
-            slug: string;
-            description: string;
-        }>;
-        parent?: { id: string; name: string } | null;
-        children?: Array<{ id: string; name: string; position: number }> | null;
-    }>;
-};
-
 export type RemoveCollectionsFromChannelMutationVariables = Exact<{
     input: RemoveCollectionsFromChannelInput;
 }>;
@@ -6737,26 +6762,6 @@ export type AddNoteToCustomerMutation = {
 export type ReindexMutationVariables = Exact<{ [key: string]: never }>;
 
 export type ReindexMutation = { reindex: { id: string } };
-
-export type SearchProductsAdminQueryVariables = Exact<{
-    input: SearchInput;
-}>;
-
-export type SearchProductsAdminQuery = {
-    search: {
-        totalItems: number;
-        items: Array<{
-            enabled: boolean;
-            productId: string;
-            productName: string;
-            slug: string;
-            description: string;
-            productVariantId: string;
-            productVariantName: string;
-            sku: string;
-        }>;
-    };
-};
 
 export type SearchFacetValuesQueryVariables = Exact<{
     input: SearchInput;
@@ -7858,6 +7863,26 @@ export type GetGlobalSettingsQuery = {
                 >;
             };
         };
+    };
+};
+
+export type SearchProductsAdminQueryVariables = Exact<{
+    input: SearchInput;
+}>;
+
+export type SearchProductsAdminQuery = {
+    search: {
+        totalItems: number;
+        items: Array<{
+            enabled: boolean;
+            productId: string;
+            productName: string;
+            slug: string;
+            description: string;
+            productVariantId: string;
+            productVariantName: string;
+            sku: string;
+        }>;
     };
 };
 
@@ -10351,6 +10376,49 @@ export type UpdateAdministratorMutation = {
             roles: Array<{ id: string; code: string; description: string; permissions: Array<Permission> }>;
         };
     };
+};
+
+export type AssignCollectionsToChannelMutationVariables = Exact<{
+    input: AssignCollectionsToChannelInput;
+}>;
+
+export type AssignCollectionsToChannelMutation = {
+    assignCollectionsToChannel: Array<{
+        id: string;
+        name: string;
+        slug: string;
+        description: string;
+        isPrivate: boolean;
+        languageCode?: LanguageCode | null;
+        featuredAsset?: {
+            id: string;
+            name: string;
+            fileSize: number;
+            mimeType: string;
+            type: AssetType;
+            preview: string;
+            source: string;
+        } | null;
+        assets: Array<{
+            id: string;
+            name: string;
+            fileSize: number;
+            mimeType: string;
+            type: AssetType;
+            preview: string;
+            source: string;
+        }>;
+        filters: Array<{ code: string; args: Array<{ name: string; value: string }> }>;
+        translations: Array<{
+            id: string;
+            languageCode: LanguageCode;
+            name: string;
+            slug: string;
+            description: string;
+        }>;
+        parent?: { id: string; name: string } | null;
+        children?: Array<{ id: string; name: string; position: number }> | null;
+    }>;
 };
 
 export type CancelJobMutationVariables = Exact<{
@@ -14930,6 +14998,92 @@ export const Q2Document = {
         },
     ],
 } as unknown as DocumentNode<Q2Query, Q2QueryVariables>;
+export const GetCollectionWithAssetsDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'query',
+            name: { kind: 'Name', value: 'GetCollectionWithAssets' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'collection' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'id' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'featuredAsset' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            {
+                                                kind: 'FragmentSpread',
+                                                name: { kind: 'Name', value: 'Asset' },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'assets' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            {
+                                                kind: 'FragmentSpread',
+                                                name: { kind: 'Name', value: 'Asset' },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'Asset' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Asset' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'fileSize' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'mimeType' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'preview' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'source' } },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<GetCollectionWithAssetsQuery, GetCollectionWithAssetsQueryVariables>;
 export const AssignAssetsToChannelDocument = {
     kind: 'Document',
     definitions: [
@@ -15394,6 +15548,56 @@ export const DeleteChannelDocument = {
         },
     ],
 } as unknown as DocumentNode<DeleteChannelMutation, DeleteChannelMutationVariables>;
+export const GetChannelDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'query',
+            name: { kind: 'Name', value: 'GetChannel' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'channel' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'id' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'token' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'defaultCurrencyCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'availableCurrencyCodes' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'defaultLanguageCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'availableLanguageCodes' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'outOfStockThreshold' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'pricesIncludeTax' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<GetChannelQuery, GetChannelQueryVariables>;
 export const UpdateGlobalLanguagesDocument = {
     kind: 'Document',
     definitions: [
@@ -16859,172 +17063,6 @@ export const PreviewCollectionVariantsDocument = {
         },
     ],
 } as unknown as DocumentNode<PreviewCollectionVariantsQuery, PreviewCollectionVariantsQueryVariables>;
-export const AssignCollectionsToChannelDocument = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'OperationDefinition',
-            operation: 'mutation',
-            name: { kind: 'Name', value: 'AssignCollectionsToChannel' },
-            variableDefinitions: [
-                {
-                    kind: 'VariableDefinition',
-                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
-                    type: {
-                        kind: 'NonNullType',
-                        type: {
-                            kind: 'NamedType',
-                            name: { kind: 'Name', value: 'AssignCollectionsToChannelInput' },
-                        },
-                    },
-                },
-            ],
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'assignCollectionsToChannel' },
-                        arguments: [
-                            {
-                                kind: 'Argument',
-                                name: { kind: 'Name', value: 'input' },
-                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
-                            },
-                        ],
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'Collection' } },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'Asset' },
-            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Asset' } },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'fileSize' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'mimeType' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'preview' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'source' } },
-                ],
-            },
-        },
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'ConfigurableOperation' },
-            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'ConfigurableOperation' } },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'args' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'value' } },
-                            ],
-                        },
-                    },
-                    { kind: 'Field', name: { kind: 'Name', value: 'code' } },
-                ],
-            },
-        },
-        {
-            kind: 'FragmentDefinition',
-            name: { kind: 'Name', value: 'Collection' },
-            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Collection' } },
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'slug' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'isPrivate' } },
-                    { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'featuredAsset' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'Asset' } }],
-                        },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'assets' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'Asset' } }],
-                        },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'filters' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                {
-                                    kind: 'FragmentSpread',
-                                    name: { kind: 'Name', value: 'ConfigurableOperation' },
-                                },
-                            ],
-                        },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'translations' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'slug' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-                            ],
-                        },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'parent' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                            ],
-                        },
-                    },
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'children' },
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                                { kind: 'Field', name: { kind: 'Name', value: 'position' } },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<AssignCollectionsToChannelMutation, AssignCollectionsToChannelMutationVariables>;
 export const RemoveCollectionsFromChannelDocument = {
     kind: 'Document',
     definitions: [
@@ -17758,71 +17796,6 @@ export const ReindexDocument = {
         },
     ],
 } as unknown as DocumentNode<ReindexMutation, ReindexMutationVariables>;
-export const SearchProductsAdminDocument = {
-    kind: 'Document',
-    definitions: [
-        {
-            kind: 'OperationDefinition',
-            operation: 'query',
-            name: { kind: 'Name', value: 'SearchProductsAdmin' },
-            variableDefinitions: [
-                {
-                    kind: 'VariableDefinition',
-                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
-                    type: {
-                        kind: 'NonNullType',
-                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'SearchInput' } },
-                    },
-                },
-            ],
-            selectionSet: {
-                kind: 'SelectionSet',
-                selections: [
-                    {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'search' },
-                        arguments: [
-                            {
-                                kind: 'Argument',
-                                name: { kind: 'Name', value: 'input' },
-                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
-                            },
-                        ],
-                        selectionSet: {
-                            kind: 'SelectionSet',
-                            selections: [
-                                { kind: 'Field', name: { kind: 'Name', value: 'totalItems' } },
-                                {
-                                    kind: 'Field',
-                                    name: { kind: 'Name', value: 'items' },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            { kind: 'Field', name: { kind: 'Name', value: 'enabled' } },
-                                            { kind: 'Field', name: { kind: 'Name', value: 'productId' } },
-                                            { kind: 'Field', name: { kind: 'Name', value: 'productName' } },
-                                            { kind: 'Field', name: { kind: 'Name', value: 'slug' } },
-                                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-                                            {
-                                                kind: 'Field',
-                                                name: { kind: 'Name', value: 'productVariantId' },
-                                            },
-                                            {
-                                                kind: 'Field',
-                                                name: { kind: 'Name', value: 'productVariantName' },
-                                            },
-                                            { kind: 'Field', name: { kind: 'Name', value: 'sku' } },
-                                        ],
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-    ],
-} as unknown as DocumentNode<SearchProductsAdminQuery, SearchProductsAdminQueryVariables>;
 export const SearchFacetValuesDocument = {
     kind: 'Document',
     definitions: [
@@ -22704,6 +22677,71 @@ export const GetGlobalSettingsDocument = {
         },
     ],
 } as unknown as DocumentNode<GetGlobalSettingsQuery, GetGlobalSettingsQueryVariables>;
+export const SearchProductsAdminDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'query',
+            name: { kind: 'Name', value: 'SearchProductsAdmin' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'SearchInput' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'search' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'input' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'totalItems' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'items' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'enabled' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'productId' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'productName' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'slug' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                            {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'productVariantId' },
+                                            },
+                                            {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'productVariantName' },
+                                            },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'sku' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<SearchProductsAdminQuery, SearchProductsAdminQueryVariables>;
 export const CreateAdministratorDocument = {
     kind: 'Document',
     definitions: [
@@ -31208,6 +31246,172 @@ export const UpdateAdministratorDocument = {
         },
     ],
 } as unknown as DocumentNode<UpdateAdministratorMutation, UpdateAdministratorMutationVariables>;
+export const AssignCollectionsToChannelDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'AssignCollectionsToChannel' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: {
+                            kind: 'NamedType',
+                            name: { kind: 'Name', value: 'AssignCollectionsToChannelInput' },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'assignCollectionsToChannel' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'input' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'Collection' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'Asset' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Asset' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'fileSize' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'mimeType' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'preview' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'source' } },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'ConfigurableOperation' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'ConfigurableOperation' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'args' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'value' } },
+                            ],
+                        },
+                    },
+                    { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'Collection' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Collection' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'slug' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'isPrivate' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'featuredAsset' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'Asset' } }],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'assets' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [{ kind: 'FragmentSpread', name: { kind: 'Name', value: 'Asset' } }],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'filters' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                {
+                                    kind: 'FragmentSpread',
+                                    name: { kind: 'Name', value: 'ConfigurableOperation' },
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'translations' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'slug' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'parent' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'children' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'position' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<AssignCollectionsToChannelMutation, AssignCollectionsToChannelMutationVariables>;
 export const CancelJobDocument = {
     kind: 'Document',
     definitions: [

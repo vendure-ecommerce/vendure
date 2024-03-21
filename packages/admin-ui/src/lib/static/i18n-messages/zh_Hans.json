@@ -72,6 +72,8 @@
     "assign-variants-to-channel": "添加到销售渠道",
     "auto-update-option-variant-name": "此选项自动更新不同商品变体名称",
     "auto-update-product-variant-name": "自动更新不同商品变体名称",
+    "calculated-price": "计算价格",
+    "calculated-price-tooltip": "有一个配置的自定义价格计算，修改了上面设置的价格：",
     "cannot-create-variants-without-options": "",
     "channel-price-preview": "渠道价格预览",
     "collection": "",

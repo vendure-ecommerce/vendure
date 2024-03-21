@@ -87,26 +87,30 @@ export class SqliteSearchStrategy implements SearchStrategy {
         const sort = input.sort;
         const qb = this.connection.getRepository(ctx, SearchIndexItem).createQueryBuilder('si');
         if (input.groupByProduct) {
-            qb.addSelect('MIN(si.price)', 'minPrice').addSelect('MAX(si.price)', 'maxPrice');
-            qb.addSelect('MIN(si.priceWithTax)', 'minPriceWithTax').addSelect(
-                'MAX(si.priceWithTax)',
-                'maxPriceWithTax',
-            );
+            qb.addSelect('MIN(si.price)', 'minPrice');
+            qb.addSelect('MAX(si.price)', 'maxPrice');
+            qb.addSelect('MIN(si.priceWithTax)', 'minPriceWithTax');
+            qb.addSelect('MAX(si.priceWithTax)', 'maxPriceWithTax');
         }
+
         this.applyTermAndFilters(ctx, qb, input);
-        if (input.term && input.term.length > this.minTermLength) {
-            qb.orderBy('score', 'DESC');
-        }
+
         if (sort) {
             if (sort.name) {
-                qb.addOrderBy('si.productName', sort.name);
+                // TODO: v3 - set the collation on the SearchIndexItem entity
+                qb.addOrderBy('si.productName COLLATE NOCASE', sort.name);
             }
             if (sort.price) {
                 qb.addOrderBy('si.price', sort.price);
             }
-        } else {
-            qb.addOrderBy('si.productVariantId', 'ASC');
+        } else if (input.term && input.term.length > this.minTermLength) {
+            qb.addOrderBy('score', 'DESC');
         }
+
+        // Required to ensure deterministic sorting.
+        // E.g. in case of sorting products with duplicate name, price or score results.
+        qb.addOrderBy('si.productVariantId', 'ASC');
+
         if (enabledOnly) {
             qb.andWhere('si.enabled = :enabled', { enabled: true });
         }
@@ -230,8 +234,8 @@ export class SqliteSearchStrategy implements SearchStrategy {
             });
         }
 
-        applyLanguageConstraints(qb, ctx.languageCode, ctx.channel.defaultLanguageCode);
         qb.andWhere('si.channelId = :channelId', { channelId: ctx.channelId });
+        applyLanguageConstraints(qb, ctx.languageCode, ctx.channel.defaultLanguageCode);
 
         if (input.groupByProduct === true) {
             qb.groupBy('si.productId');

@@ -16,16 +16,38 @@ import { HydrateOptions } from './entity-hydrator-types';
 /**
  * @description
  * This is a helper class which is used to "hydrate" entity instances, which means to populate them
- * with the specified relations. This is useful when writing plugin code which receives an entity
+ * with the specified relations. This is useful when writing plugin code which receives an entity,
  * and you need to ensure that one or more relations are present.
  *
  * @example
  * ```ts
- * const product = await this.productVariantService
- *   .getProductForVariant(ctx, variantId);
+ * import { Injectable } from '\@nestjs/common';
+ * import { ID, RequestContext, EntityHydrator, ProductVariantService } from '\@vendure/core';
  *
- * await this.entityHydrator
- *   .hydrate(ctx, product, { relations: ['facetValues.facet' ]});
+ * \@Injectable()
+ * export class MyService {
+ *
+ *   constructor(
+ *      // highlight-next-line
+ *      private entityHydrator: EntityHydrator,
+ *      private productVariantService: ProductVariantService,
+ *   ) {}
+ *
+ *   myMethod(ctx: RequestContext, variantId: ID) {
+ *     const product = await this.productVariantService
+ *       .getProductForVariant(ctx, variantId);
+ *
+ *     // at this stage, we don't know which of the Product relations
+ *     // will be joined at runtime.
+ *
+ *     // highlight-start
+ *     await this.entityHydrator
+ *       .hydrate(ctx, product, { relations: ['facetValues.facet' ]});
+ *
+ *     // You can be sure now that the `facetValues` & `facetValues.facet` relations are populated
+ *     // highlight-end
+ *   }
+ * }
  *```
  *
  * In this above example, the `product` instance will now have the `facetValues` relation
@@ -230,6 +252,8 @@ export class EntityHydrator {
                         visit(item, parts.slice());
                     }
                 }
+            } else if (target === null) {
+                result.push(target);
             } else {
                 if (parts.length === 0) {
                     result.push(target);
@@ -279,6 +303,27 @@ export class EntityHydrator {
     private mergeDeep<T extends { [key: string]: any }>(a: T | undefined, b: T): T {
         if (!a) {
             return b;
+        }
+        if (Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.length > 1) {
+            if (a[0].hasOwnProperty('id')) {
+                // If the array contains entities, we can use the id to match them up
+                // so that we ensure that we don't merge properties from different entities
+                // with the same index.
+                const aIds = a.map(e => e.id);
+                const bIds = b.map(e => e.id);
+                if (JSON.stringify(aIds) !== JSON.stringify(bIds)) {
+                    // The entities in the arrays are not in the same order, so we can't
+                    // safely merge them. We need to sort the `b` array so that the entities
+                    // are in the same order as the `a` array.
+                    const idToIndexMap = new Map();
+                    a.forEach((item, index) => {
+                        idToIndexMap.set(item.id, index);
+                    });
+                    b.sort((_a, _b) => {
+                        return idToIndexMap.get(_a.id) - idToIndexMap.get(_b.id);
+                    });
+                }
+            }
         }
         for (const [key, value] of Object.entries(b)) {
             if (Object.getOwnPropertyDescriptor(b, key)?.writable) {

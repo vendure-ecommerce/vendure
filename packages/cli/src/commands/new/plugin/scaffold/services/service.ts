@@ -5,7 +5,7 @@ import { TemplateContext } from '../../types';
 export function renderService(context: TemplateContext) {
     return /* language=TypeScript */ `
 import { Inject, Injectable } from '@nestjs/common';
-import { RequestContext, TransactionalConnection } from '@vendure/core';
+import { RequestContext, TransactionalConnection, patchEntity } from '@vendure/core';
 
 import { ${context.pluginInitOptionsName} } from '../constants';
 import { PluginInitOptions } from '../types';
@@ -71,7 +71,7 @@ export class ${context.service.className} {
 
     async update(ctx: RequestContext, input: Update${context.customEntityName}Input): Promise<${context.customEntityName}> {
         const example = await this.connection.getEntityOrThrow(ctx, ${context.customEntityName}, input.id);
-        const updated = { ...example, ...input };
+        const updated = patchEntity(example, input);
         return this.connection.getRepository(ctx, ${context.customEntityName}).save(updated);
     }
 }

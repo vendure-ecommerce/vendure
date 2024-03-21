@@ -72,6 +72,8 @@
     "assign-variants-to-channel": "",
     "auto-update-option-variant-name": "",
     "auto-update-product-variant-name": "",
+    "calculated-price": "計算價格",
+    "calculated-price-tooltip": "有一個自定義價格計算配置，修改了上面設定的價格：",
     "cannot-create-variants-without-options": "",
     "channel-price-preview": "渠道價格覽",
     "collection": "",

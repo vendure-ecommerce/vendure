@@ -520,11 +520,20 @@ export class OrderService {
         if (variant.product.enabled === false) {
             throw new EntityNotFoundError('ProductVariant', productVariantId);
         }
+        const existingQuantityInOtherLines = summate(
+            order.lines.filter(
+                l =>
+                    idsAreEqual(l.productVariantId, productVariantId) &&
+                    !idsAreEqual(l.id, existingOrderLine?.id),
+            ),
+            'quantity',
+        );
         const correctedQuantity = await this.orderModifier.constrainQuantityToSaleable(
             ctx,
             variant,
             quantity,
             existingOrderLine?.quantity,
+            existingQuantityInOtherLines,
         );
         if (correctedQuantity === 0) {
             return new InsufficientStockError({ order, quantityAvailable: correctedQuantity });
@@ -580,16 +589,27 @@ export class OrderService {
                 orderLine,
             );
         }
+        const existingQuantityInOtherLines = summate(
+            order.lines.filter(
+                l =>
+                    idsAreEqual(l.productVariantId, orderLine.productVariantId) &&
+                    !idsAreEqual(l.id, orderLineId),
+            ),
+            'quantity',
+        );
         const correctedQuantity = await this.orderModifier.constrainQuantityToSaleable(
             ctx,
             orderLine.productVariant,
             quantity,
+            0,
+            existingQuantityInOtherLines,
         );
         let updatedOrderLines = [orderLine];
         if (correctedQuantity === 0) {
             order.lines = order.lines.filter(l => !idsAreEqual(l.id, orderLine.id));
+            const deletedOrderLine = new OrderLine(orderLine);
             await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
-            this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'deleted'));
+            this.eventBus.publish(new OrderLineEvent(ctx, order, deletedOrderLine, 'deleted'));
             updatedOrderLines = [];
         } else {
             await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, correctedQuantity, order);
@@ -619,9 +639,15 @@ export class OrderService {
         }
         const orderLine = this.getOrderLineOrThrow(order, orderLineId);
         order.lines = order.lines.filter(line => !idsAreEqual(line.id, orderLineId));
+        // Persist the orderLine removal before applying price adjustments
+        // so that any hydration of the Order entity during the course of the
+        // `applyPriceAdjustments()` (e.g. in a ShippingEligibilityChecker etc)
+        // will not re-add the OrderLine.
+        await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
+        const deletedOrderLine = new OrderLine(orderLine);
         await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
-        this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'deleted'));
+        this.eventBus.publish(new OrderLineEvent(ctx, order, deletedOrderLine, 'deleted'));
         return updatedOrder;
     }
 
@@ -876,6 +902,7 @@ export class OrderService {
             let shippingLine: ShippingLine | undefined = order.shippingLines[i];
             if (shippingLine) {
                 shippingLine.shippingMethod = shippingMethod;
+                shippingLine.shippingMethodId = shippingMethod.id;
             } else {
                 shippingLine = await this.connection.getRepository(ctx, ShippingLine).save(
                     new ShippingLine({
@@ -923,8 +950,8 @@ export class OrderService {
             });
         }
         const updatedOrder = await this.getOrderOrThrow(ctx, orderId);
-        await this.applyPriceAdjustments(ctx, order);
-        return this.connection.getRepository(ctx, Order).save(order);
+        await this.applyPriceAdjustments(ctx, updatedOrder);
+        return this.connection.getRepository(ctx, Order).save(updatedOrder);
     }
 
     /**
@@ -1667,6 +1694,14 @@ export class OrderService {
     ): Promise<Order> {
         const promotions = await this.promotionService.getActivePromotionsInChannel(ctx);
         const activePromotionsPre = await this.promotionService.getActivePromotionsOnOrder(ctx, order.id);
+
+        // When changing the Order's currencyCode (on account of passing
+        // a different currencyCode into the RequestContext), we need to make sure
+        // to update all existing OrderLines to use prices in this new currency.
+        if (ctx.currencyCode !== order.currencyCode) {
+            updatedOrderLines = order.lines;
+            order.currencyCode = ctx.currencyCode;
+        }
 
         if (updatedOrderLines?.length) {
             const { orderItemPriceCalculationStrategy, changedPriceHandlingStrategy } =
