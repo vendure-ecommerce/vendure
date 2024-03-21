@@ -3,9 +3,9 @@ import { Project } from 'ts-morph';
 import { describe, expect, it } from 'vitest';
 
 import { defaultManipulationSettings } from '../../../../../constants';
+import { VendurePluginRef } from '../../../../../shared/vendure-plugin-ref';
 import { getPluginClasses } from '../../../../../utilities/ast-utils';
 import { expectSourceFileContentToMatch } from '../../../../../utilities/testing-utils';
-import { VendurePluginRef } from '../../../../../utilities/vendure-plugin-ref';
 
 import { addUiExtensionStaticProp } from './add-ui-extension-static-prop';
 

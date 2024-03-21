@@ -1,25 +1,23 @@
-import { cancel, isCancel, multiselect, outro } from '@clack/prompts';
-import { paramCase } from 'change-case';
+import { cancel, isCancel, multiselect, outro, text } from '@clack/prompts';
+import { paramCase, pascalCase } from 'change-case';
 import path from 'path';
-import { ClassDeclaration, StructureKind, SyntaxKind } from 'ts-morph';
+import { ClassDeclaration } from 'ts-morph';
 
-import { analyzeProject, getCustomEntityName, selectPlugin } from '../../../shared/shared-prompts';
+import { analyzeProject, selectPlugin } from '../../../shared/shared-prompts';
+import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
 import { createFile } from '../../../utilities/ast-utils';
-import { VendurePluginRef } from '../../../utilities/vendure-plugin-ref';
 
 import { addEntityToPlugin } from './codemods/add-entity-to-plugin/add-entity-to-plugin';
 
 const cancelledMessage = 'Add entity cancelled';
 
 export interface AddEntityTemplateContext {
-    entity: {
-        className: string;
-        fileName: string;
-        translationFileName: string;
-        features: {
-            customFields: boolean;
-            translatable: boolean;
-        };
+    className: string;
+    fileName: string;
+    translationFileName: string;
+    features: {
+        customFields: boolean;
+        translatable: boolean;
     };
 }
 
@@ -52,21 +50,19 @@ export async function addEntity(providedVendurePlugin?: VendurePluginRef) {
     }
 
     const context: AddEntityTemplateContext = {
-        entity: {
-            className: customEntityName,
-            fileName: paramCase(customEntityName) + '.entity',
-            translationFileName: paramCase(customEntityName) + '-translation.entity',
-            features: {
-                customFields: features.includes('customFields'),
-                translatable: features.includes('translatable'),
-            },
+        className: customEntityName,
+        fileName: paramCase(customEntityName) + '.entity',
+        translationFileName: paramCase(customEntityName) + '-translation.entity',
+        features: {
+            customFields: features.includes('customFields'),
+            translatable: features.includes('translatable'),
         },
     };
 
     const { entityClass, translationClass } = createEntity(vendurePlugin, context);
     addEntityToPlugin(vendurePlugin, entityClass);
     entityClass.getSourceFile().organizeImports();
-    if (context.entity.features.translatable) {
+    if (context.features.translatable) {
         addEntityToPlugin(vendurePlugin, translationClass);
         translationClass.getSourceFile().organizeImports();
     }
@@ -88,28 +84,28 @@ function createEntity(plugin: VendurePluginRef, context: AddEntityTemplateContex
         plugin.getSourceFile().getProject(),
         path.join(__dirname, 'templates/entity-translation.template.ts'),
     );
-    entityFile.move(path.join(entitiesDir, `${context.entity.fileName}.ts`));
-    translationFile.move(path.join(entitiesDir, `${context.entity.translationFileName}.ts`));
+    entityFile.move(path.join(entitiesDir, `${context.fileName}.ts`));
+    translationFile.move(path.join(entitiesDir, `${context.translationFileName}.ts`));
 
-    const entityClass = entityFile.getClass('ScaffoldEntity')?.rename(context.entity.className);
+    const entityClass = entityFile.getClass('ScaffoldEntity')?.rename(context.className);
     const customFieldsClass = entityFile
         .getClass('ScaffoldEntityCustomFields')
-        ?.rename(`${context.entity.className}CustomFields`);
+        ?.rename(`${context.className}CustomFields`);
     const translationClass = translationFile
         .getClass('ScaffoldTranslation')
-        ?.rename(`${context.entity.className}Translation`);
+        ?.rename(`${context.className}Translation`);
     const translationCustomFieldsClass = translationFile
         .getClass('ScaffoldEntityCustomFieldsTranslation')
-        ?.rename(`${context.entity.className}CustomFieldsTranslation`);
+        ?.rename(`${context.className}CustomFieldsTranslation`);
 
-    if (!context.entity.features.customFields) {
+    if (!context.features.customFields) {
         // Remove custom fields from entity
         customFieldsClass?.remove();
         translationCustomFieldsClass?.remove();
         removeCustomFieldsFromClass(entityClass);
         removeCustomFieldsFromClass(translationClass);
     }
-    if (!context.entity.features.translatable) {
+    if (!context.features.translatable) {
         // Remove translatable fields from entity
         translationClass?.remove();
         entityClass?.getProperty('localizedName')?.remove();
@@ -132,4 +128,25 @@ function removeImplementsFromClass(implementsName: string, entityClass?: ClassDe
     if (index > -1) {
         entityClass?.removeImplements(index);
     }
+}
+
+export async function getCustomEntityName(_cancelledMessage: string) {
+    const entityName = await text({
+        message: 'What is the name of the custom entity?',
+        initialValue: '',
+        validate: input => {
+            if (!input) {
+                return 'The custom entity name cannot be empty';
+            }
+            const pascalCaseRegex = /^[A-Z][a-zA-Z0-9]*$/;
+            if (!pascalCaseRegex.test(input)) {
+                return 'The custom entity name must be in PascalCase, e.g. "ProductReview"';
+            }
+        },
+    });
+    if (isCancel(entityName)) {
+        cancel(_cancelledMessage);
+        process.exit(0);
+    }
+    return pascalCase(entityName);
 }

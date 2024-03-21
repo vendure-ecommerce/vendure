@@ -10,7 +10,7 @@ import {
     SyntaxKind,
 } from 'ts-morph';
 
-import { createFile, getTsMorphProject } from './ast-utils';
+import { createFile, getTsMorphProject } from '../../../utilities/ast-utils';
 
 export class CodegenConfigRef {
     private readonly tempProject: Project;

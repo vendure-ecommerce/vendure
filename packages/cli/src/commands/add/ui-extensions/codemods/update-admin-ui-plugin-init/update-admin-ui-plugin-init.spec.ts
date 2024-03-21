@@ -3,8 +3,8 @@ import { Project } from 'ts-morph';
 import { describe, it } from 'vitest';
 
 import { defaultManipulationSettings } from '../../../../../constants';
+import { VendureConfigRef } from '../../../../../shared/vendure-config-ref';
 import { expectSourceFileContentToMatch } from '../../../../../utilities/testing-utils';
-import { VendureConfigRef } from '../../../../../utilities/vendure-config-ref';
 
 import { updateAdminUiPluginInit } from './update-admin-ui-plugin-init';
 

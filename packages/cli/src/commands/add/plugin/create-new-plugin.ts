@@ -3,9 +3,9 @@ import { constantCase, paramCase, pascalCase } from 'change-case';
 import * as fs from 'fs-extra';
 import path from 'path';
 
+import { VendureConfigRef } from '../../../shared/vendure-config-ref';
+import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
 import { addImportsToFile, createFile, getTsMorphProject } from '../../../utilities/ast-utils';
-import { VendureConfigRef } from '../../../utilities/vendure-config-ref';
-import { VendurePluginRef } from '../../../utilities/vendure-plugin-ref';
 import { addCodegen } from '../codegen/add-codegen';
 import { addEntity } from '../entity/add-entity';
 import { addUiExtensions } from '../ui-extensions/add-ui-extensions';

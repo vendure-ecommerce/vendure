@@ -2,11 +2,12 @@ import { log, note, outro, spinner } from '@clack/prompts';
 import path from 'path';
 import { StructureKind } from 'ts-morph';
 
+import { PackageJson } from '../../../shared/package-json-ref';
 import { analyzeProject, selectMultiplePluginClasses } from '../../../shared/shared-prompts';
+import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
 import { getRelativeImportPath } from '../../../utilities/ast-utils';
-import { CodegenConfigRef } from '../../../utilities/codegen-config-ref';
-import { PackageJson } from '../../../utilities/package-utils';
-import { VendurePluginRef } from '../../../utilities/vendure-plugin-ref';
+
+import { CodegenConfigRef } from './codegen-config-ref';
 
 export async function addCodegen(providedVendurePlugin?: VendurePluginRef) {
     const project = await analyzeProject({

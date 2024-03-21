@@ -1,8 +1,8 @@
 import { ClassDeclaration } from 'ts-morph';
 
 import { AdminUiExtensionTypeName } from '../../../../../constants';
+import { VendurePluginRef } from '../../../../../shared/vendure-plugin-ref';
 import { addImportsToFile, kebabize } from '../../../../../utilities/ast-utils';
-import { VendurePluginRef } from '../../../../../utilities/vendure-plugin-ref';
 
 /**
  * @description

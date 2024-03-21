@@ -1,11 +1,11 @@
 import { log, note, outro, spinner } from '@clack/prompts';
 import path from 'path';
 
+import { PackageJson } from '../../../shared/package-json-ref';
 import { analyzeProject, selectPlugin } from '../../../shared/shared-prompts';
+import { VendureConfigRef } from '../../../shared/vendure-config-ref';
+import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
 import { createFile, getRelativeImportPath } from '../../../utilities/ast-utils';
-import { PackageJson } from '../../../utilities/package-utils';
-import { VendureConfigRef } from '../../../utilities/vendure-config-ref';
-import { VendurePluginRef } from '../../../utilities/vendure-plugin-ref';
 
 import { addUiExtensionStaticProp } from './codemods/add-ui-extension-static-prop/add-ui-extension-static-prop';
 import { updateAdminUiPluginInit } from './codemods/update-admin-ui-plugin-init/update-admin-ui-plugin-init';

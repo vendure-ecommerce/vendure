@@ -1,31 +1,10 @@
-import { cancel, isCancel, multiselect, select, spinner, text } from '@clack/prompts';
-import { pascalCase } from 'change-case';
+import { cancel, isCancel, multiselect, select, spinner } from '@clack/prompts';
 import { ClassDeclaration, Project } from 'ts-morph';
 
 import { Messages } from '../constants';
 import { getPluginClasses, getTsMorphProject } from '../utilities/ast-utils';
-import { VendurePluginRef } from '../utilities/vendure-plugin-ref';
 
-export async function getCustomEntityName(cancelledMessage: string) {
-    const entityName = await text({
-        message: 'What is the name of the custom entity?',
-        initialValue: '',
-        validate: input => {
-            if (!input) {
-                return 'The custom entity name cannot be empty';
-            }
-            const pascalCaseRegex = /^[A-Z][a-zA-Z0-9]*$/;
-            if (!pascalCaseRegex.test(input)) {
-                return 'The custom entity name must be in PascalCase, e.g. "ProductReview"';
-            }
-        },
-    });
-    if (isCancel(entityName)) {
-        cancel(cancelledMessage);
-        process.exit(0);
-    }
-    return pascalCase(entityName);
-}
+import { VendurePluginRef } from './vendure-plugin-ref';
 
 export async function analyzeProject(options: {
     providedVendurePlugin?: VendurePluginRef;

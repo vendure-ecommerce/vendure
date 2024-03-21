@@ -1,8 +1,8 @@
 import { Node, ObjectLiteralExpression, StructureKind, SyntaxKind } from 'ts-morph';
 
 import { AdminUiAppConfigName } from '../../../../../constants';
+import { VendureConfigRef } from '../../../../../shared/vendure-config-ref';
 import { addImportsToFile } from '../../../../../utilities/ast-utils';
-import { VendureConfigRef } from '../../../../../utilities/vendure-config-ref';
 
 export function updateAdminUiPluginInit(
     vendureConfig: VendureConfigRef,
