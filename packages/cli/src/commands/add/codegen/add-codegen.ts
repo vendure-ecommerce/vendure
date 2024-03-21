@@ -1,11 +1,10 @@
 import { log, note, outro, spinner } from '@clack/prompts';
 import path from 'path';
-import pc from 'picocolors';
 import { ClassDeclaration, StructureKind, SyntaxKind } from 'ts-morph';
 
 import { selectMultiplePluginClasses } from '../../../shared/shared-prompts';
 import { createFile, getRelativeImportPath, getTsMorphProject } from '../../../utilities/ast-utils';
-import { addNpmScriptToPackageJson, installRequiredPackages } from '../../../utilities/package-utils';
+import { PackageJson } from '../../../utilities/package-utils';
 
 export async function addCodegen(providedPluginClass?: ClassDeclaration) {
     let pluginClasses = providedPluginClass ? [providedPluginClass] : [];
@@ -19,10 +18,11 @@ export async function addCodegen(providedPluginClass?: ClassDeclaration) {
         pluginClasses = await selectMultiplePluginClasses(project, 'Add codegen cancelled');
     }
 
+    const packageJson = new PackageJson(project);
     const installSpinner = spinner();
     installSpinner.start(`Installing dependencies...`);
     try {
-        await installRequiredPackages(project, [
+        await packageJson.installPackages([
             {
                 pkg: '@graphql-codegen/cli',
                 isDevDependency: true,
@@ -75,7 +75,7 @@ export async function addCodegen(providedPluginClass?: ClassDeclaration) {
     }
     codegenFile.move(path.join(rootDir.getPath(), 'codegen.ts'));
 
-    addNpmScriptToPackageJson(tempProject, 'codegen', 'graphql-codegen --config codegen.ts');
+    packageJson.addScript('codegen', 'graphql-codegen --config codegen.ts');
 
     configSpinner.stop('Configured codegen file');
 

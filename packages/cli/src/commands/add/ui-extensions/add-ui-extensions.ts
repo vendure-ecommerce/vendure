@@ -9,7 +9,7 @@ import {
     getTsMorphProject,
     getVendureConfig,
 } from '../../../utilities/ast-utils';
-import { determineVendureVersion, installRequiredPackages } from '../../../utilities/package-utils';
+import { PackageJson } from '../../../utilities/package-utils';
 
 import { addUiExtensionStaticProp } from './codemods/add-ui-extension-static-prop/add-ui-extension-static-prop';
 import { updateAdminUiPluginInit } from './codemods/update-admin-ui-plugin-init/update-admin-ui-plugin-init';
@@ -25,6 +25,7 @@ export async function addUiExtensions(providedPluginClass?: ClassDeclaration) {
         projectSpinner.stop('Project analyzed');
         pluginClass = await selectPluginClass(project, 'Add UI extensions cancelled');
     }
+    const packageJson = new PackageJson(project);
 
     if (pluginAlreadyHasUiExtensionProp(pluginClass)) {
         outro('This plugin already has UI extensions configured');
@@ -36,8 +37,8 @@ export async function addUiExtensions(providedPluginClass?: ClassDeclaration) {
     const installSpinner = spinner();
     installSpinner.start(`Installing dependencies...`);
     try {
-        const version = determineVendureVersion(project);
-        await installRequiredPackages(project, [
+        const version = packageJson.determineVendureVersion();
+        await packageJson.installPackages([
             {
                 pkg: '@vendure/ui-devkit',
                 isDevDependency: true,
