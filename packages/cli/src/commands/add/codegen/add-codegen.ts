@@ -1,9 +1,10 @@
 import { log, note, outro, spinner } from '@clack/prompts';
 import path from 'path';
-import { ClassDeclaration, StructureKind, SyntaxKind } from 'ts-morph';
+import { StructureKind } from 'ts-morph';
 
 import { analyzeProject, selectMultiplePluginClasses } from '../../../shared/shared-prompts';
-import { createFile, getRelativeImportPath, getTsMorphProject } from '../../../utilities/ast-utils';
+import { getRelativeImportPath } from '../../../utilities/ast-utils';
+import { CodegenConfigRef } from '../../../utilities/codegen-config-ref';
 import { PackageJson } from '../../../utilities/package-utils';
 import { VendurePluginRef } from '../../../utilities/vendure-plugin-ref';
 
@@ -46,62 +47,46 @@ export async function addCodegen(providedVendurePlugin?: VendurePluginRef) {
     configSpinner.start('Configuring codegen file...');
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    const tempProject = getTsMorphProject({ skipAddingFilesFromTsConfig: true });
-    const codegenFile = createFile(tempProject, path.join(__dirname, 'templates/codegen.template.ts'));
-    const codegenConfig = codegenFile
-        .getVariableDeclaration('config')
-        ?.getChildrenOfKind(SyntaxKind.ObjectLiteralExpression)[0];
-    if (!codegenConfig) {
-        throw new Error('Could not find the config variable in the template codegen file');
-    }
-    const generatesProp = codegenConfig
-        .getProperty('generates')
-        ?.getFirstChildByKind(SyntaxKind.ObjectLiteralExpression);
-    if (!generatesProp) {
-        throw new Error('Could not find the generates property in the template codegen file');
-    }
-    const rootDir = tempProject.getDirectory('.');
+    const codegenFile = new CodegenConfigRef(packageJson.getPackageRootDir());
+
+    const rootDir = project.getDirectory('.');
     if (!rootDir) {
         throw new Error('Could not find the root directory of the project');
     }
     for (const plugin of plugins) {
         const relativePluginPath = getRelativeImportPath({
-            from: plugin.classDeclaration.getSourceFile(),
-            to: rootDir,
+            from: rootDir,
+            to: plugin.classDeclaration.getSourceFile(),
         });
         const generatedTypesPath = `${path.dirname(relativePluginPath)}/gql/generated.ts`;
-        generatesProp
-            .addProperty({
-                name: `'${generatedTypesPath}'`,
-                kind: StructureKind.PropertyAssignment,
-                initializer: `{ plugins: ['typescript'] }`,
-            })
-            .formatText();
+        codegenFile.addEntryToGeneratesObject({
+            name: `'${generatedTypesPath}'`,
+            kind: StructureKind.PropertyAssignment,
+            initializer: `{ plugins: ['typescript'] }`,
+        });
 
         if (plugin.hasUiExtensions()) {
             const uiExtensionsPath = `${path.dirname(relativePluginPath)}/ui`;
-            generatesProp
-                .addProperty({
-                    name: `'${uiExtensionsPath}/gql/'`,
-                    kind: StructureKind.PropertyAssignment,
-                    initializer: `{ 
+            codegenFile.addEntryToGeneratesObject({
+                name: `'${uiExtensionsPath}/gql/'`,
+                kind: StructureKind.PropertyAssignment,
+                initializer: `{ 
                         preset: 'client',
                         documents: '${uiExtensionsPath}/**/*.ts', 
                         presetConfig: {
                             fragmentMasking: false,
                         },
                      }`,
-                })
-                .formatText();
+            });
         }
     }
-    codegenFile.move(path.join(rootDir.getPath(), 'codegen.ts'));
 
     packageJson.addScript('codegen', 'graphql-codegen --config codegen.ts');
 
     configSpinner.stop('Configured codegen file');
 
     await project.save();
+    await codegenFile.save();
 
     const nextSteps = [
         `You can run codegen by doing the following:`,

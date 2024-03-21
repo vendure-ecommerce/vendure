@@ -20,6 +20,6 @@ export class VendurePluginRef {
     hasUiExtensions(): boolean {
         return !!this.classDeclaration
             .getStaticProperties()
-            .find(prop => prop.getType().getText() === AdminUiExtensionTypeName);
+            .find(prop => prop.getType().getSymbol()?.getName() === AdminUiExtensionTypeName);
     }
 }

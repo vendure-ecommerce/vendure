@@ -55,8 +55,8 @@ export async function addUiExtensions(providedVendurePlugin?: VendurePluginRef) 
     } else {
         const pluginClassName = vendurePlugin.name;
         const pluginPath = getRelativeImportPath({
-            to: vendureConfig.sourceFile,
-            from: vendurePlugin.classDeclaration.getSourceFile(),
+            to: vendurePlugin.classDeclaration.getSourceFile(),
+            from: vendureConfig.sourceFile,
         });
         const updated = updateAdminUiPluginInit(vendureConfig, { pluginClassName, pluginPath });
         if (updated) {

@@ -1,5 +1,6 @@
 import { Node, ObjectLiteralExpression, StructureKind, SyntaxKind } from 'ts-morph';
 
+import { AdminUiAppConfigName } from '../../../../../constants';
 import { addImportsToFile } from '../../../../../utilities/ast-utils';
 import { VendureConfigRef } from '../../../../../utilities/vendure-config-ref';
 
@@ -34,7 +35,7 @@ export function updateAdminUiPluginInit(
                 .formatText();
         } else {
             const computeFnCall = appProperty.getFirstChildByKind(SyntaxKind.CallExpression);
-            if (computeFnCall?.getType().getText().includes('AdminUiAppConfig')) {
+            if (computeFnCall?.getType().getSymbol()?.getName() === AdminUiAppConfigName) {
                 const arg = computeFnCall.getArguments()[0];
                 if (arg && Node.isObjectLiteralExpression(arg)) {
                     const extensionsProp = arg.getProperty('extensions');

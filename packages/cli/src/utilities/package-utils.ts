@@ -78,7 +78,7 @@ export class PackageJson {
         fs.writeJsonSync(packageJsonPath, packageJson, { spaces: 2 });
     }
 
-    private getPackageRootDir() {
+    getPackageRootDir() {
         const rootDir = this.project.getDirectory('.');
         if (!rootDir) {
             throw new Error('Could not find the root directory of the project');

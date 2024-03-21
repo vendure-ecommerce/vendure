@@ -91,7 +91,8 @@ export function getRelativeImportPath(locations: {
     const fromPath =
         locations.from instanceof SourceFile ? locations.from.getFilePath() : locations.from.getPath();
     const toPath = locations.to instanceof SourceFile ? locations.to.getFilePath() : locations.to.getPath();
-    return convertPathToRelativeImport(path.relative(path.dirname(fromPath), toPath));
+    const fromDir = /\.[a-z]+$/.test(fromPath) ? path.dirname(fromPath) : fromPath;
+    return convertPathToRelativeImport(path.relative(fromDir, toPath));
 }
 
 export function createFile(project: Project, templatePath: string) {
