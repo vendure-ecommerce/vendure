@@ -2,6 +2,7 @@ import { log, note, outro, spinner } from '@clack/prompts';
 import path from 'path';
 import { StructureKind } from 'ts-morph';
 
+import { CliCommand } from '../../../shared/cli-command';
 import { PackageJson } from '../../../shared/package-json-ref';
 import { analyzeProject, selectMultiplePluginClasses } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
@@ -9,7 +10,19 @@ import { getRelativeImportPath } from '../../../utilities/ast-utils';
 
 import { CodegenConfigRef } from './codegen-config-ref';
 
-export async function addCodegen(providedVendurePlugin?: VendurePluginRef) {
+export interface AddCodegenOptions {
+    plugin?: VendurePluginRef;
+}
+
+export const addCodegenCommand = new CliCommand({
+    id: 'add-codegen',
+    category: 'Project: Codegen',
+    description: 'Set up GraphQL code generation',
+    run: addCodegen,
+});
+
+async function addCodegen(options?: AddCodegenOptions) {
+    const providedVendurePlugin = options?.plugin;
     const project = await analyzeProject({
         providedVendurePlugin,
         cancelledMessage: 'Add codegen cancelled',

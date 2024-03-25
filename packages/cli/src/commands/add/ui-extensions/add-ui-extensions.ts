@@ -1,6 +1,7 @@
 import { log, note, outro, spinner } from '@clack/prompts';
 import path from 'path';
 
+import { CliCommand } from '../../../shared/cli-command';
 import { PackageJson } from '../../../shared/package-json-ref';
 import { analyzeProject, selectPlugin } from '../../../shared/shared-prompts';
 import { VendureConfigRef } from '../../../shared/vendure-config-ref';
@@ -10,7 +11,19 @@ import { createFile, getRelativeImportPath } from '../../../utilities/ast-utils'
 import { addUiExtensionStaticProp } from './codemods/add-ui-extension-static-prop/add-ui-extension-static-prop';
 import { updateAdminUiPluginInit } from './codemods/update-admin-ui-plugin-init/update-admin-ui-plugin-init';
 
-export async function addUiExtensions(providedVendurePlugin?: VendurePluginRef) {
+export interface AddUiExtensionsOptions {
+    plugin?: VendurePluginRef;
+}
+
+export const addUiExtensionsCommand = new CliCommand<AddUiExtensionsOptions>({
+    id: 'add-ui-extensions',
+    category: 'Plugin: UI',
+    description: 'Set up Admin UI extensions',
+    run: options => addUiExtensions(options),
+});
+
+async function addUiExtensions(options?: AddUiExtensionsOptions) {
+    const providedVendurePlugin = options?.plugin;
     const project = await analyzeProject({ providedVendurePlugin });
     const vendurePlugin =
         providedVendurePlugin ?? (await selectPlugin(project, 'Add UI extensions cancelled'));

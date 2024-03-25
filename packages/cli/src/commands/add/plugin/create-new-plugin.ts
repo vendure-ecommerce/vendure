@@ -3,15 +3,23 @@ import { constantCase, paramCase, pascalCase } from 'change-case';
 import * as fs from 'fs-extra';
 import path from 'path';
 
+import { CliCommand } from '../../../shared/cli-command';
 import { VendureConfigRef } from '../../../shared/vendure-config-ref';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
 import { addImportsToFile, createFile, getTsMorphProject } from '../../../utilities/ast-utils';
-import { addCodegen } from '../codegen/add-codegen';
-import { addEntity } from '../entity/add-entity';
-import { addService } from '../service/add-service';
-import { addUiExtensions } from '../ui-extensions/add-ui-extensions';
+import { addCodegenCommand } from '../codegen/add-codegen';
+import { addEntityCommand } from '../entity/add-entity';
+import { addServiceCommand } from '../service/add-service';
+import { addUiExtensionsCommand } from '../ui-extensions/add-ui-extensions';
 
 import { GeneratePluginOptions, NewPluginTemplateContext } from './types';
+
+export const createNewPluginCommand = new CliCommand({
+    id: 'create-new-plugin',
+    category: 'Plugin',
+    description: 'Create a new Vendure plugin',
+    run: createNewPlugin,
+});
 
 const cancelledMessage = 'Plugin setup cancelled.';
 
@@ -69,18 +77,16 @@ export async function createNewPlugin() {
     configSpinner.stop('Updated VendureConfig');
 
     let done = false;
+    const followUpCommands = [addEntityCommand, addServiceCommand, addUiExtensionsCommand, addCodegenCommand];
     while (!done) {
         const featureType = await select({
             message: `Add features to ${options.name}?`,
             options: [
                 { value: 'no', label: "[Finish] No, I'm done!" },
-                { value: 'entity', label: '[Plugin: Entity] Add a new entity to the plugin' },
-                { value: 'service', label: '[Plugin: Service] Add a new service to the plugin' },
-                { value: 'uiExtensions', label: '[Plugin: UI] Set up Admin UI extensions' },
-                {
-                    value: 'codegen',
-                    label: '[Plugin: Codegen] Set up GraphQL code generation for this plugin',
-                },
+                ...followUpCommands.map(c => ({
+                    value: c.id,
+                    label: `[${c.category}] ${c.description}`,
+                })),
             ],
         });
         if (isCancel(featureType)) {
@@ -88,18 +94,11 @@ export async function createNewPlugin() {
         }
         if (featureType === 'no') {
             done = true;
-        } else if (featureType === 'entity') {
-            await addEntity(plugin);
-        } else if (featureType === 'uiExtensions') {
-            await addUiExtensions(plugin);
-        } else if (featureType === 'codegen') {
-            await addCodegen(plugin);
-        } else if (featureType === 'service') {
-            await addService(plugin);
+        } else {
+            const command = followUpCommands.find(c => c.id === featureType);
+            await command?.run({ plugin });
         }
     }
-
-    outro('✅ Plugin setup complete!');
 }
 
 export async function generatePlugin(options: GeneratePluginOptions): Promise<VendurePluginRef> {

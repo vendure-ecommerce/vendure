@@ -3,47 +3,61 @@ import path from 'path';
 import { ClassDeclaration, SourceFile } from 'ts-morph';
 
 import { pascalCaseRegex } from '../../../constants';
+import { CliCommand } from '../../../shared/cli-command';
 import { EntityRef } from '../../../shared/entity-ref';
+import { ServiceRef } from '../../../shared/service-ref';
 import { analyzeProject, selectEntity, selectPlugin } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
 import { addImportsToFile, createFile, kebabize } from '../../../utilities/ast-utils';
 
 const cancelledMessage = 'Add service cancelled';
 
-interface AddServiceTemplateContext {
+interface AddServiceOptions {
+    plugin?: VendurePluginRef;
     type: 'basic' | 'entity';
     serviceName: string;
     entityRef?: EntityRef;
 }
 
-export async function addService(providedVendurePlugin?: VendurePluginRef) {
+export const addServiceCommand = new CliCommand<AddServiceOptions, ServiceRef>({
+    id: 'add-service',
+    category: 'Plugin: Service',
+    description: 'Add a new service to a plugin',
+    run: options => addService(options),
+});
+
+async function addService(providedOptions?: Partial<AddServiceOptions>) {
+    const providedVendurePlugin = providedOptions?.plugin;
     const project = await analyzeProject({ providedVendurePlugin, cancelledMessage });
     const vendurePlugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
 
-    const type = await select({
-        message: 'What type of service would you like to add?',
-        options: [
-            { value: 'basic', label: 'Basic empty service' },
-            { value: 'entity', label: 'Service to perform CRUD operations on an entity' },
-        ],
-        maxItems: 10,
-    });
+    const type =
+        providedOptions?.type ??
+        (await select({
+            message: 'What type of service would you like to add?',
+            options: [
+                { value: 'basic', label: 'Basic empty service' },
+                { value: 'entity', label: 'Service to perform CRUD operations on an entity' },
+            ],
+            maxItems: 10,
+        }));
     if (isCancel(type)) {
         cancel('Cancelled');
         process.exit(0);
     }
-    const context: AddServiceTemplateContext = {
-        type: type as AddServiceTemplateContext['type'],
+    const options: AddServiceOptions = {
+        type: type as AddServiceOptions['type'],
         serviceName: 'MyService',
     };
     if (type === 'entity') {
         const entityRef = await selectEntity(vendurePlugin);
-        context.entityRef = entityRef;
-        context.serviceName = `${entityRef.name}Service`;
+        options.entityRef = entityRef;
+        options.serviceName = `${entityRef.name}Service`;
     }
 
     let serviceSourceFile: SourceFile;
-    if (context.type === 'basic') {
+    let serviceClassDeclaration: ClassDeclaration;
+    if (options.type === 'basic') {
         serviceSourceFile = createFile(project, path.join(__dirname, 'templates/basic-service.template.ts'));
         const name = await text({
             message: 'What is the name of the new service?',
@@ -61,17 +75,18 @@ export async function addService(providedVendurePlugin?: VendurePluginRef) {
             cancel(cancelledMessage);
             process.exit(0);
         }
-        context.serviceName = name;
-        serviceSourceFile.getClass('BasicServiceTemplate')?.rename(context.serviceName);
+        options.serviceName = name;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        serviceClassDeclaration = serviceSourceFile
+            .getClass('BasicServiceTemplate')!
+            .rename(options.serviceName);
     } else {
         serviceSourceFile = createFile(project, path.join(__dirname, 'templates/entity-service.template.ts'));
-        const serviceClassDeclaration = serviceSourceFile
-            .getClass('EntityServiceTemplate')
-            ?.rename(context.serviceName);
-        if (!serviceClassDeclaration) {
-            throw new Error('Could not find service class declaration');
-        }
-        const entityRef = context.entityRef;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        serviceClassDeclaration = serviceSourceFile
+            .getClass('EntityServiceTemplate')!
+            .rename(options.serviceName);
+        const entityRef = options.entityRef;
         if (!entityRef) {
             throw new Error('Entity class not found');
         }
@@ -107,15 +122,15 @@ export async function addService(providedVendurePlugin?: VendurePluginRef) {
         removedUnusedConstructorArgs(serviceClassDeclaration, entityRef);
     }
 
-    const serviceFileName = kebabize(context.serviceName).replace(/-service$/, '.service');
+    const serviceFileName = kebabize(options.serviceName).replace(/-service$/, '.service');
     serviceSourceFile?.move(
         path.join(vendurePlugin.getPluginDir().getPath(), 'services', `${serviceFileName}.ts`),
     );
 
-    vendurePlugin.addProvider(context.serviceName);
+    vendurePlugin.addProvider(options.serviceName);
     addImportsToFile(vendurePlugin.classDeclaration.getSourceFile(), {
         moduleSpecifier: serviceSourceFile,
-        namedImports: [context.serviceName],
+        namedImports: [options.serviceName],
     });
 
     serviceSourceFile.organizeImports();
@@ -124,6 +139,7 @@ export async function addService(providedVendurePlugin?: VendurePluginRef) {
     if (!providedVendurePlugin) {
         outro('✅  Done!');
     }
+    return new ServiceRef(serviceClassDeclaration);
 }
 
 function customizeFindOneMethod(serviceClassDeclaration: ClassDeclaration, entityRef: EntityRef) {

@@ -4,6 +4,8 @@ import path from 'path';
 import { ClassDeclaration } from 'ts-morph';
 
 import { pascalCaseRegex } from '../../../constants';
+import { CliCommand } from '../../../shared/cli-command';
+import { EntityRef } from '../../../shared/entity-ref';
 import { analyzeProject, selectPlugin } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
 import { createFile } from '../../../utilities/ast-utils';
@@ -12,7 +14,8 @@ import { addEntityToPlugin } from './codemods/add-entity-to-plugin/add-entity-to
 
 const cancelledMessage = 'Add entity cancelled';
 
-export interface AddEntityTemplateContext {
+export interface AddEntityOptions {
+    plugin?: VendurePluginRef;
     className: string;
     fileName: string;
     translationFileName: string;
@@ -22,12 +25,47 @@ export interface AddEntityTemplateContext {
     };
 }
 
-export async function addEntity(providedVendurePlugin?: VendurePluginRef) {
+export const addEntityCommand = new CliCommand({
+    id: 'add-entity',
+    category: 'Plugin: Entity',
+    description: 'Add a new entity to a plugin',
+    run: options => addEntity(options),
+});
+
+async function addEntity(options?: Partial<AddEntityOptions>) {
+    const providedVendurePlugin = options?.plugin;
     const project = await analyzeProject({ providedVendurePlugin, cancelledMessage });
     const vendurePlugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
 
-    const customEntityName = await getCustomEntityName(cancelledMessage);
+    const customEntityName = options?.className ?? (await getCustomEntityName(cancelledMessage));
 
+    const context: AddEntityOptions = {
+        className: customEntityName,
+        fileName: paramCase(customEntityName) + '.entity',
+        translationFileName: paramCase(customEntityName) + '-translation.entity',
+        features: await getFeatures(options),
+    };
+
+    const { entityClass, translationClass } = createEntity(vendurePlugin, context);
+    addEntityToPlugin(vendurePlugin, entityClass);
+    entityClass.getSourceFile().organizeImports();
+    if (context.features.translatable) {
+        addEntityToPlugin(vendurePlugin, translationClass);
+        translationClass.getSourceFile().organizeImports();
+    }
+
+    await project.save();
+
+    if (!providedVendurePlugin) {
+        outro('✅  Done!');
+    }
+    return new EntityRef(entityClass);
+}
+
+async function getFeatures(options?: Partial<AddEntityOptions>): Promise<AddEntityOptions['features']> {
+    if (options?.features) {
+        return options?.features;
+    }
     const features = await multiselect({
         message: 'Entity features (use ↑, ↓, space to select)',
         required: false,
@@ -49,33 +87,13 @@ export async function addEntity(providedVendurePlugin?: VendurePluginRef) {
         cancel(cancelledMessage);
         process.exit(0);
     }
-
-    const context: AddEntityTemplateContext = {
-        className: customEntityName,
-        fileName: paramCase(customEntityName) + '.entity',
-        translationFileName: paramCase(customEntityName) + '-translation.entity',
-        features: {
-            customFields: features.includes('customFields'),
-            translatable: features.includes('translatable'),
-        },
+    return {
+        customFields: features.includes('customFields'),
+        translatable: features.includes('translatable'),
     };
-
-    const { entityClass, translationClass } = createEntity(vendurePlugin, context);
-    addEntityToPlugin(vendurePlugin, entityClass);
-    entityClass.getSourceFile().organizeImports();
-    if (context.features.translatable) {
-        addEntityToPlugin(vendurePlugin, translationClass);
-        translationClass.getSourceFile().organizeImports();
-    }
-
-    await project.save();
-
-    if (!providedVendurePlugin) {
-        outro('✅  Done!');
-    }
 }
 
-function createEntity(plugin: VendurePluginRef, context: AddEntityTemplateContext) {
+function createEntity(plugin: VendurePluginRef, options: AddEntityOptions) {
     const entitiesDir = path.join(plugin.getPluginDir().getPath(), 'entities');
     const entityFile = createFile(
         plugin.getSourceFile().getProject(),
@@ -85,28 +103,28 @@ function createEntity(plugin: VendurePluginRef, context: AddEntityTemplateContex
         plugin.getSourceFile().getProject(),
         path.join(__dirname, 'templates/entity-translation.template.ts'),
     );
-    entityFile.move(path.join(entitiesDir, `${context.fileName}.ts`));
-    translationFile.move(path.join(entitiesDir, `${context.translationFileName}.ts`));
+    entityFile.move(path.join(entitiesDir, `${options.fileName}.ts`));
+    translationFile.move(path.join(entitiesDir, `${options.translationFileName}.ts`));
 
-    const entityClass = entityFile.getClass('ScaffoldEntity')?.rename(context.className);
+    const entityClass = entityFile.getClass('ScaffoldEntity')?.rename(options.className);
     const customFieldsClass = entityFile
         .getClass('ScaffoldEntityCustomFields')
-        ?.rename(`${context.className}CustomFields`);
+        ?.rename(`${options.className}CustomFields`);
     const translationClass = translationFile
         .getClass('ScaffoldTranslation')
-        ?.rename(`${context.className}Translation`);
+        ?.rename(`${options.className}Translation`);
     const translationCustomFieldsClass = translationFile
         .getClass('ScaffoldEntityCustomFieldsTranslation')
-        ?.rename(`${context.className}CustomFieldsTranslation`);
+        ?.rename(`${options.className}CustomFieldsTranslation`);
 
-    if (!context.features.customFields) {
+    if (!options.features.customFields) {
         // Remove custom fields from entity
         customFieldsClass?.remove();
         translationCustomFieldsClass?.remove();
         removeCustomFieldsFromClass(entityClass);
         removeCustomFieldsFromClass(translationClass);
     }
-    if (!context.features.translatable) {
+    if (!options.features.translatable) {
         // Remove translatable fields from entity
         translationClass?.remove();
         entityClass?.getProperty('localizedName')?.remove();
