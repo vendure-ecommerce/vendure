@@ -3,6 +3,7 @@ import { paramCase, pascalCase } from 'change-case';
 import path from 'path';
 import { ClassDeclaration } from 'ts-morph';
 
+import { pascalCaseRegex } from '../../../constants';
 import { analyzeProject, selectPlugin } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
 import { createFile } from '../../../utilities/ast-utils';
@@ -138,7 +139,6 @@ export async function getCustomEntityName(_cancelledMessage: string) {
             if (!input) {
                 return 'The custom entity name cannot be empty';
             }
-            const pascalCaseRegex = /^[A-Z][a-zA-Z0-9]*$/;
             if (!pascalCaseRegex.test(input)) {
                 return 'The custom entity name must be in PascalCase, e.g. "ProductReview"';
             }

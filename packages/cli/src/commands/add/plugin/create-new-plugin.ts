@@ -8,6 +8,7 @@ import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
 import { addImportsToFile, createFile, getTsMorphProject } from '../../../utilities/ast-utils';
 import { addCodegen } from '../codegen/add-codegen';
 import { addEntity } from '../entity/add-entity';
+import { addService } from '../service/add-service';
 import { addUiExtensions } from '../ui-extensions/add-ui-extensions';
 
 import { GeneratePluginOptions, NewPluginTemplateContext } from './types';
@@ -74,6 +75,7 @@ export async function createNewPlugin() {
             options: [
                 { value: 'no', label: "[Finish] No, I'm done!" },
                 { value: 'entity', label: '[Plugin: Entity] Add a new entity to the plugin' },
+                { value: 'service', label: '[Plugin: Service] Add a new service to the plugin' },
                 { value: 'uiExtensions', label: '[Plugin: UI] Set up Admin UI extensions' },
                 {
                     value: 'codegen',
@@ -92,6 +94,8 @@ export async function createNewPlugin() {
             await addUiExtensions(plugin);
         } else if (featureType === 'codegen') {
             await addCodegen(plugin);
+        } else if (featureType === 'service') {
+            await addService(plugin);
         }
     }
 

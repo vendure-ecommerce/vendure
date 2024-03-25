@@ -97,8 +97,9 @@ export function getRelativeImportPath(locations: {
 
 export function createFile(project: Project, templatePath: string) {
     const template = fs.readFileSync(templatePath, 'utf-8');
+    const tempFilePath = path.join('/.vendure-cli-temp/', path.basename(templatePath));
     try {
-        return project.createSourceFile(path.join('/.vendure-cli-temp/', templatePath), template, {
+        return project.createSourceFile(path.join('/.vendure-cli-temp/', tempFilePath), template, {
             overwrite: true,
         });
     } catch (e: any) {

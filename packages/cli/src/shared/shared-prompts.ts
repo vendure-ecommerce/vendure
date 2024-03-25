@@ -4,6 +4,7 @@ import { ClassDeclaration, Project } from 'ts-morph';
 import { Messages } from '../constants';
 import { getPluginClasses, getTsMorphProject } from '../utilities/ast-utils';
 
+import { EntityRef } from './entity-ref';
 import { VendurePluginRef } from './vendure-plugin-ref';
 
 export async function analyzeProject(options: {
@@ -41,6 +42,29 @@ export async function selectPlugin(project: Project, cancelledMessage: string): 
         process.exit(0);
     }
     return new VendurePluginRef(targetPlugin as ClassDeclaration);
+}
+
+export async function selectEntity(plugin: VendurePluginRef): Promise<EntityRef> {
+    const entities = plugin.getEntities();
+    if (entities.length === 0) {
+        cancel(Messages.NoEntitiesFound);
+        process.exit(0);
+    }
+    const targetEntity = await select({
+        message: 'Select an entity',
+        options: entities
+            .filter(e => !e.isTranslation())
+            .map(e => ({
+                value: e,
+                label: e.name,
+            })),
+        maxItems: 10,
+    });
+    if (isCancel(targetEntity)) {
+        cancel('Cancelled');
+        process.exit(0);
+    }
+    return targetEntity as EntityRef;
 }
 
 export async function selectMultiplePluginClasses(
