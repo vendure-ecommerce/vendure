@@ -1,7 +1,7 @@
 import { log, note, outro, spinner } from '@clack/prompts';
 import path from 'path';
 
-import { CliCommand } from '../../../shared/cli-command';
+import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
 import { PackageJson } from '../../../shared/package-json-ref';
 import { analyzeProject, selectPlugin } from '../../../shared/shared-prompts';
 import { VendureConfigRef } from '../../../shared/vendure-config-ref';
@@ -22,7 +22,7 @@ export const addUiExtensionsCommand = new CliCommand<AddUiExtensionsOptions>({
     run: options => addUiExtensions(options),
 });
 
-async function addUiExtensions(options?: AddUiExtensionsOptions) {
+async function addUiExtensions(options?: AddUiExtensionsOptions): Promise<CliCommandReturnVal> {
     const providedVendurePlugin = options?.plugin;
     const project = await analyzeProject({ providedVendurePlugin });
     const vendurePlugin =
@@ -31,7 +31,7 @@ async function addUiExtensions(options?: AddUiExtensionsOptions) {
 
     if (vendurePlugin.hasUiExtensions()) {
         outro('This plugin already has UI extensions configured');
-        return;
+        return { project, modifiedSourceFiles: [] };
     }
     addUiExtensionStaticProp(vendurePlugin);
 
@@ -85,7 +85,5 @@ async function addUiExtensions(options?: AddUiExtensionsOptions) {
     }
 
     await project.save();
-    if (!providedVendurePlugin) {
-        outro('✅  Done!');
-    }
+    return { project, modifiedSourceFiles: [vendurePlugin.classDeclaration.getSourceFile()] };
 }

@@ -2,7 +2,7 @@ import { log, note, outro, spinner } from '@clack/prompts';
 import path from 'path';
 import { StructureKind } from 'ts-morph';
 
-import { CliCommand } from '../../../shared/cli-command';
+import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
 import { PackageJson } from '../../../shared/package-json-ref';
 import { analyzeProject, selectMultiplePluginClasses } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
@@ -21,7 +21,7 @@ export const addCodegenCommand = new CliCommand({
     run: addCodegen,
 });
 
-async function addCodegen(options?: AddCodegenOptions) {
+async function addCodegen(options?: AddCodegenOptions): Promise<CliCommandReturnVal> {
     const providedVendurePlugin = options?.plugin;
     const project = await analyzeProject({
         providedVendurePlugin,
@@ -109,7 +109,8 @@ async function addCodegen(options?: AddCodegenOptions) {
     ];
     note(nextSteps.join('\n'));
 
-    if (!providedVendurePlugin) {
-        outro('✅ Codegen setup complete!');
-    }
+    return {
+        project,
+        modifiedSourceFiles: [codegenFile.sourceFile],
+    };
 }

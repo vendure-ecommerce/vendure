@@ -1,4 +1,4 @@
-import { ClassDeclaration, Node, SyntaxKind } from 'ts-morph';
+import { ClassDeclaration, Node, StructureKind, SyntaxKind, VariableDeclaration } from 'ts-morph';
 
 import { AdminUiExtensionTypeName } from '../constants';
 
@@ -60,6 +60,58 @@ export class VendurePluginRef {
                 name: 'providers',
                 initializer: `[${providerClassName}]`,
             });
+        }
+    }
+
+    addAdminApiExtensions(extension: {
+        schema: VariableDeclaration | undefined;
+        resolvers: ClassDeclaration[];
+    }) {
+        const pluginOptions = this.getMetadataOptions();
+        const adminApiExtensionsProperty = pluginOptions
+            .getProperty('adminApiExtensions')
+            ?.getType()
+            .getSymbolOrThrow()
+            .getDeclarations()[0];
+        if (
+            extension.schema &&
+            adminApiExtensionsProperty &&
+            Node.isObjectLiteralExpression(adminApiExtensionsProperty)
+        ) {
+            const schemaProp = adminApiExtensionsProperty.getProperty('schema');
+            if (!schemaProp) {
+                adminApiExtensionsProperty.addPropertyAssignment({
+                    name: 'schema',
+                    initializer: extension.schema?.getName(),
+                });
+            }
+            const resolversProp = adminApiExtensionsProperty.getProperty('resolvers');
+            if (resolversProp) {
+                const resolversArray = resolversProp.getFirstChildByKind(SyntaxKind.ArrayLiteralExpression);
+                if (resolversArray) {
+                    for (const resolver of extension.resolvers) {
+                        const resolverName = resolver.getName();
+                        if (resolverName) {
+                            resolversArray.addElement(resolverName);
+                        }
+                    }
+                }
+            } else {
+                adminApiExtensionsProperty.addPropertyAssignment({
+                    name: 'resolvers',
+                    initializer: `[${extension.resolvers.map(r => r.getName()).join(', ')}]`,
+                });
+            }
+        } else if (extension.schema) {
+            pluginOptions
+                .addPropertyAssignment({
+                    name: 'adminApiExtensions',
+                    initializer: `{
+                        schema: ${extension.schema.getName()},
+                        resolvers: [${extension.resolvers.map(r => r.getName()).join(', ')}]
+                    }`,
+                })
+                .formatText();
         }
     }
 

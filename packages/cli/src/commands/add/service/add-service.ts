@@ -1,9 +1,9 @@
-import { cancel, isCancel, outro, select, text } from '@clack/prompts';
+import { cancel, isCancel, select, text } from '@clack/prompts';
 import path from 'path';
 import { ClassDeclaration, SourceFile } from 'ts-morph';
 
 import { pascalCaseRegex } from '../../../constants';
-import { CliCommand } from '../../../shared/cli-command';
+import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
 import { EntityRef } from '../../../shared/entity-ref';
 import { ServiceRef } from '../../../shared/service-ref';
 import { analyzeProject, selectEntity, selectPlugin } from '../../../shared/shared-prompts';
@@ -19,14 +19,16 @@ interface AddServiceOptions {
     entityRef?: EntityRef;
 }
 
-export const addServiceCommand = new CliCommand<AddServiceOptions, ServiceRef>({
+export const addServiceCommand = new CliCommand({
     id: 'add-service',
     category: 'Plugin: Service',
     description: 'Add a new service to a plugin',
     run: options => addService(options),
 });
 
-async function addService(providedOptions?: Partial<AddServiceOptions>) {
+async function addService(
+    providedOptions?: Partial<AddServiceOptions>,
+): Promise<CliCommandReturnVal<{ serviceRef: ServiceRef }>> {
     const providedVendurePlugin = providedOptions?.plugin;
     const project = await analyzeProject({ providedVendurePlugin, cancelledMessage });
     const vendurePlugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
@@ -133,13 +135,13 @@ async function addService(providedOptions?: Partial<AddServiceOptions>) {
         namedImports: [options.serviceName],
     });
 
-    serviceSourceFile.organizeImports();
     await project.save();
 
-    if (!providedVendurePlugin) {
-        outro('✅  Done!');
-    }
-    return new ServiceRef(serviceClassDeclaration);
+    return {
+        project,
+        modifiedSourceFiles: [serviceSourceFile],
+        serviceRef: new ServiceRef(serviceClassDeclaration),
+    };
 }
 
 function customizeFindOneMethod(serviceClassDeclaration: ClassDeclaration, entityRef: EntityRef) {

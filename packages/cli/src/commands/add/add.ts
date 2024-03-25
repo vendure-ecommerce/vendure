@@ -3,6 +3,7 @@ import { Command } from 'commander';
 
 import { CliCommand } from '../../shared/cli-command';
 
+import { addApiExtensionCommand } from './api-extension/add-api-extension';
 import { addCodegenCommand } from './codegen/add-codegen';
 import { addEntityCommand } from './entity/add-entity';
 import { createNewPluginCommand } from './plugin/create-new-plugin';
@@ -16,10 +17,11 @@ export function registerAddCommand(program: Command) {
         .command('add')
         .description('Add a feature to your Vendure project')
         .action(async () => {
-            const addCommands: Array<CliCommand<any, any>> = [
+            const addCommands: Array<CliCommand<any>> = [
                 createNewPluginCommand,
                 addEntityCommand,
                 addServiceCommand,
+                addApiExtensionCommand,
                 addUiExtensionsCommand,
                 addCodegenCommand,
             ];
@@ -39,8 +41,11 @@ export function registerAddCommand(program: Command) {
                 if (!command) {
                     throw new Error(`Could not find command with id "${featureType as string}"`);
                 }
-                await command.run();
+                const { modifiedSourceFiles } = await command.run();
 
+                for (const sourceFile of modifiedSourceFiles) {
+                    sourceFile.organizeImports();
+                }
                 outro('✅ Done!');
             } catch (e: any) {
                 log.error(e.message as string);

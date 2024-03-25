@@ -4,7 +4,7 @@ import path from 'path';
 import { ClassDeclaration } from 'ts-morph';
 
 import { pascalCaseRegex } from '../../../constants';
-import { CliCommand } from '../../../shared/cli-command';
+import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
 import { EntityRef } from '../../../shared/entity-ref';
 import { analyzeProject, selectPlugin } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
@@ -32,7 +32,9 @@ export const addEntityCommand = new CliCommand({
     run: options => addEntity(options),
 });
 
-async function addEntity(options?: Partial<AddEntityOptions>) {
+async function addEntity(
+    options?: Partial<AddEntityOptions>,
+): Promise<CliCommandReturnVal<{ entityRef: EntityRef }>> {
     const providedVendurePlugin = options?.plugin;
     const project = await analyzeProject({ providedVendurePlugin, cancelledMessage });
     const vendurePlugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
@@ -56,10 +58,11 @@ async function addEntity(options?: Partial<AddEntityOptions>) {
 
     await project.save();
 
-    if (!providedVendurePlugin) {
-        outro('✅  Done!');
-    }
-    return new EntityRef(entityClass);
+    return {
+        project,
+        modifiedSourceFiles: [entityClass.getSourceFile()],
+        entityRef: new EntityRef(entityClass),
+    };
 }
 
 async function getFeatures(options?: Partial<AddEntityOptions>): Promise<AddEntityOptions['features']> {

@@ -18,6 +18,10 @@ export class ServiceRef {
         return this.classDeclaration.getName() as string;
     }
 
+    get nameCamelCase(): string {
+        return this.name.charAt(0).toLowerCase() + this.name.slice(1);
+    }
+
     get isCrudService(): boolean {
         return this.crudEntityRef !== undefined;
     }

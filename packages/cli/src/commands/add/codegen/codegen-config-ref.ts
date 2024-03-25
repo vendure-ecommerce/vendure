@@ -14,7 +14,7 @@ import { createFile, getTsMorphProject } from '../../../utilities/ast-utils';
 
 export class CodegenConfigRef {
     private readonly tempProject: Project;
-    private readonly sourceFile: SourceFile;
+    public readonly sourceFile: SourceFile;
     private configObject: ObjectLiteralExpression | undefined;
     constructor(rootDir: Directory) {
         this.tempProject = getTsMorphProject({ skipAddingFilesFromTsConfig: true });

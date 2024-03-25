@@ -45,10 +45,10 @@ export function addImportsToFile(
         order?: number;
     },
 ) {
-    const existingDeclaration = sourceFile.getImportDeclaration(
-        declaration => declaration.getModuleSpecifier().getLiteralValue() === options.moduleSpecifier,
-    );
     const moduleSpecifier = getModuleSpecifierString(options.moduleSpecifier, sourceFile);
+    const existingDeclaration = sourceFile.getImportDeclaration(
+        declaration => declaration.getModuleSpecifier().getLiteralValue() === moduleSpecifier,
+    );
     if (!existingDeclaration) {
         const importDeclaration = sourceFile.addImportDeclaration({
             moduleSpecifier,

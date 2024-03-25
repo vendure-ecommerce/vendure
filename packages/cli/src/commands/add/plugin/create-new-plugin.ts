@@ -2,8 +2,9 @@ import { cancel, intro, isCancel, outro, select, spinner, text } from '@clack/pr
 import { constantCase, paramCase, pascalCase } from 'change-case';
 import * as fs from 'fs-extra';
 import path from 'path';
+import { SourceFile } from 'ts-morph';
 
-import { CliCommand } from '../../../shared/cli-command';
+import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
 import { VendureConfigRef } from '../../../shared/vendure-config-ref';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
 import { addImportsToFile, createFile, getTsMorphProject } from '../../../utilities/ast-utils';
@@ -23,7 +24,7 @@ export const createNewPluginCommand = new CliCommand({
 
 const cancelledMessage = 'Plugin setup cancelled.';
 
-export async function createNewPlugin() {
+export async function createNewPlugin(): Promise<CliCommandReturnVal> {
     const options: GeneratePluginOptions = { name: '', customEntityName: '', pluginDir: '' } as any;
     intro('Adding a new Vendure plugin!');
     if (!options.name) {
@@ -62,7 +63,7 @@ export async function createNewPlugin() {
     }
 
     options.pluginDir = confirmation;
-    const plugin = await generatePlugin(options);
+    const { plugin, project, modifiedSourceFiles } = await generatePlugin(options);
 
     const configSpinner = spinner();
     configSpinner.start('Updating VendureConfig...');
@@ -78,6 +79,7 @@ export async function createNewPlugin() {
 
     let done = false;
     const followUpCommands = [addEntityCommand, addServiceCommand, addUiExtensionsCommand, addCodegenCommand];
+    const allModifiedSourceFiles = [...modifiedSourceFiles];
     while (!done) {
         const featureType = await select({
             message: `Add features to ${options.name}?`,
@@ -96,12 +98,21 @@ export async function createNewPlugin() {
             done = true;
         } else {
             const command = followUpCommands.find(c => c.id === featureType);
-            await command?.run({ plugin });
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const result = await command!.run({ plugin });
+            allModifiedSourceFiles.push(...result.modifiedSourceFiles);
         }
     }
+
+    return {
+        project,
+        modifiedSourceFiles,
+    };
 }
 
-export async function generatePlugin(options: GeneratePluginOptions): Promise<VendurePluginRef> {
+export async function generatePlugin(
+    options: GeneratePluginOptions,
+): Promise<CliCommandReturnVal<{ plugin: VendurePluginRef }>> {
     const nameWithoutPlugin = options.name.replace(/-?plugin$/i, '');
     const normalizedName = nameWithoutPlugin + '-plugin';
     const templateContext: NewPluginTemplateContext = {
@@ -139,7 +150,11 @@ export async function generatePlugin(options: GeneratePluginOptions): Promise<Ve
 
     projectSpinner.stop('Generated plugin scaffold');
     await project.save();
-    return new VendurePluginRef(pluginClass);
+    return {
+        project,
+        modifiedSourceFiles: [pluginFile, typesFile, constantsFile],
+        plugin: new VendurePluginRef(pluginClass),
+    };
 }
 
 function getPluginDirName(name: string) {

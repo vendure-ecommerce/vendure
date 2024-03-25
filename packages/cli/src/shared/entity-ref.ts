@@ -7,6 +7,10 @@ export class EntityRef {
         return this.classDeclaration.getName() as string;
     }
 
+    get nameCamelCase(): string {
+        return this.name.charAt(0).toLowerCase() + this.name.slice(1);
+    }
+
     isTranslatable() {
         return this.classDeclaration.getImplements().some(i => i.getText() === 'Translatable');
     }
