@@ -1,15 +1,17 @@
-import { cancel, isCancel, select, text } from '@clack/prompts';
+import { cancel, isCancel, log, select, spinner, text } from '@clack/prompts';
 import { paramCase } from 'change-case';
 import path from 'path';
 import { ClassDeclaration, SourceFile } from 'ts-morph';
 
-import { pascalCaseRegex } from '../../../constants';
+import { Messages, pascalCaseRegex } from '../../../constants';
 import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
 import { EntityRef } from '../../../shared/entity-ref';
 import { ServiceRef } from '../../../shared/service-ref';
 import { analyzeProject, selectEntity, selectPlugin } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
 import { addImportsToFile, createFile } from '../../../utilities/ast-utils';
+import { pauseForPromptDisplay } from '../../../utilities/utils';
+import { addEntityCommand } from '../entity/add-entity';
 
 const cancelledMessage = 'Add service cancelled';
 
@@ -33,7 +35,7 @@ async function addService(
     const providedVendurePlugin = providedOptions?.plugin;
     const project = await analyzeProject({ providedVendurePlugin, cancelledMessage });
     const vendurePlugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
-
+    const modifiedSourceFiles: SourceFile[] = [];
     const type =
         providedOptions?.type ??
         (await select({
@@ -53,15 +55,28 @@ async function addService(
         serviceName: 'MyService',
     };
     if (type === 'entity') {
-        const entityRef = await selectEntity(vendurePlugin);
+        let entityRef: EntityRef;
+        try {
+            entityRef = await selectEntity(vendurePlugin);
+        } catch (e: any) {
+            if (e.message === Messages.NoEntitiesFound) {
+                log.info(`No entities found in plugin ${vendurePlugin.name}. Let's create one first.`);
+                const result = await addEntityCommand.run({ plugin: providedVendurePlugin });
+                entityRef = result.entityRef;
+                modifiedSourceFiles.push(...result.modifiedSourceFiles);
+            } else {
+                throw e;
+            }
+        }
         options.entityRef = entityRef;
         options.serviceName = `${entityRef.name}Service`;
     }
 
+    const serviceSpinner = spinner();
+
     let serviceSourceFile: SourceFile;
     let serviceClassDeclaration: ClassDeclaration;
     if (options.type === 'basic') {
-        serviceSourceFile = createFile(project, path.join(__dirname, 'templates/basic-service.template.ts'));
         const name = await text({
             message: 'What is the name of the new service?',
             initialValue: 'MyService',
@@ -74,16 +89,23 @@ async function addService(
                 }
             },
         });
+
         if (isCancel(name)) {
             cancel(cancelledMessage);
             process.exit(0);
         }
+
         options.serviceName = name;
+        serviceSpinner.start(`Creating ${options.serviceName}...`);
+        await pauseForPromptDisplay();
+        serviceSourceFile = createFile(project, path.join(__dirname, 'templates/basic-service.template.ts'));
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         serviceClassDeclaration = serviceSourceFile
             .getClass('BasicServiceTemplate')!
             .rename(options.serviceName);
     } else {
+        serviceSpinner.start(`Creating ${options.serviceName}...`);
+        await pauseForPromptDisplay();
         serviceSourceFile = createFile(project, path.join(__dirname, 'templates/entity-service.template.ts'));
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         serviceClassDeclaration = serviceSourceFile
@@ -124,11 +146,13 @@ async function addService(
         customizeUpdateMethod(serviceClassDeclaration, entityRef);
         removedUnusedConstructorArgs(serviceClassDeclaration, entityRef);
     }
-
+    modifiedSourceFiles.push(serviceSourceFile);
     const serviceFileName = paramCase(options.serviceName).replace(/-service$/, '.service');
     serviceSourceFile?.move(
         path.join(vendurePlugin.getPluginDir().getPath(), 'services', `${serviceFileName}.ts`),
     );
+
+    serviceSpinner.message(`Registering service with plugin...`);
 
     vendurePlugin.addProvider(options.serviceName);
     addImportsToFile(vendurePlugin.classDeclaration.getSourceFile(), {
@@ -138,9 +162,11 @@ async function addService(
 
     await project.save();
 
+    serviceSpinner.stop(`${options.serviceName} created`);
+
     return {
         project,
-        modifiedSourceFiles: [serviceSourceFile],
+        modifiedSourceFiles,
         serviceRef: new ServiceRef(serviceClassDeclaration),
     };
 }
@@ -228,7 +254,7 @@ function customizeCreateMethod(serviceClassDeclaration: ClassDeclaration, entity
         })
         .formatText();
     if (!entityRef.isTranslatable()) {
-        createMethod.setReturnType(`Promise<${entityRef.name} | null>`);
+        createMethod.setReturnType(`Promise<${entityRef.name}>`);
     }
 }
 
@@ -265,7 +291,7 @@ function customizeUpdateMethod(serviceClassDeclaration: ClassDeclaration, entity
         })
         .formatText();
     if (!entityRef.isTranslatable()) {
-        updateMethod.setReturnType(`Promise<${entityRef.name} | null>`);
+        updateMethod.setReturnType(`Promise<${entityRef.name}>`);
     }
 }
 

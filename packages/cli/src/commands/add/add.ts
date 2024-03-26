@@ -1,7 +1,9 @@
-import { cancel, isCancel, log, outro, select } from '@clack/prompts';
+import { cancel, intro, isCancel, log, outro, select, spinner } from '@clack/prompts';
 import { Command } from 'commander';
+import pc from 'picocolors';
 
 import { CliCommand } from '../../shared/cli-command';
+import { pauseForPromptDisplay } from '../../utilities/utils';
 
 import { addApiExtensionCommand } from './api-extension/add-api-extension';
 import { addCodegenCommand } from './codegen/add-codegen';
@@ -18,6 +20,9 @@ export function registerAddCommand(program: Command) {
         .command('add')
         .description('Add a feature to your Vendure project')
         .action(async () => {
+            // eslint-disable-next-line no-console
+            console.log(`\n`);
+            intro(pc.blue("✨ Let's add a new feature to your Vendure project!"));
             const addCommands: Array<CliCommand<any>> = [
                 createNewPluginCommand,
                 addEntityCommand,
@@ -45,8 +50,14 @@ export function registerAddCommand(program: Command) {
                 }
                 const { modifiedSourceFiles } = await command.run();
 
-                for (const sourceFile of modifiedSourceFiles) {
-                    sourceFile.organizeImports();
+                if (modifiedSourceFiles.length) {
+                    const importsSpinner = spinner();
+                    importsSpinner.start('Organizing imports...');
+                    await pauseForPromptDisplay();
+                    for (const sourceFile of modifiedSourceFiles) {
+                        sourceFile.organizeImports();
+                    }
+                    importsSpinner.stop('Imports organized');
                 }
                 outro('✅ Done!');
             } catch (e: any) {

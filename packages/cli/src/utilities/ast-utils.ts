@@ -13,6 +13,7 @@ export function getTsMorphProject(options: ProjectOptions = {}) {
     return new Project({
         tsConfigFilePath: tsConfigPath,
         manipulationSettings: defaultManipulationSettings,
+        skipFileDependencyResolution: true,
         compilerOptions: {
             skipLibCheck: true,
         },

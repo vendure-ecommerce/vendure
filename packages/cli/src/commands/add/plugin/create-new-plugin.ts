@@ -1,4 +1,4 @@
-import { cancel, intro, isCancel, select, spinner, text } from '@clack/prompts';
+import { cancel, intro, isCancel, log, select, spinner, text } from '@clack/prompts';
 import { constantCase, paramCase, pascalCase } from 'change-case';
 import * as fs from 'fs-extra';
 import path from 'path';
@@ -7,6 +7,7 @@ import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
 import { VendureConfigRef } from '../../../shared/vendure-config-ref';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
 import { addImportsToFile, createFile, getTsMorphProject } from '../../../utilities/ast-utils';
+import { pauseForPromptDisplay } from '../../../utilities/utils';
 import { addApiExtensionCommand } from '../api-extension/add-api-extension';
 import { addCodegenCommand } from '../codegen/add-codegen';
 import { addEntityCommand } from '../entity/add-entity';
@@ -68,8 +69,8 @@ export async function createNewPlugin(): Promise<CliCommandReturnVal> {
 
     const configSpinner = spinner();
     configSpinner.start('Updating VendureConfig...');
-    await new Promise(resolve => setTimeout(resolve, 100));
-    const vendureConfig = new VendureConfigRef(plugin.classDeclaration.getProject());
+    await pauseForPromptDisplay();
+    const vendureConfig = new VendureConfigRef(project);
     vendureConfig.addToPluginsArray(`${plugin.name}.init({})`);
     addImportsToFile(vendureConfig.sourceFile, {
         moduleSpecifier: plugin.getSourceFile(),
@@ -87,7 +88,10 @@ export async function createNewPlugin(): Promise<CliCommandReturnVal> {
         addUiExtensionsCommand,
         addCodegenCommand,
     ];
-    const allModifiedSourceFiles = [...modifiedSourceFiles];
+    let allModifiedSourceFiles = [...modifiedSourceFiles];
+    const pluginClassName = plugin.name;
+    let workingPlugin = plugin;
+    let workingProject = project;
     while (!done) {
         const featureType = await select({
             message: `Add features to ${options.name}?`,
@@ -105,16 +109,38 @@ export async function createNewPlugin(): Promise<CliCommandReturnVal> {
         if (featureType === 'no') {
             done = true;
         } else {
-            const command = followUpCommands.find(c => c.id === featureType);
+            const newProject = getTsMorphProject();
+            workingProject = newProject;
+            const newPlugin = newProject
+                .getSourceFile(workingPlugin.getSourceFile().getFilePath())
+                ?.getClass(pluginClassName);
+            if (!newPlugin) {
+                throw new Error(`Could not find class "${pluginClassName}" in the new project`);
+            }
+            workingPlugin = new VendurePluginRef(newPlugin);
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const result = await command!.run({ plugin });
-            allModifiedSourceFiles.push(...result.modifiedSourceFiles);
+            const command = followUpCommands.find(c => c.id === featureType)!;
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            try {
+                const result = await command.run({ plugin: new VendurePluginRef(newPlugin) });
+                allModifiedSourceFiles = result.modifiedSourceFiles;
+                // We format all modified source files and re-load the
+                // project to avoid issues with the project state
+                for (const sourceFile of allModifiedSourceFiles) {
+                    sourceFile.organizeImports();
+                }
+            } catch (e: any) {
+                log.error(`Error adding feature "${command.id}"`);
+                log.error(e.stack);
+            }
+
+            await workingProject.save();
         }
     }
 
     return {
         project,
-        modifiedSourceFiles,
+        modifiedSourceFiles: [],
     };
 }
 
@@ -131,7 +157,7 @@ export async function generatePlugin(
 
     const projectSpinner = spinner();
     projectSpinner.start('Generating plugin scaffold...');
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await pauseForPromptDisplay();
     const project = getTsMorphProject({ skipAddingFilesFromTsConfig: true });
 
     const pluginFile = createFile(project, path.join(__dirname, 'templates/plugin.template.ts'));

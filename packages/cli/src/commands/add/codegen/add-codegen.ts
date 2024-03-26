@@ -7,6 +7,7 @@ import { PackageJson } from '../../../shared/package-json-ref';
 import { analyzeProject, selectMultiplePluginClasses } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
 import { getRelativeImportPath } from '../../../utilities/ast-utils';
+import { pauseForPromptDisplay } from '../../../utilities/utils';
 
 import { CodegenConfigRef } from './codegen-config-ref';
 
@@ -59,7 +60,7 @@ async function addCodegen(options?: AddCodegenOptions): Promise<CliCommandReturn
 
     const configSpinner = spinner();
     configSpinner.start('Configuring codegen file...');
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await pauseForPromptDisplay();
 
     const codegenFile = new CodegenConfigRef(packageJson.getPackageRootDir());
 

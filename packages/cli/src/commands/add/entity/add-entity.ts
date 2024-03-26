@@ -1,4 +1,4 @@
-import { cancel, isCancel, multiselect, outro, text } from '@clack/prompts';
+import { cancel, isCancel, multiselect, spinner, text } from '@clack/prompts';
 import { paramCase, pascalCase } from 'change-case';
 import path from 'path';
 import { ClassDeclaration } from 'ts-morph';
@@ -48,13 +48,16 @@ async function addEntity(
         features: await getFeatures(options),
     };
 
+    const entitySpinner = spinner();
+    entitySpinner.start('Creating entity...');
+
     const { entityClass, translationClass } = createEntity(vendurePlugin, context);
     addEntityToPlugin(vendurePlugin, entityClass);
-    entityClass.getSourceFile().organizeImports();
     if (context.features.translatable) {
         addEntityToPlugin(vendurePlugin, translationClass);
-        translationClass.getSourceFile().organizeImports();
     }
+
+    entitySpinner.stop('Entity created');
 
     await project.save();
 

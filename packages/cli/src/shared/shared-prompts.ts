@@ -4,6 +4,7 @@ import { ClassDeclaration, Project } from 'ts-morph';
 import { addServiceCommand } from '../commands/add/service/add-service';
 import { Messages } from '../constants';
 import { getPluginClasses, getTsMorphProject } from '../utilities/ast-utils';
+import { pauseForPromptDisplay } from '../utilities/utils';
 
 import { EntityRef } from './entity-ref';
 import { ServiceRef } from './service-ref';
@@ -18,7 +19,7 @@ export async function analyzeProject(options: {
     if (!providedVendurePlugin) {
         const projectSpinner = spinner();
         projectSpinner.start('Analyzing project...');
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await pauseForPromptDisplay();
         project = getTsMorphProject();
         projectSpinner.stop('Project analyzed');
     }
@@ -49,8 +50,7 @@ export async function selectPlugin(project: Project, cancelledMessage: string): 
 export async function selectEntity(plugin: VendurePluginRef): Promise<EntityRef> {
     const entities = plugin.getEntities();
     if (entities.length === 0) {
-        cancel(Messages.NoEntitiesFound);
-        process.exit(0);
+        throw new Error(Messages.NoEntitiesFound);
     }
     const targetEntity = await select({
         message: 'Select an entity',

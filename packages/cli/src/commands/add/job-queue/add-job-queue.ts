@@ -1,4 +1,4 @@
-import { cancel, isCancel, text } from '@clack/prompts';
+import { cancel, isCancel, log, text } from '@clack/prompts';
 import { camelCase, pascalCase } from 'change-case';
 import { Node, Scope } from 'ts-morph';
 
@@ -64,8 +64,10 @@ async function addJobQueue(
         type: 'JobQueueService',
     });
 
-    serviceRef.classDeclaration.addProperty({
-        name: camelCase(jobQueueName),
+    const jobQueuePropertyName = camelCase(jobQueueName) + 'Queue';
+
+    serviceRef.classDeclaration.insertProperty(0, {
+        name: jobQueuePropertyName,
         scope: Scope.Private,
         type: writer => writer.write('JobQueue<{ ctx: SerializedRequestContext, someArg: string; }>'),
     });
@@ -73,13 +75,16 @@ async function addJobQueue(
     serviceRef.classDeclaration.addImplements('OnModuleInit');
     let onModuleInitMethod = serviceRef.classDeclaration.getMethod('onModuleInit');
     if (!onModuleInitMethod) {
-        onModuleInitMethod = serviceRef.classDeclaration.addMethod({
+        // Add this after the constructor
+        const constructor = serviceRef.classDeclaration.getConstructors()[0];
+        const constructorChildIndex = constructor?.getChildIndex() ?? 0;
+
+        onModuleInitMethod = serviceRef.classDeclaration.insertMethod(constructorChildIndex + 1, {
             name: 'onModuleInit',
             isAsync: false,
             returnType: 'void',
             scope: Scope.Public,
         });
-        onModuleInitMethod.setScope(Scope.Private);
     }
     onModuleInitMethod.setIsAsync(true);
     onModuleInitMethod.setReturnType('Promise<void>');
@@ -88,7 +93,7 @@ async function addJobQueue(
         body.addStatements(writer => {
             writer
                 .write(
-                    `this.${camelCase(jobQueueName)} = await this.jobQueueService.createQueue({
+                    `this.${jobQueuePropertyName} = await this.jobQueueService.createQueue({
                 name: '${jobQueueName}',
                 process: async job => {
                     // Deserialize the RequestContext from the job data
@@ -133,13 +138,15 @@ async function addJobQueue(
             scope: Scope.Public,
             parameters: [{ name: 'ctx', type: 'RequestContext' }],
             statements: writer => {
-                writer.write(`return this.${camelCase(jobQueueName)}.add({
+                writer.write(`return this.${jobQueuePropertyName}.add({
                 ctx: ctx.serialize(),
                 someArg: 'foo',
             })`);
             },
         })
         .formatText();
+
+    log.success(`New job queue created in ${serviceRef.name}`);
 
     await project.save();
 

@@ -17,6 +17,7 @@ import { ServiceRef } from '../../../shared/service-ref';
 import { analyzeProject, selectPlugin, selectServiceRef } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
 import { addImportsToFile, createFile } from '../../../utilities/ast-utils';
+import { pauseForPromptDisplay } from '../../../utilities/utils';
 
 const cancelledMessage = 'Add API extension cancelled';
 
@@ -45,51 +46,48 @@ async function addApiExtension(
     let apiExtensions: VariableDeclaration | undefined;
 
     const scaffoldSpinner = spinner();
-    scaffoldSpinner.start('Generating API extension files...');
-    await new Promise(resolve => setTimeout(resolve, 100));
 
+    scaffoldSpinner.start('Generating resolver file...');
+    await pauseForPromptDisplay();
     if (serviceEntityRef) {
         resolver = createCrudResolver(project, plugin, serviceRef, serviceEntityRef);
         modifiedSourceFiles.push(resolver.getSourceFile());
-        apiExtensions = createCrudApiExtension(project, plugin, serviceRef);
-        if (apiExtensions) {
-            modifiedSourceFiles.push(apiExtensions.getSourceFile());
-        }
-        plugin.addAdminApiExtensions({
-            schema: apiExtensions,
-            resolvers: [resolver],
-        });
-        addImportsToFile(plugin.getSourceFile(), {
-            namedImports: [resolver.getName() as string],
-            moduleSpecifier: resolver.getSourceFile(),
-        });
-        if (apiExtensions) {
-            addImportsToFile(plugin.getSourceFile(), {
-                namedImports: [apiExtensions.getName()],
-                moduleSpecifier: apiExtensions.getSourceFile(),
-            });
-        }
     } else {
         resolver = createSimpleResolver(project, plugin, serviceRef);
         modifiedSourceFiles.push(resolver.getSourceFile());
-        apiExtensions = createSimpleApiExtension(project, plugin, serviceRef);
-        plugin.addAdminApiExtensions({
-            schema: apiExtensions,
-            resolvers: [resolver],
-        });
-        addImportsToFile(plugin.getSourceFile(), {
-            namedImports: [resolver.getName() as string],
-            moduleSpecifier: resolver.getSourceFile(),
-        });
-        if (apiExtensions) {
-            addImportsToFile(plugin.getSourceFile(), {
-                namedImports: [apiExtensions.getName()],
-                moduleSpecifier: apiExtensions.getSourceFile(),
-            });
-        }
     }
 
-    scaffoldSpinner.stop(`API extension files generated`);
+    scaffoldSpinner.message('Generating schema definitions...');
+    await pauseForPromptDisplay();
+
+    if (serviceEntityRef) {
+        apiExtensions = createCrudApiExtension(project, plugin, serviceRef);
+    } else {
+        apiExtensions = createSimpleApiExtension(project, plugin, serviceRef);
+    }
+    if (apiExtensions) {
+        modifiedSourceFiles.push(apiExtensions.getSourceFile());
+    }
+
+    scaffoldSpinner.message('Registering API extension with plugin...');
+    await pauseForPromptDisplay();
+
+    plugin.addAdminApiExtensions({
+        schema: apiExtensions,
+        resolvers: [resolver],
+    });
+    addImportsToFile(plugin.getSourceFile(), {
+        namedImports: [resolver.getName() as string],
+        moduleSpecifier: resolver.getSourceFile(),
+    });
+    if (apiExtensions) {
+        addImportsToFile(plugin.getSourceFile(), {
+            namedImports: [apiExtensions.getName()],
+            moduleSpecifier: apiExtensions.getSourceFile(),
+        });
+    }
+
+    scaffoldSpinner.stop(`API extensions added`);
 
     await project.save();
 
