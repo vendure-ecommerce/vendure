@@ -6,6 +6,7 @@ import { CliCommand } from '../../shared/cli-command';
 import { addApiExtensionCommand } from './api-extension/add-api-extension';
 import { addCodegenCommand } from './codegen/add-codegen';
 import { addEntityCommand } from './entity/add-entity';
+import { addJobQueueCommand } from './job-queue/add-job-queue';
 import { createNewPluginCommand } from './plugin/create-new-plugin';
 import { addServiceCommand } from './service/add-service';
 import { addUiExtensionsCommand } from './ui-extensions/add-ui-extensions';
@@ -22,6 +23,7 @@ export function registerAddCommand(program: Command) {
                 addEntityCommand,
                 addServiceCommand,
                 addApiExtensionCommand,
+                addJobQueueCommand,
                 addUiExtensionsCommand,
                 addCodegenCommand,
             ];

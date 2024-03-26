@@ -1,4 +1,5 @@
 import { cancel, isCancel, select, text } from '@clack/prompts';
+import { paramCase } from 'change-case';
 import path from 'path';
 import { ClassDeclaration, SourceFile } from 'ts-morph';
 
@@ -8,7 +9,7 @@ import { EntityRef } from '../../../shared/entity-ref';
 import { ServiceRef } from '../../../shared/service-ref';
 import { analyzeProject, selectEntity, selectPlugin } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
-import { addImportsToFile, createFile, kebabize } from '../../../utilities/ast-utils';
+import { addImportsToFile, createFile } from '../../../utilities/ast-utils';
 
 const cancelledMessage = 'Add service cancelled';
 
@@ -124,7 +125,7 @@ async function addService(
         removedUnusedConstructorArgs(serviceClassDeclaration, entityRef);
     }
 
-    const serviceFileName = kebabize(options.serviceName).replace(/-service$/, '.service');
+    const serviceFileName = paramCase(options.serviceName).replace(/-service$/, '.service');
     serviceSourceFile?.move(
         path.join(vendurePlugin.getPluginDir().getPath(), 'services', `${serviceFileName}.ts`),
     );

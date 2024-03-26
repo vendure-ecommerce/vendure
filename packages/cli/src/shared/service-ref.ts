@@ -1,4 +1,4 @@
-import { ClassDeclaration, Node, Type } from 'ts-morph';
+import { ClassDeclaration, Node, Scope, Type } from 'ts-morph';
 
 import { EntityRef } from './entity-ref';
 
@@ -35,6 +35,21 @@ export class ServiceRef {
             delete: !!this.classDeclaration.getMethod('delete'),
         };
         this.crudEntityRef = this.getEntityRef();
+    }
+
+    injectDependency(dependency: { scope?: Scope; name: string; type: string }) {
+        for (const constructorDeclaration of this.classDeclaration.getConstructors()) {
+            const existingParam = constructorDeclaration.getParameter(dependency.name);
+            if (!existingParam) {
+                constructorDeclaration.addParameter({
+                    name: dependency.name,
+                    type: dependency.type,
+                    hasQuestionToken: false,
+                    isReadonly: false,
+                    scope: dependency.scope ?? Scope.Private,
+                });
+            }
+        }
     }
 
     private getEntityRef(): EntityRef | undefined {

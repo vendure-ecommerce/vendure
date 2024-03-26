@@ -1,4 +1,5 @@
-import { select, spinner } from '@clack/prompts';
+import { spinner } from '@clack/prompts';
+import { paramCase } from 'change-case';
 import path from 'path';
 import {
     ClassDeclaration,
@@ -13,10 +14,9 @@ import {
 import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
 import { EntityRef } from '../../../shared/entity-ref';
 import { ServiceRef } from '../../../shared/service-ref';
-import { analyzeProject, selectPlugin } from '../../../shared/shared-prompts';
+import { analyzeProject, selectPlugin, selectServiceRef } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
-import { addImportsToFile, createFile, kebabize } from '../../../utilities/ast-utils';
-import { addServiceCommand } from '../service/add-service';
+import { addImportsToFile, createFile } from '../../../utilities/ast-utils';
 
 const cancelledMessage = 'Add API extension cancelled';
 
@@ -109,7 +109,7 @@ function createSimpleResolver(project: Project, plugin: VendurePluginRef, servic
         path.join(
             plugin.getPluginDir().getPath(),
             'api',
-            kebabize(serviceRef.name).replace('-service', '') + '-admin.resolver.ts',
+            paramCase(serviceRef.name).replace('-service', '') + '-admin.resolver.ts',
         ),
     );
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -146,7 +146,7 @@ function createCrudResolver(
         path.join(
             plugin.getPluginDir().getPath(),
             'api',
-            kebabize(serviceEntityRef.name) + '-admin.resolver.ts',
+            paramCase(serviceEntityRef.name) + '-admin.resolver.ts',
         ),
     );
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -406,44 +406,4 @@ function getOrCreateApiExtensionsFile(project: Project, plugin: VendurePluginRef
     return createFile(project, path.join(__dirname, 'templates/api-extensions.template.ts')).move(
         path.join(plugin.getPluginDir().getPath(), 'api', 'api-extensions.ts'),
     );
-}
-
-async function selectServiceRef(project: Project, plugin: VendurePluginRef): Promise<ServiceRef> {
-    const serviceRefs = getServices(project);
-    const result = await select({
-        message: 'Which service contains the business logic for this API extension?',
-        maxItems: 8,
-        options: [
-            {
-                value: 'new',
-                label: `Create new generic service`,
-            },
-            ...serviceRefs.map(sr => {
-                const features = sr.crudEntityRef
-                    ? `CRUD service for ${sr.crudEntityRef.name}`
-                    : `Generic service`;
-                const label = `${sr.name}: (${features})`;
-                return {
-                    value: sr,
-                    label,
-                };
-            }),
-        ],
-    });
-    if (result === 'new') {
-        return addServiceCommand.run({ type: 'basic', plugin }).then(r => r.serviceRef);
-    } else {
-        return result as ServiceRef;
-    }
-}
-
-function getServices(project: Project): ServiceRef[] {
-    const servicesSourceFiles = project.getSourceFiles().filter(sf => {
-        return sf.getDirectory().getPath().endsWith('/services');
-    });
-
-    return servicesSourceFiles
-        .flatMap(sf => sf.getClasses())
-        .filter(classDeclaration => classDeclaration.getDecorator('Injectable'))
-        .map(classDeclaration => new ServiceRef(classDeclaration));
 }

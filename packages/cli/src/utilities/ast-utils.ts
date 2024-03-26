@@ -108,17 +108,6 @@ export function createFile(project: Project, templatePath: string) {
     }
 }
 
-export function kebabize(str: string) {
-    return str
-        .split('')
-        .map((letter, idx) => {
-            return letter.toUpperCase() === letter
-                ? `${idx !== 0 ? '-' : ''}${letter.toLowerCase()}`
-                : letter;
-        })
-        .join('');
-}
-
 function convertPathToRelativeImport(filePath: string): string {
     // Normalize the path separators
     const normalizedPath = filePath.replace(/\\/g, '/');

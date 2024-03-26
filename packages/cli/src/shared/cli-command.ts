@@ -8,6 +8,7 @@ export type CommandCategory =
     | `Plugin: Entity`
     | `Plugin: Service`
     | `Plugin: API`
+    | `Plugin: Job Queue`
     | `Project: Codegen`
     | `Other`;
 

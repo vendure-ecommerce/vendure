@@ -1,15 +1,16 @@
-import { cancel, intro, isCancel, outro, select, spinner, text } from '@clack/prompts';
+import { cancel, intro, isCancel, select, spinner, text } from '@clack/prompts';
 import { constantCase, paramCase, pascalCase } from 'change-case';
 import * as fs from 'fs-extra';
 import path from 'path';
-import { SourceFile } from 'ts-morph';
 
 import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
 import { VendureConfigRef } from '../../../shared/vendure-config-ref';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
 import { addImportsToFile, createFile, getTsMorphProject } from '../../../utilities/ast-utils';
+import { addApiExtensionCommand } from '../api-extension/add-api-extension';
 import { addCodegenCommand } from '../codegen/add-codegen';
 import { addEntityCommand } from '../entity/add-entity';
+import { addJobQueueCommand } from '../job-queue/add-job-queue';
 import { addServiceCommand } from '../service/add-service';
 import { addUiExtensionsCommand } from '../ui-extensions/add-ui-extensions';
 
@@ -78,7 +79,14 @@ export async function createNewPlugin(): Promise<CliCommandReturnVal> {
     configSpinner.stop('Updated VendureConfig');
 
     let done = false;
-    const followUpCommands = [addEntityCommand, addServiceCommand, addUiExtensionsCommand, addCodegenCommand];
+    const followUpCommands = [
+        addEntityCommand,
+        addServiceCommand,
+        addApiExtensionCommand,
+        addJobQueueCommand,
+        addUiExtensionsCommand,
+        addCodegenCommand,
+    ];
     const allModifiedSourceFiles = [...modifiedSourceFiles];
     while (!done) {
         const featureType = await select({

@@ -1,10 +1,12 @@
 import { cancel, isCancel, multiselect, select, spinner } from '@clack/prompts';
 import { ClassDeclaration, Project } from 'ts-morph';
 
+import { addServiceCommand } from '../commands/add/service/add-service';
 import { Messages } from '../constants';
 import { getPluginClasses, getTsMorphProject } from '../utilities/ast-utils';
 
 import { EntityRef } from './entity-ref';
+import { ServiceRef } from './service-ref';
 import { VendurePluginRef } from './vendure-plugin-ref';
 
 export async function analyzeProject(options: {
@@ -108,4 +110,53 @@ export async function selectMultiplePluginClasses(
         process.exit(0);
     }
     return (targetPlugins as ClassDeclaration[]).map(pc => new VendurePluginRef(pc));
+}
+
+export async function selectServiceRef(project: Project, plugin: VendurePluginRef): Promise<ServiceRef> {
+    const serviceRefs = getServices(project).filter(sr => {
+        return sr.classDeclaration
+            .getSourceFile()
+            .getDirectoryPath()
+            .includes(plugin.getSourceFile().getDirectoryPath());
+    });
+    const result = await select({
+        message: 'Which service contains the business logic for this API extension?',
+        maxItems: 8,
+        options: [
+            {
+                value: 'new',
+                label: `Create new generic service`,
+            },
+            ...serviceRefs.map(sr => {
+                const features = sr.crudEntityRef
+                    ? `CRUD service for ${sr.crudEntityRef.name}`
+                    : `Generic service`;
+                const label = `${sr.name}: (${features})`;
+                return {
+                    value: sr,
+                    label,
+                };
+            }),
+        ],
+    });
+    if (isCancel(result)) {
+        cancel('Cancelled');
+        process.exit(0);
+    }
+    if (result === 'new') {
+        return addServiceCommand.run({ type: 'basic', plugin }).then(r => r.serviceRef);
+    } else {
+        return result as ServiceRef;
+    }
+}
+
+export function getServices(project: Project): ServiceRef[] {
+    const servicesSourceFiles = project.getSourceFiles().filter(sf => {
+        return sf.getDirectory().getPath().endsWith('/services');
+    });
+
+    return servicesSourceFiles
+        .flatMap(sf => sf.getClasses())
+        .filter(classDeclaration => classDeclaration.getDecorator('Injectable'))
+        .map(classDeclaration => new ServiceRef(classDeclaration));
 }
