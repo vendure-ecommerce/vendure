@@ -1,4 +1,4 @@
-import { ClassDeclaration, Node, SyntaxKind } from 'ts-morph';
+import { ClassDeclaration, Node, SyntaxKind, Type } from 'ts-morph';
 
 export class EntityRef {
     constructor(public classDeclaration: ClassDeclaration) {}
@@ -21,6 +21,22 @@ export class EntityRef {
 
     hasCustomFields() {
         return this.classDeclaration.getImplements().some(i => i.getText() === 'HasCustomFields');
+    }
+
+    getProps(): Array<{ name: string; type: Type; nullable: boolean }> {
+        return this.classDeclaration.getProperties().map(prop => {
+            const propType = prop.getType();
+            const name = prop.getName();
+            if (propType.isUnion()) {
+                // get the non-null part of the union
+                const nonNullType = propType.getUnionTypes().find(t => !t.isNull() && !t.isUndefined());
+                if (!nonNullType) {
+                    throw new Error('Could not find non-null type in union');
+                }
+                return { name, type: nonNullType, nullable: true };
+            }
+            return { name, type: propType, nullable: false };
+        });
     }
 
     getTranslationClass(): ClassDeclaration | undefined {

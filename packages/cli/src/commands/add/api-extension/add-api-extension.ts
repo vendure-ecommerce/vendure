@@ -258,13 +258,10 @@ function createCrudApiExtension(project: Project, plugin: VendurePluginRef, serv
                             writer.writeLine(`    id: ID!`);
                             writer.writeLine(`    createdAt: DateTime!`);
                             writer.writeLine(`    updatedAt: DateTime!`);
-                            for (const prop of entityRef.classDeclaration.getProperties()) {
-                                const { type, nullable } = getEntityPropType(prop.getType());
+                            for (const { name, type, nullable } of entityRef.getProps()) {
                                 const graphQlType = getGraphQLType(type);
                                 if (graphQlType) {
-                                    writer.writeLine(
-                                        `  ${prop.getName()}: ${graphQlType}${nullable ? '' : '!'}`,
-                                    );
+                                    writer.writeLine(`  ${name}: ${graphQlType}${nullable ? '' : '!'}`);
                                 }
                             }
                             writer.writeLine(`  }`);
@@ -297,13 +294,10 @@ function createCrudApiExtension(project: Project, plugin: VendurePluginRef, serv
 
                             if (serviceRef.features.create) {
                                 writer.writeLine(`  input Create${entityRef.name}Input {`);
-                                for (const prop of entityRef.classDeclaration.getProperties()) {
-                                    const { type, nullable } = getEntityPropType(prop.getType());
+                                for (const { name, type, nullable } of entityRef.getProps()) {
                                     const graphQlType = getGraphQLType(type);
                                     if (graphQlType) {
-                                        writer.writeLine(
-                                            `    ${prop.getName()}: ${graphQlType}${nullable ? '' : '!'}`,
-                                        );
+                                        writer.writeLine(`    ${name}: ${graphQlType}${nullable ? '' : '!'}`);
                                     }
                                 }
                                 writer.writeLine(`  }`);
@@ -313,11 +307,10 @@ function createCrudApiExtension(project: Project, plugin: VendurePluginRef, serv
                             if (serviceRef.features.update) {
                                 writer.writeLine(`  input Update${entityRef.name}Input {`);
                                 writer.writeLine(`    id: ID!`);
-                                for (const prop of entityRef.classDeclaration.getProperties()) {
-                                    const { type } = getEntityPropType(prop.getType());
+                                for (const { name, type } of entityRef.getProps()) {
                                     const graphQlType = getGraphQLType(type);
                                     if (graphQlType) {
-                                        writer.writeLine(`    ${prop.getName()}: ${graphQlType}`);
+                                        writer.writeLine(`    ${name}: ${graphQlType}`);
                                     }
                                 }
                                 writer.writeLine(`  }`);
@@ -364,18 +357,6 @@ function createCrudApiExtension(project: Project, plugin: VendurePluginRef, serv
 
     const adminApiExtensions = apiExtensionsFile.getVariableDeclaration('adminApiExtensions');
     return adminApiExtensions;
-}
-
-function getEntityPropType(propType: Type): { type: Type; nullable: boolean } {
-    if (propType.isUnion()) {
-        // get the non-null part of the union
-        const nonNullType = propType.getUnionTypes().find(t => !t.isNull() && !t.isUndefined());
-        if (!nonNullType) {
-            throw new Error('Could not find non-null type in union');
-        }
-        return { type: nonNullType, nullable: true };
-    }
-    return { type: propType, nullable: false };
 }
 
 function getGraphQLType(type: Type): string | undefined {
