@@ -1,7 +1,7 @@
 import { cancel, isCancel, multiselect, spinner, text } from '@clack/prompts';
 import { paramCase, pascalCase } from 'change-case';
 import path from 'path';
-import { ClassDeclaration } from 'ts-morph';
+import { ClassDeclaration, SourceFile } from 'ts-morph';
 
 import { pascalCaseRegex } from '../../../constants';
 import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
@@ -9,6 +9,7 @@ import { EntityRef } from '../../../shared/entity-ref';
 import { analyzeProject, selectPlugin } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
 import { createFile } from '../../../utilities/ast-utils';
+import { pauseForPromptDisplay } from '../../../utilities/utils';
 
 import { addEntityToPlugin } from './codemods/add-entity-to-plugin/add-entity-to-plugin';
 
@@ -38,6 +39,7 @@ async function addEntity(
     const providedVendurePlugin = options?.plugin;
     const project = await analyzeProject({ providedVendurePlugin, cancelledMessage });
     const vendurePlugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
+    const modifiedSourceFiles: SourceFile[] = [];
 
     const customEntityName = options?.className ?? (await getCustomEntityName(cancelledMessage));
 
@@ -50,11 +52,14 @@ async function addEntity(
 
     const entitySpinner = spinner();
     entitySpinner.start('Creating entity...');
+    await pauseForPromptDisplay();
 
     const { entityClass, translationClass } = createEntity(vendurePlugin, context);
     addEntityToPlugin(vendurePlugin, entityClass);
+    modifiedSourceFiles.push(entityClass.getSourceFile());
     if (context.features.translatable) {
         addEntityToPlugin(vendurePlugin, translationClass);
+        modifiedSourceFiles.push(translationClass.getSourceFile());
     }
 
     entitySpinner.stop('Entity created');
@@ -63,7 +68,7 @@ async function addEntity(
 
     return {
         project,
-        modifiedSourceFiles: [entityClass.getSourceFile()],
+        modifiedSourceFiles,
         entityRef: new EntityRef(entityClass),
     };
 }

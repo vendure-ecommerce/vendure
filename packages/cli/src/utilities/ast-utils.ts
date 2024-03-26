@@ -4,6 +4,7 @@ import path from 'node:path';
 import { Directory, Node, Project, ProjectOptions, SourceFile } from 'ts-morph';
 
 import { defaultManipulationSettings } from '../constants';
+import { EntityRef } from '../shared/entity-ref';
 
 export function getTsMorphProject(options: ProjectOptions = {}) {
     const tsConfigPath = path.join(process.cwd(), 'tsconfig.json');
@@ -116,4 +117,49 @@ function convertPathToRelativeImport(filePath: string): string {
     // Remove the file extension
     const parsedPath = path.parse(normalizedPath);
     return `./${parsedPath.dir}/${parsedPath.name}`.replace(/\/\//g, '/');
+}
+
+export function customizeCreateUpdateInputInterfaces(sourceFile: SourceFile, entityRef: EntityRef) {
+    const createInputInterface = sourceFile
+        .getInterface('CreateEntityInput')
+        ?.rename(`Create${entityRef.name}Input`);
+    const updateInputInterface = sourceFile
+        .getInterface('UpdateEntityInput')
+        ?.rename(`Update${entityRef.name}Input`);
+
+    for (const { name, type, nullable } of entityRef.getProps()) {
+        if (
+            type.isBoolean() ||
+            type.isString() ||
+            type.isNumber() ||
+            (type.isClass() && type.getText() === 'Date')
+        ) {
+            createInputInterface?.addProperty({
+                name,
+                type: writer => writer.write(type.getText()),
+                hasQuestionToken: nullable,
+            });
+            updateInputInterface?.addProperty({
+                name,
+                type: writer => writer.write(type.getText()),
+                hasQuestionToken: true,
+            });
+        }
+    }
+
+    if (!entityRef.hasCustomFields()) {
+        createInputInterface?.getProperty('customFields')?.remove();
+        updateInputInterface?.getProperty('customFields')?.remove();
+    }
+    if (entityRef.isTranslatable()) {
+        createInputInterface
+            ?.getProperty('translations')
+            ?.setType(`Array<TranslationInput<${entityRef.name}>>`);
+        updateInputInterface
+            ?.getProperty('translations')
+            ?.setType(`Array<TranslationInput<${entityRef.name}>>`);
+    } else {
+        createInputInterface?.getProperty('translations')?.remove();
+        updateInputInterface?.getProperty('translations')?.remove();
+    }
 }

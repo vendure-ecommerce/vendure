@@ -48,7 +48,7 @@ export function registerAddCommand(program: Command) {
                 if (!command) {
                     throw new Error(`Could not find command with id "${featureType as string}"`);
                 }
-                const { modifiedSourceFiles } = await command.run();
+                const { modifiedSourceFiles, project } = await command.run();
 
                 if (modifiedSourceFiles.length) {
                     const importsSpinner = spinner();
@@ -57,6 +57,7 @@ export function registerAddCommand(program: Command) {
                     for (const sourceFile of modifiedSourceFiles) {
                         sourceFile.organizeImports();
                     }
+                    await project.save();
                     importsSpinner.stop('Imports organized');
                 }
                 outro('✅ Done!');

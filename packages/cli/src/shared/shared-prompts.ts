@@ -152,7 +152,10 @@ export async function selectServiceRef(project: Project, plugin: VendurePluginRe
 
 export function getServices(project: Project): ServiceRef[] {
     const servicesSourceFiles = project.getSourceFiles().filter(sf => {
-        return sf.getDirectory().getPath().endsWith('/services');
+        return (
+            sf.getDirectory().getPath().endsWith('/services') ||
+            sf.getDirectory().getPath().endsWith('/service')
+        );
     });
 
     return servicesSourceFiles

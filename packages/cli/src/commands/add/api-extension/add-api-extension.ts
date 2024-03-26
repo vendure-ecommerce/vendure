@@ -16,7 +16,11 @@ import { EntityRef } from '../../../shared/entity-ref';
 import { ServiceRef } from '../../../shared/service-ref';
 import { analyzeProject, selectPlugin, selectServiceRef } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
-import { addImportsToFile, createFile } from '../../../utilities/ast-utils';
+import {
+    addImportsToFile,
+    createFile,
+    customizeCreateUpdateInputInterfaces,
+} from '../../../utilities/ast-utils';
 import { pauseForPromptDisplay } from '../../../utilities/utils';
 
 const cancelledMessage = 'Add API extension cancelled';
@@ -153,13 +157,41 @@ function createCrudResolver(
         .rename(serviceEntityRef.name + 'AdminResolver');
 
     if (serviceRef.features.findOne) {
-        resolverClassDeclaration.getMethod('entity')?.rename(serviceEntityRef.nameCamelCase);
+        const findOneMethod = resolverClassDeclaration
+            .getMethod('entity')
+            ?.rename(serviceEntityRef.nameCamelCase);
+        const serviceFindOneMethod = serviceRef.classDeclaration.getMethod('findOne');
+        if (serviceFindOneMethod) {
+            if (
+                !serviceFindOneMethod
+                    .getParameters()
+                    .find(p => p.getName() === 'relations' && p.getType().getText().includes('RelationPaths'))
+            ) {
+                findOneMethod?.getParameters()[2].remove();
+                findOneMethod?.setBodyText(`return this.${serviceRef.nameCamelCase}.findOne(ctx, args.id);`);
+            }
+        }
     } else {
         resolverClassDeclaration.getMethod('entity')?.remove();
     }
 
     if (serviceRef.features.findAll) {
-        resolverClassDeclaration.getMethod('entities')?.rename(serviceEntityRef.nameCamelCase + 's');
+        const findAllMethod = resolverClassDeclaration
+            .getMethod('entities')
+            ?.rename(serviceEntityRef.nameCamelCase + 's');
+        const serviceFindAllMethod = serviceRef.classDeclaration.getMethod('findAll');
+        if (serviceFindAllMethod) {
+            if (
+                !serviceFindAllMethod
+                    .getParameters()
+                    .find(p => p.getName() === 'relations' && p.getType().getText().includes('RelationPaths'))
+            ) {
+                findAllMethod?.getParameters()[2].remove();
+                findAllMethod?.setBodyText(
+                    `return this.${serviceRef.nameCamelCase}.findAll(ctx, args.options || undefined);`,
+                );
+            }
+        }
     } else {
         resolverClassDeclaration.getMethod('entities')?.remove();
     }
@@ -182,6 +214,8 @@ function createCrudResolver(
         resolverClassDeclaration.getMethod('deleteEntity')?.remove();
     }
 
+    customizeCreateUpdateInputInterfaces(resolverSourceFile, serviceEntityRef);
+
     resolverClassDeclaration
         .getConstructors()[0]
         .getParameter('templateService')
@@ -189,6 +223,7 @@ function createCrudResolver(
         .setType(serviceRef.name);
     resolverSourceFile.getClass('TemplateEntity')?.rename(serviceEntityRef.name).remove();
     resolverSourceFile.getClass('TemplateService')?.remove();
+
     addImportsToFile(resolverSourceFile, {
         namedImports: [serviceRef.name],
         moduleSpecifier: serviceRef.classDeclaration.getSourceFile(),

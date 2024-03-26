@@ -9,7 +9,11 @@ import { EntityRef } from '../../../shared/entity-ref';
 import { ServiceRef } from '../../../shared/service-ref';
 import { analyzeProject, selectEntity, selectPlugin } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
-import { addImportsToFile, createFile } from '../../../utilities/ast-utils';
+import {
+    addImportsToFile,
+    createFile,
+    customizeCreateUpdateInputInterfaces,
+} from '../../../utilities/ast-utils';
 import { pauseForPromptDisplay } from '../../../utilities/utils';
 import { addEntityCommand } from '../entity/add-entity';
 
@@ -139,7 +143,7 @@ async function addService(
         } else {
             templateTranslationEntityClass?.remove();
         }
-        customizeInputInterfaces(serviceSourceFile, entityRef);
+        customizeCreateUpdateInputInterfaces(serviceSourceFile, entityRef);
         customizeFindOneMethod(serviceClassDeclaration, entityRef);
         customizeFindAllMethod(serviceClassDeclaration, entityRef);
         customizeCreateMethod(serviceClassDeclaration, entityRef);
@@ -292,30 +296,6 @@ function customizeUpdateMethod(serviceClassDeclaration: ClassDeclaration, entity
         .formatText();
     if (!entityRef.isTranslatable()) {
         updateMethod.setReturnType(`Promise<${entityRef.name}>`);
-    }
-}
-
-function customizeInputInterfaces(serviceSourceFile: SourceFile, entityRef: EntityRef) {
-    const createInputInterface = serviceSourceFile
-        .getInterface('CreateEntityInput')
-        ?.rename(`Create${entityRef.name}Input`);
-    const updateInputInterface = serviceSourceFile
-        .getInterface('UpdateEntityInput')
-        ?.rename(`Update${entityRef.name}Input`);
-    if (!entityRef.hasCustomFields()) {
-        createInputInterface?.getProperty('customFields')?.remove();
-        updateInputInterface?.getProperty('customFields')?.remove();
-    }
-    if (entityRef.isTranslatable()) {
-        createInputInterface
-            ?.getProperty('translations')
-            ?.setType(`Array<TranslationInput<${entityRef.name}>>`);
-        updateInputInterface
-            ?.getProperty('translations')
-            ?.setType(`Array<TranslationInput<${entityRef.name}>>`);
-    } else {
-        createInputInterface?.getProperty('translations')?.remove();
-        updateInputInterface?.getProperty('translations')?.remove();
     }
 }
 
