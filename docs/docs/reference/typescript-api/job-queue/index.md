@@ -26,7 +26,7 @@ class JobQueue<Data extends JobData<Data> = object> {
     name: string
     started: boolean
     constructor(options: CreateQueueOptions<Data>, jobQueueStrategy: JobQueueStrategy, jobBufferService: JobBufferService)
-    add(data: Data, options?: Pick<JobConfig<Data>, 'retries'>) => Promise<SubscribableJob<Data>>;
+    add(data: Data, options?: JobOptions) => Promise<SubscribableJob<Data>>;
 }
 ```
 

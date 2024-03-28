@@ -67,7 +67,7 @@ export class SearchIndexService implements OnApplicationBootstrap {
     }
 
     reindex(ctx: RequestContext) {
-        return this.updateIndexQueue.add({ type: 'reindex', ctx: ctx.serialize() });
+        return this.updateIndexQueue.add({ type: 'reindex', ctx: ctx.serialize() }, { ctx });
     }
 
     updateProduct(ctx: RequestContext, product: Product) {
@@ -75,12 +75,13 @@ export class SearchIndexService implements OnApplicationBootstrap {
             type: 'update-product',
             ctx: ctx.serialize(),
             productId: product.id,
-        });
+        },
+        {   ctx   });
     }
 
     updateVariants(ctx: RequestContext, variants: ProductVariant[]) {
         const variantIds = variants.map(v => v.id);
-        return this.updateIndexQueue.add({ type: 'update-variants', ctx: ctx.serialize(), variantIds });
+        return this.updateIndexQueue.add({ type: 'update-variants', ctx: ctx.serialize(), variantIds }, { ctx });
     }
 
     deleteProduct(ctx: RequestContext, product: Product) {
@@ -88,24 +89,25 @@ export class SearchIndexService implements OnApplicationBootstrap {
             type: 'delete-product',
             ctx: ctx.serialize(),
             productId: product.id,
-        });
+        },
+        {   ctx   });
     }
 
     deleteVariant(ctx: RequestContext, variants: ProductVariant[]) {
         const variantIds = variants.map(v => v.id);
-        return this.updateIndexQueue.add({ type: 'delete-variant', ctx: ctx.serialize(), variantIds });
+        return this.updateIndexQueue.add({ type: 'delete-variant', ctx: ctx.serialize(), variantIds }, { ctx });
     }
 
     updateVariantsById(ctx: RequestContext, ids: ID[]) {
-        return this.updateIndexQueue.add({ type: 'update-variants-by-id', ctx: ctx.serialize(), ids });
+        return this.updateIndexQueue.add({ type: 'update-variants-by-id', ctx: ctx.serialize(), ids }, { ctx });
     }
 
     updateAsset(ctx: RequestContext, asset: Asset) {
-        return this.updateIndexQueue.add({ type: 'update-asset', ctx: ctx.serialize(), asset: asset as any });
+        return this.updateIndexQueue.add({ type: 'update-asset', ctx: ctx.serialize(), asset: asset as any }, { ctx });
     }
 
     deleteAsset(ctx: RequestContext, asset: Asset) {
-        return this.updateIndexQueue.add({ type: 'delete-asset', ctx: ctx.serialize(), asset: asset as any });
+        return this.updateIndexQueue.add({ type: 'delete-asset', ctx: ctx.serialize(), asset: asset as any }, { ctx });
     }
 
     assignProductToChannel(ctx: RequestContext, productId: ID, channelId: ID) {
@@ -114,7 +116,8 @@ export class SearchIndexService implements OnApplicationBootstrap {
             ctx: ctx.serialize(),
             productId,
             channelId,
-        });
+        },
+        {   ctx   });
     }
 
     removeProductFromChannel(ctx: RequestContext, productId: ID, channelId: ID) {
@@ -123,7 +126,8 @@ export class SearchIndexService implements OnApplicationBootstrap {
             ctx: ctx.serialize(),
             productId,
             channelId,
-        });
+        },
+        {   ctx   });
     }
 
     assignVariantToChannel(ctx: RequestContext, productVariantId: ID, channelId: ID) {
@@ -132,7 +136,8 @@ export class SearchIndexService implements OnApplicationBootstrap {
             ctx: ctx.serialize(),
             productVariantId,
             channelId,
-        });
+        },
+        {   ctx   });
     }
 
     removeVariantFromChannel(ctx: RequestContext, productVariantId: ID, channelId: ID) {
@@ -141,7 +146,8 @@ export class SearchIndexService implements OnApplicationBootstrap {
             ctx: ctx.serialize(),
             productVariantId,
             channelId,
-        });
+        },
+        {   ctx   });
     }
 
     private jobWithProgress(

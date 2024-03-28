@@ -1,6 +1,8 @@
 import { JobState } from '@vendure/common/lib/generated-types';
 import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
 
+import { RequestContext } from '../api/common/request-context';
+
 import { Job } from './job';
 
 /**
@@ -55,3 +57,9 @@ export interface JobConfig<T extends JobData<T>> {
     startedAt?: Date;
     settledAt?: Date;
 }
+
+export type JobOptions<Data extends JsonCompatible<Data>> = Pick<JobConfig<Data>, 'retries'>  & {
+    ctx?: RequestContext
+};
+
+export type JobQueueStrategyJobOptions<Data extends JsonCompatible<Data>> = Omit<JobOptions<Data>, "retries">
