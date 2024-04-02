@@ -100,7 +100,7 @@ export class JobQueue<Data extends JobData<Data> = object> {
         const isBuffered = await this.jobBufferService.add(job);
         if (!isBuffered) {
             try {
-                const addedJob = await this.jobQueueStrategy.add(job);
+                const addedJob = await this.jobQueueStrategy.add(job, options);
                 return new SubscribableJob(addedJob, this.jobQueueStrategy);
             } catch (err: any) {
                 Logger.error(`Could not add Job to "${this.name}" queue`, undefined, err.stack);
