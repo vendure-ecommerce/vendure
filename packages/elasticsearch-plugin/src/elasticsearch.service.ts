@@ -475,7 +475,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 max: aggregations.maxPriceWithTax.value || 0,
             },
             buckets: aggregations.prices.buckets.map(mapPriceBuckets).filter(x => 0 < x.count),
-            bucketsWithTax: aggregations.prices.buckets.map(mapPriceBuckets).filter(x => 0 < x.count),
+            bucketsWithTax: aggregations.pricesWithTax.buckets.map(mapPriceBuckets).filter(x => 0 < x.count),
         };
     }
 
