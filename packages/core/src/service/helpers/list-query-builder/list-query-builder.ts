@@ -4,14 +4,12 @@ import { ID, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 import {
     Brackets,
-    EntityMetadata,
     FindOneOptions,
     FindOptionsWhere,
     Repository,
     SelectQueryBuilder,
     WhereExpressionBuilder,
 } from 'typeorm';
-import { EntityTarget } from 'typeorm/common/EntityTarget';
 import { BetterSqlite3Driver } from 'typeorm/driver/better-sqlite3/BetterSqlite3Driver';
 import { SqljsDriver } from 'typeorm/driver/sqljs/SqljsDriver';
 
@@ -26,12 +24,12 @@ import {
 import { ConfigService, CustomFields, Logger } from '../../../config';
 import { TransactionalConnection } from '../../../connection';
 import { VendureEntity } from '../../../entity';
+import { joinTreeRelationsDynamically } from '../utils/tree-relations-qb-joiner';
 
 import { getColumnMetadata, getEntityAlias } from './connection-utils';
 import { getCalculatedColumns } from './get-calculated-columns';
 import { parseFilterParams, WhereGroup } from './parse-filter-params';
 import { parseSortParams } from './parse-sort-params';
-import { joinTreeRelationsDynamically } from '../utils/tree-relations-qb-joiner';
 
 /**
  * @description
@@ -201,7 +199,10 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
  */
 @Injectable()
 export class ListQueryBuilder implements OnApplicationBootstrap {
-    constructor(private connection: TransactionalConnection, private configService: ConfigService) {}
+    constructor(
+        private connection: TransactionalConnection,
+        private configService: ConfigService,
+    ) {}
 
     /** @internal */
     onApplicationBootstrap(): any {
@@ -369,8 +370,8 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         const takeLimit = ignoreQueryLimits
             ? Number.MAX_SAFE_INTEGER
             : apiType === 'admin'
-            ? adminListQueryLimit
-            : shopListQueryLimit;
+              ? adminListQueryLimit
+              : shopListQueryLimit;
         if (options.take && options.take > takeLimit) {
             throw new UserInputError('error.list-query-limit-exceeded', { limit: takeLimit });
         }
@@ -464,12 +465,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                     delete customPropertyMap[property];
                     return;
                 }
-                const alias = qb.connection.namingStrategy.joinTableName(
-                    entityMetadata.tableName,
-                    relationMetadata.propertyName,
-                    '',
-                    '',
-                );
+                const alias = `${entityMetadata.tableName}_${relationMetadata.propertyName}`;
                 if (!this.isRelationAlreadyJoined(qb, alias)) {
                     qb.leftJoinAndSelect(`${entityAlias}.${relationMetadata.propertyName}`, alias);
                 }
