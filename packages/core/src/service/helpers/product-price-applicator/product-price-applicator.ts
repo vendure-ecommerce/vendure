@@ -76,7 +76,7 @@ export class ProductPriceApplicator {
         const zones = await this.requestCache.get(ctx, 'allZones', () =>
             this.zoneService.getAllWithMembers(ctx),
         );
-        const activeTaxZone = await this.requestCache.get(ctx, 'activeTaxZone', () =>
+        const activeTaxZone = await this.requestCache.get(ctx, 'activeTaxZone-ppa', () =>
             taxZoneStrategy.determineTaxZone(ctx, zones, ctx.channel, order),
         );
         if (!activeTaxZone) {
