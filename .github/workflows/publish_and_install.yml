@@ -28,6 +28,13 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
+    - name: MacOS host fix
+      if: matrix.os == 'macos-latest'
+      run: |
+        # Make "localhost" DNS entry available; see https://github.com/actions/runner-images/issues/6383
+        # sudo networksetup -setdnsservers Ethernet 9.9.9.9
+        echo -e "$(ipconfig getifaddr en0) $(hostname -f) $(hostname -s)" | sudo tee -a /etc/hosts 
+        echo `sudo lsof -PiTCP -sTCP:LISTEN`
     - name: Install Verdaccio
       run: |
         npm install -g verdaccio
