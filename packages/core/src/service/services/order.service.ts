@@ -46,6 +46,7 @@ import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { RequestContextCacheService } from '../../cache/request-context-cache.service';
+import { CacheKey } from '../../common/constants';
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
 import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
 import {
@@ -855,7 +856,8 @@ export class OrderService {
         // Since a changed ShippingAddress could alter the activeTaxZone,
         // we will remove any cached activeTaxZone, so it can be re-calculated
         // as needed.
-        this.requestCache.set(ctx, 'activeTaxZone', undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone, undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA, undefined);
         return this.applyPriceAdjustments(ctx, order, order.lines);
     }
 
@@ -878,7 +880,8 @@ export class OrderService {
         // Since a changed BillingAddress could alter the activeTaxZone,
         // we will remove any cached activeTaxZone, so it can be re-calculated
         // as needed.
-        this.requestCache.set(ctx, 'activeTaxZone', undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone, undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA, undefined);
         return this.applyPriceAdjustments(ctx, order, order.lines);
     }
 

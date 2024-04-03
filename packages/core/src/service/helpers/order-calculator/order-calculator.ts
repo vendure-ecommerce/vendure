@@ -4,6 +4,7 @@ import { AdjustmentType } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
+import { CacheKey } from '../../../common/constants';
 import { InternalServerError } from '../../../common/error/errors';
 import { idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
@@ -58,7 +59,7 @@ export class OrderCalculator {
         // must be revalidated on any changes to an Order.
         order.promotions = [];
         const zones = await this.zoneService.getAllWithMembers(ctx);
-        const activeTaxZone = await this.requestContextCache.get(ctx, 'activeTaxZone', () =>
+        const activeTaxZone = await this.requestContextCache.get(ctx, CacheKey.ActiveTaxZone, () =>
             taxZoneStrategy.determineTaxZone(ctx, zones, ctx.channel, order),
         );
 

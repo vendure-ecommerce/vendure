@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
+import { CacheKey } from '../../../common/constants';
 import { InternalServerError } from '../../../common/error/errors';
 import { ConfigService } from '../../../config/config.service';
 import { Order } from '../../../entity/order/order.entity';
@@ -73,10 +74,10 @@ export class ProductPriceApplicator {
             });
         }
         const { taxZoneStrategy } = this.configService.taxOptions;
-        const zones = await this.requestCache.get(ctx, 'allZones', () =>
+        const zones = await this.requestCache.get(ctx, CacheKey.AllZones, () =>
             this.zoneService.getAllWithMembers(ctx),
         );
-        const activeTaxZone = await this.requestCache.get(ctx, 'activeTaxZone-ppa', () =>
+        const activeTaxZone = await this.requestCache.get(ctx, CacheKey.ActiveTaxZone_PPA, () =>
             taxZoneStrategy.determineTaxZone(ctx, zones, ctx.channel, order),
         );
         if (!activeTaxZone) {
