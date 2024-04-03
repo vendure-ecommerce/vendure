@@ -263,21 +263,16 @@ function createSimpleApiExtension(project: Project, plugin: VendurePluginRef, se
         ],
     });
 
-    if (adminApiExtensionDocuments) {
-        const initializer = adminApiExtensionDocuments.getInitializer();
-        if (Node.isArrayLiteralExpression(initializer)) {
-            initializer.addElement(schemaVariableName);
-        }
-    }
-
     const adminApiExtensions = apiExtensionsFile.getVariableDeclaration('adminApiExtensions');
+    addSchemaToApiExtensionsTemplateLiteral(adminApiExtensions, schemaVariableName);
+
     return adminApiExtensions;
 }
 
 function createCrudApiExtension(project: Project, plugin: VendurePluginRef, serviceRef: ServiceRef) {
     const apiExtensionsFile = getOrCreateApiExtensionsFile(project, plugin);
-    const adminApiExtensionDocuments = apiExtensionsFile.getVariableDeclaration('adminApiExtensionDocuments');
-    const insertAtIndex = adminApiExtensionDocuments?.getParent().getParent().getChildIndex() ?? 2;
+    const adminApiExtensions = apiExtensionsFile.getVariableDeclaration('adminApiExtensions');
+    const insertAtIndex = adminApiExtensions?.getParent().getParent().getChildIndex() ?? 2;
     const schemaVariableName = `${serviceRef.nameCamelCase.replace(/Service$/, '')}AdminApiExtensions`;
     apiExtensionsFile.insertVariableStatement(insertAtIndex, {
         declarationKind: VariableDeclarationKind.Const,
@@ -296,7 +291,7 @@ function createCrudApiExtension(project: Project, plugin: VendurePluginRef, serv
                             for (const { name, type, nullable } of entityRef.getProps()) {
                                 const graphQlType = getGraphQLType(type);
                                 if (graphQlType) {
-                                    writer.writeLine(`  ${name}: ${graphQlType}${nullable ? '' : '!'}`);
+                                    writer.writeLine(`    ${name}: ${graphQlType}${nullable ? '' : '!'}`);
                                 }
                             }
                             writer.writeLine(`  }`);
@@ -383,15 +378,33 @@ function createCrudApiExtension(project: Project, plugin: VendurePluginRef, serv
         ],
     });
 
-    if (adminApiExtensionDocuments) {
-        const initializer = adminApiExtensionDocuments.getInitializer();
-        if (Node.isArrayLiteralExpression(initializer)) {
-            initializer.addElement(schemaVariableName);
+    addSchemaToApiExtensionsTemplateLiteral(adminApiExtensions, schemaVariableName);
+
+    return adminApiExtensions;
+}
+
+function addSchemaToApiExtensionsTemplateLiteral(
+    adminApiExtensions: VariableDeclaration | undefined,
+    schemaVariableName: string,
+) {
+    if (adminApiExtensions) {
+        const apiExtensionsInitializer = adminApiExtensions.getInitializer();
+        if (Node.isTaggedTemplateExpression(apiExtensionsInitializer)) {
+            adminApiExtensions
+                .setInitializer(writer => {
+                    writer.writeLine(`gql\``);
+                    const template = apiExtensionsInitializer.getTemplate();
+                    if (Node.isNoSubstitutionTemplateLiteral(template)) {
+                        writer.write(`${template.getLiteralValue()}`);
+                    } else {
+                        writer.write(template.getText().replace(/^`/, '').replace(/`$/, ''));
+                    }
+                    writer.writeLine(`  \${${schemaVariableName}}`);
+                    writer.write(`\``);
+                })
+                .formatText();
         }
     }
-
-    const adminApiExtensions = apiExtensionsFile.getVariableDeclaration('adminApiExtensions');
-    return adminApiExtensions;
 }
 
 function getGraphQLType(type: Type): string | undefined {
