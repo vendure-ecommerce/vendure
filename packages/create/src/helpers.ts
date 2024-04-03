@@ -104,8 +104,12 @@ export function checkNodeVersion(requiredVersion: string) {
 
 export function yarnIsAvailable() {
     try {
-        execSync('yarnpkg --version', { stdio: 'ignore' });
-        return true;
+        const yarnVersion = execSync('yarnpkg --version');
+        if (semver.major(yarnVersion.toString()) > 1) {
+            return true;
+        } else {
+            return false;
+        }
     } catch (e: any) {
         return false;
     }

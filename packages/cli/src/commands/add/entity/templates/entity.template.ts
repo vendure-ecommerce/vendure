@@ -1,17 +1,31 @@
-import { VendureEntity, DeepPartial, HasCustomFields } from '@vendure/core';
-import { Entity, Column } from 'typeorm';
+import {
+    DeepPartial,
+    HasCustomFields,
+    LocaleString,
+    Translatable,
+    Translation,
+    VendureEntity,
+} from '@vendure/core';
+import { Column, Entity, OneToMany } from 'typeorm';
+
+import { ScaffoldTranslation } from './entity-translation.template';
 
 export class ScaffoldEntityCustomFields {}
 
 @Entity()
-export class ScaffoldEntity extends VendureEntity implements HasCustomFields {
+export class ScaffoldEntity extends VendureEntity implements Translatable, HasCustomFields {
     constructor(input?: DeepPartial<ScaffoldEntity>) {
         super(input);
     }
 
     @Column()
-    name: string;
+    code: string;
 
     @Column(type => ScaffoldEntityCustomFields)
     customFields: ScaffoldEntityCustomFields;
+
+    localizedName: LocaleString;
+
+    @OneToMany(type => ScaffoldTranslation, translation => translation.base, { eager: true })
+    translations: Array<Translation<ScaffoldEntity>>;
 }

@@ -1,19 +1,19 @@
 import { Node, ObjectLiteralExpression, StructureKind, SyntaxKind } from 'ts-morph';
 
+import { AdminUiAppConfigName } from '../../../../../constants';
+import { VendureConfigRef } from '../../../../../shared/vendure-config-ref';
 import { addImportsToFile } from '../../../../../utilities/ast-utils';
 
 export function updateAdminUiPluginInit(
-    vendureConfig: ObjectLiteralExpression,
+    vendureConfig: VendureConfigRef,
     options: { pluginClassName: string; pluginPath: string },
 ): boolean {
-    const plugins = vendureConfig
-        .getProperty('plugins')
-        ?.getFirstChildByKind(SyntaxKind.ArrayLiteralExpression)
-        ?.getFirstChildByKind(SyntaxKind.SyntaxList);
-
-    const adminUiPlugin = plugins?.getChildrenOfKind(SyntaxKind.CallExpression).find(c => {
-        return c.getExpression().getText() === 'AdminUiPlugin.init';
-    });
+    const adminUiPlugin = vendureConfig
+        .getPluginsArray()
+        ?.getChildrenOfKind(SyntaxKind.CallExpression)
+        .find(c => {
+            return c.getExpression().getText() === 'AdminUiPlugin.init';
+        });
     if (adminUiPlugin) {
         const initObject = adminUiPlugin
             .getArguments()
@@ -35,7 +35,7 @@ export function updateAdminUiPluginInit(
                 .formatText();
         } else {
             const computeFnCall = appProperty.getFirstChildByKind(SyntaxKind.CallExpression);
-            if (computeFnCall?.getType().getText().includes('AdminUiAppConfig')) {
+            if (computeFnCall?.getType().getText().includes(AdminUiAppConfigName)) {
                 const arg = computeFnCall.getArguments()[0];
                 if (arg && Node.isObjectLiteralExpression(arg)) {
                     const extensionsProp = arg.getProperty('extensions');
@@ -49,19 +49,19 @@ export function updateAdminUiPluginInit(
             }
         }
 
-        addImportsToFile(vendureConfig.getSourceFile(), {
+        addImportsToFile(vendureConfig.sourceFile, {
             moduleSpecifier: '@vendure/ui-devkit/compiler',
             namedImports: ['compileUiExtensions'],
             order: 0,
         });
 
-        addImportsToFile(vendureConfig.getSourceFile(), {
+        addImportsToFile(vendureConfig.sourceFile, {
             moduleSpecifier: 'path',
             namespaceImport: 'path',
             order: 0,
         });
 
-        addImportsToFile(vendureConfig.getSourceFile(), {
+        addImportsToFile(vendureConfig.sourceFile, {
             moduleSpecifier: options.pluginPath,
             namedImports: [options.pluginClassName],
         });
