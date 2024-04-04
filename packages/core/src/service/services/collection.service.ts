@@ -104,7 +104,8 @@ export class CollectionService implements OnModuleInit {
                 await this.applyFiltersQueue.add({
                     ctx: event.ctx.serialize(),
                     collectionIds: collections.map(c => c.id),
-                });
+                },
+                {   ctx: event.ctx   });
             });
 
         this.applyFiltersQueue = await this.jobQueueService.createQueue({
@@ -471,7 +472,8 @@ export class CollectionService implements OnModuleInit {
         await this.applyFiltersQueue.add({
             ctx: ctx.serialize(),
             collectionIds: [collection.id],
-        });
+        },
+        {   ctx   });
         await this.eventBus.publish(new CollectionEvent(ctx, collectionWithRelations, 'created', input));
         return assertFound(this.findOne(ctx, collection.id));
     }
@@ -497,7 +499,8 @@ export class CollectionService implements OnModuleInit {
                 ctx: ctx.serialize(),
                 collectionIds: [collection.id],
                 applyToChangedVariantsOnly: false,
-            });
+            },
+            {   ctx   });
         } else {
             const affectedVariantIds = await this.getCollectionProductVariantIds(collection);
             await this.eventBus.publish(new CollectionModificationEvent(ctx, collection, affectedVariantIds));
@@ -571,7 +574,8 @@ export class CollectionService implements OnModuleInit {
         await this.applyFiltersQueue.add({
             ctx: ctx.serialize(),
             collectionIds: [target.id],
-        });
+        },
+        {   ctx   });
         return assertFound(this.findOne(ctx, input.collectionId));
     }
 
@@ -829,7 +833,8 @@ export class CollectionService implements OnModuleInit {
         await this.applyFiltersQueue.add({
             ctx: ctx.serialize(),
             collectionIds: collectionsToAssign.map(collection => collection.id),
-        });
+        },
+        {   ctx   });
 
         return this.connection
             .findByIdsInChannel(

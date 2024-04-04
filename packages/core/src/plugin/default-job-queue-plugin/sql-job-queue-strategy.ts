@@ -6,7 +6,7 @@ import { Injector } from '../../common/injector';
 import { InspectableJobQueueStrategy, JobQueueStrategy } from '../../config';
 import { Logger } from '../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { Job, JobData } from '../../job-queue';
+import { Job, JobData, JobQueueStrategyJobOptions } from '../../job-queue';
 import { PollingJobQueueStrategy } from '../../job-queue/polling-job-queue-strategy';
 import { ListQueryBuilder } from '../../service/helpers/list-query-builder/list-query-builder';
 
@@ -20,27 +20,31 @@ import { JobRecord } from './job-record.entity';
  * @docsCategory JobQueue
  */
 export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements InspectableJobQueueStrategy {
-    private connection: Connection | undefined;
+    private rawConnection: Connection | undefined;
+    private connection: TransactionalConnection | undefined;
     private listQueryBuilder: ListQueryBuilder;
 
     init(injector: Injector) {
-        this.connection = injector.get(TransactionalConnection).rawConnection;
+        this.rawConnection = injector.get(TransactionalConnection).rawConnection;
+        this.connection = injector.get(TransactionalConnection);
         this.listQueryBuilder = injector.get(ListQueryBuilder);
         super.init(injector);
     }
 
     destroy() {
-        this.connection = undefined;
+        this.rawConnection = undefined;
         super.destroy();
     }
 
-    async add<Data extends JobData<Data> = object>(job: Job<Data>): Promise<Job<Data>> {
-        if (!this.connectionAvailable(this.connection)) {
+    async add<Data extends JobData<Data> = object>(job: Job<Data>, jobOptions?: JobQueueStrategyJobOptions<Data>): Promise<Job<Data>> {
+        if (!this.connectionAvailable(this.rawConnection)) {
             throw new Error('Connection not available');
         }
+        const jobRecordRepository = jobOptions?.ctx && this.connection ? this.connection.getRepository(jobOptions.ctx, JobRecord) :
+            this.rawConnection.getRepository(JobRecord);
         const constrainedData = this.constrainDataSize(job);
         const newRecord = this.toRecord(job, constrainedData, this.setRetries(job.queueName, job));
-        const record = await this.connection.getRepository(JobRecord).save(newRecord);
+        const record = await jobRecordRepository.save(newRecord);
         return this.fromRecord(record);
     }
 
@@ -49,7 +53,7 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
      * In order to try to prevent that, this method will truncate any strings in the `data` object over 2kb in size.
      */
     private constrainDataSize<Data extends JobData<Data> = object>(job: Job<Data>): Data | undefined {
-        const type = this.connection?.options.type;
+        const type = this.rawConnection?.options.type;
         if (type === 'mysql' || type === 'mariadb') {
             const stringified = JSON.stringify(job.data);
             if (64 * 1024 <= stringified.length) {
@@ -76,11 +80,11 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
     }
 
     async next(queueName: string): Promise<Job | undefined> {
-        if (!this.connectionAvailable(this.connection)) {
+        if (!this.connectionAvailable(this.rawConnection)) {
             throw new Error('Connection not available');
         }
-        const connection = this.connection;
-        const connectionType = this.connection.options.type;
+        const connection = this.rawConnection;
+        const connectionType = this.rawConnection.options.type;
         const isSQLite =
             connectionType === 'sqlite' || connectionType === 'sqljs' || connectionType === 'better-sqlite3';
 
@@ -157,10 +161,10 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
     }
 
     async update(job: Job<any>): Promise<void> {
-        if (!this.connectionAvailable(this.connection)) {
+        if (!this.connectionAvailable(this.rawConnection)) {
             throw new Error('Connection not available');
         }
-        await this.connection
+        await this.rawConnection
             .getRepository(JobRecord)
             .createQueryBuilder('job')
             .update()
@@ -171,7 +175,7 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
     }
 
     async findMany(options?: JobListOptions): Promise<PaginatedList<Job>> {
-        if (!this.connectionAvailable(this.connection)) {
+        if (!this.connectionAvailable(this.rawConnection)) {
             throw new Error('Connection not available');
         }
         return this.listQueryBuilder
@@ -184,27 +188,27 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
     }
 
     async findOne(id: ID): Promise<Job | undefined> {
-        if (!this.connectionAvailable(this.connection)) {
+        if (!this.connectionAvailable(this.rawConnection)) {
             throw new Error('Connection not available');
         }
-        const record = await this.connection.getRepository(JobRecord).findOne({ where: { id } });
+        const record = await this.rawConnection.getRepository(JobRecord).findOne({ where: { id } });
         if (record) {
             return this.fromRecord(record);
         }
     }
 
     async findManyById(ids: ID[]): Promise<Job[]> {
-        if (!this.connectionAvailable(this.connection)) {
+        if (!this.connectionAvailable(this.rawConnection)) {
             throw new Error('Connection not available');
         }
-        return this.connection
+        return this.rawConnection
             .getRepository(JobRecord)
             .find({ where: { id: In(ids) } })
             .then(records => records.map(this.fromRecord));
     }
 
     async removeSettledJobs(queueNames: string[] = [], olderThan?: Date) {
-        if (!this.connectionAvailable(this.connection)) {
+        if (!this.connectionAvailable(this.rawConnection)) {
             throw new Error('Connection not available');
         }
         const findOptions: FindOptionsWhere<JobRecord> = {
@@ -212,14 +216,14 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
             isSettled: true,
             settledAt: LessThan(olderThan || new Date()),
         };
-        const toDelete = await this.connection.getRepository(JobRecord).find({ where: findOptions });
-        const deleteCount = await this.connection.getRepository(JobRecord).count({ where: findOptions });
-        await this.connection.getRepository(JobRecord).delete(findOptions);
+        const toDelete = await this.rawConnection.getRepository(JobRecord).find({ where: findOptions });
+        const deleteCount = await this.rawConnection.getRepository(JobRecord).count({ where: findOptions });
+        await this.rawConnection.getRepository(JobRecord).delete(findOptions);
         return deleteCount;
     }
 
     private connectionAvailable(connection: Connection | undefined): connection is Connection {
-        return !!this.connection && this.connection.isConnected;
+        return !!this.rawConnection && this.rawConnection.isConnected;
     }
 
     private toRecord(job: Job<any>, data?: any, retries?: number): JobRecord {
