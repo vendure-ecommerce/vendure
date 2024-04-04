@@ -265,7 +265,7 @@ export function getDependencies(
         dbDriverPackage(dbType),
         `typescript@${TYPESCRIPT_VERSION}`,
     ];
-    const devDependencies = ['concurrently', 'ts-node'];
+    const devDependencies = ['concurrently', `@vendure/cli${vendurePkgVersion}`];
     return { dependencies, devDependencies };
 }
 

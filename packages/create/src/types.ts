@@ -6,7 +6,6 @@ export interface FileSources {
     configSource: string;
     envSource: string;
     envDtsSource: string;
-    migrationSource: string;
     readmeSource: string;
     dockerfileSource: string;
     dockerComposeSource: string;
