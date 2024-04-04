@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
-import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
+import pc from 'picocolors';
 import { Connection, createConnection, DataSourceOptions } from 'typeorm';
 import { MysqlDriver } from 'typeorm/driver/mysql/MysqlDriver';
 import { camelCase } from 'typeorm/util/StringUtils';
@@ -46,11 +46,11 @@ export async function runMigrations(userConfig: Partial<VendureConfig>): Promise
             connection.runMigrations({ transaction: 'each' }),
         );
         for (const migration of migrations) {
-            log(chalk.green(`Successfully ran migration: ${migration.name}`));
+            log(pc.green(`Successfully ran migration: ${migration.name}`));
             migrationsRan.push(migration.name);
         }
     } catch (e: any) {
-        log(chalk.red('An error occurred when running migrations:'));
+        log(pc.red('An error occurred when running migrations:'));
         log(e.message);
         if (isRunningFromVendureCli()) {
             throw e;
@@ -69,12 +69,12 @@ async function checkMigrationStatus(connection: Connection) {
     const builderLog = await connection.driver.createSchemaBuilder().log();
     if (builderLog.upQueries.length) {
         log(
-            chalk.yellow(
+            pc.yellow(
                 'Your database schema does not match your current configuration. Generate a new migration for the following changes:',
             ),
         );
         for (const query of builderLog.upQueries) {
-            log(' - ' + chalk.yellow(query.query));
+            log(' - ' + pc.yellow(query.query));
         }
     }
 }
@@ -94,7 +94,7 @@ export async function revertLastMigration(userConfig: Partial<VendureConfig>) {
             connection.undoLastMigration({ transaction: 'each' }),
         );
     } catch (e: any) {
-        log(chalk.red('An error occurred when reverting migration:'));
+        log(pc.red('An error occurred when reverting migration:'));
         log(e.message);
         if (isRunningFromVendureCli()) {
             throw e;
@@ -183,11 +183,11 @@ export async function generateMigration(
             await fs.ensureFile(outputPath);
             fs.writeFileSync(outputPath, fileContent);
 
-            log(chalk.green(`Migration ${chalk.blue(outputPath)} has been generated successfully.`));
+            log(pc.green(`Migration ${pc.blue(outputPath)} has been generated successfully.`));
             migrationName = outputPath;
         }
     } else {
-        log(chalk.yellow('No changes in database schema were found - cannot generate a migration.'));
+        log(pc.yellow('No changes in database schema were found - cannot generate a migration.'));
     }
     await connection.close();
     resetConfig();
