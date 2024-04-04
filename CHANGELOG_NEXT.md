@@ -1,3 +1,27 @@
+## 2.2.0-next.8 (2024-04-04)
+
+
+#### Fixes
+
+* **core** Fix deleted product option groups can't be deleted again (#2706) ([16add4a](https://github.com/vendure-ecommerce/vendure/commit/16add4a)), closes [#2706](https://github.com/vendure-ecommerce/vendure/issues/2706)
+* **core** Fix edge case with cached tax zone ([e543e5e](https://github.com/vendure-ecommerce/vendure/commit/e543e5e))
+* **core** Fix error in joining list query relations ([33db45d](https://github.com/vendure-ecommerce/vendure/commit/33db45d))
+* **core** Persist custom field relations on TaxRate ([7eaa641](https://github.com/vendure-ecommerce/vendure/commit/7eaa641))
+* **core** Remove empty customFields relations from getMissingRelations in entity-hydrator (#2765) ([1c44113](https://github.com/vendure-ecommerce/vendure/commit/1c44113)), closes [#2765](https://github.com/vendure-ecommerce/vendure/issues/2765)
+* **core** Wrap nextOrderStates in transaction ([ed9539d](https://github.com/vendure-ecommerce/vendure/commit/ed9539d))
+
+#### Features
+
+* **cli** Add API extension command ([41675a4](https://github.com/vendure-ecommerce/vendure/commit/41675a4))
+* **cli** Add codegen command ([de5544c](https://github.com/vendure-ecommerce/vendure/commit/de5544c))
+* **cli** Add job queue command ([2193a77](https://github.com/vendure-ecommerce/vendure/commit/2193a77))
+* **cli** Add service command ([e29accc](https://github.com/vendure-ecommerce/vendure/commit/e29accc))
+* **cli** Allow chaining features onto a newly-created plugin ([5b32c59](https://github.com/vendure-ecommerce/vendure/commit/5b32c59))
+* **cli** Allow new entity features to be selected ([74c69dd](https://github.com/vendure-ecommerce/vendure/commit/74c69dd))
+* **cli** Implement migrations in CLI ([9860abd](https://github.com/vendure-ecommerce/vendure/commit/9860abd))
+* **core** Pass ctx to job queue strategy add (#2759) ([3909251](https://github.com/vendure-ecommerce/vendure/commit/3909251)), closes [#2759](https://github.com/vendure-ecommerce/vendure/issues/2759) [#2758](https://github.com/vendure-ecommerce/vendure/issues/2758)
+* **create** Ship Vendure CLI with new projects ([faf69a9](https://github.com/vendure-ecommerce/vendure/commit/faf69a9))
+
 ## 2.2.0-next.7 (2024-03-20)
 
 
