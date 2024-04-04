@@ -43,11 +43,8 @@
         "ts-morph": "^21.0.1",
         "ts-node": "^10.9.2"
     },
-    "peerDependencies": {
-        "@vendure/core": "^2.0.0"
-    },
     "devDependencies": {
-        "@vendure/core": "2.2.0-next.7",
+        "@vendure/core": "^2.2.0-next.8",
         "typescript": "5.3.3"
     }
 }
