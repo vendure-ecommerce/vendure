@@ -221,7 +221,7 @@ export class EntityHydrator {
                 }
             }
         }
-        return unique(missingRelations);
+        return unique(missingRelations.filter(relation => !relation.endsWith('.customFields')));
     }
 
     private getRequiredProductVariantRelations<Entity extends VendureEntity>(
