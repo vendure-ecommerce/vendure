@@ -20,7 +20,7 @@ export function registerMigrateCommand(program: Command) {
         .action(async () => {
             // eslint-disable-next-line no-console
             console.log(`\n`);
-            intro(pc.blue('🏗️ Vendure migrations'));
+            intro(pc.blue('🛠️️ Vendure migrations'));
             const action = await select({
                 message: 'What would you like to do?',
                 options: [
