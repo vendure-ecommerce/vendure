@@ -3,6 +3,8 @@ import { Command } from 'commander';
 import pc from 'picocolors';
 
 import { generateMigrationCommand } from './generate-migration/generate-migration';
+import { revertMigrationCommand } from './revert-migration/revert-migration';
+import { runMigrationCommand } from './run-migration/run-migration';
 
 const cancelledMessage = 'Migrate cancelled.';
 
@@ -18,7 +20,7 @@ export function registerMigrateCommand(program: Command) {
         .action(async () => {
             // eslint-disable-next-line no-console
             console.log(`\n`);
-            intro(pc.blue('➡️ Vendure migrations'));
+            intro(pc.blue('🏗️ Vendure migrations'));
             const action = await select({
                 message: 'What would you like to do?',
                 options: [
@@ -32,10 +34,18 @@ export function registerMigrateCommand(program: Command) {
                 process.exit(0);
             }
             try {
+                process.env.VENDURE_RUNNING_IN_CLI = 'true';
                 if (action === 'generate') {
                     await generateMigrationCommand.run();
                 }
+                if (action === 'run') {
+                    await runMigrationCommand.run();
+                }
+                if (action === 'revert') {
+                    await revertMigrationCommand.run();
+                }
                 outro('✅ Done!');
+                process.env.VENDURE_RUNNING_IN_CLI = undefined;
             } catch (e: any) {
                 log.error(e.message as string);
                 if (e.stack) {

@@ -1,30 +1,21 @@
-import { cancel, isCancel, log, text } from '@clack/prompts';
+import { cancel, isCancel, log, spinner, text } from '@clack/prompts';
 import { generateMigration } from '@vendure/core';
-import path from 'node:path';
-import { register } from 'ts-node';
 
 import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
 import { analyzeProject } from '../../../shared/shared-prompts';
 import { VendureConfigRef } from '../../../shared/vendure-config-ref';
-import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
-import { isRunningInTsNode } from '../../../utilities/utils';
+import { loadVendureConfigFile } from '../load-vendure-config-file';
 
-const cancelledMessage = 'Add entity cancelled';
-
-export interface GenerateMigrationOptions {
-    plugin?: VendurePluginRef;
-}
+const cancelledMessage = 'Generate migration cancelled';
 
 export const generateMigrationCommand = new CliCommand({
     id: 'generate-migration',
     category: 'Other',
     description: 'Generate a new database migration',
-    run: options => runGenerateMigration(options),
+    run: () => runGenerateMigration(),
 });
 
-async function runGenerateMigration(
-    options?: Partial<GenerateMigrationOptions>,
-): Promise<CliCommandReturnVal> {
+async function runGenerateMigration(): Promise<CliCommandReturnVal> {
     const project = await analyzeProject({ cancelledMessage });
     const vendureConfig = new VendureConfigRef(project);
     log.info('Using VendureConfig from ' + vendureConfig.getPathRelativeToProjectRoot());
@@ -44,26 +35,16 @@ async function runGenerateMigration(
         process.exit(0);
     }
     const config = loadVendureConfigFile(vendureConfig);
-    await generateMigration(config, { name, outputDir: './src/migrations' });
-
+    const migrationSpinner = spinner();
+    migrationSpinner.start('Generating migration...');
+    const migrationName = await generateMigration(config, { name, outputDir: './src/migrations' });
+    const report =
+        typeof migrationName === 'string'
+            ? `New migration generated: ${migrationName}`
+            : 'No changes in database schema were found, so no migration was generated';
+    migrationSpinner.stop(report);
     return {
         project,
         modifiedSourceFiles: [],
     };
-}
-
-function loadVendureConfigFile(vendureConfig: VendureConfigRef) {
-    if (!isRunningInTsNode()) {
-        const tsConfigPath = path.join(process.cwd(), 'tsconfig.json');
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const compilerOptions = require(tsConfigPath).compilerOptions;
-        register({ compilerOptions });
-    }
-    const exportedVarName = vendureConfig.getConfigObjectVariableName();
-    if (!exportedVarName) {
-        throw new Error('Could not find the exported variable name in the VendureConfig file');
-    }
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const config = require(vendureConfig.sourceFile.getFilePath())[exportedVarName];
-    return config;
 }
