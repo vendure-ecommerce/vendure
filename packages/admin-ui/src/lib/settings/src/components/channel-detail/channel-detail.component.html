@@ -99,20 +99,6 @@
             </vdr-card>
             <vdr-card [title]="'settings.defaults' | translate">
                 <div class="form-grid">
-                    <vdr-form-field [label]="'settings.default-currency' | translate" for="defaultTaxZoneId">
-                        <select
-                            name="defaultCurrencyCode"
-                            formControlName="defaultCurrencyCode"
-                            [vdrDisabled]="!(updatePermission | hasPermission)"
-                        >
-                            <option
-                                *ngFor="let code of detailForm.value.availableCurrencyCodes"
-                                [value]="code"
-                            >
-                                {{ code | localeCurrencyName }}
-                            </option>
-                        </select>
-                    </vdr-form-field>
                     <vdr-form-field [label]="'common.default-language' | translate" for="defaultLanguage">
                         <select
                             name="defaultLanguageCode"
@@ -124,6 +110,20 @@
                                 [value]="languageCode"
                             >
                                 {{ languageCode | localeLanguageName }} ({{ languageCode | uppercase }})
+                            </option>
+                        </select>
+                    </vdr-form-field>
+                    <vdr-form-field [label]="'settings.default-currency' | translate" for="defaultCurrency">
+                        <select
+                            name="defaultCurrencyCode"
+                            formControlName="defaultCurrencyCode"
+                            [vdrDisabled]="!(updatePermission | hasPermission)"
+                        >
+                            <option
+                                *ngFor="let code of detailForm.value.availableCurrencyCodes"
+                                [value]="code"
+                            >
+                                {{ code | localeCurrencyName }}
                             </option>
                         </select>
                     </vdr-form-field>
@@ -163,7 +163,7 @@
                         </vdr-form-field>
                         <clr-alert
                             *ngIf="detailForm.value.code && !detailForm.value.defaultShippingZoneId"
-                            clrAlertType="warning"
+                            clrAlertType="danger"
                             [clrAlertClosable]="false"
                         >
                             <clr-alert-item>

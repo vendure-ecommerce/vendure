@@ -1,3 +1,16 @@
+## <small>2.1.9 (2024-04-05)</small>
+
+
+#### Fixes
+
+* **admin-ui** Make channel detail defaultShippingZoneId required (#2719) ([7bae5d7](https://github.com/vendure-ecommerce/vendure/commit/7bae5d7)), closes [#2719](https://github.com/vendure-ecommerce/vendure/issues/2719)
+* **admin-ui** Require default currency and language for channels (#2722) ([7859a15](https://github.com/vendure-ecommerce/vendure/commit/7859a15)), closes [#2722](https://github.com/vendure-ecommerce/vendure/issues/2722)
+* **admin-ui** Swedish translation adjustments and corrections (#2752) ([3e08f7b](https://github.com/vendure-ecommerce/vendure/commit/3e08f7b)), closes [#2752](https://github.com/vendure-ecommerce/vendure/issues/2752)
+* **core** Fix custom field relation for ProductVariant when value is null (#2727) ([b4f8a55](https://github.com/vendure-ecommerce/vendure/commit/b4f8a55)), closes [#2727](https://github.com/vendure-ecommerce/vendure/issues/2727) [#2723](https://github.com/vendure-ecommerce/vendure/issues/2723)
+* **core** Fix missing shipping lines in partial order (#2766) ([d4ec842](https://github.com/vendure-ecommerce/vendure/commit/d4ec842)), closes [#2766](https://github.com/vendure-ecommerce/vendure/issues/2766)
+* **core** Fix stock constraint error for adjustOrderLine when using OrderLine custom fields (#2737) ([8a961b0](https://github.com/vendure-ecommerce/vendure/commit/8a961b0)), closes [#2737](https://github.com/vendure-ecommerce/vendure/issues/2737)
+* **elasticsearch-plugin** Fix aggregation buckets with taxes (#2749) ([c23993c](https://github.com/vendure-ecommerce/vendure/commit/c23993c)), closes [#2749](https://github.com/vendure-ecommerce/vendure/issues/2749)
+
 ## <small>2.1.8 (2024-03-05)</small>
 
 
