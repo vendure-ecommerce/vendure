@@ -134,7 +134,20 @@ export class MyPlugin implements NestModule {
 }
 ```
 
-## Writing your first plugin
+## Create a Plugin via CLI
+
+:::cli
+Run the `npx vendure add` command, and select "Create a new Vendure plugin".
+
+This will guide you through the creation of a new plugin and automate all aspects of the process.
+
+This is the recommended way of creating a new plugin.
+:::
+
+## Writing a plugin from scratch
+
+Although the [Vendure CLI](/guides/developer-guide/cli/) is the recommended way to create a new plugin, it can be useful to understand the process of creating
+a plugin manually.
 
 In Vendure **plugins** are used to extend the core functionality of the server. Plugins can be pre-made functionality that you can install via npm, or they can be custom plugins that you write yourself.
 

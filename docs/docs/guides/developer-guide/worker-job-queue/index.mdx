@@ -214,6 +214,10 @@ The resolver just defines how to handle the new `addVideoToProduct` mutation, de
 
 ### Creating a job queue
 
+:::cli
+Use `npx vendure add` to easily add a job queue to a service.
+:::
+
 The [`JobQueueService`](/reference/typescript-api/job-queue/job-queue-service/) creates and manages job queues. The queue is created when the
 application starts up (see [NestJS lifecycle events](https://docs.nestjs.com/fundamentals/lifecycle-events)), and then we can use the `add()` method to add jobs to the queue.
 
@@ -290,7 +294,6 @@ will add a transcoding job to the queue.
 Plugin code typically gets executed on both the server _and_ the worker. Therefore, you sometimes need to explicitly check
 what context you are in. This can be done with the [ProcessContext](/reference/typescript-api/common/process-context/) provider.
 :::
-
 
 Finally, the `ProductVideoPlugin` brings it all together, extending the GraphQL API, defining the required CustomField to store the transcoded video URL, and registering our service and resolver. The [PluginCommonModule](/reference/typescript-api/plugin/plugin-common-module/) is imported as it exports the `JobQueueService`.
 

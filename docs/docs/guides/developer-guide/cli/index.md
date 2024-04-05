@@ -14,9 +14,7 @@ such as creating new plugins, entities, API extensions and more.
 The Vendure CLI comes installed with a new Vendure project by default from v2.2.0+
 :::
 
-You can install the CLI locally in your Vendure project, or you can run it without installation using `npx`. 
-The advantage of installing locally is that you can more easily control the installed version, and you 
-can reference the CLI using the `vendure` command.
+To manually install the CLI, run:
 
 <Tabs groupId="package-manager">
 <TabItem value="npm" label="npm" default>

@@ -57,3 +57,12 @@ button.DocSearch-Button {
     width: 250px;
     border: 1px solid var(--color-docsearch-border);
 }
+
+.theme-admonition-cli {
+    background-color: #2b2b2b;
+    color: #fff;
+}
+
+.theme-admonition-cli a:link, .theme-admonition-cli a:visited {
+    color: #fff;
+}
