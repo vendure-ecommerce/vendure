@@ -2,52 +2,91 @@
 title: "CLI"
 ---
 
-The Vendure CLI is a command-line tool for boosting your productivity as a developer.
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
 
-Currently, it provides functionality for rapidly scaffolding a new plugin, and in future we will be expanding the capabilities to include other common tasks.
-
-:::info
-The Vendure CLI package was introduced with Vendure v2.1.0
-:::
+The Vendure CLI is a command-line tool for boosting your productivity as a developer by automating common tasks
+such as creating new plugins, entities, API extensions and more.
 
 ## Installation
 
-You can install the CLI locally in your Vendure project, or you can run it without installation using `npx`. The advantage of installing locally is that you can more easily control the installed version, and you can reference the CLI using the `vendure` command.
+:::info
+The Vendure CLI comes installed with a new Vendure project by default from v2.2.0+
+:::
+
+You can install the CLI locally in your Vendure project, or you can run it without installation using `npx`. 
+The advantage of installing locally is that you can more easily control the installed version, and you 
+can reference the CLI using the `vendure` command.
+
+<Tabs groupId="package-manager">
+<TabItem value="npm" label="npm" default>
 
 ```bash
 npm install -D @vendure/cli
+```
 
-# or 
+</TabItem>
+<TabItem value="yarn" label="yarn">
 
+```bash
 yarn add -D @vendure/cli
 ```
 
-and then from your project directory you can run:
+</TabItem>
+</Tabs>
+
+## The Add Command
+
+The `add` command is used to add new entities, resolvers, services, plugins, and more to your Vendure project.
+
+From your project's **root directory**, run:
+
+<Tabs groupId="package-manager">
+<TabItem value="npm" label="npm" default>
 
 ```bash
-vendure --version
+npx vendure add
 ```
 
-### Running without installation
-
-If you want to use the Vendure CLI without installing it in your project, you can run
+</TabItem>
+<TabItem value="yarn" label="yarn">
 
 ```bash
-npx @vendure/cli --version
+yarn vendure add
 ```
 
-## Scaffold a new plugin
+</TabItem>
+</Tabs>
 
-The Vendure CLI can be used to quickly scaffold a new [plugin](/guides/developer-guide/plugins).
+![Add command](./add-command.webp)
 
-1. Navigate to your plugins directory
-   ```bash
-   cd src/plugins
-   ```
-2. Run the `new plugin` command
-   ```bash
-   vendure new plugin
-   ```
-3. Answer the questions to configure your new plugin
+The CLI will guide you through the process of adding new functionality to your project. 
 
-![Plugin creation flow](./new-plugin.webp)
+The `add` command is much more than a simple file generator. It is able to
+analyze your project source code to deeply understand and correctly update your project files.
+
+## The Migrate Command
+
+The `migrate` command is used to generate and manage [database migrations](/guides/developer-guide/migrations) for your Vendure project.
+
+
+From your project's **root directory**, run:
+
+<Tabs groupId="package-manager">
+<TabItem value="npm" label="npm" default>
+
+```bash
+npx vendure migrate
+```
+
+</TabItem>
+<TabItem value="yarn" label="yarn">
+
+```bash
+yarn vendure migrate
+```
+
+</TabItem>
+</Tabs>
+
+![Migrate command](./migrate-command.webp)
