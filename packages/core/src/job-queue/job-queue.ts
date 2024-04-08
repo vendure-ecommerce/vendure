@@ -99,7 +99,7 @@ export class JobQueue<Data extends JobData<Data> = object> {
 
         const isBuffered = await this.jobBufferService.add(job);
         if (!isBuffered) {
-            const addedJob = await this.jobQueueStrategy.add(job);
+            const addedJob = await this.jobQueueStrategy.add(job, options);
             return new SubscribableJob(addedJob, this.jobQueueStrategy);
         } else {
             const bufferedJob = new Job({
