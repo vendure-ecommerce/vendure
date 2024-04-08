@@ -32,7 +32,7 @@ export async function createNewPlugin(): Promise<CliCommandReturnVal> {
     if (!options.name) {
         const name = await text({
             message: 'What is the name of the plugin?',
-            initialValue: '',
+            initialValue: 'my-new-feature',
             validate: input => {
                 if (!/^[a-z][a-z-0-9]+$/.test(input)) {
                     return 'The plugin name must be lowercase and contain only letters, numbers and dashes';

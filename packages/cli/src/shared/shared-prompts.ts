@@ -112,21 +112,34 @@ export async function selectMultiplePluginClasses(
     return (targetPlugins as ClassDeclaration[]).map(pc => new VendurePluginRef(pc));
 }
 
-export async function selectServiceRef(project: Project, plugin: VendurePluginRef): Promise<ServiceRef> {
+export async function selectServiceRef(
+    project: Project,
+    plugin: VendurePluginRef,
+    canCreateNew = true,
+): Promise<ServiceRef> {
     const serviceRefs = getServices(project).filter(sr => {
         return sr.classDeclaration
             .getSourceFile()
             .getDirectoryPath()
             .includes(plugin.getSourceFile().getDirectoryPath());
     });
+
+    if (serviceRefs.length === 0 && !canCreateNew) {
+        throw new Error(Messages.NoServicesFound);
+    }
+
     const result = await select({
         message: 'Which service contains the business logic for this API extension?',
         maxItems: 8,
         options: [
-            {
-                value: 'new',
-                label: `Create new generic service`,
-            },
+            ...(canCreateNew
+                ? [
+                      {
+                          value: 'new',
+                          label: `Create new generic service`,
+                      },
+                  ]
+                : []),
             ...serviceRefs.map(sr => {
                 const features = sr.crudEntityRef
                     ? `CRUD service for ${sr.crudEntityRef.name}`

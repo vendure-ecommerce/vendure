@@ -2,6 +2,7 @@ import { cancel, intro, isCancel, log, outro, select, spinner } from '@clack/pro
 import { Command } from 'commander';
 import pc from 'picocolors';
 
+import { Messages } from '../../constants';
 import { CliCommand } from '../../shared/cli-command';
 import { pauseForPromptDisplay } from '../../utilities/utils';
 
@@ -63,9 +64,11 @@ export function registerAddCommand(program: Command) {
                 outro('✅ Done!');
             } catch (e: any) {
                 log.error(e.message as string);
-                if (e.stack) {
+                const isCliMessage = Object.values(Messages).includes(e.message);
+                if (!isCliMessage && e.stack) {
                     log.error(e.stack);
                 }
+                outro('❌ Error');
             }
             process.exit(0);
         });

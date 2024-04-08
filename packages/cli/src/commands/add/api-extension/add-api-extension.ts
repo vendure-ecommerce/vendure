@@ -1,11 +1,14 @@
-import { spinner } from '@clack/prompts';
+import { cancel, isCancel, log, spinner, text } from '@clack/prompts';
 import { paramCase } from 'change-case';
 import path from 'path';
 import {
     ClassDeclaration,
+    CodeBlockWriter,
+    Expression,
     Node,
     Project,
     SourceFile,
+    SyntaxKind,
     Type,
     VariableDeclaration,
     VariableDeclarationKind,
@@ -42,8 +45,7 @@ async function addApiExtension(
     const providedVendurePlugin = options?.plugin;
     const project = await analyzeProject({ providedVendurePlugin, cancelledMessage });
     const plugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
-    const serviceRef = await selectServiceRef(project, plugin);
-
+    const serviceRef = await selectServiceRef(project, plugin, false);
     const serviceEntityRef = serviceRef.crudEntityRef;
     const modifiedSourceFiles: SourceFile[] = [];
     let resolver: ClassDeclaration | undefined;
@@ -51,13 +53,65 @@ async function addApiExtension(
 
     const scaffoldSpinner = spinner();
 
+    let queryName = '';
+    let mutationName = '';
+    if (!serviceEntityRef) {
+        const queryNameResult = await text({
+            message: 'Enter a name for the new query',
+            initialValue: 'myNewQuery',
+        });
+        if (!isCancel(queryNameResult)) {
+            queryName = queryNameResult;
+        }
+        const mutationNameResult = await text({
+            message: 'Enter a name for the new mutation',
+            initialValue: 'myNewMutation',
+        });
+        if (!isCancel(mutationNameResult)) {
+            mutationName = mutationNameResult;
+        }
+    }
+
     scaffoldSpinner.start('Generating resolver file...');
     await pauseForPromptDisplay();
     if (serviceEntityRef) {
         resolver = createCrudResolver(project, plugin, serviceRef, serviceEntityRef);
         modifiedSourceFiles.push(resolver.getSourceFile());
     } else {
-        resolver = createSimpleResolver(project, plugin, serviceRef);
+        if (isCancel(queryName)) {
+            cancel(cancelledMessage);
+            process.exit(0);
+        }
+        resolver = createSimpleResolver(project, plugin, serviceRef, queryName, mutationName);
+        if (queryName) {
+            serviceRef.classDeclaration.addMethod({
+                name: queryName,
+                parameters: [
+                    { name: 'ctx', type: 'RequestContext' },
+                    { name: 'id', type: 'ID' },
+                ],
+                isAsync: true,
+                returnType: 'Promise<boolean>',
+                statements: `return true;`,
+            });
+        }
+        if (mutationName) {
+            serviceRef.classDeclaration.addMethod({
+                name: mutationName,
+                parameters: [
+                    { name: 'ctx', type: 'RequestContext' },
+                    { name: 'id', type: 'ID' },
+                ],
+                isAsync: true,
+                returnType: 'Promise<boolean>',
+                statements: `return true;`,
+            });
+        }
+
+        addImportsToFile(serviceRef.classDeclaration.getSourceFile(), {
+            namedImports: ['RequestContext', 'ID'],
+            moduleSpecifier: '@vendure/core',
+        });
         modifiedSourceFiles.push(resolver.getSourceFile());
     }
 
@@ -67,7 +121,7 @@ async function addApiExtension(
     if (serviceEntityRef) {
         apiExtensions = createCrudApiExtension(project, plugin, serviceRef);
     } else {
-        apiExtensions = createSimpleApiExtension(project, plugin, serviceRef);
+        apiExtensions = createSimpleApiExtension(project, plugin, serviceRef, queryName, mutationName);
     }
     if (apiExtensions) {
         modifiedSourceFiles.push(apiExtensions.getSourceFile());
@@ -102,22 +156,70 @@ async function addApiExtension(
     };
 }
 
-function createSimpleResolver(project: Project, plugin: VendurePluginRef, serviceRef: ServiceRef) {
+function getResolverFileName(
+    project: Project,
+    serviceRef: ServiceRef,
+): { resolverFileName: string; suffix: number | undefined } {
+    let suffix: number | undefined;
+    let resolverFileName = '';
+    let sourceFileExists = false;
+    do {
+        resolverFileName =
+            paramCase(serviceRef.name).replace('-service', '') +
+            `-admin.resolver${typeof suffix === 'number' ? `-${suffix?.toString()}` : ''}.ts`;
+        sourceFileExists = !!project.getSourceFile(resolverFileName);
+        if (sourceFileExists) {
+            suffix = (suffix ?? 1) + 1;
+        }
+    } while (sourceFileExists);
+    return { resolverFileName, suffix };
+}
+
+function createSimpleResolver(
+    project: Project,
+    plugin: VendurePluginRef,
+    serviceRef: ServiceRef,
+    queryName: string,
+    mutationName: string,
+) {
+    const { resolverFileName, suffix } = getResolverFileName(project, serviceRef);
     const resolverSourceFile = createFile(
         project,
         path.join(__dirname, 'templates/simple-resolver.template.ts'),
     );
-    resolverSourceFile.move(
-        path.join(
-            plugin.getPluginDir().getPath(),
-            'api',
-            paramCase(serviceRef.name).replace('-service', '') + '-admin.resolver.ts',
-        ),
-    );
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    resolverSourceFile.move(path.join(plugin.getPluginDir().getPath(), 'api', resolverFileName));
+
     const resolverClassDeclaration = resolverSourceFile
-        .getClass('SimpleAdminResolver')!
-        .rename(serviceRef.name.replace(/Service$/, '') + 'AdminResolver');
+        .getClasses()
+        .find(cl => cl.getDecorator('Resolver') != null);
+
+    if (!resolverClassDeclaration) {
+        throw new Error('Could not find resolver class declaration');
+    }
+    if (resolverClassDeclaration.getName() === 'SimpleAdminResolver') {
+        resolverClassDeclaration.rename(
+            serviceRef.name.replace(/Service$/, '') + 'AdminResolver' + (suffix ? suffix.toString() : ''),
+        );
+    }
+
+    if (queryName) {
+        resolverSourceFile.getClass('TemplateService')?.getMethod('exampleQueryHandler')?.rename(queryName);
+        resolverClassDeclaration.getMethod('exampleQuery')?.rename(queryName);
+    } else {
+        resolverSourceFile.getClass('TemplateService')?.getMethod('exampleQueryHandler')?.remove();
+        resolverClassDeclaration.getMethod('exampleQuery')?.remove();
+    }
+
+    if (mutationName) {
+        resolverSourceFile
+            .getClass('TemplateService')
+            ?.getMethod('exampleMutationHandler')
+            ?.rename(mutationName);
+        resolverClassDeclaration.getMethod('exampleMutation')?.rename(mutationName);
+    } else {
+        resolverSourceFile.getClass('TemplateService')?.getMethod('exampleMutationHandler')?.remove();
+        resolverClassDeclaration.getMethod('exampleMutation')?.remove();
+    }
 
     resolverClassDeclaration
         .getConstructors()[0]
@@ -236,34 +338,70 @@ function createCrudResolver(
     return resolverClassDeclaration;
 }
 
-function createSimpleApiExtension(project: Project, plugin: VendurePluginRef, serviceRef: ServiceRef) {
+function createSimpleApiExtension(
+    project: Project,
+    plugin: VendurePluginRef,
+    serviceRef: ServiceRef,
+    queryName: string,
+    mutationName: string,
+) {
     const apiExtensionsFile = getOrCreateApiExtensionsFile(project, plugin);
-    const adminApiExtensionDocuments = apiExtensionsFile.getVariableDeclaration('adminApiExtensionDocuments');
-    const insertAtIndex = adminApiExtensionDocuments?.getParent().getParent().getChildIndex() ?? 2;
-    const schemaVariableName = `${serviceRef.nameCamelCase.replace(/Service$/, '')}AdminApiExtensions`;
-    apiExtensionsFile.insertVariableStatement(insertAtIndex, {
-        declarationKind: VariableDeclarationKind.Const,
-        declarations: [
-            {
-                name: schemaVariableName,
-                initializer: writer => {
-                    writer.writeLine(`gql\``);
-                    writer.indent(() => {
-                        writer.writeLine(`  extend type Query {`);
-                        writer.writeLine(`    exampleQuery(id: ID!): Boolean!`);
-                        writer.writeLine(`  }`);
-                        writer.newLine();
-                        writer.writeLine(`  extend type Mutation {`);
-                        writer.writeLine(`    exampleMutation(id: ID!): Boolean!`);
-                        writer.writeLine(`  }`);
-                    });
-                    writer.write(`\``);
-                },
-            },
-        ],
-    });
-
     const adminApiExtensions = apiExtensionsFile.getVariableDeclaration('adminApiExtensions');
+    const insertAtIndex = adminApiExtensions?.getParent().getParent().getChildIndex() ?? 2;
+    const schemaVariableName = `${serviceRef.nameCamelCase.replace(/Service$/, '')}AdminApiExtensions`;
+    const existingSchemaVariable = apiExtensionsFile.getVariableStatement(schemaVariableName);
+    if (!existingSchemaVariable) {
+        apiExtensionsFile.insertVariableStatement(insertAtIndex, {
+            declarationKind: VariableDeclarationKind.Const,
+            declarations: [
+                {
+                    name: schemaVariableName,
+                    initializer: writer => {
+                        writer.writeLine(`gql\``);
+                        writer.indent(() => {
+                            if (queryName) {
+                                writer.writeLine(`  extend type Query {`);
+                                writer.writeLine(`    ${queryName}(id: ID!): Boolean!`);
+                                writer.writeLine(`  }`);
+                            }
+                            writer.newLine();
+                            if (mutationName) {
+                                writer.writeLine(`  extend type Mutation {`);
+                                writer.writeLine(`    ${mutationName}(id: ID!): Boolean!`);
+                                writer.writeLine(`  }`);
+                            }
+                        });
+                        writer.write(`\``);
+                    },
+                },
+            ],
+        });
+    } else {
+        const taggedTemplateLiteral = existingSchemaVariable
+            .getDeclarations()[0]
+            ?.getFirstChildByKind(SyntaxKind.TaggedTemplateExpression)
+            ?.getChildren()[1];
+        if (!taggedTemplateLiteral) {
+            log.error('Could not update schema automatically');
+        } else {
+            appendToGqlTemplateLiteral(existingSchemaVariable.getDeclarations()[0], writer => {
+                writer.indent(() => {
+                    if (queryName) {
+                        writer.writeLine(`  extend type Query {`);
+                        writer.writeLine(`    ${queryName}(id: ID!): Boolean!`);
+                        writer.writeLine(`  }`);
+                    }
+                    writer.newLine();
+                    if (mutationName) {
+                        writer.writeLine(`  extend type Mutation {`);
+                        writer.writeLine(`    ${mutationName}(id: ID!): Boolean!`);
+                        writer.writeLine(`  }`);
+                    }
+                });
+            });
+        }
+    }
+
     addSchemaToApiExtensionsTemplateLiteral(adminApiExtensions, schemaVariableName);
 
     return adminApiExtensions;
@@ -388,22 +526,34 @@ function addSchemaToApiExtensionsTemplateLiteral(
     schemaVariableName: string,
 ) {
     if (adminApiExtensions) {
-        const apiExtensionsInitializer = adminApiExtensions.getInitializer();
-        if (Node.isTaggedTemplateExpression(apiExtensionsInitializer)) {
-            adminApiExtensions
-                .setInitializer(writer => {
-                    writer.writeLine(`gql\``);
-                    const template = apiExtensionsInitializer.getTemplate();
-                    if (Node.isNoSubstitutionTemplateLiteral(template)) {
-                        writer.write(`${template.getLiteralValue()}`);
-                    } else {
-                        writer.write(template.getText().replace(/^`/, '').replace(/`$/, ''));
-                    }
-                    writer.writeLine(`  \${${schemaVariableName}}`);
-                    writer.write(`\``);
-                })
-                .formatText();
+        if (adminApiExtensions.getText().includes(`  \${${schemaVariableName}}`)) {
+            return;
         }
+        appendToGqlTemplateLiteral(adminApiExtensions, writer => {
+            writer.writeLine(`  \${${schemaVariableName}}`);
+        });
+    }
+}
+
+function appendToGqlTemplateLiteral(
+    variableDeclaration: VariableDeclaration,
+    append: (writer: CodeBlockWriter) => void,
+) {
+    const initializer = variableDeclaration.getInitializer();
+    if (Node.isTaggedTemplateExpression(initializer)) {
+        variableDeclaration
+            .setInitializer(writer => {
+                writer.write(`gql\``);
+                const template = initializer.getTemplate();
+                if (Node.isNoSubstitutionTemplateLiteral(template)) {
+                    writer.write(`${template.getLiteralValue()}`);
+                } else {
+                    writer.write(template.getText().replace(/^`/, '').replace(/`$/, ''));
+                }
+                append(writer);
+                writer.write(`\``);
+            })
+            .formatText();
     }
 }
 
