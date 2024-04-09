@@ -422,6 +422,23 @@ function createCrudApiExtension(project: Project, plugin: VendurePluginRef, serv
                     const entityRef = serviceRef.crudEntityRef;
                     if (entityRef) {
                         writer.indent(() => {
+                            if (entityRef.isTranslatable()) {
+                                const translationClass = entityRef.getTranslationClass();
+                                if (translationClass) {
+                                    writer.writeLine(`  type ${translationClass.getName() ?? ''} {`);
+                                    writer.writeLine(`    id: ID!`);
+                                    writer.writeLine(`    createdAt: DateTime!`);
+                                    writer.writeLine(`    updatedAt: DateTime!`);
+                                    writer.writeLine(`    languageCode: LanguageCode!`);
+                                    for (const { name, type, nullable } of entityRef.getProps()) {
+                                        if (type.getText().includes('LocaleString')) {
+                                            writer.writeLine(`    ${name}: String${nullable ? '' : '!'}`);
+                                        }
+                                    }
+                                    writer.writeLine(`  }`);
+                                    writer.newLine();
+                                }
+                            }
                             writer.writeLine(`  type ${entityRef.name} implements Node {`);
                             writer.writeLine(`    id: ID!`);
                             writer.writeLine(`    createdAt: DateTime!`);
@@ -431,6 +448,11 @@ function createCrudApiExtension(project: Project, plugin: VendurePluginRef, serv
                                 if (graphQlType) {
                                     writer.writeLine(`    ${name}: ${graphQlType}${nullable ? '' : '!'}`);
                                 }
+                            }
+                            if (entityRef.isTranslatable()) {
+                                writer.writeLine(
+                                    `    translations: [${entityRef.getTranslationClass()?.getName() ?? ''}!]!`,
+                                );
                             }
                             writer.writeLine(`  }`);
                             writer.newLine();
@@ -460,6 +482,24 @@ function createCrudApiExtension(project: Project, plugin: VendurePluginRef, serv
                             writer.writeLine(`  }`);
                             writer.newLine();
 
+                            if (
+                                entityRef.isTranslatable() &&
+                                (serviceRef.features.create || serviceRef.features.update)
+                            ) {
+                                writer.writeLine(
+                                    `  input ${entityRef.getTranslationClass()?.getName() ?? ''}Input {`,
+                                );
+                                writer.writeLine(`    id: ID`);
+                                writer.writeLine(`    languageCode: LanguageCode!`);
+                                for (const { name, type, nullable } of entityRef.getProps()) {
+                                    if (type.getText().includes('LocaleString')) {
+                                        writer.writeLine(`    ${name}: String`);
+                                    }
+                                }
+                                writer.writeLine(`  }`);
+                                writer.newLine();
+                            }
+
                             if (serviceRef.features.create) {
                                 writer.writeLine(`  input Create${entityRef.name}Input {`);
                                 for (const { name, type, nullable } of entityRef.getProps()) {
@@ -467,6 +507,11 @@ function createCrudApiExtension(project: Project, plugin: VendurePluginRef, serv
                                     if (graphQlType) {
                                         writer.writeLine(`    ${name}: ${graphQlType}${nullable ? '' : '!'}`);
                                     }
+                                }
+                                if (entityRef.isTranslatable()) {
+                                    writer.writeLine(
+                                        `    translations: [${entityRef.getTranslationClass()?.getName() ?? ''}Input!]!`,
+                                    );
                                 }
                                 writer.writeLine(`  }`);
                                 writer.newLine();
@@ -480,6 +525,11 @@ function createCrudApiExtension(project: Project, plugin: VendurePluginRef, serv
                                     if (graphQlType) {
                                         writer.writeLine(`    ${name}: ${graphQlType}`);
                                     }
+                                }
+                                if (entityRef.isTranslatable()) {
+                                    writer.writeLine(
+                                        `    translations: [${entityRef.getTranslationClass()?.getName() ?? ''}Input!]`,
+                                    );
                                 }
                                 writer.writeLine(`  }`);
                                 writer.newLine();
@@ -567,8 +617,11 @@ function getGraphQLType(type: Type): string | undefined {
     if (type.isNumber()) {
         return 'Int';
     }
-    if (type.isClass() && type.getText() === 'Date') {
+    if (type.isObject() && type.getText() === 'Date') {
         return 'DateTime';
+    }
+    if (type.getText().includes('LocaleString')) {
+        return 'String';
     }
     return;
 }

@@ -130,23 +130,25 @@ export function customizeCreateUpdateInputInterfaces(sourceFile: SourceFile, ent
         .getInterface('UpdateEntityInput')
         ?.rename(`Update${entityRef.name}Input`);
 
+    let index = 0;
     for (const { name, type, nullable } of entityRef.getProps()) {
         if (
             type.isBoolean() ||
             type.isString() ||
             type.isNumber() ||
-            (type.isClass() && type.getText() === 'Date')
+            (type.isObject() && type.getText() === 'Date')
         ) {
-            createInputInterface?.addProperty({
+            createInputInterface?.insertProperty(index, {
                 name,
                 type: writer => writer.write(type.getText()),
                 hasQuestionToken: nullable,
             });
-            updateInputInterface?.addProperty({
+            updateInputInterface?.insertProperty(index + 1, {
                 name,
                 type: writer => writer.write(type.getText()),
                 hasQuestionToken: true,
             });
+            index++;
         }
     }
 

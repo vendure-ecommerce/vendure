@@ -27,15 +27,7 @@ export class EntityRef {
         return this.classDeclaration.getProperties().map(prop => {
             const propType = prop.getType();
             const name = prop.getName();
-            if (propType.isUnion()) {
-                // get the non-null part of the union
-                const nonNullType = propType.getUnionTypes().find(t => !t.isNull() && !t.isUndefined());
-                if (!nonNullType) {
-                    throw new Error('Could not find non-null type in union');
-                }
-                return { name, type: nonNullType, nullable: true };
-            }
-            return { name, type: propType, nullable: false };
+            return { name, type: propType.getNonNullableType(), nullable: propType.isNullable() };
         });
     }
 
