@@ -428,7 +428,7 @@ function getBreadcrumbListItems(fixture: ComponentFixture<TestComponent>): HTMLL
 }
 
 function getBreadcrumbLabels(fixture: ComponentFixture<TestComponent>): string[] {
-    const labels = getBreadcrumbListItems(fixture).map(item => item.innerText.trim());
+    const labels = getBreadcrumbListItems(fixture).map(item => item.textContent!.trim());
     return labels;
 }
 
@@ -453,7 +453,9 @@ class TestParentComponent {}
 @Component({
     // eslint-disable-next-line @angular-eslint/component-selector
     selector: 'test-child-component',
-    template: ` <vdr-breadcrumb></vdr-breadcrumb> `,
+    template: `
+        <vdr-breadcrumb></vdr-breadcrumb>
+    `,
 })
 class TestChildComponent {}
 

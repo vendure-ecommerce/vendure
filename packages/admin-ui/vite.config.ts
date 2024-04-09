@@ -9,24 +9,26 @@ import { defineConfig } from 'vite';
 export default defineConfig(({ mode }) => {
     return {
         root: __dirname,
+        cacheDir: path.resolve(__dirname, '../../node_modules/.vite'),
         plugins: [
             angular(),
             tsconfigPaths({
-                // projects: [path.resolve(__dirname, 'tsconfig.spec.json')],
                 root: '.',
             }),
         ],
         test: {
-            // alias: {
-            //     '@vendure/admin-ui/core': path.resolve(__dirname, './src/lib/core/src/public_api.ts'),
-            // },
             globals: true,
             environment: 'jsdom',
             setupFiles: ['src/test-setup.ts'],
-            include: ['**/localization.service.spec.ts'],
+            include: ['**/*.spec.ts'],
             reporters: ['verbose'],
             passWithNoTests: false,
             watch: false,
+            server: {
+                deps: {
+                    inline: [/fesm2022/, 'ngx-pagination'],
+                },
+            },
         },
         define: {
             'import.meta.vitest': mode !== 'production',

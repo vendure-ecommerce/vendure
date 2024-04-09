@@ -3,7 +3,7 @@ import { FormControl } from '@angular/forms';
 
 @Component({
     selector: 'vdr-dt2-search',
-    templateUrl: `./data-table-search.component.html`,
+    templateUrl: './data-table-search.component.html',
     styleUrls: ['./data-table-search.component.scss'],
 })
 export class DataTable2SearchComponent {

@@ -7,7 +7,7 @@ import { BreadcrumbService } from '../../../providers/breadcrumb/breadcrumb.serv
 @Component({
     selector: 'vdr-page-title',
     templateUrl: './page-title.component.html',
-    styleUrls: [`./page-title.component.scss`],
+    styleUrls: ['./page-title.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageTitleComponent implements OnInit, OnChanges {
