@@ -3,9 +3,6 @@
 import { Command } from 'commander';
 import pc from 'picocolors';
 
-import { registerAddCommand } from './commands/add/add';
-import { registerMigrateCommand } from './commands/migrate/migrate';
-
 const program = new Command();
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -27,7 +24,22 @@ Y88  88P 88888888 888  888 888  888 888  888 888    88888888
 `),
     );
 
-registerAddCommand(program);
-registerMigrateCommand(program);
+program
+    .command('add')
+    .description('Add a feature to your Vendure project')
+    .action(async () => {
+        const { addCommand } = await import('./commands/add/add');
+        await addCommand();
+        process.exit(0);
+    });
+
+program
+    .command('migrate')
+    .description('Generate, run or revert a database migration')
+    .action(async () => {
+        const { migrateCommand } = await import('./commands/migrate/migrate');
+        await migrateCommand();
+        process.exit(0);
+    });
 
 void program.parseAsync(process.argv);
