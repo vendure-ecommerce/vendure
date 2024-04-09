@@ -8,6 +8,9 @@ import TabItem from '@theme/TabItem';
 The Vendure CLI is a command-line tool for boosting your productivity as a developer by automating common tasks
 such as creating new plugins, entities, API extensions and more.
 
+It is much more than just a scaffolding tool - it is able to analyze your project and intelligently modify your existing
+codebase to integrate new functionality.
+
 ## Installation
 
 :::info
