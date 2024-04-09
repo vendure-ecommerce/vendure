@@ -1,17 +1,11 @@
 {
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "outDir": "../out-tsc/spec",
-    "typeRoots": [
-      "../../node_modules/@types"
-    ],
-    "types": ["vitest/globals"]
-  },
-  "files": [
-    "src/test-setup.ts",
-  ],
-  "include": [
-    "src/**/*.spec.ts",
-    "src/**/*.d.ts"
-  ]
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "outDir": "../out-tsc/spec",
+        "typeRoots": ["../../node_modules/@types"],
+        "types": ["vitest/globals"],
+        "target": "es2016"
+    },
+    "files": ["src/test-setup.ts"],
+    "include": ["src/**/*.spec.ts", "src/**/*.d.ts"]
 }

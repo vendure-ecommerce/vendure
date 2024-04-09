@@ -1,6 +1,5 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { beforeEach, describe, expect, it } from 'vitest';
 
 import { TestingCommonModule } from '../../../../../testing/testing-common.module';
 import { NotificationComponent } from '../../components/notification/notification.component';
