@@ -25,7 +25,7 @@
     "generate-changelog": "ts-node scripts/changelogs/generate-changelog.ts",
     "publish-release": "lerna publish -m \"chore: Publish %s\" --no-push --force-publish",
     "publish-prerelease": "lerna publish -m \"chore: Pre-release %s\" prerelease --exact --no-push --force-publish --preid next --dist-tag next",
-    "publish-local": "lerna version --no-git-tag-version && cd scripts && ./publish-to-verdaccio.sh"
+    "publish-local": "lerna version --force-publish --no-git-tag-version && cd scripts && ./publish-to-verdaccio.sh"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.1.0",
