@@ -76,3 +76,10 @@ export function getAllPermissionsMetadata(customPermissions: PermissionDefinitio
     const allPermissions = [...DEFAULT_PERMISSIONS, ...customPermissions];
     return allPermissions.reduce((all, def) => [...all, ...def.getMetadata()], [] as PermissionMetadata[]);
 }
+
+export const CacheKey = {
+    GlobalSettings: 'GlobalSettings',
+    AllZones: 'AllZones',
+    ActiveTaxZone: 'ActiveTaxZone',
+    ActiveTaxZone_PPA: 'ActiveTaxZone_PPA',
+};

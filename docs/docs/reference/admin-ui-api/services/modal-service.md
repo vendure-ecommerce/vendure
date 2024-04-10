@@ -41,7 +41,7 @@ displayed in the modal dialog. See example:
 
 *Example*
 
-```HTML
+```ts
 class MyDialog implements Dialog {
  resolveWith: (result?: any) => void;
 
@@ -59,7 +59,7 @@ class MyDialog implements Dialog {
 
 *Example*
 
-```HTML
+```html
 <ng-template vdrDialogTitle>Title of the modal</ng-template>
 
 <p>

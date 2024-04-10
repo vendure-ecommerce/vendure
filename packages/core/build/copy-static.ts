@@ -7,7 +7,6 @@ import path from 'path';
 const SCHEMAS_GLOB = '**/*.graphql';
 const MESSAGES_GLOB = 'i18n/messages/**/*';
 const DEST_DIR = path.join(__dirname, '../dist');
-const MESSAGES_DEST_DIR = path.join(__dirname, '../dist/i18n/messages');
 
 function copyFiles(sourceGlob: string, destinationDir: string) {
     const srcDir = path.join(__dirname, '../src');
@@ -36,7 +35,7 @@ function copySchemas() {
 
 function copyI18nMessages() {
     try {
-        copyFiles(MESSAGES_GLOB, MESSAGES_DEST_DIR);
+        copyFiles(MESSAGES_GLOB, DEST_DIR);
         console.log('I18n messages copied successfully!');
     } catch (error) {
         console.error('Error copying i18n messages:', error);

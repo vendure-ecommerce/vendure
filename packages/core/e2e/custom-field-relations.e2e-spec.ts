@@ -343,6 +343,43 @@ describe('Custom field relations', () => {
         });
     });
 
+    it('ProductVariant without a specified property value returns null', async () => {
+        const { createProduct } = await adminClient.query(gql`
+            mutation {
+                createProduct(
+                    input: {
+                        translations: [
+                            {
+                                languageCode: en
+                                name: "Product with empty custom fields"
+                                description: ""
+                                slug: "product-with-empty-custom-fields"
+                            }
+                        ]
+                    }
+                ) {
+                    id
+                }
+            }
+        `);
+
+        const { product } = await adminClient.query(gql`
+            query {
+                product(id: "${createProduct.id}") {
+                    id
+                    customFields {
+                        cfProductVariant{
+                            price
+                            currencyCode
+                            priceWithTax
+                        }
+                    }
+                }
+            }`);
+
+        expect(product.customFields.cfProductVariant).toEqual(null);
+    });
+
     describe('entity-specific implementation', () => {
         function assertCustomFieldIds(customFields: any, single: string, multi: string[]) {
             expect(customFields.single).toEqual({ id: single });

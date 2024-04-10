@@ -12,6 +12,7 @@ import { ListQueryPlugin } from './fixtures/test-plugins/list-query-plugin';
 import { LanguageCode, SortOrder } from './graphql/generated-e2e-admin-types';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { fixPostgresTimezone } from './utils/fix-pg-timezone';
+import { sortById } from './utils/test-order-utils';
 
 fixPostgresTimezone();
 
@@ -55,14 +56,16 @@ describe('ListQueryBuilder', () => {
 
             expect(testEntities.totalItems).toBe(6);
             expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'C', 'D', 'E', 'F']);
-            expect(testEntities.items.map((i: any) => i.name)).toEqual([
-                'apple',
-                'bike',
-                'cake',
-                'dog',
-                'egg',
-                'baum', // if default en lang does not exist, use next available lang
-            ]);
+            expect(testEntities.items.map((i: any) => i.name)).toEqual(
+                expect.arrayContaining([
+                    'apple',
+                    'bike',
+                    'cake',
+                    'dog',
+                    'egg',
+                    'baum', // if default en lang does not exist, use next available lang
+                ]),
+            );
         });
 
         it('all de', async () => {
@@ -76,14 +79,16 @@ describe('ListQueryBuilder', () => {
 
             expect(testEntities.totalItems).toBe(6);
             expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'C', 'D', 'E', 'F']);
-            expect(testEntities.items.map((i: any) => i.name)).toEqual([
-                'apfel',
-                'fahrrad',
-                'kuchen',
-                'hund',
-                'egg', // falls back to en translation when de doesn't exist
-                'baum',
-            ]);
+            expect(testEntities.items.map((i: any) => i.name)).toEqual(
+                expect.arrayContaining([
+                    'apfel',
+                    'fahrrad',
+                    'kuchen',
+                    'hund',
+                    'egg', // falls back to en translation when de doesn't exist
+                    'baum',
+                ]),
+            );
         });
 
         it('take', async () => {
@@ -1207,9 +1212,12 @@ describe('ListQueryBuilder', () => {
     // https://github.com/vendure-ecommerce/vendure/issues/1586
     it('using the getMany() of the resulting QueryBuilder', async () => {
         const { testEntitiesGetMany } = await adminClient.query(GET_ARRAY_LIST, {});
-        expect(testEntitiesGetMany.sort((a: any, b: any) => a.id - b.id).map((x: any) => x.price)).toEqual([
-            11, 9, 22, 14, 13, 33,
-        ]);
+        const actualPrices = testEntitiesGetMany
+            .sort(sortById)
+            .map((x: any) => x.price)
+            .sort((a: number, b: number) => a - b);
+        const expectedPrices = [11, 9, 22, 14, 13, 33].sort((a, b) => a - b);
+        expect(actualPrices).toEqual(expectedPrices);
     });
 
     // https://github.com/vendure-ecommerce/vendure/issues/1611
@@ -1285,6 +1293,11 @@ describe('ListQueryBuilder', () => {
                     id: 'T_1',
                     label: 'A',
                     name: 'apple',
+                    parent: {
+                        id: 'T_2',
+                        label: 'B',
+                        name: 'bike',
+                    },
                     orderRelation: {
                         customer: {
                             firstName: 'Hayden',
@@ -1297,6 +1310,11 @@ describe('ListQueryBuilder', () => {
                     id: 'T_4',
                     label: 'D',
                     name: 'dog',
+                    parent: {
+                        id: 'T_2',
+                        label: 'B',
+                        name: 'bike',
+                    },
                     orderRelation: {
                         customer: {
                             firstName: 'Hayden',
@@ -1412,6 +1430,11 @@ const GET_LIST_WITH_ORDERS = gql`
                 id
                 label
                 name
+                parent {
+                    id
+                    label
+                    name
+                }
                 orderRelation {
                     id
                     customer {

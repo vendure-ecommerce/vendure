@@ -171,6 +171,7 @@
 .login-error {
     max-height: 0;
     overflow: hidden;
+    display: block;
 
     &.visible {
         max-height: 46px;

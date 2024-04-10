@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## StockMovementService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/stock-movement.service.ts" sourceLine="43" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/stock-movement.service.ts" sourceLine="41" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/stock-movement#stockmovement'>StockMovement</a> entities.
 

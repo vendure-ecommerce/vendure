@@ -204,7 +204,6 @@ async function generateSources(
         configSource: await createSourceFile('vendure-config.hbs', true),
         envSource: await createSourceFile('.env.hbs', true),
         envDtsSource: await createSourceFile('environment.d.hbs', true),
-        migrationSource: await createSourceFile('migration.hbs'),
         readmeSource: await createSourceFile('readme.hbs'),
         dockerfileSource: await createSourceFile('Dockerfile.hbs'),
         dockerComposeSource: await createSourceFile('docker-compose.hbs'),

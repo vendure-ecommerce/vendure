@@ -8,8 +8,8 @@ import path from 'path';
  * See https://github.com/vendure-ecommerce/vendure/issues/758 for more on this issue.
  */
 async function checkAngularVersions() {
-    const adminUiPackageJson = await import('../packages/admin-ui/package.json');
-    const uiDevkitPackageJson = await import('../packages/ui-devkit/package.json');
+    const adminUiPackageJson = require('../packages/admin-ui/package.json');
+    const uiDevkitPackageJson = require('../packages/ui-devkit/package.json');
 
     const angularCompilerPackages = ['@angular/cli', '@angular/compiler-cli', '@angular/compiler'];
     const illegalSemverPrefixes = /^[~^]/;

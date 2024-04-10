@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import pc from 'picocolors';
 
 import { Logger, LogLevel, VendureLogger } from './vendure-logger';
 
@@ -90,30 +90,30 @@ export class DefaultLogger implements VendureLogger {
         }
         if (this.level >= LogLevel.Error) {
             this.logMessage(
-                chalk.red('error'),
-                chalk.red(this.ensureString(message) + (trace ? `\n${trace}` : '')),
+                pc.red('error'),
+                pc.red(this.ensureString(message) + (trace ? `\n${trace}` : '')),
                 context,
             );
         }
     }
     warn(message: string, context?: string): void {
         if (this.level >= LogLevel.Warn) {
-            this.logMessage(chalk.yellow('warn'), chalk.yellow(this.ensureString(message)), context);
+            this.logMessage(pc.yellow('warn'), pc.yellow(this.ensureString(message)), context);
         }
     }
     info(message: string, context?: string): void {
         if (this.level >= LogLevel.Info) {
-            this.logMessage(chalk.blue('info'), this.ensureString(message), context);
+            this.logMessage(pc.blue('info'), this.ensureString(message), context);
         }
     }
     verbose(message: string, context?: string): void {
         if (this.level >= LogLevel.Verbose) {
-            this.logMessage(chalk.magenta('verbose'), this.ensureString(message), context);
+            this.logMessage(pc.magenta('verbose'), this.ensureString(message), context);
         }
     }
     debug(message: string, context?: string): void {
         if (this.level >= LogLevel.Debug) {
-            this.logMessage(chalk.magenta('debug'), this.ensureString(message), context);
+            this.logMessage(pc.magenta('debug'), this.ensureString(message), context);
         }
     }
 
@@ -124,13 +124,13 @@ export class DefaultLogger implements VendureLogger {
     }
 
     private logContext(context?: string) {
-        return chalk.cyan(`[${context || this.defaultContext}]`);
+        return pc.cyan(`[${context || this.defaultContext}]`);
     }
 
     private logTimestamp() {
         if (this.timestamp) {
             const timestamp = new Date(Date.now()).toLocaleString(undefined, this.localeStringOptions);
-            return chalk.gray(timestamp + ' -');
+            return pc.gray(timestamp + ' -');
         } else {
             return '';
         }

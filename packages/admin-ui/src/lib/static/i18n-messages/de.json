@@ -71,6 +71,8 @@
     "assign-variants-to-channel": "Produktvarianten Kanälen zuweisen",
     "auto-update-option-variant-name": "Automatisch Namen der Optionsvariante aktualisieren",
     "auto-update-product-variant-name": "Automatisch Namen der Produktvariante aktualisieren",
+    "calculated-price": "Berechneter Preis",
+    "calculated-price-tooltip": "Es ist eine benutzerdefinierte Preisberechnung konfiguriert, die den oben festgelegten Preis ändert:",
     "cannot-create-variants-without-options": "Produktvarianten können erst dann angelegt werden, wenn eine Optionsgruppe mit mindestens zwei Produktoptionen definiert wurde.",
     "channel-price-preview": "Kanal-Preisvorschau",
     "collection": "Sammlung",

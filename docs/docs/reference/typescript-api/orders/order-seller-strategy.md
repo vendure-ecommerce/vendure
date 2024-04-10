@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrderSellerStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/order-seller-strategy.ts" sourceLine="45" packageName="@vendure/core" since="2.0.0" />
+<GenerationInfo sourceFile="packages/core/src/config/order/order-seller-strategy.ts" sourceLine="43" packageName="@vendure/core" since="2.0.0" />
 
 This strategy defines how an Order can be split into multiple sub-orders for the use-case of
 a multivendor application.
@@ -88,7 +88,7 @@ class DefaultOrderSellerStrategy implements OrderSellerStrategy {
 
 ## SplitOrderContents
 
-<GenerationInfo sourceFile="packages/core/src/config/order/order-seller-strategy.ts" sourceLine="21" packageName="@vendure/core" since="2.0.0" />
+<GenerationInfo sourceFile="packages/core/src/config/order/order-seller-strategy.ts" sourceLine="19" packageName="@vendure/core" since="2.0.0" />
 
 The contents of the aggregate Order which make up a single seller Order.
 

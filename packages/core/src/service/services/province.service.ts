@@ -73,7 +73,7 @@ export class ProvinceService {
             entityType: Province as Type<Region>,
             translationType: RegionTranslation,
         });
-        this.eventBus.publish(new ProvinceEvent(ctx, province, 'created', input));
+        await this.eventBus.publish(new ProvinceEvent(ctx, province, 'created', input));
         return assertFound(this.findOne(ctx, province.id));
     }
 
@@ -84,7 +84,7 @@ export class ProvinceService {
             entityType: Province as Type<Region>,
             translationType: RegionTranslation,
         });
-        this.eventBus.publish(new ProvinceEvent(ctx, province, 'updated', input));
+        await this.eventBus.publish(new ProvinceEvent(ctx, province, 'updated', input));
         return assertFound(this.findOne(ctx, province.id));
     }
 
@@ -93,7 +93,7 @@ export class ProvinceService {
 
         const deletedProvince = new Province(region);
         await this.connection.getRepository(ctx, Province).remove(region);
-        this.eventBus.publish(new ProvinceEvent(ctx, deletedProvince, 'deleted', id));
+        await this.eventBus.publish(new ProvinceEvent(ctx, deletedProvince, 'deleted', id));
         return {
             result: DeletionResult.DELETED,
             message: '',

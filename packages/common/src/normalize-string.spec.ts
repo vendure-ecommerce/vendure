@@ -37,4 +37,13 @@ describe('normalizeString()', () => {
         expect(normalizeString('Capture d’écran')).toBe('capture decran');
         expect(normalizeString('Capture d‘écran')).toBe('capture decran');
     });
+
+    it('replaces eszett with double-s digraph', () => {
+        expect(normalizeString('KONGREẞ im Straßennamen')).toBe('kongress im strassennamen');
+    });
+
+    // works for German language, might not work for e.g. Finnish language
+    it('replaces combining diaeresis with e', () => {
+        expect(normalizeString('Ja quäkt Schwyz Pöbel vor Gmünd')).toBe('ja quaekt schwyz poebel vor gmuend');
+    });
 });

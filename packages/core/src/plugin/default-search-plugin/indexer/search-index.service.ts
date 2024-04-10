@@ -22,7 +22,10 @@ import { IndexerController } from './indexer.controller';
 export class SearchIndexService implements OnApplicationBootstrap {
     private updateIndexQueue: JobQueue<UpdateIndexQueueJobData>;
 
-    constructor(private jobService: JobQueueService, private indexerController: IndexerController) {}
+    constructor(
+        private jobService: JobQueueService,
+        private indexerController: IndexerController,
+    ) {}
 
     async onApplicationBootstrap() {
         this.updateIndexQueue = await this.jobService.createQueue({
@@ -67,81 +70,114 @@ export class SearchIndexService implements OnApplicationBootstrap {
     }
 
     reindex(ctx: RequestContext) {
-        return this.updateIndexQueue.add({ type: 'reindex', ctx: ctx.serialize() });
+        return this.updateIndexQueue.add({ type: 'reindex', ctx: ctx.serialize() }, { ctx });
     }
 
     updateProduct(ctx: RequestContext, product: Product) {
-        return this.updateIndexQueue.add({
-            type: 'update-product',
-            ctx: ctx.serialize(),
-            productId: product.id,
-        });
+        return this.updateIndexQueue.add(
+            {
+                type: 'update-product',
+                ctx: ctx.serialize(),
+                productId: product.id,
+            },
+            { ctx },
+        );
     }
 
     updateVariants(ctx: RequestContext, variants: ProductVariant[]) {
         const variantIds = variants.map(v => v.id);
-        return this.updateIndexQueue.add({ type: 'update-variants', ctx: ctx.serialize(), variantIds });
+        return this.updateIndexQueue.add(
+            { type: 'update-variants', ctx: ctx.serialize(), variantIds },
+            { ctx },
+        );
     }
 
     deleteProduct(ctx: RequestContext, product: Product) {
-        return this.updateIndexQueue.add({
-            type: 'delete-product',
-            ctx: ctx.serialize(),
-            productId: product.id,
-        });
+        return this.updateIndexQueue.add(
+            {
+                type: 'delete-product',
+                ctx: ctx.serialize(),
+                productId: product.id,
+            },
+            { ctx },
+        );
     }
 
     deleteVariant(ctx: RequestContext, variants: ProductVariant[]) {
         const variantIds = variants.map(v => v.id);
-        return this.updateIndexQueue.add({ type: 'delete-variant', ctx: ctx.serialize(), variantIds });
+        return this.updateIndexQueue.add(
+            { type: 'delete-variant', ctx: ctx.serialize(), variantIds },
+            { ctx },
+        );
     }
 
     updateVariantsById(ctx: RequestContext, ids: ID[]) {
-        return this.updateIndexQueue.add({ type: 'update-variants-by-id', ctx: ctx.serialize(), ids });
+        return this.updateIndexQueue.add(
+            { type: 'update-variants-by-id', ctx: ctx.serialize(), ids },
+            { ctx },
+        );
     }
 
     updateAsset(ctx: RequestContext, asset: Asset) {
-        return this.updateIndexQueue.add({ type: 'update-asset', ctx: ctx.serialize(), asset: asset as any });
+        return this.updateIndexQueue.add(
+            { type: 'update-asset', ctx: ctx.serialize(), asset: asset as any },
+            { ctx },
+        );
     }
 
     deleteAsset(ctx: RequestContext, asset: Asset) {
-        return this.updateIndexQueue.add({ type: 'delete-asset', ctx: ctx.serialize(), asset: asset as any });
+        return this.updateIndexQueue.add(
+            { type: 'delete-asset', ctx: ctx.serialize(), asset: asset as any },
+            { ctx },
+        );
     }
 
     assignProductToChannel(ctx: RequestContext, productId: ID, channelId: ID) {
-        return this.updateIndexQueue.add({
-            type: 'assign-product-to-channel',
-            ctx: ctx.serialize(),
-            productId,
-            channelId,
-        });
+        return this.updateIndexQueue.add(
+            {
+                type: 'assign-product-to-channel',
+                ctx: ctx.serialize(),
+                productId,
+                channelId,
+            },
+            { ctx },
+        );
     }
 
     removeProductFromChannel(ctx: RequestContext, productId: ID, channelId: ID) {
-        return this.updateIndexQueue.add({
-            type: 'remove-product-from-channel',
-            ctx: ctx.serialize(),
-            productId,
-            channelId,
-        });
+        return this.updateIndexQueue.add(
+            {
+                type: 'remove-product-from-channel',
+                ctx: ctx.serialize(),
+                productId,
+                channelId,
+            },
+            { ctx },
+        );
     }
 
     assignVariantToChannel(ctx: RequestContext, productVariantId: ID, channelId: ID) {
-        return this.updateIndexQueue.add({
-            type: 'assign-variant-to-channel',
-            ctx: ctx.serialize(),
-            productVariantId,
-            channelId,
-        });
+        return this.updateIndexQueue.add(
+            {
+                type: 'assign-variant-to-channel',
+                ctx: ctx.serialize(),
+                productVariantId,
+                channelId,
+            },
+            { ctx },
+        );
     }
 
     removeVariantFromChannel(ctx: RequestContext, productVariantId: ID, channelId: ID) {
-        return this.updateIndexQueue.add({
-            type: 'remove-variant-from-channel',
-            ctx: ctx.serialize(),
-            productVariantId,
-            channelId,
-        });
+        return this.updateIndexQueue.add(
+            {
+                type: 'remove-variant-from-channel',
+                ctx: ctx.serialize(),
+                productVariantId,
+                channelId,
+            },
+            { ctx },
+        );
     }
 
     private jobWithProgress(

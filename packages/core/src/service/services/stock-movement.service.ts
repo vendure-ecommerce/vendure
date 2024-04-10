@@ -14,8 +14,8 @@ import { ConfigService } from '../../config/config.service';
 import { ShippingCalculator } from '../../config/shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from '../../config/shipping-method/shipping-eligibility-checker';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
 import { Allocation } from '../../entity/stock-movement/allocation.entity';
@@ -121,7 +121,7 @@ export class StockMovementService {
                 input.stockLocationId,
                 delta,
             );
-            this.eventBus.publish(new StockMovementEvent(ctx, [adjustment]));
+            await this.eventBus.publish(new StockMovementEvent(ctx, [adjustment]));
             adjustments.push(adjustment);
         }
 
@@ -187,7 +187,7 @@ export class StockMovementService {
         }
         const savedAllocations = await this.connection.getRepository(ctx, Allocation).save(allocations);
         if (savedAllocations.length) {
-            this.eventBus.publish(new StockMovementEvent(ctx, savedAllocations));
+            await this.eventBus.publish(new StockMovementEvent(ctx, savedAllocations));
         }
         return savedAllocations;
     }
@@ -247,7 +247,7 @@ export class StockMovementService {
         }
         const savedSales = await this.connection.getRepository(ctx, Sale).save(sales);
         if (savedSales.length) {
-            this.eventBus.publish(new StockMovementEvent(ctx, savedSales));
+            await this.eventBus.publish(new StockMovementEvent(ctx, savedSales));
         }
         return savedSales;
     }
@@ -302,7 +302,7 @@ export class StockMovementService {
         }
         const savedCancellations = await this.connection.getRepository(ctx, Cancellation).save(cancellations);
         if (savedCancellations.length) {
-            this.eventBus.publish(new StockMovementEvent(ctx, savedCancellations));
+            await this.eventBus.publish(new StockMovementEvent(ctx, savedCancellations));
         }
         return savedCancellations;
     }
@@ -351,7 +351,7 @@ export class StockMovementService {
         }
         const savedReleases = await this.connection.getRepository(ctx, Release).save(releases);
         if (savedReleases.length) {
-            this.eventBus.publish(new StockMovementEvent(ctx, savedReleases));
+            await this.eventBus.publish(new StockMovementEvent(ctx, savedReleases));
         }
         return savedReleases;
     }

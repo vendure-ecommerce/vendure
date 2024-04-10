@@ -254,7 +254,7 @@ describe('Collection resolver', () => {
                 'accessories',
             );
             expect(createCollection.translations.find(t => t.languageCode === LanguageCode.de)?.slug).toBe(
-                'zubehor',
+                'zubehoer',
             );
         });
 
@@ -286,7 +286,7 @@ describe('Collection resolver', () => {
                 'accessories-2',
             );
             expect(createCollection.translations.find(t => t.languageCode === LanguageCode.de)?.slug).toBe(
-                'zubehor-2',
+                'zubehoer-2',
             );
         });
 
@@ -318,7 +318,7 @@ describe('Collection resolver', () => {
                 'accessories',
             );
             expect(createCollection.translations.find(t => t.languageCode === LanguageCode.de)?.slug).toBe(
-                'zubehor',
+                'zubehoer',
             );
         });
 

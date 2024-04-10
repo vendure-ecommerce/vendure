@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EntityHydrator
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/entity-hydrator/entity-hydrator.service.ts" sourceLine="75" packageName="@vendure/core" since="1.3.0" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/entity-hydrator/entity-hydrator.service.ts" sourceLine="77" packageName="@vendure/core" since="1.3.0" />
 
 This is a helper class which is used to "hydrate" entity instances, which means to populate them
 with the specified relations. This is useful when writing plugin code which receives an entity,
@@ -71,7 +71,7 @@ await this.entityHydrator
 
 ```ts title="Signature"
 class EntityHydrator {
-    constructor(connection: TransactionalConnection, productPriceApplicator: ProductPriceApplicator, translator: TranslatorService)
+    constructor(connection: TransactionalConnection, productPriceApplicator: ProductPriceApplicator, translator: TranslatorService, listQueryBuilder: ListQueryBuilder)
     hydrate(ctx: RequestContext, target: Entity, options: HydrateOptions<Entity>) => Promise<Entity>;
 }
 ```
@@ -80,7 +80,7 @@ class EntityHydrator {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, productPriceApplicator: <a href='/reference/typescript-api/service-helpers/product-price-applicator#productpriceapplicator'>ProductPriceApplicator</a>, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>) => EntityHydrator`}   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, productPriceApplicator: <a href='/reference/typescript-api/service-helpers/product-price-applicator#productpriceapplicator'>ProductPriceApplicator</a>, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>) => EntityHydrator`}   />
 
 
 ### hydrate

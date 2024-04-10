@@ -1,10 +1,9 @@
-import fs from 'fs-extra';
 import path from 'path';
 import { Project } from 'ts-morph';
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
 import { defaultManipulationSettings } from '../../../../../constants';
-import { getVendureConfig } from '../../../../../utilities/ast-utils';
+import { VendureConfigRef } from '../../../../../shared/vendure-config-ref';
 import { expectSourceFileContentToMatch } from '../../../../../utilities/testing-utils';
 
 import { updateAdminUiPluginInit } from './update-admin-ui-plugin-init';
@@ -15,7 +14,7 @@ describe('updateAdminUiPluginInit', () => {
             manipulationSettings: defaultManipulationSettings,
         });
         project.addSourceFileAtPath(path.join(__dirname, 'fixtures', 'no-app-prop.fixture.ts'));
-        const vendureConfig = getVendureConfig(project, { checkFileName: false });
+        const vendureConfig = new VendureConfigRef(project, { checkFileName: false });
         updateAdminUiPluginInit(vendureConfig, {
             pluginClassName: 'TestPlugin',
             pluginPath: './plugins/test-plugin/test.plugin',
@@ -33,7 +32,7 @@ describe('updateAdminUiPluginInit', () => {
             manipulationSettings: defaultManipulationSettings,
         });
         project.addSourceFileAtPath(path.join(__dirname, 'fixtures', 'existing-app-prop.fixture.ts'));
-        const vendureConfig = getVendureConfig(project, { checkFileName: false });
+        const vendureConfig = new VendureConfigRef(project, { checkFileName: false });
         updateAdminUiPluginInit(vendureConfig, {
             pluginClassName: 'TestPlugin',
             pluginPath: './plugins/test-plugin/test.plugin',

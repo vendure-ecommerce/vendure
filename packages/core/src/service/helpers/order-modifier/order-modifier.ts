@@ -37,11 +37,11 @@ import { ConfigService } from '../../../config/config.service';
 import { CustomFieldConfig } from '../../../config/custom-field/custom-field-types';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { VendureEntity } from '../../../entity/base/base.entity';
+import { Order } from '../../../entity/order/order.entity';
+import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { FulfillmentLine } from '../../../entity/order-line-reference/fulfillment-line.entity';
 import { OrderModificationLine } from '../../../entity/order-line-reference/order-modification-line.entity';
-import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { OrderModification } from '../../../entity/order-modification/order-modification.entity';
-import { Order } from '../../../entity/order/order.entity';
 import { Payment } from '../../../entity/payment/payment.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
@@ -100,17 +100,29 @@ export class OrderModifier {
      * @description
      * Ensure that the ProductVariant has sufficient saleable stock to add the given
      * quantity to an Order.
+     *
+     * - `existingOrderLineQuantity` is used when adding an item to the order, since if an OrderLine
+     * already exists then we will be adding the new quantity to the existing quantity.
+     * - `quantityInOtherOrderLines` is used when we have more than 1 OrderLine containing the same
+     * ProductVariant. This occurs when there are custom fields defined on the OrderLine and the lines
+     * have differing values for one or more custom fields. In this case, we need to take _all_ of these
+     * OrderLines into account when constraining the quantity. See https://github.com/vendure-ecommerce/vendure/issues/2702
+     * for more on this.
      */
     async constrainQuantityToSaleable(
         ctx: RequestContext,
         variant: ProductVariant,
         quantity: number,
-        existingQuantity = 0,
+        existingOrderLineQuantity = 0,
+        quantityInOtherOrderLines = 0,
     ) {
-        let correctedQuantity = quantity + existingQuantity;
+        let correctedQuantity = quantity + existingOrderLineQuantity;
         const saleableStockLevel = await this.productVariantService.getSaleableStockLevel(ctx, variant);
-        if (saleableStockLevel < correctedQuantity) {
-            correctedQuantity = Math.max(saleableStockLevel - existingQuantity, 0);
+        if (saleableStockLevel < correctedQuantity + quantityInOtherOrderLines) {
+            correctedQuantity = Math.max(
+                saleableStockLevel - existingOrderLineQuantity - quantityInOtherOrderLines,
+                0,
+            );
         }
         return correctedQuantity;
     }
@@ -195,7 +207,7 @@ export class OrderModifier {
         );
         order.lines.push(lineWithRelations);
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
-        this.eventBus.publish(new OrderLineEvent(ctx, order, lineWithRelations, 'created'));
+        await this.eventBus.publish(new OrderLineEvent(ctx, order, lineWithRelations, 'created'));
         return lineWithRelations;
     }
 
@@ -238,7 +250,7 @@ export class OrderModifier {
             }
         }
         await this.connection.getRepository(ctx, OrderLine).save(orderLine);
-        this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'updated'));
+        await this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'updated'));
         return orderLine;
     }
 
@@ -391,8 +403,8 @@ export class OrderModifier {
         const refundInputArray = Array.isArray(input.refunds)
             ? input.refunds
             : input.refund
-            ? [input.refund]
-            : [];
+              ? [input.refund]
+              : [];
         const refundInputs: RefundOrderInput[] = refundInputArray.map(refund => ({
             lines: [],
             adjustment: 0,

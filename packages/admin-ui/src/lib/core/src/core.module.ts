@@ -5,6 +5,7 @@ import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { interval } from 'rxjs';
 
 import { getAppConfig } from './app.config';
 import { getDefaultUiLanguage, getDefaultUiLocale } from './common/utilities/get-default-ui-language';
@@ -21,16 +22,14 @@ import { ThemeSwitcherComponent } from './components/theme-switcher/theme-switch
 import { UiLanguageSwitcherDialogComponent } from './components/ui-language-switcher-dialog/ui-language-switcher-dialog.component';
 import { UserMenuComponent } from './components/user-menu/user-menu.component';
 import { DataModule } from './data/data.module';
-import { DataService } from './data/providers/data.service';
 import { AlertsService } from './providers/alerts/alerts.service';
 import { CustomHttpTranslationLoader } from './providers/i18n/custom-http-loader';
 import { InjectableTranslateMessageFormatCompiler } from './providers/i18n/custom-message-format-compiler';
 import { I18nService } from './providers/i18n/i18n.service';
 import { LocalStorageService } from './providers/local-storage/local-storage.service';
-import { NotificationService } from './providers/notification/notification.service';
+import { Permission } from './public_api';
 import { registerDefaultFormInputs } from './shared/dynamic-form-inputs/default-form-inputs';
 import { SharedModule } from './shared/shared.module';
-import { Permission } from './public_api';
 
 @NgModule({
     imports: [
@@ -71,8 +70,6 @@ export class CoreModule {
         private localStorageService: LocalStorageService,
         private titleService: Title,
         private alertsService: AlertsService,
-        private dataService: DataService,
-        private notificationService: NotificationService,
     ) {
         this.initUiLanguagesAndLocales();
         this.initUiTitle();
@@ -121,18 +118,19 @@ export class CoreModule {
     }
 
     private initAlerts() {
+        const pendingUpdatesId = 'pending-search-index-updates';
         this.alertsService.configureAlert({
-            id: 'pending-search-index-updates',
+            id: pendingUpdatesId,
             requiredPermissions: [Permission.ReadCatalog, Permission.ReadProduct],
-            check: () =>
-                this.dataService.product
+            check: context =>
+                context.dataService.product
                     .getPendingSearchIndexUpdates()
                     .mapSingle(({ pendingSearchIndexUpdates }) => pendingSearchIndexUpdates),
-            recheckIntervalMs: 1000 * 30,
+            recheck: () => interval(1000 * 30),
             isAlert: data => 0 < data,
-            action: data => {
-                this.dataService.product.runPendingSearchIndexUpdates().subscribe(value => {
-                    this.notificationService.info(_('catalog.running-search-index-updates'), {
+            action: (data, context) => {
+                context.dataService.product.runPendingSearchIndexUpdates().subscribe(() => {
+                    context.notificationService.info(_('catalog.running-search-index-updates'), {
                         count: data,
                     });
                 });
@@ -142,7 +140,7 @@ export class CoreModule {
                 translationVars: { count: data },
             }),
         });
-        this.alertsService.refresh();
+        this.alertsService.refresh(pendingUpdatesId);
     }
 }
 

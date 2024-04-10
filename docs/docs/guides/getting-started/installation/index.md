@@ -8,9 +8,10 @@ import TabItem from '@theme/TabItem';
 
 ## Requirements
  
-* [Node.js](https://nodejs.org/en/) **v16** or above, with support for **even-numbered Node.js versions**.
+* [Node.js](https://nodejs.org/en/) **v18** or above, with support for **even-numbered Node.js versions**.
 * The [supported TypeScript version](https://github.com/vendure-ecommerce/vendure/blob/master/packages/create/src/constants.ts#L7) is set upon installation. Upgrading to a newer version of TypeScript might result in compilation errors.
 * If you want to use MySQL, MariaDB, or Postgres as your data store, then you'll need an instance available locally. However, **if you are just testing out Vendure, we recommend using SQLite**, which has no external requirements.
+* If you use **Yarn**, from Vendure v2.2.0+, you'll need to use **Yarn 2** (Berry) or above.
 
 ## @vendure/create
 
@@ -87,6 +88,11 @@ Open the Admin UI at [http://localhost:3000/admin](http://localhost:3000/admin) 
 
 * **username**: superadmin
 * **password**: superadmin
+:::
+
+
+:::cli
+Use `npx vendure add` to start adding plugins & custom functionality to your Vendure server.
 :::
 
 ### Troubleshooting

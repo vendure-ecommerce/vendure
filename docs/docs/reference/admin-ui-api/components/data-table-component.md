@@ -82,7 +82,7 @@ class DataTableComponent<T> implements AfterContentInit, OnChanges, OnInit, OnDe
     @Output() pageChange = new EventEmitter<number>();
     @Output() itemsPerPageChange = new EventEmitter<number>();
     @Input() allSelected: boolean;
-    @Input() isRowSelectedFn: (item: T) => boolean;
+    @Input() isRowSelectedFn: ((item: T) => boolean) | undefined;
     @Output() allSelectChange = new EventEmitter<void>();
     @Output() rowSelectChange = new EventEmitter<{ event: MouseEvent; item: T }>();
     @ContentChildren(DataTableColumnComponent) columns: QueryList<DataTableColumnComponent>;
@@ -154,7 +154,7 @@ class DataTableComponent<T> implements AfterContentInit, OnChanges, OnInit, OnDe
 
 ### isRowSelectedFn
 
-<MemberInfo kind="property" type={`(item: T) =&#62; boolean`}   />
+<MemberInfo kind="property" type={`((item: T) =&#62; boolean) | undefined`}   />
 
 
 ### allSelectChange

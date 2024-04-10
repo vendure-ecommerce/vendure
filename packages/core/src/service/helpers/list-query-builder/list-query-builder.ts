@@ -4,14 +4,12 @@ import { ID, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 import {
     Brackets,
-    EntityMetadata,
     FindOneOptions,
     FindOptionsWhere,
     Repository,
     SelectQueryBuilder,
     WhereExpressionBuilder,
 } from 'typeorm';
-import { EntityTarget } from 'typeorm/common/EntityTarget';
 import { BetterSqlite3Driver } from 'typeorm/driver/better-sqlite3/BetterSqlite3Driver';
 import { SqljsDriver } from 'typeorm/driver/sqljs/SqljsDriver';
 
@@ -26,6 +24,7 @@ import {
 import { ConfigService, CustomFields, Logger } from '../../../config';
 import { TransactionalConnection } from '../../../connection';
 import { VendureEntity } from '../../../entity';
+import { joinTreeRelationsDynamically } from '../utils/tree-relations-qb-joiner';
 
 import { getColumnMetadata, getEntityAlias } from './connection-utils';
 import { getCalculatedColumns } from './get-calculated-columns';
@@ -200,7 +199,10 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
  */
 @Injectable()
 export class ListQueryBuilder implements OnApplicationBootstrap {
-    constructor(private connection: TransactionalConnection, private configService: ConfigService) {}
+    constructor(
+        private connection: TransactionalConnection,
+        private configService: ConfigService,
+    ) {}
 
     /** @internal */
     onApplicationBootstrap(): any {
@@ -269,7 +271,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         // and requires special handling to ensure that only the necessary relations are joined.
         // This is bypassed an issue in TypeORM where it would join the same relation multiple times.
         // See https://github.com/typeorm/typeorm/issues/9936 for more context.
-        const processedRelations = this.joinTreeRelationsDynamically(qb, entity, relations);
+        const processedRelations = joinTreeRelationsDynamically(qb, entity, relations);
 
         // Remove any relations which are related to the 'collection' tree, as these are handled separately
         // to avoid duplicate joins.
@@ -368,8 +370,8 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         const takeLimit = ignoreQueryLimits
             ? Number.MAX_SAFE_INTEGER
             : apiType === 'admin'
-            ? adminListQueryLimit
-            : shopListQueryLimit;
+              ? adminListQueryLimit
+              : shopListQueryLimit;
         if (options.take && options.take > takeLimit) {
             throw new UserInputError('error.list-query-limit-exceeded', { limit: takeLimit });
         }
@@ -463,12 +465,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                     delete customPropertyMap[property];
                     return;
                 }
-                const alias = qb.connection.namingStrategy.joinTableName(
-                    entityMetadata.tableName,
-                    relationMetadata.propertyName,
-                    '',
-                    '',
-                );
+                const alias = `${entityMetadata.tableName}_${relationMetadata.propertyName}`;
                 if (!this.isRelationAlreadyJoined(qb, alias)) {
                     qb.leftJoinAndSelect(`${entityAlias}.${relationMetadata.propertyName}`, alias);
                 }
@@ -634,124 +631,10 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         }
     }
 
-    /**
-     * These method are designed to address specific challenges encountered with TypeORM
-     * when dealing with complex relation structures, particularly around the 'collection'
-     * entity and other similar entities, and they nested relations ('parent', 'children'). The need for these custom
-     * implementations arises from limitations in handling deeply nested relations and ensuring
-     * efficient query generation without duplicate joins, as discussed in TypeORM issue #9936.
-     * See https://github.com/typeorm/typeorm/issues/9936 for more context.
-     */
-
-    /**
-     * Verifies if a relation has already been joined in a query builder to prevent duplicate joins.
-     * This method ensures query efficiency and correctness by maintaining unique joins within the query builder.
-     *
-     * @param {SelectQueryBuilder<T>} qb The query builder instance where the joins are being added.
-     * @param {string} alias The join alias to check for uniqueness. This alias is used to determine if the relation
-     *                       has already been joined to avoid adding duplicate join statements.
-     * @returns boolean Returns true if the relation has already been joined (based on the alias), false otherwise.
-     * @template T extends VendureEntity The entity type for which the query builder is configured.
-     */
     private isRelationAlreadyJoined<T extends VendureEntity>(
         qb: SelectQueryBuilder<T>,
         alias: string,
     ): boolean {
         return qb.expressionMap.joinAttributes.some(ja => ja.alias.name === alias);
-    }
-
-    /**
-     * Dynamically joins tree relations and their eager relations to a query builder. This method is specifically
-     * designed for entities utilizing TypeORM tree decorators (@TreeParent, @TreeChildren) and aims to address
-     * the challenge of efficiently managing deeply nested relations and avoiding duplicate joins. The method
-     * automatically handles the joining of related entities marked with tree relation decorators and eagerly
-     * loaded relations, ensuring efficient data retrieval and query generation.
-     *
-     * The method iterates over the requested relations paths, joining each relation dynamically. For tree relations,
-     * it also recursively joins all associated eager relations. This approach avoids the manual specification of joins
-     * and leverages TypeORM's relation metadata to automate the process.
-     *
-     * @param {SelectQueryBuilder<T>} qb The query builder instance to which the relations will be joined.
-     * @param {EntityTarget<T>} entity The target entity class or schema name. This parameter is used to access
-     *                                 the entity's metadata and analyze its relations.
-     * @param {string[]} requestedRelations An array of strings representing the relation paths to be dynamically joined.
-     *                                      Each string in the array should denote a path to a relation (e.g., 'parent.parent.children').
-     * @returns {Set<string>} A Set containing the paths of relations that were dynamically joined. This set can be used
-     *                        to track which relations have been processed and potentially avoid duplicate processing.
-     * @template T extends VendureEntity The type of the entity for which relations are being joined. This type parameter
-     *                                    should extend VendureEntity to ensure compatibility with Vendure's data access layer.
-     */
-    private joinTreeRelationsDynamically<T extends VendureEntity>(
-        qb: SelectQueryBuilder<T>,
-        entity: EntityTarget<T>,
-        requestedRelations: string[] = [],
-    ): Set<string> {
-        const metadata = qb.connection.getMetadata(entity);
-        const processedRelations = new Set<string>();
-
-        const processRelation = (
-            currentMetadata: EntityMetadata,
-            currentParentIsTreeType: boolean,
-            currentPath: string,
-            currentAlias: string,
-        ) => {
-            const currentMetadataIsTreeType = metadata.treeType;
-            if (!currentParentIsTreeType && !currentMetadataIsTreeType) {
-                return;
-            }
-
-            const parts = currentPath.split('.');
-            const part = parts.shift();
-
-            if (!part || !currentMetadata) return;
-
-            const relationMetadata = currentMetadata.findRelationWithPropertyPath(part);
-            if (relationMetadata) {
-                const isEager = relationMetadata.isEager;
-                let joinConnector = '_';
-                if (isEager) {
-                    joinConnector = '__';
-                }
-                const nextAlias = `${currentAlias}${joinConnector}${part}`;
-                const nextPath = parts.join('.');
-
-                if (!this.isRelationAlreadyJoined(qb, nextAlias)) {
-                    qb.leftJoinAndSelect(`${currentAlias}.${part}`, nextAlias);
-                }
-
-                const isTreeParent = relationMetadata.isTreeParent;
-                const isTreeChildren = relationMetadata.isTreeChildren;
-                const isTree = isTreeParent || isTreeChildren;
-
-                if (isTree) {
-                    relationMetadata.inverseEntityMetadata.relations.forEach(subRelation => {
-                        if (subRelation.isEager) {
-                            processRelation(
-                                relationMetadata.inverseEntityMetadata,
-                                !!relationMetadata.inverseEntityMetadata.treeType,
-                                subRelation.propertyPath,
-                                nextAlias,
-                            );
-                        }
-                    });
-                }
-
-                if (nextPath) {
-                    processRelation(
-                        relationMetadata.inverseEntityMetadata,
-                        !!relationMetadata.inverseEntityMetadata.treeType,
-                        nextPath,
-                        nextAlias,
-                    );
-                }
-                processedRelations.add(currentPath);
-            }
-        };
-
-        requestedRelations.forEach(relationPath => {
-            processRelation(metadata, !!metadata.treeType, relationPath, qb.alias);
-        });
-
-        return processedRelations;
     }
 }

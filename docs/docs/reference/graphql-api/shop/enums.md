@@ -464,6 +464,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">ORDER_COUPON_APPLIED</div>
 <div class="graphql-code-line ">ORDER_COUPON_REMOVED</div>
 <div class="graphql-code-line ">ORDER_MODIFIED</div>
+<div class="graphql-code-line ">ORDER_CUSTOMER_UPDATED</div>
 <div class="graphql-code-line top-level">&#125;</div>
 
 </div>

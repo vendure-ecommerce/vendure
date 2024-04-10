@@ -41,7 +41,7 @@ class Order extends VendureEntity implements ChannelAware, HasCustomFields {
     @Column({ nullable: true })
     orderPlacedAt?: Date;
     @Index()
-    @ManyToOne(type => Customer)
+    @ManyToOne(type => Customer, customer => customer.orders)
     customer?: Customer;
     @EntityId({ nullable: true })
     customerId?: ID;
@@ -51,14 +51,14 @@ class Order extends VendureEntity implements ChannelAware, HasCustomFields {
     surcharges: Surcharge[];
     @Column('simple-array')
     couponCodes: string[];
-    @ManyToMany(type => Promotion)
+    @ManyToMany(type => Promotion, promotion => promotion.orders)
     @JoinTable()
     promotions: Promotion[];
     @Column('simple-json') shippingAddress: OrderAddress;
     @Column('simple-json') billingAddress: OrderAddress;
     @OneToMany(type => Payment, payment => payment.order)
     payments: Payment[];
-    @ManyToMany(type => Fulfillment)
+    @ManyToMany(type => Fulfillment, fulfillment => fulfillment.orders)
     @JoinTable()
     fulfillments: Fulfillment[];
     @Column('varchar')

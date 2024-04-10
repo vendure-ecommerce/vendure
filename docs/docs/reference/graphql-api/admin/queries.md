@@ -202,6 +202,16 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
+## entityDuplicators
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
+ &#123;</div>
+<div class="graphql-code-line ">entityDuplicators: [<a href="/reference/graphql-api/admin/object-types#entityduplicatordefinition">EntityDuplicatorDefinition</a>!]!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
 ## facet
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>

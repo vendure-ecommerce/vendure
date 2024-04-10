@@ -8,11 +8,18 @@ write any types for your API calls.
 
 To do this, we will use [Graphql Code Generator](https://the-guild.dev/graphql/codegen).
 
+:::cli
+Use `npx vendure add` and select "Set up GraphQL code generation" to quickly set up code generation.
+:::
+
 :::note
 This guide is for adding codegen to your Vendure plugins & Admin UI extensions. For a guide on adding codegen to your storefront, see the [Storefront Codegen](/guides/storefront/codegen/) guide.
 :::
 
 ## Installation
+
+It is recommended to use the `vendure add` CLI command as detailed above to set up codegen. 
+If you prefer to set it up manually, follow the steps below.
 
 First, install the required dependencies:
 

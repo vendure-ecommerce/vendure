@@ -41,6 +41,10 @@ const config = {
                     sidebarPath: require.resolve('./sidebars.js'),
                     editUrl: 'https://github.com/vendure-ecommerce/vendure/blob/master/docs/',
                     showLastUpdateTime: true,
+                    admonitions: {
+                        tag: ':::',
+                        keywords: ['note', 'tip', 'info', 'caution', 'danger', 'cli'],
+                    },
                 },
                 blog: false,
                 theme: {

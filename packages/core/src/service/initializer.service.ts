@@ -53,7 +53,7 @@ export class InitializerService {
         await this.shippingMethodService.initShippingMethods();
         await this.taxRateService.initTaxRates();
         await this.stockLocationService.initStockLocations();
-        this.eventBus.publish(new InitializerEvent());
+        await this.eventBus.publish(new InitializerEvent());
     }
 
     /**

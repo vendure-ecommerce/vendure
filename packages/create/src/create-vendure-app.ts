@@ -105,7 +105,6 @@ export async function createVendureApp(
         envDtsSource,
         indexSource,
         indexWorkerSource,
-        migrationSource,
         readmeSource,
         dockerfileSource,
         dockerComposeSource,
@@ -131,9 +130,6 @@ export async function createVendureApp(
             'start:server': 'node ./dist/index.js',
             'start:worker': 'node ./dist/index-worker.js',
             start: packageManager === 'yarn' ? 'concurrently yarn:start:*' : 'concurrently npm:start:*',
-            'migration:generate': 'ts-node migration generate',
-            'migration:run': 'ts-node migration run',
-            'migration:revert': 'ts-node migration revert',
         },
     };
 
@@ -186,7 +182,6 @@ export async function createVendureApp(
             .then(() => fs.writeFile(srcPathScript('environment.d'), envDtsSource))
             .then(() => fs.writeFile(srcPathScript('index'), indexSource))
             .then(() => fs.writeFile(srcPathScript('index-worker'), indexWorkerSource))
-            .then(() => fs.writeFile(rootPathScript('migration'), migrationSource))
             .then(() => fs.writeFile(path.join(root, 'README.md'), readmeSource))
             .then(() => fs.writeFile(path.join(root, 'Dockerfile'), dockerfileSource))
             .then(() => fs.writeFile(path.join(root, 'docker-compose.yml'), dockerComposeSource))
@@ -221,8 +216,8 @@ export async function createVendureApp(
             logLevel === 'silent'
                 ? LogLevel.Error
                 : logLevel === 'verbose'
-                ? LogLevel.Verbose
-                : LogLevel.Info;
+                  ? LogLevel.Verbose
+                  : LogLevel.Info;
 
         const bootstrapFn = async () => {
             await checkDbConnection(config.dbConnectionOptions, root);

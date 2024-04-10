@@ -104,8 +104,12 @@ export function checkNodeVersion(requiredVersion: string) {
 
 export function yarnIsAvailable() {
     try {
-        execSync('yarnpkg --version', { stdio: 'ignore' });
-        return true;
+        const yarnVersion = execSync('yarnpkg --version');
+        if (semver.major(yarnVersion.toString()) > 1) {
+            return true;
+        } else {
+            return false;
+        }
     } catch (e: any) {
         return false;
     }
@@ -261,7 +265,7 @@ export function getDependencies(
         dbDriverPackage(dbType),
         `typescript@${TYPESCRIPT_VERSION}`,
     ];
-    const devDependencies = ['concurrently', 'ts-node'];
+    const devDependencies = ['concurrently', `@vendure/cli${vendurePkgVersion}`];
     return { dependencies, devDependencies };
 }
 

@@ -28,7 +28,7 @@ class ProductOptionGroup extends VendureEntity implements Translatable, HasCusto
     @OneToMany(type => ProductOption, option => option.group)
     options: ProductOption[];
     @Index()
-    @ManyToOne(type => Product)
+    @ManyToOne(type => Product, product => product.optionGroups)
     product: Product;
     @Column(type => CustomProductOptionGroupFields)
     customFields: CustomProductOptionGroupFields;

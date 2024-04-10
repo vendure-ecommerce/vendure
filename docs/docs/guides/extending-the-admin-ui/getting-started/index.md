@@ -16,9 +16,21 @@ UI extensions fall into two categories:
 -   **Providers**: these are used to add new functionality to the Admin UI, such as adding buttons to pages, adding new nav menu items, or defining custom form inputs. They would typically be defined in a file named `providers.ts`.
 -   **Routes**: these are used to define new pages in the Admin UI, such as a new page for managing a custom entity. They would typically be defined in a file named `routes.ts`.
 
-## Install `@vendure/ui-devkit`
+## Setup
 
-To extend the Admin UI, install the [`@vendure/ui-devkit` package](https://www.npmjs.com/package/@vendure/ui-devkit) as a dev dependency:
+:::cli
+Use `npx vendure add` and select "Set up Admin UI extensions".
+
+Then follow the prompts, which will guide you through the process of 
+setting up the necessary files and folders for your UI extensions.
+:::
+
+### Manual setup
+
+It is recommended to use the `vendure add` command as described above, but if you prefer to set up the 
+Admin UI extensions manually, follow these steps:
+
+First, install the [`@vendure/ui-devkit` package](https://www.npmjs.com/package/@vendure/ui-devkit) as a dev dependency:
 
 <Tabs>
 <TabItem value="npm" label="npm" default>

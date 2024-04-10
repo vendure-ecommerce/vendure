@@ -253,6 +253,7 @@ export class ShopOrderResolver {
         return new NoActiveOrderError();
     }
 
+    @Transaction()
     @Query()
     @Allow(Permission.Owner)
     async nextOrderStates(

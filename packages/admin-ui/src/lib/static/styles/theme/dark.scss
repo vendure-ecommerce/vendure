@@ -1,7 +1,7 @@
 // Vendure dark theme
 // Based on this dark theme example from Scott Mathis:
 // https://github.com/mathisscott/clarity-theming-starter/blob/20f4680b43a9a7fd3d43a6ba36f717fdafc6e570/src/_dark-theme.scss
-[data-theme="dark"][cds-theme] {
+:root [data-theme="dark"] {
     --color-grey-100: hsl(211, 10%, 90%);
     --color-grey-200: hsl(211, 10%, 67%);
     --color-grey-300: hsl(211, 10%, 47%);

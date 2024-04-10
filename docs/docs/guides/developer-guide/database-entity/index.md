@@ -3,6 +3,10 @@ title: "Define a database entity"
 showtoc: true
 ---
 
+:::cli
+Use `npx vendure add` to easily add a new entity to a plugin.
+:::
+
 Your plugin can define new database entities to model the data it needs to store. For instance, a product
 review plugin would need a way to store reviews. This would be done by defining a new database entity.
 

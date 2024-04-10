@@ -27,13 +27,15 @@ DB=sqlite npm run populate
 ## Testing custom ui extension compilation
 
 In order to compile ui extensions within this monorepo, you need to add the following entry to
-this package's `package.json` devDependencies:
+the [temporary admin ui `tsconfig.json`](./custom-admin-ui/tsconfig.json) file:
 
 ```
- "@vendure/admin-ui": "./packages/admin-ui/package",
+  "paths": {
+      "@vendure/admin-ui/*": ["../../admin-ui/package/*"]
+  }
 ```
 
-and then run `npm install`. Make sure you already built the admin-ui package first.
+
 
 
 ## Load testing

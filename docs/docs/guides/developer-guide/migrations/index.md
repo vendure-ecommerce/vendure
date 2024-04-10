@@ -8,7 +8,7 @@ import TabItem from '@theme/TabItem';
 Database migrations are needed whenever the database schema changes. This can be caused by:
 
 * changes to the [custom fields](/guides/developer-guide/custom-fields/) configuration
-* new [database entities defined by plugins](/guides/developer-guide/database-entity//)
+* new [database entities defined by plugins](/guides/developer-guide/database-entity/)
 * occasional changes to the core Vendure database schema when updating to newer versions
 
 ## Synchronize vs migrate
@@ -45,25 +45,9 @@ Since we have `synchronize` set to `false`, we need to generate a migration to a
 
 ### 1. Generate a migration
 
-Run the following command:
-
-
-<Tabs>
-<TabItem value="npm" label="npm" default>
-
-```
-npm run migration:generate add-keywords-field
-```
-
-</TabItem>
-<TabItem value="yarn" label="yarn">
-
-```
-yarn migration:generate add-keywords-field
-```
-
-</TabItem>
-</Tabs>
+:::cli
+Run `npx vendure migrate` and select "Generate a new migration"
+:::
 
 ### 2. Check the migration file
 
@@ -110,22 +94,9 @@ runMigrations(config)
 
 It is also possible to run the migration manually without starting the server:
 
-<Tabs>
-<TabItem value="npm" label="npm" default>
-
-```
-npm run migration:run
-```
-
-</TabItem>
-<TabItem value="yarn" label="yarn">
-
-```
-yarn migration:run
-```
-
-</TabItem>
-</Tabs>
+:::cli
+Run `npx vendure migrate` and select "Run pending migrations"
+:::
 
 :::caution
 TypeORM will attempt to run each migration inside a transaction. This means that if one of the migration commands fails, then the entire transaction will be rolled back to its original state.
@@ -139,9 +110,12 @@ You can read more about this issue in [typeorm/issues/7054](https://github.com/t
 
 Now we'll dive into what's going on under the hood.
 
-Vendure exposes a some helper function which wrap around the underlying [TypeORM migration functionality](https://typeorm.io/migrations). The reason for using these helper functions rather than using the TypeORM CLI directly is that Vendure generates additional schema information based on custom fields and plugin configurations which are not available to the TypeORM CLI.
+Vendure exposes a some helper function which wrap around the underlying [TypeORM migration functionality](https://typeorm.io/migrations). The 
+reason for using these helper functions rather than using the TypeORM CLI directly is that Vendure generates additional 
+schema information based on custom fields and plugin configurations which are not available to the TypeORM CLI.
 
-In a standard Vendure installation, you'll see the following migration script in your project root directory:
+In a standard Vendure installation prior to v2.2.0, you'll see the following migration script in your project root directory.
+Running the `vendure migrate` command also uses a very similar script internally.
 
 ```ts title="migration.ts"
 import { generateMigration, revertLastMigration, runMigrations } from '@vendure/core';

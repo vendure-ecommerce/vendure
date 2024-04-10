@@ -139,7 +139,7 @@ export class PaymentService {
             .relation('payments')
             .of(order)
             .add(payment);
-        this.eventBus.publish(
+        await this.eventBus.publish(
             new PaymentStateTransitionEvent(initialState, result.state, ctx, payment, order),
         );
         await finalize();
@@ -228,7 +228,7 @@ export class PaymentService {
             return new PaymentStateTransitionError({ transitionError, fromState, toState });
         }
         await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
-        this.eventBus.publish(
+        await this.eventBus.publish(
             new PaymentStateTransitionEvent(fromState, toState, ctx, payment, payment.order),
         );
         await finalize();
@@ -264,7 +264,9 @@ export class PaymentService {
             .relation('payments')
             .of(order)
             .add(payment);
-        this.eventBus.publish(new PaymentStateTransitionEvent(initialState, endState, ctx, payment, order));
+        await this.eventBus.publish(
+            new PaymentStateTransitionEvent(initialState, endState, ctx, payment, order),
+        );
         await finalize();
         return payment;
     }
@@ -355,7 +357,7 @@ export class PaymentService {
                     ? await handler.createRefund(
                           ctx,
                           input,
-                          total,
+                          constrainedTotal,
                           order,
                           paymentToRefund,
                           paymentMethod.handler.args,
@@ -404,7 +406,7 @@ export class PaymentService {
                 }
                 await this.connection.getRepository(ctx, Refund).save(refund, { reload: false });
                 await finalize();
-                this.eventBus.publish(
+                await this.eventBus.publish(
                     new RefundStateTransitionEvent(fromState, createRefundResult.state, ctx, refund, order),
                 );
             }

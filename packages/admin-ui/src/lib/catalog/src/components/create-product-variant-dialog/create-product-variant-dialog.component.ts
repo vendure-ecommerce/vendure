@@ -21,7 +21,7 @@ export class CreateProductVariantDialogComponent implements Dialog<CreateProduct
     form = this.formBuilder.group({
         name: ['', Validators.required],
         sku: ['', Validators.required],
-        price: ['', Validators.required],
+        price: [''],
         options: this.formBuilder.record<string>({}),
     });
     existingVariant: NonNullable<GetProductVariantOptionsQuery['product']>['variants'][number] | undefined;

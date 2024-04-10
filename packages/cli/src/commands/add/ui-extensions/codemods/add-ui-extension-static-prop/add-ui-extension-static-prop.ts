@@ -1,14 +1,17 @@
-import { ClassDeclaration } from 'ts-morph';
+import { paramCase } from 'change-case';
 
-import { addImportsToFile, kebabize } from '../../../../../utilities/ast-utils';
+import { AdminUiExtensionTypeName } from '../../../../../constants';
+import { VendurePluginRef } from '../../../../../shared/vendure-plugin-ref';
+import { addImportsToFile } from '../../../../../utilities/ast-utils';
 
 /**
  * @description
  * Adds the static `ui` property to the plugin class, and adds the required imports.
  */
-export function addUiExtensionStaticProp(pluginClass: ClassDeclaration) {
-    const adminUiExtensionType = 'AdminUiExtension';
-    const extensionId = kebabize(pluginClass.getName() as string).replace(/-plugin$/, '');
+export function addUiExtensionStaticProp(plugin: VendurePluginRef) {
+    const pluginClass = plugin.classDeclaration;
+    const adminUiExtensionType = AdminUiExtensionTypeName;
+    const extensionId = paramCase(pluginClass.getName() as string).replace(/-plugin$/, '');
     pluginClass
         .addProperty({
             name: 'ui',

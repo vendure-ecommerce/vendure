@@ -43,13 +43,16 @@ export const molliePaymentHandler = new PaymentMethodHandler({
         },
         redirectUrl: {
             type: 'string',
-            required: false,
+            required: true,
             defaultValue: '',
-            label: [{ languageCode: LanguageCode.en, value: 'Redirect URL' }],
+            label: [{ languageCode: LanguageCode.en, value: 'Fallback redirect URL' }],
             description: [
-                { languageCode: LanguageCode.en, value: 'Redirect the client to this URL after payment' },
+                {
+                    languageCode: LanguageCode.en,
+                    value: 'Redirect URL to use when no URL is given by the storefront. Order code is appended to this URL',
+                },
             ],
-        }
+        },
     },
     init(injector) {
         mollieService = injector.get(MollieService);
@@ -72,7 +75,12 @@ export const molliePaymentHandler = new PaymentMethodHandler({
                 }. Only Authorized or Settled are allowed.`,
             );
         }
-        Logger.info(`Payment for order ${order.code} with amount ${metadata.amount} created with state '${metadata.status}'`, loggerCtx);
+        Logger.info(
+            `Payment for order ${order.code} with amount ${metadata.amount as string} created with state '${
+                metadata.status as string
+            }'`,
+            loggerCtx,
+        );
         return {
             amount: metadata.amount,
             state: metadata.status,
