@@ -3,6 +3,7 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { By } from '@angular/platform-browser';
 import { Router, Routes } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { ClarityModule } from '@clr/angular';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { BehaviorSubject, Observable, of as observableOf } from 'rxjs';
 
@@ -227,7 +228,7 @@ describe('BeadcrumbsComponent', () => {
         ];
 
         TestBed.configureTestingModule({
-            imports: [RouterTestingModule.withRoutes(baseRouteConfig)],
+            imports: [RouterTestingModule.withRoutes(baseRouteConfig), ClarityModule],
             declarations: [BreadcrumbComponent, TestParentComponent, TestChildComponent, MockTranslatePipe],
             providers: [FooResolver, { provide: DataService, useClass: class {} }],
         }).compileComponents();
