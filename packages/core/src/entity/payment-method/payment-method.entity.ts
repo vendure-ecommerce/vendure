@@ -39,7 +39,7 @@ export class PaymentMethod extends VendureEntity implements Translatable, Channe
 
     @Column('simple-json') handler: ConfigurableOperation;
 
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.paymentMethods)
     @JoinTable()
     channels: Channel[];
 

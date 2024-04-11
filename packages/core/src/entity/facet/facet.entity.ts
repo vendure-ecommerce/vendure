@@ -45,7 +45,7 @@ export class Facet extends VendureEntity implements Translatable, HasCustomField
     @Column(type => CustomFacetFields)
     customFields: CustomFacetFields;
 
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.facets)
     @JoinTable()
     channels: Channel[];
 }

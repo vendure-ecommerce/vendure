@@ -20,7 +20,6 @@ import { Channel } from '../channel/channel.entity';
 import { CustomPromotionFields } from '../custom-entity-fields';
 import { Order } from '../order/order.entity';
 import { OrderLine } from '../order-line/order-line.entity';
-import { PaymentMethodTranslation } from '../payment-method/payment-method-translation.entity';
 import { ShippingLine } from '../shipping-line/shipping-line.entity';
 
 import { PromotionTranslation } from './promotion-translation.entity';
@@ -107,7 +106,7 @@ export class Promotion
 
     @Column() enabled: boolean;
 
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.promotions)
     @JoinTable()
     channels: Channel[];
 

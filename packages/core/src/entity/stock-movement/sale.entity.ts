@@ -22,6 +22,6 @@ export class Sale extends StockMovement {
     }
 
     // @Index() omitted as it would conflict with the orderLineId index from the Allocation entity
-    @ManyToOne(type => OrderLine)
+    @ManyToOne(type => OrderLine, line => line.sales)
     orderLine: OrderLine;
 }

@@ -9,6 +9,7 @@ import { NativeAuthenticationMethod } from '../authentication-method/native-auth
 import { VendureEntity } from '../base/base.entity';
 import { CustomUserFields } from '../custom-entity-fields';
 import { Role } from '../role/role.entity';
+import { AuthenticatedSession } from '../session/authenticated-session.entity';
 
 /**
  * @description
@@ -44,6 +45,9 @@ export class User extends VendureEntity implements HasCustomFields, SoftDeletabl
 
     @Column(type => CustomUserFields)
     customFields: CustomUserFields;
+
+    @OneToMany(type => AuthenticatedSession, session => session.user)
+    sessions: AuthenticatedSession[];
 
     getNativeAuthenticationMethod(): NativeAuthenticationMethod;
     getNativeAuthenticationMethod(strict?: boolean): NativeAuthenticationMethod | undefined;

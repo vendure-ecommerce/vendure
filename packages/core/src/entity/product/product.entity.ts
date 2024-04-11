@@ -63,7 +63,7 @@ export class Product
     @JoinTable()
     facetValues: FacetValue[];
 
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.products)
     @JoinTable()
     channels: Channel[];
 

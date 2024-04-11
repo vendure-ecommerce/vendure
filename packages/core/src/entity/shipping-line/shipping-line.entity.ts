@@ -1,8 +1,9 @@
 import { Adjustment, AdjustmentType, Discount, TaxLine } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
-import { Column, Entity, Index, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
 
+import { OrderLine } from '..';
 import { Calculated } from '../../common/calculated-decorator';
 import { roundMoney } from '../../common/round-money';
 import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
@@ -48,6 +49,9 @@ export class ShippingLine extends VendureEntity {
 
     @Column('simple-json')
     taxLines: TaxLine[];
+
+    @OneToMany(type => OrderLine, orderLine => orderLine.shippingLine)
+    orderLines: OrderLine[];
 
     @Calculated()
     get price(): number {

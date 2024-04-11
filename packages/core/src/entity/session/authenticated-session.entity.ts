@@ -22,7 +22,7 @@ export class AuthenticatedSession extends Session {
      * The {@link User} who has authenticated to create this session.
      */
     @Index()
-    @ManyToOne(type => User)
+    @ManyToOne(type => User, user => user.sessions)
     user: User;
 
     /**

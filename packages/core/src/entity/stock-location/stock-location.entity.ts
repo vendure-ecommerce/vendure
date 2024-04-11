@@ -1,11 +1,12 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 
 import { ChannelAware } from '../../common/types/common-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
 import { Channel } from '../channel/channel.entity';
 import { CustomStockLocationFields } from '../custom-entity-fields';
+import { StockMovement } from '../stock-movement/stock-movement.entity';
 
 /**
  * @description
@@ -32,7 +33,10 @@ export class StockLocation extends VendureEntity implements HasCustomFields, Cha
     @Column(type => CustomStockLocationFields)
     customFields: CustomStockLocationFields;
 
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.stockLocations)
     @JoinTable()
     channels: Channel[];
+
+    @OneToMany(type => StockMovement, movement => movement.stockLocation)
+    stockMovements: StockMovement[];
 }
