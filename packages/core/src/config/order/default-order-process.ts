@@ -415,13 +415,12 @@ export function configureDefaultOrderProcess(options: DefaultOrderProcessOptions
                     await Promise.all(
                         order.lines.map(line => {
                             line.orderPlacedQuantity = line.quantity;
-                            connection
+                            return connection
                                 .getRepository(ctx, OrderLine)
                                 .update(line.id, { orderPlacedQuantity: line.quantity });
-                            return line;
                         }),
                     );
-                    eventBus.publish(new OrderPlacedEvent(fromState, toState, ctx, order));
+                    await eventBus.publish(new OrderPlacedEvent(fromState, toState, ctx, order));
                     await orderSplitter.createSellerOrders(ctx, order);
                 }
             }
