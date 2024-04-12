@@ -73,7 +73,6 @@ export class EntityServiceTemplate {
             .build(TemplateEntity, options, {
                 relations,
                 ctx,
-                channelId: ctx.channelId,
             })
             .getManyAndCount()
             .then(([_items, totalItems]) => {

@@ -207,7 +207,6 @@ function customizeFindAllMethod(serviceClassDeclaration: ClassDeclaration, entit
             writer.write(`.build(${entityRef.name}, options,`).block(() => {
                 writer.writeLine('relations,');
                 writer.writeLine('ctx,');
-                writer.writeLine('channelId: ctx.channelId,');
             });
             writer.write(')');
             writer.write('.getManyAndCount()');
