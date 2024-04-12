@@ -22,6 +22,6 @@ export class Cancellation extends StockMovement {
     }
 
     // @Index() omitted as it would conflict with the orderLineId index from the Allocation entity
-    @ManyToOne(type => OrderLine)
+    @ManyToOne(type => OrderLine, orderLine => orderLine.cancellations)
     orderLine: OrderLine;
 }

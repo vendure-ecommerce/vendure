@@ -1,7 +1,7 @@
 import { Adjustment, AdjustmentType, Discount, TaxLine } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
-import { Column, Entity, Index, ManyToOne, OneToOne } from 'typeorm';
+import { Column, Entity, Index, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
 import { roundMoney } from '../../common/round-money';
@@ -14,9 +14,12 @@ import { CustomOrderLineFields } from '../custom-entity-fields';
 import { EntityId } from '../entity-id.decorator';
 import { Money } from '../money.decorator';
 import { Order } from '../order/order.entity';
+import { OrderLineReference } from '../order-line-reference/order-line-reference.entity';
 import { ProductVariant } from '../product-variant/product-variant.entity';
 import { ShippingLine } from '../shipping-line/shipping-line.entity';
+import { Allocation } from '../stock-movement/allocation.entity';
 import { Cancellation } from '../stock-movement/cancellation.entity';
+import { Sale } from '../stock-movement/sale.entity';
 import { TaxCategory } from '../tax-category/tax-category.entity';
 
 /**
@@ -49,7 +52,10 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * This is determined by the configured {@link ShippingLineAssignmentStrategy}.
      */
     @Index()
-    @ManyToOne(type => ShippingLine, { nullable: true, onDelete: 'SET NULL' })
+    @ManyToOne(type => ShippingLine, shippingLine => shippingLine.orderLines, {
+        nullable: true,
+        onDelete: 'SET NULL',
+    })
     shippingLine?: ShippingLine;
 
     @EntityId({ nullable: true })
@@ -60,7 +66,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      * The {@link ProductVariant} which is being ordered.
      */
     @Index()
-    @ManyToOne(type => ProductVariant)
+    @ManyToOne(type => ProductVariant, productVariant => productVariant.lines, { onDelete: 'CASCADE' })
     productVariant: ProductVariant;
 
     @EntityId()
@@ -71,12 +77,18 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     taxCategory: TaxCategory;
 
     @Index()
-    @ManyToOne(type => Asset)
+    @ManyToOne(type => Asset, asset => asset.featuredInVariants, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
 
     @Index()
     @ManyToOne(type => Order, order => order.lines, { onDelete: 'CASCADE' })
     order: Order;
+
+    @OneToMany(type => OrderLineReference, lineRef => lineRef.orderLine)
+    linesReferences: OrderLineReference[];
+
+    @OneToMany(type => Sale, sale => sale.orderLine)
+    sales: Sale[];
 
     @Column()
     quantity: number;
@@ -118,8 +130,11 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     @Column('simple-json')
     taxLines: TaxLine[];
 
-    @OneToOne(type => Cancellation, cancellation => cancellation.orderLine)
-    cancellation: Cancellation;
+    @OneToMany(type => Cancellation, cancellation => cancellation.orderLine)
+    cancellations: Cancellation[];
+
+    @OneToMany(type => Allocation, allocation => allocation.orderLine)
+    allocations: Allocation[];
 
     @Column(type => CustomOrderLineFields)
     customFields: CustomOrderLineFields;

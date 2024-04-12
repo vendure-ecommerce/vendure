@@ -48,7 +48,7 @@ export class Refund extends VendureEntity {
     lines: RefundLine[];
 
     @Index()
-    @ManyToOne(type => Payment)
+    @ManyToOne(type => Payment, payment => payment.refunds)
     @JoinColumn()
     payment: Payment;
 

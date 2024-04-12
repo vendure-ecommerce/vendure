@@ -14,6 +14,7 @@ import { Collection } from '../collection/collection.entity';
 import { CustomProductVariantFields } from '../custom-entity-fields';
 import { EntityId } from '../entity-id.decorator';
 import { FacetValue } from '../facet-value/facet-value.entity';
+import { OrderLine } from '../order-line/order-line.entity';
 import { Product } from '../product/product.entity';
 import { ProductOption } from '../product-option/product-option.entity';
 import { StockLevel } from '../stock-level/stock-level.entity';
@@ -170,4 +171,7 @@ export class ProductVariant
     @ManyToMany(type => Channel, channel => channel.productVariants)
     @JoinTable()
     channels: Channel[];
+
+    @OneToMany(type => OrderLine, orderLine => orderLine.productVariant)
+    lines: OrderLine[];
 }

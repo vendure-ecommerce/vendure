@@ -23,6 +23,6 @@ export class Allocation extends StockMovement {
     }
 
     @Index()
-    @ManyToOne(type => OrderLine)
+    @ManyToOne(type => OrderLine, orderLine => orderLine.allocations)
     orderLine: OrderLine;
 }

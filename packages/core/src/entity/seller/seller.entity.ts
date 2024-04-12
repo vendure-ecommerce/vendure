@@ -1,6 +1,7 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 
+import { Channel } from '..';
 import { SoftDeletable } from '../../common/types/common-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
@@ -26,4 +27,7 @@ export class Seller extends VendureEntity implements SoftDeletable, HasCustomFie
 
     @Column(type => CustomSellerFields)
     customFields: CustomSellerFields;
+
+    @OneToMany(type => Channel, channel => channel.seller)
+    channels: Channel[];
 }

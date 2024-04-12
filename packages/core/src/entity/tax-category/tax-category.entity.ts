@@ -1,6 +1,7 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, OneToMany } from 'typeorm';
 
+import { TaxRate } from '..';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
 import { CustomTaxCategoryFields } from '../custom-entity-fields';
@@ -27,4 +28,7 @@ export class TaxCategory extends VendureEntity implements HasCustomFields {
 
     @OneToMany(type => ProductVariant, productVariant => productVariant.taxCategory)
     productVariants: ProductVariant[];
+
+    @OneToMany(type => TaxRate, taxRate => taxRate.category)
+    taxRates: TaxRate[];
 }
