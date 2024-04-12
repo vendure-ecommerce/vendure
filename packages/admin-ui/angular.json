@@ -143,9 +143,6 @@
               "tsConfig": "./tsconfig.lib.prod.json"
             }
           }
-        },
-        "test": {
-          "builder": "@analogjs/platform:vitest"
         }
       }
     }

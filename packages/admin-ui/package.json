@@ -8,7 +8,7 @@
         "build:app": "ng build vendure-admin --configuration production",
         "build": "node scripts/copy-package-json.js && node scripts/set-version.js && node scripts/build-public-api.js && ng build vendure-admin-lib --configuration production && node scripts/compile-styles.js",
         "watch": "ng build --watch=true",
-        "test": "ng test",
+        "test": "npx vitest",
         "lint": "ng lint --fix",
         "extract-translations": "node scripts/extract-translations.js",
         "ngcc": "ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points"
@@ -79,7 +79,7 @@
         "zone.js": "~0.14.4"
     },
     "devDependencies": {
-        "@analogjs/platform": "^0.2.45",
+        "@analogjs/vite-plugin-angular": "^1.1.2",
         "@angular-devkit/build-angular": "^17.2.3",
         "@angular-eslint/builder": "^17.2.1",
         "@angular-eslint/eslint-plugin": "^17.2.1",
@@ -89,7 +89,6 @@
         "@angular/cli": "^17.2.3",
         "@angular/compiler": "^17.2.4",
         "@angular/compiler-cli": "^17.2.4",
-        "@nx/vite": "^18.0.8",
         "@types/node": "^18.17.9",
         "@types/react": "^18.2.21",
         "@typescript-eslint/eslint-plugin": "^5.59.2",
