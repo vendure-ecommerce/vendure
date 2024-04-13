@@ -411,7 +411,7 @@ export class ImportParser {
                 slug = parseString(r.slug);
             }
             if (slug.length === 0) {
-                slug = normalizeString(name, '-');
+                slug = normalizeString(name, '-', languageCode);
             }
             return {
                 languageCode,
