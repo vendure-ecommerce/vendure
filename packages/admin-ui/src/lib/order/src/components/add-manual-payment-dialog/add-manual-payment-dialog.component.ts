@@ -6,10 +6,8 @@ import {
     Dialog,
     GetAddManualPaymentMethodListDocument,
     GetAddManualPaymentMethodListQuery,
-    GetPaymentMethodListQuery,
     ItemOf,
     ManualPaymentInput,
-    PAYMENT_METHOD_FRAGMENT,
 } from '@vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
 import { Observable } from 'rxjs';

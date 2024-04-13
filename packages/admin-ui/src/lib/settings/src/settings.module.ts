@@ -7,7 +7,7 @@ import {
     GetAdministratorDetailDocument,
     GetChannelDetailDocument,
     GetCountryDetailDocument,
-    GetPaymentMethodDetailDocument,
+    GetPaymentMethodDocument,
     GetRoleDetailDocument,
     GetSellerDetailDocument,
     GetShippingMethodDetailDocument,
@@ -311,7 +311,7 @@ export class SettingsModule {
             route: '',
             component: detailComponentWithResolver({
                 component: PaymentMethodDetailComponent,
-                query: GetPaymentMethodDetailDocument,
+                query: GetPaymentMethodDocument,
                 entityKey: 'paymentMethod',
                 getBreadcrumbs: entity => [
                     {

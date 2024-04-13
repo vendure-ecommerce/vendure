@@ -11,6 +11,12 @@
         [config]="config"
         [readonly]="readonly"
     ></vdr-relation-product-input>
+    <vdr-relation-payment-method-input
+        *ngSwitchCase="'PaymentMethod'"
+        [parentFormControl]="formControl"
+        [config]="config"
+        [readonly]="readonly"
+    ></vdr-relation-payment-method-input>
     <vdr-relation-customer-input
         *ngSwitchCase="'Customer'"
         [parentFormControl]="formControl"
@@ -26,8 +32,8 @@
     <ng-template ngSwitchDefault>
         <vdr-relation-generic-input
             [parentFormControl]="formControl"
-               [config]="config"
-               [readonly]="readonly"
+            [config]="config"
+            [readonly]="readonly"
         ></vdr-relation-generic-input>
     </ng-template>
 </div>
