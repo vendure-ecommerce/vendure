@@ -1,6 +1,6 @@
 {
     "name": "@vendure/stellate-plugin",
-    "version": "2.2.0-next.8",
+    "version": "2.2.0",
     "license": "MIT",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -21,7 +21,7 @@
         "node-fetch": "^2.7.0"
     },
     "devDependencies": {
-        "@vendure/common": "2.2.0-next.8",
-        "@vendure/core": "2.2.0-next.8"
+        "@vendure/common": "^2.2.0",
+        "@vendure/core": "^2.2.0"
     }
 }

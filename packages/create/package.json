@@ -1,6 +1,6 @@
 {
     "name": "@vendure/create",
-    "version": "2.2.0-next.8",
+    "version": "2.2.0",
     "license": "MIT",
     "bin": {
         "create": "./index.js"
@@ -28,14 +28,14 @@
         "@types/fs-extra": "^11.0.4",
         "@types/handlebars": "^4.1.0",
         "@types/semver": "^7.5.8",
-        "@vendure/core": "2.2.0-next.8",
+        "@vendure/core": "^2.2.0",
         "rimraf": "^5.0.5",
         "ts-node": "^10.9.2",
         "typescript": "5.3.3"
     },
     "dependencies": {
         "@clack/prompts": "^0.7.0",
-        "@vendure/common": "2.2.0-next.8",
+        "@vendure/common": "^2.2.0",
         "commander": "^11.0.0",
         "cross-spawn": "^7.0.3",
         "detect-port": "^1.5.1",

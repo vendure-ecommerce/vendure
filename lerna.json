@@ -1,6 +1,6 @@
 {
     "packages": ["packages/*"],
-    "version": "2.2.0-next.8",
+    "version": "2.2.0",
     "npmClient": "npm",
     "command": {
         "version": {
