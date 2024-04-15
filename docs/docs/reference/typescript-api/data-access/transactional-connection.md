@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TransactionalConnection
 
-<GenerationInfo sourceFile="packages/core/src/connection/transactional-connection.ts" sourceLine="38" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/connection/transactional-connection.ts" sourceLine="39" packageName="@vendure/core" />
 
 The TransactionalConnection is a wrapper around the TypeORM `Connection` object which works in conjunction
 with the <a href='/reference/typescript-api/request/transaction-decorator#transaction'>Transaction</a> decorator to implement per-request transactions. All services which access the
@@ -23,8 +23,8 @@ API by the use of the `Transaction` decorator.
 
 ```ts title="Signature"
 class TransactionalConnection {
-    constructor(connection: Connection, transactionWrapper: TransactionWrapper)
-    rawConnection: Connection
+    constructor(dataSource: DataSource, transactionWrapper: TransactionWrapper)
+    rawConnection: DataSource
     getRepository(target: ObjectType<Entity> | EntitySchema<Entity> | string) => Repository<Entity>;
     getRepository(ctx: RequestContext | undefined, target: ObjectType<Entity> | EntitySchema<Entity> | string) => Repository<Entity>;
     getRepository(ctxOrTarget: RequestContext | ObjectType<Entity> | EntitySchema<Entity> | string | undefined, maybeTarget?: ObjectType<Entity> | EntitySchema<Entity> | string) => Repository<Entity>;
@@ -44,12 +44,12 @@ class TransactionalConnection {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(connection: Connection, transactionWrapper: TransactionWrapper) => TransactionalConnection`}   />
+<MemberInfo kind="method" type={`(dataSource: DataSource, transactionWrapper: TransactionWrapper) => TransactionalConnection`}   />
 
 
 ### rawConnection
 
-<MemberInfo kind="property" type={`Connection`}   />
+<MemberInfo kind="property" type={`DataSource`}   />
 
 The plain TypeORM Connection object. Should be used carefully as any operations
 performed with this connection will not be performed within any outer

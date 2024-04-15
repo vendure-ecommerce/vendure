@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Promotion
 
-<GenerationInfo sourceFile="packages/core/src/entity/promotion/promotion.entity.ts" sourceLine="57" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/promotion/promotion.entity.ts" sourceLine="56" packageName="@vendure/core" />
 
 A Promotion is used to define a set of conditions under which promotions actions (typically discounts)
 will be applied to an Order.
@@ -43,7 +43,7 @@ class Promotion extends AdjustmentSource implements ChannelAware, SoftDeletable,
     @OneToMany(type => PromotionTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<Promotion>>;
     @Column() enabled: boolean;
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.promotions)
     @JoinTable()
     channels: Channel[];
     @ManyToMany(type => Order, order => order.promotions)

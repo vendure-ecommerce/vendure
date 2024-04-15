@@ -19,7 +19,7 @@ An AuthenticatedSession is created upon successful authentication.
 class AuthenticatedSession extends Session {
     constructor(input: DeepPartial<AuthenticatedSession>)
     @Index()
-    @ManyToOne(type => User)
+    @ManyToOne(type => User, user => user.sessions)
     user: User;
     @Column()
     authenticationStrategy: string;

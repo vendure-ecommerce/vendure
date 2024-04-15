@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Seller
 
-<GenerationInfo sourceFile="packages/core/src/entity/seller/seller.entity.ts" sourceLine="16" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/seller/seller.entity.ts" sourceLine="17" packageName="@vendure/core" />
 
 A Seller represents the person or organization who is selling the goods on a given <a href='/reference/typescript-api/entities/channel#channel'>Channel</a>.
 By default, a single-channel Vendure installation will have a single default Seller.
@@ -24,6 +24,8 @@ class Seller extends VendureEntity implements SoftDeletable, HasCustomFields {
     @Column() name: string;
     @Column(type => CustomSellerFields)
     customFields: CustomSellerFields;
+    @OneToMany(type => Channel, channel => channel.seller)
+    channels: Channel[];
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
@@ -53,6 +55,11 @@ class Seller extends VendureEntity implements SoftDeletable, HasCustomFields {
 ### customFields
 
 <MemberInfo kind="property" type={`CustomSellerFields`}   />
+
+
+### channels
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]`}   />
 
 
 

@@ -31,7 +31,7 @@ class ShippingMethod extends VendureEntity implements ChannelAware, SoftDeletabl
     @Column('simple-json') calculator: ConfigurableOperation;
     @Column()
     fulfillmentHandlerCode: string;
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.shippingMethods)
     @JoinTable()
     channels: Channel[];
     @OneToMany(type => ShippingMethodTranslation, translation => translation.base, { eager: true })

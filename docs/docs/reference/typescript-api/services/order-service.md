@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrderService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/order.service.ts" sourceLine="133" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/order.service.ts" sourceLine="134" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/order#order'>Order</a> entities.
 

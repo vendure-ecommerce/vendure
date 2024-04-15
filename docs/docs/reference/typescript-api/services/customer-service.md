@@ -138,7 +138,7 @@ Publishes a new <a href='/reference/typescript-api/events/event-types#passwordre
 a token which can be used in the `resetPassword()` method.
 ### resetPassword
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, passwordResetToken: string, password: string) => Promise&#60;         <a href='/reference/typescript-api/entities/user#user'>User</a> | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError | PasswordValidationError     &#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, passwordResetToken: string, password: string) => Promise&#60;         <a href='/reference/typescript-api/entities/user#user'>User</a> | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError | PasswordValidationError     &#62;`}   />
 
 Given a valid password reset token created by a call to the `requestPasswordReset()` method,
 this method will change the Customer's password to that given as the `password` argument.
