@@ -34,6 +34,7 @@ import {
     IdentifierChangeTokenExpiredError,
     IdentifierChangeTokenInvalidError,
     MissingPasswordError,
+    NotVerifiedError,
     PasswordResetTokenExpiredError,
     PasswordResetTokenInvalidError,
     PasswordValidationError,
@@ -65,6 +66,7 @@ import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-build
 import { TranslatorService } from '../helpers/translator/translator.service';
 import { addressToLine } from '../helpers/utils/address-to-line';
 import { patchEntity } from '../helpers/utils/patch-entity';
+import { VerificationTokenGenerator } from '../helpers/verification-token-generator/verification-token-generator';
 
 import { ChannelService } from './channel.service';
 import { CountryService } from './country.service';
@@ -90,6 +92,7 @@ export class CustomerService {
         private channelService: ChannelService,
         private customFieldRelationService: CustomFieldRelationService,
         private translator: TranslatorService,
+        private verificationTokenGenerator: VerificationTokenGenerator,
     ) {}
 
     findAll(
@@ -379,7 +382,9 @@ export class CustomerService {
     async registerCustomerAccount(
         ctx: RequestContext,
         input: RegisterCustomerInput,
-    ): Promise<RegisterCustomerAccountResult | EmailAddressConflictError | PasswordValidationError> {
+    ): Promise<
+        RegisterCustomerAccountResult | EmailAddressConflictError | NotVerifiedError | PasswordValidationError
+    > {
         if (!this.configService.authOptions.requireVerification) {
             if (!input.password) {
                 return new MissingPasswordError();
@@ -389,11 +394,20 @@ export class CustomerService {
         const hasNativeAuthMethod = !!user?.authenticationMethods.find(
             m => m instanceof NativeAuthenticationMethod,
         );
-        if (user && user.verified) {
-            if (hasNativeAuthMethod) {
-                // If the user has already been verified and has already
-                // registered with the native authentication strategy, do nothing.
-                return { success: true };
+        if (user && hasNativeAuthMethod && user.verified) {
+            // If the user has already been verified, return a conflict error.
+            return new EmailAddressConflictError();
+        }
+        if (user && hasNativeAuthMethod && !user.verified) {
+            // If the user has not been verified, check expiration of verification token
+            const token = user.getNativeAuthenticationMethod().verificationToken;
+            const valid = token ? this.verificationTokenGenerator.verifyVerificationToken(token) : false;
+            if (!valid) {
+                // If expired, registration will continue as if new
+                user = undefined;
+            } else {
+                // If not expired, throw not verified error
+                return new NotVerifiedError();
             }
         }
         const customFields = (input as any).customFields;
