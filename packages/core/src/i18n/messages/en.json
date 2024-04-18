@@ -100,6 +100,7 @@
     "REFUND_AMOUNT_ERROR": "The amount specified exceeds the refundable amount for this payment",
     "REFUND_ORDER_STATE_ERROR": "Cannot refund an Order in the \"{ orderState }\" state",
     "SETTLE_PAYMENT_ERROR": "Settling the payment failed",
+	 "VERIFICATION_PENDING_ERROR": "This email address has been registered but not confirmed",
     "VERIFICATION_TOKEN_EXPIRED_ERROR": "Verification token has expired. Use refreshCustomerVerification to send a new token.",
     "VERIFICATION_TOKEN_INVALID_ERROR": "Verification token not recognized"
   },

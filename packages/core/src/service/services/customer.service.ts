@@ -34,10 +34,10 @@ import {
     IdentifierChangeTokenExpiredError,
     IdentifierChangeTokenInvalidError,
     MissingPasswordError,
-    NotVerifiedError,
     PasswordResetTokenExpiredError,
     PasswordResetTokenInvalidError,
     PasswordValidationError,
+    VerificationPendingError,
 } from '../../common/error/generated-graphql-shop-errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/utils';
@@ -383,7 +383,10 @@ export class CustomerService {
         ctx: RequestContext,
         input: RegisterCustomerInput,
     ): Promise<
-        RegisterCustomerAccountResult | EmailAddressConflictError | NotVerifiedError | PasswordValidationError
+        | RegisterCustomerAccountResult
+        | EmailAddressConflictError
+        | VerificationPendingError
+        | PasswordValidationError
     > {
         if (!this.configService.authOptions.requireVerification) {
             if (!input.password) {
@@ -407,7 +410,7 @@ export class CustomerService {
                 user = undefined;
             } else {
                 // If not expired, throw not verified error
-                return new NotVerifiedError();
+                return new VerificationPendingError();
             }
         }
         const customFields = (input as any).customFields;

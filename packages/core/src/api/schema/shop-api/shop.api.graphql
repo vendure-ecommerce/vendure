@@ -207,7 +207,7 @@ union AddPaymentToOrderResult =
     | NoActiveOrderError
 union TransitionOrderToStateResult = Order | OrderStateTransitionError
 union SetCustomerForOrderResult = Order | AlreadyLoggedInError | EmailAddressConflictError | NoActiveOrderError | GuestCheckoutError
-union RegisterCustomerAccountResult = Success | MissingPasswordError | EmailAddressConflictError | NotVerifiedError | PasswordValidationError | NativeAuthStrategyError
+union RegisterCustomerAccountResult = Success | MissingPasswordError | EmailAddressConflictError | VerificationPendingError | PasswordValidationError | NativeAuthStrategyError
 union RefreshCustomerVerificationResult = Success | NativeAuthStrategyError
 union VerifyCustomerAccountResult =
       CurrentUser
