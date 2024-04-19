@@ -3,6 +3,7 @@ import { Omit } from '@vendure/common/lib/omit';
 import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../api/common/request-context';
+import { Surcharge } from '../entity';
 import { Channel } from '../entity/channel/channel.entity';
 import { Order } from '../entity/order/order.entity';
 import { OrderLine } from '../entity/order-line/order-line.entity';
@@ -130,13 +131,14 @@ export class MockTaxRateService {
 }
 
 export function createOrder(
-    orderConfig: Partial<Omit<Order, 'lines'>> & {
+    orderConfig: Partial<Omit<Order, 'lines', 'surcharges'>> & {
         ctx: RequestContext;
         lines: Array<{
             listPrice: number;
             taxCategory: TaxCategory;
             quantity: number;
         }>;
+        surcharges?: Surcharge[];
     },
 ): Order {
     const lines = orderConfig.lines.map(
@@ -156,7 +158,7 @@ export function createOrder(
         couponCodes: [],
         lines,
         shippingLines: [],
-        surcharges: [],
+        surcharges: orderConfig.surcharges || [],
         modifications: [],
     });
 }
