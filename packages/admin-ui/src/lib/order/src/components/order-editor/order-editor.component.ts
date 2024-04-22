@@ -260,10 +260,13 @@ export class OrderEditorComponent
         const adjustedLine = this.modifyOrderInput.adjustOrderLines?.find(l => l.orderLineId === lineId);
         if (adjustedLine) {
             return adjustedLine.quantity;
-        } else {
-            const line = this.orderSnapshot.lines.find(l => l.id === lineId);
-            return line ? line.quantity : 0;
         }
+        const addedLine = this.modifyOrderInput.addItems?.find(l => this.getIdForAddedItem(l) === lineId);
+        if (addedLine) {
+            return addedLine.quantity ?? 1;
+        }
+        const line = this.orderSnapshot.lines.find(l => l.id === lineId);
+        return line ? line.quantity : 1;
     }
 
     updateLineQuantity(line: OrderDetailFragment['lines'][number] | AddedLine, quantity: string) {
