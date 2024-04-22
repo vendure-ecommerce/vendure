@@ -1,6 +1,6 @@
 {
     "name": "@bb-vendure/admin-ui",
-    "version": "2.2.1-alpha.3",
+    "version": "2.2.1-alpha.5",
     "license": "MIT",
     "scripts": {
         "ng": "ng",
@@ -16,7 +16,7 @@
     "homepage": "https://www.vendure.io/",
     "funding": "https://github.com/sponsors/michaelbromley",
     "publishConfig": {
-        "access": "public",
+        "registry": "https://npm.pkg.github.com",
         "directory": "package"
     },
     "//": "These exports are just here so that we can do local testing of ui-devkit compilation by allowing the ui-devkit package to find its way to the compiled package",
@@ -39,7 +39,7 @@
         "@angular/platform-browser-dynamic": "^17.2.4",
         "@angular/router": "^17.2.4",
         "@apollo/client": "^3.9.6",
-        "@bb-vendure/common": "^2.2.1-alpha.3",
+        "@bb-vendure/common": "^2.2.1-alpha.5",
         "@biesbjerg/ngx-translate-extract-marker": "^1.0.0",
         "@cds/core": "^6.9.2",
         "@clr/angular": "^17.0.1",
@@ -114,10 +114,9 @@
         "rimraf": "^5.0.5",
         "typescript": "5.3.3"
     },
-    "gitHead": "616bd9b5b1d1312e80c87d16f5459672d0d35bbc",
+    "gitHead": "bee7d94867d50e317a72795bc709abc93d8d401e",
     "repository": {
         "url": "https://github.com/TheValkDokk/bb-vendure/",
-        "directory": "packages/admin-ui",
         "type": "git"
     }
 }

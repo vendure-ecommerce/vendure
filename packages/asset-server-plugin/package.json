@@ -1,6 +1,6 @@
 {
     "name": "@bb-vendure/asset-server-plugin",
-    "version": "2.2.1-alpha.3",
+    "version": "2.2.1-alpha.5",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "files": [
@@ -18,13 +18,13 @@
     "homepage": "https://www.vendure.io/",
     "funding": "https://github.com/sponsors/michaelbromley",
     "publishConfig": {
-        "access": "public"
+        "registry": "https://npm.pkg.github.com"
     },
     "devDependencies": {
         "@aws-sdk/client-s3": "^3.529.1",
         "@aws-sdk/lib-storage": "^3.529.1",
-        "@bb-vendure/common": "^2.2.1-alpha.3",
-        "@bb-vendure/core": "^2.2.1-alpha.3",
+        "@bb-vendure/common": "^2.2.1-alpha.5",
+        "@bb-vendure/core": "^2.2.1-alpha.5",
         "@types/express": "^4.17.21",
         "@types/fs-extra": "^11.0.4",
         "@types/node-fetch": "^2.6.11",
@@ -38,10 +38,9 @@
         "fs-extra": "^11.2.0",
         "sharp": "~0.33.2"
     },
-    "gitHead": "616bd9b5b1d1312e80c87d16f5459672d0d35bbc",
+    "gitHead": "bee7d94867d50e317a72795bc709abc93d8d401e",
     "repository": {
         "url": "https://github.com/TheValkDokk/bb-vendure/",
-        "directory": "packages/asset-server-plugin",
         "type": "git"
     }
 }

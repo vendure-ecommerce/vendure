@@ -1,6 +1,6 @@
 {
     "name": "@bb-vendure/stellate-plugin",
-    "version": "2.2.1-alpha.3",
+    "version": "2.2.1-alpha.5",
     "license": "MIT",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -15,19 +15,18 @@
     "homepage": "https://www.vendure.io",
     "funding": "https://github.com/sponsors/michaelbromley",
     "publishConfig": {
-        "access": "public"
+        "registry": "https://npm.pkg.github.com"
     },
     "dependencies": {
         "node-fetch": "^2.7.0"
     },
     "devDependencies": {
-        "@bb-vendure/common": "^2.2.1-alpha.3",
-        "@bb-vendure/core": "^2.2.1-alpha.3"
+        "@bb-vendure/common": "^2.2.1-alpha.5",
+        "@bb-vendure/core": "^2.2.1-alpha.5"
     },
-    "gitHead": "616bd9b5b1d1312e80c87d16f5459672d0d35bbc",
+    "gitHead": "bee7d94867d50e317a72795bc709abc93d8d401e",
     "repository": {
         "url": "https://github.com/TheValkDokk/bb-vendure/",
-        "directory": "packages/stellate-plugin",
         "type": "git"
     }
 }

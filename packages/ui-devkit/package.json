@@ -1,6 +1,6 @@
 {
     "name": "@bb-vendure/ui-devkit",
-    "version": "2.2.1-alpha.3",
+    "version": "2.2.1-alpha.5",
     "description": "A library for authoring Vendure Admin UI extensions",
     "keywords": [
         "vendure",
@@ -17,13 +17,12 @@
     ],
     "funding": "https://github.com/sponsors/michaelbromley",
     "publishConfig": {
-        "access": "public"
+        "registry": "https://npm.pkg.github.com"
     },
     "main": "client/index.js",
     "types": "client/index.d.ts",
     "repository": {
         "url": "https://github.com/TheValkDokk/bb-vendure/",
-        "directory": "packages/ui-devkit",
         "type": "git"
     },
     "scripts": {
@@ -41,8 +40,8 @@
         "@angular/cli": "^17.2.3",
         "@angular/compiler": "^17.2.4",
         "@angular/compiler-cli": "^17.2.4",
-        "@bb-vendure/admin-ui": "^2.2.1-alpha.3",
-        "@bb-vendure/common": "^2.2.1-alpha.3",
+        "@bb-vendure/admin-ui": "^2.2.1-alpha.5",
+        "@bb-vendure/common": "^2.2.1-alpha.5",
         "chalk": "^4.1.0",
         "chokidar": "^3.6.0",
         "fs-extra": "^11.2.0",
@@ -50,7 +49,7 @@
         "rxjs": "^7.8.1"
     },
     "devDependencies": {
-        "@bb-vendure/core": "^2.2.1-alpha.3",
+        "@bb-vendure/core": "^2.2.1-alpha.5",
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@rollup/plugin-terser": "^0.4.4",
         "@types/fs-extra": "^11.0.4",
@@ -62,5 +61,5 @@
         "tslib": "^2.6.2",
         "typescript": "5.3.3"
     },
-    "gitHead": "616bd9b5b1d1312e80c87d16f5459672d0d35bbc"
+    "gitHead": "bee7d94867d50e317a72795bc709abc93d8d401e"
 }
