@@ -1,6 +1,6 @@
 {
     "name": "@bb-vendure/harden-plugin",
-    "version": "2.2.1-alpha.5",
+    "version": "2.2.1-alpha.6",
     "license": "MIT",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -21,10 +21,10 @@
         "graphql-query-complexity": "^0.12.0"
     },
     "devDependencies": {
-        "@bb-vendure/common": "^2.2.1-alpha.5",
-        "@bb-vendure/core": "^2.2.1-alpha.5"
+        "@bb-vendure/common": "^2.2.1-alpha.6",
+        "@bb-vendure/core": "^2.2.1-alpha.6"
     },
-    "gitHead": "bee7d94867d50e317a72795bc709abc93d8d401e",
+    "gitHead": "94b24c938d0bb347e09c2b43d7f8ab81a0cc8424",
     "repository": {
         "url": "https://github.com/TheValkDokk/bb-vendure/",
         "type": "git"
