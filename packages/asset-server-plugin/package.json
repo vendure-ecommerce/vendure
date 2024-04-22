@@ -37,5 +37,6 @@
         "file-type": "^19.0.0",
         "fs-extra": "^11.2.0",
         "sharp": "~0.33.2"
-    }
+    },
+    "gitHead": "9d84f238fb2a7a39f0d1dbd4ee1168f6af2b37ed"
 }

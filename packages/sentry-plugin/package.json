@@ -24,5 +24,6 @@
         "@bb-vendure/common": "^2.2.1-alpha.0",
         "@bb-vendure/core": "^2.2.1-alpha.0",
         "@sentry/node": "^7.106.1"
-    }
+    },
+    "gitHead": "9d84f238fb2a7a39f0d1dbd4ee1168f6af2b37ed"
 }

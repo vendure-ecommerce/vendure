@@ -38,5 +38,6 @@
         "@types/mjml": "^4.7.4",
         "rimraf": "^5.0.5",
         "typescript": "5.3.3"
-    }
+    },
+    "gitHead": "9d84f238fb2a7a39f0d1dbd4ee1168f6af2b37ed"
 }

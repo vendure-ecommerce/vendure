@@ -102,5 +102,6 @@
         "sql.js": "1.10.2",
         "sqlite3": "^5.1.7",
         "typescript": "5.3.3"
-    }
+    },
+    "gitHead": "9d84f238fb2a7a39f0d1dbd4ee1168f6af2b37ed"
 }
