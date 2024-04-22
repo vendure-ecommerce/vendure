@@ -1,6 +1,6 @@
 {
     "name": "@bb-vendure/email-plugin",
-    "version": "2.2.1-alpha.9",
+    "version": "2.2.1-alpha.10",
     "license": "MIT",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -30,8 +30,8 @@
         "nodemailer": "^6.9.4"
     },
     "devDependencies": {
-        "@bb-vendure/common": "^2.2.1-alpha.9",
-        "@bb-vendure/core": "^2.2.1-alpha.9",
+        "@bb-vendure/common": "^2.2.1-alpha.10",
+        "@bb-vendure/core": "^2.2.1-alpha.10",
         "@types/dateformat": "^3.0.1",
         "@types/express": "^4.17.21",
         "@types/fs-extra": "^11.0.4",
@@ -39,7 +39,7 @@
         "rimraf": "^5.0.5",
         "typescript": "5.3.3"
     },
-    "gitHead": "b4e7da9ce8be2504e8609f36a68726134c0c28ce",
+    "gitHead": "73ee4ce1834574a938dddef40ef8cec6e2944048",
     "repository": {
         "url": "https://github.com/TheValkDokk/bb-vendure.git",
         "type": "git"

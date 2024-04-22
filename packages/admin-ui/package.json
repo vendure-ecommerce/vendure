@@ -1,6 +1,6 @@
 {
     "name": "@bb-vendure/admin-ui",
-    "version": "2.2.1-alpha.9",
+    "version": "2.2.1-alpha.10",
     "license": "MIT",
     "scripts": {
         "ng": "ng",
@@ -39,7 +39,7 @@
         "@angular/platform-browser-dynamic": "^17.2.4",
         "@angular/router": "^17.2.4",
         "@apollo/client": "^3.9.6",
-        "@bb-vendure/common": "^2.2.1-alpha.9",
+        "@bb-vendure/common": "^2.2.1-alpha.10",
         "@biesbjerg/ngx-translate-extract-marker": "^1.0.0",
         "@cds/core": "^6.9.2",
         "@clr/angular": "^17.0.1",
@@ -114,7 +114,7 @@
         "rimraf": "^5.0.5",
         "typescript": "5.3.3"
     },
-    "gitHead": "b4e7da9ce8be2504e8609f36a68726134c0c28ce",
+    "gitHead": "73ee4ce1834574a938dddef40ef8cec6e2944048",
     "repository": {
         "url": "https://github.com/TheValkDokk/bb-vendure.git",
         "type": "git"

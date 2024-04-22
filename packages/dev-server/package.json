@@ -1,6 +1,6 @@
 {
     "name": "dev-server",
-    "version": "2.2.1-alpha.9",
+    "version": "2.2.1-alpha.10",
     "main": "index.js",
     "license": "MIT",
     "private": true,
@@ -14,18 +14,18 @@
         "load-test:100k": "node -r ts-node/register load-testing/run-load-test.ts 100000"
     },
     "dependencies": {
-        "@bb-vendure/admin-ui-plugin": "^2.2.1-alpha.9",
-        "@bb-vendure/asset-server-plugin": "^2.2.1-alpha.9",
-        "@bb-vendure/common": "^2.2.1-alpha.9",
-        "@bb-vendure/core": "^2.2.1-alpha.9",
-        "@bb-vendure/elasticsearch-plugin": "^2.2.1-alpha.9",
-        "@bb-vendure/email-plugin": "^2.2.1-alpha.9",
+        "@bb-vendure/admin-ui-plugin": "^2.2.1-alpha.10",
+        "@bb-vendure/asset-server-plugin": "^2.2.1-alpha.10",
+        "@bb-vendure/common": "^2.2.1-alpha.10",
+        "@bb-vendure/core": "^2.2.1-alpha.10",
+        "@bb-vendure/elasticsearch-plugin": "^2.2.1-alpha.10",
+        "@bb-vendure/email-plugin": "^2.2.1-alpha.10",
         "@nestjs/axios": "^3.0.2",
         "typescript": "5.3.3"
     },
     "devDependencies": {
-        "@bb-vendure/testing": "^2.2.1-alpha.9",
-        "@bb-vendure/ui-devkit": "^2.2.1-alpha.9",
+        "@bb-vendure/testing": "^2.2.1-alpha.10",
+        "@bb-vendure/ui-devkit": "^2.2.1-alpha.10",
         "commander": "^12.0.0",
         "concurrently": "^8.2.2",
         "csv-stringify": "^6.4.6",

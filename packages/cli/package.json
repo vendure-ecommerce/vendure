@@ -1,6 +1,6 @@
 {
     "name": "@bb-vendure/cli",
-    "version": "2.2.1-alpha.9",
+    "version": "2.2.1-alpha.10",
     "description": "A modern, headless ecommerce framework",
     "repository": {
         "url": "https://github.com/TheValkDokk/bb-vendure.git",
@@ -34,7 +34,7 @@
         "dist/**/*"
     ],
     "dependencies": {
-        "@bb-vendure/common": "^2.2.1-alpha.9",
+        "@bb-vendure/common": "^2.2.1-alpha.10",
         "@clack/prompts": "^0.7.0",
         "change-case": "^4.1.2",
         "commander": "^11.0.0",
@@ -44,8 +44,8 @@
         "ts-node": "^10.9.2"
     },
     "devDependencies": {
-        "@bb-vendure/core": "^2.2.1-alpha.9",
+        "@bb-vendure/core": "^2.2.1-alpha.10",
         "typescript": "5.3.3"
     },
-    "gitHead": "b4e7da9ce8be2504e8609f36a68726134c0c28ce"
+    "gitHead": "73ee4ce1834574a938dddef40ef8cec6e2944048"
 }

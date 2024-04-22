@@ -1,6 +1,6 @@
 {
     "name": "@bb-vendure/create",
-    "version": "2.2.1-alpha.9",
+    "version": "2.2.1-alpha.10",
     "license": "MIT",
     "bin": {
         "create": "./index.js"
@@ -23,7 +23,7 @@
         "registry": "https://npm.pkg.github.com"
     },
     "devDependencies": {
-        "@bb-vendure/core": "^2.2.1-alpha.9",
+        "@bb-vendure/core": "^2.2.1-alpha.10",
         "@types/cross-spawn": "^6.0.6",
         "@types/detect-port": "^1.3.5",
         "@types/fs-extra": "^11.0.4",
@@ -34,7 +34,7 @@
         "typescript": "5.3.3"
     },
     "dependencies": {
-        "@bb-vendure/common": "^2.2.1-alpha.9",
+        "@bb-vendure/common": "^2.2.1-alpha.10",
         "@clack/prompts": "^0.7.0",
         "commander": "^11.0.0",
         "cross-spawn": "^7.0.3",
@@ -45,7 +45,7 @@
         "semver": "^7.5.4",
         "tcp-port-used": "^1.0.2"
     },
-    "gitHead": "b4e7da9ce8be2504e8609f36a68726134c0c28ce",
+    "gitHead": "73ee4ce1834574a938dddef40ef8cec6e2944048",
     "repository": {
         "url": "https://github.com/TheValkDokk/bb-vendure.git",
         "type": "git"
