@@ -1,6 +1,6 @@
 {
     "name": "@bb-vendure/elasticsearch-plugin",
-    "version": "2.2.1-alpha.7",
+    "version": "2.2.1-alpha.8",
     "license": "MIT",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -26,12 +26,12 @@
         "fast-deep-equal": "^3.1.3"
     },
     "devDependencies": {
-        "@bb-vendure/common": "^2.2.1-alpha.7",
-        "@bb-vendure/core": "^2.2.1-alpha.7",
+        "@bb-vendure/common": "^2.2.1-alpha.8",
+        "@bb-vendure/core": "^2.2.1-alpha.8",
         "rimraf": "^5.0.5",
         "typescript": "5.3.3"
     },
-    "gitHead": "29fafc132c002cf07d461e98a61d27917c13adcd",
+    "gitHead": "4583f5b635822c35c05713a9dbd97c44b514402c",
     "repository": {
         "url": "https://github.com/TheValkDokk/bb-vendure/",
         "type": "git"

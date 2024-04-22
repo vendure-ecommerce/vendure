@@ -1,6 +1,6 @@
 {
     "name": "@bb-vendure/payments-plugin",
-    "version": "2.2.1-alpha.7",
+    "version": "2.2.1-alpha.8",
     "license": "MIT",
     "main": "package/index.js",
     "types": "package/index.d.ts",
@@ -43,9 +43,9 @@
         }
     },
     "devDependencies": {
-        "@bb-vendure/common": "^2.2.1-alpha.7",
-        "@bb-vendure/core": "^2.2.1-alpha.7",
-        "@bb-vendure/testing": "^2.2.1-alpha.7",
+        "@bb-vendure/common": "^2.2.1-alpha.8",
+        "@bb-vendure/core": "^2.2.1-alpha.8",
+        "@bb-vendure/testing": "^2.2.1-alpha.8",
         "@mollie/api-client": "^3.7.0",
         "@types/braintree": "^3.3.11",
         "@types/localtunnel": "2.0.4",
@@ -56,7 +56,7 @@
         "stripe": "^13.3.0",
         "typescript": "5.1.6"
     },
-    "gitHead": "29fafc132c002cf07d461e98a61d27917c13adcd",
+    "gitHead": "4583f5b635822c35c05713a9dbd97c44b514402c",
     "repository": {
         "url": "https://github.com/TheValkDokk/bb-vendure/",
         "type": "git"
