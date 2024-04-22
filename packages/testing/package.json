@@ -1,6 +1,6 @@
 {
     "name": "@bb-vendure/testing",
-    "version": "2.2.1-alpha.2",
+    "version": "2.2.1-alpha.3",
     "description": "End-to-end testing tools for Vendure projects",
     "keywords": [
         "vendure",
@@ -22,8 +22,9 @@
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "repository": {
-        "type": "git",
-        "url": "git+https://github.com/vendure-ecommerce/vendure.git"
+        "url": "https://github.com/TheValkDokk/bb-vendure/",
+        "directory": "packages/testing",
+        "type": "git"
     },
     "funding": "https://github.com/sponsors/michaelbromley",
     "scripts": {
@@ -36,7 +37,7 @@
         "url": "https://github.com/vendure-ecommerce/vendure/issues"
     },
     "dependencies": {
-        "@bb-vendure/common": "^2.2.1-alpha.2",
+        "@bb-vendure/common": "^2.2.1-alpha.3",
         "@graphql-typed-document-node/core": "^3.2.0",
         "faker": "^4.1.0",
         "form-data": "^4.0.0",
@@ -46,7 +47,7 @@
         "sql.js": "1.8.0"
     },
     "devDependencies": {
-        "@bb-vendure/core": "^2.2.1-alpha.2",
+        "@bb-vendure/core": "^2.2.1-alpha.3",
         "@types/faker": "^5.5.9",
         "@types/mysql": "^2.15.26",
         "@types/node-fetch": "^2.6.4",

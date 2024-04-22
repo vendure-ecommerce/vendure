@@ -1,10 +1,11 @@
 {
     "name": "@bb-vendure/core",
-    "version": "2.2.1-alpha.2",
+    "version": "2.2.1-alpha.3",
     "description": "A modern, headless ecommerce framework",
     "repository": {
-        "type": "git",
-        "url": "https://github.com/vendure-ecommerce/vendure/"
+        "url": "https://github.com/TheValkDokk/bb-vendure/",
+        "directory": "packages/core",
+        "type": "git"
     },
     "keywords": [
         "vendure",
@@ -41,7 +42,7 @@
     ],
     "dependencies": {
         "@apollo/server": "^4.10.1",
-        "@bb-vendure/common": "^2.2.1-alpha.2",
+        "@bb-vendure/common": "^2.2.1-alpha.3",
         "@graphql-tools/stitch": "^9.0.5",
         "@nestjs/apollo": "^12.1.0",
         "@nestjs/common": "10.3.3",
