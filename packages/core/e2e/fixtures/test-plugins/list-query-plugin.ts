@@ -1,7 +1,7 @@
 import { Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
-import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
+import { LanguageCode } from '@bb-vendure/common/lib/generated-types';
+import { DeepPartial, ID } from '@bb-vendure/common/lib/shared-types';
 import {
     Ctx,
     Customer,
@@ -20,7 +20,7 @@ import {
     Translation,
     VendureEntity,
     VendurePlugin,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import gql from 'graphql-tag';
 import { Column, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, OneToOne, Relation } from 'typeorm';
 

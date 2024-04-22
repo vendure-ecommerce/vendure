@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Promotion
 
-<GenerationInfo sourceFile="packages/core/src/entity/promotion/promotion.entity.ts" sourceLine="56" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/promotion/promotion.entity.ts" sourceLine="56" packageName="@bb-vendure/core" />
 
 A Promotion is used to define a set of conditions under which promotions actions (typically discounts)
 will be applied to an Order.
@@ -75,7 +75,10 @@ class Promotion extends AdjustmentSource implements ChannelAware, SoftDeletable,
 
 ### constructor
 
-<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a>&#62; &#38; {             promotionConditions?: Array&#60;<a href='/reference/typescript-api/promotions/promotion-condition#promotioncondition'>PromotionCondition</a>&#60;any&#62;&#62;;             promotionActions?: Array&#60;<a href='/reference/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>&#60;any&#62;&#62;;         }) => Promotion`}   />
+<MemberInfo kind="method" type={`(input?: DeepPartial&#60;<a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a>&#62; &#38; {
+             promotionConditions?: Array&#60;<a href='/reference/typescript-api/promotions/promotion-condition#promotioncondition'>PromotionCondition</a>&#60;any&#62;&#62;;
+             promotionActions?: Array&#60;<a href='/reference/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>&#60;any&#62;&#62;;
+         }) => Promotion`}   />
 
 
 ### deletedAt

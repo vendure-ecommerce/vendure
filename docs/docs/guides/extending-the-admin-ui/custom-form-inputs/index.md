@@ -12,7 +12,7 @@ You can define custom Angular or React components which can be used to render [C
 Let's say you define a custom "intensity" field on the Product entity:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
     // ...
@@ -42,7 +42,7 @@ Angular components will have the `readonly`, `config` and `formControl` properti
 ```ts title="src/plugins/common/ui/components/slider-form-input/slider-form-input.component.ts"
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { IntCustomFieldConfig, SharedModule, FormInputComponent } from '@vendure/admin-ui/core';
+import { IntCustomFieldConfig, SharedModule, FormInputComponent } from '@bb-vendure/admin-ui/core';
 
 @Component({
     template: `
@@ -71,7 +71,7 @@ component will also receive `config` and `readonly` data as props.
 
 ```tsx title="src/plugins/common/ui/components/SliderFormInput.tsx"
 import React from 'react';
-import { useFormControl, ReactFormInputOptions, useInjector } from '@vendure/admin-ui/react';
+import { useFormControl, ReactFormInputOptions, useInjector } from '@bb-vendure/admin-ui/react';
 
 export function SliderFormInput({ readonly, config }: ReactFormInputOptions) {
     const { value, setFormValue } = useFormControl();
@@ -106,7 +106,7 @@ Next we will register this component in our `providers.ts` file and give it a un
 <TabItem value="Angular" label="Angular" default>
 
 ```ts title="src/plugins/common/ui/providers.ts"
-import { registerFormInputComponent } from '@vendure/admin-ui/core';
+import { registerFormInputComponent } from '@bb-vendure/admin-ui/core';
 import { SliderControlComponent } from './components/slider-form-input/slider-form-input.component';
 
 export default [
@@ -118,7 +118,7 @@ export default [
 <TabItem value="React" label="React">
 
 ```ts title="src/plugins/common/ui/providers.ts"
-import { registerReactFormInputComponent } from '@vendure/admin-ui/react';
+import { registerReactFormInputComponent } from '@bb-vendure/admin-ui/react';
 import { SliderControl } from './components/SliderFormInput';
 
 export default [
@@ -135,9 +135,9 @@ The `providers.ts` is then passed to the `compileUiExtensions()` function as des
 
 ```ts title="src/vendure-config.ts"
 import * as path from 'path';
-import { VendureConfig } from '@vendure/core';
-import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
-import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
+import { VendureConfig } from '@bb-vendure/core';
+import { AdminUiPlugin } from '@bb-vendure/admin-ui-plugin';
+import { compileUiExtensions } from '@bb-vendure/ui-devkit/compiler';
 
 export const config: VendureConfig = {
     // ...
@@ -200,8 +200,8 @@ Here's an example of a custom field control for a `relation` field which relates
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { RelationCustomFieldConfig } from '@vendure/common/lib/generated-types';
-import { FormInputComponent, DataService, SharedModule } from '@vendure/admin-ui/core';
+import { RelationCustomFieldConfig } from '@bb-vendure/common/lib/generated-types';
+import { FormInputComponent, DataService, SharedModule } from '@bb-vendure/admin-ui/core';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 

@@ -1,4 +1,4 @@
-import { ADDRESS_FRAGMENT } from '@vendure/admin-ui/core';
+import { ADDRESS_FRAGMENT } from '@bb-vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
 
 export const GET_CUSTOMER_ADDRESSES = gql`

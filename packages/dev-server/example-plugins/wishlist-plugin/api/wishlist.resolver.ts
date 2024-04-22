@@ -1,5 +1,5 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { Allow, Ctx, Permission, RequestContext, Transaction } from '@vendure/core';
+import { Allow, Ctx, Permission, RequestContext, Transaction } from '@bb-vendure/core';
 
 import { WishlistItem } from '../entities/wishlist-item.entity';
 import { WishlistService } from '../service/wishlist.service';

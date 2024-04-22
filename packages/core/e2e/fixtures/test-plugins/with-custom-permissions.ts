@@ -1,6 +1,6 @@
 import { Mutation, Query, Resolver } from '@nestjs/graphql';
-import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { Allow, CrudPermissionDefinition, PermissionDefinition, VendurePlugin } from '@vendure/core';
+import { LanguageCode } from '@bb-vendure/common/lib/generated-types';
+import { Allow, CrudPermissionDefinition, PermissionDefinition, VendurePlugin } from '@bb-vendure/core';
 import gql from 'graphql-tag';
 
 export const sync = new PermissionDefinition({

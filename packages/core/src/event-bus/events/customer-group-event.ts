@@ -1,5 +1,5 @@
-import { CreateCustomerGroupInput, UpdateCustomerGroupInput } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { CreateCustomerGroupInput, UpdateCustomerGroupInput } from '@bb-vendure/common/lib/generated-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api';
 import { CustomerGroup } from '../../entity';

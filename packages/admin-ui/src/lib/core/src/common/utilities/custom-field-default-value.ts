@@ -1,5 +1,5 @@
-import { CustomFieldType } from '@vendure/common/lib/shared-types';
-import { assertNever } from '@vendure/common/lib/shared-utils';
+import { CustomFieldType } from '@bb-vendure/common/lib/shared-types';
+import { assertNever } from '@bb-vendure/common/lib/shared-utils';
 import { CustomFieldConfig } from '../generated-types';
 
 export function getCustomFieldsDefaults(customFieldConfig: CustomFieldConfig[]): {

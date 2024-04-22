@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DefaultGuestCheckoutStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/default-guest-checkout-strategy.ts" sourceLine="64" packageName="@vendure/core" since="2.0.0" />
+<GenerationInfo sourceFile="packages/core/src/config/order/default-guest-checkout-strategy.ts" sourceLine="64" packageName="@bb-vendure/core" since="2.0.0" />
 
 The default implementation of the <a href='/reference/typescript-api/orders/guest-checkout-strategy#guestcheckoutstrategy'>GuestCheckoutStrategy</a>. This strategy allows
 guest checkouts by default, but can be configured to disallow them.
@@ -19,7 +19,7 @@ guest checkouts by default, but can be configured to disallow them.
 *Example*
 
 ```ts
-import { DefaultGuestCheckoutStrategy, VendureConfig } from '@vendure/core';
+import { DefaultGuestCheckoutStrategy, VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
   orderOptions: {
@@ -67,7 +67,7 @@ class DefaultGuestCheckoutStrategy implements GuestCheckoutStrategy {
 
 ## DefaultGuestCheckoutStrategyOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/order/default-guest-checkout-strategy.ts" sourceLine="20" packageName="@vendure/core" since="2.0.0" />
+<GenerationInfo sourceFile="packages/core/src/config/order/default-guest-checkout-strategy.ts" sourceLine="20" packageName="@bb-vendure/core" since="2.0.0" />
 
 Options available for the <a href='/reference/typescript-api/orders/default-guest-checkout-strategy#defaultguestcheckoutstrategy'>DefaultGuestCheckoutStrategy</a>.
 

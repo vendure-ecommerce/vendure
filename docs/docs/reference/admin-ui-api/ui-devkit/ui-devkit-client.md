@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## setTargetOrigin
 
-<GenerationInfo sourceFile="packages/ui-devkit/src/client/devkit-client-api.ts" sourceLine="24" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/client/devkit-client-api.ts" sourceLine="24" packageName="@bb-vendure/ui-devkit" />
 
 Set the [window.postMessage API](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage)
 `targetOrigin`. The Vendure ui-devkit uses the postMessage API to
@@ -31,7 +31,7 @@ Parameters
 
 ## getActivatedRoute
 
-<GenerationInfo sourceFile="packages/ui-devkit/src/client/devkit-client-api.ts" sourceLine="43" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/client/devkit-client-api.ts" sourceLine="43" packageName="@bb-vendure/ui-devkit" />
 
 Retrieves information about the current route of the host application, since it is not possible
 to otherwise get this information from within the child iframe.
@@ -39,7 +39,7 @@ to otherwise get this information from within the child iframe.
 *Example*
 
 ```ts
-import { getActivatedRoute } from '@vendure/ui-devkit';
+import { getActivatedRoute } from '@bb-vendure/ui-devkit';
 
 const route = await getActivatedRoute();
 const slug = route.params.slug;
@@ -52,14 +52,14 @@ function getActivatedRoute(): Promise<ActiveRouteData>
 
 ## graphQlQuery
 
-<GenerationInfo sourceFile="packages/ui-devkit/src/client/devkit-client-api.ts" sourceLine="70" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/client/devkit-client-api.ts" sourceLine="70" packageName="@bb-vendure/ui-devkit" />
 
 Perform a GraphQL query and returns either an Observable or a Promise of the result.
 
 *Example*
 
 ```ts
-import { graphQlQuery } from '@vendure/ui-devkit';
+import { graphQlQuery } from '@bb-vendure/ui-devkit';
 
 const productList = await graphQlQuery(`
   query GetProducts($skip: Int, $take: Int) {
@@ -97,14 +97,14 @@ Parameters
 
 ## graphQlMutation
 
-<GenerationInfo sourceFile="packages/ui-devkit/src/client/devkit-client-api.ts" sourceLine="112" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/client/devkit-client-api.ts" sourceLine="112" packageName="@bb-vendure/ui-devkit" />
 
 Perform a GraphQL mutation and returns either an Observable or a Promise of the result.
 
 *Example*
 
 ```ts
-import { graphQlMutation } from '@vendure/ui-devkit';
+import { graphQlMutation } from '@bb-vendure/ui-devkit';
 
 const disableProduct = (id: string) => {
   return graphQlMutation(`
@@ -138,14 +138,14 @@ Parameters
 
 ## notify
 
-<GenerationInfo sourceFile="packages/ui-devkit/src/client/devkit-client-api.ts" sourceLine="147" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/client/devkit-client-api.ts" sourceLine="147" packageName="@bb-vendure/ui-devkit" />
 
 Display a toast notification.
 
 *Example*
 
 ```ts
-import { notify } from '@vendure/ui-devkit';
+import { notify } from '@bb-vendure/ui-devkit';
 
 notify({
   message: 'Updated Product',

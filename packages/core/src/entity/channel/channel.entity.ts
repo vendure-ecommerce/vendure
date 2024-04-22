@@ -1,5 +1,5 @@
-import { CurrencyCode, LanguageCode } from '@vendure/common/lib/generated-types';
-import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
+import { CurrencyCode, LanguageCode } from '@bb-vendure/common/lib/generated-types';
+import { DeepPartial, ID } from '@bb-vendure/common/lib/shared-types';
 import { Column, Entity, Index, ManyToMany, ManyToOne } from 'typeorm';
 
 import { Customer, PaymentMethod, Promotion, Role, ShippingMethod, StockLocation } from '..';

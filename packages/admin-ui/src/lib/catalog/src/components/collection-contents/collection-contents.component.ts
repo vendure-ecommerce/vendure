@@ -16,7 +16,7 @@ import {
     ConfigurableOperationInput,
     DataService,
     GetCollectionContentsQuery,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { BehaviorSubject, combineLatest, Observable, of, Subject } from 'rxjs';
 import {
     catchError,

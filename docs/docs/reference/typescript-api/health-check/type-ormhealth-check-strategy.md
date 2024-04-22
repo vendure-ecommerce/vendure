@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TypeORMHealthCheckStrategy
 
-<GenerationInfo sourceFile="packages/core/src/health-check/typeorm-health-check-strategy.ts" sourceLine="36" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/health-check/typeorm-health-check-strategy.ts" sourceLine="36" packageName="@bb-vendure/core" />
 
 A <a href='/reference/typescript-api/health-check/health-check-strategy#healthcheckstrategy'>HealthCheckStrategy</a> used to check the health of the database. This health
 check is included by default, but can be customized by explicitly adding it to the
@@ -20,7 +20,7 @@ check is included by default, but can be customized by explicitly adding it to t
 *Example*
 
 ```ts
-import { TypeORMHealthCheckStrategy } from '@vendure/core';
+import { TypeORMHealthCheckStrategy } from '@bb-vendure/core';
 
 export const config = {
   // ...

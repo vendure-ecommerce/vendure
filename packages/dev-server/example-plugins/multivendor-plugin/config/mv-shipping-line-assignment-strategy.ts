@@ -8,7 +8,7 @@ import {
     RequestContext,
     ShippingLine,
     ShippingLineAssignmentStrategy,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 
 export class MultivendorShippingLineAssignmentStrategy implements ShippingLineAssignmentStrategy {
     private entityHydrator: EntityHydrator;

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { omit } from '@vendure/common/lib/omit';
-import { ID, Type } from '@vendure/common/lib/shared-types';
+import { omit } from '@bb-vendure/common/lib/omit';
+import { ID, Type } from '@bb-vendure/common/lib/shared-types';
 import { FindOneOptions } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 

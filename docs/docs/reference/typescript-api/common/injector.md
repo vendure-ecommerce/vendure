@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Injector
 
-<GenerationInfo sourceFile="packages/core/src/common/injector.ts" sourceLine="15" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/common/injector.ts" sourceLine="15" packageName="@bb-vendure/core" />
 
 The Injector wraps the underlying Nestjs `ModuleRef`, allowing injection of providers
 known to the application's dependency injection container. This is intended to enable the injection

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## BaseEntityResolver
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/base-entity-resolver.ts" sourceLine="55" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/base-entity-resolver.ts" sourceLine="55" packageName="@bb-vendure/admin-ui" />
 
 A base resolver for an entity detail route. Resolves to an observable of the given entity, or a "blank"
 version if the route id equals "create". Should be used together with details views which extend the

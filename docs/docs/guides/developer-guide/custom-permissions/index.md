@@ -12,7 +12,7 @@ When building plugins, you may need to define new permissions to control access 
 For example, let's imagine you are creating a plugin which exposes a new mutation that can be used by remote services to sync your inventory. First of all we will define the new permission using the [`PermissionDefinition`](/reference/typescript-api/auth/permission-definition/) class:
 
 ```ts title="src/plugins/inventory-sync/constants.ts"
-import { PermissionDefinition } from '@vendure/core';
+import { PermissionDefinition } from '@bb-vendure/core';
 
 export const sync = new PermissionDefinition({
     name: 'SyncInventory',
@@ -24,7 +24,7 @@ This permission can then be used in conjuction with the [@Allow() decorator](/re
 
 ```ts title="src/plugins/inventory-sync/api/inventory-sync.resolver.ts"
 import { Mutation, Resolver } from '@nestjs/graphql';
-import { Allow } from '@vendure/core';
+import { Allow } from '@bb-vendure/core';
 import { sync } from '../constants';
 
 @Resolver()
@@ -43,7 +43,7 @@ Finally, the `sync` PermissionDefinition must be passed into the VendureConfig s
 
 ```ts title="src/plugins/inventory-sync/inventory-sync.plugin.ts"
 import gql from 'graphql-tag';
-import { VendurePlugin } from '@vendure/core';
+import { VendurePlugin } from '@bb-vendure/core';
 
 import { InventorySyncResolver } from './api/inventory-sync.resolver'
 import { sync } from './constants';
@@ -79,7 +79,7 @@ Quite often your plugin will define a new entity on which you must perform creat
 For example, let's imagine we are creating a plugin which adds a new entity called `ProductReview`. We can define the CRUD permissions like so:
 
 ```ts title="src/plugins/product-review/constants.ts"
-import { CrudPermissionDefinition } from '@vendure/core';
+import { CrudPermissionDefinition } from '@bb-vendure/core';
 
 export const productReviewPermission = new CrudPermissionDefinition('ProductReview');
 ```
@@ -88,7 +88,7 @@ These permissions can then be used in our resolver:
 
 ```ts title="src/plugins/product-review/api/product-review.resolver.ts"
 import { Mutation, Resolver } from '@nestjs/graphql';
-import { Allow, Transaction } from '@vendure/core';
+import { Allow, Transaction } from '@bb-vendure/core';
 import { productReviewPermission } from '../constants';
 
 @Resolver()
@@ -131,7 +131,7 @@ Finally, the `productReview` CrudPermissionDefinition must be passed into the Ve
 
 ```ts title="src/plugins/product-review/product-review.plugin.ts"
 import gql from 'graphql-tag';
-import { VendurePlugin } from '@vendure/core';
+import { VendurePlugin } from '@bb-vendure/core';
 
 import { ProductReviewResolver } from './api/product-review.resolver'
 import { productReviewPermission } from './constants';
@@ -162,7 +162,7 @@ You may want to restrict access to this custom field to only those roles which h
 plugin.
 
 ```ts title="src/plugins/product-review.plugin.ts"
-import { VendurePlugin } from '@vendure/core';
+import { VendurePlugin } from '@bb-vendure/core';
 import { productReviewPermission } from './constants';
 
 @VendurePlugin({

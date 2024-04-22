@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CustomFieldType
 
-<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="103" packageName="@vendure/common" />
+<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="103" packageName="@bb-vendure/common" />
 
 A data type for a custom field. The CustomFieldType determines the data types used in the generated
 database columns and GraphQL fields as follows (key: m = MySQL, p = Postgres, s = SQLite):

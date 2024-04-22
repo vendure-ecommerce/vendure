@@ -1,5 +1,5 @@
-import { Adjustment, AdjustmentType } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { Adjustment, AdjustmentType } from '@bb-vendure/common/lib/generated-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
 
 import { VendureEntity } from '../../entity/base/base.entity';
 

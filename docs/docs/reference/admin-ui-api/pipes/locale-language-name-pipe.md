@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## LocaleLanguageNamePipe
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/pipes/locale-language-name.pipe.ts" sourceLine="18" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/pipes/locale-language-name.pipe.ts" sourceLine="18" packageName="@bb-vendure/admin-ui" />
 
 Displays a human-readable name for a given ISO 639-1 language code.
 

@@ -19,7 +19,7 @@ import {
     GetZoneMembersQuery,
     ItemOf,
     SelectionManager,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { BehaviorSubject, combineLatest, merge, Observable, of, Subject, switchMap } from 'rxjs';
 import { map, startWith, take, takeUntil } from 'rxjs/operators';
 

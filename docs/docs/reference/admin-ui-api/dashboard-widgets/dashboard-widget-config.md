@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DashboardWidgetConfig
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/dashboard-widget/dashboard-widget-types.ts" sourceLine="11" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/dashboard-widget/dashboard-widget-types.ts" sourceLine="11" packageName="@bb-vendure/admin-ui" />
 
 A configuration object for a dashboard widget.
 

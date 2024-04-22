@@ -1,5 +1,5 @@
 import { ApolloServerPlugin, GraphQLRequestListener, GraphQLServerContext } from '@apollo/server';
-import { isObject } from '@vendure/common/lib/shared-utils';
+import { isObject } from '@bb-vendure/common/lib/shared-utils';
 import { DocumentNode } from 'graphql';
 
 import { GraphqlValueTransformer } from '../common/graphql-value-transformer';

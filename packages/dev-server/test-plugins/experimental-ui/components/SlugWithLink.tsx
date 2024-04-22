@@ -1,4 +1,4 @@
-import { ReactDataTableComponentProps } from '@vendure/admin-ui/react';
+import { ReactDataTableComponentProps } from '@bb-vendure/admin-ui/react';
 import React from 'react';
 
 export function SlugWithLink({ rowItem }: ReactDataTableComponentProps<{ slug: string }>) {

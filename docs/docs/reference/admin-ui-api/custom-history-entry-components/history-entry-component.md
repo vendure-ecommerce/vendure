@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## HistoryEntryComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/custom-history-entry-component/history-entry-component-types.ts" sourceLine="16" packageName="@vendure/admin-ui" since="1.9.0" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/custom-history-entry-component/history-entry-component-types.ts" sourceLine="16" packageName="@bb-vendure/admin-ui" since="1.9.0" />
 
 This interface should be implemented by components intended to display a history entry in the
 Order or Customer history timeline. If the component needs access to the Order or Customer object itself,

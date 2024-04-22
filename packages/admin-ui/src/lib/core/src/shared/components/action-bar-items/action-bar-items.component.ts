@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnChanges, OnInit } from '@angular/core';
-import { assertNever } from '@vendure/common/lib/shared-utils';
+import { assertNever } from '@bb-vendure/common/lib/shared-utils';
 import { combineLatest } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { ActionBarItem } from '../../../providers/nav-builder/nav-builder-types';

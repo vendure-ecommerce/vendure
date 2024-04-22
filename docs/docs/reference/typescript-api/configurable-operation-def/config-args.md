@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ConfigArgs
 
-<GenerationInfo sourceFile="packages/core/src/common/configurable-operation.ts" sourceLine="140" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/common/configurable-operation.ts" sourceLine="140" packageName="@bb-vendure/core" />
 
 A object which defines the configurable arguments which may be passed to
 functions in those classes which implement the <a href='/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a> interface.
@@ -73,7 +73,7 @@ When not set, a default input component is used appropriate to the data type.
 ```
 The available components as well as their configuration options can be found in the <a href='/reference/typescript-api/configurable-operation-def/default-form-config-hash#defaultformconfighash'>DefaultFormConfigHash</a> docs.
 Custom UI components may also be defined via an Admin UI extension using the `registerFormInputComponent()` function
-which is exported from `@vendure/admin-ui/core`.
+which is exported from `@bb-vendure/admin-ui/core`.
 
 ```ts title="Signature"
 type ConfigArgs = {

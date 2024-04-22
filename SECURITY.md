@@ -9,4 +9,4 @@
 
 ## Reporting a Vulnerability
 
-To report a security vulnarability, email [contact@vendure.io](mailto:contact@vendure.io).
+To report a security vulnarability, email [contact@bb-vendure.io](mailto:contact@bb-vendure.io).

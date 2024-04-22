@@ -16,7 +16,7 @@ import {
     GetCustomerGroupsQuery,
     ItemOf,
     SelectionManager,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, startWith, takeUntil, tap } from 'rxjs/operators';
 

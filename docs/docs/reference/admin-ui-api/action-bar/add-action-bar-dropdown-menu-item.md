@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## addActionBarDropdownMenuItem
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/add-action-bar-dropdown-menu-item.ts" sourceLine="27" packageName="@vendure/admin-ui" since="2.2.0" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/add-action-bar-dropdown-menu-item.ts" sourceLine="27" packageName="@bb-vendure/admin-ui" since="2.2.0" />
 
 Adds a dropdown menu item to the ActionBar at the top right of each list or detail view. The locationId can
 be determined by pressing `ctrl + u` when running the Admin UI in dev mode.
@@ -19,7 +19,7 @@ be determined by pressing `ctrl + u` when running the Admin UI in dev mode.
 *Example*
 
 ```ts title="providers.ts"
-import { addActionBarDropdownMenuItem } from '@vendure/admin-ui/core';
+import { addActionBarDropdownMenuItem } from '@bb-vendure/admin-ui/core';
 
 export default [
     addActionBarDropdownMenuItem({

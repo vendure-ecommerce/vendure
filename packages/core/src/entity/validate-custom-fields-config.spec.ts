@@ -1,4 +1,4 @@
-import { Type } from '@vendure/common/lib/shared-types';
+import { Type } from '@bb-vendure/common/lib/shared-types';
 import { describe, expect, it } from 'vitest';
 
 import { CustomFields } from '../config/custom-field/custom-field-types';

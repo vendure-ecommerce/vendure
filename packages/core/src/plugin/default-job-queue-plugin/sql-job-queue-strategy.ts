@@ -1,5 +1,5 @@
-import { JobListOptions, JobState } from '@vendure/common/lib/generated-types';
-import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { JobListOptions, JobState } from '@bb-vendure/common/lib/generated-types';
+import { ID, PaginatedList } from '@bb-vendure/common/lib/shared-types';
 import { Brackets, Connection, EntityManager, FindOptionsWhere, In, LessThan } from 'typeorm';
 
 import { Injector } from '../../common/injector';

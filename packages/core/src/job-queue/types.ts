@@ -1,5 +1,5 @@
-import { JobState } from '@vendure/common/lib/generated-types';
-import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
+import { JobState } from '@bb-vendure/common/lib/generated-types';
+import { ID, JsonCompatible } from '@bb-vendure/common/lib/shared-types';
 
 import { RequestContext } from '../api/common/request-context';
 

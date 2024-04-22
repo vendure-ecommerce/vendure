@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAdministratorInput, Permission } from '@vendure/common/lib/generated-types';
-import { normalizeString } from '@vendure/common/lib/normalize-string';
+import { CreateAdministratorInput, Permission } from '@bb-vendure/common/lib/generated-types';
+import { normalizeString } from '@bb-vendure/common/lib/normalize-string';
 import {
     AdministratorService,
     Channel,
@@ -21,7 +21,7 @@ import {
     TaxSetting,
     TransactionalConnection,
     User,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 
 import { multivendorShippingEligibilityChecker } from '../config/mv-shipping-eligibility-checker';
 import { CreateSellerInput } from '../types';

@@ -36,7 +36,7 @@ A promotion condition is an example of a [configurable operation](/guides/develo
 Here is an annotated example of one of the built-in PromotionConditions.
 
 ```ts
-import { LanguageCode, PromotionCondition } from '@vendure/core';
+import { LanguageCode, PromotionCondition } from '@bb-vendure/core';
 
 export const minimumOrderAmount = new PromotionCondition({
     /** A unique identifier for the condition */
@@ -83,7 +83,7 @@ export const minimumOrderAmount = new PromotionCondition({
 Custom promotion conditions are then passed into the VendureConfig [PromotionOptions](/reference/typescript-api/promotions/promotion-options/) to make them available when setting up Promotions:
 
 ```ts title="src/vendure-config.ts"
-import { defaultPromotionConditions, VendureConfig } from '@vendure/core';
+import { defaultPromotionConditions, VendureConfig } from '@bb-vendure/core';
 import { minimumOrderAmount } from './minimum-order-amount';
 
 export const config: VendureConfig = {
@@ -110,7 +110,7 @@ The implementations of each type is similar, with the difference being the argum
 Here's an example of a simple PromotionOrderAction.
 
 ```ts
-import { LanguageCode, PromotionOrderAction } from '@vendure/core';
+import { LanguageCode, PromotionOrderAction } from '@bb-vendure/core';
 
 export const orderPercentageDiscount = new PromotionOrderAction({
     // See the custom condition example above for explanations
@@ -142,7 +142,7 @@ export const orderPercentageDiscount = new PromotionOrderAction({
 Custom PromotionActions are then passed into the VendureConfig [PromotionOptions](/reference/typescript-api/promotions/promotion-options) to make them available when setting up Promotions:
 
 ```ts title="src/vendure-config.ts"
-import { defaultPromotionActions, VendureConfig } from '@vendure/core';
+import { defaultPromotionActions, VendureConfig } from '@bb-vendure/core';
 import { orderPercentageDiscount } from './order-percentage-discount';
 
 export const config: VendureConfig = {
@@ -166,7 +166,7 @@ A primary use-case of this API is to add a free gift to the Order. Here's an exa
 import {
 	ID, idsAreEqual, isGraphQlErrorResult, LanguageCode, Logger,
 	OrderLine, OrderService, PromotionItemAction, VendurePlugin,
-} from "@vendure/core";
+} from "@bb-vendure/core";
 import { createHash } from "crypto";
 
 let orderService: OrderService;

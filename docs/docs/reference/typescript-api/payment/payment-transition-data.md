@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PaymentTransitionData
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/payment-state-machine/payment-state.ts" sourceLine="41" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/payment-state-machine/payment-state.ts" sourceLine="41" packageName="@bb-vendure/core" />
 
 The data which is passed to the `onStateTransitionStart` function configured when constructing
 a new `PaymentMethodHandler`

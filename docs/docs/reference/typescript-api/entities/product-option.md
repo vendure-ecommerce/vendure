@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ProductOption
 
-<GenerationInfo sourceFile="packages/core/src/entity/product-option/product-option.entity.ts" sourceLine="21" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/product-option/product-option.entity.ts" sourceLine="21" packageName="@bb-vendure/core" />
 
 A ProductOption is used to differentiate <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>s from one another.
 

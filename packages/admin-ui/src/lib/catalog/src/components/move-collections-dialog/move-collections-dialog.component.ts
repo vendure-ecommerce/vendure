@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { DataService, Dialog, GetCollectionListQuery, I18nService, ItemOf } from '@vendure/admin-ui/core';
+import { DataService, Dialog, GetCollectionListQuery, I18nService, ItemOf } from '@bb-vendure/admin-ui/core';
 import { BehaviorSubject, combineLatest, Observable, of, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, startWith, switchMap, tap } from 'rxjs/operators';
 

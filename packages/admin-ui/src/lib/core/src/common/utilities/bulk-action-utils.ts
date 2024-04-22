@@ -1,6 +1,6 @@
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
-import { unique } from '@vendure/common/lib/unique';
+import { DEFAULT_CHANNEL_CODE } from '@bb-vendure/common/lib/shared-constants';
+import { unique } from '@bb-vendure/common/lib/unique';
 import { EMPTY, from, lastValueFrom, Observable, of, switchMap } from 'rxjs';
 import { map, mapTo } from 'rxjs/operators';
 

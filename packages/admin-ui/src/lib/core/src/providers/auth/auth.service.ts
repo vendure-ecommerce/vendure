@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
+import { DEFAULT_CHANNEL_CODE } from '@bb-vendure/common/lib/shared-constants';
 import { Observable, of } from 'rxjs';
 import { catchError, map, mapTo, mergeMap, switchMap } from 'rxjs/operators';
 

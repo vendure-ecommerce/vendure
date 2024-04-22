@@ -25,7 +25,7 @@ Let's imagine that your project has an external content management system (CMS) 
 import { Component, OnInit } from '@angular/core';
 import { Observable, switchMap } from 'rxjs';
 import { FormGroup } from '@angular/forms';
-import { DataService, CustomDetailComponent, SharedModule } from '@vendure/admin-ui/core';
+import { DataService, CustomDetailComponent, SharedModule } from '@bb-vendure/admin-ui/core';
 import { CmsDataService } from '../../providers/cms-data.service';
 
 @Component({
@@ -64,7 +64,7 @@ When using React, we can use the [`useDetailComponentData` hook](/reference/admi
 
 ```tsx title="src/plugins/cms/ui/components/ProductInfo.tsx"
 import React, { useEffect, useState } from 'react';
-import { Card, useDetailComponentData, useInjector } from '@vendure/admin-ui/react';
+import { Card, useDetailComponentData, useInjector } from '@bb-vendure/admin-ui/react';
 import { CmsDataService } from '../providers/cms-data.service';
 
 export function ProductInfo() {
@@ -103,7 +103,7 @@ We can then register the component in our `providers.ts` file:
 <TabItem value="Angular" label="Angular" default>
 
 ```ts title="src/plugins/cms/ui/providers.ts"
-import { registerCustomDetailComponent } from '@vendure/admin-ui/core';
+import { registerCustomDetailComponent } from '@bb-vendure/admin-ui/core';
 import { ProductInfoComponent } from './components/product-info/product-info.component';
 
 export default [
@@ -118,7 +118,7 @@ export default [
 <TabItem value="React" label="React">
 
 ```ts title="src/plugins/cms/ui/providers.ts"
-import { registerReactCustomDetailComponent } from '@vendure/admin-ui/react';
+import { registerReactCustomDetailComponent } from '@bb-vendure/admin-ui/react';
 import { ProductInfo } from './components/ProductInfo';
 
 export default [
@@ -146,7 +146,7 @@ The `detailForm` property is an instance of the Angular [FormGroup](https://angu
 ```ts title="src/plugins/cms/ui/components/product-info/product-info.component.ts"
 import { Component, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { CustomDetailComponent } from '@vendure/admin-ui/core';
+import { CustomDetailComponent } from '@bb-vendure/admin-ui/core';
 
 @Component({
     template: `<button class="button secondary" (click)="updateDescription()">Update description</button>`,
@@ -173,7 +173,7 @@ export class ProductInfoComponent implements CustomDetailComponent, OnInit {
 
 ```tsx title="src/plugins/cms/ui/components/ProductInfo.tsx"
 import React from 'react';
-import { Card, useDetailComponentData } from '@vendure/admin-ui/react';
+import { Card, useDetailComponentData } from '@bb-vendure/admin-ui/react';
 
 export function ProductInfo() {
     const { detailForm } = useDetailComponentData();

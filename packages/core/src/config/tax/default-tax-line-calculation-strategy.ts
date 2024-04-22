@@ -1,4 +1,4 @@
-import { TaxLine } from '@vendure/common/lib/generated-types';
+import { TaxLine } from '@bb-vendure/common/lib/generated-types';
 
 import { CalculateTaxLinesArgs, TaxLineCalculationStrategy } from './tax-line-calculation-strategy';
 

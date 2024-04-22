@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { CustomFieldControl, DataService, SharedModule } from '@vendure/admin-ui/core';
+import { CustomFieldControl, DataService, SharedModule } from '@bb-vendure/admin-ui/core';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 

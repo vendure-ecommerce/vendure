@@ -4,7 +4,7 @@ import {
   Product,
   ProductVariant,
   VendureEntity,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import { Column, Entity, OneToMany, ManyToOne } from 'typeorm';
 import { SupplierStockInTransit } from './supplier-stock-in-transit.entity';
 

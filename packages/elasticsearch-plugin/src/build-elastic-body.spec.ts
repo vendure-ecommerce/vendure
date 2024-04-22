@@ -1,5 +1,5 @@
-import { LanguageCode, LogicalOperator, SortOrder } from '@vendure/common/lib/generated-types';
-import { DeepRequired } from '@vendure/core';
+import { LanguageCode, LogicalOperator, SortOrder } from '@bb-vendure/common/lib/generated-types';
+import { DeepRequired } from '@bb-vendure/core';
 import { describe, expect, it } from 'vitest';
 
 import { buildElasticBody } from './build-elastic-body';

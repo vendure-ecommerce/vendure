@@ -7,7 +7,7 @@ import {
     OnInit,
 } from '@angular/core';
 import { UntypedFormArray, UntypedFormGroup } from '@angular/forms';
-import { Asset, Permission, ProductDetailFragment, ProductVariantFragment } from '@vendure/admin-ui/core';
+import { Asset, Permission, ProductDetailFragment, ProductVariantFragment } from '@bb-vendure/admin-ui/core';
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 

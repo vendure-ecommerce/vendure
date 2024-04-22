@@ -81,7 +81,7 @@ to `true`. This will ensure that when the price of a product variant is updated 
 (of that particular currency) will be updated to match.
 
 ```ts
-import { DefaultProductVariantPriceUpdateStrategy, VendureConfig } from '@vendure/core';
+import { DefaultProductVariantPriceUpdateStrategy, VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
     // ...

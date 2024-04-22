@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## LocaleCurrencyPipe
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/pipes/locale-currency.pipe.ts" sourceLine="20" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/pipes/locale-currency.pipe.ts" sourceLine="20" packageName="@bb-vendure/admin-ui" />
 
 Formats a Vendure monetary value (in cents) into the correct format for the configured currency and display
 locale.

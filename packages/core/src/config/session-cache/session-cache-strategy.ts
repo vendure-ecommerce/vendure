@@ -1,4 +1,4 @@
-import { ID } from '@vendure/common/lib/shared-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
 
 import { InjectableStrategy } from '../../common/types/injectable-strategy';
 import { UserChannelPermissions } from '../../service/helpers/utils/get-user-channels-permissions';
@@ -67,7 +67,7 @@ export type CachedSession = {
  *
  * @example
  * ```ts
- * import { CachedSession, Logger, SessionCacheStrategy, VendurePlugin } from '\@vendure/core';
+ * import { CachedSession, Logger, SessionCacheStrategy, VendurePlugin } from '\@bb-vendure/core';
  * import { Redis, RedisOptions } from 'ioredis';
  *
  * export interface RedisSessionCachePluginOptions {

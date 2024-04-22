@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Importer
 
-<GenerationInfo sourceFile="packages/core/src/data-import/providers/importer/importer.ts" sourceLine="41" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/data-import/providers/importer/importer.ts" sourceLine="41" packageName="@bb-vendure/core" />
 
 Parses and imports Products using the CSV import format.
 

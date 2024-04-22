@@ -8,7 +8,7 @@ import {
     QueryTagArgs,
     QueryTagsArgs,
     TagList,
-} from '@vendure/common/lib/generated-types';
+} from '@bb-vendure/common/lib/generated-types';
 
 import { Tag } from '../../../entity/tag/tag.entity';
 import { TagService } from '../../../service/services/tag.service';

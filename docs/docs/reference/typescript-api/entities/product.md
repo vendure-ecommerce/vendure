@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Product
 
-<GenerationInfo sourceFile="packages/core/src/entity/product/product.entity.ts" sourceLine="25" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/product/product.entity.ts" sourceLine="25" packageName="@bb-vendure/core" />
 
 A Product contains one or more <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>s and serves as a container for those variants,
 providing an overall name, description etc.

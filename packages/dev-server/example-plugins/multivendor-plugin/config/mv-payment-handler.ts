@@ -1,11 +1,11 @@
-import { OrderType } from '@vendure/common/lib/generated-types';
+import { OrderType } from '@bb-vendure/common/lib/generated-types';
 import {
     CreatePaymentResult,
     LanguageCode,
     PaymentMethodHandler,
     SettlePaymentErrorResult,
     SettlePaymentResult,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 
 import { MyConnectSdk } from '../payment/mv-connect-sdk';
 

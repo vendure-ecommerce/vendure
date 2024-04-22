@@ -11,14 +11,14 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## bootstrap
 
-<GenerationInfo sourceFile="packages/core/src/bootstrap.ts" sourceLine="106" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/bootstrap.ts" sourceLine="106" packageName="@bb-vendure/core" />
 
 Bootstraps the Vendure server. This is the entry point to the application.
 
 *Example*
 
 ```ts
-import { bootstrap } from '@vendure/core';
+import { bootstrap } from '@bb-vendure/core';
 import { config } from './vendure-config';
 
 bootstrap(config).catch(err => {
@@ -34,7 +34,7 @@ For example, to integrate with the [Nest Devtools](https://docs.nestjs.com/devto
 pass the `snapshot` option:
 
 ```ts
-import { bootstrap } from '@vendure/core';
+import { bootstrap } from '@bb-vendure/core';
 import { config } from './vendure-config';
 
 bootstrap(config, {
@@ -66,7 +66,7 @@ Parameters
 
 ## BootstrapOptions
 
-<GenerationInfo sourceFile="packages/core/src/bootstrap.ts" sourceLine="41" packageName="@vendure/core" since="2.2.0" />
+<GenerationInfo sourceFile="packages/core/src/bootstrap.ts" sourceLine="41" packageName="@bb-vendure/core" since="2.2.0" />
 
 Additional options that can be used to configure the bootstrap process of the
 Vendure server.

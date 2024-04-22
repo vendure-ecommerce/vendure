@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## FacetValueSelectorComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/facet-value-selector/facet-value-selector.component.ts" sourceLine="42" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/facet-value-selector/facet-value-selector.component.ts" sourceLine="42" packageName="@bb-vendure/admin-ui" />
 
 A form control for selecting facet values.
 

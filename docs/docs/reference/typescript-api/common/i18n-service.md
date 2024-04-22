@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## I18nService
 
-<GenerationInfo sourceFile="packages/core/src/i18n/i18n.service.ts" sourceLine="44" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/i18n/i18n.service.ts" sourceLine="44" packageName="@bb-vendure/core" />
 
 
 
@@ -44,7 +44,7 @@ Add a I18n translation (key-value) resource
 
 ## VendureTranslationResources
 
-<GenerationInfo sourceFile="packages/core/src/i18n/i18n.service.ts" sourceLine="24" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/i18n/i18n.service.ts" sourceLine="24" packageName="@bb-vendure/core" />
 
 I18n resources used for translations
 

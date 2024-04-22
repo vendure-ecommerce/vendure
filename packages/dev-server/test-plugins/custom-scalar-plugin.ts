@@ -1,5 +1,5 @@
 import { CustomScalar, Resolver, Scalar } from '@nestjs/graphql';
-import { VendurePlugin } from '@vendure/core';
+import { VendurePlugin } from '@bb-vendure/core';
 import { Kind, ValueNode } from 'graphql';
 import gql from 'graphql-tag';
 

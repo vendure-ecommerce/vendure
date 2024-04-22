@@ -10,7 +10,7 @@ import { useInjector } from '../react-hooks/use-injector';
  *
  * @example
  * ```ts
- * import { Link } from '@vendure/admin-ui/react';
+ * import { Link } from '@bb-vendure/admin-ui/react';
  *
  * export const MyReactComponent = () => {
  *     return <Link href="/extensions/my-extension">Go to my extension</Link>;

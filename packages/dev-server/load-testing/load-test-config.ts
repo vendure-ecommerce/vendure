@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { AssetServerPlugin } from '@vendure/asset-server-plugin';
+import { AssetServerPlugin } from '@bb-vendure/asset-server-plugin';
 import {
     defaultConfig,
     DefaultJobQueuePlugin,
@@ -10,7 +10,7 @@ import {
     LogLevel,
     mergeConfig,
     VendureConfig,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import path from 'path';
 
 export function getMysqlConnectionOptions(databaseName: string) {

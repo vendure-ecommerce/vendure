@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CustomerHistoryEntry
 
-<GenerationInfo sourceFile="packages/core/src/entity/history-entry/customer-history-entry.entity.ts" sourceLine="14" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/history-entry/customer-history-entry.entity.ts" sourceLine="14" packageName="@bb-vendure/core" />
 
 Represents an event in the history of a particular <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>.
 

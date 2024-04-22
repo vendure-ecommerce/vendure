@@ -7,14 +7,14 @@ import {
     LocalizedString,
     Maybe,
     StringFieldOption,
-} from '@vendure/common/lib/generated-types';
+} from '@bb-vendure/common/lib/generated-types';
 import {
     ConfigArgType,
     DefaultFormComponentConfig,
     ID,
     UiComponentConfig,
-} from '@vendure/common/lib/shared-types';
-import { assertNever } from '@vendure/common/lib/shared-utils';
+} from '@bb-vendure/common/lib/shared-types';
+import { assertNever } from '@bb-vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../api/common/request-context';
 
@@ -133,7 +133,7 @@ export type ConfigArgDef<T extends ConfigArgType> = T extends 'string'
  * ```
  * The available components as well as their configuration options can be found in the {@link DefaultFormConfigHash} docs.
  * Custom UI components may also be defined via an Admin UI extension using the `registerFormInputComponent()` function
- * which is exported from `@vendure/admin-ui/core`.
+ * which is exported from `@bb-vendure/admin-ui/core`.
  *
  * @docsCategory ConfigurableOperationDef
  */
@@ -297,7 +297,7 @@ export interface ConfigurableOperationDefOptions<T extends ConfigArgs> extends I
  *
  * @example
  * ```ts
- * import { Injector, ShippingCalculator } from '\@vendure/core';
+ * import { Injector, ShippingCalculator } from '\@bb-vendure/core';
  * import { ShippingRatesService } from './shipping-rates.service';
  *
  * // We keep reference to our injected service by keeping it

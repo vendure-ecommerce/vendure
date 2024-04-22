@@ -1,5 +1,5 @@
 import { Args, Query, Resolver } from '@nestjs/graphql';
-import { Allow, Ctx, Permission, RequestContext } from '@vendure/core';
+import { Allow, Ctx, Permission, RequestContext } from '@bb-vendure/core';
 
 import { MetricsService } from '../service/metrics.service';
 import { MetricSummary, MetricSummaryInput } from '../types';

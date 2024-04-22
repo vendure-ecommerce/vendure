@@ -1,4 +1,4 @@
-import { Injector, RequestContext } from '@vendure/core';
+import { Injector, RequestContext } from '@bb-vendure/core';
 
 import { LoadTemplateInput, Partial } from '../types';
 
@@ -9,7 +9,7 @@ import { LoadTemplateInput, Partial } from '../types';
  *
  * @example
  * ```ts
- * import { EmailPlugin, TemplateLoader } from '\@vendure/email-plugin';
+ * import { EmailPlugin, TemplateLoader } from '\@bb-vendure/email-plugin';
  *
  * class MyTemplateLoader implements TemplateLoader {
  *      loadTemplate(injector, ctx, { type, templateName }){

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PermissionDefinition
 
-<GenerationInfo sourceFile="packages/core/src/common/permission-definition.ts" sourceLine="86" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/common/permission-definition.ts" sourceLine="86" packageName="@bb-vendure/core" />
 
 Defines a new Permission with which to control access to GraphQL resolvers & REST controllers.
 Used in conjunction with the <a href='/reference/typescript-api/request/allow-decorator#allow'>Allow</a> decorator (see example below).
@@ -74,7 +74,7 @@ Returns the permission defined by this definition, for use in the
 
 ## CrudPermissionDefinition
 
-<GenerationInfo sourceFile="packages/core/src/common/permission-definition.ts" sourceLine="146" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/common/permission-definition.ts" sourceLine="146" packageName="@bb-vendure/core" />
 
 Defines a set of CRUD Permissions for the given name, i.e. a `name` of 'Wishlist' will create
 4 Permissions: 'CreateWishlist', 'ReadWishlist', 'UpdateWishlist' & 'DeleteWishlist'.
@@ -156,7 +156,7 @@ Returns the 'Delete' CRUD permission defined by this definition, for use in the
 
 ## PermissionDefinitionConfig
 
-<GenerationInfo sourceFile="packages/core/src/common/permission-definition.ts" sourceLine="10" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/common/permission-definition.ts" sourceLine="10" packageName="@bb-vendure/core" />
 
 Configures a <a href='/reference/typescript-api/auth/permission-definition#permissiondefinition'>PermissionDefinition</a>
 

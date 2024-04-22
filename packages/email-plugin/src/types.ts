@@ -1,6 +1,6 @@
-import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { Omit } from '@vendure/common/lib/omit';
-import { Injector, RequestContext, SerializedRequestContext, VendureEvent } from '@vendure/core';
+import { LanguageCode } from '@bb-vendure/common/lib/generated-types';
+import { Omit } from '@bb-vendure/common/lib/omit';
+import { Injector, RequestContext, SerializedRequestContext, VendureEvent } from '@bb-vendure/core';
 import { Attachment } from 'nodemailer/lib/mailer';
 import SESTransport from 'nodemailer/lib/ses-transport';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';

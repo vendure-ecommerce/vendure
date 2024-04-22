@@ -1,4 +1,4 @@
-import { AssetStorageStrategy } from '@vendure/core';
+import { AssetStorageStrategy } from '@bb-vendure/core';
 import { Request } from 'express';
 import { Readable, Stream, Writable } from 'stream';
 

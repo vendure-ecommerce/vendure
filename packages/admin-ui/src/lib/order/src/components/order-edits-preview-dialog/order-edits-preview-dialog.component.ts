@@ -6,7 +6,7 @@ import {
     Dialog,
     ModifyOrderInput,
     OrderDetailFragment,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { getRefundablePayments, RefundablePayment } from '../../common/get-refundable-payments';
 import { AddedLine, OrderSnapshot } from '../../common/modify-order-types';
 import { OrderEditorComponent } from '../order-editor/order-editor.component';

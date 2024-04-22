@@ -134,7 +134,7 @@ const config = {
                             },
                             {
                                 label: 'YouTube',
-                                href: 'https://www.youtube.com/@vendure_io',
+                                href: 'https://www.youtube.com/@bb-vendure_io',
                             },
                         ],
                     },

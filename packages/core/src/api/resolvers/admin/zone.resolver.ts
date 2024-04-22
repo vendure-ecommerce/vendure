@@ -10,8 +10,8 @@ import {
     Permission,
     QueryZoneArgs,
     QueryZonesArgs,
-} from '@vendure/common/lib/generated-types';
-import { PaginatedList } from '@vendure/common/lib/shared-types';
+} from '@bb-vendure/common/lib/generated-types';
+import { PaginatedList } from '@bb-vendure/common/lib/shared-types';
 
 import { Zone } from '../../../entity/zone/zone.entity';
 import { ZoneService } from '../../../service/services/zone.service';

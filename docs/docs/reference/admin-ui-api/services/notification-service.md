@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## NotificationService
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/notification/notification.service.ts" sourceLine="54" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/notification/notification.service.ts" sourceLine="54" packageName="@bb-vendure/admin-ui" />
 
 Provides toast notification functionality.
 
@@ -79,7 +79,7 @@ Display a toast notification.
 
 ## NotificationType
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/notification/notification.service.ts" sourceLine="14" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/notification/notification.service.ts" sourceLine="14" packageName="@bb-vendure/admin-ui" />
 
 The types of notification available.
 
@@ -90,7 +90,7 @@ type NotificationType = 'info' | 'success' | 'error' | 'warning'
 
 ## ToastConfig
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/notification/notification.service.ts" sourceLine="23" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/notification/notification.service.ts" sourceLine="23" packageName="@bb-vendure/admin-ui" />
 
 Configuration for a toast notification.
 

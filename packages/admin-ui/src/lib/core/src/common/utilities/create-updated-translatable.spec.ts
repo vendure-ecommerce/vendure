@@ -1,4 +1,4 @@
-import { DeepPartial } from '@vendure/common/lib/shared-types';
+import { DeepPartial } from '@bb-vendure/common/lib/shared-types';
 
 import { CustomFieldConfig, LanguageCode, ProductDetailFragment } from '../generated-types';
 

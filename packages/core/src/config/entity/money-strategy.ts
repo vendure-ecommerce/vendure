@@ -36,7 +36,7 @@ import { InjectableStrategy } from '../../common/types/injectable-strategy';
  *
  * @example
  * ```ts
- * import { DefaultMoneyStrategy, VendureConfig } from '\@vendure/core';
+ * import { DefaultMoneyStrategy, VendureConfig } from '\@bb-vendure/core';
  *
  * export class ThreeDecimalPlacesMoneyStrategy extends DefaultMoneyStrategy {
  *   readonly precision = 3;

@@ -77,7 +77,7 @@ Here's a simple example demonstrating Express middleware which will log a messag
 Admin API:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 import { RequestHandler } from 'express';
 
 /**
@@ -108,7 +108,7 @@ You can also define [NestJS middleware](https://docs.nestjs.com/middleware) whic
 has access to the NestJS dependency injection system.
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig, ConfigService } from '@vendure/core';
+import { VendureConfig, ConfigService } from '@bb-vendure/core';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 
@@ -150,7 +150,7 @@ using the NestJS decorators as given in the NestJS docs. However, a common patte
 [Vendure plugin](/guides/developer-guide/plugins/):
 
 ```ts title="src/plugins/my-plugin/my-plugin.ts"
-import { VendurePlugin } from '@vendure/core';
+import { VendurePlugin } from '@bb-vendure/core';
 import { APP_GUARD, APP_FILTER, APP_INTERCEPTOR  } from '@nestjs/core';
 
 // Some custom NestJS middleware classes which we want to apply globally
@@ -186,7 +186,7 @@ export class MyPlugin {}
 Adding this plugin to your Vendure config `plugins` array will now apply these middleware classes to all requests.
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 import { MyPlugin } from './plugins/my-plugin/my-plugin';
 
 export const config: VendureConfig = {
@@ -218,7 +218,7 @@ Here's a simplified example of a resolver function for the `product` query:
 
 ```ts
 import { Query, Resolver, Args } from '@nestjs/graphql';
-import { Ctx, RequestContext, ProductService } from '@vendure/core';
+import { Ctx, RequestContext, ProductService } from '@bb-vendure/core';
 
 @Resolver()
 export class ShopProductsResolver {
@@ -310,13 +310,13 @@ export class WishlistResolver {
 
 ### `@Allow()`
 
-The [`Allow` decorator](/reference/typescript-api/request/allow-decorator) is exported by the `@vendure/core` package. It is used to control access to queries and mutations. It takes a list
+The [`Allow` decorator](/reference/typescript-api/request/allow-decorator) is exported by the `@bb-vendure/core` package. It is used to control access to queries and mutations. It takes a list
 of [Permissions](/reference/typescript-api/common/permission/) and if the current user does not have at least one of the
 permissions, then the query or mutation will return an error.
 
 ```ts title="src/plugins/wishlist/api/wishlist.resolver.ts"
 import { Mutation, Resolver } from '@nestjs/graphql';
-import { Allow, Permission } from '@vendure/core';
+import { Allow, Permission } from '@bb-vendure/core';
 
 @Resolver()
 export class WishlistResolver {
@@ -332,12 +332,12 @@ export class WishlistResolver {
 
 ### `@Transaction()`
 
-The [`Transaction` decorator](/reference/typescript-api/request/transaction-decorator/) is exported by the `@vendure/core` package. It is used to wrap a resolver function in a database transaction. It is
+The [`Transaction` decorator](/reference/typescript-api/request/transaction-decorator/) is exported by the `@bb-vendure/core` package. It is used to wrap a resolver function in a database transaction. It is
 normally used with mutations, since queries typically do not modify data.
 
 ```ts title="src/plugins/wishlist/api/wishlist.resolver.ts"
 import { Mutation, Resolver } from '@nestjs/graphql';
-import { Transaction } from '@vendure/core';
+import { Transaction } from '@bb-vendure/core';
 
 @Resolver()
 export class WishlistResolver {
@@ -361,14 +361,14 @@ this object to the service layer, the services and thus database calls can acces
 
 ### `@Ctx()`
 
-The [`Ctx` decorator](/reference/typescript-api/request/ctx-decorator/) is exported by the `@vendure/core` package. It is used to inject the
+The [`Ctx` decorator](/reference/typescript-api/request/ctx-decorator/) is exported by the `@bb-vendure/core` package. It is used to inject the
 [`RequestContext` object](/reference/typescript-api/request/request-context/) into a resolver function. The `RequestContext` contains information about the
 current request, such as the current user, the active channel, the active language, etc. The `RequestContext` is a key part
 of the Vendure architecture, and is used throughout the application to provide context to the various services and plugins.
 
 ```ts title="src/plugins/wishlist/api/wishlist.resolver.ts"
 import { Mutation, Resolver } from '@nestjs/graphql';
-import { Ctx, RequestContext } from '@vendure/core';
+import { Ctx, RequestContext } from '@bb-vendure/core';
 
 @Resolver()
 export class WishlistResolver {
@@ -401,7 +401,7 @@ The resolver function would look like this:
 
 ```ts title="src/plugins/wishlist/api/wishlist.resolver.ts"
 import { Mutation, Resolver, Args } from '@nestjs/graphql';
-import { Ctx, RequestContext, ID } from '@vendure/core';
+import { Ctx, RequestContext, ID } from '@bb-vendure/core';
 
 @Resolver()
 export class WishlistResolver {
@@ -437,7 +437,7 @@ would look like this:
 
 ```ts title="src/plugins/wishlist/api/wishlist-item.resolver.ts"
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
-import { Ctx, RequestContext } from '@vendure/core';
+import { Ctx, RequestContext } from '@bb-vendure/core';
 
 import { WishlistItem } from '../entities/wishlist-item.entity';
 

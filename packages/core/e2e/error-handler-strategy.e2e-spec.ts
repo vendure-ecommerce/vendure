@@ -8,8 +8,8 @@ import {
     PluginCommonModule,
     JobQueueService,
     JobQueue,
-} from '@vendure/core';
-import { createTestEnvironment } from '@vendure/testing';
+} from '@bb-vendure/core';
+import { createTestEnvironment } from '@bb-vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';

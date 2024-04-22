@@ -7,7 +7,7 @@ import {
     PromotionListOptions,
     PromotionSortParameter,
     TypedBaseListComponent,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
 
 export const GET_PROMOTION_LIST = gql`

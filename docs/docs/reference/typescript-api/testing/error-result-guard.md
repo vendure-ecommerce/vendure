@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ErrorResultGuard
 
-<GenerationInfo sourceFile="packages/testing/src/error-result-guard.ts" sourceLine="50" packageName="@vendure/testing" />
+<GenerationInfo sourceFile="packages/testing/src/error-result-guard.ts" sourceLine="50" packageName="@bb-vendure/testing" />
 
 A utility class which is used to assert the success of an operation
 which returns a union type of `SuccessType | ErrorResponse [ | ErrorResponse ]`.

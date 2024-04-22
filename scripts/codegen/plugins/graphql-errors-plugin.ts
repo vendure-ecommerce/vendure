@@ -158,7 +158,7 @@ function generateIsErrorFunction(schema: GraphQLSchema) {
         .filter(node => inheritsFromErrorResult(node));
     return `
 const errorTypeNames = new Set<string>([${errorNodes.map(n => `'${n.name}'`).join(', ')}]);
-function isGraphQLError(input: any): input is import('@vendure/common/lib/generated-types').${ERROR_INTERFACE_NAME} {
+function isGraphQLError(input: any): input is import('@bb-vendure/common/lib/generated-types').${ERROR_INTERFACE_NAME} {
   return input instanceof ${ERROR_INTERFACE_NAME} || errorTypeNames.has(input.__typename);
 }`;
 }

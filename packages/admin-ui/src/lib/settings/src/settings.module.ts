@@ -17,8 +17,8 @@ import {
     GetZoneDetailDocument,
     PageService,
     SharedModule,
-} from '@vendure/admin-ui/core';
-import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
+} from '@bb-vendure/admin-ui/core';
+import { DEFAULT_CHANNEL_CODE } from '@bb-vendure/common/lib/shared-constants';
 
 import { AddCountryToZoneDialogComponent } from './components/add-country-to-zone-dialog/add-country-to-zone-dialog.component';
 import { AdminDetailComponent } from './components/admin-detail/admin-detail.component';

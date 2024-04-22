@@ -4,7 +4,7 @@ import {
     GetTaxCategoryListDocument,
     TAX_CATEGORY_FRAGMENT,
     TypedBaseListComponent,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
 
 export const GET_TAX_CATEGORY_LIST = gql`

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
-import { CustomFieldConfig, Dialog, GetAvailableCountriesQuery } from '@vendure/admin-ui/core';
+import { CustomFieldConfig, Dialog, GetAvailableCountriesQuery } from '@bb-vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-address-detail-dialog',

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## StellateService
 
-<GenerationInfo sourceFile="packages/stellate-plugin/src/service/stellate.service.ts" sourceLine="23" packageName="@vendure/stellate-plugin" />
+<GenerationInfo sourceFile="packages/stellate-plugin/src/service/stellate.service.ts" sourceLine="23" packageName="@bb-vendure/stellate-plugin" />
 
 The StellateService is used to purge the Stellate cache when certain events occur.
 

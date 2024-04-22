@@ -11,14 +11,14 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## useQuery
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-hooks/use-query.ts" sourceLine="43" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-hooks/use-query.ts" sourceLine="43" packageName="@bb-vendure/admin-ui" />
 
 A React hook which provides access to the results of a GraphQL query.
 
 *Example*
 
 ```ts
-import { useQuery } from '@vendure/admin-ui/react';
+import { useQuery } from '@bb-vendure/admin-ui/react';
 import { gql } from 'graphql-tag';
 
 const GET_PRODUCT = gql`

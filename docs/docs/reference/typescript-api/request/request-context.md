@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## RequestContext
 
-<GenerationInfo sourceFile="packages/core/src/api/common/request-context.ts" sourceLine="44" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/api/common/request-context.ts" sourceLine="44" packageName="@bb-vendure/core" />
 
 The RequestContext holds information relevant to the current request, which may be
 required at various points of the stack.

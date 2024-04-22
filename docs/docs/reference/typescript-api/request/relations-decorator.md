@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Relations
 
-<GenerationInfo sourceFile="packages/core/src/api/decorators/relations.decorator.ts" sourceLine="136" packageName="@vendure/core" since="1.6.0" />
+<GenerationInfo sourceFile="packages/core/src/api/decorators/relations.decorator.ts" sourceLine="136" packageName="@bb-vendure/core" since="1.6.0" />
 
 Resolver param decorator which returns an array of relation paths which can be passed through
 to the TypeORM data layer in order to join only the required relations. This works by inspecting

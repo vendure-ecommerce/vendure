@@ -1,4 +1,4 @@
-import { LanguageCode } from '@vendure/core';
+import { LanguageCode } from '@bb-vendure/core';
 import path from 'path';
 
 export const DEFAULT_APP_PATH = path.join(__dirname, '../admin-ui');

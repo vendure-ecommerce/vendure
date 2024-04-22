@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EmailEventListener
 
-<GenerationInfo sourceFile="packages/email-plugin/src/event-listener.ts" sourceLine="13" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/event-listener.ts" sourceLine="13" packageName="@bb-vendure/email-plugin" />
 
 An EmailEventListener is used to listen for events and set up a <a href='/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a> which
 defines how an email will be generated from this event.

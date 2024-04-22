@@ -35,7 +35,7 @@ import {
     CreatePaymentResult,
     SettlePaymentResult,
     SettlePaymentErrorResult
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import { sdk } from 'payment-provider-sdk';
 
 /**
@@ -124,7 +124,7 @@ const myPaymentHandler = new PaymentMethodHandler({
 We can now add this handler to our configuration:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 import { myPaymentHandler } from './plugins/payment-plugin/my-payment-handler';
 
 export const config: VendureConfig = {
@@ -285,12 +285,12 @@ Here's an example which adds a new "Validating" state to the Payment state machi
 ```
 
 ```ts title="src/plugins/my-payment-plugin/payment-process.ts"
-import { PaymentProcess } from '@vendure/core';
+import { PaymentProcess } from '@bb-vendure/core';
 
 /**
  * Declare your custom state in special interface to make it type-safe
  */
-declare module '@vendure/core' {
+declare module '@bb-vendure/core' {
     interface PaymentStates {
         Validating: never;
     }
@@ -314,7 +314,7 @@ const customPaymentProcess: PaymentProcess<'Validating'> = {
 ```
 
 ```ts title="src/plugins/my-payment-plugin/order-process.ts"
-import { OrderProcess } from '@vendure/core';
+import { OrderProcess } from '@bb-vendure/core';
 /**
  * Define a new "ValidatingPayment" Order state, and set up the
  * permitted transitions to/from it.
@@ -333,7 +333,7 @@ const customOrderProcess: OrderProcess<'ValidatingPayment'> = {
 ```
 
 ```ts title="src/plugins/my-payment-plugin/payment-method-handler.ts"
-import { LanguageCode, PaymentMethodHandler } from '@vendure/core';
+import { LanguageCode, PaymentMethodHandler } from '@bb-vendure/core';
 
 /**
  * This PaymentMethodHandler creates the Payment in the custom "Validating"
@@ -360,7 +360,7 @@ const myPaymentHandler = new PaymentMethodHandler({
 ```
 
 ```ts title="src/plugins/my-payment-plugin/order-placed-strategy.ts"
-import { OrderPlacedStrategy, OrderState, RequestContext } from '@vendure/core';
+import { OrderPlacedStrategy, OrderState, RequestContext } from '@bb-vendure/core';
 
 /**
  * This OrderPlacedStrategy tells Vendure to set the Order as "placed"
@@ -374,7 +374,7 @@ class MyOrderPlacedStrategy implements OrderPlacedStrategy {
 ```
 
 ```ts title="src/vendure-config.ts"
-import { defaultOrderProcess, defaultPaymentProcess, VendureConfig } from '@vendure/core';
+import { defaultOrderProcess, defaultPaymentProcess, VendureConfig } from '@bb-vendure/core';
 import { customOrderProcess } from './plugins/my-payment-plugin/order-process';
 import { customPaymentProcess } from './plugins/my-payment-plugin/payment-process';
 import { myPaymentHandler } from './plugins/my-payment-plugin/payment-method-handler';

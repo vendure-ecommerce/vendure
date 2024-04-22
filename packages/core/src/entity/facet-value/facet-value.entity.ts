@@ -1,4 +1,4 @@
-import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
+import { DeepPartial, ID } from '@bb-vendure/common/lib/shared-types';
 import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { ChannelAware } from '../../common/types/common-types';

@@ -1,5 +1,5 @@
-import { CreateProductVariantInput, UpdateProductVariantInput } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { CreateProductVariantInput, UpdateProductVariantInput } from '@bb-vendure/common/lib/generated-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { ProductVariant } from '../../entity';

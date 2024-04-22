@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ObjectTreeComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/object-tree/object-tree.component.ts" sourceLine="22" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/object-tree/object-tree.component.ts" sourceLine="22" packageName="@bb-vendure/admin-ui" />
 
 This component displays a plain JavaScript object as an expandable tree.
 

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## InitialData
 
-<GenerationInfo sourceFile="packages/core/src/data-import/types.ts" sourceLine="47" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/data-import/types.ts" sourceLine="47" packageName="@bb-vendure/core" />
 
 An object defining initial settings for a new Vendure installation.
 

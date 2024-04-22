@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PaymentProcess
 
-<GenerationInfo sourceFile="packages/core/src/config/payment/payment-process.ts" sourceLine="33" packageName="@vendure/core" since="2.0.0" />
+<GenerationInfo sourceFile="packages/core/src/config/payment/payment-process.ts" sourceLine="33" packageName="@bb-vendure/core" since="2.0.0" />
 
 A PaymentProcess is used to define the way the payment process works as in: what states a Payment can be
 in, and how it may transition from one state to another. Using the `onTransitionStart()` hook, a

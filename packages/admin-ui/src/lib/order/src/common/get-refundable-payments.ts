@@ -1,6 +1,6 @@
 import { FormControl, Validators } from '@angular/forms';
-import { OrderDetailFragment } from '@vendure/admin-ui/core';
-import { summate } from '@vendure/common/lib/shared-utils';
+import { OrderDetailFragment } from '@bb-vendure/admin-ui/core';
+import { summate } from '@bb-vendure/common/lib/shared-utils';
 
 export type Payment = NonNullable<OrderDetailFragment['payments']>[number];
 export type RefundablePayment = Payment & {

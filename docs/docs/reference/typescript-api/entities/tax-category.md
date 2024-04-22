@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TaxCategory
 
-<GenerationInfo sourceFile="packages/core/src/entity/tax-category/tax-category.entity.ts" sourceLine="16" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/tax-category/tax-category.entity.ts" sourceLine="16" packageName="@bb-vendure/core" />
 
 A TaxCategory defines what type of taxes to apply to a <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>.
 

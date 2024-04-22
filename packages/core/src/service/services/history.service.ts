@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { UpdateCustomerInput as UpdateCustomerShopInput } from '@vendure/common/lib/generated-shop-types';
+import { UpdateCustomerInput as UpdateCustomerShopInput } from '@bb-vendure/common/lib/generated-shop-types';
 import {
     HistoryEntryListOptions,
     HistoryEntryType,
     OrderLineInput,
     UpdateAddressInput,
     UpdateCustomerInput,
-} from '@vendure/common/lib/generated-types';
-import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
+} from '@bb-vendure/common/lib/generated-types';
+import { ID, PaginatedList, Type } from '@bb-vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -165,7 +165,7 @@ export interface UpdateCustomerHistoryEntryArgs<T extends keyof CustomerHistoryE
  *
  * @example
  * ```ts
- * import { PluginCommonModule, VendurePlugin } from '\@vendure/core';
+ * import { PluginCommonModule, VendurePlugin } from '\@bb-vendure/core';
  * import { VerificationService } from './verification.service';
  *
  * \@VendurePlugin({
@@ -189,11 +189,11 @@ export interface UpdateCustomerHistoryEntryArgs<T extends keyof CustomerHistoryE
  * @example
  * ```ts
  * // types.ts
- * import { CustomerHistoryEntryData } from '\@vendure/core';
+ * import { CustomerHistoryEntryData } from '\@bb-vendure/core';
  *
  * export const CUSTOMER_TAX_ID_VERIFICATION = 'CUSTOMER_TAX_ID_VERIFICATION';
  *
- * declare module '@vendure/core' {
+ * declare module '@bb-vendure/core' {
  *   interface CustomerHistoryEntryData {
  *     [CUSTOMER_TAX_ID_VERIFICATION]: {
  *       taxId: string;
@@ -214,7 +214,7 @@ export interface UpdateCustomerHistoryEntryArgs<T extends keyof CustomerHistoryE
  * ```ts
  * // verification.service.ts
  * import { Injectable } from '\@nestjs/common';
- * import { RequestContext } from '\@vendure/core';
+ * import { RequestContext } from '\@bb-vendure/core';
  * import { CUSTOMER_TAX_ID_VERIFICATION } from './types';
  *
  * \@Injectable()

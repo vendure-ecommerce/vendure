@@ -1,4 +1,4 @@
-import { CurrencyCode, LanguageCode } from '@vendure/common/lib/generated-types';
+import { CurrencyCode, LanguageCode } from '@bb-vendure/common/lib/generated-types';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import { CachedSession } from '../../config/session-cache/session-cache-strategy';

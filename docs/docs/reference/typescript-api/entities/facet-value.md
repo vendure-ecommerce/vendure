@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## FacetValue
 
-<GenerationInfo sourceFile="packages/core/src/entity/facet-value/facet-value.entity.ts" sourceLine="23" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/facet-value/facet-value.entity.ts" sourceLine="23" packageName="@bb-vendure/core" />
 
 A particular value of a <a href='/reference/typescript-api/entities/facet#facet'>Facet</a>.
 

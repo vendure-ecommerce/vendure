@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SubscribableJob
 
-<GenerationInfo sourceFile="packages/core/src/job-queue/subscribable-job.ts" sourceLine="58" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/job-queue/subscribable-job.ts" sourceLine="58" packageName="@bb-vendure/core" />
 
 This is a type of Job object that allows you to subscribe to updates to the Job. It is returned
 by the <a href='/reference/typescript-api/job-queue/#jobqueue'>JobQueue</a>'s `add()` method. Note that the subscription capability is only supported

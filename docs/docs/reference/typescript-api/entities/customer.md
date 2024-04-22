@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Customer
 
-<GenerationInfo sourceFile="packages/core/src/entity/customer/customer.entity.ts" sourceLine="22" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/customer/customer.entity.ts" sourceLine="22" packageName="@bb-vendure/core" />
 
 This entity represents a customer of the store, typically an individual person. A Customer can be
 a guest, in which case it has no associated <a href='/reference/typescript-api/entities/user#user'>User</a>. Customers with registered account will

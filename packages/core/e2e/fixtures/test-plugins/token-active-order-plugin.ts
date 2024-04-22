@@ -1,5 +1,5 @@
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql';
-import { ID } from '@vendure/common/lib/shared-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
 import {
     ActiveOrderStrategy,
     Ctx,
@@ -14,10 +14,10 @@ import {
     TransactionalConnection,
     UserInputError,
     VendurePlugin,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import gql from 'graphql-tag';
 
-declare module '@vendure/core/dist/entity/custom-entity-fields' {
+declare module '@bb-vendure/core/dist/entity/custom-entity-fields' {
     interface CustomOrderFields {
         orderToken: string;
     }

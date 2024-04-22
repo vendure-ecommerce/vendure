@@ -1,5 +1,5 @@
 {
-    "name": "@vendure/job-queue-plugin",
+    "name": "@bb-vendure/job-queue-plugin",
     "version": "2.2.0",
     "license": "MIT",
     "main": "package/index.js",
@@ -23,8 +23,8 @@
     },
     "devDependencies": {
         "@google-cloud/pubsub": "^2.8.0",
-        "@vendure/common": "^2.2.0",
-        "@vendure/core": "^2.2.0",
+        "@bb-vendure/common": "^2.2.0",
+        "@bb-vendure/core": "^2.2.0",
         "bullmq": "^5.4.2",
         "ioredis": "^5.3.2",
         "rimraf": "^5.0.5",

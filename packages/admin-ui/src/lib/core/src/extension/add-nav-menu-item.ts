@@ -12,7 +12,7 @@ import { NavBuilderService } from '../providers/nav-builder/nav-builder.service'
  *
  * @example
  * ```ts title="providers.ts"
- * import { addNavMenuSection } from '\@vendure/admin-ui/core';
+ * import { addNavMenuSection } from '\@bb-vendure/admin-ui/core';
  *
  * export default [
  *     addNavMenuSection({
@@ -50,7 +50,7 @@ export function addNavMenuSection(config: NavMenuSection, before?: string): Prov
  *
  * @example
  * ```ts title="providers.ts"
- * import { addNavMenuItem } from '\@vendure/admin-ui/core';
+ * import { addNavMenuItem } from '\@bb-vendure/admin-ui/core';
  *
  * export default [
  *     addNavMenuItem({

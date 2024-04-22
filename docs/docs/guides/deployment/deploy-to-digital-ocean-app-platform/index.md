@@ -34,7 +34,7 @@ The following is already pre-configured if you are using the one-click-deploy re
 Make sure your DB connection options uses the following environment variables:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
     // ...
@@ -70,8 +70,8 @@ npm install @aws-sdk/client-s3 @aws-sdk/lib-storage
 and set up your AssetServerPlugin like this:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
-import { AssetServerPlugin, configureS3AssetStorage } from '@vendure/asset-server-plugin';
+import { VendureConfig } from '@bb-vendure/core';
+import { AssetServerPlugin, configureS3AssetStorage } from '@bb-vendure/asset-server-plugin';
 
 export const config: VendureConfig = {
     // ...

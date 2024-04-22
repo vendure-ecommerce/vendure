@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SessionCacheStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/session-cache/session-cache-strategy.ts" sourceLine="155" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/session-cache/session-cache-strategy.ts" sourceLine="155" packageName="@bb-vendure/core" />
 
 This strategy defines how sessions get cached. Since most requests will need the Session
 object for permissions data, it can become a bottleneck to go to the database and do a multi-join
@@ -36,7 +36,7 @@ Here's an example implementation using Redis. To use this, you need to add the
 *Example*
 
 ```ts
-import { CachedSession, Logger, SessionCacheStrategy, VendurePlugin } from '@vendure/core';
+import { CachedSession, Logger, SessionCacheStrategy, VendurePlugin } from '@bb-vendure/core';
 import { Redis, RedisOptions } from 'ioredis';
 
 export interface RedisSessionCachePluginOptions {
@@ -160,7 +160,7 @@ Clear the entire cache
 
 ## CachedSessionUser
 
-<GenerationInfo sourceFile="packages/core/src/config/session-cache/session-cache-strategy.ts" sourceLine="14" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/session-cache/session-cache-strategy.ts" sourceLine="14" packageName="@bb-vendure/core" />
 
 A simplified representation of the User associated with the
 current Session.
@@ -203,7 +203,7 @@ type CachedSessionUser = {
 
 ## CachedSession
 
-<GenerationInfo sourceFile="packages/core/src/config/session-cache/session-cache-strategy.ts" sourceLine="29" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/session-cache/session-cache-strategy.ts" sourceLine="29" packageName="@bb-vendure/core" />
 
 A simplified representation of a Session which is easy to
 store.

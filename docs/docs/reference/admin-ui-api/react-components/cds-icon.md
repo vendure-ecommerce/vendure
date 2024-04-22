@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CdsIcon
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-components/CdsIcon.tsx" sourceLine="47" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-components/CdsIcon.tsx" sourceLine="47" packageName="@bb-vendure/admin-ui" />
 
 A React wrapper for the Clarity UI icon component.
 
@@ -19,7 +19,7 @@ A React wrapper for the Clarity UI icon component.
 
 ```ts
 import { userIcon } from '@cds/core/icon';
-import { CdsIcon } from '@vendure/admin-ui/react';
+import { CdsIcon } from '@bb-vendure/admin-ui/react';
 
 registerCdsIcon(userIcon);
 export function MyComponent() {

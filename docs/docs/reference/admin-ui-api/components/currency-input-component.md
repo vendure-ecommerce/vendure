@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CurrencyInputComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/currency-input/currency-input.component.ts" sourceLine="33" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/currency-input/currency-input.component.ts" sourceLine="33" packageName="@bb-vendure/admin-ui" />
 
 A form input control which displays currency in decimal format, whilst working
 with the integer cent value in the background.

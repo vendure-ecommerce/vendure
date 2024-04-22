@@ -1,4 +1,4 @@
-import { CustomFieldType } from '@vendure/common/lib/shared-types';
+import { CustomFieldType } from '@bb-vendure/common/lib/shared-types';
 import { useContext, useEffect, useState } from 'react';
 import { HostedComponentContext } from '../directives/react-component-host.directive';
 import { HostedReactComponentContext, ReactFormInputOptions } from '../types';
@@ -9,7 +9,7 @@ import { HostedReactComponentContext, ReactFormInputOptions } from '../types';
  *
  * @example
  * ```ts
- * import { useFormControl, ReactFormInputProps } from '\@vendure/admin-ui/react';
+ * import { useFormControl, ReactFormInputProps } from '\@bb-vendure/admin-ui/react';
  * import React from 'react';
  *
  * export function ReactNumberInput({ readonly }: ReactFormInputProps) {

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { summate } from '@vendure/common/lib/shared-utils';
+import { summate } from '@bb-vendure/common/lib/shared-utils';
 import {
     Channel,
     Injector,
@@ -8,8 +8,8 @@ import {
     TaxZoneStrategy,
     TransactionalConnection,
     Zone,
-} from '@vendure/core';
-import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
+} from '@bb-vendure/core';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@bb-vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';

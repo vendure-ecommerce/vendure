@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrderModification
 
-<GenerationInfo sourceFile="packages/core/src/entity/order-modification/order-modification.entity.ts" sourceLine="21" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/order-modification/order-modification.entity.ts" sourceLine="21" packageName="@bb-vendure/core" />
 
 An entity which represents a modification to an order which has been placed, and
 then modified afterwards by an administrator.

@@ -1,6 +1,6 @@
-import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { HasCustomFields, Translation, VendureEntity } from '@vendure/core';
+import { LanguageCode } from '@bb-vendure/common/lib/generated-types';
+import { DeepPartial } from '@bb-vendure/common/lib/shared-types';
+import { HasCustomFields, Translation, VendureEntity } from '@bb-vendure/core';
 import { Column, Entity, Index, ManyToOne } from 'typeorm';
 
 import { ScaffoldEntity } from './entity.template';

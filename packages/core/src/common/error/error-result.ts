@@ -52,7 +52,7 @@ export type ErrorResultUnion<T extends GraphQLErrorResult | U, E extends Vendure
  *
  * @example
  * ```ts
- * import { isGraphQlErrorResult } from '\@vendure/core';
+ * import { isGraphQlErrorResult } from '\@bb-vendure/core';
  *
  * // ...
  *

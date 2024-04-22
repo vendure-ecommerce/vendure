@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { CachedSession, mergeConfig, SessionCacheStrategy } from '@vendure/core';
-import { createTestEnvironment } from '@vendure/testing';
+import { CachedSession, mergeConfig, SessionCacheStrategy } from '@bb-vendure/core';
+import { createTestEnvironment } from '@bb-vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';

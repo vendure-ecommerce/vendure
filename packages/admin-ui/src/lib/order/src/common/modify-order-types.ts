@@ -5,7 +5,7 @@ import {
     OrderDetailFragment,
     OrderLineInput,
     ProductSelectorSearchQuery,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 
 export interface OrderSnapshot {
     totalWithTax: number;

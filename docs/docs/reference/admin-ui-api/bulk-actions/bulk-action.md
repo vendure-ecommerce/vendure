@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## BulkAction
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/bulk-action-registry/bulk-action-types.ts" sourceLine="99" packageName="@vendure/admin-ui" since="1.8.0" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/bulk-action-registry/bulk-action-types.ts" sourceLine="99" packageName="@bb-vendure/admin-ui" since="1.8.0" />
 
 Configures a bulk action which can be performed on all selected items in a list view.
 
@@ -46,7 +46,9 @@ interface BulkAction<ItemType = any, ComponentType = any> {
 
 ### getTranslationVars
 
-<MemberInfo kind="property" type={`(         context: <a href='/reference/admin-ui-api/bulk-actions/bulk-action#bulkactionfunctioncontext'>BulkActionFunctionContext</a>&#60;ItemType, ComponentType&#62;,     ) =&#62; Record&#60;string, string | number&#62; | Promise&#60;Record&#60;string, string | number&#62;&#62;`}   />
+<MemberInfo kind="property" type={`(
+         context: <a href='/reference/admin-ui-api/bulk-actions/bulk-action#bulkactionfunctioncontext'>BulkActionFunctionContext</a>&#60;ItemType, ComponentType&#62;,
+     ) =&#62; Record&#60;string, string | number&#62; | Promise&#60;Record&#60;string, string | number&#62;&#62;`}   />
 
 An optional function that should resolve to a map of translation variables which can be
 used when translating the `label` string.
@@ -83,7 +85,7 @@ This function will be invoked each time the selection is changed, so try to avoi
 running here.
 
 *Example*
-
+@bb-vendure
 ```ts
 import { registerBulkAction, DataService } from '@vendure/admin-ui/core';
 
@@ -123,7 +125,7 @@ registerBulkAction({
 </div>
 
 
-## BulkActionLocationId
+## BulkActionLocationId@bb-vendure
 
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/bulk-action-registry/bulk-action-types.ts" sourceLine="12" packageName="@vendure/admin-ui" since="1.8.0" />
 
@@ -153,7 +155,7 @@ type BulkActionLocationId = | 'product-list'
 ```
 
 
-## BulkActionFunctionContext
+## BulkActionFunctionContext@bb-vendure
 
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/bulk-action-registry/bulk-action-types.ts" sourceLine="43" packageName="@vendure/admin-ui" since="1.8.0" />
 
@@ -200,7 +202,7 @@ to get service instances which might be needed in the click handler.
 </div>
 
 
-## BulkActionClickContext
+## BulkActionClickContext@bb-vendure
 
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/bulk-action-registry/bulk-action-types.ts" sourceLine="74" packageName="@vendure/admin-ui" since="1.8.0" />
 

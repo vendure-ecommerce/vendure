@@ -1,4 +1,4 @@
-import { ID } from '@vendure/common/lib/shared-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
 import { Column, Entity, Index, ManyToOne, TableInheritance } from 'typeorm';
 
 import { VendureEntity } from '../base/base.entity';

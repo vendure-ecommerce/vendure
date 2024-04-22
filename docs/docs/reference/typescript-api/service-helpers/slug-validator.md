@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SlugValidator
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/slug-validator/slug-validator.ts" sourceLine="44" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/slug-validator/slug-validator.ts" sourceLine="44" packageName="@bb-vendure/core" />
 
 Used to validate slugs to ensure they are URL-safe and unique. Designed to be used with translatable
 entities such as <a href='/reference/typescript-api/entities/product#product'>Product</a> and <a href='/reference/typescript-api/entities/collection#collection'>Collection</a>.
@@ -42,7 +42,7 @@ class SlugValidator {
 
 ## InputWithSlug
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/slug-validator/slug-validator.ts" sourceLine="16" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/slug-validator/slug-validator.ts" sourceLine="16" packageName="@bb-vendure/core" />
 
 
 
@@ -66,13 +66,17 @@ type InputWithSlug = {
 
 ### translations
 
-<MemberInfo kind="property" type={`Array&#60;{         id?: <a href='/reference/typescript-api/common/id#id'>ID</a> | null;         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         slug?: string | null;     }&#62; | null`}   />
+<MemberInfo kind="property" type={`Array&#60;{
+         id?: <a href='/reference/typescript-api/common/id#id'>ID</a> | null;
+         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;
+         slug?: string | null;
+     }&#62; | null`}   />
 
 
 
 
 </div>
-
+@bb-vendure
 
 ## TranslationEntity
 

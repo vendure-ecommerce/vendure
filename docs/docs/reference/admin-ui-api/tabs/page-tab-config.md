@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PageTabConfig
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/page/page.service.ts" sourceLine="14" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/page/page.service.ts" sourceLine="14" packageName="@bb-vendure/admin-ui" />
 
 The object used to configure a new page tab.
 

@@ -1,5 +1,5 @@
-import { SUPER_ADMIN_USER_IDENTIFIER } from '@vendure/common/lib/shared-constants';
-import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
+import { SUPER_ADMIN_USER_IDENTIFIER } from '@bb-vendure/common/lib/shared-constants';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@bb-vendure/testing';
 import { fail } from 'assert';
 import gql from 'graphql-tag';
 import path from 'path';

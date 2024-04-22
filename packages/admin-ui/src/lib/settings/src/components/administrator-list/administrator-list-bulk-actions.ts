@@ -3,7 +3,7 @@ import {
     GetAdministratorListQuery,
     ItemOf,
     Permission,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { map } from 'rxjs/operators';
 
 export const deleteAdministratorsBulkAction = createBulkDeleteAction<

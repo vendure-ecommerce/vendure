@@ -20,7 +20,7 @@ import { Job } from '../../job-queue/job';
  * ```ts
  * import { ArgumentsHost, ExecutionContext } from '\@nestjs/common';
  * import { GqlContextType, GqlExecutionContext } from '\@nestjs/graphql';
- * import { ErrorHandlerStrategy, I18nError, Injector, Job, LogLevel } from '\@vendure/core';
+ * import { ErrorHandlerStrategy, I18nError, Injector, Job, LogLevel } from '\@bb-vendure/core';
  *
  * import { MonitoringService } from './monitoring.service';
  *

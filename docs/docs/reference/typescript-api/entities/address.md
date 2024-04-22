@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Address
 
-<GenerationInfo sourceFile="packages/core/src/entity/address/address.entity.ts" sourceLine="16" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/address/address.entity.ts" sourceLine="16" packageName="@bb-vendure/core" />
 
 Represents a <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>'s address.
 

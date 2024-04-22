@@ -1,4 +1,4 @@
-import { Permission } from '@vendure/common/lib/generated-types';
+import { Permission } from '@bb-vendure/common/lib/generated-types';
 
 /**
  * @description

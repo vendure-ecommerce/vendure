@@ -126,8 +126,8 @@ decorator, you should use Vendure's [`@Money()` decorator](/reference/typescript
 Using this decorator allows Vendure to correctly store the value in the database according to the configured `MoneyStrategy` (see below).
 
 ```ts title="src/plugins/quote/entities/quote.entity.ts"
-import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { VendureEntity, Order, EntityId, Money, CurrencyCode, ID } from '@vendure/core';
+import { DeepPartial } from '@bb-vendure/common/lib/shared-types';
+import { VendureEntity, Order, EntityId, Money, CurrencyCode, ID } from '@bb-vendure/core';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 @Entity()
@@ -180,7 +180,7 @@ using the `bigint` data type, allowing much larger amounts to be stored.
 Here's how you would configure your server to use this strategy:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig, BigIntMoneyStrategy } from '@vendure/core';
+import { VendureConfig, BigIntMoneyStrategy } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
     // ...
@@ -198,7 +198,7 @@ For example, you want to be able to sell a product for `$1.234` per unit. To do 
 1. Configure the `MoneyStrategy` to use three decimal places
 
 ```ts
-import { DefaultMoneyStrategy, VendureConfig } from '@vendure/core';
+import { DefaultMoneyStrategy, VendureConfig } from '@bb-vendure/core';
 
 export class ThreeDecimalPlacesMoneyStrategy extends DefaultMoneyStrategy {
     // highlight-next-line

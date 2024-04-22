@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AuthenticationStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/auth/authentication-strategy.ts" sourceLine="23" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/auth/authentication-strategy.ts" sourceLine="23" packageName="@bb-vendure/core" />
 
 An AuthenticationStrategy defines how a User (which can be a Customer in the Shop API or
 and Administrator in the Admin API) may be authenticated.

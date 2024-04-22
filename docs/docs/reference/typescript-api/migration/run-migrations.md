@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## runMigrations
 
-<GenerationInfo sourceFile="packages/core/src/migrate.ts" sourceLine="40" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/migrate.ts" sourceLine="40" packageName="@bb-vendure/core" />
 
 Runs any pending database migrations. See [TypeORM migration docs](https://typeorm.io/#/migrations)
 for more information about the underlying migration mechanism.

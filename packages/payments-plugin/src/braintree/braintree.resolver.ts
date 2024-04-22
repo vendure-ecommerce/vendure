@@ -11,7 +11,7 @@ import {
     PaymentMethod,
     RequestContext,
     TransactionalConnection,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 
 import { getGateway } from './braintree-common';
 import { braintreePaymentMethodHandler } from './braintree.handler';

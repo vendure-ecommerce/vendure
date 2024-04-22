@@ -1,4 +1,4 @@
-import { VendureLogger } from '@vendure/core';
+import { VendureLogger } from '@bb-vendure/core';
 import fs from 'fs';
 
 // A simple custom logger which writes all logs to a file.

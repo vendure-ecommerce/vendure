@@ -1,5 +1,5 @@
-import { JobListOptions } from '@vendure/common/lib/generated-types';
-import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { JobListOptions } from '@bb-vendure/common/lib/generated-types';
+import { ID, PaginatedList } from '@bb-vendure/common/lib/shared-types';
 
 import { InjectableStrategy } from '../../common';
 import { JobData, JobQueueStrategyJobOptions } from '../../job-queue';

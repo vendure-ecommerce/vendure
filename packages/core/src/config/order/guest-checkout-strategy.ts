@@ -1,4 +1,4 @@
-import { CreateCustomerInput, SetCustomerForOrderResult } from '@vendure/common/lib/generated-shop-types';
+import { CreateCustomerInput, SetCustomerForOrderResult } from '@bb-vendure/common/lib/generated-shop-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { ErrorResultUnion } from '../../common/error/error-result';

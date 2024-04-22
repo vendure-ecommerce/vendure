@@ -1,5 +1,5 @@
-import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
-import { DefaultJobQueuePlugin, dummyPaymentHandler, VendureConfig } from '@vendure/core';
+import { AdminUiPlugin } from '@bb-vendure/admin-ui-plugin';
+import { DefaultJobQueuePlugin, dummyPaymentHandler, VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
     apiOptions: {

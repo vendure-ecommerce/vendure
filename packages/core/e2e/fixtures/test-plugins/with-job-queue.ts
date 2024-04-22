@@ -1,5 +1,5 @@
 import { Controller, Get, OnModuleInit } from '@nestjs/common';
-import { JobQueue, JobQueueService, PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { JobQueue, JobQueueService, PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 import { Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
 

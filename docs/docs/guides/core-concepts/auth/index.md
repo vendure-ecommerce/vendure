@@ -100,7 +100,7 @@ In addition to the built-in `NativeAuthenticationStrategy`, it is possible to de
 Custom authentication strategies are set via the [`VendureConfig.authOptions` object](/reference/typescript-api/auth/auth-options/#shopauthenticationstrategy):
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig, NativeAuthenticationStrategy } from '@vendure/core';
+import { VendureConfig, NativeAuthenticationStrategy } from '@bb-vendure/core';
 
 import { FacebookAuthenticationStrategy } from './plugins/authentication/facebook-authentication-strategy';
 import { GoogleAuthenticationStrategy } from './plugins/authentication/google-authentication-strategy';
@@ -172,7 +172,7 @@ import {
     Injector,
     RequestContext,
     User,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import { OAuth2Client } from 'google-auth-library';
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
@@ -323,7 +323,7 @@ import {
     RequestContext,
     User,
     UserService,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
@@ -452,8 +452,8 @@ vendureLoginButton.addEventListener('click', () => {
 We also need to tell the Admin UI application about the custom login URL, since we have no need for the default "username/password" login form. This can be done by setting the [`loginUrl` property](/reference/typescript-api/common/admin-ui/admin-ui-config#loginurl) in the AdminUiConfig:
 
 ```ts title="/src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
-import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
+import { VendureConfig } from '@bb-vendure/core';
+import { AdminUiPlugin } from '@bb-vendure/admin-ui-plugin';
 
 export const config: VendureConfig = {
     // ...
@@ -488,7 +488,7 @@ import {
     RequestContext,
     RoleService,
     User,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 

@@ -5,7 +5,7 @@ import {
     DataService,
     GetOrderChartDataDocument,
     MetricType,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
 import { BehaviorSubject, combineLatest, Observable, Subject, switchMap } from 'rxjs';
 import { distinctUntilChanged, map, startWith } from 'rxjs/operators';

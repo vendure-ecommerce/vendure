@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## VendurePluginMetadata
 
-<GenerationInfo sourceFile="packages/core/src/plugin/vendure-plugin.ts" sourceLine="23" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/plugin/vendure-plugin.ts" sourceLine="23" packageName="@bb-vendure/core" />
 
 Defines the metadata of a Vendure plugin. This interface is an superset of the [Nestjs ModuleMetadata](https://docs.nestjs.com/modules)
 (which allows the definition of `imports`, `exports`, `providers` and `controllers`), which means
@@ -80,7 +80,7 @@ compatibility: '^2.0.0'
 
 ## APIExtensionDefinition
 
-<GenerationInfo sourceFile="packages/core/src/plugin/vendure-plugin.ts" sourceLine="74" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/plugin/vendure-plugin.ts" sourceLine="74" packageName="@bb-vendure/core" />
 
 An object which allows a plugin to extend the Vendure GraphQL API.
 
@@ -128,7 +128,7 @@ Read more about defining custom scalars in the
 
 ## PluginConfigurationFn
 
-<GenerationInfo sourceFile="packages/core/src/plugin/vendure-plugin.ts" sourceLine="112" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/plugin/vendure-plugin.ts" sourceLine="112" packageName="@bb-vendure/core" />
 
 This method is called before the app bootstraps and should be used to perform any needed modifications to the <a href='/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>.
 

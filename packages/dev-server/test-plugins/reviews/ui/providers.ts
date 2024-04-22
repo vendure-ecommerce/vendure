@@ -4,7 +4,7 @@ import {
     registerFormInputComponent,
     registerPageTab,
     setDashboardWidgetLayout,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 
 import { RelationReviewInputComponent } from './components/featured-review-selector/featured-review-selector.component';
 import { ProductReviewsListComponent } from './components/product-reviews-list/product-reviews-list.component';

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## defaultPaymentProcess
 
-<GenerationInfo sourceFile="packages/core/src/config/payment/default-payment-process.ts" sourceLine="26" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/payment/default-payment-process.ts" sourceLine="26" packageName="@bb-vendure/core" />
 
 The default <a href='/reference/typescript-api/payment/payment-process#paymentprocess'>PaymentProcess</a>
 

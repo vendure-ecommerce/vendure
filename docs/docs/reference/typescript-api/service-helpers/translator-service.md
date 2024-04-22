@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TranslatorService
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/translator/translator.service.ts" sourceLine="42" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/translator/translator.service.ts" sourceLine="42" packageName="@bb-vendure/core" />
 
 The TranslatorService is used to translate entities into the current language.
 
@@ -19,7 +19,7 @@ The TranslatorService is used to translate entities into the current language.
 
 ```ts
 import { Injectable } from '@nestjs/common';
-import { ID, Product, RequestContext, TransactionalConnection, TranslatorService } from '@vendure/core';
+import { ID, Product, RequestContext, TransactionalConnection, TranslatorService } from '@bb-vendure/core';
 
 @Injectable()
 export class ProductService {

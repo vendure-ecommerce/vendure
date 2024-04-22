@@ -1,5 +1,5 @@
-import { LanguageCode, LogicalOperator, PriceRange, SortOrder } from '@vendure/common/lib/generated-types';
-import { DeepRequired, ID, UserInputError } from '@vendure/core';
+import { LanguageCode, LogicalOperator, PriceRange, SortOrder } from '@bb-vendure/common/lib/generated-types';
+import { DeepRequired, ID, UserInputError } from '@bb-vendure/core';
 
 import { SearchConfig } from './options';
 import { CustomScriptMapping, ElasticSearchInput, ElasticSearchSortInput, SearchRequestBody } from './types';

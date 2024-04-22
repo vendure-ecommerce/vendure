@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## registerDataTableComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/register-data-table-component.ts" sourceLine="45" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/register-data-table-component.ts" sourceLine="45" packageName="@bb-vendure/admin-ui" />
 
 Allows you to override the default component used to render the data of a particular column in a DataTable.
 The component should implement the {@link CustomDataTableColumnComponent} interface. The tableId and columnId can
@@ -21,7 +21,7 @@ be determined by pressing `ctrl + u` when running the Admin UI in dev mode.
 
 ```ts title="components/custom-table.component.ts"
 import { Component, Input } from '@angular/core';
-import { CustomColumnComponent } from '@vendure/admin-ui/core';
+import { CustomColumnComponent } from '@bb-vendure/admin-ui/core';
 
 @Component({
     selector: 'custom-slug-component',
@@ -36,7 +36,7 @@ export class CustomTableComponent implements CustomColumnComponent {
 ```
 
 ```ts title="providers.ts"
-import { registerDataTableComponent } from '@vendure/admin-ui/core';
+import { registerDataTableComponent } from '@bb-vendure/admin-ui/core';
 import { CustomTableComponent } from './components/custom-table.component';
 
 export default [

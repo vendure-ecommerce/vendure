@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
-import { ActiveRouteData, ExtensionMessage, MessageResponse } from '@vendure/common/lib/extension-host-types';
-import { assertNever } from '@vendure/common/lib/shared-utils';
+import { ActiveRouteData, ExtensionMessage, MessageResponse } from '@bb-vendure/common/lib/extension-host-types';
+import { assertNever } from '@bb-vendure/common/lib/shared-utils';
 import { parse } from 'graphql';
 import { merge, Observer, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';

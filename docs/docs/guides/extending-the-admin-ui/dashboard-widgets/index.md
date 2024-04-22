@@ -24,7 +24,7 @@ A dashboard widget is an Angular component. This example features a simplified U
 
 ```ts title="src/plugins/reviews/ui/components/reviews-widget/reviews-widget.component.ts"
 import { Component, OnInit } from '@angular/core';
-import { DataService, SharedModule } from '@vendure/admin-ui/core';
+import { DataService, SharedModule } from '@bb-vendure/admin-ui/core';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -69,7 +69,7 @@ export class ReviewsWidgetComponent implements OnInit {
 ```
 
 :::note
-We also need to define an `NgModule` for this component. This is because we will be lazy-loading the component at run-time, and the NgModule is required for us to use shared providers (e.g. `DataService`) and any shared components, directives or pipes defined in the `@vendure/admin-ui/core` package.
+We also need to define an `NgModule` for this component. This is because we will be lazy-loading the component at run-time, and the NgModule is required for us to use shared providers (e.g. `DataService`) and any shared components, directives or pipes defined in the `@bb-vendure/admin-ui/core` package.
 :::
 
 ### Register the widget
@@ -77,7 +77,7 @@ We also need to define an `NgModule` for this component. This is because we will
 Our widget now needs to be registered in our [providers file](/guides/extending-the-admin-ui/getting-started/#providers):
 
 ```ts title="src/plugins/reviews/ui/providers.ts"
-import { registerDashboardWidget } from '@vendure/admin-ui/core';
+import { registerDashboardWidget } from '@bb-vendure/admin-ui/core';
 
 export default [
     // highlight-start
@@ -106,7 +106,7 @@ Once registered, the reviews widget will be available to select by administrator
 While administrators can customize which widgets they want to display on the dashboard, and the layout of those widgets, you can also set a default layout:
 
 ```ts title="src/plugins/reviews/ui/providers.ts"
-import { registerDashboardWidget, setDashboardWidgetLayout } from '@vendure/admin-ui/core';
+import { registerDashboardWidget, setDashboardWidgetLayout } from '@bb-vendure/admin-ui/core';
 
 export default [
     registerDashboardWidget('reviews', {
@@ -134,8 +134,8 @@ Sometimes you may wish to alter the permissions settings of the default widgets 
 For example, the "order summary" widget has a default permission requirement of "ReadOrder". If you want to limit the availability to e.g. the SuperAdmin role, you can do so by overriding the definition like this:
 
 ```ts title="src/plugins/reviews/ui/providers.ts"
-import { registerDashboardWidget } from '@vendure/admin-ui/core';
-import { OrderSummaryWidgetComponent } from '@vendure/admin-ui/dashboard';
+import { registerDashboardWidget } from '@bb-vendure/admin-ui/core';
+import { OrderSummaryWidgetComponent } from '@bb-vendure/admin-ui/dashboard';
 
 export default [
     // highlight-start

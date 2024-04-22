@@ -5,7 +5,7 @@ import {
     NotificationService,
     SharedModule,
     TypedBaseDetailComponent,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import gql from 'graphql-tag';
 import { Observable, of } from 'rxjs';
 import { filter, map, mapTo, switchMap } from 'rxjs/operators';

@@ -1,7 +1,7 @@
 import { PubSub } from '@google-cloud/pubsub';
 import { ModuleRef } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
-import { Injector, Job } from '@vendure/core';
+import { Injector, Job } from '@bb-vendure/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { PUB_SUB_OPTIONS } from './constants';

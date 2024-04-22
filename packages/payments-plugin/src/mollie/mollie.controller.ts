@@ -1,5 +1,5 @@
 import { Body, Controller, Param, Post } from '@nestjs/common';
-import { Ctx, Logger, RequestContext, Transaction, ChannelService, LanguageCode } from '@vendure/core';
+import { Ctx, Logger, RequestContext, Transaction, ChannelService, LanguageCode } from '@bb-vendure/core';
 
 import { loggerCtx } from './constants';
 import { MollieService } from './mollie.service';

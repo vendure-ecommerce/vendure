@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, NestModule, OnApplicationBootstrap } from '@nestjs/common';
-import { Type } from '@vendure/common/lib/shared-types';
+import { Type } from '@bb-vendure/common/lib/shared-types';
 import {
     AssetStorageStrategy,
     Logger,
@@ -8,7 +8,7 @@ import {
     registerPluginStartupMessage,
     RuntimeVendureConfig,
     VendurePlugin,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import { createHash } from 'crypto';
 import express, { NextFunction, Request, Response } from 'express';
 import fs from 'fs-extra';
@@ -35,15 +35,15 @@ async function getFileType(buffer: Buffer) {
  *
  * ## Installation
  *
- * `yarn add \@vendure/asset-server-plugin`
+ * `yarn add \@bb-vendure/asset-server-plugin`
  *
  * or
  *
- * `npm install \@vendure/asset-server-plugin`
+ * `npm install \@bb-vendure/asset-server-plugin`
  *
  * @example
  * ```ts
- * import { AssetServerPlugin } from '\@vendure/asset-server-plugin';
+ * import { AssetServerPlugin } from '\@bb-vendure/asset-server-plugin';
  *
  * const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array

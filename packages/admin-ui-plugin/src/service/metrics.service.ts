@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { assertNever } from '@vendure/common/lib/shared-utils';
+import { assertNever } from '@bb-vendure/common/lib/shared-utils';
 import {
     ConfigService,
     Logger,
@@ -7,7 +7,7 @@ import {
     RequestContext,
     TransactionalConnection,
     TtlCache,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import {
     Duration,
     endOfDay,

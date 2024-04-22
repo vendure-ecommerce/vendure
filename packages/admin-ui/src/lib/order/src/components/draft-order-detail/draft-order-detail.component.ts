@@ -11,7 +11,7 @@ import {
     OrderDetailFragment,
     OrderDetailQueryDocument,
     TypedBaseDetailComponent,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { combineLatest, Observable, Subject } from 'rxjs';
 import { switchMap, take } from 'rxjs/operators';
 

@@ -5,8 +5,8 @@ import {
     LanguageCode,
     manualFulfillmentHandler,
     mergeConfig,
-} from '@vendure/core';
-import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
+} from '@bb-vendure/core';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@bb-vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 import { vi } from 'vitest';

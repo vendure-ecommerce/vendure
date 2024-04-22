@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ShippingEligibilityChecker
 
-<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-eligibility-checker.ts" sourceLine="49" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-eligibility-checker.ts" sourceLine="49" packageName="@bb-vendure/core" />
 
 The ShippingEligibilityChecker class is used to check whether an order qualifies for a
 given <a href='/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>.

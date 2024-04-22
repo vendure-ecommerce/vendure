@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## MoneyStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/entity/money-strategy.ts" sourceLine="63" packageName="@vendure/core" since="2.0.0" />
+<GenerationInfo sourceFile="packages/core/src/config/entity/money-strategy.ts" sourceLine="63" packageName="@bb-vendure/core" since="2.0.0" />
 
 The MoneyStrategy defines how monetary values are stored and manipulated. The MoneyStrategy
 is defined in <a href='/reference/typescript-api/configuration/entity-options#entityoptions'>EntityOptions</a>:
@@ -47,7 +47,7 @@ UI as to how many decimal places to display.
 *Example*
 
 ```ts
-import { DefaultMoneyStrategy, VendureConfig } from '@vendure/core';
+import { DefaultMoneyStrategy, VendureConfig } from '@bb-vendure/core';
 
 export class ThreeDecimalPlacesMoneyStrategy extends DefaultMoneyStrategy {
   readonly precision = 3;

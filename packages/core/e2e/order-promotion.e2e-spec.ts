@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { omit } from '@vendure/common/lib/omit';
-import { pick } from '@vendure/common/lib/pick';
+import { omit } from '@bb-vendure/common/lib/omit';
+import { pick } from '@bb-vendure/common/lib/pick';
 import {
     containsProducts,
     customerGroup,
@@ -13,13 +13,13 @@ import {
     minimumOrderAmount,
     orderPercentageDiscount,
     productsPercentageDiscount,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import {
     createErrorResultGuard,
     createTestEnvironment,
     E2E_DEFAULT_CHANNEL_TOKEN,
     ErrorResultGuard,
-} from '@vendure/testing';
+} from '@bb-vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';

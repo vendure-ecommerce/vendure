@@ -1,6 +1,6 @@
 import { Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { Permission, SearchResponse } from '@vendure/common/lib/generated-types';
-import { Omit } from '@vendure/common/lib/omit';
+import { Permission, SearchResponse } from '@bb-vendure/common/lib/generated-types';
+import { Omit } from '@bb-vendure/common/lib/omit';
 
 import { InternalServerError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';

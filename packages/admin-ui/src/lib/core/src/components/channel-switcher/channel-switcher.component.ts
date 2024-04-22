@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { notNullOrUndefined } from '@bb-vendure/common/lib/shared-utils';
 import { combineLatest, Observable } from 'rxjs';
 import { filter, map, startWith } from 'rxjs/operators';
 

@@ -6,7 +6,7 @@
  *
  * @example
  * ```ts
- * import { VENDURE_VERSION } from '\@vendure/core';
+ * import { VENDURE_VERSION } from '\@bb-vendure/core';
  *
  * console.log('Vendure version:', VENDURE_VERSION);
  * ```

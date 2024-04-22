@@ -23,10 +23,10 @@ Migration will consist of these main steps:
    {
      // ...
      "dependencies": {
-   -    "@vendure/common": "1.9.7",
-   -    "@vendure/core": "1.9.7",
-   +    "@vendure/common": "2.0.0",
-   +    "@vendure/core": "2.0.0",
+   -    "@bb-vendure/common": "1.9.7",
+   -    "@bb-vendure/core": "1.9.7",
+   +    "@bb-vendure/common": "2.0.0",
+   +    "@bb-vendure/core": "2.0.0",
         // etc.
      },
      "devDependencies": {

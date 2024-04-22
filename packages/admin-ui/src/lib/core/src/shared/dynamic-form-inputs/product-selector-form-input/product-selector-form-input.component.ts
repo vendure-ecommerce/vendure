@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { DefaultFormComponentId, DefaultFormComponentUiConfig } from '@vendure/common/lib/shared-types';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { DefaultFormComponentId, DefaultFormComponentUiConfig } from '@bb-vendure/common/lib/shared-types';
+import { notNullOrUndefined } from '@bb-vendure/common/lib/shared-utils';
 import { forkJoin, Observable, of } from 'rxjs';
 import { map, startWith, switchMap } from 'rxjs/operators';
 

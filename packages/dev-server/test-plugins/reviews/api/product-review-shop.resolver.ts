@@ -8,7 +8,7 @@ import {
     RequestContext,
     Transaction,
     TransactionalConnection,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 
 import { ProductReview } from '../entities/product-review.entity';
 import { MutationSubmitProductReviewArgs, MutationVoteOnReviewArgs } from '../generated-shop-types';

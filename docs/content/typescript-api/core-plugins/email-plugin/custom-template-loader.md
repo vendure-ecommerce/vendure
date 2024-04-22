@@ -13,7 +13,7 @@ generated: true
 
 # TemplateLoader
 
-{{< generation-info sourceFile="packages/email-plugin/src/types.ts" sourceLine="390" packageName="@vendure/email-plugin">}}
+{{< generation-info sourceFile="packages/email-plugin/src/types.ts" sourceLine="390" packageName="@bb-vendure/email-plugin">}}
 
 Load an email template based on the given request context, type and template name
 and return the template as a string.
@@ -21,7 +21,7 @@ and return the template as a string.
 *Example*
 
 ```TypeScript
-import { EmailPlugin, TemplateLoader } from '@vendure/email-plugin';
+import { EmailPlugin, TemplateLoader } from '@bb-vendure/email-plugin';
 
 class MyTemplateLoader implements TemplateLoader {
      loadTemplate(injector, ctx, { type, templateName, templateVars }){

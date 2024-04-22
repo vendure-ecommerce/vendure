@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Channel
 
-<GenerationInfo sourceFile="packages/core/src/entity/channel/channel.entity.ts" sourceLine="37" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/channel/channel.entity.ts" sourceLine="37" packageName="@bb-vendure/core" />
 
 A Channel represents a distinct sales channel and configures defaults for that
 channel.

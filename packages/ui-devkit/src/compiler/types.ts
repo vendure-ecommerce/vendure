@@ -1,4 +1,4 @@
-import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { LanguageCode } from '@bb-vendure/common/lib/generated-types';
 
 export type Extension =
     | AdminUiExtension
@@ -185,7 +185,7 @@ export interface AdminUiExtension
      * @example
      * ```ts title="packages/common-ui-module/src/ui/ui-shared.module.ts"
      * import { NgModule } from '\@angular/core';
-     * import { SharedModule } from '\@vendure/admin-ui/core';
+     * import { SharedModule } from '\@bb-vendure/admin-ui/core';
      * import { CommonUiComponent } from './components/common-ui/common-ui.component';
      *
      * export { CommonUiComponent };
@@ -201,7 +201,7 @@ export interface AdminUiExtension
      * ```ts title="packages/common-ui-module/src/index.ts"
      * import path from 'path';
      *
-     * import { AdminUiExtension } from '\@vendure/ui-devkit/compiler';
+     * import { AdminUiExtension } from '\@bb-vendure/ui-devkit/compiler';
      *
      * export const uiExtensions: AdminUiExtension = {
      *   // highlight-next-line
@@ -231,7 +231,7 @@ export interface AdminUiExtension
      *
      * ```ts title="packages/sample-plugin/src/ui/ui-extension.module.ts"
      * import { NgModule } from '\@angular/core';
-     * import { SharedModule } from '\@vendure/admin-ui/core';
+     * import { SharedModule } from '\@bb-vendure/admin-ui/core';
      * // highlight-start
      * // the import below works both in the context of the custom Admin UI app as well as the main project
      * // '\@common-ui-module' is the value of "pathAlias" and 'ui-shared.module' is the file we want to reference inside "extensionPath"

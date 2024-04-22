@@ -6,9 +6,9 @@ import {
     MutationAddMembersToZoneArgs,
     MutationRemoveMembersFromZoneArgs,
     UpdateZoneInput,
-} from '@vendure/common/lib/generated-types';
-import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { unique } from '@vendure/common/lib/unique';
+} from '@bb-vendure/common/lib/generated-types';
+import { ID, PaginatedList } from '@bb-vendure/common/lib/shared-types';
+import { unique } from '@bb-vendure/common/lib/unique';
 import { In } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';

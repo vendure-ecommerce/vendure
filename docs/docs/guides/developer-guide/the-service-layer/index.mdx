@@ -23,7 +23,7 @@ used in the example in the [previous section](/guides/developer-guide/the-api-la
 ```ts title="src/services/product.service.ts"
 import { Injectable } from '@nestjs/common';
 import { IsNull } from 'typeorm';
-import { ID, Product, RequestContext, TransactionalConnection, TranslatorService } from '@vendure/core';
+import { ID, Product, RequestContext, TransactionalConnection, TranslatorService } from '@bb-vendure/core';
 
 @Injectable()
 export class ProductService {
@@ -63,13 +63,13 @@ export class ProductService {
 ## Using core services
 
 All the internal Vendure services can be used in your own plugins and scripts. They are listed in the [Services API reference](/reference/typescript-api/services/) and
-can be imported from the `@vendure/core` package.
+can be imported from the `@bb-vendure/core` package.
 
 To make use of a core service in your own plugin, you need to ensure your plugin is importing the `PluginCommonModule` and
 then inject the desired service into your own service's constructor:
 
 ```ts title="src/my-plugin/my.plugin.ts"
-import { PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 import { MyService } from './services/my.service';
 
 @VendurePlugin({
@@ -83,7 +83,7 @@ export class MyPlugin {}
 
 ```ts title="src/my-plugin/services/my.service.ts"
 import { Injectable } from '@nestjs/common';
-import { ProductService } from '@vendure/core';
+import { ProductService } from '@bb-vendure/core';
 
 @Injectable()
 export class MyService {
@@ -121,7 +121,7 @@ Here are some examples of using the Find API:
 
 ```ts title="src/services/item.service.ts"
 import { Injectable } from '@nestjs/common';
-import { ID, RequestContext, TransactionalConnection } from '@vendure/core';
+import { ID, RequestContext, TransactionalConnection } from '@bb-vendure/core';
 import { IsNull } from 'typeorm';
 import { Item } from '../entities/item.entity';
 
@@ -191,7 +191,7 @@ Here are some examples of using the QueryBuilder API:
 
 ```ts title="src/services/item.service.ts"
 import { Injectable } from '@nestjs/common';
-import { ID, RequestContext, TransactionalConnection } from '@vendure/core';
+import { ID, RequestContext, TransactionalConnection } from '@bb-vendure/core';
 import { Brackets, IsNull } from 'typeorm';
 import { Item } from '../entities/item.entity';
 
@@ -274,7 +274,7 @@ a function which gets an entity passed to it by Vendure. In this case, we can us
 to ensure that a given relation is "hydrated" (i.e. joined) before we use it:
 
 ```ts
-import { EntityHydrator, ShippingCalculator } from '@vendure/core';
+import { EntityHydrator, ShippingCalculator } from '@bb-vendure/core';
 
 let entityHydrator: EntityHydrator;
 

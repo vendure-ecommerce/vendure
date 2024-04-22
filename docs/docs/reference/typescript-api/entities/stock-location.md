@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## StockLocation
 
-<GenerationInfo sourceFile="packages/core/src/entity/stock-location/stock-location.entity.ts" sourceLine="22" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/stock-location/stock-location.entity.ts" sourceLine="22" packageName="@bb-vendure/core" />
 
 A StockLocation represents a physical location where stock is held. For example, a warehouse or a shop.
 

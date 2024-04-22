@@ -15,8 +15,8 @@ This example shows how new [TypeORM database entities](https://typeorm.io/entiti
 ## Create the entity class
 
 ```ts title="src/plugins/reviews/entities/product-review.entity.ts"
-import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { VendureEntity, Product, EntityId, ID } from '@vendure/core';
+import { DeepPartial } from '@bb-vendure/common/lib/shared-types';
+import { VendureEntity, Product, EntityId, ID } from '@bb-vendure/core';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 @Entity()
@@ -58,7 +58,7 @@ There is an additional Vendure-specific decorator:
 The new entity is then passed to the `entities` array of the VendurePlugin metadata:
 
 ```ts title="src/plugins/reviews/reviews-plugin.ts"
-import { VendurePlugin } from '@vendure/core';
+import { VendurePlugin } from '@bb-vendure/core';
 import { ProductReview } from './entities/product-review.entity';
 
 @VendurePlugin({
@@ -78,7 +78,7 @@ The new entity can now be used in your plugin code. For example, you might want 
 
 ```ts title="src/plugins/reviews/services/review.service.ts"
 import { Injectable } from '@nestjs/common';
-import { RequestContext, Product, TransactionalConnection } from '@vendure/core';
+import { RequestContext, Product, TransactionalConnection } from '@bb-vendure/core';
 
 import { ProductReview } from '../entities/product-review.entity';
 
@@ -138,7 +138,7 @@ import {
     HasCustomFields,
     Product,
     VendureEntity,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 // highlight-next-line
@@ -173,7 +173,7 @@ export class ProductReview extends VendureEntity implements HasCustomFields {
 Now you'll be able to add custom fields to the `ProductReview` entity via the VendureConfig:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
     // ...

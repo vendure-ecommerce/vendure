@@ -4,7 +4,7 @@ import { BaseConnectionOptions } from 'typeorm/connection/BaseConnectionOptions'
 /**
  * @description
  * Defines how the e2e TestService sets up a particular DB to run a single test suite.
- * The `\@vendure/testing` package ships with initializers for sql.js, MySQL & Postgres.
+ * The `\@bb-vendure/testing` package ships with initializers for sql.js, MySQL & Postgres.
  *
  * Custom initializers can be created by implementing this interface and registering
  * it with the {@link registerInitializer} function:

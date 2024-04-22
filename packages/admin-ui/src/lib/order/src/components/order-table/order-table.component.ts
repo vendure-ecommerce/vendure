@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { AdjustmentType, CustomFieldConfig, OrderDetailFragment } from '@vendure/admin-ui/core';
+import { AdjustmentType, CustomFieldConfig, OrderDetailFragment } from '@bb-vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-order-table',

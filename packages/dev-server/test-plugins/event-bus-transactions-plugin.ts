@@ -14,7 +14,7 @@ import {
     Transaction,
     TransactionalConnection,
     VendurePlugin,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import gql from 'graphql-tag';
 
 @Resolver()

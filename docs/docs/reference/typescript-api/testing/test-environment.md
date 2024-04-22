@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TestEnvironment
 
-<GenerationInfo sourceFile="packages/testing/src/create-test-environment.ts" sourceLine="13" packageName="@vendure/testing" />
+<GenerationInfo sourceFile="packages/testing/src/create-test-environment.ts" sourceLine="13" packageName="@bb-vendure/testing" />
 
 The return value of <a href='/reference/typescript-api/testing/create-test-environment#createtestenvironment'>createTestEnvironment</a>, containing the test server
 and clients for the Shop API and Admin API.

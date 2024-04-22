@@ -10,8 +10,8 @@ import {
     OrderLineInput,
     PaymentWithRefundsFragment,
     RefundOrderInput,
-} from '@vendure/admin-ui/core';
-import { summate } from '@vendure/common/lib/shared-utils';
+} from '@bb-vendure/admin-ui/core';
+import { summate } from '@bb-vendure/common/lib/shared-utils';
 import { getRefundablePayments, RefundablePayment } from '../../common/get-refundable-payments';
 
 type SelectionLine = { quantity: number; cancel: boolean };

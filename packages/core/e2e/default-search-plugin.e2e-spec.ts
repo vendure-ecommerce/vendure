@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { pick } from '@vendure/common/lib/pick';
+import { pick } from '@bb-vendure/common/lib/pick';
 import {
     DefaultJobQueuePlugin,
     DefaultSearchPlugin,
     facetValueCollectionFilter,
     mergeConfig,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import {
     createTestEnvironment,
     E2E_DEFAULT_CHANNEL_TOKEN,
     registerInitializer,
     SimpleGraphQLClient,
     SqljsInitializer,
-} from '@vendure/testing';
+} from '@bb-vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';

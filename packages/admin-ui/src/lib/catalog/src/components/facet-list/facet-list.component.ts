@@ -8,7 +8,7 @@ import {
     ItemOf,
     LanguageCode,
     TypedBaseListComponent,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
 
 export const FACET_LIST_QUERY = gql`

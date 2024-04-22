@@ -1,4 +1,4 @@
-import { Type } from '@vendure/common/lib/shared-types';
+import { Type } from '@bb-vendure/common/lib/shared-types';
 import { DataSource } from 'typeorm';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 

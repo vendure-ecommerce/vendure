@@ -1,4 +1,4 @@
-import { Injector, Job, JobBufferStorageStrategy, JobConfig, Logger } from '@vendure/core';
+import { Injector, Job, JobBufferStorageStrategy, JobConfig, Logger } from '@bb-vendure/core';
 import { Cluster, Redis, RedisOptions } from 'ioredis';
 
 import { BULLMQ_PLUGIN_OPTIONS, loggerCtx } from './constants';

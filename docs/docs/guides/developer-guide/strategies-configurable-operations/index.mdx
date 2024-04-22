@@ -29,7 +29,7 @@ What if you need to change this behavior? For instance, you might have an existi
 for generating order codes, which you need to integrate with. Here's how you would do this:
 
 ```ts title="src/config/my-order-code-strategy.ts"
-import { OrderCodeStrategy, RequestContext } from '@vendure/core';
+import { OrderCodeStrategy, RequestContext } from '@bb-vendure/core';
 import { OrderCodeService } from '../services/order-code.service';
 
 export class MyOrderCodeStrategy implements OrderCodeStrategy {
@@ -58,7 +58,7 @@ connecting to our backend service which generates the order codes.
 We then need to pass this custom strategy to our config:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 import { MyOrderCodeStrategy } from '../config/my-order-code-strategy';
 
 export const config: VendureConfig = {
@@ -88,7 +88,7 @@ selects a location within a given proximity to the customer's address. You might
 in your config:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 import { MyStockLocationStrategy } from '../config/my-stock-location-strategy';
 
 export const config: VendureConfig = {
@@ -103,7 +103,7 @@ export const config: VendureConfig = {
 This config will be passed to the strategy's constructor:
 
 ```ts title="src/config/my-stock-location-strategy.ts"
-import  { ID, ProductVariant, RequestContext, StockLevel, StockLocationStrategy } from '@vendure/core';
+import  { ID, ProductVariant, RequestContext, StockLevel, StockLocationStrategy } from '@bb-vendure/core';
 
 export class MyStockLocationStrategy implements StockLocationStrategy {
 
@@ -163,7 +163,7 @@ When one is selected, the UI will allow you to configure the arguments for that 
 Let's take a look at a simplified implementation of the `variantNameCollectionFilter`:
 
 ```ts title="variant-name-collection-filter.ts"
-import { CollectionFilter, LanguageCode } from '@vendure/core';
+import { CollectionFilter, LanguageCode } from '@bb-vendure/core';
 
 export const variantNameCollectionFilter = new CollectionFilter({
     args: {
@@ -208,7 +208,7 @@ and any additional configuration.
 As an example let's look at the `dummyPaymentMethodHandler`, a test payment method which we ship with Vendure core:
 
 ```ts title="dummy-payment-method.ts"
-import { PaymentMethodHandler, LanguageCode } from '@vendure/core';
+import { PaymentMethodHandler, LanguageCode } from '@bb-vendure/core';
 
 export const dummyPaymentHandler = new PaymentMethodHandler({
     code: 'dummy-payment-handler',
@@ -335,7 +335,7 @@ a class when you define a configurable operation. Instead, you can store the dep
 Here’s an example of a ShippingCalculator that injects a service which has been defined in a plugin:
 
 ```ts title="src/config/custom-shipping-calculator.ts"
-import { Injector, ShippingCalculator } from '@vendure/core';
+import { Injector, ShippingCalculator } from '@bb-vendure/core';
 import { ShippingRatesService } from './shipping-rates.service';
 
 // We keep reference to our injected service by keeping it

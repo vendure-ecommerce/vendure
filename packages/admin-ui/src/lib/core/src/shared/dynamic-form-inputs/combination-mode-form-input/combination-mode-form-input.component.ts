@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, Optional } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
-import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/common/lib/shared-types';
+import { DefaultFormComponentConfig, DefaultFormComponentId } from '@bb-vendure/common/lib/shared-types';
 import { Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 

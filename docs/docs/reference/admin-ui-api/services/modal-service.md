@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ModalService
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/modal/modal.service.ts" sourceLine="21" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/modal/modal.service.ts" sourceLine="21" packageName="@bb-vendure/admin-ui" />
 
 This service is responsible for instantiating a ModalDialog component and
 embedding the specified component within.
@@ -87,7 +87,7 @@ Displays a modal dialog with the provided title, body and buttons.
 
 ## Dialog
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/modal/modal.types.ts" sourceLine="9" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/modal/modal.types.ts" sourceLine="9" packageName="@bb-vendure/admin-ui" />
 
 Any component intended to be used with the ModalService.fromComponent() method must implement
 this interface.
@@ -114,7 +114,7 @@ to this method and then complete.
 
 ## DialogConfig
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/modal/modal.types.ts" sourceLine="33" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/modal/modal.types.ts" sourceLine="33" packageName="@bb-vendure/admin-ui" />
 
 Configures a generic modal dialog.
 
@@ -162,7 +162,7 @@ interface DialogConfig<T> {
 
 ## ModalOptions
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/modal/modal.types.ts" sourceLine="48" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/modal/modal.types.ts" sourceLine="48" packageName="@bb-vendure/admin-ui" />
 
 Options to configure the behaviour of the modal.
 

@@ -3,7 +3,7 @@ import {
     AssetPreviewStrategy,
     AssetStorageStrategy,
     RequestContext,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 
 export type ImageTransformFormat = 'jpg' | 'jpeg' | 'png' | 'webp' | 'avif';
 

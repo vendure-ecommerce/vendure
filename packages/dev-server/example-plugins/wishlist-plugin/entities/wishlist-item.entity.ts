@@ -1,4 +1,4 @@
-import { DeepPartial, ID, ProductVariant, VendureEntity } from '@vendure/core';
+import { DeepPartial, ID, ProductVariant, VendureEntity } from '@bb-vendure/core';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 @Entity()

@@ -1,4 +1,4 @@
-import { bootstrap, JobQueueService } from '@vendure/core';
+import { bootstrap, JobQueueService } from '@bb-vendure/core';
 
 import { devConfig } from './dev-config';
 

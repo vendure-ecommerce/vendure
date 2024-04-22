@@ -12,7 +12,7 @@ This is a guide to the recommended configuration for a production Vendure applic
 
 Keep sensitive information or context-dependent settings in environment variables. In local development you can store the values in a `.env` file. For production, you should use the mechanism provided by your hosting platform to set the values for production.
 
-The default `@vendure/create` project scaffold makes use of environment variables already. For example:
+The default `@bb-vendure/create` project scaffold makes use of environment variables already. For example:
 
 ```ts
 const IS_DEV = process.env.APP_ENV === 'dev';
@@ -29,7 +29,7 @@ If you are using [Docker or Kubernetes](/guides/deployment/using-docker), they i
 Ensure you set the superadmin credentials to something other than the default of `superadmin:superadmin`. Use your hosting platform's environment variables to set a **strong** password for the Superadmin account.
 
 ```ts
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
   authOptions: {
@@ -50,18 +50,18 @@ It is recommended that you install and configure the [HardenPlugin](/reference/c
 Install the plugin: 
 
 ```sh
-npm install @vendure/harden-plugin
+npm install @bb-vendure/harden-plugin
 
 # or
 
-yarn add @vendure/harden-plugin
+yarn add @bb-vendure/harden-plugin
 ```
 
 Then add it to your VendureConfig:
 
 ```ts
-import { VendureConfig } from '@vendure/core';
-import { HardenPlugin } from '@vendure/harden-plugin';
+import { VendureConfig } from '@bb-vendure/core';
+import { HardenPlugin } from '@bb-vendure/harden-plugin';
 
 const IS_DEV = process.env.APP_ENV === 'dev';
 
@@ -88,7 +88,7 @@ By default, Vendure uses auto-increment integer IDs as entity primary keys. Whil
 For this reason you should consider using the UuidIdStrategy for production.
 
 ```ts title="src/vendure-config.ts"
-import { UuidIdStrategy, VendureConfig } from '@vendure/core';
+import { UuidIdStrategy, VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
     entityOptions: {

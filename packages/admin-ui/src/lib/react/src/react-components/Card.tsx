@@ -6,7 +6,7 @@ import React, { PropsWithChildren } from 'react';
  *
  * @example
  * ```ts
- * import { Card } from '@vendure/admin-ui/react';
+ * import { Card } from '@bb-vendure/admin-ui/react';
  *
  * export function MyComponent() {
  *   return (

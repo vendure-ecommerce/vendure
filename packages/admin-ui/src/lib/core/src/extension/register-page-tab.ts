@@ -7,7 +7,7 @@ import { PageService, PageTabConfig } from '../providers/page/page.service';
  *
  * @example
  * ```ts title="providers.ts"
- * import { registerPageTab } from '@vendure/admin-ui/core';
+ * import { registerPageTab } from '@bb-vendure/admin-ui/core';
  * import { DeletedProductListComponent } from './components/deleted-product-list/deleted-product-list.component';
  *
  * export default [

@@ -1,8 +1,8 @@
-import { CustomerHistoryEntryData } from '@vendure/core';
+import { CustomerHistoryEntryData } from '@bb-vendure/core';
 
 export const CUSTOM_TYPE = 'CUSTOM_TYPE';
 
-declare module '@vendure/core' {
+declare module '@bb-vendure/core' {
     interface OrderHistoryEntryData {
         [CUSTOM_TYPE]: { message: string };
     }

@@ -56,7 +56,7 @@ export const ACTIVE_ORDER_INPUT_FIELD_NAME = 'activeOrderInput';
  *
  * @example
  * ```ts
- * import { ID } from '\@vendure/common/lib/shared-types';
+ * import { ID } from '\@bb-vendure/common/lib/shared-types';
  * import {
  *   ActiveOrderStrategy,
  *   CustomerService,
@@ -66,7 +66,7 @@ export const ACTIVE_ORDER_INPUT_FIELD_NAME = 'activeOrderInput';
  *   OrderService,
  *   RequestContext,
  *   TransactionalConnection,
- * } from '\@vendure/core';
+ * } from '\@bb-vendure/core';
  * import gql from 'graphql-tag';
  *
  * // This strategy assumes a "orderToken" custom field is defined on the Order

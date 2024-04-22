@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { Args, Query, Mutation, Resolver } from '@nestjs/graphql';
-import type { PaginatedList } from '@vendure/core';
+import type { PaginatedList } from '@bb-vendure/core';
 import {
   Logger,
   Ctx,
@@ -13,7 +13,7 @@ import {
   Populator,
   ChannelService,
   ProductService,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import { LOGGER_CTX } from '../../../constants';
 import { SupplierStockInTransit } from '../../../entities/supplier-stock-in-transit.entity';
 import { SupplierStock } from '../../../entities/supplier-stock.entity';

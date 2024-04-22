@@ -1,5 +1,5 @@
-import { AdjustmentType } from '@vendure/common/lib/generated-types';
-import { summate } from '@vendure/common/lib/shared-utils';
+import { AdjustmentType } from '@bb-vendure/common/lib/generated-types';
+import { summate } from '@bb-vendure/common/lib/shared-utils';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import { ensureConfigLoaded } from '../../config/config-helpers';

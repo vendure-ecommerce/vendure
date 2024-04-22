@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## MigrationOptions
 
-<GenerationInfo sourceFile="packages/core/src/migrate.ts" sourceLine="19" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/migrate.ts" sourceLine="19" packageName="@bb-vendure/core" />
 
 Configuration for generating a new migration script via <a href='/reference/typescript-api/migration/generate-migration#generatemigration'>generateMigration</a>.
 

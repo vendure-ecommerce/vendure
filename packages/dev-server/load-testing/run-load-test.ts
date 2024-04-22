@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { INestApplication } from '@nestjs/common';
-import { bootstrap, JobQueueService } from '@vendure/core';
+import { bootstrap, JobQueueService } from '@bb-vendure/core';
 import { spawn } from 'child_process';
 import stringify from 'csv-stringify';
 import fs from 'fs';

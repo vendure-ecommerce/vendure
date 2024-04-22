@@ -1,6 +1,6 @@
 import { Component, inject, InjectionToken, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormGroup, UntypedFormGroup } from '@angular/forms';
-import { CustomDetailComponent } from '@vendure/admin-ui/core';
+import { CustomDetailComponent } from '@bb-vendure/admin-ui/core';
 import { ElementType } from 'react';
 import { Observable } from 'rxjs';
 import { ReactComponentHostDirective } from '../directives/react-component-host.directive';

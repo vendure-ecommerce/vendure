@@ -1,6 +1,6 @@
-import { LogicalOperator } from '@vendure/common/lib/generated-types';
-import { Type } from '@vendure/common/lib/shared-types';
-import { assertNever } from '@vendure/common/lib/shared-utils';
+import { LogicalOperator } from '@bb-vendure/common/lib/generated-types';
+import { Type } from '@bb-vendure/common/lib/shared-types';
+import { assertNever } from '@bb-vendure/common/lib/shared-utils';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { DateUtils } from 'typeorm/util/DateUtils';
 

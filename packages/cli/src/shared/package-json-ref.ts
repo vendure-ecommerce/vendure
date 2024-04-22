@@ -15,7 +15,7 @@ export class PackageJson {
 
     determineVendureVersion(): string | undefined {
         const packageJson = this.getPackageJsonContent();
-        return packageJson.dependencies['@vendure/core'];
+        return packageJson.dependencies['@bb-vendure/core'];
     }
 
     async installPackages(requiredPackages: PackageToInstall[]) {

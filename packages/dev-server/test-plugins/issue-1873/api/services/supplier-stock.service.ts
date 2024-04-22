@@ -4,8 +4,8 @@ import type {
   PaginatedList,
   RelationPaths,
   RequestContext,
-} from '@vendure/core';
-import { ListQueryBuilder } from '@vendure/core';
+} from '@bb-vendure/core';
+import { ListQueryBuilder } from '@bb-vendure/core';
 import { SupplierStock } from '../../entities/supplier-stock.entity';
 
 @Injectable()

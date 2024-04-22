@@ -1,6 +1,6 @@
 # Generated Admin UI
 
-This directory and its entire contents was generated the `compileUiExtensions()` function of the `@vendure/ui-devkit/compiler` package. It is not recommended to modify these files, since any changes will be overwritten upon re-compiling the ui extensions.
+This directory and its entire contents was generated the `compileUiExtensions()` function of the `@bb-vendure/ui-devkit/compiler` package. It is not recommended to modify these files, since any changes will be overwritten upon re-compiling the ui extensions.
 
 ## Production app
 

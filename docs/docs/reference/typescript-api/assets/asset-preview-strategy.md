@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AssetPreviewStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/asset-preview-strategy/asset-preview-strategy.ts" sourceLine="25" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/asset-preview-strategy/asset-preview-strategy.ts" sourceLine="25" packageName="@bb-vendure/core" />
 
 The AssetPreviewStrategy determines how preview images for assets are created. For image
 assets, this would usually typically involve resizing to sensible dimensions. Other file types

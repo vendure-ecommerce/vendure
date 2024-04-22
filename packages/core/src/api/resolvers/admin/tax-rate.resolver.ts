@@ -8,8 +8,8 @@ import {
     Permission,
     QueryTaxRateArgs,
     QueryTaxRatesArgs,
-} from '@vendure/common/lib/generated-types';
-import { PaginatedList } from '@vendure/common/lib/shared-types';
+} from '@bb-vendure/common/lib/generated-types';
+import { PaginatedList } from '@bb-vendure/common/lib/shared-types';
 
 import { TaxRate } from '../../../entity/tax-rate/tax-rate.entity';
 import { TaxRateService } from '../../../service/services/tax-rate.service';

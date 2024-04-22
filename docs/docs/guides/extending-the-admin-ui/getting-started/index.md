@@ -30,20 +30,20 @@ setting up the necessary files and folders for your UI extensions.
 It is recommended to use the `vendure add` command as described above, but if you prefer to set up the 
 Admin UI extensions manually, follow these steps:
 
-First, install the [`@vendure/ui-devkit` package](https://www.npmjs.com/package/@vendure/ui-devkit) as a dev dependency:
+First, install the [`@bb-vendure/ui-devkit` package](https://www.npmjs.com/package/@bb-vendure/ui-devkit) as a dev dependency:
 
 <Tabs>
 <TabItem value="npm" label="npm" default>
 
 ```bash
-npm install --save-dev @vendure/ui-devkit
+npm install --save-dev @bb-vendure/ui-devkit
 ```
 
 </TabItem>
 <TabItem value="yarn" label="yarn">
 
 ```bash
-yarn add --dev @vendure/ui-devkit
+yarn add --dev @bb-vendure/ui-devkit
 ```
 
 </TabItem>
@@ -64,7 +64,7 @@ src
 Let's add a simple UI extension that adds a new button to the "order list" page. We'll leave the routes file empty for now.
 
 ```ts title="src/plugins/my-plugin/ui/providers.ts"
-import { addActionBarItem } from '@vendure/admin-ui/core';
+import { addActionBarItem } from '@bb-vendure/admin-ui/core';
 
 export default [
     addActionBarItem({
@@ -78,10 +78,10 @@ export default [
 You can then use the [`compileUiExtensions` function](/reference/admin-ui-api/ui-devkit/compile-ui-extensions/) to compile your UI extensions and add them to the Admin UI app bundle.
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
-import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
+import { VendureConfig } from '@bb-vendure/core';
+import { AdminUiPlugin } from '@bb-vendure/admin-ui-plugin';
 // highlight-next-line
-import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
+import { compileUiExtensions } from '@bb-vendure/ui-devkit/compiler';
 import * as path from 'path';
 
 export const config: VendureConfig = {
@@ -159,7 +159,7 @@ With providers you can:
 A providers file should have a **default export** which is an array of providers:
 
 ```ts title="src/plugins/my-plugin/ui/providers.ts"
-import { addActionBarItem } from '@vendure/admin-ui/core';
+import { addActionBarItem } from '@bb-vendure/admin-ui/core';
 
 export default [
     addActionBarItem({
@@ -175,7 +175,7 @@ export default [
 When defining UI extensions in the `compileUiExtensions()` function, you must specify at least one providers file. This is done by passing an array of file paths, where each file path is relative to the directory specified by the `extensionPath` option.
 
 ```ts title="src/vendure-config.ts"
-import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
+import { compileUiExtensions } from '@bb-vendure/ui-devkit/compiler';
 import * as path from 'path';
 
 // ... omitted for brevity
@@ -206,7 +206,7 @@ In addition to the specialized UI extension providers listed above, the provider
 
 ```ts title="src/plugins/my-plugin/ui/providers.ts"
 import { Injectable } from '@angular/core';
-import { addActionBarItem } from '@vendure/admin-ui/core';
+import { addActionBarItem } from '@bb-vendure/admin-ui/core';
 
 // highlight-start
 @Injectable()
@@ -249,9 +249,9 @@ For a detailed instructions, see the [Defining Routes guide](/guides/extending-t
 When you are developing your Admin UI extension, you can set the `devMode` option to `true` which will compile the Admin UI app in development mode, and recompile and auto-refresh the browser on any changes to your extension source files.
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
-import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
-import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
+import { VendureConfig } from '@bb-vendure/core';
+import { AdminUiPlugin } from '@bb-vendure/admin-ui-plugin';
+import { compileUiExtensions } from '@bb-vendure/ui-devkit/compiler';
 import * as path from 'path';
 
 export const config: VendureConfig = {
@@ -278,7 +278,7 @@ export const config: VendureConfig = {
 Although the examples so far all use the `compileUiExtensions` function in conjunction with the AdminUiPlugin, it is also possible to use it on its own:
 
 ```ts title="src/compile-admin-ui.ts"
-import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
+import { compileUiExtensions } from '@bb-vendure/ui-devkit/compiler';
 import * as path from 'path';
 
 compileUiExtensions({
@@ -315,8 +315,8 @@ yarn ts-node compile-admin-ui.ts
 Once complete, the production-ready app bundle will be output to `admin-ui/dist`. This method is suitable for a production setup, so that the Admin UI can be compiled ahead-of-time as part of your deployment process. This ensures that your Vendure server starts up as quickly as possible. In this case, you can pass the path of the compiled app to the AdminUiPlugin:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
-import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
+import { VendureConfig } from '@bb-vendure/core';
+import { AdminUiPlugin } from '@bb-vendure/admin-ui-plugin';
 import * as path from 'path';
 
 export const config: VendureConfig = {
@@ -411,7 +411,7 @@ Next we need to declare an Angular module to house the component:
 ```ts title="src/plugins/greeter/ui/greeter.module.ts"
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { SharedModule } from '@vendure/admin-ui/core';
+import { SharedModule } from '@bb-vendure/admin-ui/core';
 import { GreeterComponent } from './greeter.component';
 
 @NgModule({
@@ -438,9 +438,9 @@ Now we need to tell the `compileUiExtensions` function where to find the extensi
 
 ```ts title="src/vendure-config.ts"
 import path from 'path';
-import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
-import { VendureConfig } from '@vendure/core';
-import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
+import { AdminUiPlugin } from '@bb-vendure/admin-ui-plugin';
+import { VendureConfig } from '@bb-vendure/core';
+import { compileUiExtensions } from '@bb-vendure/ui-devkit/compiler';
 
 export const config: VendureConfig = {
     // ...
@@ -472,7 +472,7 @@ Here's an example of the legacy API for defining a shared module:
 
 ```ts title="src/plugins/invoices/ui/invoice-shared.module.ts"
 import { NgModule } from '@angular/core';
-import { SharedModule, addActionBarItem } from '@vendure/admin-ui/core';
+import { SharedModule, addActionBarItem } from '@bb-vendure/admin-ui/core';
 
 @NgModule({
     imports: [SharedModule],
@@ -494,9 +494,9 @@ export class InvoiceSharedModule {}
 
 ```ts title="src/vendure-config.ts"
 import path from 'path';
-import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
-import { VendureConfig } from '@vendure/core';
-import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
+import { AdminUiPlugin } from '@bb-vendure/admin-ui-plugin';
+import { VendureConfig } from '@bb-vendure/core';
+import { compileUiExtensions } from '@bb-vendure/ui-devkit/compiler';
 
 export const config: VendureConfig = {
     // ...
@@ -529,7 +529,7 @@ If you have existing UI extensions written using the legacy API, you can migrate
   ```ts
   import { Component } from '@angular/core';
   // highlight-next-line
-  import { SharedModule } from '@vendure/admin-ui/core';
+  import { SharedModule } from '@bb-vendure/admin-ui/core';
   
   @Component({
       selector: 'greeter',

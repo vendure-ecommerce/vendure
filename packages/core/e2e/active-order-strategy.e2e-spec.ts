@@ -1,6 +1,6 @@
-import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { mergeConfig, orderPercentageDiscount } from '@vendure/core';
-import { createTestEnvironment } from '@vendure/testing';
+import { LanguageCode } from '@bb-vendure/common/lib/generated-types';
+import { mergeConfig, orderPercentageDiscount } from '@bb-vendure/core';
+import { createTestEnvironment } from '@bb-vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';

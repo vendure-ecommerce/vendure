@@ -1,5 +1,5 @@
-import { mergeConfig } from '@vendure/core';
-import { createTestEnvironment } from '@vendure/testing';
+import { mergeConfig } from '@bb-vendure/core';
+import { createTestEnvironment } from '@bb-vendure/testing';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 

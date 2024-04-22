@@ -1,4 +1,4 @@
-import { registerReactRouteComponent } from '@vendure/admin-ui/react';
+import { registerReactRouteComponent } from '@bb-vendure/admin-ui/react';
 
 import { Greeter } from './components/Greeter';
 import { ProductList } from './components/ProductList';

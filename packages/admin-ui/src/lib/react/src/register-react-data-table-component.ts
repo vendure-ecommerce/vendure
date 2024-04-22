@@ -3,7 +3,7 @@ import {
     DataTableColumnId,
     DataTableCustomComponentService,
     DataTableLocationId,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { ElementType } from 'react';
 import {
     REACT_CUSTOM_COLUMN_COMPONENT_OPTIONS,
@@ -57,7 +57,7 @@ export interface ReactDataTableComponentProps<T = any> {
  *
  * @example
  * ```ts title="components/SlugWithLink.tsx"
- * import { ReactDataTableComponentProps } from '\@vendure/admin-ui/react';
+ * import { ReactDataTableComponentProps } from '\@bb-vendure/admin-ui/react';
  * import React from 'react';
  *
  * export function SlugWithLink({ rowItem }: ReactDataTableComponentProps<{ slug: string }>) {
@@ -70,7 +70,7 @@ export interface ReactDataTableComponentProps<T = any> {
  * ```
  *
  * ```ts title="providers.ts"
- * import { registerReactDataTableComponent } from '\@vendure/admin-ui/react';
+ * import { registerReactDataTableComponent } from '\@bb-vendure/admin-ui/react';
  * import { SlugWithLink } from './components/SlugWithLink';
  *
  * export default [

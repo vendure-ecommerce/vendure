@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## BaseDetailComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/base-detail.component.ts" sourceLine="57" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/base-detail.component.ts" sourceLine="57" packageName="@bb-vendure/admin-ui" />
 
 A base class for entity detail views. It should be used in conjunction with the
 <a href='/reference/admin-ui-api/list-detail-views/base-entity-resolver#baseentityresolver'>BaseEntityResolver</a>.

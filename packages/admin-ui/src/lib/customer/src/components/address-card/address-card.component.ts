@@ -10,7 +10,7 @@ import {
     SimpleChanges,
 } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { CustomFieldConfig, GetAvailableCountriesQuery, ModalService } from '@vendure/admin-ui/core';
+import { CustomFieldConfig, GetAvailableCountriesQuery, ModalService } from '@bb-vendure/admin-ui/core';
 import { BehaviorSubject } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## defaultFulfillmentProcess
 
-<GenerationInfo sourceFile="packages/core/src/config/fulfillment/default-fulfillment-process.ts" sourceLine="45" packageName="@vendure/core" since="2.0.0" />
+<GenerationInfo sourceFile="packages/core/src/config/fulfillment/default-fulfillment-process.ts" sourceLine="45" packageName="@bb-vendure/core" since="2.0.0" />
 
 The default <a href='/reference/typescript-api/fulfillment/fulfillment-process#fulfillmentprocess'>FulfillmentProcess</a>. This process includes the following actions:
 
@@ -26,7 +26,7 @@ The default <a href='/reference/typescript-api/fulfillment/fulfillment-process#f
 
 ## FulfillmentProcess
 
-<GenerationInfo sourceFile="packages/core/src/config/fulfillment/fulfillment-process.ts" sourceLine="26" packageName="@vendure/core" since="2.0.0" />
+<GenerationInfo sourceFile="packages/core/src/config/fulfillment/fulfillment-process.ts" sourceLine="26" packageName="@bb-vendure/core" since="2.0.0" />
 
 A FulfillmentProcess is used to define the way the fulfillment process works as in: what states a Fulfillment can be
 in, and how it may transition from one state to another. Using the `onTransitionStart()` hook, a
@@ -52,7 +52,8 @@ interface FulfillmentProcess<State extends keyof CustomFulfillmentStates | strin
 
 ### transitions
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/state-machine/transitions#transitions'>Transitions</a>&#60;State, State | <a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>&#62; &#38;         Partial&#60;<a href='/reference/typescript-api/state-machine/transitions#transitions'>Transitions</a>&#60;<a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a> | State&#62;&#62;`}   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/state-machine/transitions#transitions'>Transitions</a>&#60;State, State | <a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>&#62; &#38;
+         Partial&#60;<a href='/reference/typescript-api/state-machine/transitions#transitions'>Transitions</a>&#60;<a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a> | State&#62;&#62;`}   />
 
 
 ### onTransitionStart

@@ -80,7 +80,7 @@ In v2, the hard-coded states & transition logic for the Order, Fulfillment and P
 What this means is that if you are defining a custom process, you'll now need to explicitly add the default process to the array.
 
 ```diff
-+ import { defaultOrderProcess } from '@vendure/core';
++ import { defaultOrderProcess } from '@bb-vendure/core';
 
 orderOptions: {
 -  process: [myCustomOrderProcess],
@@ -140,7 +140,7 @@ Instead, this information is now located at `ProductVariant.stockLevels`, which 
 
 ### Admin UI changes
 
-If you are using the `@vendure/ui-devkit` package to generate custom ui extensions, here are the breaking changes to be aware of:
+If you are using the `@bb-vendure/ui-devkit` package to generate custom ui extensions, here are the breaking changes to be aware of:
 
 - As part of the major refresh to the Admin UI app, certain layout elements had be changed which can cause your custom routes to look bad. Wrapping all your custom pages in `<vdr-page-block>` (or `<div class="page-block">` if not built with Angular components) will improve things. There will soon be a comprehensive guide published on how to create seamless ui extensions that look just like the built-in screens.
 - If you use any of the scoped method of the Admin UI `DataService`, you might find that some no longer exist. They are now deprecated and will eventually be removed. Use the `dataService.query()` and `dataService.mutation()` methods only, passing your own GraphQL documents:
@@ -197,7 +197,7 @@ If you are using the `@vendure/ui-devkit` package to generate custom ui extensio
    }
    ```
 - The **Stripe plugin** has been made channel aware. This means your api key and webhook secret are now stored in the database, per channel, instead of environment variables.
-   To migrate to v2 of the Stripe plugin from @vendure/payments you need to:
+   To migrate to v2 of the Stripe plugin from @bb-vendure/payments you need to:
   1. Remove the apiKey and webhookSigningSecret from the plugin initialization in vendure-config.ts:
        ```diff
        StripePlugin.init({

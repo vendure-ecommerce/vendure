@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { omit } from '@vendure/common/lib/omit';
+import { omit } from '@bb-vendure/common/lib/omit';
 import {
     CUSTOMER_ROLE_CODE,
     DEFAULT_CHANNEL_CODE,
     SUPER_ADMIN_ROLE_CODE,
-} from '@vendure/common/lib/shared-constants';
-import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
+} from '@bb-vendure/common/lib/shared-constants';
+import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@bb-vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## InMemoryJobBufferStorageStrategy
 
-<GenerationInfo sourceFile="packages/core/src/job-queue/job-buffer/in-memory-job-buffer-storage-strategy.ts" sourceLine="17" packageName="@vendure/core" since="1.3.0" />
+<GenerationInfo sourceFile="packages/core/src/job-queue/job-buffer/in-memory-job-buffer-storage-strategy.ts" sourceLine="17" packageName="@bb-vendure/core" since="1.3.0" />
 
 A <a href='/reference/typescript-api/job-queue/job-buffer-storage-strategy#jobbufferstoragestrategy'>JobBufferStorageStrategy</a> which keeps the buffered jobs in memory. Should
 _not_ be used in production, since it will lose data in the event of the server

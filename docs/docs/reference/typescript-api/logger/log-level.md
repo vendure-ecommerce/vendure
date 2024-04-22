@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## LogLevel
 
-<GenerationInfo sourceFile="packages/core/src/config/logger/vendure-logger.ts" sourceLine="9" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/logger/vendure-logger.ts" sourceLine="9" packageName="@bb-vendure/core" />
 
 An enum of valid logging levels.
 

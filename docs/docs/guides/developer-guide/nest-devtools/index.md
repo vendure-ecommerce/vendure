@@ -22,7 +22,7 @@ npm i @nestjs/devtools-integration
 Next you need to create a plugin which imports the `DevToolsModule` and adds it to the `imports` array:
 
 ```ts title="src/plugins/devtools/devtools-plugin.ts"
-import { VendurePlugin } from '@vendure/core';
+import { VendurePlugin } from '@bb-vendure/core';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
 
 @VendurePlugin({
@@ -45,7 +45,7 @@ Lastly we must set the `snapshot` option when bootstrapping the server. Note: th
 with Vendure v2.2 or later.
 
 ```ts title="src/index.ts"
-import { bootstrap } from '@vendure/core';
+import { bootstrap } from '@bb-vendure/core';
 import { config } from './vendure-config';
 
 const configWithDevtools = {

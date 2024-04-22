@@ -1,4 +1,4 @@
-import { JobState } from '@vendure/common/lib/generated-types';
+import { JobState } from '@bb-vendure/common/lib/generated-types';
 import { Subject, Subscription } from 'rxjs';
 import { throttleTime } from 'rxjs/operators';
 

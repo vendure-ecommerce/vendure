@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## registerBulkAction
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/register-bulk-action.ts" sourceLine="52" packageName="@vendure/admin-ui" since="1.8.0" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/register-bulk-action.ts" sourceLine="52" packageName="@bb-vendure/admin-ui" since="1.8.0" />
 
 Registers a custom <a href='/reference/admin-ui-api/bulk-actions/bulk-action#bulkaction'>BulkAction</a> which can be invoked from the bulk action menu
 of any supported list view.
@@ -26,7 +26,7 @@ translation via a custom service which integrates with the translation service's
 *Example*
 
 ```ts title="providers.ts"
-import { ModalService, registerBulkAction, SharedModule } from '@vendure/admin-ui/core';
+import { ModalService, registerBulkAction, SharedModule } from '@bb-vendure/admin-ui/core';
 import { ProductDataTranslationService } from './product-data-translation.service';
 
 export default [

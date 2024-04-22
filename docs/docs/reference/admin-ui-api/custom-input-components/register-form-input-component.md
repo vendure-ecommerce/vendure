@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## registerFormInputComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/register-form-input-component.ts" sourceLine="53" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/register-form-input-component.ts" sourceLine="53" packageName="@bb-vendure/admin-ui" />
 
 Registers a custom FormInputComponent which can be used to control the argument inputs
 of a <a href='/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a> (e.g. CollectionFilter, ShippingMethod etc.) or for
@@ -20,7 +20,7 @@ a custom field.
 *Example*
 
 ```ts title="providers.ts"
-import { registerFormInputComponent } from '@vendure/admin-ui/core';
+import { registerFormInputComponent } from '@bb-vendure/admin-ui/core';
 
 export default [
     // highlight-next-line
@@ -33,7 +33,7 @@ This input component can then be used in a custom field:
 *Example*
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 
 const config: VendureConfig = {
   // ...

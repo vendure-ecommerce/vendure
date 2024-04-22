@@ -16,11 +16,11 @@ export * from './data-import/index';
 export * from './service/index';
 export * from './i18n/index';
 export * from './worker/index';
-export * from '@vendure/common/lib/shared-types';
+export * from '@bb-vendure/common/lib/shared-types';
 export {
     Permission,
     LanguageCode,
     CurrencyCode,
     AssetType,
     AdjustmentType,
-} from '@vendure/common/lib/generated-types';
+} from '@bb-vendure/common/lib/generated-types';

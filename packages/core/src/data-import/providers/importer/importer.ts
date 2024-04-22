@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { ImportInfo, LanguageCode } from '@vendure/common/lib/generated-types';
-import { normalizeString } from '@vendure/common/lib/normalize-string';
-import { ID } from '@vendure/common/lib/shared-types';
+import { ImportInfo, LanguageCode } from '@bb-vendure/common/lib/generated-types';
+import { normalizeString } from '@bb-vendure/common/lib/normalize-string';
+import { ID } from '@bb-vendure/common/lib/shared-types';
 import ProgressBar from 'progress';
 import { Observable } from 'rxjs';
 import { Stream } from 'stream';

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Region
 
-<GenerationInfo sourceFile="packages/core/src/entity/region/region.entity.ts" sourceLine="22" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/region/region.entity.ts" sourceLine="22" packageName="@bb-vendure/core" />
 
 A Region represents a geographical administrative unit, such as a Country, Province, State, Prefecture etc.
 This is an abstract class which is extended by the <a href='/reference/typescript-api/entities/country#country'>Country</a> and <a href='/reference/typescript-api/entities/province#province'>Province</a> entities.

@@ -1,7 +1,7 @@
 import { OnApplicationBootstrap, OnApplicationShutdown } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { SearchReindexResponse } from '@vendure/common/lib/generated-types';
-import { ID, Type } from '@vendure/common/lib/shared-types';
+import { SearchReindexResponse } from '@bb-vendure/common/lib/generated-types';
+import { ID, Type } from '@bb-vendure/common/lib/shared-types';
 import { buffer, debounceTime, delay, filter, map } from 'rxjs/operators';
 import { Column } from 'typeorm';
 
@@ -39,7 +39,7 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
  * The DefaultSearchPlugin provides a full-text Product search based on the full-text searching capabilities of the
  * underlying database.
  *
- * The DefaultSearchPlugin is bundled with the `\@vendure/core` package. If you are not using an alternative search
+ * The DefaultSearchPlugin is bundled with the `\@bb-vendure/core` package. If you are not using an alternative search
  * plugin, then make sure this one is used, otherwise you will not be able to search products via the
  * [`search` query](/reference/graphql-api/shop/queries#search).
  *
@@ -51,7 +51,7 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
  *
  * @example
  * ```ts
- * import { DefaultSearchPlugin, VendureConfig } from '\@vendure/core';
+ * import { DefaultSearchPlugin, VendureConfig } from '\@bb-vendure/core';
  *
  * export const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array

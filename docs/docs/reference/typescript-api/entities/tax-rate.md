@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TaxRate
 
-<GenerationInfo sourceFile="packages/core/src/entity/tax-rate/tax-rate.entity.ts" sourceLine="25" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/tax-rate/tax-rate.entity.ts" sourceLine="25" packageName="@bb-vendure/core" />
 
 A TaxRate defines the rate of tax to apply to a <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> based on three factors:
 

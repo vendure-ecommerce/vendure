@@ -7,7 +7,7 @@ showtoc: true
 
 Vendure plugins allow you to extend all aspects of the standard Vendure server. When a plugin gets somewhat complex (defining new entities, extending the GraphQL schema, implementing custom resolvers), you may wish to create automated tests to ensure your plugin is correct.
 
-The `@vendure/testing` package gives you some simple but powerful tooling for creating end-to-end tests for your custom Vendure code.
+The `@bb-vendure/testing` package gives you some simple but powerful tooling for creating end-to-end tests for your custom Vendure code.
 
 By "end-to-end" we mean we are testing the _entire server stack_ - from API, to services, to database - by making a real API request, and then making assertions about the response. This is a very effective way to ensure that _all_ parts of your plugin are working correctly together.
 
@@ -19,7 +19,7 @@ For a working example of a Vendure plugin with e2e testing, see the [real-world-
 
 ### Install dependencies
 
-* [`@vendure/testing`](https://www.npmjs.com/package/@vendure/testing)
+* [`@bb-vendure/testing`](https://www.npmjs.com/package/@bb-vendure/testing)
 * [`vitest`](https://vitest.dev/) You'll need to install a testing framework. In this example, we will use [Vitest](https://vitest.dev/) as it has very good support for the modern JavaScript features that Vendure uses, and is very fast.
 * [`graphql-tag`](https://www.npmjs.com/package/graphql-tag) This is not strictly required but makes it much easier to create the DocumentNodes needed to query your server.
 * We also need to install some packages to allow us to compile TypeScript code that uses decorators:
@@ -81,7 +81,7 @@ and a `tsconfig.e2e.json` tsconfig file for the tests:
 
 ### Register database-specific initializers
 
-The `@vendure/testing` package uses "initializers" to create the test databases and populate them with initial data. We ship with initializers for `sqljs`, `postgres` and `mysql`. Custom initializers can be created to support running e2e tests against other databases supported by TypeORM. See the [`TestDbInitializer` docs](/reference/typescript-api/testing/test-db-initializer/) for more details.
+The `@bb-vendure/testing` package uses "initializers" to create the test databases and populate them with initial data. We ship with initializers for `sqljs`, `postgres` and `mysql`. Custom initializers can be created to support running e2e tests against other databases supported by TypeORM. See the [`TestDbInitializer` docs](/reference/typescript-api/testing/test-db-initializer/) for more details.
 
 ```ts title="src/plugins/my-plugin/e2e/my-plugin.e2e-spec.ts"
 import {
@@ -89,7 +89,7 @@ import {
     PostgresInitializer,
     SqljsInitializer,
     registerInitializer,
-} from '@vendure/testing';
+} from '@bb-vendure/testing';
 
 const sqliteDataDir = path.join(__dirname, '__data__');
 
@@ -104,10 +104,10 @@ Note re. the `sqliteDataDir`: The first time this test suite is run with the `Sq
 
 ### Create a test environment
 
-The `@vendure/testing` package exports a [`createTestEnvironment` function](/reference/typescript-api/testing/create-test-environment/) which is used to set up a Vendure server and GraphQL clients to interact with both the Shop and Admin APIs:
+The `@bb-vendure/testing` package exports a [`createTestEnvironment` function](/reference/typescript-api/testing/create-test-environment/) which is used to set up a Vendure server and GraphQL clients to interact with both the Shop and Admin APIs:
 
 ```ts title="src/plugins/my-plugin/e2e/my-plugin.e2e-spec.ts"
-import { createTestEnvironment, testConfig } from '@vendure/testing';
+import { createTestEnvironment, testConfig } from '@bb-vendure/testing';
 import { describe } from 'vitest';
 import { MyPlugin } from '../my-plugin.ts';
 
@@ -124,7 +124,7 @@ describe('my plugin', () => {
 Notice that we pass a [`VendureConfig`](/reference/typescript-api/configuration/vendure-config/) object into the `createTestEnvironment` function. The testing package provides a special [`testConfig`](/reference/typescript-api/testing/test-config/) which is pre-configured for e2e tests, but any aspect can be overridden for your tests. Here we are configuring the server to load the plugin under test, `MyPlugin`. 
 
 :::caution
-**Note**: If you need to deeply merge in some custom configuration, use the [`mergeConfig` function](/reference/typescript-api/configuration/merge-config/) which is provided by `@vendure/core`.
+**Note**: If you need to deeply merge in some custom configuration, use the [`mergeConfig` function](/reference/typescript-api/configuration/merge-config/) which is provided by `@bb-vendure/core`.
 :::
 
 ### Initialize the server
@@ -194,7 +194,7 @@ All that's left is to run your tests to find out whether your code behaves as ex
 on the same port (the default in the `testConfig` is `3050`), then this will cause a port conflict. To avoid this, you can manually set a unique port for each test suite:
 
 ```ts title="src/plugins/my-plugin/e2e/my-plugin.e2e-spec.ts"
-import { createTestEnvironment, testConfig } from '@vendure/testing';
+import { createTestEnvironment, testConfig } from '@bb-vendure/testing';
 import { describe } from 'vitest';
 import { MyPlugin } from '../my-plugin.ts';
 
@@ -218,7 +218,7 @@ It is possible to access any internal service of the Vendure server via the `ser
 For example, to access the `ProductService`:
 
 ```ts title="src/plugins/my-plugin/e2e/my-plugin.e2e-spec.ts"
-import { createTestEnvironment, testConfig } from '@vendure/testing';
+import { createTestEnvironment, testConfig } from '@bb-vendure/testing';
 import { describe, beforeAll } from 'vitest';
 import { MyPlugin } from '../my-plugin.ts';
 

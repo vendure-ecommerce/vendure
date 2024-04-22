@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## FulfillmentLine
 
-<GenerationInfo sourceFile="packages/core/src/entity/order-line-reference/fulfillment-line.entity.ts" sourceLine="16" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/order-line-reference/fulfillment-line.entity.ts" sourceLine="16" packageName="@bb-vendure/core" />
 
 This entity represents a line from an <a href='/reference/typescript-api/entities/order#order'>Order</a> which has been fulfilled by a <a href='/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>.
 
@@ -53,7 +53,7 @@ class FulfillmentLine extends OrderLineReference {
 
 ## OrderLineReference
 
-<GenerationInfo sourceFile="packages/core/src/entity/order-line-reference/order-line-reference.entity.ts" sourceLine="15" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/order-line-reference/order-line-reference.entity.ts" sourceLine="15" packageName="@bb-vendure/core" />
 
 This is an abstract base class for entities which reference an <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>.
 
@@ -96,7 +96,7 @@ class OrderLineReference extends VendureEntity {
 
 ## OrderModificationLine
 
-<GenerationInfo sourceFile="packages/core/src/entity/order-line-reference/order-modification-line.entity.ts" sourceLine="16" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/order-line-reference/order-modification-line.entity.ts" sourceLine="16" packageName="@bb-vendure/core" />
 
 This entity represents a line from an <a href='/reference/typescript-api/entities/order#order'>Order</a> which has been modified by an <a href='/reference/typescript-api/entities/order-modification#ordermodification'>OrderModification</a>.
 
@@ -138,7 +138,7 @@ class OrderModificationLine extends OrderLineReference {
 
 ## RefundLine
 
-<GenerationInfo sourceFile="packages/core/src/entity/order-line-reference/refund-line.entity.ts" sourceLine="16" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/order-line-reference/refund-line.entity.ts" sourceLine="16" packageName="@bb-vendure/core" />
 
 This entity represents a line from an <a href='/reference/typescript-api/entities/order#order'>Order</a> which has been refunded by a {@link Refund}.
 

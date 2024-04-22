@@ -1,5 +1,5 @@
-import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { ConfigModule, VendurePlugin } from '@vendure/core';
+import { LanguageCode } from '@bb-vendure/common/lib/generated-types';
+import { ConfigModule, VendurePlugin } from '@bb-vendure/core';
 
 @VendurePlugin({
     imports: [ConfigModule],

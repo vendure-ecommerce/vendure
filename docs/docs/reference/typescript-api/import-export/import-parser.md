@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ImportParser
 
-<GenerationInfo sourceFile="packages/core/src/data-import/providers/import-parser/import-parser.ts" sourceLine="152" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/data-import/providers/import-parser/import-parser.ts" sourceLine="152" packageName="@bb-vendure/core" />
 
 Validates and parses CSV files into a data structure which can then be used to created new entities.
 This is used internally by the <a href='/reference/typescript-api/import-export/importer#importer'>Importer</a>.
@@ -37,7 +37,7 @@ returns a data structure which can then be used to populate Vendure using the <a
 
 ## ParsedOptionGroup
 
-<GenerationInfo sourceFile="packages/core/src/data-import/providers/import-parser/import-parser.ts" sourceLine="45" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/data-import/providers/import-parser/import-parser.ts" sourceLine="45" packageName="@bb-vendure/core" />
 
 The intermediate representation of an OptionGroup after it has been parsed
 by the <a href='/reference/typescript-api/import-export/import-parser#importparser'>ImportParser</a>.
@@ -56,13 +56,17 @@ interface ParsedOptionGroup {
 
 ### translations
 
-<MemberInfo kind="property" type={`Array&#60;{         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         name: string;         values: string[];     }&#62;`}   />
+<MemberInfo kind="property" type={`Array&#60;{
+         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;
+         name: string;
+         values: string[];
+     }&#62;`}   />
 
 
 
 
 </div>
-
+@bb-vendure
 
 ## ParsedFacet
 
@@ -85,9 +89,13 @@ interface ParsedFacet {
 
 ### translations
 
-<MemberInfo kind="property" type={`Array&#60;{         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         facet: string;         value: string;     }&#62;`}   />
+<MemberInfo kind="property" type={`Array&#60;{
+         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;
+         facet: string;
+         value: string;
+     }&#62;`}   />
 
-
+@bb-vendure
 
 
 </div>
@@ -158,7 +166,13 @@ interface ParsedProductVariant {
 
 ### translations
 
-<MemberInfo kind="property" type={`Array&#60;{         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         optionValues: string[];         customFields: {             [name: string]: string;         };     }&#62;`}   />
+<MemberInfo kind="property" type={`Array&#60;{
+         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;
+         optionValues: string[];@bb-vendure
+         customFields: {
+             [name: string]: string;
+         };
+     }&#62;`}   />
 
 
 
@@ -205,11 +219,19 @@ interface ParsedProduct {
 ### facets
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/import-export/import-parser#parsedfacet'>ParsedFacet</a>[]`}   />
-
+@bb-vendure
 
 ### translations
 
-<MemberInfo kind="property" type={`Array&#60;{         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;         name: string;         slug: string;         description: string;         customFields: {             [name: string]: string;         };     }&#62;`}   />
+<MemberInfo kind="property" type={`Array&#60;{
+         languageCode: <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>;
+         name: string;
+         slug: string;
+         description: string;
+         customFields: {
+             [name: string]: string;
+         };
+     }&#62;`}   />
 
 
 
@@ -228,7 +250,7 @@ The data structure into which an import CSV file is parsed by the
 interface ParsedProductWithVariants {
     product: ParsedProduct;
     variants: ParsedProductVariant[];
-}
+}@bb-vendure
 ```
 
 <div className="members-wrapper">

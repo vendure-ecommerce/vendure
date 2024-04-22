@@ -31,7 +31,7 @@ GraphQL requests are made over HTTP, so you can use any HTTP client such as the 
 Vendure supports two ways to manage user sessions: **cookies** and **bearer token**. The method you choose depends on your requirements, and is specified by the [`authOptions.tokenMethod` property](/reference/typescript-api/auth/auth-options/#tokenmethod) of the VendureConfig. By default, both are enabled on the server:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
     // ...
@@ -53,7 +53,7 @@ Using cookies is the simpler approach for browser-based applications, since the 
 2. When using cookie-based sessions, you should set the [`authOptions.cookieOptions.secret` property](/reference/typescript-api/auth/cookie-options#secret) to some secret string which will be used to sign the cookies sent to clients to prevent tampering. This string could be hard-coded in your config file, or (better) reside in an environment variable:
 
     ```ts title="src/vendure-config.ts"
-    import { VendureConfig } from '@vendure/core';
+    import { VendureConfig } from '@bb-vendure/core';
 
     export const config: VendureConfig = {
         // ...

@@ -44,7 +44,7 @@ The [`StockDisplayStrategy`](/reference/typescript-api/products-stock/stock-disp
 You can implement a custom strategy to display stock levels in a different way. Here's how you would implement a custom strategy to display exact stock levels:
 
 ```ts title="src/exact-stock-display-strategy.ts"
-import { RequestContext, StockDisplayStrategy, ProductVariant } from '@vendure/core';
+import { RequestContext, StockDisplayStrategy, ProductVariant } from '@bb-vendure/core';
 
 export class ExactStockDisplayStrategy implements StockDisplayStrategy {
     getStockLevel(ctx: RequestContext, productVariant: ProductVariant, saleableStockLevel: number): string {
@@ -56,7 +56,7 @@ export class ExactStockDisplayStrategy implements StockDisplayStrategy {
 This strategy is then used in your config:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 import { ExactStockDisplayStrategy } from './exact-stock-display-strategy';
 
 export const config: VendureConfig = {

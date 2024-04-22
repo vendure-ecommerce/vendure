@@ -10,7 +10,7 @@ import {
     NotificationService,
     Permission,
     TypedBaseDetailComponent,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
 import { switchMap, tap, withLatestFrom } from 'rxjs/operators';
 

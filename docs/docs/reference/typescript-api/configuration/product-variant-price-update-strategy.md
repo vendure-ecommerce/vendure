@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ProductVariantPriceUpdateStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/catalog/product-variant-price-update-strategy.ts" sourceLine="58" packageName="@vendure/core" since="2.2.0" />
+<GenerationInfo sourceFile="packages/core/src/config/catalog/product-variant-price-update-strategy.ts" sourceLine="58" packageName="@bb-vendure/core" since="2.2.0" />
 
 This strategy determines how updates to a ProductVariantPrice is handled in regard to
 any other prices which may be associated with the same ProductVariant.
@@ -95,7 +95,7 @@ the prices of the specific ProductVariantPrices.
 
 ## DefaultProductVariantPriceUpdateStrategyOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/catalog/default-product-variant-price-update-strategy.ts" sourceLine="14" packageName="@vendure/core" since="2.2.0" />
+<GenerationInfo sourceFile="packages/core/src/config/catalog/default-product-variant-price-update-strategy.ts" sourceLine="14" packageName="@bb-vendure/core" since="2.2.0" />
 
 The options available to the <a href='/reference/typescript-api/configuration/product-variant-price-update-strategy#defaultproductvariantpriceupdatestrategy'>DefaultProductVariantPriceUpdateStrategy</a>.
 
@@ -122,7 +122,7 @@ case, a custom strategy should be implemented.
 
 ## DefaultProductVariantPriceUpdateStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/catalog/default-product-variant-price-update-strategy.ts" sourceLine="56" packageName="@vendure/core" since="2.2.0" />
+<GenerationInfo sourceFile="packages/core/src/config/catalog/default-product-variant-price-update-strategy.ts" sourceLine="56" packageName="@bb-vendure/core" since="2.2.0" />
 
 The default <a href='/reference/typescript-api/configuration/product-variant-price-update-strategy#productvariantpriceupdatestrategy'>ProductVariantPriceUpdateStrategy</a> which by default will not update any other
 prices when a price is created, updated or deleted.
@@ -135,7 +135,7 @@ case, a custom strategy should be implemented.
 *Example*
 
 ```ts
-import { DefaultProductVariantPriceUpdateStrategy, VendureConfig } from '@vendure/core';
+import { DefaultProductVariantPriceUpdateStrategy, VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
   // ...

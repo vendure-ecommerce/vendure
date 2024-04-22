@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { assertNever } from '@vendure/common/lib/shared-utils';
+import { assertNever } from '@bb-vendure/common/lib/shared-utils';
 
 import { lastValueFrom, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';

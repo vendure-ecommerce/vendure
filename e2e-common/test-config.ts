@@ -1,11 +1,11 @@
-import { mergeConfig } from '@vendure/core';
+import { mergeConfig } from '@bb-vendure/core';
 import {
     MysqlInitializer,
     PostgresInitializer,
     registerInitializer,
     SqljsInitializer,
     testConfig as defaultTestConfig,
-} from '@vendure/testing';
+} from '@bb-vendure/testing';
 import fs from 'fs-extra';
 import path from 'path';
 import { DataSourceOptions } from 'typeorm';

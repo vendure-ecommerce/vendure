@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TypedBaseListComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/base-list.component.ts" sourceLine="199" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/base-list.component.ts" sourceLine="199" packageName="@bb-vendure/admin-ui" />
 
 A version of the <a href='/reference/admin-ui-api/list-detail-views/base-list-component#baselistcomponent'>BaseListComponent</a> which is designed to be used with a
 [TypedDocumentNode](https://the-guild.dev/graphql/codegen/plugins/typescript/typed-document-node).
@@ -84,7 +84,12 @@ class TypedBaseListComponent<T extends TypedDocumentNode<any, Vars>, Field exten
 
 ### configure
 
-<MemberInfo kind="method" type={`(config: {         document: T;         getItems: (data: ResultOf&#60;T&#62;) =&#62; { items: Array&#60;ItemOf&#60;ResultOf&#60;T&#62;, Field&#62;&#62;; totalItems: number };         setVariables?: (skip: number, take: number) =&#62; VariablesOf&#60;T&#62;;         refreshListOnChanges?: Array&#60;Observable&#60;any&#62;&#62;;     }) => `}   />
+<MemberInfo kind="method" type={`(config: {
+         document: T;
+         getItems: (data: ResultOf&#60;T&#62;) =&#62; { items: Array&#60;ItemOf&#60;ResultOf&#60;T&#62;, Field&#62;&#62;; totalItems: number };
+         setVariables?: (skip: number, take: number) =&#62; VariablesOf&#60;T&#62;;
+         refreshListOnChanges?: Array&#60;Observable&#60;any&#62;&#62;;
+     }) => `}   />
 
 
 ### ngOnInit

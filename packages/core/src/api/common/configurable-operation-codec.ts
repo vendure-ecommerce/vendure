@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigurableOperation, ConfigurableOperationInput } from '@vendure/common/lib/generated-types';
-import { Type } from '@vendure/common/lib/shared-types';
+import { ConfigurableOperation, ConfigurableOperationInput } from '@bb-vendure/common/lib/generated-types';
+import { Type } from '@bb-vendure/common/lib/shared-types';
 
 import { ConfigurableOperationDef } from '../../common/configurable-operation';
 import { InternalServerError } from '../../common/error/errors';

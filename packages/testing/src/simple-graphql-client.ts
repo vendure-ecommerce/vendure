@@ -1,6 +1,6 @@
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/lib/shared-constants';
-import { VendureConfig } from '@vendure/core';
+import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@bb-vendure/common/lib/shared-constants';
+import { VendureConfig } from '@bb-vendure/core';
 import FormData from 'form-data';
 import fs from 'fs';
 import { DocumentNode } from 'graphql';

@@ -9,7 +9,7 @@ import { HostedReactComponentContext } from '../types';
  *
  * @example
  * ```ts
- * import { Card, useDetailComponentData } from '\@vendure/admin-ui/react';
+ * import { Card, useDetailComponentData } from '\@bb-vendure/admin-ui/react';
  * import React from 'react';
  *
  * export function CustomDetailComponent(props: any) {

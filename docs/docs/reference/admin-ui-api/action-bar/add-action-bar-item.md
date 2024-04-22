@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## addActionBarItem
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/add-action-bar-item.ts" sourceLine="23" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/add-action-bar-item.ts" sourceLine="23" packageName="@bb-vendure/admin-ui" />
 
 Adds a button to the ActionBar at the top right of each list or detail view. The locationId can
 be determined by pressing `ctrl + u` when running the Admin UI in dev mode.

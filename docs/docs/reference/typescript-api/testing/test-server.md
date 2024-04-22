@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TestServer
 
-<GenerationInfo sourceFile="packages/testing/src/test-server.ts" sourceLine="17" packageName="@vendure/testing" />
+<GenerationInfo sourceFile="packages/testing/src/test-server.ts" sourceLine="17" packageName="@bb-vendure/testing" />
 
 A real Vendure server against which the e2e tests should be run.
 

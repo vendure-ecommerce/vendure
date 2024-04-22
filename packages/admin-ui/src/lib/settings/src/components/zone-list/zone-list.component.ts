@@ -10,7 +10,7 @@ import {
     ModalService,
     NotificationService,
     TypedBaseListComponent,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
 import { combineLatest, EMPTY, Observable } from 'rxjs';
 import { distinctUntilChanged, map, mapTo, switchMap, tap } from 'rxjs/operators';

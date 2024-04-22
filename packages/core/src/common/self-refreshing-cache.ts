@@ -1,4 +1,4 @@
-import { Json } from '@vendure/common/lib/shared-types';
+import { Json } from '@bb-vendure/common/lib/shared-types';
 
 import { Logger } from '../config/logger/vendure-logger';
 

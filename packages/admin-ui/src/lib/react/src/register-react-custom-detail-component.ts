@@ -1,5 +1,5 @@
 import { APP_INITIALIZER } from '@angular/core';
-import { CustomDetailComponentLocationId, CustomDetailComponentService } from '@vendure/admin-ui/core';
+import { CustomDetailComponentLocationId, CustomDetailComponentService } from '@bb-vendure/admin-ui/core';
 import { ElementType } from 'react';
 import {
     REACT_CUSTOM_DETAIL_COMPONENT_OPTIONS,

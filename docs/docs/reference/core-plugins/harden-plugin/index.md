@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## HardenPlugin
 
-<GenerationInfo sourceFile="packages/harden-plugin/src/harden.plugin.ts" sourceLine="146" packageName="@vendure/harden-plugin" />
+<GenerationInfo sourceFile="packages/harden-plugin/src/harden.plugin.ts" sourceLine="146" packageName="@bb-vendure/harden-plugin" />
 
 The HardenPlugin hardens the Shop and Admin GraphQL APIs against attacks and abuse.
 
@@ -24,18 +24,18 @@ It is a recommended plugin for all production configurations.
 
 ## Installation
 
-`yarn add @vendure/harden-plugin`
+`yarn add @bb-vendure/harden-plugin`
 
 or
 
-`npm install @vendure/harden-plugin`
+`npm install @bb-vendure/harden-plugin`
 
 Then add the `HardenPlugin`, calling the `.init()` method with <a href='/reference/core-plugins/harden-plugin/harden-plugin-options#hardenpluginoptions'>HardenPluginOptions</a>:
 
 *Example*
 
 ```ts
-import { HardenPlugin } from '@vendure/harden-plugin';
+import { HardenPlugin } from '@bb-vendure/harden-plugin';
 
 const config: VendureConfig = {
   // Add an instance of the plugin to the plugins array
@@ -107,7 +107,7 @@ that total score is derived from its child fields:
 *Example*
 
 ```ts
-import { HardenPlugin } from '@vendure/harden-plugin';
+import { HardenPlugin } from '@bb-vendure/harden-plugin';
 
 const config: VendureConfig = {
   // A detailed summary is logged at the "debug" level

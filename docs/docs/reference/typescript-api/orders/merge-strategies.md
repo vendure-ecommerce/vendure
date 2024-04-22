@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## MergeOrdersStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/merge-orders-strategy.ts" sourceLine="15" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/order/merge-orders-strategy.ts" sourceLine="15" packageName="@bb-vendure/core" />
 
 Merges both Orders. If the guest order contains items which are already in the
 existing Order, the guest Order quantity will replace that of the existing Order.
@@ -39,7 +39,7 @@ class MergeOrdersStrategy implements OrderMergeStrategy {
 
 ## UseExistingStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/use-existing-strategy.ts" sourceLine="13" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/order/use-existing-strategy.ts" sourceLine="13" packageName="@bb-vendure/core" />
 
 The guest order is discarded and the existing order is used as the active order.
 
@@ -66,7 +66,7 @@ class UseExistingStrategy implements OrderMergeStrategy {
 
 ## UseGuestIfExistingEmptyStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/use-guest-if-existing-empty-strategy.ts" sourceLine="13" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/order/use-guest-if-existing-empty-strategy.ts" sourceLine="13" packageName="@bb-vendure/core" />
 
 If the existing order is empty, then the guest order is used. Otherwise the existing order is used.
 
@@ -93,7 +93,7 @@ class UseGuestIfExistingEmptyStrategy implements OrderMergeStrategy {
 
 ## UseGuestStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/use-guest-strategy.ts" sourceLine="13" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/order/use-guest-strategy.ts" sourceLine="13" packageName="@bb-vendure/core" />
 
 Any existing order is discarded and the guest order is set as the active order.
 

@@ -7,9 +7,9 @@ import {
     QueryProductArgs,
     QueryProductsArgs,
     SearchResponse,
-} from '@vendure/common/lib/generated-shop-types';
-import { Omit } from '@vendure/common/lib/omit';
-import { PaginatedList } from '@vendure/common/lib/shared-types';
+} from '@bb-vendure/common/lib/generated-shop-types';
+import { Omit } from '@bb-vendure/common/lib/omit';
+import { PaginatedList } from '@bb-vendure/common/lib/shared-types';
 
 import { InternalServerError, UserInputError } from '../../../common/error/errors';
 import { ListQueryOptions } from '../../../common/types/common-types';

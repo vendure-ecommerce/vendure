@@ -1,7 +1,7 @@
 import { Client } from '@elastic/elasticsearch';
 import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { unique } from '@vendure/common/lib/unique';
+import { unique } from '@bb-vendure/common/lib/unique';
 import {
     Asset,
     asyncObservable,
@@ -26,7 +26,7 @@ import {
     TransactionalConnection,
     Translatable,
     Translation,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import { Observable } from 'rxjs';
 import { In, IsNull } from 'typeorm';
 

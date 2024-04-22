@@ -4,7 +4,7 @@ import {
     CurrencyCode,
     Dialog,
     DraftOrderEligibleShippingMethodsQuery,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 
 type ShippingMethodQuote =
     DraftOrderEligibleShippingMethodsQuery['eligibleShippingMethodsForDraftOrder'][number];

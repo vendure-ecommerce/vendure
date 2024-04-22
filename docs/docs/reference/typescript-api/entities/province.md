@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Province
 
-<GenerationInfo sourceFile="packages/core/src/entity/region/province.entity.ts" sourceLine="13" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/region/province.entity.ts" sourceLine="13" packageName="@bb-vendure/core" />
 
 A Province represents an administrative subdivision of a <a href='/reference/typescript-api/entities/country#country'>Country</a>. For example, in the
 United States, the country would be "United States" and the province would be "California".

@@ -65,7 +65,7 @@ added to it using the `.andWhere()` method.
 Here's an example of a collection filter which filters by SKU:
 
 ```ts title="src/config/sku-collection-filter.ts"
-import { CollectionFilter, LanguageCode } from '@vendure/core';
+import { CollectionFilter, LanguageCode } from '@bb-vendure/core';
 
 export const skuCollectionFilter = new CollectionFilter({
     args: {
@@ -104,7 +104,7 @@ In the `apply()` method, the product variant entity is aliased as `'productVaria
 This custom filter is then added to the defaults in your config:
 
 ```ts title="src/vendure-config.ts"
-import { defaultCollectionFilters, VendureConfig } from '@vendure/core';
+import { defaultCollectionFilters, VendureConfig } from '@bb-vendure/core';
 import { skuCollectionFilter } from './config/sku-collection-filter';
 
 export const config: VendureConfig = {

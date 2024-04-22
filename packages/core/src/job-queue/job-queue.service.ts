@@ -1,5 +1,5 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
-import { JobQueue as GraphQlJobQueue } from '@vendure/common/lib/generated-types';
+import { JobQueue as GraphQlJobQueue } from '@bb-vendure/common/lib/generated-types';
 
 import { ConfigService, JobQueueStrategy, Logger } from '../config';
 

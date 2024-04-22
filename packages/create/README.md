@@ -11,7 +11,7 @@ To create a new project, you may choose one of the following methods:
 ### npx
 
 ```sh
-npx @vendure/create my-app
+npx @bb-vendure/create my-app
 ```
 
 *[npx](https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b) comes with npm 5.2+ and higher.*
@@ -19,7 +19,7 @@ npx @vendure/create my-app
 ### npm
 
 ```sh
-npm init @vendure my-app
+npm init @bb-vendure my-app
 ```
 
 *`npm init <initializer>` is available in npm 6+*
@@ -27,7 +27,7 @@ npm init @vendure my-app
 ### Yarn
 
 ```sh
-yarn create @vendure my-app
+yarn create @bb-vendure my-app
 ```
 
 *`yarn create` is available in Yarn 0.25+*
@@ -49,6 +49,6 @@ You can control how much output is generated during the installation and setup w
 Example:
 
 ```sh 
-npx @vendure/create my-app --log-level verbose
+npx @bb-vendure/create my-app --log-level verbose
 ```
 

@@ -7,7 +7,7 @@ weight: 3
 # Using Docker
 
 [Docker](https://docs.docker.com/) is a technology which allows you to run your Vendure application inside a [container](https://docs.docker.com/get-started/#what-is-a-container).
-The default installation with `@vendure/create` includes a sample Dockerfile:
+The default installation with `@bb-vendure/create` includes a sample Dockerfile:
 
 ```dockerfile title="Dockerfile"
 FROM node:16

@@ -11,14 +11,14 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## useDetailComponentData
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-hooks/use-detail-component-data.ts" sourceLine="34" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-hooks/use-detail-component-data.ts" sourceLine="34" packageName="@bb-vendure/admin-ui" />
 
 Provides the data available to React-based CustomDetailComponents.
 
 *Example*
 
 ```ts
-import { Card, useDetailComponentData } from '@vendure/admin-ui/react';
+import { Card, useDetailComponentData } from '@bb-vendure/admin-ui/react';
 import React from 'react';
 
 export function CustomDetailComponent(props: any) {

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AssetImportStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/asset-import-strategy/asset-import-strategy.ts" sourceLine="25" packageName="@vendure/core" since="1.7.0" />
+<GenerationInfo sourceFile="packages/core/src/config/asset-import-strategy/asset-import-strategy.ts" sourceLine="25" packageName="@bb-vendure/core" since="1.7.0" />
 
 The AssetImportStrategy determines how asset files get imported based on the path given in the
 import CSV or via the <a href='/reference/typescript-api/import-export/asset-importer#assetimporter'>AssetImporter</a> `getAssets()` method.

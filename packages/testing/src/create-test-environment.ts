@@ -1,4 +1,4 @@
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 
 import { SimpleGraphQLClient } from './simple-graphql-client';
 import { TestServer } from './test-server';
@@ -35,7 +35,7 @@ export interface TestEnvironment {
  *
  * @example
  * ```ts
- * import { createTestEnvironment, testConfig } from '\@vendure/testing';
+ * import { createTestEnvironment, testConfig } from '\@bb-vendure/testing';
  *
  * describe('some feature to test', () => {
  *

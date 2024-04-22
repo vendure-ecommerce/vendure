@@ -1,5 +1,5 @@
-import { TaxLine } from '@vendure/common/lib/generated-types';
-import { DeepPartial } from '@vendure/common/lib/shared-types';
+import { TaxLine } from '@bb-vendure/common/lib/generated-types';
+import { DeepPartial } from '@bb-vendure/common/lib/shared-types';
 import { Column, Entity, Index, ManyToOne } from 'typeorm';
 
 import { grossPriceOf, netPriceOf, taxComponentOf, taxPayableOn } from '../../common/tax-utils';

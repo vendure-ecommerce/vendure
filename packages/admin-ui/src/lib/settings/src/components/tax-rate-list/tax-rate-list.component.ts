@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { GetTaxRateListDocument, TAX_RATE_FRAGMENT, TypedBaseListComponent } from '@vendure/admin-ui/core';
+import { GetTaxRateListDocument, TAX_RATE_FRAGMENT, TypedBaseListComponent } from '@bb-vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
 
 export const GET_TAX_RATE_LIST = gql`

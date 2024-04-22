@@ -1,5 +1,5 @@
-import { CreateChannelInput, UpdateChannelInput } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { CreateChannelInput, UpdateChannelInput } from '@bb-vendure/common/lib/generated-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api';
 import { Channel } from '../../entity';

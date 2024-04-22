@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## LocaleRegionNamePipe
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/pipes/locale-region-name.pipe.ts" sourceLine="18" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/pipes/locale-region-name.pipe.ts" sourceLine="18" packageName="@bb-vendure/admin-ui" />
 
 Displays a human-readable name for a given region.
 

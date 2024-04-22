@@ -7,7 +7,7 @@ import {
     RemoveOrderItemsResult,
     SetOrderShippingMethodResult,
     UpdateOrderItemsResult,
-} from '@vendure/common/lib/generated-shop-types';
+} from '@bb-vendure/common/lib/generated-shop-types';
 import {
     AddFulfillmentToOrderResult,
     AddManualPaymentToOrderResult,
@@ -36,10 +36,10 @@ import {
     ShippingMethodQuote,
     TransitionPaymentToStateResult,
     UpdateOrderNoteInput,
-} from '@vendure/common/lib/generated-types';
-import { omit } from '@vendure/common/lib/omit';
-import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { summate } from '@vendure/common/lib/shared-utils';
+} from '@bb-vendure/common/lib/generated-types';
+import { omit } from '@bb-vendure/common/lib/omit';
+import { ID, PaginatedList } from '@bb-vendure/common/lib/shared-types';
+import { summate } from '@bb-vendure/common/lib/shared-utils';
 import { In, IsNull } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 

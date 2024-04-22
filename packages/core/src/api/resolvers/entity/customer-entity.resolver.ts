@@ -1,6 +1,6 @@
 import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql';
-import { HistoryEntryListOptions, QueryOrdersArgs, SortOrder } from '@vendure/common/lib/generated-types';
-import { PaginatedList } from '@vendure/common/lib/shared-types';
+import { HistoryEntryListOptions, QueryOrdersArgs, SortOrder } from '@bb-vendure/common/lib/generated-types';
+import { PaginatedList } from '@bb-vendure/common/lib/shared-types';
 
 import { Address } from '../../../entity/address/address.entity';
 import { Customer } from '../../../entity/customer/customer.entity';

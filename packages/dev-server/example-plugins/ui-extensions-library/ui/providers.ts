@@ -1,4 +1,4 @@
-import { addNavMenuSection } from '@vendure/admin-ui/core';
+import { addNavMenuSection } from '@bb-vendure/admin-ui/core';
 
 export default [
     addNavMenuSection({

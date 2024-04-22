@@ -4,8 +4,8 @@ import {
     CollectionBreadcrumb,
     ConfigurableOperation,
     ProductVariantListOptions,
-} from '@vendure/common/lib/generated-types';
-import { PaginatedList } from '@vendure/common/lib/shared-types';
+} from '@bb-vendure/common/lib/generated-types';
+import { PaginatedList } from '@bb-vendure/common/lib/shared-types';
 
 import { ListQueryOptions } from '../../../common/types/common-types';
 import { Translated } from '../../../common/types/locale-types';

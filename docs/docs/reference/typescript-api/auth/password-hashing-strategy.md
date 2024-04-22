@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PasswordHashingStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/auth/password-hashing-strategy.ts" sourceLine="17" packageName="@vendure/core" since="1.3.0" />
+<GenerationInfo sourceFile="packages/core/src/config/auth/password-hashing-strategy.ts" sourceLine="17" packageName="@bb-vendure/core" since="1.3.0" />
 
 Defines how user passwords get hashed when using the <a href='/reference/typescript-api/auth/native-authentication-strategy#nativeauthenticationstrategy'>NativeAuthenticationStrategy</a>.
 

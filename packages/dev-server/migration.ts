@@ -1,4 +1,4 @@
-import { generateMigration, revertLastMigration, runMigrations } from '@vendure/core';
+import { generateMigration, revertLastMigration, runMigrations } from '@bb-vendure/core';
 import program from 'commander';
 
 import { devConfig } from './dev-config';

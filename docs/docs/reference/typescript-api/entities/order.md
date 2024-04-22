@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Order
 
-<GenerationInfo sourceFile="packages/core/src/entity/order/order.entity.ts" sourceLine="43" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/order/order.entity.ts" sourceLine="43" packageName="@bb-vendure/core" />
 
 An Order is created whenever a <a href='/reference/typescript-api/entities/customer#customer'>Customer</a> adds an item to the cart. It contains all the
 information required to fulfill an order: which <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>s in what quantities;

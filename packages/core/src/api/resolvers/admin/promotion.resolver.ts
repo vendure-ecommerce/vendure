@@ -12,8 +12,8 @@ import {
     QueryPromotionArgs,
     QueryPromotionsArgs,
     UpdatePromotionResult,
-} from '@vendure/common/lib/generated-types';
-import { PaginatedList } from '@vendure/common/lib/shared-types';
+} from '@bb-vendure/common/lib/generated-types';
+import { PaginatedList } from '@bb-vendure/common/lib/shared-types';
 
 import { ErrorResultUnion } from '../../../common/error/error-result';
 import { PromotionItemAction, PromotionOrderAction } from '../../../config/promotion/promotion-action';

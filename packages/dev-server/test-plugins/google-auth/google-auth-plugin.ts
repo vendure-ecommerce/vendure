@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, NestModule, OnApplicationBootstrap, OnModuleDestroy } from '@nestjs/common';
-import { PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 import express from 'express';
 import path from 'path';
 

@@ -45,9 +45,9 @@ The Admin UI ships with built-in support for many languages, but allows you to a
 1. **Create your translation file**
 
      Start by copying the contents of the [English language file](https://github.com/vendure-ecommerce/vendure/blob/master/packages/admin-ui/src/lib/static/i18n-messages/en.json) into a new file, `<languageCode>.json`, where `languageCode` is the 2-character [ISO 639-1 code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) for the language. Replace the strings with the translation for the new language.
-2. **Install `@vendure/ui-devkit`**
+2. **Install `@bb-vendure/ui-devkit`**
 
-    If not already installed, install the `@vendure/ui-devkit` package, which allows you to create custom builds of the Admin UI.
+    If not already installed, install the `@bb-vendure/ui-devkit` package, which allows you to create custom builds of the Admin UI.
 3. **Register the translation file**
   
     Here's a minimal directory structure and sample code to add your new translation:
@@ -63,9 +63,9 @@ The Admin UI ships with built-in support for many languages, but allows you to a
     
     ```ts title="src.vendure-config.ts"
     import path from 'path';
-    import { VendureConfig } from '@vendure/core';
-    import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
-    import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
+    import { VendureConfig } from '@bb-vendure/core';
+    import { AdminUiPlugin } from '@bb-vendure/admin-ui-plugin';
+    import { compileUiExtensions } from '@bb-vendure/ui-devkit/compiler';
     
     export const config: VendureConfig = {
         // ...

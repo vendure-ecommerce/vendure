@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DefaultProductVariantPriceCalculationStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/catalog/default-product-variant-price-calculation-strategy.ts" sourceLine="18" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/catalog/default-product-variant-price-calculation-strategy.ts" sourceLine="18" packageName="@bb-vendure/core" />
 
 A default ProductVariant price calculation function.
 

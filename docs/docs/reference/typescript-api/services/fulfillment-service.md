@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## FulfillmentService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/fulfillment.service.ts" sourceLine="34" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/fulfillment.service.ts" sourceLine="34" packageName="@bb-vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a> entities.
 
@@ -59,7 +59,15 @@ Creates a new Fulfillment for the given Orders and OrderItems, using the specifi
 
 ### transitionToState
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, fulfillmentId: <a href='/reference/typescript-api/common/id#id'>ID</a>, state: <a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>) => Promise&#60;         | {               fulfillment: <a href='/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>;               orders: <a href='/reference/typescript-api/entities/order#order'>Order</a>[];               fromState: <a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>;               toState: <a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>;           }         | FulfillmentStateTransitionError     &#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, fulfillmentId: <a href='/reference/typescript-api/common/id#id'>ID</a>, state: <a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>) => Promise&#60;
+         | {
+               fulfillment: <a href='/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>;
+               orders: <a href='/reference/typescript-api/entities/order#order'>Order</a>[];
+               fromState: <a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>;
+               toState: <a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>;
+           }
+         | FulfillmentStateTransitionError
+     &#62;`}   />
 
 Transitions the specified Fulfillment to a new state and upon successful transition
 publishes a <a href='/reference/typescript-api/events/event-types#fulfillmentstatetransitionevent'>FulfillmentStateTransitionEvent</a>.

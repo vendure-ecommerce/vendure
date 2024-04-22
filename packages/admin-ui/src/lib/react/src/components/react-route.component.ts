@@ -1,5 +1,5 @@
 import { Component, inject, InjectionToken, ViewEncapsulation } from '@angular/core';
-import { ROUTE_COMPONENT_OPTIONS, RouteComponent, SharedModule } from '@vendure/admin-ui/core';
+import { ROUTE_COMPONENT_OPTIONS, RouteComponent, SharedModule } from '@bb-vendure/admin-ui/core';
 import { ReactComponentHostDirective } from '../directives/react-component-host.directive';
 import { ReactRouteComponentOptions } from '../types';
 

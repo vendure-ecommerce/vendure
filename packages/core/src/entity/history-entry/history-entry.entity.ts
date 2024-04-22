@@ -1,4 +1,4 @@
-import { HistoryEntryType } from '@vendure/common/lib/generated-types';
+import { HistoryEntryType } from '@bb-vendure/common/lib/generated-types';
 import { Column, Entity, Index, ManyToOne, TableInheritance } from 'typeorm';
 
 import { Administrator } from '../administrator/administrator.entity';

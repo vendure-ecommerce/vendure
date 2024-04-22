@@ -20,7 +20,7 @@ import {
     GetCollectionListQuery,
     ItemOf,
     LocalStorageService,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 
 export type CollectionTableItem = ItemOf<GetCollectionListQuery, 'collections'>;
 export type CollectionOrderEvent = {

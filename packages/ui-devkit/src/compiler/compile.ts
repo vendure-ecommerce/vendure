@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
-import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { AdminUiAppConfig, AdminUiAppDevModeConfig } from '@vendure/common/lib/shared-types';
+import { LanguageCode } from '@bb-vendure/common/lib/generated-types';
+import { AdminUiAppConfig, AdminUiAppDevModeConfig } from '@bb-vendure/common/lib/shared-types';
 import { ChildProcess, spawn } from 'child_process';
 import { FSWatcher, watch as chokidarWatch } from 'chokidar';
 import * as fs from 'fs-extra';
@@ -113,7 +113,7 @@ function runWatchMode({
     additionalProcessArguments,
     ngCompilerPath,
 }: UiExtensionCompilerOptions & { usingYarn: boolean }): AdminUiAppDevModeConfig {
-    const devkitPath = require.resolve('@vendure/ui-devkit');
+    const devkitPath = require.resolve('@bb-vendure/ui-devkit');
     let buildProcess: ChildProcess;
     let watcher: FSWatcher | undefined;
     let close: () => void = () => {

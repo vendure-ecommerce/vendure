@@ -24,7 +24,7 @@ import { HealthIndicatorFunction } from '@nestjs/terminus';
  *
  * @example
  * ```ts
- * import { HealthCheckRegistryService, PluginCommonModule, VendurePlugin } from '\@vendure/core';
+ * import { HealthCheckRegistryService, PluginCommonModule, VendurePlugin } from '\@bb-vendure/core';
  * import { TerminusModule } from '\@nestjs/terminus';
  *
  * \@VendurePlugin({

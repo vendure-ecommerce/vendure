@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { CHANNEL_FRAGMENT, GetChannelListDocument, TypedBaseListComponent } from '@vendure/admin-ui/core';
-import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
+import { CHANNEL_FRAGMENT, GetChannelListDocument, TypedBaseListComponent } from '@bb-vendure/admin-ui/core';
+import { DEFAULT_CHANNEL_CODE } from '@bb-vendure/common/lib/shared-constants';
 import { gql } from 'apollo-angular';
 
 export const GET_CHANNEL_LIST = gql`

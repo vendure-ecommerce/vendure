@@ -11,14 +11,14 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## useRouteParams
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-hooks/use-route-params.ts" sourceLine="23" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-hooks/use-route-params.ts" sourceLine="23" packageName="@bb-vendure/admin-ui" />
 
 Provides access to the current route params and query params.
 
 *Example*
 
 ```ts
-import { useRouteParams } from '@vendure/admin-ui/react';
+import { useRouteParams } from '@bb-vendure/admin-ui/react';
 import React from 'react';
 
 export function MyComponent() {

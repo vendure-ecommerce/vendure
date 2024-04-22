@@ -7,7 +7,7 @@ import {
     RequestContext,
     UnauthorizedError,
     UserInputError,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 
 import { StripeService } from './stripe.service';
 

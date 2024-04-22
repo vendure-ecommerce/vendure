@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Allow
 
-<GenerationInfo sourceFile="packages/core/src/api/decorators/allow.decorator.ts" sourceLine="38" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/api/decorators/allow.decorator.ts" sourceLine="38" packageName="@bb-vendure/core" />
 
 Attaches metadata to the resolver defining which permissions are required to execute the
 operation, using one or more <a href='/reference/typescript-api/common/permission#permission'>Permission</a> values.

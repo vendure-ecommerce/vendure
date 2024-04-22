@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ProductVariant
 
-<GenerationInfo sourceFile="packages/core/src/entity/product-variant/product-variant.entity.ts" sourceLine="38" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/product-variant/product-variant.entity.ts" sourceLine="38" packageName="@bb-vendure/core" />
 
 A ProductVariant represents a single stock keeping unit (SKU) in the store's inventory.
 Whereas a <a href='/reference/typescript-api/entities/product#product'>Product</a> is a "container" of variants, the variant itself holds the

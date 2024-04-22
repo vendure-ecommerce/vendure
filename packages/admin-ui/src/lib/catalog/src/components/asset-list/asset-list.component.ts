@@ -14,7 +14,7 @@ import {
     NotificationService,
     SortOrder,
     TagFragment,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { PaginationInstance } from 'ngx-pagination';
 import { BehaviorSubject, combineLatest, EMPTY, Observable } from 'rxjs';
 import { debounceTime, finalize, map, switchMap, takeUntil } from 'rxjs/operators';

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PaymentMethodConfigOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/payment/payment-method-handler.ts" sourceLine="255" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/payment/payment-method-handler.ts" sourceLine="255" packageName="@bb-vendure/core" />
 
 Defines the object which is used to construct the <a href='/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>.
 

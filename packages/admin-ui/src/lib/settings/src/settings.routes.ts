@@ -7,7 +7,7 @@ import {
     GetProfileDetailDocument,
     PageComponent,
     PageService,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { of } from 'rxjs';
 
 export const createRoutes = (pageService: PageService): Route[] => [

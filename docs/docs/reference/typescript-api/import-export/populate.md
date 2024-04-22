@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## populate
 
-<GenerationInfo sourceFile="packages/core/src/cli/populate.ts" sourceLine="51" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/cli/populate.ts" sourceLine="51" packageName="@bb-vendure/core" />
 
 Populates the Vendure server with some initial data and (optionally) product data from
 a supplied CSV file. The format of the CSV file is described in the section
@@ -30,8 +30,8 @@ Internally the `populate()` function does the following:
 *Example*
 
 ```ts
-import { bootstrap } from '@vendure/core';
-import { populate } from '@vendure/core/cli';
+import { bootstrap } from '@bb-vendure/core';
+import { populate } from '@bb-vendure/core/cli';
 import { config } from './vendure-config.ts'
 import { initialData } from './my-initial-data.ts';
 
@@ -53,7 +53,7 @@ populate(
 ```
 
 ```ts title="Signature"
-function populate<T extends INestApplicationContext>(bootstrapFn: () => Promise<T | undefined>, initialDataPathOrObject: string | object, productsCsvPath?: string, channelOrToken?: string | import('@vendure/core').Channel): Promise<T>
+function populate<T extends INestApplicationContext>(bootstrapFn: () => Promise<T | undefined>, initialDataPathOrObject: string | object, productsCsvPath?: string, channelOrToken?: string | import('@bb-vendure/core').Channel): Promise<T>
 ```
 Parameters
 
@@ -71,5 +71,5 @@ Parameters
 
 ### channelOrToken
 
-<MemberInfo kind="parameter" type={`string | import('@vendure/core').<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>`} />
+<MemberInfo kind="parameter" type={`string | import('@bb-vendure/core').<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>`} />
 

@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DefaultLogger, JobQueueService, Logger, VendureConfig } from '@vendure/core';
-import { preBootstrapConfig, configureSessionCookies } from '@vendure/core/dist/bootstrap';
+import { DefaultLogger, JobQueueService, Logger, VendureConfig } from '@bb-vendure/core';
+import { preBootstrapConfig, configureSessionCookies } from '@bb-vendure/core/dist/bootstrap';
 
 import { populateForTesting } from './data-population/populate-for-testing';
 import { getInitializerFor } from './initializers/initializers';
@@ -109,7 +109,7 @@ export class TestServer {
     ): Promise<INestApplication> {
         const config = await preBootstrapConfig(userConfig);
         Logger.useLogger(config.logger);
-        const appModule = await import('@vendure/core/dist/app.module.js');
+        const appModule = await import('@bb-vendure/core/dist/app.module.js');
         try {
             DefaultLogger.hideNestBoostrapLogs();
             const app = await NestFactory.create(appModule.AppModule, {

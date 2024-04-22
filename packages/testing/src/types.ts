@@ -1,4 +1,4 @@
-import { InitialData } from '@vendure/core';
+import { InitialData } from '@bb-vendure/core';
 
 /**
  * Creates a mutable version of a type with readonly properties.

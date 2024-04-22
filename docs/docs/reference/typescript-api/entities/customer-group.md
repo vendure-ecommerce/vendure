@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CustomerGroup
 
-<GenerationInfo sourceFile="packages/core/src/entity/customer-group/customer-group.entity.ts" sourceLine="17" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/customer-group/customer-group.entity.ts" sourceLine="17" packageName="@bb-vendure/core" />
 
 A grouping of <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>s which enables features such as group-based promotions
 or tax rules.

@@ -26,10 +26,10 @@ import {
     UntypedFormArray,
     UntypedFormControl,
 } from '@angular/forms';
-import { StringCustomFieldConfig } from '@vendure/common/lib/generated-types';
-import { ConfigArgType, CustomFieldType, DefaultFormComponentId } from '@vendure/common/lib/shared-types';
-import { assertNever, notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
+import { StringCustomFieldConfig } from '@bb-vendure/common/lib/generated-types';
+import { ConfigArgType, CustomFieldType, DefaultFormComponentId } from '@bb-vendure/common/lib/shared-types';
+import { assertNever, notNullOrUndefined } from '@bb-vendure/common/lib/shared-utils';
+import { simpleDeepClone } from '@bb-vendure/common/lib/simple-deep-clone';
 import { Subject, Subscription } from 'rxjs';
 import { switchMap, take, takeUntil } from 'rxjs/operators';
 

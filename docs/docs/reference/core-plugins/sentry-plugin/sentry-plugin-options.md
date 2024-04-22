@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SentryPluginOptions
 
-<GenerationInfo sourceFile="packages/sentry-plugin/src/types.ts" sourceLine="12" packageName="@vendure/sentry-plugin" />
+<GenerationInfo sourceFile="packages/sentry-plugin/src/types.ts" sourceLine="12" packageName="@bb-vendure/sentry-plugin" />
 
 Configuration options for the <a href='/reference/core-plugins/sentry-plugin/#sentryplugin'>SentryPlugin</a>.
 

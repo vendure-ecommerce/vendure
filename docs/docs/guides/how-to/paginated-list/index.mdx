@@ -57,7 +57,7 @@ Next, we need to define the resolver for the query.
 
 ```ts title="src/plugins/reviews/api/admin.resolver.ts"
 import { Args, Query, Resolver } from '@nestjs/graphql';
-import { Ctx, PaginatedList, RequestContext } from '@vendure/core';
+import { Ctx, PaginatedList, RequestContext } from '@bb-vendure/core';
 
 import { ProductReview } from '../entities/product-review.entity';
 import { ProductReviewService } from '../services/product-review.service';
@@ -85,7 +85,7 @@ Finally, we need to implement the `findAll()` method on the `ProductReviewServic
 ```ts title="src/plugins/reviews/services/product-review.service.ts"
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { ListQueryBuilder, ListQueryOptions, PaginatedList, RequestContext } from '@vendure/core';
+import { ListQueryBuilder, ListQueryOptions, PaginatedList, RequestContext } from '@bb-vendure/core';
 
 import { ProductReview } from '../entities/product-review.entity';
 
@@ -301,7 +301,7 @@ Next we need to update our `ProductReviewService` to be able to handle filtering
 ```ts title="src/plugins/reviews/services/product-review.service.ts"
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { ListQueryBuilder, ListQueryOptions, PaginatedList, RequestContext } from '@vendure/core';
+import { ListQueryBuilder, ListQueryOptions, PaginatedList, RequestContext } from '@bb-vendure/core';
 
 import { ProductReview } from '../entities/product-review.entity';
 

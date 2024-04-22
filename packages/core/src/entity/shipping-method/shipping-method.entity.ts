@@ -1,5 +1,5 @@
-import { ConfigurableOperation } from '@vendure/common/lib/generated-types';
-import { DeepPartial } from '@vendure/common/lib/shared-types';
+import { ConfigurableOperation } from '@bb-vendure/common/lib/generated-types';
+import { DeepPartial } from '@bb-vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';

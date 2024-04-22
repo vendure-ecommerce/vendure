@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ShippingLine
 
-<GenerationInfo sourceFile="packages/core/src/entity/shipping-line/shipping-line.entity.ts" sourceLine="24" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/shipping-line/shipping-line.entity.ts" sourceLine="24" packageName="@bb-vendure/core" />
 
 A ShippingLine is created when a <a href='/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a> is applied to an <a href='/reference/typescript-api/entities/order#order'>Order</a>.
 It contains information about the price of the shipping method, any discounts that were

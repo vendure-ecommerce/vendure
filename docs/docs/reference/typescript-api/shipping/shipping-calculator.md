@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ShippingCalculator
 
-<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-calculator.ts" sourceLine="48" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-calculator.ts" sourceLine="48" packageName="@bb-vendure/core" />
 
 The ShippingCalculator is used by a <a href='/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a> to calculate the price of shipping on a given <a href='/reference/typescript-api/entities/order#order'>Order</a>.
 
@@ -64,7 +64,7 @@ class ShippingCalculator<T extends ConfigArgs = ConfigArgs> extends Configurable
 
 ## ShippingCalculationResult
 
-<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-calculator.ts" sourceLine="79" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-calculator.ts" sourceLine="79" packageName="@bb-vendure/core" />
 
 The return value of the <a href='/reference/typescript-api/shipping/shipping-calculator#calculateshippingfn'>CalculateShippingFn</a>.
 
@@ -108,7 +108,7 @@ needed in the storefront application when listing eligible shipping methods.
 
 ## CalculateShippingFn
 
-<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-calculator.ts" sourceLine="119" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-calculator.ts" sourceLine="119" packageName="@bb-vendure/core" />
 
 A function which implements the specific shipping calculation logic. It takes an <a href='/reference/typescript-api/entities/order#order'>Order</a> and
 an arguments object and should return the shipping price as an integer in cents.

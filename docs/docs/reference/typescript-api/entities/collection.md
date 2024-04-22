@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Collection
 
-<GenerationInfo sourceFile="packages/core/src/entity/collection/collection.entity.ts" sourceLine="35" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/collection/collection.entity.ts" sourceLine="35" packageName="@bb-vendure/core" />
 
 A Collection is a grouping of <a href='/reference/typescript-api/entities/product#product'>Product</a>s based on various configurable criteria.
 

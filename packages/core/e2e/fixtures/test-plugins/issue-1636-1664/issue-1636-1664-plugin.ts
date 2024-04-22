@@ -1,6 +1,6 @@
 import { OnApplicationBootstrap } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
-import { ID } from '@vendure/common/lib/shared-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
 import {
     Asset,
     Channel,
@@ -13,7 +13,7 @@ import {
     User,
     VendureEntity,
     VendurePlugin,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import gql from 'graphql-tag';
 import { Entity, JoinColumn, OneToOne } from 'typeorm';
 import { vi } from 'vitest';

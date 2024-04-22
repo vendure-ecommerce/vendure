@@ -7,7 +7,7 @@ import {
     PluginCommonModule,
     RequestContext,
     VendurePlugin,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import gql from 'graphql-tag';
 import path from 'path';
 

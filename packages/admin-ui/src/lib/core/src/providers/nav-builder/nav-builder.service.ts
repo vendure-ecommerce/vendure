@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { notNullOrUndefined } from '@bb-vendure/common/lib/shared-utils';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 

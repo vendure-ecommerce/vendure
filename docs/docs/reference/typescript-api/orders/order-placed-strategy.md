@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrderPlacedStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/order-placed-strategy.ts" sourceLine="24" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/order/order-placed-strategy.ts" sourceLine="24" packageName="@bb-vendure/core" />
 
 This strategy is responsible for deciding at which stage in the order process
 the Order will be set as "placed" (i.e. the Customer has checked out, and

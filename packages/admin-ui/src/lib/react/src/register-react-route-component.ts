@@ -1,6 +1,6 @@
 import { Route } from '@angular/router';
 import { ResultOf, TypedDocumentNode } from '@graphql-typed-document-node/core';
-import { registerRouteComponent, RegisterRouteComponentOptions } from '@vendure/admin-ui/core';
+import { registerRouteComponent, RegisterRouteComponentOptions } from '@bb-vendure/admin-ui/core';
 import { DocumentNode } from 'graphql/index';
 import { ElementType } from 'react';
 import { REACT_ROUTE_COMPONENT_OPTIONS, ReactRouteComponent } from './components/react-route.component';

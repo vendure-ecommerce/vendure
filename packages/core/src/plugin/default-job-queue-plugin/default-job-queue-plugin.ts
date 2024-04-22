@@ -1,4 +1,4 @@
-import { Type } from '@vendure/common/lib/shared-types';
+import { Type } from '@bb-vendure/common/lib/shared-types';
 
 import { Job } from '../../job-queue/job';
 import { BackoffStrategy } from '../../job-queue/polling-job-queue-strategy';
@@ -98,7 +98,7 @@ export interface DefaultJobQueueOptions {
  *
  * @example
  * ```ts
- * import { DefaultJobQueuePlugin, VendureConfig } from '\@vendure/core';
+ * import { DefaultJobQueuePlugin, VendureConfig } from '\@bb-vendure/core';
  *
  * export const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array

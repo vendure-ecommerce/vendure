@@ -20,7 +20,7 @@ configuration as is passed to the main server `bootstrap()`. In a standard Vendu
 in the `index-worker.ts` file:
 
 ```ts title="src/index-worker.ts"
-import { bootstrapWorker } from '@vendure/core';
+import { bootstrapWorker } from '@bb-vendure/core';
 import { config } from './vendure-config';
 
 bootstrapWorker(config)
@@ -46,7 +46,7 @@ to one or more specific types of jobs. For example, if your application does vid
 you might want to set up a dedicated worker just for that task:
 
 ```ts title="src/transcoder-worker.ts"
-import { bootstrapWorker, mergeConfig } from '@vendure/core';
+import { bootstrapWorker, mergeConfig } from '@bb-vendure/core';
 import { config } from './vendure-config';
 
 const transcoderConfig = mergeConfig(config, {
@@ -69,7 +69,7 @@ and automated tasks, and is not advised for production use, since it negates the
 running long tasks off of the main process. To do so, you need to manually start the JobQueueService:
 
 ```ts title="src/index.ts"
-import { bootstrap, JobQueueService } from '@vendure/core';
+import { bootstrap, JobQueueService } from '@bb-vendure/core';
 import { config } from './vendure-config';
 
 bootstrap(config)
@@ -87,7 +87,7 @@ In this case you can inject the [`ProcessContext`](/reference/typescript-api/com
 
 ```ts title="src/plugins/my-plugin/services/my.service.ts"
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import { ProcessContext } from '@vendure/core';
+import { ProcessContext } from '@bb-vendure/core';
 
 @Injectable()
 export class MyService implements OnApplicationBootstrap {
@@ -148,7 +148,7 @@ queue will be lost and any pending jobs will never be processed. Moreover, it ca
 as a separate process.
 
 A better alternative is to use the [DefaultJobQueuePlugin](/reference/typescript-api/job-queue/default-job-queue-plugin/)
-(which will be used in a standard `@vendure/create` installation), which configures Vendure to use the [SqlJobQueueStrategy](/reference/typescript-api/job-queue/sql-job-queue-strategy).
+(which will be used in a standard `@bb-vendure/create` installation), which configures Vendure to use the [SqlJobQueueStrategy](/reference/typescript-api/job-queue/sql-job-queue-strategy).
 This strategy uses the database as a queue, and means that even if the Vendure server stops, pending jobs will be persisted and upon re-start, they will be processed.
 
 It is also possible to implement your own JobQueueStrategy to take advantage of other technologies.
@@ -192,7 +192,7 @@ The resolver looks like this:
 
 ```ts title="src/plugins/product-video/api/product-video.resolver.ts"
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { Allow, Ctx, RequestContext, Permission, RequestContext } from '@vendure/core'
+import { Allow, Ctx, RequestContext, Permission, RequestContext } from '@bb-vendure/core'
 import { ProductVideoService } from '../services/product-video.service';
 
 @Resolver()
@@ -223,7 +223,7 @@ application starts up (see [NestJS lifecycle events](https://docs.nestjs.com/fun
 
 ```ts title="src/plugins/product-video/services/product-video.service.ts"
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { JobQueue, JobQueueService, ID, Product, TransactionalConnection } from '@vendure/core';
+import { JobQueue, JobQueueService, ID, Product, TransactionalConnection } from '@bb-vendure/core';
 import { transcode } from 'third-party-video-sdk';
 
 @Injectable()
@@ -299,7 +299,7 @@ Finally, the `ProductVideoPlugin` brings it all together, extending the GraphQL 
 
 ```ts title="src/plugins/product-video/product-video.plugin.ts"
 import gql from 'graphql-tag';
-import { PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 import { ProductVideoService } from './services/product-video.service';
 import { ProductVideoResolver } from './api/product-video.resolver';
 import { adminApiExtensions } from './api/api-extensions';
@@ -332,7 +332,7 @@ method](/reference/typescript-api/request/request-context/#serialize), and then 
 ```ts
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { JobQueue, JobQueueService, Product, TransactionalConnection,
-    SerializedRequestContext, RequestContext } from '@vendure/core';
+    SerializedRequestContext, RequestContext } from '@bb-vendure/core';
 
 @Injectable()
 class ProductExportService implements OnModuleInit {
@@ -376,7 +376,7 @@ by early cancellation:
 ```ts
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { JobQueue, JobQueueService, Product, TransactionalConnection,
-    SerializedRequestContext, RequestContext, Job, JobState } from '@vendure/core';
+    SerializedRequestContext, RequestContext, Job, JobState } from '@bb-vendure/core';
 import { IsNull } from 'typeorm';
 
 @Injectable()
@@ -431,7 +431,7 @@ In the video transcoding example above, we could modify the `transcodeForProduct
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { ID, Product, TransactionalConnection } from '@vendure/core';
+import { ID, Product, TransactionalConnection } from '@bb-vendure/core';
 
 @Injectable()
 class ProductVideoService implements OnModuleInit {

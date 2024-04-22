@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { Controller, Res, Get } from '@nestjs/common';
-import { PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 import { Response } from 'express';
 
 import { clientSecret } from './stripe-dev-server';

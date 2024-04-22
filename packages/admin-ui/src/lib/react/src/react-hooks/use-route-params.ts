@@ -8,7 +8,7 @@ import { useInjector } from './use-injector';
  *
  * @example
  * ```ts
- * import { useRouteParams } from '\@vendure/admin-ui/react';
+ * import { useRouteParams } from '\@bb-vendure/admin-ui/react';
  * import React from 'react';
  *
  * export function MyComponent() {

@@ -1,5 +1,5 @@
 import { APP_INITIALIZER, FactoryProvider } from '@angular/core';
-import { ComponentRegistryService } from '@vendure/admin-ui/core';
+import { ComponentRegistryService } from '@bb-vendure/admin-ui/core';
 import { ElementType } from 'react';
 import {
     REACT_INPUT_COMPONENT_OPTIONS,

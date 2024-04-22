@@ -15,7 +15,7 @@ Contributors should conduct themselves according to these guidelines:
 
 Contributors and other community members can and should enforce the standard above. The mark of an effective and cohesive group is that the individual members enforce the mores of the group.
 
-However, in certain circumstances a report to the project maintainers may be warranted. In this case, contact us at *contact@vendure.io* so we can deal with it in an appropriate manner.
+However, in certain circumstances a report to the project maintainers may be warranted. In this case, contact us at *contact@bb-vendure.io* so we can deal with it in an appropriate manner.
 
 ---
 

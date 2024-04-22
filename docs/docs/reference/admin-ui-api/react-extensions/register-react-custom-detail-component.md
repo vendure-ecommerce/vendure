@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## registerReactCustomDetailComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/register-react-custom-detail-component.ts" sourceLine="40" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/register-react-custom-detail-component.ts" sourceLine="40" packageName="@bb-vendure/admin-ui" />
 
 Registers a React component to be rendered in a detail page in the given location.
 Components used as custom detail components can make use of the <a href='/reference/admin-ui-api/react-hooks/use-detail-component-data#usedetailcomponentdata'>useDetailComponentData</a> hook.

@@ -1,5 +1,5 @@
-import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Asset, VendureEntity } from '@vendure/core';
+import { DeepPartial } from '@bb-vendure/common/lib/shared-types';
+import { Asset, VendureEntity } from '@bb-vendure/core';
 import { Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 
 import { Profile } from './profile.entity';

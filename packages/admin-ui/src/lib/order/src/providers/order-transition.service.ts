@@ -7,7 +7,7 @@ import {
     ModalService,
     NotificationService,
     SortOrder,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { EMPTY } from 'rxjs';
 import { catchError, delay, map, retryWhen, switchMap, take } from 'rxjs/operators';
 

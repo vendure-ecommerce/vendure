@@ -8,7 +8,7 @@ import {
     RequestContextService,
     ShippingMethodService,
     TransactionalConnection,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import dayjs from 'dayjs';
 
 import { devConfig } from '../dev-config';

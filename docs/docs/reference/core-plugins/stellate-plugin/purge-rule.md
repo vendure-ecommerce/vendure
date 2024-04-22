@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PurgeRule
 
-<GenerationInfo sourceFile="packages/stellate-plugin/src/purge-rule.ts" sourceLine="49" packageName="@vendure/stellate-plugin" />
+<GenerationInfo sourceFile="packages/stellate-plugin/src/purge-rule.ts" sourceLine="49" packageName="@bb-vendure/stellate-plugin" />
 
 Defines a rule that listens for a particular VendureEvent and uses that to
 make calls to the [Stellate Purging API](https://docs.stellate.co/docs/purging-api) via
@@ -55,7 +55,7 @@ class PurgeRule<Event extends VendureEvent = VendureEvent> {
 
 ## PurgeRuleConfig
 
-<GenerationInfo sourceFile="packages/stellate-plugin/src/purge-rule.ts" sourceLine="13" packageName="@vendure/stellate-plugin" />
+<GenerationInfo sourceFile="packages/stellate-plugin/src/purge-rule.ts" sourceLine="13" packageName="@bb-vendure/stellate-plugin" />
 
 Configures a <a href='/reference/core-plugins/stellate-plugin/purge-rule#purgerule'>PurgeRule</a>.
 
@@ -86,7 +86,11 @@ How long to buffer events for in milliseconds before executing the handler. This
 us to efficiently batch calls to the Stellate Purge API.
 ### handler
 
-<MemberInfo kind="property" type={`(handlerArgs: {         events: Event[];         stellateService: <a href='/reference/core-plugins/stellate-plugin/stellate-service#stellateservice'>StellateService</a>;         injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>;     }) =&#62; void | Promise&#60;void&#62;`}   />
+<MemberInfo kind="property" type={`(handlerArgs: {
+         events: Event[];
+         stellateService: <a href='/reference/core-plugins/stellate-plugin/stellate-service#stellateservice'>StellateService</a>;
+         injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>;
+     }) =&#62; void | Promise&#60;void&#62;`}   />
 
 The function to invoke when the specified event is published. This function should use the
 <a href='/reference/core-plugins/stellate-plugin/stellate-service#stellateservice'>StellateService</a> instance to call the Stellate Purge API.

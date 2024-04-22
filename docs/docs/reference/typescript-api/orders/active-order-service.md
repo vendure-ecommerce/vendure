@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ActiveOrderService
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/active-order/active-order.service.ts" sourceLine="17" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/active-order/active-order.service.ts" sourceLine="17" packageName="@bb-vendure/core" />
 
 This helper class is used to get a reference to the active Order from the current RequestContext.
 

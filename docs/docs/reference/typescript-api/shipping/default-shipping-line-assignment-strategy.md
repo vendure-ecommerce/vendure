@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DefaultShippingLineAssignmentStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/shipping-method/default-shipping-line-assignment-strategy.ts" sourceLine="16" packageName="@vendure/core" since="2.0.0" />
+<GenerationInfo sourceFile="packages/core/src/config/shipping-method/default-shipping-line-assignment-strategy.ts" sourceLine="16" packageName="@bb-vendure/core" since="2.0.0" />
 
 This is the default <a href='/reference/typescript-api/shipping/shipping-line-assignment-strategy#shippinglineassignmentstrategy'>ShippingLineAssignmentStrategy</a> which simply assigns all OrderLines to the
 ShippingLine, and is suitable for the most common scenario of a single shipping method per Order.

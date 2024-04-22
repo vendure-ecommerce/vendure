@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## getSuperadminContext
 
-<GenerationInfo sourceFile="packages/testing/src/utils/get-superadmin-context.ts" sourceLine="11" packageName="@vendure/testing" />
+<GenerationInfo sourceFile="packages/testing/src/utils/get-superadmin-context.ts" sourceLine="11" packageName="@bb-vendure/testing" />
 
 Creates a <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> configured for the default Channel with the activeUser set
 as the superadmin user. Useful for populating data.

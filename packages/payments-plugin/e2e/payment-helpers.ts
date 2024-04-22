@@ -1,6 +1,6 @@
-import { ID } from '@vendure/common/lib/shared-types';
-import { ChannelService, OrderService, PaymentService, RequestContext } from '@vendure/core';
-import { SimpleGraphQLClient, TestServer } from '@vendure/testing';
+import { ID } from '@bb-vendure/common/lib/shared-types';
+import { ChannelService, OrderService, PaymentService, RequestContext } from '@bb-vendure/core';
+import { SimpleGraphQLClient, TestServer } from '@bb-vendure/testing';
 import gql from 'graphql-tag';
 
 import { REFUND_ORDER } from './graphql/admin-queries';

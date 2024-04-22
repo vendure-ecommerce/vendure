@@ -18,7 +18,7 @@ import {
     TaxRateModificationEvent,
     Type,
     VendurePlugin,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import { buffer, debounceTime, delay, filter, map } from 'rxjs/operators';
 
 import { generateSchemaExtensions } from './api/api-extensions';
@@ -68,11 +68,11 @@ function getCustomResolvers(options: ElasticsearchRuntimeOptions) {
  * Elasticsearch version 7.10.2 will throw error due to incompatibility with elasticsearch-js client.
  * [Check here for more info](https://github.com/elastic/elasticsearch-js/issues/1519).
  *
- * `yarn add \@elastic/elasticsearch \@vendure/elasticsearch-plugin`
+ * `yarn add \@elastic/elasticsearch \@bb-vendure/elasticsearch-plugin`
  *
  * or
  *
- * `npm install \@elastic/elasticsearch \@vendure/elasticsearch-plugin`
+ * `npm install \@elastic/elasticsearch \@bb-vendure/elasticsearch-plugin`
  *
  * Make sure to remove the `DefaultSearchPlugin` if it is still in the VendureConfig plugins array.
  *
@@ -80,7 +80,7 @@ function getCustomResolvers(options: ElasticsearchRuntimeOptions) {
  *
  * @example
  * ```ts
- * import { ElasticsearchPlugin } from '\@vendure/elasticsearch-plugin';
+ * import { ElasticsearchPlugin } from '\@bb-vendure/elasticsearch-plugin';
  *
  * const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array

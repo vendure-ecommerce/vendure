@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## VendureEvent
 
-<GenerationInfo sourceFile="packages/core/src/event-bus/vendure-event.ts" sourceLine="7" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/event-bus/vendure-event.ts" sourceLine="7" packageName="@bb-vendure/core" />
 
 The base class for all events used by the EventBus system.
 

@@ -1,6 +1,6 @@
-import { JobState } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
-import { isObject } from '@vendure/common/lib/shared-utils';
+import { JobState } from '@bb-vendure/common/lib/generated-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
+import { isObject } from '@bb-vendure/common/lib/shared-utils';
 import { from, interval, mergeMap, race, Subject, Subscription } from 'rxjs';
 import { filter, switchMap, take, throttleTime } from 'rxjs/operators';
 

@@ -1,5 +1,5 @@
 import { OnApplicationBootstrap } from '@nestjs/common';
-import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
+import { DEFAULT_CHANNEL_CODE } from '@bb-vendure/common/lib/shared-constants';
 import {
     Asset,
     Channel,
@@ -13,13 +13,13 @@ import {
     TransactionalConnection,
     User,
     VendurePlugin,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import gql from 'graphql-tag';
 
 import { ProfileAsset } from './profile-asset.entity';
 import { Profile } from './profile.entity';
 
-declare module '@vendure/core' {
+declare module '@bb-vendure/core' {
     interface CustomOrderFields {
         productOwner: User;
     }

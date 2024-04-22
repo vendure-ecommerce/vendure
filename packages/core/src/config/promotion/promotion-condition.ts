@@ -1,4 +1,4 @@
-import { ConfigArg } from '@vendure/common/lib/generated-types';
+import { ConfigArg } from '@bb-vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import {

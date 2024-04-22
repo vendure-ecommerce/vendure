@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## NativeAuthenticationStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/auth/native-authentication-strategy.ts" sourceLine="28" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/auth/native-authentication-strategy.ts" sourceLine="28" packageName="@bb-vendure/core" />
 
 This strategy implements a username/password credential-based authentication, with the credentials
 being stored in the Vendure database. This is the default method of authentication, and it is advised

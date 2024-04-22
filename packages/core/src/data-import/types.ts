@@ -1,5 +1,5 @@
-import { ConfigurableOperationInput, LanguageCode, Permission } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { ConfigurableOperationInput, LanguageCode, Permission } from '@bb-vendure/common/lib/generated-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
 
 import { Zone } from '../entity/zone/zone.entity';
 

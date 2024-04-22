@@ -11,14 +11,14 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## useMutation
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-hooks/use-query.ts" sourceLine="169" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-hooks/use-query.ts" sourceLine="169" packageName="@bb-vendure/admin-ui" />
 
 A React hook which allows you to execute a GraphQL mutation.
 
 *Example*
 
 ```ts
-import { useMutation } from '@vendure/admin-ui/react';
+import { useMutation } from '@bb-vendure/admin-ui/react';
 import { gql } from 'graphql-tag';
 
 const UPDATE_PRODUCT = gql`

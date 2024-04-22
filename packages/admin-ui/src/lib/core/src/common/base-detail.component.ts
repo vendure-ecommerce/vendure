@@ -2,7 +2,7 @@ import { inject, Type } from '@angular/core';
 import { AbstractControl, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, ActivationStart, ResolveFn, Router } from '@angular/router';
 import { ResultOf, TypedDocumentNode } from '@graphql-typed-document-node/core';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { notNullOrUndefined } from '@bb-vendure/common/lib/shared-utils';
 import { combineLatest, Observable, of, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, map, shareReplay, switchMap, takeUntil, tap } from 'rxjs/operators';
 

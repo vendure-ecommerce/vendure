@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { EventBus, Injector, Logger, RequestContext } from '@vendure/core';
+import { EventBus, Injector, Logger, RequestContext } from '@bb-vendure/core';
 import fs from 'fs-extra';
 
 import { deserializeAttachments } from './attachment-utils';

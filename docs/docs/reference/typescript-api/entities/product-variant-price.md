@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ProductVariantPrice
 
-<GenerationInfo sourceFile="packages/core/src/entity/product-variant/product-variant-price.entity.ts" sourceLine="20" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/product-variant/product-variant-price.entity.ts" sourceLine="20" packageName="@bb-vendure/core" />
 
 A ProductVariantPrice is a Channel-specific price for a ProductVariant. For every Channel to
 which a ProductVariant is assigned, there will be a corresponding ProductVariantPrice entity.

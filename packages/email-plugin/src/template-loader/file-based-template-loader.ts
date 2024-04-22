@@ -1,4 +1,4 @@
-import { Injector, RequestContext } from '@vendure/core';
+import { Injector, RequestContext } from '@bb-vendure/core';
 import fs from 'fs/promises';
 import path from 'path';
 

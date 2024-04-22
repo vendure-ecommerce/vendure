@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
-import { DefaultFormComponentId } from '@vendure/common/lib/shared-types';
+import { DefaultFormComponentId } from '@bb-vendure/common/lib/shared-types';
 
 import { CustomFieldConfig } from '../../../common/generated-types';
 import { CustomFieldEntityName } from '../../../providers/custom-field-component/custom-field-component.service';

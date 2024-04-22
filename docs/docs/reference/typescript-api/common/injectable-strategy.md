@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## InjectableStrategy
 
-<GenerationInfo sourceFile="packages/core/src/common/types/injectable-strategy.ts" sourceLine="10" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/common/types/injectable-strategy.ts" sourceLine="10" packageName="@bb-vendure/core" />
 
 This interface defines the setup and teardown hooks available to the
 various strategies used to configure Vendure.

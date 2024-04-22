@@ -9,7 +9,7 @@ import {
     QuerySellerArgs,
     QuerySellersArgs,
     SellerList,
-} from '@vendure/common/lib/generated-types';
+} from '@bb-vendure/common/lib/generated-types';
 
 import { Seller } from '../../../entity/seller/seller.entity';
 import { SellerService } from '../../../service/services/seller.service';

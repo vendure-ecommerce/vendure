@@ -1,5 +1,5 @@
 {
-    "name": "@vendure/stellate-plugin",
+    "name": "@bb-vendure/stellate-plugin",
     "version": "2.2.0",
     "license": "MIT",
     "main": "lib/index.js",
@@ -21,7 +21,7 @@
         "node-fetch": "^2.7.0"
     },
     "devDependencies": {
-        "@vendure/common": "^2.2.0",
-        "@vendure/core": "^2.2.0"
+        "@bb-vendure/common": "^2.2.0",
+        "@bb-vendure/core": "^2.2.0"
     }
 }

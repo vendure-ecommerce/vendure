@@ -1,4 +1,4 @@
-import { Job } from '@vendure/core';
+import { Job } from '@bb-vendure/core';
 import { ConnectionOptions, WorkerOptions } from 'bullmq';
 import { QueueOptions } from 'bullmq';
 

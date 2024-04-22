@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## StockLevel
 
-<GenerationInfo sourceFile="packages/core/src/entity/stock-level/stock-level.entity.ts" sourceLine="16" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/stock-level/stock-level.entity.ts" sourceLine="16" packageName="@bb-vendure/core" />
 
 A StockLevel represents the number of a particular <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> which are available
 at a particular <a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>.

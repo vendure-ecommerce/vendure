@@ -1,6 +1,6 @@
 import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql';
-import { FacetValueListOptions } from '@vendure/common/lib/generated-types';
-import { PaginatedList } from '@vendure/common/lib/shared-types';
+import { FacetValueListOptions } from '@bb-vendure/common/lib/generated-types';
+import { PaginatedList } from '@bb-vendure/common/lib/shared-types';
 
 import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
 import { Facet } from '../../../entity/facet/facet.entity';

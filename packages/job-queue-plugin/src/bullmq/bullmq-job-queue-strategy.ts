@@ -1,5 +1,5 @@
-import { JobListOptions, JobState } from '@vendure/common/lib/generated-types';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { JobListOptions, JobState } from '@bb-vendure/common/lib/generated-types';
+import { notNullOrUndefined } from '@bb-vendure/common/lib/shared-utils';
 import {
     ID,
     Injector,
@@ -9,7 +9,7 @@ import {
     JobData,
     Logger,
     PaginatedList,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import Bull, {
     ConnectionOptions,
     JobType,

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AdminUiExtension
 
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="130" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="130" packageName="@bb-vendure/ui-devkit" />
 
 Defines extensions to the Admin UI application by specifying additional
 Angular [NgModules](https://angular.io/guide/ngmodules) which are compiled
@@ -88,7 +88,7 @@ well as linting.
 
 ```ts title="packages/common-ui-module/src/ui/ui-shared.module.ts"
 import { NgModule } from '@angular/core';
-import { SharedModule } from '@vendure/admin-ui/core';
+import { SharedModule } from '@bb-vendure/admin-ui/core';
 import { CommonUiComponent } from './components/common-ui/common-ui.component';
 
 export { CommonUiComponent };
@@ -104,7 +104,7 @@ export class CommonSharedUiModule {}
 ```ts title="packages/common-ui-module/src/index.ts"
 import path from 'path';
 
-import { AdminUiExtension } from '@vendure/ui-devkit/compiler';
+import { AdminUiExtension } from '@bb-vendure/ui-devkit/compiler';
 
 export const uiExtensions: AdminUiExtension = {
   // highlight-next-line
@@ -134,7 +134,7 @@ export const uiExtensions: AdminUiExtension = {
 
 ```ts title="packages/sample-plugin/src/ui/ui-extension.module.ts"
 import { NgModule } from '@angular/core';
-import { SharedModule } from '@vendure/admin-ui/core';
+import { SharedModule } from '@bb-vendure/admin-ui/core';
 // highlight-start
 // the import below works both in the context of the custom Admin UI app as well as the main project
 // '@common-ui-module' is the value of "pathAlias" and 'ui-shared.module' is the file we want to reference inside "extensionPath"
@@ -175,7 +175,7 @@ exclude: ['**/*.spec.ts']
 
 ## TranslationExtension
 
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="18" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="18" packageName="@bb-vendure/ui-devkit" />
 
 Defines extensions to the Admin UI translations. Can be used as a stand-alone extension definition which only adds translations
 without adding new UI functionality, or as part of a full <a href='/reference/admin-ui-api/ui-devkit/admin-ui-extension#adminuiextension'>AdminUiExtension</a>.
@@ -212,7 +212,7 @@ translations: {
 
 ## StaticAssetExtension
 
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="44" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="44" packageName="@bb-vendure/ui-devkit" />
 
 Defines extensions which copy static assets to the custom Admin UI application source asset directory.
 
@@ -237,7 +237,7 @@ directory.
 
 ## GlobalStylesExtension
 
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="60" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="60" packageName="@bb-vendure/ui-devkit" />
 
 Defines extensions which add global styles to the custom Admin UI application.
 
@@ -262,7 +262,7 @@ incorporated into the Admin UI app global stylesheet.
 
 ## SassVariableOverridesExtension
 
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="76" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="76" packageName="@bb-vendure/ui-devkit" />
 
 Defines an extension which allows overriding Clarity Design System's Sass variables used in styles on the Admin UI.
 
@@ -287,7 +287,7 @@ default values defined in Clarity.
 
 ## UiExtensionRouteDefinition
 
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="92" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="92" packageName="@bb-vendure/ui-devkit" />
 
 Defines a route which will be added to the Admin UI application.
 
@@ -328,7 +328,7 @@ This is useful when the extension is intended to replace the default Admin UI, r
 
 ## StaticAssetDefinition
 
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="280" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="280" packageName="@bb-vendure/ui-devkit" />
 
 A static asset can be provided as a path to the asset, or as an object containing a path and a new
 name, which will cause the compiler to copy and then rename the asset.
@@ -340,7 +340,7 @@ type StaticAssetDefinition = string | { path: string; rename: string }
 
 ## AdminUiExtensionSharedModule
 
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="289" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="289" packageName="@bb-vendure/ui-devkit" />
 
 Configuration defining a single NgModule with which to extend the Admin UI.
 
@@ -378,7 +378,7 @@ The name of the extension module class.
 
 ## AdminUiExtensionLazyModule
 
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="316" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="316" packageName="@bb-vendure/ui-devkit" />
 
 Configuration defining a single NgModule with which to extend the Admin UI.
 

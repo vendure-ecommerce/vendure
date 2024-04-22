@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { NotificationService, PageMetadataService, SharedModule } from '@vendure/admin-ui/core';
+import { NotificationService, PageMetadataService, SharedModule } from '@bb-vendure/admin-ui/core';
 
 @Component({
     selector: 'demo-block',

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { omit } from '@vendure/common/lib/omit';
-import { pick } from '@vendure/common/lib/pick';
-import { summate } from '@vendure/common/lib/shared-utils';
+import { omit } from '@bb-vendure/common/lib/omit';
+import { pick } from '@bb-vendure/common/lib/pick';
+import { summate } from '@bb-vendure/common/lib/shared-utils';
 import {
     defaultShippingCalculator,
     defaultShippingEligibilityChecker,
@@ -11,8 +11,8 @@ import {
     orderPercentageDiscount,
     productsPercentageDiscount,
     ShippingCalculator,
-} from '@vendure/core';
-import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
+} from '@bb-vendure/core';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@bb-vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';

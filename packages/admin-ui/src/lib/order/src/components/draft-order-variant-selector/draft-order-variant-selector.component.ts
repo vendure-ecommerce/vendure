@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { CurrencyCode, CustomFieldConfig, DataService, GetProductVariantQuery } from '@vendure/admin-ui/core';
+import { CurrencyCode, CustomFieldConfig, DataService, GetProductVariantQuery } from '@bb-vendure/admin-ui/core';
 import { Observable, Subject } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 

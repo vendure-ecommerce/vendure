@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { DataService, GetAvailableCountriesQuery, ItemOf, LocalStorageService } from '@vendure/admin-ui/core';
+import { DataService, GetAvailableCountriesQuery, ItemOf, LocalStorageService } from '@bb-vendure/admin-ui/core';
 import { Observable, Subscription } from 'rxjs';
 
 export interface TestAddress {

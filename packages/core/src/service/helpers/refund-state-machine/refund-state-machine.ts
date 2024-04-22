@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { HistoryEntryType } from '@vendure/common/lib/generated-types';
+import { HistoryEntryType } from '@bb-vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { IllegalOperationError } from '../../../common/error/errors';

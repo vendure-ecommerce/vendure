@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ProductOptionGroup
 
-<GenerationInfo sourceFile="packages/core/src/entity/product-option-group/product-option-group.entity.ts" sourceLine="20" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/product-option-group/product-option-group.entity.ts" sourceLine="20" packageName="@bb-vendure/core" />
 
 A grouping of one or more <a href='/reference/typescript-api/entities/product-option#productoption'>ProductOption</a>s.
 

@@ -1,6 +1,6 @@
-import { JobState } from '@vendure/common/lib/generated-types';
-import { pick } from '@vendure/common/lib/pick';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { JobState } from '@bb-vendure/common/lib/generated-types';
+import { pick } from '@bb-vendure/common/lib/pick';
+import { notNullOrUndefined } from '@bb-vendure/common/lib/shared-utils';
 import ms from 'ms';
 import { interval, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, map, switchMap, takeWhile, tap } from 'rxjs/operators';

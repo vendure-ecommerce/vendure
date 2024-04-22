@@ -17,7 +17,7 @@ import { BulkAction } from '../providers/bulk-action-registry/bulk-action-types'
  *
  * @example
  * ```ts title="providers.ts"
- * import { ModalService, registerBulkAction, SharedModule } from '\@vendure/admin-ui/core';
+ * import { ModalService, registerBulkAction, SharedModule } from '\@bb-vendure/admin-ui/core';
  * import { ProductDataTranslationService } from './product-data-translation.service';
  *
  * export default [

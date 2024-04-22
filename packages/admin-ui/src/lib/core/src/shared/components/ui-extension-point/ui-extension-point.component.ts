@@ -93,7 +93,7 @@ function highlightTsCode(tsCode: string) {
 
 const codeTemplates: Record<UiExtensionType, (locationId: UIExtensionLocationId, metadata: any) => string> = {
     actionBar: locationId => `
-import { addActionBarItem } from '@vendure/admin-ui/core';
+import { addActionBarItem } from '@bb-vendure/admin-ui/core';
 
 export default [
   addActionBarItem({
@@ -103,7 +103,7 @@ export default [
   }),
 ];`,
     actionBarDropdown: locationId => `
-import { addActionBarDropdownMenuItem } from '@vendure/admin-ui/core';
+import { addActionBarDropdownMenuItem } from '@bb-vendure/admin-ui/core';
 
 export default [
   addActionBarDropdownMenuItem({
@@ -113,7 +113,7 @@ export default [
   }),
 ];`,
     navMenu: locationId => `
-import { addNavMenuSection } from '@vendure/admin-ui/core';
+import { addNavMenuSection } from '@bb-vendure/admin-ui/core';
 
 export default [
   addNavMenuSection({
@@ -125,7 +125,7 @@ export default [
   ),
 ];`,
     detailComponent: locationId => `
-import { registerCustomDetailComponent } from '@vendure/admin-ui/core';
+import { registerCustomDetailComponent } from '@bb-vendure/admin-ui/core';
 
 export default [
   registerCustomDetailComponent({
@@ -134,7 +134,7 @@ export default [
   }),
 ];`,
     dataTable: (locationId, metadata) => `
-import { registerDataTableComponent } from '@vendure/admin-ui/core';
+import { registerDataTableComponent } from '@bb-vendure/admin-ui/core';
 
 export default [
   registerDataTableComponent({

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## FSM
 
-<GenerationInfo sourceFile="packages/core/src/common/finite-state-machine/finite-state-machine.ts" sourceLine="12" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/common/finite-state-machine/finite-state-machine.ts" sourceLine="12" packageName="@bb-vendure/core" />
 
 A simple type-safe finite state machine. This is used internally to control the Order process, ensuring that
 the state of Orders, Payments, Fulfillments and Refunds follows a well-defined behaviour.

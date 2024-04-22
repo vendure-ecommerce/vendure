@@ -1,5 +1,5 @@
 import { INestApplicationContext } from '@nestjs/common';
-import { CustomerService, isGraphQlErrorResult, RequestContext } from '@vendure/core';
+import { CustomerService, isGraphQlErrorResult, RequestContext } from '@bb-vendure/core';
 
 import { getSuperadminContext } from '../utils/get-superadmin-context';
 

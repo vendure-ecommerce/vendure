@@ -14,9 +14,9 @@ import {
     UpdateProductOptionInput,
     UpdateProductVariantInput,
     UpdateProductVariantsMutation,
-} from '@vendure/admin-ui/core';
-import { normalizeString } from '@vendure/common/lib/normalize-string';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+} from '@bb-vendure/admin-ui/core';
+import { normalizeString } from '@bb-vendure/common/lib/normalize-string';
+import { notNullOrUndefined } from '@bb-vendure/common/lib/shared-utils';
 import { forkJoin, Observable, of, throwError } from 'rxjs';
 import { map, mergeMap, shareReplay, switchMap } from 'rxjs/operators';
 

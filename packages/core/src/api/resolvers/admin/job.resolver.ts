@@ -9,7 +9,7 @@ import {
     QueryJobBufferSizeArgs,
     QueryJobsArgs,
     QueryJobsByIdArgs,
-} from '@vendure/common/lib/generated-types';
+} from '@bb-vendure/common/lib/generated-types';
 
 import { ConfigService, InspectableJobQueueStrategy, isInspectableJobQueueStrategy } from '../../../config';
 import { JobQueueService } from '../../../job-queue';

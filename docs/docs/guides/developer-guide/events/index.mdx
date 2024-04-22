@@ -92,7 +92,7 @@ Here's an example where we subscribe to the `ProductEvent` and use it to trigger
 
 ```ts title="src/plugins/storefront-build/storefront-build.plugin.ts"
 import { OnModuleInit } from '@nestjs/common';
-import { EventBus, ProductEvent, PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { EventBus, ProductEvent, PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 
 import { StorefrontBuildService } from './services/storefront-build.service';
 
@@ -151,7 +151,7 @@ import {
     VendurePlugin,
     ProductEvent,
     ProductVariantEvent,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 
 @VendurePlugin({
     imports: [PluginCommonModule],
@@ -179,7 +179,7 @@ For example, to publish a `ProductEvent`:
 
 ```ts title="src/plugins/my-plugin/services/my-plugin.service.ts"
 import { Injectable } from '@nestjs/common';
-import { EventBus, ProductEvent, RequestContext, Product } from '@vendure/core';
+import { EventBus, ProductEvent, RequestContext, Product } from '@bb-vendure/core';
 
 @Injectable()
 export class MyPluginService {
@@ -198,7 +198,7 @@ export class MyPluginService {
 You can create your own custom events by extending the [`VendureEvent`](/reference/typescript-api/events/vendure-event) class. For example, to create a custom event which is triggered when a customer submits a review, you could do this:
 
 ```ts title="src/plugins/reviews/events/review-submitted.event.ts"
-import { ID, RequestContext, VendureEvent } from '@vendure/core';
+import { ID, RequestContext, VendureEvent } from '@bb-vendure/core';
 import { ProductReviewInput } from '../types';
 
 /**
@@ -219,7 +219,7 @@ The event would then be published from your plugin's `ProductReviewService`:
 
 ```ts title="src/plugins/reviews/services/product-review.service.ts"
 import { Injectable } from '@nestjs/common';
-import { EventBus, ProductReviewService, RequestContext } from '@vendure/core';
+import { EventBus, ProductReviewService, RequestContext } from '@bb-vendure/core';
 
 import { ReviewSubmittedEvent } from '../events/review-submitted.event';
 import { ProductReviewInput } from '../types';
@@ -245,7 +245,7 @@ export class ProductReviewService {
 There is a special event class [`VendureEntityEvent`](/reference/typescript-api/events/vendure-entity-event) for events relating to the creation, update or deletion of entities. Let's say you have a custom entity (see [defining a database entity](/guides/developer-guide/database-entity//)) `BlogPost` and you want to trigger an event whenever a new `BlogPost` is created, updated or deleted:
 
 ```ts title="src/plugins/blog/events/blog-post-event.ts"
-import { ID, RequestContext, VendureEntityEvent } from '@vendure/core';
+import { ID, RequestContext, VendureEntityEvent } from '@bb-vendure/core';
 import { BlogPost } from '../entities/blog-post.entity';
 import { CreateBlogPostInput, UpdateBlogPostInput } from '../types';
 
@@ -271,7 +271,7 @@ Using this event, you can subscribe to all `BlogPost` events, and for instance f
 
 ```ts title="src/plugins/blog/blog-plugin.ts"
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { EventBus, PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { EventBus, PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 import { filter } from 'rxjs/operators';
 
 import { BlogPostEvent } from './events/blog-post-event';
@@ -326,7 +326,7 @@ In these cases, you can use the `EventBus.registerBlockingEventHandler()` method
 
 ```ts title="src/plugins/my-plugin/my-plugin.plugin.ts"
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { EventBus, PluginCommonModule, VendurePlugin, CustomerEvent } from '@vendure/core';
+import { EventBus, PluginCommonModule, VendurePlugin, CustomerEvent } from '@bb-vendure/core';
 import { CustomerSyncService } from './services/customer-sync.service';
 
 @VendurePlugin({

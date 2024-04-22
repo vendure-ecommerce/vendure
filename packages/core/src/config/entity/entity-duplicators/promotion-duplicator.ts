@@ -3,7 +3,7 @@ import {
     LanguageCode,
     Permission,
     PromotionTranslationInput,
-} from '@vendure/common/lib/generated-types';
+} from '@bb-vendure/common/lib/generated-types';
 
 import { isGraphQlErrorResult } from '../../../common/error/error-result';
 import { Injector } from '../../../common/injector';

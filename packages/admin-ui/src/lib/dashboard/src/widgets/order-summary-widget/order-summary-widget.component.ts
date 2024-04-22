@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, NgModule, OnInit } from '@angular/core';
-import { CoreModule, DataService, GetOrderSummaryDocument } from '@vendure/admin-ui/core';
+import { CoreModule, DataService, GetOrderSummaryDocument } from '@bb-vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
 import dayjs from 'dayjs';
 import { BehaviorSubject, Observable } from 'rxjs';

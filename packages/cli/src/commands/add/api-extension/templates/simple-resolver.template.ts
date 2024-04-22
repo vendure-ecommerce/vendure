@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { Permission } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
-import { Allow, Ctx, RequestContext, Transaction } from '@vendure/core';
+import { Permission } from '@bb-vendure/common/lib/generated-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
+import { Allow, Ctx, RequestContext, Transaction } from '@bb-vendure/core';
 
 class TemplateService {
     async exampleQueryHandler(ctx: RequestContext, id: ID) {

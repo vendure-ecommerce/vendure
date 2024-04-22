@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
-import { DataService, GetOrderStateQuery, GetOrderStateQueryVariables } from '@vendure/admin-ui/core';
+import { DataService, GetOrderStateQuery, GetOrderStateQueryVariables } from '@bb-vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';

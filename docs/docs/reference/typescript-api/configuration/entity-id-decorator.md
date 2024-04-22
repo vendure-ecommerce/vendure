@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EntityId
 
-<GenerationInfo sourceFile="packages/core/src/entity/entity-id.decorator.ts" sourceLine="41" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/entity-id.decorator.ts" sourceLine="41" packageName="@bb-vendure/core" />
 
 Decorates a property which points to another entity by ID. This custom decorator is needed
 because we do not know the data type of the ID column until runtime, when we have access

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { DeletionResponse, DeletionResult, LanguageCode } from '@vendure/common/lib/generated-types';
-import { CustomFieldsObject, ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { DeletionResponse, DeletionResult, LanguageCode } from '@bb-vendure/common/lib/generated-types';
+import { CustomFieldsObject, ID, PaginatedList } from '@bb-vendure/common/lib/shared-types';
 import {
     assertFound,
     CustomFieldRelationService,
@@ -18,7 +18,7 @@ import {
     TranslatorService,
     VendureEntity,
     patchEntity,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 
 // These can be replaced by generated types if you set up code generation
 interface CreateEntityInput {

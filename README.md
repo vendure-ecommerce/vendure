@@ -151,7 +151,7 @@ Unit tests are co-located with the files which they test, and have the suffix `.
 
 Certain packages have e2e tests, which are located at `/packages/<name>/e2e/`. All e2e tests can be run by running `npm run e2e` from the root directory, or individually by running it from the package directory.
 
-e2e tests use the `@vendure/testing` package. For details of how the setup works, see the [Testing docs](https://www.vendure.io/docs/developer-guide/testing/)
+e2e tests use the `@bb-vendure/testing` package. For details of how the setup works, see the [Testing docs](https://www.vendure.io/docs/developer-guide/testing/)
 
 When **debugging e2e tests**, set an environment variable `E2E_DEBUG=true` which will increase the global Jest timeout and allow you to step through the e2e tests without the tests automatically failing due to timeout.
 

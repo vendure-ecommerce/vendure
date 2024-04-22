@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AlertConfig
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/alerts/alerts.service.ts" sourceLine="62" packageName="@vendure/admin-ui" since="2.2.0" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/alerts/alerts.service.ts" sourceLine="62" packageName="@bb-vendure/admin-ui" since="2.2.0" />
 
 A configuration object for an Admin UI alert.
 
@@ -78,7 +78,10 @@ function.
 A function which is called when the alert is clicked in the Admin UI.
 ### label
 
-<MemberInfo kind="property" type={`(         data: T,         context: <a href='/reference/admin-ui-api/alerts/alert-context#alertcontext'>AlertContext</a>,     ) =&#62; { text: string; translationVars?: { [key: string]: string | number } }`}   />
+<MemberInfo kind="property" type={`(
+         data: T,
+         context: <a href='/reference/admin-ui-api/alerts/alert-context#alertcontext'>AlertContext</a>,
+     ) =&#62; { text: string; translationVars?: { [key: string]: string | number } }`}   />
 
 A function which returns the text used in the UI to describe the alert.
 ### requiredPermissions

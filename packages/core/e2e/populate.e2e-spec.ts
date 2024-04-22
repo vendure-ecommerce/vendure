@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
-import { DefaultLogger, User } from '@vendure/core';
-import { populate } from '@vendure/core/cli';
-import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
+import { DefaultLogger, User } from '@bb-vendure/core';
+import { populate } from '@bb-vendure/core/cli';
+import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@bb-vendure/testing';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 

@@ -8,9 +8,9 @@ import {
     Permission,
     RemoveShippingMethodsFromChannelInput,
     UpdateShippingMethodInput,
-} from '@vendure/common/lib/generated-types';
-import { omit } from '@vendure/common/lib/omit';
-import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+} from '@bb-vendure/common/lib/generated-types';
+import { omit } from '@bb-vendure/common/lib/omit';
+import { ID, PaginatedList } from '@bb-vendure/common/lib/shared-types';
 import { IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';

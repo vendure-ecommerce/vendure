@@ -12,7 +12,7 @@ import {
     MoveCollectionInput,
     NotificationService,
     Permission,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { EMPTY } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { CollectionPartial } from '../collection-tree/collection-tree.types';

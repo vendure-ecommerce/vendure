@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AssetServerOptions
 
-<GenerationInfo sourceFile="packages/asset-server-plugin/src/types.ts" sourceLine="72" packageName="@vendure/asset-server-plugin" />
+<GenerationInfo sourceFile="packages/asset-server-plugin/src/types.ts" sourceLine="72" packageName="@bb-vendure/asset-server-plugin" />
 
 The configuration options for the AssetServerPlugin.
 
@@ -83,7 +83,9 @@ Defines how previews are generated for a given Asset binary. By default, this us
 the <a href='/reference/core-plugins/asset-server-plugin/sharp-asset-preview-strategy#sharpassetpreviewstrategy'>SharpAssetPreviewStrategy</a>
 ### storageStrategyFactory
 
-<MemberInfo kind="property" type={`(         options: <a href='/reference/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions'>AssetServerOptions</a>,     ) =&#62; <a href='/reference/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a> | Promise&#60;<a href='/reference/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a>&#62;`} default="() =&#62; <a href='/reference/core-plugins/asset-server-plugin/local-asset-storage-strategy#localassetstoragestrategy'>LocalAssetStorageStrategy</a>"   />
+<MemberInfo kind="property" type={`(
+         options: <a href='/reference/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions'>AssetServerOptions</a>,
+     ) =&#62; <a href='/reference/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a> | Promise&#60;<a href='/reference/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a>&#62;`} default="() =&#62; <a href='/reference/core-plugins/asset-server-plugin/local-asset-storage-strategy#localassetstoragestrategy'>LocalAssetStorageStrategy</a>"   />
 
 A function which can be used to configure an <a href='/reference/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a>. This is useful e.g. if you wish to store your assets
 using a cloud storage provider. By default, the <a href='/reference/core-plugins/asset-server-plugin/local-asset-storage-strategy#localassetstoragestrategy'>LocalAssetStorageStrategy</a> is used.

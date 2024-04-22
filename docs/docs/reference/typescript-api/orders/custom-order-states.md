@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CustomOrderStates
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/order-state-machine/order-state.ts" sourceLine="11" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/order-state-machine/order-state.ts" sourceLine="11" packageName="@bb-vendure/core" />
 
 An interface to extend standard <a href='/reference/typescript-api/orders/order-process#orderstate'>OrderState</a>.
 

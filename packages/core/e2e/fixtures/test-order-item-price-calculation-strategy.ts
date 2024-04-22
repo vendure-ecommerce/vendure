@@ -5,7 +5,7 @@ import {
     ProductVariant,
     RequestContext,
     roundMoney,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 
 /**
  * Adds $5 for items with gift wrapping, halves the price when buying 3 or more

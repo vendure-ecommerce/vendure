@@ -1,4 +1,4 @@
-import { createBulkDeleteAction, GetTaxRateListQuery, ItemOf, Permission } from '@vendure/admin-ui/core';
+import { createBulkDeleteAction, GetTaxRateListQuery, ItemOf, Permission } from '@bb-vendure/admin-ui/core';
 import { map } from 'rxjs/operators';
 
 export const deleteTaxRatesBulkAction = createBulkDeleteAction<ItemOf<GetTaxRateListQuery, 'taxRates'>>({

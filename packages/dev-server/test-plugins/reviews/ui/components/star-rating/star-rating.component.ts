@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { CustomFieldConfigType, CustomFieldControl, SharedModule } from '@vendure/admin-ui/core';
+import { CustomFieldConfigType, CustomFieldControl, SharedModule } from '@bb-vendure/admin-ui/core';
 
 type StarType = 'empty' | 'full' | 'half';
 

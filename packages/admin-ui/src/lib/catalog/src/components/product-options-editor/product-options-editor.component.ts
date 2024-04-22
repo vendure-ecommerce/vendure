@@ -19,7 +19,7 @@ import {
     TranslationOf,
     UpdateProductOptionGroupInput,
     UpdateProductOptionInput,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { combineLatest, forkJoin, Observable } from 'rxjs';
 import { map, mergeMap, take, tap } from 'rxjs/operators';
 

@@ -15,7 +15,7 @@ import {
     CustomerHistoryEntryComponent,
     HistoryEntryComponentService,
     TimelineHistoryEntry,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-customer-history-entry-host',

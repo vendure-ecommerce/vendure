@@ -1,5 +1,5 @@
 import { HealthIndicatorFunction } from '@nestjs/terminus';
-import { HealthCheckStrategy, Injector } from '@vendure/core';
+import { HealthCheckStrategy, Injector } from '@bb-vendure/core';
 
 import { RedisHealthIndicator } from './redis-health-indicator';
 

@@ -200,7 +200,7 @@ As well as exposing custom fields via the GraphQL APIs, you can also access them
 Given the following custom field configuration:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 
 const config: VendureConfig = {
     // ...
@@ -337,7 +337,7 @@ Setting a custom field to be a list has the following effects:
 An array of localized labels for the field. These are used in the Admin UI to label the field.
 
 ```ts title="src/vendure-config.ts"
-import { LanguageCode } from '@vendure/core';
+import { LanguageCode } from '@bb-vendure/core';
 
 const config = {
     // ...
@@ -366,7 +366,7 @@ const config = {
 An array of localized descriptions for the field. These are used in the Admin UI to describe the field.
 
 ```ts title="src/vendure-config.ts"
-import { LanguageCode } from '@vendure/core';
+import { LanguageCode } from '@bb-vendure/core';
 
 const config = {
     // ...
@@ -536,7 +536,7 @@ A custom validation function. If the value is valid, then the function should no
 Note that string, number and date fields also have some built-in validation options such as `min`, `max`, `pattern` which you can read about in the following sections.
 
 ```ts title="src/vendure-config.ts"
-import { LanguageCode } from '@vendure/core';
+import { LanguageCode } from '@bb-vendure/core';
 
 const config = {
     // ...
@@ -606,7 +606,7 @@ Attempting to set the value of a field for which the user does not have the requ
 with an error.
 
 ```ts title="src/vendure-config.ts"
-import { Permission } from '@vendure/core';
+import { Permission } from '@bb-vendure/core';
 
 const config = {
     // ...
@@ -674,7 +674,7 @@ const config = {
 An array of pre-defined options for the field. This is useful for fields which should only have a limited set of values. The `value` property is the value which will be stored in the database, and the `label` property is an optional array of localized strings which will be displayed in the admin UI.
 
 ```ts title="src/vendure-config.ts"
-import { LanguageCode } from '@vendure/core';
+import { LanguageCode } from '@bb-vendure/core';
 
 const config = {
     // ...
@@ -889,7 +889,7 @@ In addition to the common properties, the `relation` custom fields have some typ
 The entity which this custom field is referencing. This can be one of the built-in entities, or a custom entity. If the entity is a custom entity, it must extend the `VendureEntity` class.
 
 ```ts title="src/vendure-config.ts"
-import { Product } from '\@vendure/core';
+import { Product } from '\@bb-vendure/core';
 
 const config = {
     // ...
@@ -915,7 +915,7 @@ const config = {
 Whether to [eagerly load](https://typeorm.io/#/eager-and-lazy-relations) the relation. Defaults to false. Note that eager loading has performance implications, so should only be used when necessary.
 
 ```ts title="src/vendure-config.ts"
-import { Product } from '\@vendure/core';
+import { Product } from '\@bb-vendure/core';
 
 const config = {
     // ...
@@ -970,7 +970,7 @@ Allows you to specify the [inverse side of the relation](https://typeorm.io/#inv
 to a custom entity which refers back to the product. You can specify this inverse relation like so:
 
 ```ts title="src/vendure-config.ts"
-import { Product } from '\@vendure/core';
+import { Product } from '\@bb-vendure/core';
 import { ProductReview } from './entities/product-review.entity';
 
 const config = {
@@ -1065,7 +1065,7 @@ const config = {
 Here's an example config demonstrating several ways to customize the UI controls for custom fields:
 
 ```ts
-import { LanguageCode, VendureConfig } from '@vendure/core';
+import { LanguageCode, VendureConfig } from '@bb-vendure/core';
 
 const config: VendureConfig = {
     // ...
@@ -1165,7 +1165,7 @@ access the custom field values on a Product entity.
 Attempting to access the custom field will result in a TS compiler error:
 
 ```ts {hl_lines=[12,13]}
-import { RequestContext, TransactionalConnection, ID, Product } from '@vendure/core';
+import { RequestContext, TransactionalConnection, ID, Product } from '@bb-vendure/core';
 
 export class MyService {
     constructor(private connection: TransactionalConnection) {
@@ -1192,12 +1192,12 @@ However, this sacrifices type safety. To make our custom fields type-safe we can
 ```ts
 // types.ts
 
-// Note: we are using deep a import here, rather than importing from `@vendure/core` due to
+// Note: we are using deep a import here, rather than importing from `@bb-vendure/core` due to
 // a possible bug in TypeScript (https://github.com/microsoft/TypeScript/issues/46617) which
 // causes issues when multiple plugins extend the same custom fields interface.
-import { CustomProductFields } from '@vendure/core/dist/entity/custom-entity-fields';
+import { CustomProductFields } from '@bb-vendure/core/dist/entity/custom-entity-fields';
 
-declare module '@vendure/core/dist/entity/custom-entity-fields' {
+declare module '@bb-vendure/core/dist/entity/custom-entity-fields' {
     interface CustomProductFields {
         infoUrl: string;
         downloadable: boolean;

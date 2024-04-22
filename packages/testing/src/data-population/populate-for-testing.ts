@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 import { INestApplicationContext } from '@nestjs/common';
-import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { VendureConfig } from '@vendure/core';
-import { importProductsFromCsv, populateCollections, populateInitialData } from '@vendure/core/cli';
+import { LanguageCode } from '@bb-vendure/common/lib/generated-types';
+import { VendureConfig } from '@bb-vendure/core';
+import { importProductsFromCsv, populateCollections, populateInitialData } from '@bb-vendure/core/cli';
 
 import { TestServerOptions } from '../types';
 

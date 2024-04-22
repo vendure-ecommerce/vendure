@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PaymentMethodQuote } from '@vendure/common/lib/generated-shop-types';
+import { PaymentMethodQuote } from '@bb-vendure/common/lib/generated-shop-types';
 import {
     AssignPaymentMethodsToChannelInput,
     ConfigurableOperationDefinition,
@@ -9,9 +9,9 @@ import {
     Permission,
     RemovePaymentMethodsFromChannelInput,
     UpdatePaymentMethodInput,
-} from '@vendure/common/lib/generated-types';
-import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
-import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+} from '@bb-vendure/common/lib/generated-types';
+import { DEFAULT_CHANNEL_CODE } from '@bb-vendure/common/lib/shared-constants';
+import { ID, PaginatedList } from '@bb-vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';

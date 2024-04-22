@@ -1,4 +1,4 @@
-import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
+import { AdminUiPlugin } from '@bb-vendure/admin-ui-plugin';
 import {
     ChannelService,
     DefaultLogger,
@@ -8,8 +8,8 @@ import {
     mergeConfig,
     OrderService,
     RequestContext,
-} from '@vendure/core';
-import { createTestEnvironment, registerInitializer, SqljsInitializer, testConfig } from '@vendure/testing';
+} from '@bb-vendure/core';
+import { createTestEnvironment, registerInitializer, SqljsInitializer, testConfig } from '@bb-vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 

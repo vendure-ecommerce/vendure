@@ -1,5 +1,5 @@
 import { INestApplicationContext } from '@nestjs/common';
-import { ChannelService, ConfigService, RequestContext, TransactionalConnection, User } from '@vendure/core';
+import { ChannelService, ConfigService, RequestContext, TransactionalConnection, User } from '@bb-vendure/core';
 
 /**
  * @description

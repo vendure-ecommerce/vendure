@@ -8,7 +8,7 @@ import {
     GetPromotionDetailDocument,
     PageService,
     SharedModule,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 
 import { PromotionDetailComponent } from './components/promotion-detail/promotion-detail.component';
 import {

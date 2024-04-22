@@ -1,4 +1,4 @@
-import { InjectableStrategy, VendureEvent } from '@vendure/core';
+import { InjectableStrategy, VendureEvent } from '@bb-vendure/core';
 
 import { EmailDetails, EmailPluginOptions } from '../types';
 

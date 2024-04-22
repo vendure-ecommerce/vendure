@@ -1,6 +1,6 @@
 import { PutObjectRequest, S3ClientConfig } from '@aws-sdk/client-s3';
 import { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@aws-sdk/types';
-import { AssetStorageStrategy, Logger } from '@vendure/core';
+import { AssetStorageStrategy, Logger } from '@bb-vendure/core';
 import { Request } from 'express';
 import * as path from 'node:path';
 import { Readable } from 'node:stream';
@@ -59,8 +59,8 @@ export interface S3Config {
  *
  * @example
  * ```ts
- * import { AssetServerPlugin, configureS3AssetStorage } from '\@vendure/asset-server-plugin';
- * import { DefaultAssetNamingStrategy } from '\@vendure/core';
+ * import { AssetServerPlugin, configureS3AssetStorage } from '\@bb-vendure/asset-server-plugin';
+ * import { DefaultAssetNamingStrategy } from '\@bb-vendure/core';
  * import { fromEnv } from '\@aws-sdk/credential-providers';
  *
  * // ...
@@ -86,8 +86,8 @@ export interface S3Config {
  *
  * @example
  * ```ts
- * import { AssetServerPlugin, configureS3AssetStorage } from '\@vendure/asset-server-plugin';
- * import { DefaultAssetNamingStrategy } from '\@vendure/core';
+ * import { AssetServerPlugin, configureS3AssetStorage } from '\@bb-vendure/asset-server-plugin';
+ * import { DefaultAssetNamingStrategy } from '\@bb-vendure/core';
  *
  * // ...
  *

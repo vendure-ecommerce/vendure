@@ -6,9 +6,9 @@ import {
     SearchInput,
     SearchResponse,
     SearchResult,
-} from '@vendure/common/lib/generated-types';
-import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
-import { Asset, SerializedRequestContext } from '@vendure/core';
+} from '@bb-vendure/common/lib/generated-types';
+import { ID, JsonCompatible } from '@bb-vendure/common/lib/shared-types';
+import { Asset, SerializedRequestContext } from '@bb-vendure/core';
 
 export type ElasticSearchResult = SearchResult & {
     inStock: boolean;

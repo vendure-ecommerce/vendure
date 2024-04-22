@@ -1,5 +1,5 @@
-import { JobState } from '@vendure/common/lib/generated-types';
-import { isClassInstance, isObject } from '@vendure/common/lib/shared-utils';
+import { JobState } from '@bb-vendure/common/lib/generated-types';
+import { isClassInstance, isObject } from '@bb-vendure/common/lib/shared-utils';
 
 import { Logger } from '../config/logger/vendure-logger';
 

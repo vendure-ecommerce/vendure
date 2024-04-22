@@ -6,7 +6,7 @@ import React, { PropsWithChildren, ReactNode } from 'react';
  *
  * @example
  * ```ts
- * import { PageDetailLayout } from '@vendure/admin-ui/react';
+ * import { PageDetailLayout } from '@bb-vendure/admin-ui/react';
  *
  * export function MyComponent() {
  *   return (

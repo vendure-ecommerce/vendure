@@ -1,5 +1,5 @@
-import { mergeConfig } from '@vendure/core';
-import { createTestEnvironment, SimpleGraphQLClient } from '@vendure/testing';
+import { mergeConfig } from '@bb-vendure/core';
+import { createTestEnvironment, SimpleGraphQLClient } from '@bb-vendure/testing';
 import { fail } from 'assert';
 import gql from 'graphql-tag';
 import path from 'path';

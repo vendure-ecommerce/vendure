@@ -5,7 +5,7 @@ import {
     RemoveOrderItemsResult,
     SetOrderShippingMethodResult,
     UpdateOrderItemsResult,
-} from '@vendure/common/lib/generated-shop-types';
+} from '@bb-vendure/common/lib/generated-shop-types';
 import {
     DeletionResponse,
     DeletionResult,
@@ -22,7 +22,7 @@ import {
     Permission,
     QueryEligibleShippingMethodsForDraftOrderArgs,
     ShippingMethodQuote,
-} from '@vendure/common/lib/generated-types';
+} from '@bb-vendure/common/lib/generated-types';
 
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../../common/error/error-result';
 import { UserInputError } from '../../../common/error/errors';

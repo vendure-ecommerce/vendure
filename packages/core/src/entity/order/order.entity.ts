@@ -5,9 +5,9 @@ import {
     OrderTaxSummary,
     OrderType,
     TaxLine,
-} from '@vendure/common/lib/generated-types';
-import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
-import { summate } from '@vendure/common/lib/shared-utils';
+} from '@bb-vendure/common/lib/generated-types';
+import { DeepPartial, ID } from '@bb-vendure/common/lib/shared-types';
+import { summate } from '@bb-vendure/common/lib/shared-utils';
 import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';

@@ -1,5 +1,5 @@
 import { IFieldResolver, IResolvers } from '@graphql-tools/utils';
-import { StockMovementType } from '@vendure/common/lib/generated-types';
+import { StockMovementType } from '@bb-vendure/common/lib/generated-types';
 import { GraphQLSchema } from 'graphql';
 import { GraphQLDateTime, GraphQLJSON } from 'graphql-scalars';
 

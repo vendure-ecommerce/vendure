@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DurationPipe
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/pipes/duration.pipe.ts" sourceLine="18" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/pipes/duration.pipe.ts" sourceLine="18" packageName="@bb-vendure/admin-ui" />
 
 Displays a number of milliseconds in a more human-readable format,
 e.g. "12ms", "33s", "2:03m"

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { mergeConfig } from '@vendure/core';
-import { AssetFragment } from '@vendure/core/e2e/graphql/generated-e2e-admin-types';
-import { createTestEnvironment } from '@vendure/testing';
+import { mergeConfig } from '@bb-vendure/core';
+import { AssetFragment } from '@bb-vendure/core/e2e/graphql/generated-e2e-admin-types';
+import { createTestEnvironment } from '@bb-vendure/testing';
 import fs from 'fs-extra';
 import gql from 'graphql-tag';
 import fetch from 'node-fetch';

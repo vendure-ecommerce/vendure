@@ -5,8 +5,8 @@ import {
     DeletionResponse,
     DeletionResult,
     UpdateProductOptionInput,
-} from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+} from '@bb-vendure/common/lib/generated-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { Translated } from '../../common/types/locale-types';

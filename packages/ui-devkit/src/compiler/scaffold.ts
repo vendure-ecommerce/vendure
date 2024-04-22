@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { notNullOrUndefined } from '@bb-vendure/common/lib/shared-utils';
 import * as fs from 'fs-extra';
 import { globSync } from 'glob';
 import * as path from 'path';
@@ -265,13 +265,13 @@ function copyAdminUiSource(outputPath: string, modulePathMapping: Record<string,
     }
 
     const scaffoldDir = path.join(__dirname, '../scaffold');
-    const adminUiSrc = path.join(require.resolve('@vendure/admin-ui'), '../../static');
+    const adminUiSrc = path.join(require.resolve('@bb-vendure/admin-ui'), '../../static');
 
     if (!fs.existsSync(scaffoldDir)) {
         throw new Error(`Could not find the admin ui scaffold files at ${scaffoldDir}`);
     }
     if (!fs.existsSync(adminUiSrc)) {
-        throw new Error(`Could not find the @vendure/admin-ui sources. Looked in ${adminUiSrc}`);
+        throw new Error(`Could not find the @bb-vendure/admin-ui sources. Looked in ${adminUiSrc}`);
     }
 
     // copy scaffold

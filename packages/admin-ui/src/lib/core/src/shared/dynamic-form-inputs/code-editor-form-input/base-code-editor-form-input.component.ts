@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, Directive, ElementRef, ViewChild } from '@angular/core';
 import { UntypedFormControl, ValidatorFn } from '@angular/forms';
-import { DefaultFormComponentConfig } from '@vendure/common/lib/shared-types';
+import { DefaultFormComponentConfig } from '@bb-vendure/common/lib/shared-types';
 import { CodeJar } from 'codejar';
 
 import { FormInputComponent } from '../../../common/component-registry-types';

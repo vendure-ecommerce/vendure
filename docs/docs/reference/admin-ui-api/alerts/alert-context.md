@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AlertContext
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/alerts/alerts.service.ts" sourceLine="28" packageName="@vendure/admin-ui" since="2.2.0" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/alerts/alerts.service.ts" sourceLine="28" packageName="@bb-vendure/admin-ui" since="2.2.0" />
 
 The context object which is passed to the `check`, `isAlert`, `label` and `action` functions of an
 <a href='/reference/admin-ui-api/alerts/alert-config#alertconfig'>AlertConfig</a> object.

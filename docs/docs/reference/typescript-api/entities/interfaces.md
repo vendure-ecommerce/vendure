@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ChannelAware
 
-<GenerationInfo sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="17" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="17" packageName="@bb-vendure/core" />
 
 Entities which can be assigned to Channels should implement this interface.
 
@@ -35,7 +35,7 @@ interface ChannelAware {
 
 ## SoftDeletable
 
-<GenerationInfo sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="28" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="28" packageName="@bb-vendure/core" />
 
 Entities which can be soft deleted should implement this interface.
 
@@ -59,7 +59,7 @@ interface SoftDeletable {
 
 ## Orderable
 
-<GenerationInfo sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="39" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="39" packageName="@bb-vendure/core" />
 
 Entities which can be ordered relative to their siblings in a list.
 
@@ -83,7 +83,7 @@ interface Orderable {
 
 ## Taggable
 
-<GenerationInfo sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="50" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="50" packageName="@bb-vendure/core" />
 
 Entities which can have Tags applied to them.
 
@@ -107,7 +107,7 @@ interface Taggable {
 
 ## Translatable
 
-<GenerationInfo sourceFile="packages/core/src/common/types/locale-types.ts" sourceLine="29" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/common/types/locale-types.ts" sourceLine="29" packageName="@bb-vendure/core" />
 
 Entities which have localizable string properties should implement this type.
 

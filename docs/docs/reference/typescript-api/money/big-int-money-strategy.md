@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## BigIntMoneyStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/entity/bigint-money-strategy.ts" sourceLine="18" packageName="@vendure/core" since="2.0.0" />
+<GenerationInfo sourceFile="packages/core/src/config/entity/bigint-money-strategy.ts" sourceLine="18" packageName="@bb-vendure/core" since="2.0.0" />
 
 A <a href='/reference/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a> that stores monetary values as a `bigint` type in the database, which
 allows values up to ~9 quadrillion to be stored (limited by JavaScript's `MAX_SAFE_INTEGER` limit).

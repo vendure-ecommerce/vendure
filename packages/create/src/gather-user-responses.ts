@@ -1,5 +1,5 @@
 import { cancel, intro, isCancel, outro, select, text } from '@clack/prompts';
-import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/lib/shared-constants';
+import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@bb-vendure/common/lib/shared-constants';
 import fs from 'fs-extra';
 import Handlebars from 'handlebars';
 import path from 'path';

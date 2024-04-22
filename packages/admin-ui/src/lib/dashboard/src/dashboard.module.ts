@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { DashboardWidgetService, SharedModule } from '@vendure/admin-ui/core';
+import { DashboardWidgetService, SharedModule } from '@bb-vendure/admin-ui/core';
 
 import { DashboardWidgetComponent } from './components/dashboard-widget/dashboard-widget.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';

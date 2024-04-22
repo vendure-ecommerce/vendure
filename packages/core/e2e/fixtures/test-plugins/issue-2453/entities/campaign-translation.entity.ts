@@ -1,5 +1,5 @@
-import type { Translation } from '@vendure/core';
-import { DeepPartial, LanguageCode, VendureEntity } from '@vendure/core';
+import type { Translation } from '@bb-vendure/core';
+import { DeepPartial, LanguageCode, VendureEntity } from '@bb-vendure/core';
 import { Column, Entity, Relation, ManyToOne } from 'typeorm';
 
 import { Campaign } from './campaign.entity';

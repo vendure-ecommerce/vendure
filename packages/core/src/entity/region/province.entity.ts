@@ -1,4 +1,4 @@
-import { DeepPartial } from '@vendure/common/lib/shared-types';
+import { DeepPartial } from '@bb-vendure/common/lib/shared-types';
 import { ChildEntity } from 'typeorm';
 
 import { Region, RegionType } from './region.entity';

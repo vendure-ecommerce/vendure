@@ -11,14 +11,14 @@ import {
     RelationCustomFieldConfig as GraphQLRelationCustomFieldConfig,
     StringCustomFieldConfig as GraphQLStringCustomFieldConfig,
     TextCustomFieldConfig as GraphQLTextCustomFieldConfig,
-} from '@vendure/common/lib/generated-types';
+} from '@bb-vendure/common/lib/generated-types';
 import {
     CustomFieldsObject,
     CustomFieldType,
     DefaultFormComponentId,
     Type,
     UiComponentConfig,
-} from '@vendure/common/lib/shared-types';
+} from '@bb-vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { Injector } from '../../common/injector';

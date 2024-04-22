@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrderByCodeAccessStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/order-by-code-access-strategy.ts" sourceLine="38" packageName="@vendure/core" since="1.1.0" />
+<GenerationInfo sourceFile="packages/core/src/config/order/order-by-code-access-strategy.ts" sourceLine="38" packageName="@bb-vendure/core" since="1.1.0" />
 
 The OrderByCodeAccessStrategy determines how access to a placed Order via the
 orderByCode query is granted.
@@ -62,7 +62,7 @@ Gives or denies permission to access the requested Order
 
 ## DefaultOrderByCodeAccessStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/order-by-code-access-strategy.ts" sourceLine="57" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/order/order-by-code-access-strategy.ts" sourceLine="57" packageName="@bb-vendure/core" />
 
 The default OrderByCodeAccessStrategy used by Vendure. It permitts permanent access to
 the Customer owning the Order and anyone within a given time period after placing the Order

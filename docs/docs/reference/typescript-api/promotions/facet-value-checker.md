@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## FacetValueChecker
 
-<GenerationInfo sourceFile="packages/core/src/config/promotion/utils/facet-value-checker.ts" sourceLine="48" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/promotion/utils/facet-value-checker.ts" sourceLine="48" packageName="@bb-vendure/core" />
 
 The FacetValueChecker is a helper class used to determine whether a given OrderLine consists
 of ProductVariants containing the given FacetValues.
@@ -19,7 +19,7 @@ of ProductVariants containing the given FacetValues.
 *Example*
 
 ```ts
-import { FacetValueChecker, LanguageCode, PromotionCondition, TransactionalConnection } from '@vendure/core';
+import { FacetValueChecker, LanguageCode, PromotionCondition, TransactionalConnection } from '@bb-vendure/core';
 
 let facetValueChecker: FacetValueChecker;
 

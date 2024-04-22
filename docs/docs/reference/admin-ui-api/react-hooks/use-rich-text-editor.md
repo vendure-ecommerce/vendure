@@ -11,14 +11,14 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## useRichTextEditor
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-hooks/use-rich-text-editor.ts" sourceLine="40" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-hooks/use-rich-text-editor.ts" sourceLine="40" packageName="@bb-vendure/admin-ui" />
 
 Provides access to the ProseMirror (rich text editor) instance.
 
 *Example*
 
 ```ts
-import { useRichTextEditor } from '@vendure/admin-ui/react';
+import { useRichTextEditor } from '@bb-vendure/admin-ui/react';
 import React from 'react';
 
 export function Component() {

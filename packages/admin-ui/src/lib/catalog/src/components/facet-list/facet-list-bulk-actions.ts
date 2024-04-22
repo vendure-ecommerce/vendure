@@ -14,8 +14,8 @@ import {
     NotificationService,
     Permission,
     RemoveFacetsFromChannelMutation,
-} from '@vendure/admin-ui/core';
-import { unique } from '@vendure/common/lib/unique';
+} from '@bb-vendure/admin-ui/core';
+import { unique } from '@bb-vendure/common/lib/unique';
 import { EMPTY, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 

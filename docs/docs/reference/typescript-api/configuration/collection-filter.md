@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CollectionFilter
 
-<GenerationInfo sourceFile="packages/core/src/config/catalog/collection-filter.ts" sourceLine="64" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/catalog/collection-filter.ts" sourceLine="64" packageName="@bb-vendure/core" />
 
 A CollectionFilter defines a rule which can be used to associate ProductVariants with a Collection.
 The filtering is done by defining the `apply()` function, which receives a TypeORM
@@ -25,7 +25,7 @@ Here's a simple example of a custom CollectionFilter:
 *Example*
 
 ```ts
-import { CollectionFilter, LanguageCode } from '@vendure/core';
+import { CollectionFilter, LanguageCode } from '@bb-vendure/core';
 
 export const skuCollectionFilter = new CollectionFilter({
   args: {

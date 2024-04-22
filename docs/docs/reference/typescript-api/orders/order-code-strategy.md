@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrderCodeStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/order-code-strategy.ts" sourceLine="39" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/order/order-code-strategy.ts" sourceLine="39" packageName="@bb-vendure/core" />
 
 The OrderCodeStrategy determines how Order codes are generated.
 A custom strategy can be defined which e.g. integrates with an
@@ -66,7 +66,7 @@ Generates the order code.
 
 ## DefaultOrderCodeStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/order-code-strategy.ts" sourceLine="55" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/order/order-code-strategy.ts" sourceLine="55" packageName="@bb-vendure/core" />
 
 The default OrderCodeStrategy generates a random string consisting
 of 16 uppercase letters and numbers.

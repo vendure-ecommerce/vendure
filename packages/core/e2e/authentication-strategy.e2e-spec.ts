@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { ErrorCode } from '@vendure/common/lib/generated-shop-types';
-import { pick } from '@vendure/common/lib/pick';
-import { mergeConfig, NativeAuthenticationStrategy } from '@vendure/core';
-import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
+import { ErrorCode } from '@bb-vendure/common/lib/generated-shop-types';
+import { pick } from '@bb-vendure/common/lib/pick';
+import { mergeConfig, NativeAuthenticationStrategy } from '@bb-vendure/core';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@bb-vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';

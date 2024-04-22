@@ -36,7 +36,7 @@ email sending, and search. For documentation on these, see the [Core Plugins ref
 Here's a bare-minimum example of a plugin:
 
 ```ts title="src/plugins/avatar-plugin/avatar.plugin.ts"
-import { LanguageCode, PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { LanguageCode, PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 
 @VendurePlugin({
     imports: [PluginCommonModule],
@@ -58,7 +58,7 @@ This plugin does one thing only: it adds a new custom field to the `Customer` en
 The plugin is then imported into the `VendureConfig`:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 import { AvatarPlugin } from './plugins/avatar-plugin/avatar.plugin';
 
 export const config: VendureConfig = {
@@ -118,7 +118,7 @@ to the network stack, and the worker has no network part.
 
 ```ts
 import { MiddlewareConsumer, NestModule } from '@nestjs/common';
-import { EventBus, PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { EventBus, PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 import { MyMiddleware } from './api/my-middleware';
 
 @VendurePlugin({
@@ -190,7 +190,7 @@ We'll start by creating a new directory to house our plugin, add create the main
 ```
 
 ```ts title="src/plugins/reviews-plugin/wishlist.plugin.ts"
-import { PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 
 @VendurePlugin({
     imports: [PluginCommonModule],
@@ -217,7 +217,7 @@ First let's create the file to house the entity:
 By convention, we'll store the entity definitions in the `entities` directory of the plugin. Again, this is not a requirement, but it is a good way to keep your plugin organized.
 
 ```ts title="src/plugins/wishlist-plugin/entities/wishlist-item.entity.ts"
-import { DeepPartial, ID, ProductVariant, VendureEntity, EntityId } from '@vendure/core';
+import { DeepPartial, ID, ProductVariant, VendureEntity, EntityId } from '@bb-vendure/core';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 @Entity()
@@ -245,7 +245,7 @@ Let's break down what's happening here:
 Next we need to register this entity with our plugin:
 
 ```ts title="src/plugins/wishlist-plugin/wishlist.plugin.ts"
-import { PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 import { WishlistItem } from './entities/wishlist-item.entity';
 
 @VendurePlugin({
@@ -262,7 +262,7 @@ We'll now define a new custom field on the Customer entity which will store a li
 Custom fields are defined in the VendureConfig object, and in a plugin we use the `configuration` function to modify the config object:
 
 ```ts title="src/plugins/wishlist-plugin/wishlist.plugin.ts"
-import { PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 import { WishlistItem } from './entities/wishlist-item.entity';
 
 @VendurePlugin({
@@ -296,7 +296,7 @@ In order to make use of this custom field in a type-safe way, we can tell TypeSc
 ```ts title="src/plugins/wishlist-plugin/types.ts"
 import { WishlistItem } from './entities/wishlist-item.entity';
 
-declare module '@vendure/core/dist/entity/custom-entity-fields' {
+declare module '@bb-vendure/core/dist/entity/custom-entity-fields' {
   interface CustomCustomerFields {
     wishlistItems: WishlistItem[];
   }
@@ -335,7 +335,7 @@ import {
     RequestContext,
     TransactionalConnection,
     UserInputError,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 
 import { WishlistItem } from '../entities/wishlist-item.entity';
 
@@ -428,7 +428,7 @@ Let's break down what's happening here:
 The service is then registered with the plugin metadata as a provider:
 
 ```ts title="src/plugins/wishlist-plugin/wishlist.plugin.ts"
-import { PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 import { WishlistService } from './services/wishlist.service';
 
 @VendurePlugin({
@@ -491,7 +491,7 @@ The `api-extensions.ts` file is where we define the extensions we will be making
 Next we need to pass these extensions to our plugin's metadata:
 
 ```ts title="src/plugins/wishlist-plugin/wishlist.plugin.ts"
-import { PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 import { shopApiExtensions } from './api/api-extensions';
 
 @VendurePlugin({
@@ -519,7 +519,7 @@ Now that we have defined the GraphQL schema extensions, we need to create a reso
 
 ```ts title="src/plugins/wishlist-plugin/api/wishlist.resolver.ts"
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { Allow, Ctx, Permission, RequestContext, Transaction } from '@vendure/core';
+import { Allow, Ctx, Permission, RequestContext, Transaction } from '@bb-vendure/core';
 
 import { WishlistItem } from '../entities/wishlist-item.entity';
 import { WishlistService } from '../services/wishlist.service';
@@ -564,7 +564,7 @@ Resolvers are usually "thin" functions that delegate the actual work to a servic
 This resolver is then registered with the plugin metadata:
 
 ```ts title="src/plugins/wishlist-plugin/wishlist.plugin.ts"
-import { PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 import { shopApiExtensions } from './api/api-extensions';
 import { WishlistShopResolver } from './api/wishlist.resolver';
 
@@ -610,7 +610,7 @@ The value of this property is a [semver range](https://docs.npmjs.com/about-sema
 The final step is to add the plugin to the `VendureConfig` object. This is done in the `vendure-config.ts` file:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 import { WishlistPlugin } from './plugins/wishlist-plugin/wishlist.plugin';
 
 export const config: VendureConfig = {

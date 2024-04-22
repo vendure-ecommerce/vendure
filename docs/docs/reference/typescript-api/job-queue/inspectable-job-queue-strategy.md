@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## InspectableJobQueueStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/job-queue/inspectable-job-queue-strategy.ts" sourceLine="14" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/job-queue/inspectable-job-queue-strategy.ts" sourceLine="14" packageName="@bb-vendure/core" />
 
 Defines a job queue strategy that can be inspected using the default admin ui
 

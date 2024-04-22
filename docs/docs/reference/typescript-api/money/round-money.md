@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## roundMoney
 
-<GenerationInfo sourceFile="packages/core/src/common/round-money.ts" sourceLine="13" packageName="@vendure/core" since="2.0.0" />
+<GenerationInfo sourceFile="packages/core/src/common/round-money.ts" sourceLine="13" packageName="@bb-vendure/core" since="2.0.0" />
 
 Rounds a monetary value according to the configured <a href='/reference/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a>.
 

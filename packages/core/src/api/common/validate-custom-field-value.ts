@@ -1,4 +1,4 @@
-import { assertNever } from '@vendure/common/lib/shared-utils';
+import { assertNever } from '@bb-vendure/common/lib/shared-utils';
 
 import { UserInputError } from '../../common/error/errors';
 import { Injector } from '../../common/injector';

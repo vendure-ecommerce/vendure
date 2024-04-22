@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BaseEntityResolver, GetProductVariantOptionsQuery, DataService } from '@vendure/admin-ui/core';
+import { BaseEntityResolver, GetProductVariantOptionsQuery, DataService } from '@bb-vendure/admin-ui/core';
 
 @Injectable({
     providedIn: 'root',

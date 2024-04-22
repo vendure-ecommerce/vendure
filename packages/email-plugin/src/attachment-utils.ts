@@ -1,4 +1,4 @@
-import { Logger } from '@vendure/core';
+import { Logger } from '@bb-vendure/core';
 import { Readable, Stream } from 'stream';
 import { format, Url } from 'url';
 

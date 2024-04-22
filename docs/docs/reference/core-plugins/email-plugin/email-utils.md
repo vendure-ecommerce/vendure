@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## transformOrderLineAssetUrls
 
-<GenerationInfo sourceFile="packages/email-plugin/src/handler/default-email-handlers.ts" sourceLine="101" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/handler/default-email-handlers.ts" sourceLine="101" packageName="@bb-vendure/email-plugin" />
 
 Applies the configured `AssetStorageStrategy.toAbsoluteUrl()` function to each of the
 OrderLine's `featuredAsset.preview` properties, so that they can be correctly displayed
@@ -42,7 +42,7 @@ Parameters
 
 ## hydrateShippingLines
 
-<GenerationInfo sourceFile="packages/email-plugin/src/handler/default-email-handlers.ts" sourceLine="122" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/handler/default-email-handlers.ts" sourceLine="122" packageName="@bb-vendure/email-plugin" />
 
 Ensures that the ShippingLines are hydrated so that we can use the
 `shippingMethod.name` property in the email template.

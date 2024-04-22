@@ -29,7 +29,7 @@ import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
  *     RequestContext,
  *     ShippingLine,
  *     ShippingLineAssignmentStrategy,
- * } from '\@vendure/core';
+ * } from '\@bb-vendure/core';
  *
  * export class DigitalShippingLineAssignmentStrategy implements ShippingLineAssignmentStrategy {
  *     assignShippingLineToOrderLines(

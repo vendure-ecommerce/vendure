@@ -1,5 +1,5 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
-import { Permission } from '@vendure/common/lib/generated-types';
+import { Permission } from '@bb-vendure/common/lib/generated-types';
 
 import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
 import { Translated } from '../../../common/types/locale-types';

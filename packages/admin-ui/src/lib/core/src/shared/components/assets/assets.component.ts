@@ -8,7 +8,7 @@ import {
     Input,
     Output,
 } from '@angular/core';
-import { unique } from '@vendure/common/lib/unique';
+import { unique } from '@bb-vendure/common/lib/unique';
 import { Asset, Permission } from '../../../common/generated-types';
 import { ModalService } from '../../../providers/modal/modal.service';
 import { AssetPickerDialogComponent } from '../asset-picker-dialog/asset-picker-dialog.component';

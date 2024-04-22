@@ -11,17 +11,17 @@ This guide provides guidance for updating the Vendure core framework to a newer 
 
 First, check the [changelog](https://github.com/vendure-ecommerce/vendure/blob/master/CHANGELOG.md) for an overview of the changes and any breaking changes in the next version.
 
-In your project's `package.json` file, find all the `@vendure/...` packages and change the version
+In your project's `package.json` file, find all the `@bb-vendure/...` packages and change the version
 to the latest. All the Vendure packages have the same version, and are all released together.
 
 ```diff
 {
   // ...
   "dependencies": {
--    "@vendure/common": "1.1.5",
-+    "@vendure/common": "1.2.0",
--    "@vendure/core": "1.1.5",
-+    "@vendure/core": "1.2.0",
+-    "@bb-vendure/common": "1.1.5",
++    "@bb-vendure/common": "1.2.0",
+-    "@bb-vendure/core": "1.1.5",
++    "@bb-vendure/core": "1.2.0",
      // etc.
   }
 }

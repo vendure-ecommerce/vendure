@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Dialog } from '@vendure/admin-ui/core';
+import { Dialog } from '@bb-vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-order-state-select-dialog',

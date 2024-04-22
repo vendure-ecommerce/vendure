@@ -234,7 +234,7 @@ is a redirect in place to `/catalog/products/...`.
 * **admin-ui** Expose providers to nav menu routerLink function ([1bae40e](https://github.com/vendure-ecommerce/vendure/commit/1bae40e))
 * **admin-ui** Improved control over ActionBar buttons ([065a2b4](https://github.com/vendure-ecommerce/vendure/commit/065a2b4))
 * **create** Better defaults for project scaffold ([fa683e7](https://github.com/vendure-ecommerce/vendure/commit/fa683e7))
-* **cli** Introduce new `@vendure/cli` package which exposes a `vendure` binary. Currently supports `vendure new plugin` command.
+* **cli** Introduce new `@bb-vendure/cli` package which exposes a `vendure` binary. Currently supports `vendure new plugin` command.
 * **cli** Implement plugin scaffold command ([a6df4c1](https://github.com/vendure-ecommerce/vendure/commit/a6df4c1))
 * **cli** Include custom CRUD permissions with plugin scaffold ([0c62b6f](https://github.com/vendure-ecommerce/vendure/commit/0c62b6f))
 

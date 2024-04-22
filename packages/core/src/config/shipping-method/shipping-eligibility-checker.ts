@@ -1,5 +1,5 @@
-import { ConfigArg } from '@vendure/common/lib/generated-types';
-import { Json } from '@vendure/common/lib/shared-types';
+import { ConfigArg } from '@bb-vendure/common/lib/generated-types';
+import { Json } from '@bb-vendure/common/lib/shared-types';
 import { createHash } from 'crypto';
 
 import { RequestContext } from '../../api/common/request-context';

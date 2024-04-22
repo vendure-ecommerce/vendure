@@ -1,4 +1,4 @@
-import { createBulkDeleteAction, GetZoneListQuery, ItemOf, Permission } from '@vendure/admin-ui/core';
+import { createBulkDeleteAction, GetZoneListQuery, ItemOf, Permission } from '@bb-vendure/admin-ui/core';
 import { map } from 'rxjs/operators';
 
 export const deleteZonesBulkAction = createBulkDeleteAction<ItemOf<GetZoneListQuery, 'zones'>>({

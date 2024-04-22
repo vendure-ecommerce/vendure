@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## createErrorResultGuard
 
-<GenerationInfo sourceFile="packages/testing/src/error-result-guard.ts" sourceLine="18" packageName="@vendure/testing" />
+<GenerationInfo sourceFile="packages/testing/src/error-result-guard.ts" sourceLine="18" packageName="@bb-vendure/testing" />
 
 Convenience method for creating an <a href='/reference/typescript-api/testing/error-result-guard#errorresultguard'>ErrorResultGuard</a>. Takes a predicate function which
 tests whether the input is considered successful (true) or an error result (false).

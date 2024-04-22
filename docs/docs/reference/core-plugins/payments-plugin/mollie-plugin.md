@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## MolliePlugin
 
-<GenerationInfo sourceFile="packages/payments-plugin/src/mollie/mollie.plugin.ts" sourceLine="192" packageName="@vendure/payments-plugin" />
+<GenerationInfo sourceFile="packages/payments-plugin/src/mollie/mollie.plugin.ts" sourceLine="192" packageName="@bb-vendure/payments-plugin" />
 
 Plugin to enable payments through the [Mollie platform](https://docs.mollie.com/).
 This plugin uses the Order API from Mollie, not the Payments API.
@@ -21,17 +21,17 @@ This plugin uses the Order API from Mollie, not the Payments API.
 1. You will need to create a Mollie account and get your apiKey in the dashboard.
 2. Install the Payments plugin and the Mollie client:
 
-    `yarn add @vendure/payments-plugin @mollie/api-client`
+    `yarn add @bb-vendure/payments-plugin @mollie/api-client`
 
     or
 
-    `npm install @vendure/payments-plugin @mollie/api-client`
+    `npm install @bb-vendure/payments-plugin @mollie/api-client`
 
 ## Setup
 
 1. Add the plugin to your VendureConfig `plugins` array:
     ```ts
-    import { MolliePlugin } from '@vendure/payments-plugin/package/mollie';
+    import { MolliePlugin } from '@bb-vendure/payments-plugin/package/mollie';
 
     // ...
 
@@ -145,7 +145,7 @@ Initialize the mollie payment plugin
 
 ## MolliePluginOptions
 
-<GenerationInfo sourceFile="packages/payments-plugin/src/mollie/mollie.plugin.ts" sourceLine="29" packageName="@vendure/payments-plugin" />
+<GenerationInfo sourceFile="packages/payments-plugin/src/mollie/mollie.plugin.ts" sourceLine="29" packageName="@bb-vendure/payments-plugin" />
 
 Configuration options for the Mollie payments plugin.
 
@@ -170,7 +170,11 @@ The host of your Vendure server, e.g. `'https://my-vendure.io'`.
 This is used by Mollie to send webhook events to the Vendure server
 ### enabledPaymentMethodsParams
 
-<MemberInfo kind="property" type={`(         injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>,         ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>,         order: <a href='/reference/typescript-api/entities/order#order'>Order</a> | null,     ) =&#62; AdditionalEnabledPaymentMethodsParams | Promise&#60;AdditionalEnabledPaymentMethodsParams&#62;`}  since="2.2.0"  />
+<MemberInfo kind="property" type={`(
+         injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>,
+         ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>,
+         order: <a href='/reference/typescript-api/entities/order#order'>Order</a> | null,
+     ) =&#62; AdditionalEnabledPaymentMethodsParams | Promise&#60;AdditionalEnabledPaymentMethodsParams&#62;`}  since="2.2.0"  />
 
 Provide additional parameters to the Mollie enabled payment methods API call. By default,
 the plugin will already pass the `resource` parameter.
@@ -179,8 +183,8 @@ For example, if you want to provide a `locale` and `billingCountry` for the API 
 
 **Note:** The `order` argument is possibly `null`, this could happen when you fetch the available payment methods
 before the order is created.
-
-*Example*
+@bb-vendure
+*Example*@bb-vendure
 
 ```ts
 import { VendureConfig } from '@vendure/core';

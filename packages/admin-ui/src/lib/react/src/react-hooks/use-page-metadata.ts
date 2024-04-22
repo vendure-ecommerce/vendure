@@ -1,4 +1,4 @@
-import { BreadcrumbValue } from '@vendure/admin-ui/core';
+import { BreadcrumbValue } from '@bb-vendure/admin-ui/core';
 import { useContext } from 'react';
 import { HostedComponentContext } from '../directives/react-component-host.directive';
 import { HostedReactComponentContext, ReactRouteComponentOptions } from '../types';
@@ -9,7 +9,7 @@ import { HostedReactComponentContext, ReactRouteComponentOptions } from '../type
  *
  * @example
  * ```ts
- * import { usePageMetadata } from '\@vendure/admin-ui/react';
+ * import { usePageMetadata } from '\@bb-vendure/admin-ui/react';
  * import { useEffect } from 'react';
  *
  * export const MyComponent = () => {

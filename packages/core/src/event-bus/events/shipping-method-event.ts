@@ -1,5 +1,5 @@
-import { CreateShippingMethodInput, UpdateShippingMethodInput } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { CreateShippingMethodInput, UpdateShippingMethodInput } from '@bb-vendure/common/lib/generated-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { ShippingMethod } from '../../entity';

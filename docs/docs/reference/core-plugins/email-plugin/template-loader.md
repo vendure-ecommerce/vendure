@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TemplateLoader
 
-<GenerationInfo sourceFile="packages/email-plugin/src/template-loader/template-loader.ts" sourceLine="32" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/template-loader/template-loader.ts" sourceLine="32" packageName="@bb-vendure/email-plugin" />
 
 Loads email templates based on the given request context, type and template name
 and return the template as a string.
@@ -19,7 +19,7 @@ and return the template as a string.
 *Example*
 
 ```ts
-import { EmailPlugin, TemplateLoader } from '@vendure/email-plugin';
+import { EmailPlugin, TemplateLoader } from '@bb-vendure/email-plugin';
 
 class MyTemplateLoader implements TemplateLoader {
      loadTemplate(injector, ctx, { type, templateName }){
@@ -62,7 +62,7 @@ This method is only called during initialization, i.e. during server startup.
 
 ## FileBasedTemplateLoader
 
-<GenerationInfo sourceFile="packages/email-plugin/src/template-loader/file-based-template-loader.ts" sourceLine="17" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/template-loader/file-based-template-loader.ts" sourceLine="17" packageName="@bb-vendure/email-plugin" />
 
 Loads email templates from the local file system. This is the default
 loader used by the EmailPlugin.

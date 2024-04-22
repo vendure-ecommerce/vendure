@@ -1,7 +1,7 @@
 import {
     AuthenticationResult as ShopAuthenticationResult,
     PasswordValidationError,
-} from '@vendure/common/lib/generated-shop-types';
+} from '@bb-vendure/common/lib/generated-shop-types';
 import {
     AuthenticationResult as AdminAuthenticationResult,
     CurrentUser,
@@ -9,7 +9,7 @@ import {
     MutationAuthenticateArgs,
     MutationLoginArgs,
     Success,
-} from '@vendure/common/lib/generated-types';
+} from '@bb-vendure/common/lib/generated-types';
 import { Request, Response } from 'express';
 
 import { isGraphQlErrorResult } from '../../../common/error/error-result';

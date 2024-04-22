@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { FormControl, UntypedFormControl } from '@angular/forms';
-import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/common/lib/shared-types';
+import { DefaultFormComponentConfig, DefaultFormComponentId } from '@bb-vendure/common/lib/shared-types';
 
 import { FormInputComponent } from '../../../common/component-registry-types';
 import { DataService } from '../../../data/providers/data.service';

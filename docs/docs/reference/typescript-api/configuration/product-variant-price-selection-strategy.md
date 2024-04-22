@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ProductVariantPriceSelectionStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/catalog/product-variant-price-selection-strategy.ts" sourceLine="21" packageName="@vendure/core" since="2.0.0" />
+<GenerationInfo sourceFile="packages/core/src/config/catalog/product-variant-price-selection-strategy.ts" sourceLine="21" packageName="@bb-vendure/core" since="2.0.0" />
 
 The strategy for selecting the price for a ProductVariant in a given Channel.
 
@@ -48,7 +48,7 @@ interface ProductVariantPriceSelectionStrategy extends InjectableStrategy {
 
 ## DefaultProductVariantPriceSelectionStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/catalog/default-product-variant-price-selection-strategy.ts" sourceLine="17" packageName="@vendure/core" since="2.0.0" />
+<GenerationInfo sourceFile="packages/core/src/config/catalog/default-product-variant-price-selection-strategy.ts" sourceLine="17" packageName="@bb-vendure/core" since="2.0.0" />
 
 The default strategy for selecting the price for a ProductVariant in a given Channel. It
 first filters all available prices to those which are in the current Channel, and then

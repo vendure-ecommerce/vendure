@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ZoneSelectorComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/zone-selector/zone-selector.component.ts" sourceLine="40" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/zone-selector/zone-selector.component.ts" sourceLine="40" packageName="@bb-vendure/admin-ui" />
 
 A form control for selecting zones.
 

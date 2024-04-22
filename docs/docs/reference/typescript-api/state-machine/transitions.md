@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Transitions
 
-<GenerationInfo sourceFile="packages/core/src/common/finite-state-machine/types.ts" sourceLine="30" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/common/finite-state-machine/types.ts" sourceLine="30" packageName="@bb-vendure/core" />
 
 A type which is used to define valid states and transitions for a state machine based
 on <a href='/reference/typescript-api/state-machine/fsm#fsm'>FSM</a>.

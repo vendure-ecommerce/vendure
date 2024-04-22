@@ -4,7 +4,7 @@ import {
     RegisterCustomerInput,
     UpdateCustomerInput as UpdateCustomerShopInput,
     VerifyCustomerAccountResult,
-} from '@vendure/common/lib/generated-shop-types';
+} from '@bb-vendure/common/lib/generated-shop-types';
 import {
     AddNoteToCustomerInput,
     CreateAddressInput,
@@ -20,8 +20,8 @@ import {
     UpdateCustomerInput,
     UpdateCustomerNoteInput,
     UpdateCustomerResult,
-} from '@vendure/common/lib/generated-types';
-import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+} from '@bb-vendure/common/lib/generated-types';
+import { ID, PaginatedList } from '@bb-vendure/common/lib/shared-types';
 import { IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';

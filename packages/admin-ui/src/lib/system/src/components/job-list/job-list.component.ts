@@ -9,7 +9,7 @@ import {
     ItemOf,
     JobState,
     SortOrder,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { Observable, timer } from 'rxjs';
 import { filter, map, takeUntil } from 'rxjs/operators';
 

@@ -1,5 +1,5 @@
 import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql';
-import { Api, ApiType, ListQueryBuilder, Product, TransactionalConnection } from '@vendure/core';
+import { Api, ApiType, ListQueryBuilder, Product, TransactionalConnection } from '@bb-vendure/core';
 
 import { ProductReview } from '../entities/product-review.entity';
 import { ProductReviewsArgs } from '../generated-shop-types';

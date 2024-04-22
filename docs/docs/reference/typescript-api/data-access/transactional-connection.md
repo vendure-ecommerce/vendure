@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TransactionalConnection
 
-<GenerationInfo sourceFile="packages/core/src/connection/transactional-connection.ts" sourceLine="39" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/connection/transactional-connection.ts" sourceLine="39" packageName="@bb-vendure/core" />
 
 The TransactionalConnection is a wrapper around the TypeORM `Connection` object which works in conjunction
 with the <a href='/reference/typescript-api/request/transaction-decorator#transaction'>Transaction</a> decorator to implement per-request transactions. All services which access the

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EntityHydrator
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/entity-hydrator/entity-hydrator.service.ts" sourceLine="77" packageName="@vendure/core" since="1.3.0" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/entity-hydrator/entity-hydrator.service.ts" sourceLine="77" packageName="@bb-vendure/core" since="1.3.0" />
 
 This is a helper class which is used to "hydrate" entity instances, which means to populate them
 with the specified relations. This is useful when writing plugin code which receives an entity,
@@ -21,7 +21,7 @@ and you need to ensure that one or more relations are present.
 
 ```ts
 import { Injectable } from '@nestjs/common';
-import { ID, RequestContext, EntityHydrator, ProductVariantService } from '@vendure/core';
+import { ID, RequestContext, EntityHydrator, ProductVariantService } from '@bb-vendure/core';
 
 @Injectable()
 export class MyService {

@@ -1,5 +1,5 @@
-import { CreateSellerInput, UpdateSellerInput } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { CreateSellerInput, UpdateSellerInput } from '@bb-vendure/common/lib/generated-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { Role } from '../../entity';

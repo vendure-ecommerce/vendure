@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AnonymousSession
 
-<GenerationInfo sourceFile="packages/core/src/entity/session/anonymous-session.entity.ts" sourceLine="16" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/session/anonymous-session.entity.ts" sourceLine="16" packageName="@bb-vendure/core" />
 
 An anonymous session is created when a unauthenticated user interacts with restricted operations,
 such as calling the `activeOrder` query in the Shop API. Anonymous sessions allow a guest Customer

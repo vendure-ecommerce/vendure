@@ -1,6 +1,6 @@
 import { Inject, OnApplicationBootstrap } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { EventBus, Injector, PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { EventBus, Injector, PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 import { buffer, debounceTime } from 'rxjs/operators';
 
 import { shopApiExtensions } from './api/api-extensions';
@@ -31,7 +31,7 @@ const StellateOptionsProvider = {
  * ## Installation
  *
  * ```
- * npm install \@vendure/stellate-plugin
+ * npm install \@bb-vendure/stellate-plugin
  * ```
  *
  * ## Configuration
@@ -43,8 +43,8 @@ const StellateOptionsProvider = {
  *
  * @example
  * ```ts
- * import { StellatePlugin, defaultPurgeRules } from '\@vendure/stellate-plugin';
- * import { VendureConfig } from '\@vendure/core';
+ * import { StellatePlugin, defaultPurgeRules } from '\@bb-vendure/stellate-plugin';
+ * import { VendureConfig } from '\@bb-vendure/core';
  *
  * export const config: VendureConfig = {
  *    // ...
@@ -188,8 +188,8 @@ const StellateOptionsProvider = {
  *
  * @example
  * ```ts
- * import { StellatePlugin, defaultPurgeRules } from "\@vendure/stellate-plugin";
- * import { VendureConfig } from "\@vendure/core";
+ * import { StellatePlugin, defaultPurgeRules } from "\@bb-vendure/stellate-plugin";
+ * import { VendureConfig } from "\@bb-vendure/core";
  * import { ArticleEvent } from "./plugins/cms/events/article-event";
  *
  * export const config: VendureConfig = {
@@ -221,8 +221,8 @@ const StellateOptionsProvider = {
  *
  * @example
  * ```ts
- * import { StellatePlugin, defaultPurgeRules } from '\@vendure/stellate-plugin';
- * import { VendureConfig } from '\@vendure/core';
+ * import { StellatePlugin, defaultPurgeRules } from '\@bb-vendure/stellate-plugin';
+ * import { VendureConfig } from '\@bb-vendure/core';
  *
  * export const config: VendureConfig = {
  *    // ...

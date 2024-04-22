@@ -18,7 +18,7 @@ TypeORM (which Vendure uses to interact with the database) has a `synchronize` o
 This is convenient while developing, but **should not be used in production**, since a misconfiguration could potentially delete production data. In this case, migrations should be used.
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
     // ...
@@ -32,7 +32,7 @@ export const config: VendureConfig = {
 
 ## Migration workflow
 
-This section assumes a standard Vendure installation based on `@vendure/create`. 
+This section assumes a standard Vendure installation based on `@bb-vendure/create`. 
 
 Let's assume you have defined a new "keywords" custom field on the Product entity. The next time you start your server you'll see a message like this:
 
@@ -81,7 +81,7 @@ Assuming the migration file looks correct, the next time you start the server, t
 be run automatically. This is because the `runMigrations` function is called in the `src/index.ts` file:
 
 ```ts title="src/index.ts"
-import { bootstrap, runMigrations } from '@vendure/core';
+import { bootstrap, runMigrations } from '@bb-vendure/core';
 import { config } from './vendure-config';
 
 // highlight-next-line
@@ -118,7 +118,7 @@ In a standard Vendure installation prior to v2.2.0, you'll see the following mig
 Running the `vendure migrate` command also uses a very similar script internally.
 
 ```ts title="migration.ts"
-import { generateMigration, revertLastMigration, runMigrations } from '@vendure/core';
+import { generateMigration, revertLastMigration, runMigrations } from '@bb-vendure/core';
 import program from 'commander';
 
 import { config } from './src/vendure-config';
@@ -163,7 +163,7 @@ and a set of scripts in your `package.json` file:
 When running and reverting migrations, Vendure is looking for migration files in the directory specified by the `dbConnectionOptions.migrations` option is set in your VendureConfig:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 import path from 'path';
 
 export const config: VendureConfig = {

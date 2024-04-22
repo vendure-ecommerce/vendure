@@ -1,5 +1,5 @@
-import { Type } from '@vendure/common/lib/shared-types';
-import { VendureEvent, Injector } from '@vendure/core';
+import { Type } from '@bb-vendure/common/lib/shared-types';
+import { VendureEvent, Injector } from '@bb-vendure/core';
 
 import { StellateService } from './service/stellate.service';
 

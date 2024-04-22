@@ -28,7 +28,7 @@ import { InjectableStrategy } from '../../common/types/injectable-strategy';
  *
  * @example
  * ```ts
- * import { HttpHealthCheckStrategy, TypeORMHealthCheckStrategy } from '\@vendure/core';
+ * import { HttpHealthCheckStrategy, TypeORMHealthCheckStrategy } from '\@bb-vendure/core';
  * import { MyCustomHealthCheckStrategy } from './config/custom-health-check-strategy';
  *
  * export const config = {

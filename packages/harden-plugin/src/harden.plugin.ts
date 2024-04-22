@@ -1,4 +1,4 @@
-import { Logger, VendurePlugin } from '@vendure/core';
+import { Logger, VendurePlugin } from '@bb-vendure/core';
 
 import { HARDEN_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { HideValidationErrorsPlugin } from './middleware/hide-validation-errors-plugin';
@@ -18,17 +18,17 @@ import { HardenPluginOptions } from './types';
  *
  * ## Installation
  *
- * `yarn add \@vendure/harden-plugin`
+ * `yarn add \@bb-vendure/harden-plugin`
  *
  * or
  *
- * `npm install \@vendure/harden-plugin`
+ * `npm install \@bb-vendure/harden-plugin`
  *
  * Then add the `HardenPlugin`, calling the `.init()` method with {@link HardenPluginOptions}:
  *
  * @example
  * ```ts
- * import { HardenPlugin } from '\@vendure/harden-plugin';
+ * import { HardenPlugin } from '\@bb-vendure/harden-plugin';
  *
  * const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array
@@ -99,7 +99,7 @@ import { HardenPluginOptions } from './types';
  *
  * @example
  * ```ts
- * import { HardenPlugin } from '\@vendure/harden-plugin';
+ * import { HardenPlugin } from '\@bb-vendure/harden-plugin';
  *
  * const config: VendureConfig = {
  *   // A detailed summary is logged at the "debug" level

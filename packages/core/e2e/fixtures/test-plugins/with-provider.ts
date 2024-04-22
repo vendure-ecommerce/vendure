@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Query, Resolver } from '@nestjs/graphql';
-import { VendurePlugin } from '@vendure/core';
+import { VendurePlugin } from '@bb-vendure/core';
 import gql from 'graphql-tag';
 
 @Injectable()

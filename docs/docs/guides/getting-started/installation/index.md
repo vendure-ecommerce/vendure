@@ -13,19 +13,19 @@ import TabItem from '@theme/TabItem';
 * If you want to use MySQL, MariaDB, or Postgres as your data store, then you'll need an instance available locally. However, **if you are just testing out Vendure, we recommend using SQLite**, which has no external requirements.
 * If you use **Yarn**, from Vendure v2.2.0+, you'll need to use **Yarn 2** (Berry) or above.
 
-## @vendure/create
+## @bb-vendure/create
 
-The recommended way to get started with Vendure is by using the [@vendure/create](https://github.com/vendure-ecommerce/vendure/tree/master/packages/create) tool. This is a command-line tool which will scaffold and configure your new Vendure project and install all dependencies.
+The recommended way to get started with Vendure is by using the [@bb-vendure/create](https://github.com/vendure-ecommerce/vendure/tree/master/packages/create) tool. This is a command-line tool which will scaffold and configure your new Vendure project and install all dependencies.
 
 ### 1. Run the command
 
 ```
-npx @vendure/create my-shop
+npx @bb-vendure/create my-shop
 ```
 
 ### 2. Select a database
 
-Vendure supports a number of different databases. The `@vendure/create` tool will prompt you to select one. 
+Vendure supports a number of different databases. The `@bb-vendure/create` tool will prompt you to select one. 
 
 **To quickly test out Vendure, we recommend using SQLite**, which requires no external dependencies. You can always switch to a different database later by changing your configuration file.
 
@@ -100,7 +100,7 @@ Use `npx vendure add` to start adding plugins & custom functionality to your Ven
 If you encounter any issues during installation, you can get a more detailed output by setting the log level to `verbose`:
 
 ```sh
-npx @vendure/create my-shop --log-level verbose
+npx @bb-vendure/create my-shop --log-level verbose
 ```
 
 ## Set up a storefront

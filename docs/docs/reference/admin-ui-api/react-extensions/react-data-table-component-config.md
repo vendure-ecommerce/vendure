@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ReactDataTableComponentConfig
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/register-react-data-table-component.ts" sourceLine="19" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/register-react-data-table-component.ts" sourceLine="19" packageName="@bb-vendure/admin-ui" />
 
 Configures a <a href='/reference/admin-ui-api/custom-detail-components/custom-detail-component#customdetailcomponent'>CustomDetailComponent</a> to be placed in the given location.
 

@@ -8,7 +8,7 @@ import {
     TransactionalConnection,
     translateDeep,
     VendurePlugin,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import { gql } from 'graphql-tag';
 
 // Testing this issue https://github.com/typeorm/typeorm/issues/7707

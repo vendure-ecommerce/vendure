@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## BcryptPasswordHashingStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/auth/bcrypt-password-hashing-strategy.ts" sourceLine="12" packageName="@vendure/core" since="1.3.0" />
+<GenerationInfo sourceFile="packages/core/src/config/auth/bcrypt-password-hashing-strategy.ts" sourceLine="12" packageName="@bb-vendure/core" since="1.3.0" />
 
 A hashing strategy which uses bcrypt (https://en.wikipedia.org/wiki/Bcrypt) to hash plaintext password strings.
 

@@ -1,5 +1,5 @@
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import { DataService } from '@vendure/admin-ui/core';
+import { DataService } from '@bb-vendure/admin-ui/core';
 import { DocumentNode } from 'graphql/index';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { firstValueFrom, Observable } from 'rxjs';
@@ -12,7 +12,7 @@ import { HostedComponentContext } from '../directives/react-component-host.direc
  *
  * @example
  * ```ts
- * import { useQuery } from '\@vendure/admin-ui/react';
+ * import { useQuery } from '\@bb-vendure/admin-ui/react';
  * import { gql } from 'graphql-tag';
  *
  * const GET_PRODUCT = gql`
@@ -62,7 +62,7 @@ export function useQuery<T, V extends Record<string, any> = Record<string, any>>
  *
  * @example
  * ```ts
- * import { useLazyQuery } from '\@vendure/admin-ui/react';
+ * import { useLazyQuery } from '\@bb-vendure/admin-ui/react';
  * import { gql } from 'graphql-tag';
  *
  * const GET_PRODUCT = gql`
@@ -127,7 +127,7 @@ export function useLazyQuery<T, V extends Record<string, any> = Record<string, a
  *
  * @example
  * ```ts
- * import { useMutation } from '\@vendure/admin-ui/react';
+ * import { useMutation } from '\@bb-vendure/admin-ui/react';
  * import { gql } from 'graphql-tag';
  *
  * const UPDATE_PRODUCT = gql`

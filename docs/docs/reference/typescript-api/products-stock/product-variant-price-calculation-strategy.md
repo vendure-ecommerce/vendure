@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ProductVariantPriceCalculationStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/catalog/product-variant-price-calculation-strategy.ts" sourceLine="22" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/catalog/product-variant-price-calculation-strategy.ts" sourceLine="22" packageName="@bb-vendure/core" />
 
 Defines how ProductVariant are calculated based on the input price, tax zone and current request context.
 
@@ -45,7 +45,7 @@ interface ProductVariantPriceCalculationStrategy extends InjectableStrategy {
 
 ## ProductVariantPriceCalculationArgs
 
-<GenerationInfo sourceFile="packages/core/src/config/catalog/product-variant-price-calculation-strategy.ts" sourceLine="35" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/catalog/product-variant-price-calculation-strategy.ts" sourceLine="35" packageName="@bb-vendure/core" />
 
 The arguments passed the `calculate` method of the configured <a href='/reference/typescript-api/products-stock/product-variant-price-calculation-strategy#productvariantpricecalculationstrategy'>ProductVariantPriceCalculationStrategy</a>.
 

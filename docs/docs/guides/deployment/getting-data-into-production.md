@@ -21,7 +21,7 @@ The first item - creation of the schema - can be automatically handled by TypeOR
 run will automatically create the schema. This can be done by using an environment variable:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
     // ...

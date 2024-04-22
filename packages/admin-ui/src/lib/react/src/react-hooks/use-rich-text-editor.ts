@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Injector } from '@angular/core';
 
-import { CreateEditorViewOptions, ProsemirrorService, ContextMenuService } from '@vendure/admin-ui/core';
+import { CreateEditorViewOptions, ProsemirrorService, ContextMenuService } from '@bb-vendure/admin-ui/core';
 import { useInjector } from './use-injector';
 
 export interface useRichTextEditorOptions extends Omit<CreateEditorViewOptions, 'element'> {
@@ -21,7 +21,7 @@ export interface useRichTextEditorOptions extends Omit<CreateEditorViewOptions, 
  *
  * @example
  * ```ts
- * import { useRichTextEditor } from '\@vendure/admin-ui/react';
+ * import { useRichTextEditor } from '\@bb-vendure/admin-ui/react';
  * import React from 'react';
  *
  * export function Component() {

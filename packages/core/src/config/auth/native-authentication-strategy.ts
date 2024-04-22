@@ -1,4 +1,4 @@
-import { ID } from '@vendure/common/lib/shared-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 

@@ -1,6 +1,6 @@
-import { normalizeString } from '@vendure/common/lib/normalize-string';
-import { assertNever } from '@vendure/common/lib/shared-utils';
-import { Logger } from '@vendure/core';
+import { normalizeString } from '@bb-vendure/common/lib/normalize-string';
+import { assertNever } from '@bb-vendure/common/lib/shared-utils';
+import { Logger } from '@bb-vendure/core';
 import fs from 'fs-extra';
 import { createTransport } from 'nodemailer';
 import { default as Mail } from 'nodemailer/lib/mailer';

@@ -13,7 +13,7 @@ import { DeepTranslatableRelations, translateDeep } from '../utils/translate-ent
  * @example
  * ```ts
  * import { Injectable } from '\@nestjs/common';
- * import { ID, Product, RequestContext, TransactionalConnection, TranslatorService } from '\@vendure/core';
+ * import { ID, Product, RequestContext, TransactionalConnection, TranslatorService } from '\@bb-vendure/core';
  *
  * \@Injectable()
  * export class ProductService {

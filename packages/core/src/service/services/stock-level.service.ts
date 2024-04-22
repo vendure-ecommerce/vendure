@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ID } from '@vendure/common/lib/shared-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { AvailableStock } from '../../config/catalog/stock-location-strategy';

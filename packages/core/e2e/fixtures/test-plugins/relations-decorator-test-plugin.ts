@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
-import { QueryOrdersArgs } from '@vendure/common/lib/generated-types';
-import { PaginatedList } from '@vendure/common/lib/shared-types';
+import { QueryOrdersArgs } from '@bb-vendure/common/lib/generated-types';
+import { PaginatedList } from '@bb-vendure/common/lib/shared-types';
 import {
     Ctx,
     Order,
@@ -11,7 +11,7 @@ import {
     Relations,
     RelationPaths,
     PluginCommonModule,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import gql from 'graphql-tag';
 
 @Injectable()

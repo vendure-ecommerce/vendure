@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AssetNamingStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/asset-naming-strategy/asset-naming-strategy.ts" sourceLine="18" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/asset-naming-strategy/asset-naming-strategy.ts" sourceLine="18" packageName="@bb-vendure/core" />
 
 The AssetNamingStrategy determines how file names are generated based on the uploaded source file name,
 as well as how to handle naming conflicts.

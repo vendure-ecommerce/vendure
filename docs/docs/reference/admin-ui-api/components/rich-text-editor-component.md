@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## RichTextEditorComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/rich-text-editor/rich-text-editor.component.ts" sourceLine="32" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/rich-text-editor/rich-text-editor.component.ts" sourceLine="32" packageName="@bb-vendure/admin-ui" />
 
 A rich text (HTML) editor based on Prosemirror (https://prosemirror.net/)
 

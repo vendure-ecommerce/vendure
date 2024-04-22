@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PaymentState
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/payment-state-machine/payment-state.ts" sourceLine="27" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/payment-state-machine/payment-state.ts" sourceLine="27" packageName="@bb-vendure/core" />
 
 These are the default states of the payment process.
 

@@ -3,7 +3,7 @@ import {
     DuplicateEntityResult,
     MutationDuplicateEntityArgs,
     Permission,
-} from '@vendure/common/lib/generated-types';
+} from '@bb-vendure/common/lib/generated-types';
 
 import { EntityDuplicatorService } from '../../../service/helpers/entity-duplicator/entity-duplicator.service';
 import { RequestContext } from '../../common/request-context';

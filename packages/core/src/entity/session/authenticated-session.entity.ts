@@ -1,4 +1,4 @@
-import { DeepPartial } from '@vendure/common/lib/shared-types';
+import { DeepPartial } from '@bb-vendure/common/lib/shared-types';
 import { ChildEntity, Column, Index, ManyToOne } from 'typeorm';
 
 import { User } from '../user/user.entity';

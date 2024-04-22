@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## StockAllocationStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/stock-allocation-strategy.ts" sourceLine="20" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/order/stock-allocation-strategy.ts" sourceLine="20" packageName="@bb-vendure/core" />
 
 This strategy is responsible for deciding at which stage in the order process
 stock will be allocated.

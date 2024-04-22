@@ -5,7 +5,7 @@ import {
     MessageResponse,
     NotificationMessage,
     WatchQueryFetchPolicy,
-} from '@vendure/common/lib/extension-host-types';
+} from '@bb-vendure/common/lib/extension-host-types';
 import { Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -32,7 +32,7 @@ export function setTargetOrigin(value: string) {
  *
  * @example
  * ```ts
- * import { getActivatedRoute } from '\@vendure/ui-devkit';
+ * import { getActivatedRoute } from '\@bb-vendure/ui-devkit';
  *
  * const route = await getActivatedRoute();
  * const slug = route.params.slug;
@@ -50,7 +50,7 @@ export function getActivatedRoute(): Promise<ActiveRouteData> {
  *
  * @example
  * ```ts
- * import { graphQlQuery } from '\@vendure/ui-devkit';
+ * import { graphQlQuery } from '\@bb-vendure/ui-devkit';
  *
  * const productList = await graphQlQuery(`
  *   query GetProducts($skip: Int, $take: Int) {
@@ -92,7 +92,7 @@ export function graphQlQuery<T, V extends { [key: string]: any }>(
  *
  * @example
  * ```ts
- * import { graphQlMutation } from '\@vendure/ui-devkit';
+ * import { graphQlMutation } from '\@bb-vendure/ui-devkit';
  *
  * const disableProduct = (id: string) => {
  *   return graphQlMutation(`
@@ -133,7 +133,7 @@ export function graphQlMutation<T, V extends { [key: string]: any }>(
  *
  * @example
  * ```ts
- * import { notify } from '\@vendure/ui-devkit';
+ * import { notify } from '\@bb-vendure/ui-devkit';
  *
  * notify({
  *   message: 'Updated Product',

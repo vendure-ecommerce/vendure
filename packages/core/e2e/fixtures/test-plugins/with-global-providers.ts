@@ -12,7 +12,7 @@ import {
     PipeTransform,
 } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
-import { VendurePlugin } from '@vendure/core';
+import { VendurePlugin } from '@bb-vendure/core';
 import { Observable } from 'rxjs';
 
 @Injectable()

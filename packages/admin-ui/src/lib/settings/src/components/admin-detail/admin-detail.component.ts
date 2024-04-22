@@ -15,9 +15,9 @@ import {
     RoleFragment,
     TypedBaseDetailComponent,
     UpdateAdministratorInput,
-} from '@vendure/admin-ui/core';
-import { CUSTOMER_ROLE_CODE } from '@vendure/common/lib/shared-constants';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+} from '@bb-vendure/admin-ui/core';
+import { CUSTOMER_ROLE_CODE } from '@bb-vendure/common/lib/shared-constants';
+import { notNullOrUndefined } from '@bb-vendure/common/lib/shared-utils';
 import { gql } from 'apollo-angular';
 import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';

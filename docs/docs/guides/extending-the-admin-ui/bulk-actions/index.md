@@ -2,7 +2,7 @@
 title: 'Bulk Actions for List Views'
 ---
 
-List views in the Admin UI support bulk actions, which are performed on any selected items in the list. There are a default set of bulk actions that are defined by the Admin UI itself (e.g. delete, assign to channels), but using the `@vendure/ui-devit` package you are also able to define your own bulk actions.
+List views in the Admin UI support bulk actions, which are performed on any selected items in the list. There are a default set of bulk actions that are defined by the Admin UI itself (e.g. delete, assign to channels), but using the `@bb-vendure/ui-devit` package you are also able to define your own bulk actions.
 
 ![./bulk-actions-screenshot.webp](./bulk-actions-screenshot.webp)
 
@@ -17,7 +17,7 @@ Use cases for bulk actions include things like:
 Bulk actions are declared using the [`registerBulkAction` function](/reference/admin-ui-api/bulk-actions/register-bulk-action/)
 
 ```ts title="src/plugins/translation/ui/providers.ts"
-import { ModalService, registerBulkAction } from '@vendure/admin-ui/core';
+import { ModalService, registerBulkAction } from '@bb-vendure/admin-ui/core';
 import { ProductDataTranslationService } from './product-data-translation.service';
 
 export default [
@@ -61,7 +61,7 @@ Sometimes a bulk action only makes sense in certain circumstances. For example, 
 We can conditionally control the display of a bulk action with the `isVisible` function, which should return a Promise resolving to a boolean:
 
 ```ts title="src/plugins/my-plugin/ui/providers.ts"
-import { registerBulkAction, DataService } from '@vendure/admin-ui/core';
+import { registerBulkAction, DataService } from '@bb-vendure/admin-ui/core';
 
 export default [
     registerBulkAction({

@@ -32,8 +32,8 @@ one of which is responsible for sending "order confirmation" emails.
 Let's take a closer look at a simplified version of the `orderConfirmationHandler`:
 
 ```ts
-import { OrderStateTransitionEvent } from '@vendure/core';
-import { EmailEventListener, transformOrderLineAssetUrls, hydrateShippingLines } from '@vendure/email-plugin';
+import { OrderStateTransitionEvent } from '@bb-vendure/core';
+import { EmailEventListener, transformOrderLineAssetUrls, hydrateShippingLines } from '@bb-vendure/email-plugin';
 
 // The 'order-confirmation' string is used by the EmailPlugin to identify
 // which template to use when rendering the email.
@@ -84,8 +84,8 @@ Additionally, there are global variables which are made available to _all_ email
 defined in the `globalTemplateVars` property of the EmailPlugin config:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
-import { EmailPlugin } from '@vendure/email-plugin';
+import { VendureConfig } from '@bb-vendure/core';
+import { EmailPlugin } from '@bb-vendure/email-plugin';
 
 export const config: VendureConfig = {
     // ...
@@ -126,8 +126,8 @@ This is just a simplified example to illustrate the pattern.
 
 ```ts title="src/plugins/sms-plugin/sms-plugin.ts"
 import { OnModuleInit } from '@nestjs/common';
-import { PluginCommonModule, VendurePlugin, EventBus } from '@vendure/core';
-import { OrderStateTransitionEvent } from '@vendure/core';
+import { PluginCommonModule, VendurePlugin, EventBus } from '@bb-vendure/core';
+import { OrderStateTransitionEvent } from '@bb-vendure/core';
 
 // A custom service which sends SMS messages
 // using a third-party SMS provider such as Twilio.

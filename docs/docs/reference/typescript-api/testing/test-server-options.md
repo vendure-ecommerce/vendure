@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TestServerOptions
 
-<GenerationInfo sourceFile="packages/testing/src/types.ts" sourceLine="14" packageName="@vendure/testing" />
+<GenerationInfo sourceFile="packages/testing/src/types.ts" sourceLine="14" packageName="@bb-vendure/testing" />
 
 Configuration options used to initialize an instance of the <a href='/reference/typescript-api/testing/test-server#testserver'>TestServer</a>.
 

@@ -1,4 +1,4 @@
-import { Logger } from '@vendure/core';
+import { Logger } from '@bb-vendure/core';
 
 // ensure that the bullmq package is installed
 try {

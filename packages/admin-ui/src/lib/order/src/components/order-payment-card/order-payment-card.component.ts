@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { CurrencyCode, OrderDetailFragment } from '@vendure/admin-ui/core';
+import { CurrencyCode, OrderDetailFragment } from '@bb-vendure/admin-ui/core';
 
 type Payment = NonNullable<OrderDetailFragment['payments']>[number];
 

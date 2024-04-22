@@ -5,7 +5,7 @@ showtoc: true
 
 If you have hundreds, thousands or more products, inputting all the data by hand via the Admin UI can be too inefficient. To solve this, Vendure supports bulk-importing product and other data.
 
-Data import is also useful for setting up test or demo environments, and is also used by the `@vendure/testing` package for end-to-end tests.
+Data import is also useful for setting up test or demo environments, and is also used by the `@bb-vendure/testing` package for end-to-end tests.
 
 ## Product Import Format
 
@@ -85,7 +85,7 @@ Use of language codes has to be consistent throughout the file. You don't have t
 As well as product data, other initialization data can be populated using the [`InitialData` object](/reference/typescript-api/import-export/initial-data/). **This format is intentionally limited**; more advanced requirements (e.g. setting up ShippingMethods that use custom checkers & calculators) should be carried out via [custom populate scripts](#populating-the-server).
 
 ```ts
-import { InitialData, LanguageCode } from '@vendure/core';
+import { InitialData, LanguageCode } from '@bb-vendure/core';
 
 export const initialData: InitialData = {
     paymentMethods: [
@@ -177,11 +177,11 @@ export const initialData: InitialData = {
 ## Populating The Server
 
 ### The `populate()` function
-The `@vendure/core` package exposes a [`populate()` function](/reference/typescript-api/import-export/populate/) which can be used along with the data formats described above to populate your Vendure server:
+The `@bb-vendure/core` package exposes a [`populate()` function](/reference/typescript-api/import-export/populate/) which can be used along with the data formats described above to populate your Vendure server:
 
 ```ts title="src/my-populate-script.ts"
-import { bootstrap, DefaultJobQueuePlugin } from '@vendure/core';
-import { populate } from '@vendure/core/cli';
+import { bootstrap, DefaultJobQueuePlugin } from '@bb-vendure/core';
+import { populate } from '@bb-vendure/core/cli';
 import path from "path";
 
 import { config } from './vendure-config';
@@ -226,17 +226,17 @@ In the Admin UI, this can be done by navigating to the product list view and cli
 
 ### Populating test data
 
-When installing with @vendure/create, you have the option of populating test data (products, payment methods, countries, zones, tax rates etc).
+When installing with @bb-vendure/create, you have the option of populating test data (products, payment methods, countries, zones, tax rates etc).
 
 This guide illustrates how to populate that test data again on an existing Vendure installation, without needing to re-install from scratch.
 
-1. `npm install --save-dev @vendure/create`. This installs the "create" package, which contains the test data we will need.
+1. `npm install --save-dev @bb-vendure/create`. This installs the "create" package, which contains the test data we will need.
 2. drop all tables from your database, but leave the actual database there.
 3. create a script that looks like this:
 
 ```ts title="src/populate-test-data.ts"
-import { populate } from '@vendure/core/cli';
-import { bootstrap, VendureConfig } from '@vendure/core';
+import { populate } from '@bb-vendure/core/cli';
+import { bootstrap, VendureConfig } from '@bb-vendure/core';
 import { config } from './vendure-config';
 
 populate(
@@ -244,14 +244,14 @@ populate(
         ...config,
         importExportOptions: {
             importAssetsDir: path.join(
-                require.resolve('@vendure/create/assets/products.csv'),
+                require.resolve('@bb-vendure/create/assets/products.csv'),
                 '../images'
             ),
         },
         dbConnectionOptions: {...config.dbConnectionOptions, synchronize: true}
     }),
-    require('@vendure/create/assets/initial-data.json'),
-    require.resolve('@vendure/create/assets/products.csv')
+    require('@bb-vendure/create/assets/initial-data.json'),
+    require.resolve('@bb-vendure/create/assets/products.csv')
 )
     .then(app => app.close())
     .catch(err => {
@@ -313,7 +313,7 @@ import {
     RequestContext, RequestContextService,
     TransactionalConnection, User,
     SearchService,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import { createClient, OldCommerceProduct } from '@old-commerce/client';
 
 import { config } from './vendure-config';

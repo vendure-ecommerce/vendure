@@ -1,5 +1,5 @@
 import { ApolloServerPlugin, GraphQLRequestListener, GraphQLServerContext } from '@apollo/server';
-import { mergeConfig } from '@vendure/core';
+import { mergeConfig } from '@bb-vendure/core';
 import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';

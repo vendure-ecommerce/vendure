@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { DataService, ItemOf, SharedModule } from '@vendure/admin-ui/core';
+import { DataService, ItemOf, SharedModule } from '@bb-vendure/admin-ui/core';
 import gql from 'graphql-tag';
 import { Observable } from 'rxjs';
 

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SearchService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/search.service.ts" sourceLine="15" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/search.service.ts" sourceLine="15" packageName="@bb-vendure/core" />
 
 This service allows a concrete search service to override its behaviour
 by passing itself to the `adopt()` method.

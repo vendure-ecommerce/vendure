@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CurrencyCode, LanguageCode, Permission } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { CurrencyCode, LanguageCode, Permission } from '@bb-vendure/common/lib/generated-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
 import { Request } from 'express';
 import { GraphQLResolveInfo } from 'graphql';
 import ms from 'ms';

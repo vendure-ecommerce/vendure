@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## StellatePlugin
 
-<GenerationInfo sourceFile="packages/stellate-plugin/src/stellate-plugin.ts" sourceLine="246" packageName="@vendure/stellate-plugin" since="2.1.5" />
+<GenerationInfo sourceFile="packages/stellate-plugin/src/stellate-plugin.ts" sourceLine="246" packageName="@bb-vendure/stellate-plugin" since="2.1.5" />
 
 A plugin to integrate the [Stellate](https://stellate.co/) GraphQL caching service with your Vendure server.
 The main purpose of this plugin is to ensure that cached data gets correctly purged in
@@ -28,7 +28,7 @@ see the [Stellate Purging API docs](https://docs.stellate.co/docs/purging-api#au
 ## Installation
 
 ```
-npm install @vendure/stellate-plugin
+npm install @bb-vendure/stellate-plugin
 ```
 
 ## Configuration
@@ -41,8 +41,8 @@ Stellate [Purging API](https://stellate.co/docs/graphql-edge-cache/purging-api).
 *Example*
 
 ```ts
-import { StellatePlugin, defaultPurgeRules } from '@vendure/stellate-plugin';
-import { VendureConfig } from '@vendure/core';
+import { StellatePlugin, defaultPurgeRules } from '@bb-vendure/stellate-plugin';
+import { VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
    // ...
@@ -190,8 +190,8 @@ You can then add a custom <a href='/reference/core-plugins/stellate-plugin/purge
 *Example*
 
 ```ts
-import { StellatePlugin, defaultPurgeRules } from "@vendure/stellate-plugin";
-import { VendureConfig } from "@vendure/core";
+import { StellatePlugin, defaultPurgeRules } from "@bb-vendure/stellate-plugin";
+import { VendureConfig } from "@bb-vendure/core";
 import { ArticleEvent } from "./plugins/cms/events/article-event";
 
 export const config: VendureConfig = {
@@ -224,8 +224,8 @@ Note that debugLogging generates a lot of debug-level logging, so it is recommen
 *Example*
 
 ```ts
-import { StellatePlugin, defaultPurgeRules } from '@vendure/stellate-plugin';
-import { VendureConfig } from '@vendure/core';
+import { StellatePlugin, defaultPurgeRules } from '@bb-vendure/stellate-plugin';
+import { VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
    // ...

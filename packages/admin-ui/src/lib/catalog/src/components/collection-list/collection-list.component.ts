@@ -8,7 +8,7 @@ import {
     LanguageCode,
     NotificationService,
     TypedBaseListComponent,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { combineLatest, Observable, of } from 'rxjs';
 import { distinctUntilChanged, map, switchMap, takeUntil } from 'rxjs/operators';
 import { CollectionOrderEvent } from '../collection-data-table/collection-data-table.component';

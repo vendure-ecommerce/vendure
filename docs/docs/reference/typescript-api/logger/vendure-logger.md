@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## VendureLogger
 
-<GenerationInfo sourceFile="packages/core/src/config/logger/vendure-logger.ts" sourceLine="47" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/logger/vendure-logger.ts" sourceLine="47" packageName="@bb-vendure/core" />
 
 The VendureLogger interface defines the shape of a logger service which may be provided in
 the config.

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { GetPaymentMethodListDocument, TypedBaseListComponent } from '@vendure/admin-ui/core';
+import { GetPaymentMethodListDocument, TypedBaseListComponent } from '@bb-vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
 
 export const GET_PAYMENT_METHOD_LIST = gql`

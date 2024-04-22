@@ -1,5 +1,5 @@
-import { ConfigArg, Permission } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { ConfigArg, Permission } from '@bb-vendure/common/lib/generated-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import {
@@ -71,7 +71,7 @@ export interface EntityDuplicatorConfig<T extends ConfigArgs> extends Configurab
  * @example
  * ```ts title=src/config/custom-collection-duplicator.ts
  * import { Collection, LanguageCode, Permission
- *   EntityDuplicator, TransactionalConnection, CollectionService } from '\@vendure/core';
+ *   EntityDuplicator, TransactionalConnection, CollectionService } from '\@bb-vendure/core';
  *
  * let collectionService: CollectionService;
  * let connection: TransactionalConnection;
@@ -136,7 +136,7 @@ export interface EntityDuplicatorConfig<T extends ConfigArgs> extends Configurab
  * The duplicator then gets passed to your VendureConfig object:
  *
  * ```ts title=src/vendure-config.ts
- * import { VendureConfig, defaultEntityDuplicators } from '\@vendure/core';
+ * import { VendureConfig, defaultEntityDuplicators } from '\@bb-vendure/core';
  * import { customCollectionDuplicator } from './config/custom-collection-duplicator';
  *
  * export const config: VendureConfig = {

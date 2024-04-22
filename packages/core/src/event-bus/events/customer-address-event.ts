@@ -1,5 +1,5 @@
-import { CreateAddressInput, UpdateAddressInput } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { CreateAddressInput, UpdateAddressInput } from '@bb-vendure/common/lib/generated-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api';
 import { Address } from '../../entity/address/address.entity';

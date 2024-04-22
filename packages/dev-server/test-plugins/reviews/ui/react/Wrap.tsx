@@ -1,6 +1,6 @@
 import { ApplicationRef, createComponent, Type, ComponentRef } from '@angular/core';
 import { createApplication } from '@angular/platform-browser';
-import { HostedComponentContext } from '@vendure/admin-ui/react';
+import { HostedComponentContext } from '@bb-vendure/admin-ui/react';
 import React, { useContext, useEffect, useRef, useState, PropsWithChildren } from 'react';
 
 type AnyComponentRef = ComponentRef<unknown>;

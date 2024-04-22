@@ -1,6 +1,6 @@
-import { Adjustment, AdjustmentType, Discount, TaxLine } from '@vendure/common/lib/generated-types';
-import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
-import { summate } from '@vendure/common/lib/shared-utils';
+import { Adjustment, AdjustmentType, Discount, TaxLine } from '@bb-vendure/common/lib/generated-types';
+import { DeepPartial, ID } from '@bb-vendure/common/lib/shared-types';
+import { summate } from '@bb-vendure/common/lib/shared-utils';
 import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
 
 import { OrderLine } from '..';

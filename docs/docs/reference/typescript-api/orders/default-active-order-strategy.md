@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DefaultActiveOrderStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/default-active-order-strategy.ts" sourceLine="18" packageName="@vendure/core" since="1.9.0" />
+<GenerationInfo sourceFile="packages/core/src/config/order/default-active-order-strategy.ts" sourceLine="18" packageName="@bb-vendure/core" since="1.9.0" />
 
 The default <a href='/reference/typescript-api/orders/active-order-strategy#activeorderstrategy'>ActiveOrderStrategy</a>, which uses the current <a href='/reference/typescript-api/entities/session#session'>Session</a> to determine
 the active Order, and requires no additional input in the Shop API since it is based on the

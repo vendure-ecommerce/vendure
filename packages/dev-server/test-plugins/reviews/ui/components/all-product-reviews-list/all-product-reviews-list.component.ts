@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { SharedModule, TypedBaseListComponent } from '@vendure/admin-ui/core';
+import { SharedModule, TypedBaseListComponent } from '@bb-vendure/admin-ui/core';
 import gql from 'graphql-tag';
 
 import { PRODUCT_REVIEW_FRAGMENT } from '../../common/fragments.graphql';

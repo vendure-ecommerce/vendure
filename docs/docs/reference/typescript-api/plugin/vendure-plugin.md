@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## VendurePlugin
 
-<GenerationInfo sourceFile="packages/core/src/plugin/vendure-plugin.ts" sourceLine="151" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/plugin/vendure-plugin.ts" sourceLine="151" packageName="@bb-vendure/core" />
 
 The VendurePlugin decorator is a means of configuring and/or extending the functionality of the Vendure server. A Vendure plugin is
 a [Nestjs Module](https://docs.nestjs.com/modules), with optional additional metadata defining things like extensions to the GraphQL API, custom
@@ -24,7 +24,7 @@ entirely new types. Database entities and resolvers can also be defined to handl
 
 ```ts
 import { Controller, Get } from '@nestjs/common';
-import { Ctx, PluginCommonModule, ProductService, RequestContext, VendurePlugin } from '@vendure/core';
+import { Ctx, PluginCommonModule, ProductService, RequestContext, VendurePlugin } from '@bb-vendure/core';
 
 @Controller('products')
 export class ProductsController {

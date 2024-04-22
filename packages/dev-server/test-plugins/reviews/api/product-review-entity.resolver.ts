@@ -6,7 +6,7 @@ import {
     RequestContext,
     TransactionalConnection,
     translateDeep,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 
 import { ProductReview } from '../entities/product-review.entity';
 

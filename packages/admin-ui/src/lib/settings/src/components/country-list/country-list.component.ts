@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { GetCountryListDocument, TypedBaseListComponent } from '@vendure/admin-ui/core';
+import { GetCountryListDocument, TypedBaseListComponent } from '@bb-vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
 
 export const GET_COUNTRY_LIST = gql`

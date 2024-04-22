@@ -1,5 +1,5 @@
 import { Args, Query, Resolver } from '@nestjs/graphql';
-import { Ctx, RequestContext } from '@vendure/core';
+import { Ctx, RequestContext } from '@bb-vendure/core';
 import { QuerySupplierStockInTransitsArgs } from '../../../generated-admin-types';
 import { SupplierStockInTransitService } from '../../services/supplier-stock-in-transit.service';
 

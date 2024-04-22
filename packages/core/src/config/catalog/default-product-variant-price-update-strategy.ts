@@ -34,7 +34,7 @@ export interface DefaultProductVariantPriceUpdateStrategyOptions {
  *
  * @example
  * ```ts
- * import { DefaultProductVariantPriceUpdateStrategy, VendureConfig } from '\@vendure/core';
+ * import { DefaultProductVariantPriceUpdateStrategy, VendureConfig } from '\@bb-vendure/core';
  *
  * export const config: VendureConfig = {
  *   // ...

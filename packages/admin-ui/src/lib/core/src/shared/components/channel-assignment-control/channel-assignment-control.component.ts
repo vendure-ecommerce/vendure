@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { DEFAULT_CHANNEL_CODE } from '@bb-vendure/common/lib/shared-constants';
+import { notNullOrUndefined } from '@bb-vendure/common/lib/shared-utils';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 

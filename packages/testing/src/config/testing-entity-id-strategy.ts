@@ -1,4 +1,4 @@
-import { EntityIdStrategy } from '@vendure/core';
+import { EntityIdStrategy } from '@bb-vendure/core';
 
 /**
  * A testing entity id strategy which prefixes all IDs with a constant string. This is used in the

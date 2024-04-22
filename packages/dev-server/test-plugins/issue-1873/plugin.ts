@@ -1,4 +1,4 @@
-import { PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 import { SupplierStockAdminResolver } from './api/resolvers/admin/supplier-stock-admin.resolver';
 import { SupplierStockInTransitAdminResolver } from './api/resolvers/admin/supplier-stock-in-transit-admin.resolver';
 import { SupplierStockEntityResolver } from './api/resolvers/entity/suppiler-stock-entity.resolver';

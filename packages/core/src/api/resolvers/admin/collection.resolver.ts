@@ -13,8 +13,8 @@ import {
     QueryCollectionArgs,
     QueryCollectionsArgs,
     QueryPreviewCollectionVariantsArgs,
-} from '@vendure/common/lib/generated-types';
-import { PaginatedList } from '@vendure/common/lib/shared-types';
+} from '@bb-vendure/common/lib/generated-types';
+import { PaginatedList } from '@bb-vendure/common/lib/shared-types';
 
 import { UserInputError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';

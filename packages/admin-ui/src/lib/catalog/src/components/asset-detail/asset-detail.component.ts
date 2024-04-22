@@ -11,7 +11,7 @@ import {
     NotificationService,
     TAG_FRAGMENT,
     TypedBaseDetailComponent,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
 
 export const ASSET_DETAIL_QUERY = gql`

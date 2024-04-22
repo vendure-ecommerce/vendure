@@ -10,9 +10,9 @@ import {
     ProductVariantFilterParameter,
     RemoveProductVariantsFromChannelInput,
     UpdateProductVariantInput,
-} from '@vendure/common/lib/generated-types';
-import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { unique } from '@vendure/common/lib/unique';
+} from '@bb-vendure/common/lib/generated-types';
+import { ID, PaginatedList } from '@bb-vendure/common/lib/shared-types';
+import { unique } from '@bb-vendure/common/lib/unique';
 import { In, IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';

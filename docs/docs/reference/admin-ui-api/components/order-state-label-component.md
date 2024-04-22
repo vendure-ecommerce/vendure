@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrderStateLabelComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/order-state-label/order-state-label.component.ts" sourceLine="13" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/order-state-label/order-state-label.component.ts" sourceLine="13" packageName="@bb-vendure/admin-ui" />
 
 Displays the state of an order in a colored chip.
 

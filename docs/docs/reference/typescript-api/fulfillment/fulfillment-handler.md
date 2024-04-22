@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## FulfillmentHandler
 
-<GenerationInfo sourceFile="packages/core/src/config/fulfillment/fulfillment-handler.ts" sourceLine="149" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/fulfillment/fulfillment-handler.ts" sourceLine="149" packageName="@bb-vendure/core" />
 
 A FulfillmentHandler is used when creating a new <a href='/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>. When the `addFulfillmentToOrder` mutation
 is executed, the specified handler will be used and it's `createFulfillment` method is called. This method
@@ -110,7 +110,7 @@ class FulfillmentHandler<T extends ConfigArgs = ConfigArgs> extends Configurable
 
 ## FulfillmentHandlerConfig
 
-<GenerationInfo sourceFile="packages/core/src/config/fulfillment/fulfillment-handler.ts" sourceLine="48" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/fulfillment/fulfillment-handler.ts" sourceLine="48" packageName="@bb-vendure/core" />
 
 The configuration object used to instantiate a <a href='/reference/typescript-api/fulfillment/fulfillment-handler#fulfillmenthandler'>FulfillmentHandler</a>.
 
@@ -152,7 +152,7 @@ shipping API.
 
 ## CreateFulfillmentFn
 
-<GenerationInfo sourceFile="packages/core/src/config/fulfillment/fulfillment-handler.ts" sourceLine="33" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/fulfillment/fulfillment-handler.ts" sourceLine="33" packageName="@bb-vendure/core" />
 
 The function called when creating a new Fulfillment
 
@@ -168,7 +168,7 @@ type CreateFulfillmentFn<T extends ConfigArgs> = (
 
 ## CreateFulfillmentResult
 
-<GenerationInfo sourceFile="packages/core/src/config/fulfillment/fulfillment-handler.ts" sourceLine="23" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/fulfillment/fulfillment-handler.ts" sourceLine="23" packageName="@bb-vendure/core" />
 
 
 

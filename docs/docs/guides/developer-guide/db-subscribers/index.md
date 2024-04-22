@@ -13,7 +13,7 @@ If you need lower-level access to database changes that you get with the [Vendur
 The simplest way to register a subscriber is to pass it to the `dbConnectionOptions.subscribers` array:
 
 ```ts title="src/plugins/my-plugin/product-subscriber.ts"
-import { Product, VendureConfig } from '@vendure/core';
+import { Product, VendureConfig } from '@bb-vendure/core';
 import { EntitySubscriberInterface, EventSubscriber, UpdateEvent } from 'typeorm';
 
 @EventSubscriber()
@@ -29,7 +29,7 @@ export class ProductSubscriber implements EntitySubscriberInterface<Product> {
 ```
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 import { ProductSubscriber } from './plugins/my-plugin/product-subscriber';
 
 // ...
@@ -56,7 +56,7 @@ import {
   TransactionalConnection,
   VendureConfig,
   VendurePlugin,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import { Injectable } from '@nestjs/common';
 import { EntitySubscriberInterface, EventSubscriber, UpdateEvent } from 'typeorm';
 import { MyService } from './services/my.service';

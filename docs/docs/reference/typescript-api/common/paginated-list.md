@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PaginatedList
 
-<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="67" packageName="@vendure/common" />
+<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="67" packageName="@bb-vendure/common" />
 
 A type describing the shape of a paginated list response. In Vendure, almost all list queries
 (`products`, `collections`, `orders`, `customers` etc) return an object of this type.

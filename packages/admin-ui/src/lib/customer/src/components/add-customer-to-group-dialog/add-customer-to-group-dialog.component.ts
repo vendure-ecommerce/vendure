@@ -6,7 +6,7 @@ import {
     GetCustomerGroupsQuery,
     GetCustomerListQuery,
     ItemOf,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 

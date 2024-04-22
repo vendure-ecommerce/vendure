@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion, no-console */
-import { CurrencyCode, SortOrder } from '@vendure/common/lib/generated-types';
-import { pick } from '@vendure/common/lib/pick';
+import { CurrencyCode, SortOrder } from '@bb-vendure/common/lib/generated-types';
+import { pick } from '@bb-vendure/common/lib/pick';
 import {
     DefaultJobQueuePlugin,
     DefaultLogger,
@@ -9,8 +9,8 @@ import {
     LanguageCode,
     LogLevel,
     mergeConfig,
-} from '@vendure/core';
-import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
+} from '@bb-vendure/core';
+import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@bb-vendure/testing';
 import { fail } from 'assert';
 import gql from 'graphql-tag';
 import path from 'path';

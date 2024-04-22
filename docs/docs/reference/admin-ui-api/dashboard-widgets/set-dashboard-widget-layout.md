@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## setDashboardWidgetLayout
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/register-dashboard-widget.ts" sourceLine="33" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/register-dashboard-widget.ts" sourceLine="33" packageName="@bb-vendure/admin-ui" />
 
 Sets the default widget layout for the Admin UI dashboard.
 

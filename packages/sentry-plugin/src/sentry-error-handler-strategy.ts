@@ -1,7 +1,7 @@
 import { ArgumentsHost, ExecutionContext } from '@nestjs/common';
 import { GqlContextType, GqlExecutionContext } from '@nestjs/graphql';
 import { setContext } from '@sentry/node';
-import { ErrorHandlerStrategy, I18nError, Injector, Job, LogLevel } from '@vendure/core';
+import { ErrorHandlerStrategy, I18nError, Injector, Job, LogLevel } from '@bb-vendure/core';
 
 import { SentryService } from './sentry.service';
 

@@ -4,7 +4,7 @@ import {
     DataService,
     GetCouponCodeSelectorPromotionListDocument,
     PROMOTION_FRAGMENT,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
 import { concat, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, skip, startWith, switchMap } from 'rxjs/operators';

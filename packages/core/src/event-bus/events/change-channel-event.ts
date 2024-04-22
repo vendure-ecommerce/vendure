@@ -1,4 +1,4 @@
-import { ID, Type } from '@vendure/common/lib/shared-types';
+import { ID, Type } from '@bb-vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api';
 import { ChannelAware } from '../../common';

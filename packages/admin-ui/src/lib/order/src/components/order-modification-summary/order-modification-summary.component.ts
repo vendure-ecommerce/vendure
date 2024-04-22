@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { notNullOrUndefined } from '@bb-vendure/common/lib/shared-utils';
 import type { OrderEditorComponent } from '../order-editor/order-editor.component';
 import { AddedLine, ModifyOrderData, OrderSnapshot } from '../../common/modify-order-types';
 

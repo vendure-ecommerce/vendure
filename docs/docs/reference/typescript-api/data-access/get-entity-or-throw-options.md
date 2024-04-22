@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## GetEntityOrThrowOptions
 
-<GenerationInfo sourceFile="packages/core/src/connection/types.ts" sourceLine="10" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/connection/types.ts" sourceLine="10" packageName="@bb-vendure/core" />
 
 Options used by the <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a> `getEntityOrThrow` method.
 

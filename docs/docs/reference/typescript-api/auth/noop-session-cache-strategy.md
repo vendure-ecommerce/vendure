@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## NoopSessionCacheStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/session-cache/noop-session-cache-strategy.ts" sourceLine="10" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/session-cache/noop-session-cache-strategy.ts" sourceLine="10" packageName="@bb-vendure/core" />
 
 A cache that doesn't cache. The cache lookup will miss every time
 so the session will always be taken from the database.

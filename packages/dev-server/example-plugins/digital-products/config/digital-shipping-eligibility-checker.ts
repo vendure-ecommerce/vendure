@@ -1,4 +1,4 @@
-import { LanguageCode, ShippingEligibilityChecker } from '@vendure/core';
+import { LanguageCode, ShippingEligibilityChecker } from '@bb-vendure/core';
 
 export const digitalShippingEligibilityChecker = new ShippingEligibilityChecker({
     code: 'digital-shipping-eligibility-checker',

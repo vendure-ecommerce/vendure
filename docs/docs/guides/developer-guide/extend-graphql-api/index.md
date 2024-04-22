@@ -11,7 +11,7 @@ Extension to the GraphQL API consists of two parts:
 The Shop API and Admin APIs can be extended independently:
 
 ```ts title="src/plugins/top-products/top-products.plugin.ts"
-import { PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 import gql from 'graphql-tag';
 import { TopSellersResolver } from './api/top-products.resolver';
 
@@ -74,7 +74,7 @@ We can now define the resolver for this query:
 
 ```ts title="src/plugins/banner/api/banner-shop.resolver.ts"
 import { Args, Query, Resolver } from '@nestjs/graphql';
-import { Ctx, RequestContext } from '@vendure/core';
+import { Ctx, RequestContext } from '@bb-vendure/core';
 import { BannerService } from '../services/banner.service.ts';
 
 @Resolver()
@@ -95,7 +95,7 @@ The `BannerService` would implement the actual logic for fetching the banner tex
 Finally, we need to add the resolver to the plugin metadata:
 
 ```ts title="src/plugins/banner/banner.plugin.ts"
-import { PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 import { BannerService } from './services/banner.service';
 import { BannerShopResolver } from './api/banner-shop.resolver';
 import { shopApiExtensions } from './api/api-extensions';
@@ -136,7 +136,7 @@ Now let's define a resolver to handle that mutation:
 
 ```ts title="src/plugins/banner/api/banner-admin.resolver.ts"
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { Allow, Ctx, RequestContext, Permission, Transaction } from '@vendure/core';
+import { Allow, Ctx, RequestContext, Permission, Transaction } from '@bb-vendure/core';
 import { BannerService } from '../services/banner.service.ts';
 
 @Resolver()
@@ -163,7 +163,7 @@ For more information on the available decorators, see the [API Layer "decorators
 Finally, we add the resolver to the plugin metadata:
 
 ```ts title="src/plugins/banner/banner.plugin.ts"
-import { PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 import { BannerService } from './services/banner.service';
 import { BannerShopResolver } from './api/banner-shop.resolver';
 import { BannerAdminResolver } from './api/banner-admin.resolver';
@@ -196,8 +196,8 @@ Using the `ProductReview` entity from the [Define a database entity guide](/guid
 As a reminder, here is the `ProductReview` entity:
 
 ```ts title="src/plugins/reviews/product-review.entity.ts"
-import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { VendureEntity, Product, EntityId, ID } from '@vendure/core';
+import { DeepPartial } from '@bb-vendure/common/lib/shared-types';
+import { VendureEntity, Product, EntityId, ID } from '@bb-vendure/core';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 @Entity()
@@ -249,7 +249,7 @@ Now we can add this type to both the Admin and Shop APIs:
 
 ```ts title="src/plugins/reviews/reviews.plugin.ts"
 import gql from 'graphql-tag';
-import { PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 import { ReviewsResolver } from './api/reviews.resolver';
 import { apiExtensions } from './api/api-extensions';
 import { ProductReview } from './entities/product-review.entity';
@@ -295,7 +295,7 @@ Next we need to define an "entity resolver" for this field. Unlike the resolvers
 
 ```ts title="src/plugins/delivery-time/product-variant-entity.resolver.ts"
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
-import { Ctx, RequestContext, ProductVariant } from '@vendure/core';
+import { Ctx, RequestContext, ProductVariant } from '@bb-vendure/core';
 import { DeliveryEstimateService } from '../services/delivery-estimate.service';
 
 // highlight-next-line
@@ -316,7 +316,7 @@ Finally we need to pass these schema extensions and the resolver to our plugin m
 
 ```ts title="src/plugins/delivery-time/delivery-time.plugin.ts"
 import gql from 'graphql-tag';
-import { PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 import { ProductVariantEntityResolver } from './api/product-variant-entity.resolver';
 import { shopApiExtensions } from './api/api-extensions';
 
@@ -338,7 +338,7 @@ It is also possible to override an existing built-in resolver function with one 
 
 ```ts
 import { Args, Query, Mutation, Resolver } from '@nestjs/graphql';
-import { Ctx, RequestContext } from '@vendure/core'
+import { Ctx, RequestContext } from '@bb-vendure/core'
 
 @Resolver()
 class OverrideExampleResolver {
@@ -363,7 +363,7 @@ The same can be done for resolving fields:
 
 ```ts
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
-import { Ctx, RequestContext, Product } from '@vendure/core';
+import { Ctx, RequestContext, Product } from '@bb-vendure/core';
 
 @Resolver('Product')
 export class FieldOverrideExampleResolver {
@@ -411,7 +411,7 @@ In order to implement a `__resolveType` function as part of your plugin, you nee
 
 ```ts
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
-import { Ctx, RequestContext, ProductVariant } from '@vendure/core';
+import { Ctx, RequestContext, ProductVariant } from '@bb-vendure/core';
 
 @Resolver('MyCustomMutationResult')
 export class MyCustomMutationResultResolver {

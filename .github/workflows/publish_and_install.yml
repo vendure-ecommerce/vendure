@@ -56,15 +56,15 @@ jobs:
         nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &
         wait-on http://localhost:4873
         lerna publish prepatch --preid ci --no-push --no-git-tag-version --no-commit-hooks --force-publish "*" --yes --dist-tag ci --registry http://localhost:4873
-    - name: Install via @vendure/create
+    - name: Install via @bb-vendure/create
       run: |
         mkdir -p $HOME/install
         cd $HOME/install
         nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &
         wait-on http://localhost:4873
         npm set registry=http://localhost:4873
-        npm dist-tag ls @vendure/create
-        npx @vendure/create@ci test-app --ci --use-npm --log-level info
+        npm dist-tag ls @bb-vendure/create
+        npx @bb-vendure/create@ci test-app --ci --use-npm --log-level info
     - name: Server smoke tests
       run: |
         cd $HOME/install/test-app

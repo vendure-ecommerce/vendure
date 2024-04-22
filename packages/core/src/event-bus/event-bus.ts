@@ -1,6 +1,6 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
-import { Type } from '@vendure/common/lib/shared-types';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { Type } from '@bb-vendure/common/lib/shared-types';
+import { notNullOrUndefined } from '@bb-vendure/common/lib/shared-utils';
 import { Observable, Subject } from 'rxjs';
 import { filter, mergeMap, takeUntil } from 'rxjs/operators';
 import { EntityManager } from 'typeorm';
@@ -68,7 +68,7 @@ export type BlockingEventHandlerOptions<T extends VendureEvent> = {
  * @example
  * ```ts
  * import { OnApplicationBootstrap } from '\@nestjs/common';
- * import { EventBus, PluginCommonModule, VendurePlugin } from '\@vendure/core';
+ * import { EventBus, PluginCommonModule, VendurePlugin } from '\@bb-vendure/core';
  * import { filter } from 'rxjs/operators';
  *
  * \@VendurePlugin({

@@ -14,9 +14,9 @@ import {
     StockLocation,
     TransactionalConnection,
     VendurePlugin,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 
-declare module '@vendure/core/dist/entity/custom-entity-fields' {
+declare module '@bb-vendure/core/dist/entity/custom-entity-fields' {
     interface CustomOrderLineFields {
         stockLocationId?: string;
     }

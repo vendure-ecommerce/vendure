@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PluginCommonModule
 
-<GenerationInfo sourceFile="packages/core/src/plugin/plugin-common.module.ts" sourceLine="30" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/plugin/plugin-common.module.ts" sourceLine="30" packageName="@bb-vendure/core" />
 
 This module provides the common services, configuration, and event bus capabilities
 required by a typical plugin. It should be imported into plugins to avoid having to

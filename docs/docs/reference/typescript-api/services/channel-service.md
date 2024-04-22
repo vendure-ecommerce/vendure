@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ChannelService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/channel.service.ts" sourceLine="54" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/channel.service.ts" sourceLine="54" packageName="@bb-vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/channel#channel'>Channel</a> entities.
 

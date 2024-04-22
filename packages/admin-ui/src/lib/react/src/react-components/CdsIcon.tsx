@@ -34,7 +34,7 @@ export function registerCdsIcon(icon: IconShapeTuple) {
  * @example
  * ```ts
  * import { userIcon } from '@cds/core/icon';
- * import { CdsIcon } from '@vendure/admin-ui/react';
+ * import { CdsIcon } from '@bb-vendure/admin-ui/react';
  *
  * registerCdsIcon(userIcon);
  * export function MyComponent() {

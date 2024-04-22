@@ -13,8 +13,8 @@ be `http://localhost:3000`. For production deployments where the Admin UI app is
 configure the Admin UI app to point to the correct API host and port.
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
-import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
+import { VendureConfig } from '@bb-vendure/core';
+import { AdminUiPlugin } from '@bb-vendure/admin-ui-plugin';
 
 const config: VendureConfig = {
     // ...
@@ -40,7 +40,7 @@ Usually, the Admin UI is served from the Vendure server via the AdminUiPlugin. H
 The AdminUiPlugin not only serves the Admin UI app, but also provides a `metricSummary` query which is used to display the order metrics on the dashboard. If you wish to deploy the Admin UI app stand-alone (not served by the AdminUiPlugin), but still want to display the metrics on the dashboard, you'll need to include the AdminUiPlugin in your server's plugins array, but do not call `init()`:
 
 ```ts title="src/vendure-config.ts"
-import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
+import { AdminUiPlugin } from '@bb-vendure/admin-ui-plugin';
 
 const config: VendureConfig = {
     plugins: [
@@ -69,7 +69,7 @@ This example is for Vercel, and assumes:
         "build": "ts-node compile.ts"
       },
       "devDependencies": {
-        "@vendure/ui-devkit": "^1.4.5",
+        "@bb-vendure/ui-devkit": "^1.4.5",
         "ts-node": "^10.2.1",
         "typescript": "~4.3.5"
       }
@@ -77,8 +77,8 @@ This example is for Vercel, and assumes:
     ```
 
 ```ts title="compile.ts"
-import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
-import { DEFAULT_BASE_HREF } from '@vendure/ui-devkit/compiler/constants';
+import { compileUiExtensions } from '@bb-vendure/ui-devkit/compiler';
+import { DEFAULT_BASE_HREF } from '@bb-vendure/ui-devkit/compiler/constants';
 import path from 'path';
 import { promises as fs } from 'fs';
 

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TaxZoneStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/tax/tax-zone-strategy.ts" sourceLine="28" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/tax/tax-zone-strategy.ts" sourceLine="28" packageName="@bb-vendure/core" />
 
 Defines how the active <a href='/reference/typescript-api/entities/zone#zone'>Zone</a> is determined for the purposes of calculating taxes.
 

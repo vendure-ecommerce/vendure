@@ -30,7 +30,7 @@ let projectName: string | undefined;
 
 // Set the environment variable which can then be used to
 // conditionally modify behaviour of core or plugins.
-const createEnvVar: import('@vendure/common/lib/shared-constants').CREATING_VENDURE_APP =
+const createEnvVar: import('@bb-vendure/common/lib/shared-constants').CREATING_VENDURE_APP =
     'CREATING_VENDURE_APP';
 process.env[createEnvVar] = 'true';
 
@@ -203,9 +203,9 @@ export async function createVendureApp(
     require(path.join(root, 'node_modules/ts-node')).register();
 
     try {
-        const { populate } = await import(path.join(root, 'node_modules/@vendure/core/cli/populate'));
+        const { populate } = await import(path.join(root, 'node_modules/@bb-vendure/core/cli/populate'));
         const { bootstrap, DefaultLogger, LogLevel, JobQueueService } = await import(
-            path.join(root, 'node_modules/@vendure/core/dist/index')
+            path.join(root, 'node_modules/@bb-vendure/core/dist/index')
         );
         const { config } = await import(configFile);
         const assetsDir = path.join(__dirname, '../assets');
@@ -315,7 +315,7 @@ async function createDirectoryStructure(root: string) {
  * Copy the email templates into the app
  */
 async function copyEmailTemplates(root: string) {
-    const templateDir = path.join(root, 'node_modules/@vendure/email-plugin/templates');
+    const templateDir = path.join(root, 'node_modules/@bb-vendure/email-plugin/templates');
     try {
         await fs.copy(templateDir, path.join(root, 'static', 'email', 'templates'));
     } catch (err: any) {

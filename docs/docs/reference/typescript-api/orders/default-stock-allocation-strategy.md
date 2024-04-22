@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DefaultStockAllocationStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/default-stock-allocation-strategy.ts" sourceLine="14" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/order/default-stock-allocation-strategy.ts" sourceLine="14" packageName="@bb-vendure/core" />
 
 Allocates stock when the Order transitions from `ArrangingPayment` to either
 `PaymentAuthorized` or `PaymentSettled`.

@@ -1,6 +1,6 @@
 import { Route } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { PageComponent, PageService } from '@vendure/admin-ui/core';
+import { PageComponent, PageService } from '@bb-vendure/admin-ui/core';
 import { OrderGuard } from './providers/routing/order.guard';
 
 export const createRoutes = (pageService: PageService): Route[] => [

@@ -24,7 +24,7 @@ The [`VendureConfig.apiOptions`](/reference/typescript-api/configuration/api-opt
 Example:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
   apiOptions: {
@@ -49,7 +49,7 @@ The database connection is configured with the `VendureConfig.dbConnectionOption
 Example:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
   dbConnectionOptions: {
@@ -75,7 +75,7 @@ The username and default password of the superadmin user can also be specified h
 Example:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
   authOptions: {
@@ -102,7 +102,7 @@ Since the `VendureConfig` is just a JavaScript object, it can be managed and man
 Environment variables can be used when you don't want to hard-code certain values which may change, e.g. depending on whether running locally, in staging or in production:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
   apiOptions: {
@@ -116,7 +116,7 @@ export const config: VendureConfig = {
 They are also useful so that sensitive credentials do not need to be hard-coded and committed to source control:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
   dbConnectionOptions: {
@@ -129,7 +129,7 @@ export const config: VendureConfig = {
 }
 ```
 
-When you create a Vendure project with `@vendure/create`, it comes with the [dotenv](https://www.npmjs.com/package/dotenv) package installed, which allows you to store environment variables in a `.env` file in the root of your project.
+When you create a Vendure project with `@bb-vendure/create`, it comes with the [dotenv](https://www.npmjs.com/package/dotenv) package installed, which allows you to store environment variables in a `.env` file in the root of your project.
 
 To define new environment variables, you can add them to the `.env` file. For instance, if you are using a plugin that requires
 an API key, you can
@@ -167,7 +167,7 @@ declare global {
 You can then use the environment variable in your config file:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
   plugins: [
@@ -192,9 +192,9 @@ In production, the way you manage environment variables will depend on your host
 If the config object grows too large, you can split it across several files. For example, the `plugins` array in a real-world project can easily grow quite big:
 
 ```ts title="src/vendure-config-plugins.ts"
-import { AssetServerPlugin, DefaultJobQueuePlugin, VendureConfig } from '@vendure/core';
-import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
-import { EmailPlugin } from '@vendure/email-plugin';
+import { AssetServerPlugin, DefaultJobQueuePlugin, VendureConfig } from '@bb-vendure/core';
+import { ElasticsearchPlugin } from '@bb-vendure/elasticsearch-plugin';
+import { EmailPlugin } from '@bb-vendure/email-plugin';
 import { CustomPlugin } from './plugins/custom-plugin';
 
 export const plugins: VendureConfig['plugins'] = [
@@ -216,7 +216,7 @@ export const plugins: VendureConfig['plugins'] = [
 ```
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 import { plugins } from './vendure-config-plugins';
 
 export const config: VendureConfig = {

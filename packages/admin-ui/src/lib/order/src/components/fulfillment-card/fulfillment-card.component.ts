@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { FulfillmentFragment, OrderDetailFragment } from '@vendure/admin-ui/core';
+import { FulfillmentFragment, OrderDetailFragment } from '@bb-vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-fulfillment-card',

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigurableOperation, ConfigurableOperationInput } from '@vendure/common/lib/generated-types';
+import { ConfigurableOperation, ConfigurableOperationInput } from '@bb-vendure/common/lib/generated-types';
 
 import { ConfigurableOperationDef } from '../../../common/configurable-operation';
 import { UserInputError } from '../../../common/error/errors';

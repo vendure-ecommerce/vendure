@@ -1,11 +1,11 @@
-import { pick } from '@vendure/common/lib/pick';
+import { pick } from '@bb-vendure/common/lib/pick';
 import {
     defaultShippingEligibilityChecker,
     LanguageCode,
     mergeConfig,
     ShippingEligibilityChecker,
-} from '@vendure/core';
-import { createTestEnvironment } from '@vendure/testing';
+} from '@bb-vendure/core';
+import { createTestEnvironment } from '@bb-vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';

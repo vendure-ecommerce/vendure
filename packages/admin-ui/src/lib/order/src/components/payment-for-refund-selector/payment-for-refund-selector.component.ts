@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { OrderDetailFragment } from '@vendure/admin-ui/core';
+import { OrderDetailFragment } from '@bb-vendure/admin-ui/core';
 import { RefundablePayment } from '../../common/get-refundable-payments';
 
 @Component({

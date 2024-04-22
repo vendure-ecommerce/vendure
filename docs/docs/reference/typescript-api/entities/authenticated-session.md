@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AuthenticatedSession
 
-<GenerationInfo sourceFile="packages/core/src/entity/session/authenticated-session.entity.ts" sourceLine="14" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/session/authenticated-session.entity.ts" sourceLine="14" packageName="@bb-vendure/core" />
 
 An AuthenticatedSession is created upon successful authentication.
 

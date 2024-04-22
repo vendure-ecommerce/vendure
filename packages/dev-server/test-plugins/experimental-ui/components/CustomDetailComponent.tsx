@@ -1,4 +1,4 @@
-import { Card, useDetailComponentData, useInjector } from '@vendure/admin-ui/react';
+import { Card, useDetailComponentData, useInjector } from '@bb-vendure/admin-ui/react';
 import React, { useEffect, useState } from 'react';
 
 import { CmsDataService } from '../providers/cms-data.service';

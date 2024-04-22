@@ -1,4 +1,4 @@
-import { assertNever, getGraphQlInputName } from '@vendure/common/lib/shared-utils';
+import { assertNever, getGraphQlInputName } from '@bb-vendure/common/lib/shared-utils';
 import {
     buildSchema,
     extendSchema,

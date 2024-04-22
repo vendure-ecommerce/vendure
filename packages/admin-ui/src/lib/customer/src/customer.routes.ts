@@ -7,7 +7,7 @@ import {
     detailBreadcrumb,
     PageComponent,
     PageService,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 
 import { CustomerDetailComponent } from './components/customer-detail/customer-detail.component';
 import { CustomerGroupListComponent } from './components/customer-group-list/customer-group-list.component';

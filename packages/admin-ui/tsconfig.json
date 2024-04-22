@@ -27,37 +27,37 @@
       "esnext.asynciterable"
     ],
     "paths": {
-      "@vendure/admin-ui": [
+      "@bb-vendure/admin-ui": [
         "./src/lib/public_api"
       ],
-      "@vendure/admin-ui/catalog": [
+      "@bb-vendure/admin-ui/catalog": [
         "./src/lib/catalog/src/public_api"
       ],
-      "@vendure/admin-ui/core": [
+      "@bb-vendure/admin-ui/core": [
         "./src/lib/core/src/public_api"
       ],
-      "@vendure/admin-ui/customer": [
+      "@bb-vendure/admin-ui/customer": [
         "./src/lib/customer/src/public_api"
       ],
-      "@vendure/admin-ui/dashboard": [
+      "@bb-vendure/admin-ui/dashboard": [
         "./src/lib/dashboard/src/public_api"
       ],
-      "@vendure/admin-ui/login": [
+      "@bb-vendure/admin-ui/login": [
         "./src/lib/login/src/public_api"
       ],
-      "@vendure/admin-ui/marketing": [
+      "@bb-vendure/admin-ui/marketing": [
         "./src/lib/marketing/src/public_api"
       ],
-      "@vendure/admin-ui/order": [
+      "@bb-vendure/admin-ui/order": [
         "./src/lib/order/src/public_api"
       ],
-      "@vendure/admin-ui/react": [
+      "@bb-vendure/admin-ui/react": [
         "./src/lib/react/src/public_api"
       ],
-      "@vendure/admin-ui/settings": [
+      "@bb-vendure/admin-ui/settings": [
         "./src/lib/settings/src/public_api"
       ],
-      "@vendure/admin-ui/system": [
+      "@bb-vendure/admin-ui/system": [
         "./src/lib/system/src/public_api"
       ]
     },

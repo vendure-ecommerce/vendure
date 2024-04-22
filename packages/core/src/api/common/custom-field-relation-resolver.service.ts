@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ID } from '@vendure/common/lib/shared-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { Translatable } from '../../common/types/locale-types';

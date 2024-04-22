@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ErrorHandlerStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/system/error-handler-strategy.ts" sourceLine="60" packageName="@vendure/core" since="2.2.0" />
+<GenerationInfo sourceFile="packages/core/src/config/system/error-handler-strategy.ts" sourceLine="60" packageName="@bb-vendure/core" since="2.2.0" />
 
 This strategy defines logic for handling errors thrown during on both the server
 and the worker. It can be used for additional logging & monitoring, or for sending error
@@ -29,7 +29,7 @@ your VendureConfig.
 ```ts
 import { ArgumentsHost, ExecutionContext } from '@nestjs/common';
 import { GqlContextType, GqlExecutionContext } from '@nestjs/graphql';
-import { ErrorHandlerStrategy, I18nError, Injector, Job, LogLevel } from '@vendure/core';
+import { ErrorHandlerStrategy, I18nError, Injector, Job, LogLevel } from '@bb-vendure/core';
 
 import { MonitoringService } from './monitoring.service';
 

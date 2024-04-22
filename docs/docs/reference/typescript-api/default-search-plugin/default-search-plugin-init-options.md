@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DefaultSearchPluginInitOptions
 
-<GenerationInfo sourceFile="packages/core/src/plugin/default-search-plugin/types.ts" sourceLine="15" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/plugin/default-search-plugin/types.ts" sourceLine="15" packageName="@bb-vendure/core" />
 
 Options which configure the behaviour of the DefaultSearchPlugin
 

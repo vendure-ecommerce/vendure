@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## User
 
-<GenerationInfo sourceFile="packages/core/src/entity/user/user.entity.ts" sourceLine="21" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/user/user.entity.ts" sourceLine="21" packageName="@bb-vendure/core" />
 
 A User represents any authenticated user of the Vendure API. This includes both
 <a href='/reference/typescript-api/entities/administrator#administrator'>Administrator</a>s as well as registered <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>s.

@@ -4,10 +4,10 @@ import {
     CreateProductOptionGroupInput,
     CreateProductOptionInput,
     CreateProductVariantInput,
-} from '@vendure/common/lib/generated-types';
-import { normalizeString } from '@vendure/common/lib/normalize-string';
-import { ID } from '@vendure/common/lib/shared-types';
-import { unique } from '@vendure/common/lib/unique';
+} from '@bb-vendure/common/lib/generated-types';
+import { normalizeString } from '@bb-vendure/common/lib/normalize-string';
+import { ID } from '@bb-vendure/common/lib/shared-types';
+import { unique } from '@bb-vendure/common/lib/unique';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { TransactionalConnection } from '../../../connection/transactional-connection';

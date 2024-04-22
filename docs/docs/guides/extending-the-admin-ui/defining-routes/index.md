@@ -22,7 +22,7 @@ First we need to create the component which will be mounted at the route. This c
 
 
 ```ts title="src/plugins/greeter/ui/components/greeter/greeter.component.ts"
-import { SharedModule } from '@vendure/admin-ui/core';
+import { SharedModule } from '@bb-vendure/admin-ui/core';
 import { Component } from '@angular/core';
 
 @Component({
@@ -73,7 +73,7 @@ Next we need to define a route in our `routes.ts` file. Note that this file can 
 Using [`registerRouteComponent`](/reference/admin-ui-api/routes/register-route-component) you can define a new route based on an Angular component.
 
 ```ts title="src/plugins/greeter/ui/routes.ts"
-import { registerRouteComponent } from '@vendure/admin-ui/core';
+import { registerRouteComponent } from '@bb-vendure/admin-ui/core';
 import { GreeterComponent } from './components/greeter/greeter.component';
 
 export default [
@@ -92,7 +92,7 @@ export default [
 Here's the equivalent example using React and [`registerReactRouteComponent`](/reference/admin-ui-api/react-extensions/register-react-route-component):
 
 ```ts title="src/plugins/greeter/ui/routes.ts"
-import { registerReactRouteComponent } from '@vendure/admin-ui/react';
+import { registerReactRouteComponent } from '@bb-vendure/admin-ui/react';
 import { Greeter } from './components/Greeter';
 
 export default [
@@ -115,9 +115,9 @@ The `path: ''` is actually optional, since `''` is the default value. But this i
 Now we need to add this routes file to our extension definition:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
-import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
-import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
+import { VendureConfig } from '@bb-vendure/core';
+import { AdminUiPlugin } from '@bb-vendure/admin-ui-plugin';
+import { compileUiExtensions } from '@bb-vendure/ui-devkit/compiler';
 import * as path from 'path';
 
 export const config: VendureConfig = {
@@ -178,7 +178,7 @@ To link to other routes, you must use the `routerLink` directive for Angular, or
 
 ```tsx
 import React from 'react';
-import { Link } from '@vendure/admin-ui/react';
+import { Link } from '@bb-vendure/admin-ui/react';
 
 export function DemoComponent() {
     return (
@@ -200,7 +200,7 @@ The `path` property is used to specify the path to a specific component. This pa
 <TabItem value="Angular" label="Angular" default>
 
 ```ts title="src/plugins/my-plugin/ui/routes.ts"
-import { registerRouteComponent } from '@vendure/admin-ui/core';
+import { registerRouteComponent } from '@bb-vendure/admin-ui/core';
 import { TestComponent } from './components/test/test.component';
 
 export default [
@@ -218,7 +218,7 @@ export default [
 <TabItem value="React" label="React">
 
 ```ts title="src/plugins/my-plugin/ui/routes.ts"
-import { registerReactRouteComponent } from '@vendure/admin-ui/react';
+import { registerReactRouteComponent } from '@bb-vendure/admin-ui/react';
 import { Test } from './components/Test';
 
 export default [
@@ -241,7 +241,7 @@ The `id` parameter will then be available in the component:
 <TabItem value="Angular" label="Angular" default>
 
 ```ts title="src/plugins/my-plugin/ui/components/test/test.component.ts"
-import { SharedModule } from '@vendure/admin-ui/core';
+import { SharedModule } from '@bb-vendure/admin-ui/core';
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
@@ -270,7 +270,7 @@ export class TestComponent {
 
 ```tsx title="src/plugins/my-plugin/ui/components/Test.tsx"
 import React from 'react';
-import { useRouteParams } from '@vendure/admin-ui/react';
+import { useRouteParams } from '@bb-vendure/admin-ui/react';
 
 export function Test() {
     // highlight-next-line
@@ -302,7 +302,7 @@ Here's an example of injecting the built-in `NotificationService` into a compone
 In Angular, we can use either the constructor to inject the service (as shown below), or the `inject()` function. See the [Angular dependency injection guide](https://angular.io/guide/dependency-injection#injecting-a-dependency) for more information.
 
 ```ts title="src/plugins/my-plugin/ui/components/test/test.component.ts"
-import { SharedModule, NotificationService } from '@vendure/admin-ui/core';
+import { SharedModule, NotificationService } from '@bb-vendure/admin-ui/core';
 import { Component } from '@angular/core';
 
 @Component({
@@ -331,9 +331,9 @@ export class TestComponent {
 In React, we use the [`useInjector()`](/reference/admin-ui-api/react-hooks/use-injector) hook to inject the service:
 
 ```tsx title="src/plugins/my-plugin/ui/components/Test.tsx"
-import { NotificationService } from '@vendure/admin-ui/core';
+import { NotificationService } from '@bb-vendure/admin-ui/core';
 // highlight-next-line
-import { useInjector } from '@vendure/admin-ui/react';
+import { useInjector } from '@bb-vendure/admin-ui/react';
 import React from 'react';
 
 export function Test() {
@@ -367,7 +367,7 @@ The page title can be set in the route definition:
 <TabItem value="Angular" label="Angular" default>
 
 ```ts title="src/plugins/my-plugin/ui/routes.ts"
-import { registerRouteComponent } from '@vendure/admin-ui/core';
+import { registerRouteComponent } from '@bb-vendure/admin-ui/core';
 import { TestComponent } from './components/test/test.component';
 
 export default [
@@ -384,7 +384,7 @@ export default [
 <TabItem value="React" label="React">
 
 ```ts title="src/plugins/my-plugin/ui/routes.ts"
-import { registerReactRouteComponent } from '@vendure/admin-ui/react';
+import { registerReactRouteComponent } from '@bb-vendure/admin-ui/react';
 import { Test } from './components/Test';
 
 export default [
@@ -408,7 +408,7 @@ It is also possible to update the page title dynamically from the route componen
 <TabItem value="Angular" label="Angular" default>
 
 ```ts title="src/plugins/my-plugin/ui/components/test/test.component.ts"
-import { PageMetadataService, SharedModule } from '@vendure/admin-ui/core';
+import { PageMetadataService, SharedModule } from '@bb-vendure/admin-ui/core';
 import { Component } from '@angular/core';
 
 @Component({
@@ -438,7 +438,7 @@ export class TestComponent {
 <TabItem value="React" label="React">
 
 ```tsx title="src/plugins/my-plugin/ui/components/Test.tsx"
-import { Card, usePageMetadata } from '@vendure/admin-ui/react';
+import { Card, usePageMetadata } from '@bb-vendure/admin-ui/react';
 import React from 'react';
 
 export function Test() {
@@ -475,7 +475,7 @@ The page breadcumbs can be set in the route definition in a couple of ways. The 
 <TabItem value="Angular" label="Angular" default>
 
 ```ts title="src/plugins/my-plugin/ui/routes.ts"
-import { registerRouteComponent } from '@vendure/admin-ui/core';
+import { registerRouteComponent } from '@bb-vendure/admin-ui/core';
 import { TestComponent } from './components/test/test.component';
 
 export default [
@@ -492,7 +492,7 @@ export default [
 <TabItem value="React" label="React">
 
 ```ts title="src/plugins/my-plugin/ui/routes.ts"
-import { registerReactRouteComponent } from '@vendure/admin-ui/react';
+import { registerReactRouteComponent } from '@bb-vendure/admin-ui/react';
 import { Test } from './components/Test';
 
 export default [
@@ -511,7 +511,7 @@ export default [
 This can be a string (as above), a link/label pair, or an array of link/label pairs:
 
 ```ts title="src/plugins/my-plugin/ui/routes.ts"
-import { registerRouteComponent } from '@vendure/admin-ui/core';
+import { registerRouteComponent } from '@bb-vendure/admin-ui/core';
 import { TestComponent } from './components/test/test.component';
 
 export default [
@@ -547,7 +547,7 @@ Similar to setting the title, the breadcrumbs can also be updated dynamically fr
 <TabItem value="Angular" label="Angular" default>
 
 ```ts title="src/plugins/my-plugin/ui/components/test/test.component.ts"
-import { PageMetadataService, SharedModule } from '@vendure/admin-ui/core';
+import { PageMetadataService, SharedModule } from '@bb-vendure/admin-ui/core';
 import { Component } from '@angular/core';
 
 @Component({
@@ -577,7 +577,7 @@ export class TestComponent {
 <TabItem value="React" label="React">
 
 ```tsx title="src/plugins/my-plugin/ui/components/Test.tsx"
-import { Card, usePageMetadata } from '@vendure/admin-ui/react';
+import { Card, usePageMetadata } from '@bb-vendure/admin-ui/react';
 import React from 'react';
 
 export function Test() {
@@ -618,9 +618,9 @@ For example, let's say we want to override the product detail page. The full pat
 ```
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
-import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
-import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
+import { VendureConfig } from '@bb-vendure/core';
+import { AdminUiPlugin } from '@bb-vendure/admin-ui-plugin';
+import { compileUiExtensions } from '@bb-vendure/ui-devkit/compiler';
 import * as path from 'path';
 
 export const config: VendureConfig = {
@@ -659,7 +659,7 @@ Then in the `routes.ts` file, you can define a route which matches the built-in 
 <TabItem value="Angular" label="Angular" default>
 
 ```ts title="src/plugins/my-plugin/ui/routes.ts"
-import { GetProductDetailDocument, registerRouteComponent } from '@vendure/admin-ui/core';
+import { GetProductDetailDocument, registerRouteComponent } from '@bb-vendure/admin-ui/core';
 import { MyProductDetailComponent } from './components/product-detail/product-detail.component';
 
 export default [
@@ -684,8 +684,8 @@ export default [
 <TabItem value="React" label="React">
 
 ```ts title="src/plugins/my-plugin/ui/routes.ts"
-import { GetProductDetailDocument } from '@vendure/admin-ui/core';
-import { registerReactRouteComponent } from '@vendure/admin-ui/react';
+import { GetProductDetailDocument } from '@bb-vendure/admin-ui/core';
+import { registerReactRouteComponent } from '@bb-vendure/admin-ui/react';
 import { MyProductDetail } from './components/ProductDetail';
 
 export default [
@@ -714,7 +714,7 @@ export default [
 The Admin UI app routing is built on top of the [Angular router](https://angular.io/guide/routing-overview) - a very advanced and robust router. As such, you are able to tap into all the advanced features it provides by using the `routeConfig` property, which takes an Angular [`Route` definition object](https://angular.io/api/router/Route) and passes it directly to the router.
 
 ```ts title="src/plugins/my-plugin/ui/routes.ts"
-import { registerRouteComponent } from '@vendure/admin-ui/core';
+import { registerRouteComponent } from '@bb-vendure/admin-ui/core';
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { TestComponent } from './components/test/test.component';

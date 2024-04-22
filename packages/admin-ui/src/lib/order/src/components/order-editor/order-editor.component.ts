@@ -25,9 +25,9 @@ import {
     SurchargeInput,
     transformRelationCustomFieldInputs,
     TypedBaseDetailComponent,
-} from '@vendure/admin-ui/core';
-import { assertNever, notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
+} from '@bb-vendure/admin-ui/core';
+import { assertNever, notNullOrUndefined } from '@bb-vendure/common/lib/shared-utils';
+import { simpleDeepClone } from '@bb-vendure/common/lib/simple-deep-clone';
 import { EMPTY, Observable, of } from 'rxjs';
 import { map, mapTo, shareReplay, switchMap, take, takeUntil } from 'rxjs/operators';
 import {

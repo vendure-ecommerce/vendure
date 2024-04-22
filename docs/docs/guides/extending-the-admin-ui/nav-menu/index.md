@@ -13,7 +13,7 @@ Once you have defined some custom routes, you need some way for the administrato
 Let's add a new section to the Admin UI main nav bar containing a link to the "greeter" module from the [Getting Started guide](/guides/extending-the-admin-ui/getting-started/#routes) example:
 
 ```ts title="src/plugins/greeter/ui/providers.ts"
-import { addNavMenuSection } from '@vendure/admin-ui/core';
+import { addNavMenuSection } from '@bb-vendure/admin-ui/core';
 
 export default [
     addNavMenuSection({
@@ -36,9 +36,9 @@ Now we must also register these providers with the compiler:
 
 ```ts title="src/vendure-config.ts"
 import path from 'path';
-import { VendureConfig } from '@vendure/core';
-import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
-import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
+import { VendureConfig } from '@bb-vendure/core';
+import { AdminUiPlugin } from '@bb-vendure/admin-ui-plugin';
+import { compileUiExtensions } from '@bb-vendure/ui-devkit/compiler';
 
 export const config: VendureConfig = {
     // ...
@@ -80,7 +80,7 @@ This is done by setting the `id` property to that of an existing nav menu sectio
 If you would like to remove an existing nav item, you can do so by overriding it and setting the `requiresPermission` property to an invalid value:
 
 ```ts title="src/plugins/greeter/ui/providers.ts"
-import { SharedModule, addNavMenuItem} from '@vendure/admin-ui/core';
+import { SharedModule, addNavMenuItem} from '@bb-vendure/admin-ui/core';
 
 export default [
     addNavMenuItem({

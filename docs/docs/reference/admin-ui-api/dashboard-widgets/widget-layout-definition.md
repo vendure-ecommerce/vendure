@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## WidgetLayoutDefinition
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/dashboard-widget/dashboard-widget-types.ts" sourceLine="51" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/dashboard-widget/dashboard-widget-types.ts" sourceLine="51" packageName="@bb-vendure/admin-ui" />
 
 A configuration object for the default dashboard widget layout.
 

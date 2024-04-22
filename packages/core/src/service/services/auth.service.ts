@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ID } from '@vendure/common/lib/shared-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
 
 import { ApiType } from '../../api/common/get-api-type';
 import { RequestContext } from '../../api/common/request-context';

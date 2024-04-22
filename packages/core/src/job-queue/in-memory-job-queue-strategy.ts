@@ -6,9 +6,9 @@ import {
     JobState,
     NumberOperators,
     StringOperators,
-} from '@vendure/common/lib/generated-types';
-import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+} from '@bb-vendure/common/lib/generated-types';
+import { ID, PaginatedList } from '@bb-vendure/common/lib/shared-types';
+import { notNullOrUndefined } from '@bb-vendure/common/lib/shared-utils';
 
 import { Injector } from '../common';
 import { InspectableJobQueueStrategy } from '../config/job-queue/inspectable-job-queue-strategy';

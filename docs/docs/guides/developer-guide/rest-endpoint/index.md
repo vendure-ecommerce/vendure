@@ -18,7 +18,7 @@ First let's define the controller:
 ```ts title="src/plugins/rest-plugin/api/products.controller.ts"
 // products.controller.ts
 import { Controller, Get } from '@nestjs/common';
-import { Ctx, ProductService, RequestContext } from '@vendure/core';
+import { Ctx, ProductService, RequestContext } from '@bb-vendure/core';
 
 @Controller('products')
 export class ProductsController {
@@ -41,7 +41,7 @@ The key points to note here are:
 ## Register the controller with the plugin
 
 ```ts title="src/plugins/rest-plugin/rest.plugin.ts"
-import { PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 import { ProductsController } from './api/products.controller';
 
 @VendurePlugin({
@@ -58,7 +58,7 @@ export class RestPlugin {}
 The plugin can then be added to the `VendureConfig`:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 import { RestPlugin } from './plugins/rest-plugin/rest.plugin';
 
 export const config: VendureConfig = {
@@ -77,7 +77,7 @@ You can use the [`@Allow()` decorator](/reference/typescript-api/request/allow-d
 
 ```ts title="src/plugins/rest-plugin/api/products.controller.ts"
 import { Controller, Get } from '@nestjs/common';
-import { Allow, Permission, Ctx, ProductService, RequestContext } from '@vendure/core';
+import { Allow, Permission, Ctx, ProductService, RequestContext } from '@bb-vendure/core';
 
 @Controller('products')
 export class ProductsController {

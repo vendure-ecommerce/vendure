@@ -23,7 +23,7 @@ import {
     SharedModule,
     TimelineDisplayType,
     TimelineHistoryEntry,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 
 @Component({
     selector: 'tax-id-verification-entry',
@@ -64,7 +64,7 @@ export class TaxIdHistoryEntryComponent implements CustomerHistoryEntryComponent
 We can then register this component in the `providers.ts` file:
 
 ```ts title="src/plugins/tax-id/ui/providers.ts"
-import { registerHistoryEntryComponent } from '@vendure/admin-ui/core';
+import { registerHistoryEntryComponent } from '@bb-vendure/admin-ui/core';
 import { TaxIdHistoryEntryComponent } from './components/tax-id-history-entry/tax-id-history-entry.component';
 
 export default [

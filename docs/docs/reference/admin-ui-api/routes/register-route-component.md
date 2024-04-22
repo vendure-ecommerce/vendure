@@ -11,15 +11,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## registerRouteComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/register-route-component.ts" sourceLine="77" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/register-route-component.ts" sourceLine="77" packageName="@bb-vendure/admin-ui" />
 
 Registers an Angular standalone component to be rendered in a route.
 
 *Example*
 
 ```ts title="routes.ts"
-import { registerRouteComponent } from '@vendure/admin-ui/core';
-import { registerReactRouteComponent } from '@vendure/admin-ui/react';
+import { registerRouteComponent } from '@bb-vendure/admin-ui/core';
+import { registerReactRouteComponent } from '@bb-vendure/admin-ui/react';
 
 import { ProductReviewDetailComponent } from './components/product-review-detail/product-review-detail.component';
 import { AllProductReviewsList } from './components/all-product-reviews-list/all-product-reviews-list.component';

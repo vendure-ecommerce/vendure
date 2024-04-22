@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## isGraphQlErrorResult
 
-<GenerationInfo sourceFile="packages/core/src/common/error/error-result.ts" sourceLine="71" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/common/error/error-result.ts" sourceLine="71" packageName="@bb-vendure/core" />
 
 Returns true if the <a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a> is actually an ErrorResult type. This is useful when dealing with
 certain internal service method that return an ErrorResultUnion.
@@ -19,7 +19,7 @@ certain internal service method that return an ErrorResultUnion.
 *Example*
 
 ```ts
-import { isGraphQlErrorResult } from '@vendure/core';
+import { isGraphQlErrorResult } from '@bb-vendure/core';
 
 // ...
 

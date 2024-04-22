@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TaxLineCalculationStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/tax/tax-line-calculation-strategy.ts" sourceLine="29" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/tax/tax-line-calculation-strategy.ts" sourceLine="29" packageName="@bb-vendure/core" />
 
 This strategy defines how the TaxLines on OrderItems are calculated. By default,
 the <a href='/reference/typescript-api/tax/default-tax-line-calculation-strategy#defaulttaxlinecalculationstrategy'>DefaultTaxLineCalculationStrategy</a> is used, which directly applies
@@ -54,7 +54,7 @@ calling external APIs when absolutely necessary.
 
 ## CalculateTaxLinesArgs
 
-<GenerationInfo sourceFile="packages/core/src/config/tax/tax-line-calculation-strategy.ts" sourceLine="47" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/tax/tax-line-calculation-strategy.ts" sourceLine="47" packageName="@bb-vendure/core" />
 
 
 

@@ -3,12 +3,12 @@ import fs from 'fs';
 import path from 'path';
 
 /**
- * For some unknown reason, a v1.2.2 of @vendure/core included incorrect type definitions for some types.
+ * For some unknown reason, a v1.2.2 of @bb-vendure/core included incorrect type definitions for some types.
  * Namely, _some_ of the `ConfigurableOperationDef` types had their specific string literal & enum types
  * replaced with just `string`, which caused the published package to fail to build.
  *
  * Example:
- * [dummy-payment-method-handler.d.ts](https://unpkg.com/@vendure/core@1.2.2/dist/config/payment/dummy-payment-method-handler.d.ts)
+ * [dummy-payment-method-handler.d.ts](https://unpkg.com/@bb-vendure/core@1.2.2/dist/config/payment/dummy-payment-method-handler.d.ts)
  * ```
  * export declare const dummyPaymentHandler: PaymentMethodHandler<{
  *     automaticSettle: {

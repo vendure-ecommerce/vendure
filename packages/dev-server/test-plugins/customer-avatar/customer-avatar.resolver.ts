@@ -1,5 +1,5 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { Asset } from '@vendure/common/lib/generated-types';
+import { Asset } from '@bb-vendure/common/lib/generated-types';
 import {
     Allow,
     AssetService,
@@ -9,7 +9,7 @@ import {
     Permission,
     RequestContext,
     Transaction,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 
 @Resolver()
 export class CustomerAvatarResolver {

@@ -1,4 +1,4 @@
-import { Type } from '@vendure/common/lib/shared-types';
+import { Type } from '@bb-vendure/common/lib/shared-types';
 
 interface IdColumnOptions {
     /** Whether the field is nullable. Defaults to false */

@@ -17,7 +17,7 @@ button to the ActionBar of the order detail page, either as a button or as a dro
 Adding a button is done using the [`addActionBarItem`](/reference/admin-ui-api/action-bar/add-action-bar-item/) function.
 
 ```ts title="src/plugins/invoice/ui/providers.ts"
-import { addActionBarItem } from '@vendure/admin-ui/core';
+import { addActionBarItem } from '@bb-vendure/admin-ui/core';
 
 export default [
     addActionBarItem({
@@ -49,7 +49,7 @@ This is done using the [`addActionBarDropdownMenuItem`](/reference/admin-ui-api/
 Let's re-work the "print invoice" button example to display it instead as a dropdown menu item:
 
 ```ts title="src/plugins/invoice/ui/providers.ts"
-import { addActionBarDropdownMenuItem } from '@vendure/admin-ui/core';
+import { addActionBarDropdownMenuItem } from '@bb-vendure/admin-ui/core';
 
 export default [
     addActionBarDropdownMenuItem({
@@ -86,7 +86,7 @@ The `routerLink` property allows you to specify a route to navigate to when the 
 <TabItem value="routerLink constant" label="routerLink constant" default>
 
 ```ts title="src/plugins/invoice/ui/providers.ts"
-import { addActionBarItem } from '@vendure/admin-ui/core';
+import { addActionBarItem } from '@bb-vendure/admin-ui/core';
 
 export default [
     addActionBarItem({
@@ -105,7 +105,7 @@ export default [
 <TabItem value="routerLink function" label="routerLink function">
 
 ```ts title="src/plugins/invoice/ui/providers.ts"
-import { addActionBarItem } from '@vendure/admin-ui/core';
+import { addActionBarItem } from '@bb-vendure/admin-ui/core';
 
 export default [
     addActionBarItem({
@@ -137,7 +137,7 @@ Here's an example of how to use the onClick property to perform a GraphQL mutati
 ```ts title="src/plugins/invoice/ui/providers.ts"
 import gql from 'graphql-tag';
 import { firstValueFrom } from 'rxjs';
-import { addActionBarItem } from '@vendure/admin-ui/core';
+import { addActionBarItem } from '@bb-vendure/admin-ui/core';
 
 const mutation = gql`
     mutation MyMutation($orderId: ID!) {
@@ -174,7 +174,7 @@ Use the `buttonState` property (added in v2.1) to control the visibility and dis
 
 ```ts title="src/plugins/invoice/ui/providers.ts"
 import { map, switchMap } from 'rxjs/operators';
-import { addActionBarItem } from '@vendure/admin-ui/core';
+import { addActionBarItem } from '@bb-vendure/admin-ui/core';
 
 export default [
     addActionBarItem({
@@ -218,7 +218,7 @@ buttonState: context => {
 You can use the `requiresPermission` property to restrict access to the button by permission. This property accepts a single permission string or an array of permission strings. If the current user does not have the required permission, the button will not be visible.
 
 ```ts title="src/plugins/invoice/ui/providers.ts"
-import { addActionBarItem } from '@vendure/admin-ui/core';
+import { addActionBarItem } from '@bb-vendure/admin-ui/core';
 
 export default [
     addActionBarItem({

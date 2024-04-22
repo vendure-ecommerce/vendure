@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Type } from '@vendure/common/lib/shared-types';
-import { isObject } from '@vendure/common/lib/shared-utils';
-import { unique } from '@vendure/common/lib/unique';
+import { Type } from '@bb-vendure/common/lib/shared-types';
+import { isObject } from '@bb-vendure/common/lib/shared-utils';
+import { unique } from '@bb-vendure/common/lib/unique';
 import { SelectQueryBuilder } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
@@ -24,7 +24,7 @@ import { HydrateOptions } from './entity-hydrator-types';
  * @example
  * ```ts
  * import { Injectable } from '\@nestjs/common';
- * import { ID, RequestContext, EntityHydrator, ProductVariantService } from '\@vendure/core';
+ * import { ID, RequestContext, EntityHydrator, ProductVariantService } from '\@bb-vendure/core';
  *
  * \@Injectable()
  * export class MyService {

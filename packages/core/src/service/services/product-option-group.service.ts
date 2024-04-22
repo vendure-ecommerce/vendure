@@ -3,8 +3,8 @@ import {
     CreateProductOptionGroupInput,
     DeletionResult,
     UpdateProductOptionGroupInput,
-} from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+} from '@bb-vendure/common/lib/generated-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
 import { FindManyOptions, Like } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';

@@ -12,11 +12,11 @@ import {
     PreviewCollectionVariantsInput,
     RemoveCollectionsFromChannelInput,
     UpdateCollectionInput,
-} from '@vendure/common/lib/generated-types';
-import { pick } from '@vendure/common/lib/pick';
-import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
-import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { unique } from '@vendure/common/lib/unique';
+} from '@bb-vendure/common/lib/generated-types';
+import { pick } from '@bb-vendure/common/lib/pick';
+import { ROOT_COLLECTION_NAME } from '@bb-vendure/common/lib/shared-constants';
+import { ID, PaginatedList } from '@bb-vendure/common/lib/shared-types';
+import { unique } from '@bb-vendure/common/lib/unique';
 import { merge } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { In, IsNull } from 'typeorm';

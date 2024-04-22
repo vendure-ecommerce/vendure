@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ActiveOrderStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/active-order-strategy.ts" sourceLine="127" packageName="@vendure/core" since="1.9.0" />
+<GenerationInfo sourceFile="packages/core/src/config/order/active-order-strategy.ts" sourceLine="127" packageName="@bb-vendure/core" since="1.9.0" />
 
 This strategy is used to determine the active Order for all order-related operations in
 the Shop API. By default, all the Shop API operations that relate to the active Order (e.g.
@@ -63,7 +63,7 @@ mutation AddItemToOrder {
 *Example*
 
 ```ts
-import { ID } from '@vendure/common/lib/shared-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
 import {
   ActiveOrderStrategy,
   CustomerService,
@@ -73,7 +73,7 @@ import {
   OrderService,
   RequestContext,
   TransactionalConnection,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import gql from 'graphql-tag';
 
 // This strategy assumes a "orderToken" custom field is defined on the Order

@@ -18,8 +18,8 @@ import {
     SortOrder,
     TimelineHistoryEntry,
     TypedBaseDetailComponent,
-} from '@vendure/admin-ui/core';
-import { assertNever, summate } from '@vendure/common/lib/shared-utils';
+} from '@bb-vendure/admin-ui/core';
+import { assertNever, summate } from '@bb-vendure/common/lib/shared-utils';
 import { gql } from 'apollo-angular';
 import { EMPTY, forkJoin, Observable, of, Subject } from 'rxjs';
 import { map, mapTo, startWith, switchMap, take } from 'rxjs/operators';

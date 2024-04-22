@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { DataService } from '@vendure/admin-ui/core';
+import { DataService } from '@bb-vendure/admin-ui/core';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 

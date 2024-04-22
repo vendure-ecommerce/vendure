@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Job
 
-<GenerationInfo sourceFile="packages/core/src/job-queue/job.ts" sourceLine="37" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/job-queue/job.ts" sourceLine="37" packageName="@bb-vendure/core" />
 
 A Job represents a piece of work to be run in the background, i.e. outside the request-response cycle.
 It is intended to be used for long-running work triggered by API requests. Jobs should now generally
@@ -179,7 +179,7 @@ Used to register event handler for job events
 
 ## JobEventType
 
-<GenerationInfo sourceFile="packages/core/src/job-queue/job.ts" sourceLine="15" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/job-queue/job.ts" sourceLine="15" packageName="@bb-vendure/core" />
 
 An event raised by a Job.
 
@@ -190,7 +190,7 @@ type JobEventType = 'progress'
 
 ## JobEventListener
 
-<GenerationInfo sourceFile="packages/core/src/job-queue/job.ts" sourceLine="24" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/job-queue/job.ts" sourceLine="24" packageName="@bb-vendure/core" />
 
 The signature of the event handler expected by the `Job.on()` method.
 

@@ -1,4 +1,4 @@
-import { TaxLine } from '@vendure/common/lib/generated-types';
+import { TaxLine } from '@bb-vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { InjectableStrategy } from '../../common/types/injectable-strategy';

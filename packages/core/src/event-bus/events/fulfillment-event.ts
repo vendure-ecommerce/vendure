@@ -1,4 +1,4 @@
-import { ConfigurableOperationInput, OrderLineInput } from '@vendure/common/lib/generated-types';
+import { ConfigurableOperationInput, OrderLineInput } from '@bb-vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../api';
 import { Order } from '../../entity';

@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { DeletionResponse, Permission } from '@vendure/common/lib/generated-types';
-import { CustomFieldsObject } from '@vendure/common/lib/shared-types';
+import { DeletionResponse, Permission } from '@bb-vendure/common/lib/generated-types';
+import { CustomFieldsObject } from '@bb-vendure/common/lib/shared-types';
 import {
     Allow,
     Ctx,
@@ -13,7 +13,7 @@ import {
     TranslationInput,
     ListQueryOptions,
     RelationPaths,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 
 class TemplateEntity extends VendureEntity {
     constructor() {

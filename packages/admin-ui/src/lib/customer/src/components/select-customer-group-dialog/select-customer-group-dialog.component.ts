@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { DataService, Dialog, GetCustomerGroupsQuery, ItemOf } from '@vendure/admin-ui/core';
+import { DataService, Dialog, GetCustomerGroupsQuery, ItemOf } from '@bb-vendure/admin-ui/core';
 import { Observable } from 'rxjs';
 
 @Component({

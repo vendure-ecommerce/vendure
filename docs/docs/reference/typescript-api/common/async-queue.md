@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AsyncQueue
 
-<GenerationInfo sourceFile="packages/core/src/common/async-queue.ts" sourceLine="13" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/common/async-queue.ts" sourceLine="13" packageName="@bb-vendure/core" />
 
 A queue class for limiting concurrent async tasks. This can be used e.g. to prevent
 race conditions when working on a shared resource such as writing to a database.

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrderableAsset
 
-<GenerationInfo sourceFile="packages/core/src/entity/asset/orderable-asset.entity.ts" sourceLine="18" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/asset/orderable-asset.entity.ts" sourceLine="18" packageName="@bb-vendure/core" />
 
 This base class is extended in order to enable specific ordering of the one-to-many
 Entity -> Assets relation. Using a many-to-many relation does not provide a way

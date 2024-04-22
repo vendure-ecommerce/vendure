@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { Ctx, PluginCommonModule, ProductService, RequestContext, VendurePlugin } from '@vendure/core';
+import { Ctx, PluginCommonModule, ProductService, RequestContext, VendurePlugin } from '@bb-vendure/core';
 
 @Controller('products')
 export class ProductsController {

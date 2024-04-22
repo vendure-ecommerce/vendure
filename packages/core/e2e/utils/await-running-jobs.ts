@@ -1,4 +1,4 @@
-import { SimpleGraphQLClient } from '@vendure/testing';
+import { SimpleGraphQLClient } from '@bb-vendure/testing';
 
 import { GetRunningJobsQuery, GetRunningJobsQueryVariables } from '../graphql/generated-e2e-admin-types';
 import { GET_RUNNING_JOBS } from '../graphql/shared-definitions';

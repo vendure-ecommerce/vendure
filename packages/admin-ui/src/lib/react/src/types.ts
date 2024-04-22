@@ -1,6 +1,6 @@
 import { Injector } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { CustomField, PageMetadataService } from '@vendure/admin-ui/core';
+import { CustomField, PageMetadataService } from '@bb-vendure/admin-ui/core';
 
 export interface ReactFormInputOptions {
     formControl: FormControl;

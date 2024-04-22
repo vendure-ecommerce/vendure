@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ApiType
 
-<GenerationInfo sourceFile="packages/core/src/api/common/get-api-type.ts" sourceLine="9" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/api/common/get-api-type.ts" sourceLine="9" packageName="@bb-vendure/core" />
 
 Which of the GraphQL APIs the current request came via.
 

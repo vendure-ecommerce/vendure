@@ -11,8 +11,8 @@ import {
     Permission,
     QueryPaymentMethodArgs,
     QueryPaymentMethodsArgs,
-} from '@vendure/common/lib/generated-types';
-import { PaginatedList } from '@vendure/common/lib/shared-types';
+} from '@bb-vendure/common/lib/generated-types';
+import { PaginatedList } from '@bb-vendure/common/lib/shared-types';
 
 import { Translated } from '../../../common/types/locale-types';
 import { PaymentMethod } from '../../../entity/payment-method/payment-method.entity';

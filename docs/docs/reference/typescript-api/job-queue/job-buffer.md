@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## JobBuffer
 
-<GenerationInfo sourceFile="packages/core/src/job-queue/job-buffer/job-buffer.ts" sourceLine="83" packageName="@vendure/core" since="1.3.0" />
+<GenerationInfo sourceFile="packages/core/src/job-queue/job-buffer/job-buffer.ts" sourceLine="83" packageName="@bb-vendure/core" since="1.3.0" />
 
 A JobBuffer is used to temporarily prevent jobs from being sent to the job queue for processing.
 Instead, it collects certain jobs (as specified by the `collect()` method), and stores them.

@@ -32,7 +32,7 @@ If you'd like to quickly get started with a ready-made Vendure project which inc
 Railway defines the port via the `PORT` environment variable, so make sure your Vendure Config uses this variable:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
     apiOptions: {
@@ -53,7 +53,7 @@ The following is already pre-configured if you are using the one-click-deploy re
 Make sure your DB connection options uses the following environment variables:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
     // ...
@@ -77,8 +77,8 @@ In this guide we will use the AssetServerPlugin's default local disk storage str
 `ASSET_UPLOAD_DIR` environment variable to set the path to the directory where the uploaded assets will be stored.
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
-import { AssetServerPlugin } from '@vendure/asset-server-plugin';
+import { VendureConfig } from '@bb-vendure/core';
+import { AssetServerPlugin } from '@bb-vendure/asset-server-plugin';
 
 export const config: VendureConfig = {
     // ...

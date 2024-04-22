@@ -1,5 +1,5 @@
-import { CardComponent, DatetimePickerComponent, NotificationService } from '@vendure/admin-ui/core';
-import { useInjector, usePageMetadata } from '@vendure/admin-ui/react';
+import { CardComponent, DatetimePickerComponent, NotificationService } from '@bb-vendure/admin-ui/core';
+import { useInjector, usePageMetadata } from '@bb-vendure/admin-ui/react';
 import React, { useState, useEffect } from 'react';
 
 import { Wrap } from './Wrap';

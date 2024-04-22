@@ -11,7 +11,7 @@ import {
     SimpleChanges,
     ViewChildren,
 } from '@angular/core';
-import { OrderProcessState } from '@vendure/admin-ui/core';
+import { OrderProcessState } from '@bb-vendure/admin-ui/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 

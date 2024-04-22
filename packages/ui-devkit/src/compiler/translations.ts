@@ -1,4 +1,4 @@
-import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { LanguageCode } from '@bb-vendure/common/lib/generated-types';
 import * as fs from 'fs-extra';
 import { globSync } from 'glob';
 import * as path from 'path';

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## HasPermissionPipe
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/pipes/has-permission.pipe.ts" sourceLine="16" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/pipes/has-permission.pipe.ts" sourceLine="16" packageName="@bb-vendure/admin-ui" />
 
 A pipe which checks the provided permission against all the permissions of the current user.
 Returns `true` if the current user has that permission.

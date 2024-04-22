@@ -1,5 +1,5 @@
-import { ID } from '@vendure/common/lib/shared-types';
-import { unique } from '@vendure/common/lib/unique';
+import { ID } from '@bb-vendure/common/lib/shared-types';
+import { unique } from '@bb-vendure/common/lib/unique';
 
 import { RequestContext } from '../../../api';
 import { TtlCache } from '../../../common/ttl-cache';
@@ -15,7 +15,7 @@ import { ProductVariant } from '../../../entity/product-variant/product-variant.
  *
  * @example
  * ```ts
- * import { FacetValueChecker, LanguageCode, PromotionCondition, TransactionalConnection } from '\@vendure/core';
+ * import { FacetValueChecker, LanguageCode, PromotionCondition, TransactionalConnection } from '\@bb-vendure/core';
  *
  * let facetValueChecker: FacetValueChecker;
  *

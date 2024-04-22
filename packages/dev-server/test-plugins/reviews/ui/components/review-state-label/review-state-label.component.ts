@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { SharedModule } from '@vendure/admin-ui/core';
+import { SharedModule } from '@bb-vendure/admin-ui/core';
 
 import { ReviewState } from '../../common/ui-types';
 

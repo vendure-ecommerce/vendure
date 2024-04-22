@@ -79,7 +79,7 @@ const noopLogger: VendureLogger = {
  *
  * @example
  * ```ts
- * import { Logger } from '\@vendure/core';
+ * import { Logger } from '\@bb-vendure/core';
  *
  * Logger.info(`Some log message`, 'My Vendure Plugin');
  * ```
@@ -96,7 +96,7 @@ const noopLogger: VendureLogger = {
  *
  * @example
  * ```ts
- * import { VendureLogger } from '\@vendure/core';
+ * import { VendureLogger } from '\@bb-vendure/core';
  * import fs from 'fs';
  *
  * // A simple custom logger which writes all logs to a file.

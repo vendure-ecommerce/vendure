@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## JobQueueStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/job-queue/job-queue-strategy.ts" sourceLine="24" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/job-queue/job-queue-strategy.ts" sourceLine="24" packageName="@bb-vendure/core" />
 
 Defines how the jobs in the <a href='/reference/typescript-api/job-queue/job-queue-service#jobqueueservice'>JobQueueService</a> are persisted and
 accessed. Custom strategies can be defined to make use of external

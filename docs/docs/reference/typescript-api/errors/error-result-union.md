@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ErrorResultUnion
 
-<GenerationInfo sourceFile="packages/core/src/common/error/error-result.ts" sourceLine="44" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/common/error/error-result.ts" sourceLine="44" packageName="@bb-vendure/core" />
 
 Used to construct a TypeScript return type for a query or mutation which, in the GraphQL schema,
 returns a union type composed of a success result (e.g. Order) plus one or more ErrorResult

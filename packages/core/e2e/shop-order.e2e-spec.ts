@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { pick } from '@vendure/common/lib/pick';
+import { pick } from '@bb-vendure/common/lib/pick';
 import {
     Asset,
     defaultShippingCalculator,
     defaultShippingEligibilityChecker,
     manualFulfillmentHandler,
     mergeConfig,
-} from '@vendure/core';
-import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
+} from '@bb-vendure/core';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@bb-vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';

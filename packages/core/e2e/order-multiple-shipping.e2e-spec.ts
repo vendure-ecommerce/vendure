@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { summate } from '@vendure/common/lib/shared-utils';
+import { summate } from '@bb-vendure/common/lib/shared-utils';
 import {
     mergeConfig,
     RequestContext,
@@ -12,8 +12,8 @@ import {
     defaultShippingEligibilityChecker,
     OrderService,
     RequestContextService,
-} from '@vendure/core';
-import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
+} from '@bb-vendure/core';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@bb-vendure/testing';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
@@ -39,7 +39,7 @@ import {
     SET_SHIPPING_METHOD,
 } from './graphql/shop-definitions';
 
-declare module '@vendure/core/dist/entity/custom-entity-fields' {
+declare module '@bb-vendure/core/dist/entity/custom-entity-fields' {
     interface CustomShippingMethodFields {
         minPrice: number;
         maxPrice: number;

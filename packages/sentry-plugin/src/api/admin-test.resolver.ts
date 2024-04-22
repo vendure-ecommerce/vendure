@@ -1,5 +1,5 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { Allow, Permission, UserInputError } from '@vendure/core';
+import { Allow, Permission, UserInputError } from '@bb-vendure/core';
 
 import { SentryService } from '../sentry.service';
 import { ErrorTestService } from './error-test.service';

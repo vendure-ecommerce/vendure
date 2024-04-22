@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { omit } from '@vendure/common/lib/omit';
-import { pick } from '@vendure/common/lib/pick';
-import { mergeConfig } from '@vendure/core';
-import { createTestEnvironment } from '@vendure/testing';
+import { omit } from '@bb-vendure/common/lib/omit';
+import { pick } from '@bb-vendure/common/lib/pick';
+import { mergeConfig } from '@bb-vendure/core';
+import { createTestEnvironment } from '@bb-vendure/testing';
 import fs from 'fs-extra';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';

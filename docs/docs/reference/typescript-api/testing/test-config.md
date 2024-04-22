@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## testConfig
 
-<GenerationInfo sourceFile="packages/testing/src/config/test-config.ts" sourceLine="42" packageName="@vendure/testing" />
+<GenerationInfo sourceFile="packages/testing/src/config/test-config.ts" sourceLine="42" packageName="@bb-vendure/testing" />
 
 A <a href='/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a> object used for e2e tests. This configuration uses sqljs as the database
 and configures some special settings which are optimized for e2e tests:

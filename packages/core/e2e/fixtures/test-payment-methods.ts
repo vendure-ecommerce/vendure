@@ -1,4 +1,4 @@
-import { Payment, PaymentMethodHandler, TransactionalConnection } from '@vendure/core';
+import { Payment, PaymentMethodHandler, TransactionalConnection } from '@bb-vendure/core';
 import { vi } from 'vitest';
 
 import { LanguageCode } from '../graphql/generated-e2e-admin-types';

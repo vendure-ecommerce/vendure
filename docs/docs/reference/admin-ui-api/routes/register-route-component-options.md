@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## RegisterRouteComponentOptions
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/register-route-component.ts" sourceLine="19" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/register-route-component.ts" sourceLine="19" packageName="@bb-vendure/admin-ui" />
 
 Configuration for a route component.
 

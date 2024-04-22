@@ -1,4 +1,4 @@
-import { VendureLogger } from '@vendure/core';
+import { VendureLogger } from '@bb-vendure/core';
 
 /**
  * @description
@@ -12,7 +12,7 @@ import { VendureLogger } from '@vendure/core';
  * @example
  * ```ts
  * // e2e test example
- * import { createTestEnvironment, TestingLogger } from '\@vendure/testing';
+ * import { createTestEnvironment, TestingLogger } from '\@bb-vendure/testing';
  *
  * const testingLogger = new TestingLogger(() => jest.fn());
  *
@@ -37,8 +37,8 @@ import { VendureLogger } from '@vendure/core';
  * ```ts
  * // unit test example
  * import { Test } from '\@nestjs/testing';
- * import { Logger } from '\@vendure/core';
- * import { TestingLogger } from '\@vendure/testing';
+ * import { Logger } from '\@bb-vendure/core';
+ * import { TestingLogger } from '\@bb-vendure/testing';
  *
  * beforeEach(async () => {
  *   const moduleRef = await Test.createTestingModule({

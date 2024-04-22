@@ -1,5 +1,5 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { MutationImportProductsArgs, Permission } from '@vendure/common/lib/generated-types';
+import { MutationImportProductsArgs, Permission } from '@bb-vendure/common/lib/generated-types';
 
 import { Importer } from '../../../data-import/providers/importer/importer';
 import { RequestContext } from '../../common/request-context';

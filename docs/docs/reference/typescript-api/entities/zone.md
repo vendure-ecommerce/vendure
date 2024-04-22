@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Zone
 
-<GenerationInfo sourceFile="packages/core/src/entity/zone/zone.entity.ts" sourceLine="19" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/zone/zone.entity.ts" sourceLine="19" packageName="@bb-vendure/core" />
 
 A Zone is a grouping of one or more <a href='/reference/typescript-api/entities/country#country'>Country</a> entities. It is used for
 calculating applicable shipping and taxes.

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## registerReactDataTableComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/register-react-data-table-component.ts" sourceLine="90" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/register-react-data-table-component.ts" sourceLine="90" packageName="@bb-vendure/admin-ui" />
 
 Registers a React component to be rendered in a data table in the given location.
 The component will receive the `rowItem` prop which is the data object for the row,
@@ -20,7 +20,7 @@ e.g. the `Product` object if used in the `product-list` table.
 *Example*
 
 ```ts title="components/SlugWithLink.tsx"
-import { ReactDataTableComponentProps } from '@vendure/admin-ui/react';
+import { ReactDataTableComponentProps } from '@bb-vendure/admin-ui/react';
 import React from 'react';
 
 export function SlugWithLink({ rowItem }: ReactDataTableComponentProps<{ slug: string }>) {
@@ -33,7 +33,7 @@ export function SlugWithLink({ rowItem }: ReactDataTableComponentProps<{ slug: s
 ```
 
 ```ts title="providers.ts"
-import { registerReactDataTableComponent } from '@vendure/admin-ui/react';
+import { registerReactDataTableComponent } from '@bb-vendure/admin-ui/react';
 import { SlugWithLink } from './components/SlugWithLink';
 
 export default [

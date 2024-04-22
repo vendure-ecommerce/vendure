@@ -1,4 +1,4 @@
-import { SearchInput } from '@vendure/common/lib/generated-types';
+import { SearchInput } from '@bb-vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { VendureEvent } from '../vendure-event';

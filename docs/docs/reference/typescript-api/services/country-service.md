@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CountryService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/country.service.ts" sourceLine="33" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/country.service.ts" sourceLine="33" packageName="@bb-vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/country#country'>Country</a> entities.
 

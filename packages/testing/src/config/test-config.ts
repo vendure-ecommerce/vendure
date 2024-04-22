@@ -1,4 +1,4 @@
-import { ADMIN_API_PATH, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
+import { ADMIN_API_PATH, SHOP_API_PATH } from '@bb-vendure/common/lib/shared-constants';
 import {
     DefaultAssetNamingStrategy,
     defaultConfig,
@@ -6,7 +6,7 @@ import {
     mergeConfig,
     NoopLogger,
     VendureConfig,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 
 import { TestingAssetPreviewStrategy } from './testing-asset-preview-strategy';
 import { TestingAssetStorageStrategy } from './testing-asset-storage-strategy';

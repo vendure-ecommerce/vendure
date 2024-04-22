@@ -4,7 +4,7 @@ import {
     createTestEnvironment,
     E2E_DEFAULT_CHANNEL_TOKEN,
     ErrorResultGuard,
-} from '@vendure/testing';
+} from '@bb-vendure/testing';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 

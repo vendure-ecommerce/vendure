@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Money
 
-<GenerationInfo sourceFile="packages/core/src/entity/money.decorator.ts" sourceLine="26" packageName="@vendure/core" since="2.0.0" />
+<GenerationInfo sourceFile="packages/core/src/entity/money.decorator.ts" sourceLine="26" packageName="@bb-vendure/core" since="2.0.0" />
 
 Use this decorator for any entity field that is storing a monetary value.
 This allows the column type to be defined by the configured <a href='/reference/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a>.

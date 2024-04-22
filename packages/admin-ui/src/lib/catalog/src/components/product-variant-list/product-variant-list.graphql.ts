@@ -1,4 +1,4 @@
-import { ASSET_FRAGMENT } from '@vendure/admin-ui/core';
+import { ASSET_FRAGMENT } from '@bb-vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
 
 const PRODUCT_VARIANT_LIST_QUERY_PRODUCT_VARIANT_FRAGMENT = gql`

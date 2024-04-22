@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## StockMovement
 
-<GenerationInfo sourceFile="packages/core/src/entity/stock-movement/stock-movement.entity.ts" sourceLine="19" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/stock-movement/stock-movement.entity.ts" sourceLine="19" packageName="@bb-vendure/core" />
 
 A StockMovement is created whenever stock of a particular ProductVariant goes in
 or out.
@@ -70,7 +70,7 @@ class StockMovement extends VendureEntity {
 
 ## Allocation
 
-<GenerationInfo sourceFile="packages/core/src/entity/stock-movement/allocation.entity.ts" sourceLine="17" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/stock-movement/allocation.entity.ts" sourceLine="17" packageName="@bb-vendure/core" />
 
 An Allocation is created for each ProductVariant in an Order when the checkout is completed
 (as configured by the <a href='/reference/typescript-api/orders/stock-allocation-strategy#stockallocationstrategy'>StockAllocationStrategy</a>. This prevents stock being sold twice.
@@ -112,7 +112,7 @@ class Allocation extends StockMovement {
 
 ## Cancellation
 
-<GenerationInfo sourceFile="packages/core/src/entity/stock-movement/cancellation.entity.ts" sourceLine="16" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/stock-movement/cancellation.entity.ts" sourceLine="16" packageName="@bb-vendure/core" />
 
 A Cancellation is created when OrderItems from a fulfilled Order are cancelled.
 
@@ -152,7 +152,7 @@ class Cancellation extends StockMovement {
 
 ## Release
 
-<GenerationInfo sourceFile="packages/core/src/entity/stock-movement/release.entity.ts" sourceLine="17" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/stock-movement/release.entity.ts" sourceLine="17" packageName="@bb-vendure/core" />
 
 A Release is created when OrderItems which have been allocated (but not yet fulfilled)
 are cancelled.
@@ -193,7 +193,7 @@ class Release extends StockMovement {
 
 ## Sale
 
-<GenerationInfo sourceFile="packages/core/src/entity/stock-movement/sale.entity.ts" sourceLine="16" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/stock-movement/sale.entity.ts" sourceLine="16" packageName="@bb-vendure/core" />
 
 A Sale is created when OrderItems are fulfilled.
 
@@ -233,7 +233,7 @@ class Sale extends StockMovement {
 
 ## StockAdjustment
 
-<GenerationInfo sourceFile="packages/core/src/entity/stock-movement/stock-adjustment.entity.ts" sourceLine="14" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/stock-movement/stock-adjustment.entity.ts" sourceLine="14" packageName="@bb-vendure/core" />
 
 A StockAdjustment is created when the `stockOnHand` level of a ProductVariant is manually adjusted.
 

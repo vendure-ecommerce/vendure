@@ -8,7 +8,7 @@ import {
     ItemOf,
     LogicalOperator,
     NotificationService,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { combineLatest, from, lastValueFrom, Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 

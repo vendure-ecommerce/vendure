@@ -42,7 +42,7 @@ async function addUiExtensions(options?: AddUiExtensionsOptions): Promise<CliCom
         const version = packageJson.determineVendureVersion();
         await packageJson.installPackages([
             {
-                pkg: '@vendure/ui-devkit',
+                pkg: '@bb-vendure/ui-devkit',
                 isDevDependency: true,
                 version,
             },

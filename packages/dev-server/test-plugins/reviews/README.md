@@ -12,7 +12,7 @@ This plugin demonstrates many capabilities of the Vendure plugin system:
 * Modifying the VendureConfig to add CustomFields (see [./reviews-plugin.ts](./reviews-plugin.ts))
 * Extending the Admin UI with custom UI components for those CustomFields as well as list and details views for managing reviews.
 * Adding a custom widget to the Admin UI dashboard  
-* End-to-end testing of the GraphQL extensions & business logic with Vitest & the `@vendure/testing` package.
+* End-to-end testing of the GraphQL extensions & business logic with Vitest & the `@bb-vendure/testing` package.
 
 ## Usage
 

@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
-import { Permission } from '@vendure/common/lib/generated-shop-types';
-import { Allow, InternalServerError, VendurePlugin } from '@vendure/core';
+import { Permission } from '@bb-vendure/common/lib/generated-shop-types';
+import { Allow, InternalServerError, VendurePlugin } from '@bb-vendure/core';
 
 @Controller('test')
 export class TestController {

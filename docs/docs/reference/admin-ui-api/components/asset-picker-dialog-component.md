@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AssetPickerDialogComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/asset-picker-dialog/asset-picker-dialog.component.ts" sourceLine="52" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/asset-picker-dialog/asset-picker-dialog.component.ts" sourceLine="52" packageName="@bb-vendure/admin-ui" />
 
 A dialog which allows the creation and selection of assets.
 

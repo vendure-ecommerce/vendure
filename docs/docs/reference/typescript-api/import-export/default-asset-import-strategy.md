@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DefaultAssetImportStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/asset-import-strategy/default-asset-import-strategy.ts" sourceLine="50" packageName="@vendure/core" since="1.7.0" />
+<GenerationInfo sourceFile="packages/core/src/config/asset-import-strategy/default-asset-import-strategy.ts" sourceLine="50" packageName="@bb-vendure/core" since="1.7.0" />
 
 The DefaultAssetImportStrategy is able to import paths from the local filesystem (taking into account the
 `importExportOptions.importAssetsDir` setting) as well as remote http/https urls.
@@ -34,7 +34,10 @@ class DefaultAssetImportStrategy implements AssetImportStrategy {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(options?: {             retryDelayMs: number;             retryCount: number;         }) => DefaultAssetImportStrategy`}   />
+<MemberInfo kind="method" type={`(options?: {
+             retryDelayMs: number;
+             retryCount: number;
+         }) => DefaultAssetImportStrategy`}   />
 
 
 ### init

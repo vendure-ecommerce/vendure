@@ -11,7 +11,7 @@ import {
     ModalService,
     NotificationService,
     TypedBaseListComponent,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
 import { BehaviorSubject, combineLatest, EMPTY, Observable, of } from 'rxjs';
 import { distinctUntilChanged, map, mapTo, switchMap } from 'rxjs/operators';

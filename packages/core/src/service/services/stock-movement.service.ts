@@ -4,8 +4,8 @@ import {
     OrderLineInput,
     StockLevelInput,
     StockMovementListOptions,
-} from '@vendure/common/lib/generated-types';
-import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+} from '@bb-vendure/common/lib/generated-types';
+import { ID, PaginatedList } from '@bb-vendure/common/lib/shared-types';
 import { In } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';

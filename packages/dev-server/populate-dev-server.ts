@@ -1,8 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="../core/typings.d.ts" />
-import { bootstrap, defaultConfig, JobQueueService, Logger, mergeConfig } from '@vendure/core';
-import { populate } from '@vendure/core/cli';
-import { clearAllTables, populateCustomers } from '@vendure/testing';
+import { bootstrap, defaultConfig, JobQueueService, Logger, mergeConfig } from '@bb-vendure/core';
+import { populate } from '@bb-vendure/core/cli';
+import { clearAllTables, populateCustomers } from '@bb-vendure/testing';
 import path from 'path';
 
 import { initialData } from '../core/mock-data/data-sources/initial-data';

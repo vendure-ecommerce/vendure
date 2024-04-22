@@ -6,7 +6,7 @@ weight: 5
 You can add your own tabs to any of the Admin UI's list or detail pages using the [registerPageTab](/reference/admin-ui-api/tabs/register-page-tab/) function. For example, to add a new tab to the product detail page for displaying product reviews:
 
 ```ts title="src/plugins/reviews/ui/providers.ts"
-import { registerPageTab } from '@vendure/admin-ui/core';
+import { registerPageTab } from '@bb-vendure/admin-ui/core';
 
 import { ReviewListComponent } from './components/review-list/review-list.component';
 

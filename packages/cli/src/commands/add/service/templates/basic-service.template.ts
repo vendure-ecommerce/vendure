@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ID, Product, RequestContext, TransactionalConnection } from '@vendure/core';
+import { ID, Product, RequestContext, TransactionalConnection } from '@bb-vendure/core';
 
 @Injectable()
 export class BasicServiceTemplate {

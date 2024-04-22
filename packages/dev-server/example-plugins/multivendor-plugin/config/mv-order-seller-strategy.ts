@@ -17,12 +17,12 @@ import {
     SplitOrderContents,
     Surcharge,
     TransactionalConnection,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 
 import { CONNECTED_PAYMENT_METHOD_CODE, MULTIVENDOR_PLUGIN_OPTIONS } from '../constants';
 import { MultivendorPluginOptions } from '../types';
 
-declare module '@vendure/core/dist/entity/custom-entity-fields' {
+declare module '@bb-vendure/core/dist/entity/custom-entity-fields' {
     interface CustomSellerFields {
         connectedAccountId: string;
     }

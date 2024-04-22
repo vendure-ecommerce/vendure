@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { CustomerFragment } from '@vendure/admin-ui/core';
+import { CustomerFragment } from '@bb-vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-customer-status-label',

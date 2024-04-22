@@ -1,5 +1,5 @@
 import { log, spinner } from '@clack/prompts';
-import { revertLastMigration } from '@vendure/core';
+import { revertLastMigration } from '@bb-vendure/core';
 
 import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
 import { analyzeProject } from '../../../shared/shared-prompts';

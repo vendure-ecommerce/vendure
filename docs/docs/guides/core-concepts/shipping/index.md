@@ -68,7 +68,7 @@ Custom checkers can be created by defining a [`ShippingEligibilityChecker` objec
 For example, you could create a checker which works with a custom "weight" field to only apply to orders below a certain weight:
 
 ```ts title="src/shipping-methods/max-weight-checker.ts"
-import { LanguageCode, ShippingEligibilityChecker } from '@vendure/core';
+import { LanguageCode, ShippingEligibilityChecker } from '@bb-vendure/core';
 
 export const maxWeightChecker = new ShippingEligibilityChecker({
     code: 'max-weight-checker',
@@ -109,7 +109,7 @@ export const maxWeightChecker = new ShippingEligibilityChecker({
 Custom checkers are then passed into the VendureConfig [ShippingOptions](/reference/typescript-api/shipping/shipping-options/#shippingeligibilitycheckers) to make them available when setting up new ShippingMethods:
 
 ```ts title="src/vendure-config.ts"
-import { defaultShippingEligibilityChecker, VendureConfig } from '@vendure/core';
+import { defaultShippingEligibilityChecker, VendureConfig } from '@bb-vendure/core';
 import { maxWeightChecker } from './shipping-methods/max-weight-checker';
 
 export const config: VendureConfig = {
@@ -130,7 +130,7 @@ Custom calculators can be created by defining a [`ShippingCalculator` object](/r
 For example, you could create a calculator which consults an external data source (e.g. a spreadsheet, database or 3rd-party API) to find out the cost and estimated delivery time for the order.
 
 ```ts title="src/shipping-methods/external-shipping-calculator.ts"
-import { LanguageCode, ShippingCalculator } from '@vendure/core';
+import { LanguageCode, ShippingCalculator } from '@bb-vendure/core';
 import { shippingDataSource } from './shipping-data-source';
 
 export const externalShippingCalculator = new ShippingCalculator({
@@ -166,7 +166,7 @@ export const externalShippingCalculator = new ShippingCalculator({
 Custom calculators are then passed into the VendureConfig [ShippingOptions](/reference/typescript-api/shipping/shipping-options/#shippingcalculators) to make them available when setting up new ShippingMethods:
 
 ```ts
-import { defaultShippingCalculator, VendureConfig } from '@vendure/core';
+import { defaultShippingCalculator, VendureConfig } from '@bb-vendure/core';
 import { externalShippingCalculator } from './external-shipping-calculator';
 
 export const config: VendureConfig = {
@@ -209,7 +209,7 @@ Like Orders, Fulfillments are governed by a [finite state machine](/reference/ty
 These states cover the typical workflow for fulfilling orders. However, it is possible to customize the fulfillment workflow by defining a [FulfillmentProcess](/reference/typescript-api/fulfillment/fulfillment-process) and passing it to your VendureConfig:
 
 ```ts title="src/vendure-config.ts"
-import { FulfillmentProcess, VendureConfig } from '@vendure/core';
+import { FulfillmentProcess, VendureConfig } from '@bb-vendure/core';
 import { myCustomFulfillmentProcess } from './my-custom-fulfillment-process';
 
 export const config: VendureConfig = {

@@ -1,5 +1,5 @@
-import type { CustomFieldConfig } from '@vendure/core';
-import { Asset } from '@vendure/core';
+import type { CustomFieldConfig } from '@bb-vendure/core';
+import { Asset } from '@bb-vendure/core';
 
 export const productVariantCustomFields: CustomFieldConfig[] = [
   // {

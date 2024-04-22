@@ -1,4 +1,4 @@
-import { pick } from '@vendure/common/lib/pick';
+import { pick } from '@bb-vendure/common/lib/pick';
 
 import * as Codegen from '../../common/generated-types';
 import { SortOrder } from '../../common/generated-types';

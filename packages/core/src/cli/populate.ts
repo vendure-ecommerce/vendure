@@ -24,8 +24,8 @@ const loggerCtx = 'Populate';
  *
  * @example
  * ```ts
- * import { bootstrap } from '\@vendure/core';
- * import { populate } from '\@vendure/core/cli';
+ * import { bootstrap } from '\@bb-vendure/core';
+ * import { populate } from '\@bb-vendure/core/cli';
  * import { config } from './vendure-config.ts'
  * import { initialData } from './my-initial-data.ts';
  *
@@ -52,14 +52,14 @@ export async function populate<T extends INestApplicationContext>(
     bootstrapFn: () => Promise<T | undefined>,
     initialDataPathOrObject: string | object,
     productsCsvPath?: string,
-    channelOrToken?: string | import('@vendure/core').Channel,
+    channelOrToken?: string | import('@bb-vendure/core').Channel,
 ): Promise<T> {
     const app = await bootstrapFn();
     if (!app) {
         throw new Error('Could not bootstrap the Vendure app');
     }
-    let channel: import('@vendure/core').Channel | undefined;
-    const { ChannelService, Channel, Logger } = await import('@vendure/core');
+    let channel: import('@bb-vendure/core').Channel | undefined;
+    const { ChannelService, Channel, Logger } = await import('@bb-vendure/core');
     if (typeof channelOrToken === 'string') {
         channel = await app.get(ChannelService).getChannelFromToken(channelOrToken);
         if (!channel) {
@@ -71,7 +71,7 @@ export async function populate<T extends INestApplicationContext>(
     } else if (channelOrToken instanceof Channel) {
         channel = channelOrToken;
     }
-    const initialData: import('@vendure/core').InitialData =
+    const initialData: import('@bb-vendure/core').InitialData =
         typeof initialDataPathOrObject === 'string'
             ? require(initialDataPathOrObject)
             : initialDataPathOrObject;
@@ -105,10 +105,10 @@ export async function populate<T extends INestApplicationContext>(
 
 export async function populateInitialData(
     app: INestApplicationContext,
-    initialData: import('@vendure/core').InitialData,
-    channel?: import('@vendure/core').Channel,
+    initialData: import('@bb-vendure/core').InitialData,
+    channel?: import('@bb-vendure/core').Channel,
 ) {
-    const { Populator, Logger } = await import('@vendure/core');
+    const { Populator, Logger } = await import('@bb-vendure/core');
     const populator = app.get(Populator);
     try {
         await populator.populateInitialData(initialData, channel);
@@ -120,10 +120,10 @@ export async function populateInitialData(
 
 export async function populateCollections(
     app: INestApplicationContext,
-    initialData: import('@vendure/core').InitialData,
-    channel?: import('@vendure/core').Channel,
+    initialData: import('@bb-vendure/core').InitialData,
+    channel?: import('@bb-vendure/core').Channel,
 ) {
-    const { Populator, Logger } = await import('@vendure/core');
+    const { Populator, Logger } = await import('@bb-vendure/core');
     const populator = app.get(Populator);
     try {
         if (initialData.collections.length) {
@@ -138,10 +138,10 @@ export async function populateCollections(
 export async function importProductsFromCsv(
     app: INestApplicationContext,
     productsCsvPath: string,
-    languageCode: import('@vendure/core').LanguageCode,
-    channel?: import('@vendure/core').Channel,
-): Promise<import('@vendure/core').ImportProgress> {
-    const { Importer, RequestContextService } = await import('@vendure/core');
+    languageCode: import('@bb-vendure/core').LanguageCode,
+    channel?: import('@bb-vendure/core').Channel,
+): Promise<import('@bb-vendure/core').ImportProgress> {
+    const { Importer, RequestContextService } = await import('@bb-vendure/core');
     const importer = app.get(Importer);
     const requestContextService = app.get(RequestContextService);
     const productData = await fs.readFile(productsCsvPath, 'utf-8');

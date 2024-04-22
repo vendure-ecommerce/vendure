@@ -50,7 +50,7 @@ export function updateAdminUiPluginInit(
         }
 
         addImportsToFile(vendureConfig.sourceFile, {
-            moduleSpecifier: '@vendure/ui-devkit/compiler',
+            moduleSpecifier: '@bb-vendure/ui-devkit/compiler',
             namedImports: ['compileUiExtensions'],
             order: 0,
         });

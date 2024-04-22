@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DataService
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/data/providers/data.service.ts" sourceLine="33" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/data/providers/data.service.ts" sourceLine="33" packageName="@bb-vendure/admin-ui" />
 
 Used to interact with the Admin API via GraphQL queries. Internally this service uses the
 Apollo Client, which means it maintains a normalized entity cache. For this reason, it is
@@ -74,7 +74,7 @@ const result$ = this.dataService.mutate(gql`
 
 ## QueryResult
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/data/query-result.ts" sourceLine="19" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/data/query-result.ts" sourceLine="19" packageName="@bb-vendure/admin-ui" />
 
 This class wraps the Apollo Angular QueryRef object and exposes some getters
 for convenience.

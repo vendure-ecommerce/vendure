@@ -21,7 +21,7 @@ Steps to reproduce the behavior:
 A clear and concise description of what you expected to happen.
 
 **Environment (please complete the following information):**
- - @vendure/core version:
+ - @bb-vendure/core version:
  - Nodejs version
  - Database (mysql/postgres etc):
 

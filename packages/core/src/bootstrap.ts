@@ -3,8 +3,8 @@ import { NestApplicationContextOptions } from '@nestjs/common/interfaces/nest-ap
 import { NestApplicationOptions } from '@nestjs/common/interfaces/nest-application-options.interface';
 import { NestFactory } from '@nestjs/core';
 import { getConnectionToken } from '@nestjs/typeorm';
-import { DEFAULT_COOKIE_NAME } from '@vendure/common/lib/shared-constants';
-import { Type } from '@vendure/common/lib/shared-types';
+import { DEFAULT_COOKIE_NAME } from '@bb-vendure/common/lib/shared-constants';
+import { Type } from '@bb-vendure/common/lib/shared-types';
 import cookieSession = require('cookie-session');
 import { satisfies } from 'semver';
 import { Connection, DataSourceOptions, EntitySubscriberInterface } from 'typeorm';
@@ -69,7 +69,7 @@ export interface BootstrapWorkerOptions {
  *
  * @example
  * ```ts
- * import { bootstrap } from '\@vendure/core';
+ * import { bootstrap } from '\@bb-vendure/core';
  * import { config } from './vendure-config';
  *
  * bootstrap(config).catch(err => {
@@ -85,7 +85,7 @@ export interface BootstrapWorkerOptions {
  * pass the `snapshot` option:
  *
  * ```ts
- * import { bootstrap } from '\@vendure/core';
+ * import { bootstrap } from '\@bb-vendure/core';
  * import { config } from './vendure-config';
  *
  * bootstrap(config, {
@@ -152,7 +152,7 @@ export async function bootstrap(
  *
  * @example
  * ```ts
- * import { bootstrapWorker } from '\@vendure/core';
+ * import { bootstrapWorker } from '\@bb-vendure/core';
  * import { config } from './vendure-config';
  *
  * bootstrapWorker(config)

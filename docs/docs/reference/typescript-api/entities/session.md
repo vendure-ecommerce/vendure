@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Session
 
-<GenerationInfo sourceFile="packages/core/src/entity/session/session.entity.ts" sourceLine="18" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/session/session.entity.ts" sourceLine="18" packageName="@bb-vendure/core" />
 
 A Session is created when a user makes a request to restricted API operations. A Session can be an <a href='/reference/typescript-api/entities/anonymous-session#anonymoussession'>AnonymousSession</a>
 in the case of un-authenticated users, otherwise it is an <a href='/reference/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a>.

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Customer, DeepPartial, Product, ProductVariant, VendureEntity } from '@vendure/core';
+import { Customer, DeepPartial, Product, ProductVariant, VendureEntity } from '@bb-vendure/core';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 import { ReviewState } from '../types';

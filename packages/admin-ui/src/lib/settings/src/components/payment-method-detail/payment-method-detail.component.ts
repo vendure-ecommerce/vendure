@@ -21,8 +21,8 @@ import {
     toConfigurableOperationInput,
     TypedBaseDetailComponent,
     UpdatePaymentMethodInput,
-} from '@vendure/admin-ui/core';
-import { normalizeString } from '@vendure/common/lib/normalize-string';
+} from '@bb-vendure/admin-ui/core';
+import { normalizeString } from '@bb-vendure/common/lib/normalize-string';
 import { gql } from 'apollo-angular';
 import { combineLatest } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';

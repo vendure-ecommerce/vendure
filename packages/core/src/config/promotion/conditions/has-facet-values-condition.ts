@@ -1,4 +1,4 @@
-import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { LanguageCode } from '@bb-vendure/common/lib/generated-types';
 
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { PromotionCondition } from '../promotion-condition';

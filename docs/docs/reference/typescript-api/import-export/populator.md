@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Populator
 
-<GenerationInfo sourceFile="packages/core/src/data-import/providers/populator/populator.ts" sourceLine="46" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/data-import/providers/populator/populator.ts" sourceLine="46" packageName="@bb-vendure/core" />
 
 Responsible for populating the database with <a href='/reference/typescript-api/import-export/initial-data#initialdata'>InitialData</a>, i.e. non-product data such as countries, tax rates,
 shipping methods, payment methods & roles.

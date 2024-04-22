@@ -1,7 +1,7 @@
 import * as path from 'path';
-import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
-import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
-import { DefaultJobQueuePlugin, dummyPaymentHandler, VendureConfig } from '@vendure/core';
+import { compileUiExtensions } from '@bb-vendure/ui-devkit/compiler';
+import { AdminUiPlugin } from '@bb-vendure/admin-ui-plugin';
+import { DefaultJobQueuePlugin, dummyPaymentHandler, VendureConfig } from '@bb-vendure/core';
 import { TestPlugin } from './plugins/test-plugin/test.plugin';
 
 export const config: VendureConfig = {

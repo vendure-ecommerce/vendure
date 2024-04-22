@@ -9,7 +9,7 @@ import { NavBuilderService } from '../providers/nav-builder/nav-builder.service'
  *
  * @example
  * ```ts title="providers.ts"
- * import { addActionBarDropdownMenuItem } from '\@vendure/admin-ui/core';
+ * import { addActionBarDropdownMenuItem } from '\@bb-vendure/admin-ui/core';
  *
  * export default [
  *     addActionBarDropdownMenuItem({

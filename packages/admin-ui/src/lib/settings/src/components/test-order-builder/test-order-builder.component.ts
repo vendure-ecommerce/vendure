@@ -4,7 +4,7 @@ import {
     DataService,
     LocalStorageService,
     ProductSelectorSearchQuery,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 
 type SearchItem = ProductSelectorSearchQuery['search']['items'][number];
 

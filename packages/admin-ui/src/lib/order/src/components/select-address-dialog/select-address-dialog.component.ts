@@ -8,8 +8,8 @@ import {
     GetAvailableCountriesQuery,
     GetCustomerAddressesDocument,
     OrderAddressFragment,
-} from '@vendure/admin-ui/core';
-import { pick } from '@vendure/common/lib/pick';
+} from '@bb-vendure/admin-ui/core';
+import { pick } from '@bb-vendure/common/lib/pick';
 import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 

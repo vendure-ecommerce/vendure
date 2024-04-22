@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigurableOperationInput, OrderLineInput } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
-import { isObject } from '@vendure/common/lib/shared-utils';
-import { unique } from '@vendure/common/lib/unique';
+import { ConfigurableOperationInput, OrderLineInput } from '@bb-vendure/common/lib/generated-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
+import { isObject } from '@bb-vendure/common/lib/shared-utils';
+import { unique } from '@bb-vendure/common/lib/unique';
 import { In, Not } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';

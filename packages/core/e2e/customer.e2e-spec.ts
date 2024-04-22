@@ -1,15 +1,15 @@
 import { OnModuleInit } from '@nestjs/common';
-import { HistoryEntryType } from '@vendure/common/lib/generated-types';
-import { omit } from '@vendure/common/lib/omit';
-import { pick } from '@vendure/common/lib/pick';
+import { HistoryEntryType } from '@bb-vendure/common/lib/generated-types';
+import { omit } from '@bb-vendure/common/lib/omit';
+import { pick } from '@bb-vendure/common/lib/pick';
 import {
     AccountRegistrationEvent,
     EventBus,
     EventBusModule,
     mergeConfig,
     VendurePlugin,
-} from '@vendure/core';
-import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
+} from '@bb-vendure/core';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@bb-vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 import { vi } from 'vitest';

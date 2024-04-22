@@ -4,8 +4,8 @@ import {
     manualFulfillmentHandler,
     ShippingCalculator,
     ShippingEligibilityChecker,
-} from '@vendure/core';
-import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
+} from '@bb-vendure/core';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@bb-vendure/testing';
 import path from 'path';
 import { vi } from 'vitest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';

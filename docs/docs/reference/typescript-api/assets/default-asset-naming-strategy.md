@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DefaultAssetNamingStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/asset-naming-strategy/default-asset-naming-strategy.ts" sourceLine="15" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/asset-naming-strategy/default-asset-naming-strategy.ts" sourceLine="15" packageName="@bb-vendure/core" />
 
 The default strategy normalizes the file names to remove unwanted characters and
 in the case of conflicts, increments a counter suffix.

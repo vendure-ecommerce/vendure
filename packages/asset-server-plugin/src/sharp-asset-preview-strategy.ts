@@ -1,5 +1,5 @@
-import { AssetType } from '@vendure/common/lib/generated-types';
-import { AssetPreviewStrategy, getAssetType, Logger, RequestContext } from '@vendure/core';
+import { AssetType } from '@bb-vendure/common/lib/generated-types';
+import { AssetPreviewStrategy, getAssetType, Logger, RequestContext } from '@bb-vendure/core';
 import path from 'path';
 import sharp from 'sharp';
 

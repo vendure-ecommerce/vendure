@@ -17,7 +17,7 @@ export const DEFAULT_AUTH_TOKEN_HEADER_KEY = 'vendure-auth-token';
 export const DEFAULT_COOKIE_NAME = 'session';
 export const DEFAULT_CHANNEL_TOKEN_KEY = 'vendure-token';
 
-// An environment variable which is set when the @vendure/create
+// An environment variable which is set when the @bb-vendure/create
 // script is run. Can be used to modify normal behaviour
 // to fit with the initial create task.
 export type CREATING_VENDURE_APP = 'CREATING_VENDURE_APP';

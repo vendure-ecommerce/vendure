@@ -1,6 +1,6 @@
 import { Test } from '@nestjs/testing';
-import { AdjustmentType, LanguageCode, TaxLine } from '@vendure/common/lib/generated-types';
-import { summate } from '@vendure/common/lib/shared-utils';
+import { AdjustmentType, LanguageCode, TaxLine } from '@bb-vendure/common/lib/generated-types';
+import { summate } from '@bb-vendure/common/lib/shared-utils';
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import { RequestContext } from '../../../api/common/request-context';

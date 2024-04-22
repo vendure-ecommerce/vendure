@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## registerInitializer
 
-<GenerationInfo sourceFile="packages/testing/src/initializers/initializers.ts" sourceLine="16" packageName="@vendure/testing" />
+<GenerationInfo sourceFile="packages/testing/src/initializers/initializers.ts" sourceLine="16" packageName="@bb-vendure/testing" />
 
 Registers a <a href='/reference/typescript-api/testing/test-db-initializer#testdbinitializer'>TestDbInitializer</a> for the given database type. Should be called before invoking
 <a href='/reference/typescript-api/testing/create-test-environment#createtestenvironment'>createTestEnvironment</a>.

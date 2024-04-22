@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { GetShippingMethodListDocument, TypedBaseListComponent } from '@vendure/admin-ui/core';
+import { GetShippingMethodListDocument, TypedBaseListComponent } from '@bb-vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
 
 export const GET_SHIPPING_METHOD_LIST = gql`

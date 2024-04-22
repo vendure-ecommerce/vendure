@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## VendureWorker
 
-<GenerationInfo sourceFile="packages/core/src/worker/vendure-worker.ts" sourceLine="13" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/worker/vendure-worker.ts" sourceLine="13" packageName="@bb-vendure/core" />
 
 This object is created by calling the <a href='/reference/typescript-api/worker/bootstrap-worker#bootstrapworker'>bootstrapWorker</a> function.
 

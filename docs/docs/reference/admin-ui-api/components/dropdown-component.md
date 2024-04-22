@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DropdownComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/dropdown/dropdown.component.ts" sourceLine="28" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/dropdown/dropdown.component.ts" sourceLine="28" packageName="@bb-vendure/admin-ui" />
 
 Used for building dropdown menus.
 

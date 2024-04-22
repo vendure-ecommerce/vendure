@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AssetPreviewPipe
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/pipes/asset-preview.pipe.ts" sourceLine="19" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/pipes/asset-preview.pipe.ts" sourceLine="19" packageName="@bb-vendure/admin-ui" />
 
 Given an Asset object (an object with `preview` and optionally `focalPoint` properties), this pipe
 returns a string with query parameters designed to work with the image resize capabilities of the

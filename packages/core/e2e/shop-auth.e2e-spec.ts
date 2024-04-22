@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { OnModuleInit } from '@nestjs/common';
-import { ErrorCode, RegisterCustomerInput } from '@vendure/common/lib/generated-shop-types';
-import { pick } from '@vendure/common/lib/pick';
+import { ErrorCode, RegisterCustomerInput } from '@bb-vendure/common/lib/generated-shop-types';
+import { pick } from '@bb-vendure/common/lib/pick';
 import {
     AccountRegistrationEvent,
     EventBus,
@@ -13,8 +13,8 @@ import {
     PasswordValidationStrategy,
     RequestContext,
     VendurePlugin,
-} from '@vendure/core';
-import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
+} from '@bb-vendure/core';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@bb-vendure/testing';
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import path from 'path';

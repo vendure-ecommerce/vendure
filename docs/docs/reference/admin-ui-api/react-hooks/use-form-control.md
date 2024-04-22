@@ -11,14 +11,14 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## useFormControl
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-hooks/use-form-control.ts" sourceLine="31" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-hooks/use-form-control.ts" sourceLine="31" packageName="@bb-vendure/admin-ui" />
 
 Provides access to the current FormControl value and a method to update the value.
 
 *Example*
 
 ```ts
-import { useFormControl, ReactFormInputProps } from '@vendure/admin-ui/react';
+import { useFormControl, ReactFormInputProps } from '@bb-vendure/admin-ui/react';
 import React from 'react';
 
 export function ReactNumberInput({ readonly }: ReactFormInputProps) {

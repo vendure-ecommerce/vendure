@@ -2,9 +2,9 @@ import {
     CustomProductVariantFields,
     CustomFulfillmentFields,
     CustomShippingMethodFields,
-} from '@vendure/core/dist/entity/custom-entity-fields';
+} from '@bb-vendure/core/dist/entity/custom-entity-fields';
 
-declare module '@vendure/core/dist/entity/custom-entity-fields' {
+declare module '@bb-vendure/core/dist/entity/custom-entity-fields' {
     interface CustomProductVariantFields {
         isDigital: boolean;
     }

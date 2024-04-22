@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ReactCustomDetailComponentConfig
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/register-react-custom-detail-component.ts" sourceLine="15" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/register-react-custom-detail-component.ts" sourceLine="15" packageName="@bb-vendure/admin-ui" />
 
 Configures a React-based component to be placed in a detail page in the given location.
 

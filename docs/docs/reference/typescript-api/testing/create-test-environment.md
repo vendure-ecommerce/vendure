@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## createTestEnvironment
 
-<GenerationInfo sourceFile="packages/testing/src/create-test-environment.ts" sourceLine="60" packageName="@vendure/testing" />
+<GenerationInfo sourceFile="packages/testing/src/create-test-environment.ts" sourceLine="60" packageName="@bb-vendure/testing" />
 
 Configures a <a href='/reference/typescript-api/testing/test-server#testserver'>TestServer</a> and a <a href='/reference/typescript-api/testing/simple-graph-qlclient#simplegraphqlclient'>SimpleGraphQLClient</a> for each of the GraphQL APIs
 for use in end-to-end tests. Returns a <a href='/reference/typescript-api/testing/test-environment#testenvironment'>TestEnvironment</a> object.
@@ -19,7 +19,7 @@ for use in end-to-end tests. Returns a <a href='/reference/typescript-api/testin
 *Example*
 
 ```ts
-import { createTestEnvironment, testConfig } from '@vendure/testing';
+import { createTestEnvironment, testConfig } from '@bb-vendure/testing';
 
 describe('some feature to test', () => {
 

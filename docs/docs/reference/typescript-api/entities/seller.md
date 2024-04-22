@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Seller
 
-<GenerationInfo sourceFile="packages/core/src/entity/seller/seller.entity.ts" sourceLine="17" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/seller/seller.entity.ts" sourceLine="17" packageName="@bb-vendure/core" />
 
 A Seller represents the person or organization who is selling the goods on a given <a href='/reference/typescript-api/entities/channel#channel'>Channel</a>.
 By default, a single-channel Vendure installation will have a single default Seller.

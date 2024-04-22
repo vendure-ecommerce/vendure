@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { facetValueCollectionFilter, JobQueueService } from '@vendure/core';
-import { createTestEnvironment } from '@vendure/testing';
+import { facetValueCollectionFilter, JobQueueService } from '@bb-vendure/core';
+import { createTestEnvironment } from '@bb-vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';

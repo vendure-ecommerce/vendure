@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Logger
 
-<GenerationInfo sourceFile="packages/core/src/config/logger/vendure-logger.ts" sourceLine="136" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/logger/vendure-logger.ts" sourceLine="136" packageName="@bb-vendure/core" />
 
 The Logger is responsible for all logging in a Vendure application.
 
@@ -20,7 +20,7 @@ It is intended to be used as a static class:
 *Example*
 
 ```ts
-import { Logger } from '@vendure/core';
+import { Logger } from '@bb-vendure/core';
 
 Logger.info(`Some log message`, 'My Vendure Plugin');
 ```
@@ -38,7 +38,7 @@ logs to a file:
 *Example*
 
 ```ts
-import { VendureLogger } from '@vendure/core';
+import { VendureLogger } from '@bb-vendure/core';
 import fs from 'fs';
 
 // A simple custom logger which writes all logs to a file.

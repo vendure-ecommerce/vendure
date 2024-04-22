@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## FacetService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/facet.service.ts" sourceLine="45" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/facet.service.ts" sourceLine="45" packageName="@bb-vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/facet#facet'>Facet</a> entities.
 

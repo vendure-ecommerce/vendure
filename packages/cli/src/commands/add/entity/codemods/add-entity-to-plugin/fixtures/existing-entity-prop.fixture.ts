@@ -1,4 +1,4 @@
-import { PluginCommonModule, Type, VendurePlugin, Product } from '@vendure/core';
+import { PluginCommonModule, Type, VendurePlugin, Product } from '@bb-vendure/core';
 
 type PluginInitOptions = any;
 

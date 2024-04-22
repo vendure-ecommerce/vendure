@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Facet
 
-<GenerationInfo sourceFile="packages/core/src/entity/facet/facet.entity.ts" sourceLine="25" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/facet/facet.entity.ts" sourceLine="25" packageName="@bb-vendure/core" />
 
 A Facet is a class of properties which can be applied to a <a href='/reference/typescript-api/entities/product#product'>Product</a> or <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>.
 They are used to enable [faceted search](https://en.wikipedia.org/wiki/Faceted_search) whereby products

@@ -110,7 +110,7 @@ async function addApiExtension(
 
         addImportsToFile(serviceRef.classDeclaration.getSourceFile(), {
             namedImports: ['RequestContext', 'ID'],
-            moduleSpecifier: '@vendure/core',
+            moduleSpecifier: '@bb-vendure/core',
         });
         modifiedSourceFiles.push(resolver.getSourceFile());
     }

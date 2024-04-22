@@ -1,7 +1,7 @@
-import { OrderLineInput } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
-import { summate } from '@vendure/common/lib/shared-utils';
-import { unique } from '@vendure/common/lib/unique';
+import { OrderLineInput } from '@bb-vendure/common/lib/generated-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
+import { summate } from '@bb-vendure/common/lib/shared-utils';
+import { unique } from '@bb-vendure/common/lib/unique';
 import { In } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';

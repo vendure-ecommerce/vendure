@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EmailSendEvent
 
-<GenerationInfo sourceFile="packages/email-plugin/src/email-send-event.ts" sourceLine="14" packageName="@vendure/email-plugin" since="2.2.0" />
+<GenerationInfo sourceFile="packages/email-plugin/src/email-send-event.ts" sourceLine="14" packageName="@bb-vendure/email-plugin" since="2.2.0" />
 
 This event is fired when an email sending attempt has been made. If the sending was successful,
 the `success` property will be `true`, and if not, the `error` property will contain the error

@@ -1,5 +1,5 @@
 import { PubSub } from '@google-cloud/pubsub';
-import { PluginCommonModule, Type, VendurePlugin } from '@vendure/core';
+import { PluginCommonModule, Type, VendurePlugin } from '@bb-vendure/core';
 
 import { PUB_SUB_OPTIONS } from './constants';
 import { PubSubOptions } from './options';

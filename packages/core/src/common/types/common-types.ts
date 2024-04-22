@@ -1,5 +1,5 @@
-import { LogicalOperator } from '@vendure/common/lib/generated-types';
-import { Type } from '@vendure/common/lib/shared-types';
+import { LogicalOperator } from '@bb-vendure/common/lib/generated-types';
+import { Type } from '@bb-vendure/common/lib/shared-types';
 
 import { VendureEntity } from '../../entity/base/base.entity';
 import { Channel } from '../../entity/channel/channel.entity';
@@ -192,7 +192,7 @@ export type MiddlewareHandler = Type<any> | Function;
  *
  * @example
  * ```ts
- * import { VendureConfig } from '\@vendure/core';
+ * import { VendureConfig } from '\@bb-vendure/core';
  * import { json } from 'body-parser';
  *
  * export const config: VendureConfig = {

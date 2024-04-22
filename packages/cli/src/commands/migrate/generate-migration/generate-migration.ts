@@ -1,5 +1,5 @@
 import { cancel, isCancel, log, spinner, text } from '@clack/prompts';
-import { generateMigration } from '@vendure/core';
+import { generateMigration } from '@bb-vendure/core';
 
 import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
 import { analyzeProject } from '../../../shared/shared-prompts';

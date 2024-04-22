@@ -23,7 +23,7 @@ Angular components will receive the value of the current column as the `rowItem`
 
 ```ts title="src/plugins/slug-link/ui/components/slug-link/slug-link.component.ts"
 import { Component, Input } from '@angular/core';
-import { CustomColumnComponent } from '@vendure/admin-ui/core';
+import { CustomColumnComponent } from '@bb-vendure/admin-ui/core';
 
 @Component({
     selector: 'slug-link',
@@ -43,7 +43,7 @@ export class SlugLinkComponent implements CustomColumnComponent {
 React components will receive the value of the current column as the `rowItem` prop. In this case, the `rowItem` will be the Product entity, because we will be adding this to the product list data table.
 
 ```tsx title="src/plugins/slug-link/ui/components/SlugLink.tsx"
-import { ReactDataTableComponentProps } from '@vendure/admin-ui/react';
+import { ReactDataTableComponentProps } from '@bb-vendure/admin-ui/react';
 import React from 'react';
 
 export function SlugLink({ rowItem }: ReactDataTableComponentProps<{ slug: string }>) {
@@ -71,7 +71,7 @@ In this case we want to target the `product-list` table and the `slug` column.
 <TabItem value="angular" label="Angular">
 
 ```ts title="src/plugins/slug-link/ui/providers.ts"
-import { registerDataTableComponent } from '@vendure/admin-ui/core';
+import { registerDataTableComponent } from '@bb-vendure/admin-ui/core';
 import { SlugLinkComponent } from './components/slug-link/slug-link.component';
 
 export default [
@@ -87,7 +87,7 @@ export default [
 <TabItem value="react" label="React">
 
 ```ts title="src/plugins/slug-link/ui/providers.ts"
-import { registerReactDataTableComponent } from '@vendure/admin-ui/react';
+import { registerReactDataTableComponent } from '@bb-vendure/admin-ui/react';
 import { SlugLink } from './components/SlugLink';
 
 export default [

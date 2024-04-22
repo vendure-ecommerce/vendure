@@ -9,7 +9,7 @@ import {
     ProductVariantEvent,
     StockMovementEvent,
     TaxRateEvent,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 
 import { loggerCtx } from './constants';
 import { PurgeRule } from './purge-rule';

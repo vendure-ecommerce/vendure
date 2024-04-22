@@ -5,7 +5,7 @@ import {
     LanguageCode,
     Permission,
     ProductTranslationInput,
-} from '@vendure/common/lib/generated-types';
+} from '@bb-vendure/common/lib/generated-types';
 import { IsNull } from 'typeorm';
 
 import { InternalServerError } from '../../../common/error/errors';

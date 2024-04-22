@@ -178,7 +178,7 @@
 
 ## <small>1.8.1 (2022-10-26)</small>
 
-This release corrects a publishing error with the `@vendure/admin-ui` packages. There are no code changes in this release.
+This release corrects a publishing error with the `@bb-vendure/admin-ui` packages. There are no code changes in this release.
 
 ## 1.8.0 (2022-10-26)
 
@@ -1955,7 +1955,7 @@ RequestContext of the current request.
 * The TypeORM `Connection` should no longer be directly used. Instead, inject the new `TransactionalConnection` class, which wraps the TypeORM connection and enables database transactions to be used in conjunction with the new `@Transaction` decorator.
 
    The `getEntityOrThrow()` and `findOneInChannel()` helper functions have been deprecated and replaced by methods with the same name (but slightly different signature) on the TransactionalConnection class.
-* The upgrade of the Admin UI to Angular v10 means that if you are using the `@vendure/ui-devkit` package to compile an extended version of the Admin UI, you need to have at least TypeScript v3.9.2 installed.
+* The upgrade of the Admin UI to Angular v10 means that if you are using the `@bb-vendure/ui-devkit` package to compile an extended version of the Admin UI, you need to have at least TypeScript v3.9.2 installed.
 ## <small>0.15.2 (2020-09-30)</small>
 
 
@@ -2046,7 +2046,7 @@ RequestContext of the current request.
   );
   ```
 * The `'facetValueIds'` type has been removed from the `ConfigArgType` type, and replaced by `'ID'` and the `list` option. This change only affects you if you have created custom CollectionFilters of PromotionActions/Conditions using the `'facetValueIds'` type for an argument.
-* The `ID` type in `@vendure/common/lib/generated-types` & `@vendure/common/lib/generated-shop-types` is now correctly typed as `string | number`, whereas previously it was `string`. If you are using any generated types in your plugin code, this may lead to TypeScript compiler errors which will need to be corrected.
+* The `ID` type in `@bb-vendure/common/lib/generated-types` & `@bb-vendure/common/lib/generated-shop-types` is now correctly typed as `string | number`, whereas previously it was `string`. If you are using any generated types in your plugin code, this may lead to TypeScript compiler errors which will need to be corrected.
 ## <small>0.14.1 (2020-08-18)</small>
 
 
@@ -2455,8 +2455,8 @@ Fixes broken publish of admin-ui-plugin
 
 * This release introduces a re-architected solution for handling extensions to the Admin UI. *If you do not use the ui extensions feature, you will not need to change anything*. For those already using ui extensions, these are the changes:
 
-* The `@vendure/admin-ui-plugin` now contains only the default admin ui app.
-* To create extensions, you will need to install `@vendure/ui-devkit`, which exposes a `compileUiExtensions()` function.
+* The `@bb-vendure/admin-ui-plugin` now contains only the default admin ui app.
+* To create extensions, you will need to install `@bb-vendure/ui-devkit`, which exposes a `compileUiExtensions()` function.
 * Here is an example of how the config differs:
   ```ts
     // before
@@ -2471,7 +2471,7 @@ Fixes broken publish of admin-ui-plugin
   ```
   ```ts
     // after
-  import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
+  import { compileUiExtensions } from '@bb-vendure/ui-devkit/compiler';
 
   // ...
 
@@ -2518,7 +2518,7 @@ Fixes broken publish of admin-ui-plugin
   - CustomFieldConfig,
   + CustomFieldConfigType,
     CustomFieldControl,
-  } from '@vendure/admin-ui/core';
+  } from '@bb-vendure/admin-ui/core';
 
   @Component({
       // ...
@@ -2565,7 +2565,7 @@ Fixes broken publish of admin-ui-plugin
 ### BREAKING CHANGE
 
 * A new field, `focalPoint` has been added to the `Asset` entity which will require a database migration to add.
-* The `LocalAssetStorageStrategy` class has been removed from `@vendure/core` and now lives in the `@vendure/asset-server-plugin` package.
+* The `LocalAssetStorageStrategy` class has been removed from `@bb-vendure/core` and now lives in the `@bb-vendure/asset-server-plugin` package.
 * The `search` query's `SearchResult` type has had two properties deprecated: `productPreview` and `productVariantPreview`. They are replaced by `productAsset.preview` and `productVariantAsset.preview respectively`. The deprecated properties still work but will be removed from a future release.
 * The AssetServerPlugin has a new default naming strategy - instead of dumping all assets & previews into a single directory, it will now split sources & previews into subdirectories and in each of them will use hashed directories to ensure that the total number of files in a single directory does not grow too large (as this can have a negative performance impact). If you wish to keep the current behavior, then you must manually set the `namingStrategy: new DefaultAssetNamingStrategy()` in the `AssetServerPlugin.init()` method.
 ## <small>0.8.2 (2020-02-12)</small>
@@ -2628,11 +2628,11 @@ Fixes broken publish of admin-ui-plugin
 
 ### BREAKING CHANGE
 
-* The `@vendure/testing` package now requires you to explicitly register initializers for the databases you with to test against. This change enables e2e tests to be run against any database supported by TypeORM. The `dataDir` option has been removed from the call to the `TestServer.init()` method, as it is specific to the SqljsInitializer:
+* The `@bb-vendure/testing` package now requires you to explicitly register initializers for the databases you with to test against. This change enables e2e tests to be run against any database supported by TypeORM. The `dataDir` option has been removed from the call to the `TestServer.init()` method, as it is specific to the SqljsInitializer:
 
 before:
 ```TypeScript
-import { createTestEnvironment, testConfig } from '@vendure/testing';
+import { createTestEnvironment, testConfig } from '@bb-vendure/testing';
 
 describe('my e2e test suite', () => {
     const { server, adminClient } = createTestEnvironment(testConfig);
@@ -2652,7 +2652,7 @@ describe('my e2e test suite', () => {
 
 after:
 ```TypeScript
-import { createTestEnvironment, registerInitializer, SqljsInitializer, testConfig } from '@vendure/testing';
+import { createTestEnvironment, registerInitializer, SqljsInitializer, testConfig } from '@bb-vendure/testing';
 
 registerInitializer('sqljs', new SqljsInitializer(path.join(__dirname, '__data__')));
 
@@ -2739,7 +2739,7 @@ describe('my e2e test suite', () => {
 
 ## <small>0.6.3 (2019-11-26)</small>
 
-*Note: only the `@vendure/email-plugin` package was updated in this release, as v0.6.2 included a critical bug which prevented installation via `@vendure/create`*
+*Note: only the `@bb-vendure/email-plugin` package was updated in this release, as v0.6.2 included a critical bug which prevented installation via `@bb-vendure/create`*
 
 #### Fixes
 
@@ -2951,7 +2951,7 @@ extensions: [
 
 ## <small>0.3.2 (2019-09-26)</small>
 
-**Note** only the `@vendure/admin-ui`, `@vendure/admin-ui-plugin` & `@vendure/email-plugin` packages were updated in this release.
+**Note** only the `@bb-vendure/admin-ui`, `@bb-vendure/admin-ui-plugin` & `@bb-vendure/email-plugin` packages were updated in this release.
 
 #### Fixes
 
@@ -3000,7 +3000,7 @@ extensions: [
 * **admin-ui** Enable drag-drop reordering of assets ([0e624f4](https://github.com/vendure-ecommerce/vendure/commit/0e624f4)), closes [#156](https://github.com/vendure-ecommerce/vendure/issues/156)
 * **admin-ui** Enable drag-drop reordering of Collections ([ffab838](https://github.com/vendure-ecommerce/vendure/commit/ffab838))
 * **admin-ui** Experimental system for extending the UI ([1dcb2e6](https://github.com/vendure-ecommerce/vendure/commit/1dcb2e6)), closes [#55](https://github.com/vendure-ecommerce/vendure/issues/55)
-* **admin-ui** Expose public API at @vendure/admin-ui/devkit ([c2742ec](https://github.com/vendure-ecommerce/vendure/commit/c2742ec))
+* **admin-ui** Expose public API at @bb-vendure/admin-ui/devkit ([c2742ec](https://github.com/vendure-ecommerce/vendure/commit/c2742ec))
 * **admin-ui** Implement adding new variants by extending options ([fefe0ea](https://github.com/vendure-ecommerce/vendure/commit/fefe0ea)), closes [#162](https://github.com/vendure-ecommerce/vendure/issues/162)
 * **core** Re-architect entity-asset relations to allow ordering ([4ed2ce3](https://github.com/vendure-ecommerce/vendure/commit/4ed2ce3)), closes [#156](https://github.com/vendure-ecommerce/vendure/issues/156)
 * **create** Add ci option to test installs ([c2c7b82](https://github.com/vendure-ecommerce/vendure/commit/c2c7b82))

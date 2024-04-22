@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## registerDashboardWidget
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/register-dashboard-widget.ts" sourceLine="16" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/register-dashboard-widget.ts" sourceLine="16" packageName="@bb-vendure/admin-ui" />
 
 Registers a dashboard widget. Once registered, the widget can be set as part of the default
 (using <a href='/reference/admin-ui-api/dashboard-widgets/set-dashboard-widget-layout#setdashboardwidgetlayout'>setDashboardWidgetLayout</a>).

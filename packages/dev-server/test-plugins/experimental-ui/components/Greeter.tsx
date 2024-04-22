@@ -1,6 +1,6 @@
 import { userIcon } from '@cds/core/icon';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { Card, registerCdsIcon, useInjector, usePageMetadata, useRouteParams } from '@vendure/admin-ui/react';
+import { NotificationService } from '@bb-vendure/admin-ui/core';
+import { Card, registerCdsIcon, useInjector, usePageMetadata, useRouteParams } from '@bb-vendure/admin-ui/react';
 import React, { useEffect, useState } from 'react';
 
 registerCdsIcon(userIcon);

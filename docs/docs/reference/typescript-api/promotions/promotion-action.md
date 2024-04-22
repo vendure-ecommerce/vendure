@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PromotionAction
 
-<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="247" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="247" packageName="@bb-vendure/core" />
 
 An abstract class which is extended by <a href='/reference/typescript-api/promotions/promotion-action#promotionitemaction'>PromotionItemAction</a>, <a href='/reference/typescript-api/promotions/promotion-action#promotionorderaction'>PromotionOrderAction</a>,
 and <a href='/reference/typescript-api/promotions/promotion-action#promotionshippingaction'>PromotionShippingAction</a>.
@@ -47,7 +47,7 @@ more information.
 
 ## PromotionItemAction
 
-<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="320" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="320" packageName="@bb-vendure/core" />
 
 Represents a PromotionAction which applies to individual <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>s.
 
@@ -88,7 +88,7 @@ class PromotionItemAction<T extends ConfigArgs = ConfigArgs, U extends Array<Pro
 
 ## PromotionOrderAction
 
-<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="375" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="375" packageName="@bb-vendure/core" />
 
 Represents a PromotionAction which applies to the <a href='/reference/typescript-api/entities/order#order'>Order</a> as a whole.
 
@@ -129,7 +129,7 @@ class PromotionOrderAction<T extends ConfigArgs = ConfigArgs, U extends Promotio
 
 ## PromotionShippingAction
 
-<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="417" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="417" packageName="@bb-vendure/core" />
 
 Represents a PromotionAction which applies to the shipping cost of an Order.
 
@@ -156,7 +156,7 @@ class PromotionShippingAction<T extends ConfigArgs = ConfigArgs, U extends Promo
 
 ## ExecutePromotionItemActionFn
 
-<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="72" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="72" packageName="@bb-vendure/core" />
 
 The function which is used by a PromotionItemAction to calculate the
 discount on the OrderLine.
@@ -174,7 +174,7 @@ type ExecutePromotionItemActionFn<T extends ConfigArgs, U extends Array<Promotio
 
 ## ExecutePromotionOrderActionFn
 
-<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="88" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="88" packageName="@bb-vendure/core" />
 
 The function which is used by a PromotionOrderAction to calculate the
 discount on the Order.
@@ -192,7 +192,7 @@ type ExecutePromotionOrderActionFn<T extends ConfigArgs, U extends Array<Promoti
 
 ## ExecutePromotionShippingActionFn
 
-<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="104" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="104" packageName="@bb-vendure/core" />
 
 The function which is used by a PromotionOrderAction to calculate the
 discount on the Order.
@@ -211,7 +211,7 @@ type ExecutePromotionShippingActionFn<T extends ConfigArgs, U extends Array<Prom
 
 ## PromotionActionSideEffectFn
 
-<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="125" packageName="@vendure/core" since="1.8.0" experimental="true" />
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="125" packageName="@bb-vendure/core" since="1.8.0" experimental="true" />
 
 The signature of a PromotionAction's side-effect functions `onActivate` and `onDeactivate`.
 
@@ -227,7 +227,7 @@ type PromotionActionSideEffectFn<T extends ConfigArgs> = (
 
 ## PromotionActionConfig
 
-<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="139" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="139" packageName="@bb-vendure/core" />
 
 Configuration for all types of <a href='/reference/typescript-api/promotions/promotion-action#promotionaction'>PromotionAction</a>.
 
@@ -284,7 +284,7 @@ Used to reverse or clean up any side effects executed as part of the `onActivate
 
 ## PromotionItemActionConfig
 
-<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="193" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="193" packageName="@bb-vendure/core" />
 
 Configuration for a <a href='/reference/typescript-api/promotions/promotion-action#promotionitemaction'>PromotionItemAction</a>
 
@@ -313,7 +313,7 @@ the OrderLine, i.e. the number should be negative.
 
 ## PromotionOrderActionConfig
 
-<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="210" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="210" packageName="@bb-vendure/core" />
 
 
 
@@ -342,7 +342,7 @@ the Order, i.e. the number should be negative.
 
 ## PromotionShippingActionConfig
 
-<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="227" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-action.ts" sourceLine="227" packageName="@bb-vendure/core" />
 
 
 

@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { EntityHydrator, mergeConfig } from '@vendure/core';
+import { EntityHydrator, mergeConfig } from '@bb-vendure/core';
 import {
     CreateProductMutation,
     CreateProductMutationVariables,
     CreateProductVariantsMutation,
     CreateProductVariantsMutationVariables,
-} from '@vendure/core/e2e/graphql/generated-e2e-admin-types';
-import { CREATE_PRODUCT, CREATE_PRODUCT_VARIANTS } from '@vendure/core/e2e/graphql/shared-definitions';
-import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
+} from '@bb-vendure/core/e2e/graphql/generated-e2e-admin-types';
+import { CREATE_PRODUCT, CREATE_PRODUCT_VARIANTS } from '@bb-vendure/core/e2e/graphql/shared-definitions';
+import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@bb-vendure/testing';
 import gql from 'graphql-tag';
 import nock from 'nock';
 import fetch from 'node-fetch';

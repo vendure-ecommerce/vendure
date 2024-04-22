@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## dummyPaymentHandler
 
-<GenerationInfo sourceFile="packages/core/src/config/payment/dummy-payment-method-handler.ts" sourceLine="27" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/payment/dummy-payment-method-handler.ts" sourceLine="27" packageName="@bb-vendure/core" />
 
 A dummy PaymentMethodHandler which simply creates a Payment without any integration
 with an external payment provider. Intended only for use in development.

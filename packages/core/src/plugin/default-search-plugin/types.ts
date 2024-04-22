@@ -1,5 +1,5 @@
-import { SearchInput as GeneratedSearchInput } from '@vendure/common/lib/generated-types';
-import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
+import { SearchInput as GeneratedSearchInput } from '@bb-vendure/common/lib/generated-types';
+import { ID, JsonCompatible } from '@bb-vendure/common/lib/shared-types';
 
 import { SerializedRequestContext } from '../../api/common/request-context';
 import { Asset } from '../../entity/asset/asset.entity';

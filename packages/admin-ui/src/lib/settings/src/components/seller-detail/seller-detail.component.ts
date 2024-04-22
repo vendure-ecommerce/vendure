@@ -12,7 +12,7 @@ import {
     SellerFragment,
     TypedBaseDetailComponent,
     UpdateSellerInput,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
 import { mergeMap, take } from 'rxjs/operators';
 

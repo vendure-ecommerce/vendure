@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## registerHistoryEntryComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/register-history-entry-component.ts" sourceLine="68" packageName="@vendure/admin-ui" since="1.9.0" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/register-history-entry-component.ts" sourceLine="68" packageName="@bb-vendure/admin-ui" since="1.9.0" />
 
 Registers a <a href='/reference/admin-ui-api/custom-history-entry-components/history-entry-component#historyentrycomponent'>HistoryEntryComponent</a> for displaying history entries in the Order/Customer
 history timeline.
@@ -27,7 +27,7 @@ import {
     SharedModule,
     TimelineDisplayType,
     TimelineHistoryEntry,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 
 @Component({
     selector: 'tax-id-verification-component',

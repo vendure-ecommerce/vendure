@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, ContentChildren, Input, QueryList } from '@angular/core';
-import { DataTable2ColumnComponent, DataTable2Component, OrderDetailFragment } from '@vendure/admin-ui/core';
+import { DataTable2ColumnComponent, DataTable2Component, OrderDetailFragment } from '@bb-vendure/admin-ui/core';
 import { OrderTotalColumnComponent } from './order-total-column.component';
 
 @Component({

@@ -9,7 +9,7 @@ import {
     PageService,
     SharedModule,
     SortOrder,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 
 import { AddCustomerToGroupDialogComponent } from './components/add-customer-to-group-dialog/add-customer-to-group-dialog.component';
 import { AddressCardComponent } from './components/address-card/address-card.component';

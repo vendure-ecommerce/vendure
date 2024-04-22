@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PromotionCondition
 
-<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-condition.ts" sourceLine="66" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-condition.ts" sourceLine="66" packageName="@bb-vendure/core" />
 
 PromotionConditions are used to create <a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a>s. The purpose of a PromotionCondition
 is to check the order against a particular predicate function (the `check` function) and to return
@@ -61,7 +61,7 @@ a Promotion should apply to an Order. See <a href='/reference/typescript-api/pro
 
 ## PromotionConditionConfig
 
-<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-condition.ts" sourceLine="46" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-condition.ts" sourceLine="46" packageName="@bb-vendure/core" />
 
 This object is used to configure a PromotionCondition.
 
@@ -100,7 +100,7 @@ interface PromotionConditionConfig<T extends ConfigArgs, C extends string, R ext
 
 ## CheckPromotionConditionFn
 
-<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-condition.ts" sourceLine="31" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/promotion/promotion-condition.ts" sourceLine="31" packageName="@bb-vendure/core" />
 
 A function which checks whether or not a given <a href='/reference/typescript-api/entities/order#order'>Order</a> satisfies the <a href='/reference/typescript-api/promotions/promotion-condition#promotioncondition'>PromotionCondition</a>.
 

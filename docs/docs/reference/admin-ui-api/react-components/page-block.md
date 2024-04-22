@@ -11,14 +11,14 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PageBlock
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-components/PageBlock.tsx" sourceLine="22" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-components/PageBlock.tsx" sourceLine="22" packageName="@bb-vendure/admin-ui" />
 
 A container for page content which provides a consistent width and spacing.
 
 *Example*
 
 ```ts
-import { PageBlock } from '@vendure/admin-ui/react';
+import { PageBlock } from '@bb-vendure/admin-ui/react';
 
 export function MyComponent() {
   return (

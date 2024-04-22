@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SentryPlugin
 
-<GenerationInfo sourceFile="packages/sentry-plugin/src/sentry-plugin.ts" sourceLine="108" packageName="@vendure/sentry-plugin" />
+<GenerationInfo sourceFile="packages/sentry-plugin/src/sentry-plugin.ts" sourceLine="108" packageName="@bb-vendure/sentry-plugin" />
 
 This plugin integrates the [Sentry](https://sentry.io) error tracking & performance monitoring
 service with your Vendure server. In addition to capturing errors, it also provides built-in
@@ -33,7 +33,7 @@ which you will need to provide to the plugin.
 Install this plugin as well as the `@sentry/node` package:
 
 ```sh
-npm install --save @vendure/sentry-plugin @sentry/node
+npm install --save @bb-vendure/sentry-plugin @sentry/node
 ```
 
 ## Configuration
@@ -41,8 +41,8 @@ npm install --save @vendure/sentry-plugin @sentry/node
 Before using the plugin, you must configure it with the DSN provided by Sentry:
 
 ```ts
-import { VendureConfig } from '@vendure/core';
-import { SentryPlugin } from '@vendure/sentry-plugin';
+import { VendureConfig } from '@bb-vendure/core';
+import { SentryPlugin } from '@bb-vendure/sentry-plugin';
 
 export const config: VendureConfig = {
     // ...

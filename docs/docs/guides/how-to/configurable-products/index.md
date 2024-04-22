@@ -15,7 +15,7 @@ In Vendure this is done by defining one or more [custom fields](/guides/develope
 Let's take the example of an engraving service. Some products can be engraved, others cannot. We will record this information in a custom field on the [ProductVariant](/reference/typescript-api/entities/product-variant/) entity:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
     // ...
@@ -37,7 +37,7 @@ export const config: VendureConfig = {
 For those variants that _are_ engravable, we need to be able to record the text to be engraved. This is done by defining a custom field on the [OrderLine](/reference/typescript-api/entities/order-line/) entity:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
     // ...
@@ -101,7 +101,7 @@ Let's say that our engraving service costs and extra $10 on top of the regular p
 import {
     RequestContext, PriceCalculationResult,
     ProductVariant, OrderItemPriceCalculationStrategy
-} from '@vendure/core';
+} from '@bb-vendure/core';
 
 export class EngravingPriceStrategy implements OrderItemPriceCalculationStrategy {
 
@@ -126,7 +126,7 @@ export class EngravingPriceStrategy implements OrderItemPriceCalculationStrategy
 This is then added to the config:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 import { EngravingPriceStrategy } from './engraving-price-calculation-strategy';
 
 export const config: VendureConfig = {

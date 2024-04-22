@@ -1,4 +1,4 @@
-import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
+import { DeepPartial, ID } from '@bb-vendure/common/lib/shared-types';
 import { Column, Index, ManyToOne } from 'typeorm';
 
 import { Orderable } from '../../common/types/common-types';

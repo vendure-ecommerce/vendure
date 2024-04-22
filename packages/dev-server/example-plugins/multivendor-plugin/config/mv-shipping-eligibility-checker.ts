@@ -1,6 +1,6 @@
-import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
-import { EntityHydrator, idsAreEqual, ShippingEligibilityChecker } from '@vendure/core';
+import { LanguageCode } from '@bb-vendure/common/lib/generated-types';
+import { DEFAULT_CHANNEL_CODE } from '@bb-vendure/common/lib/shared-constants';
+import { EntityHydrator, idsAreEqual, ShippingEligibilityChecker } from '@bb-vendure/core';
 
 let entityHydrator: EntityHydrator;
 

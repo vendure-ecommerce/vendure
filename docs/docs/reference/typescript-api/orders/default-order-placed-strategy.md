@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DefaultOrderPlacedStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/default-order-placed-strategy.ts" sourceLine="14" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/order/default-order-placed-strategy.ts" sourceLine="14" packageName="@bb-vendure/core" />
 
 The default <a href='/reference/typescript-api/orders/order-placed-strategy#orderplacedstrategy'>OrderPlacedStrategy</a>. The order is set as "placed" when it transitions from
 'ArrangingPayment' to either 'PaymentAuthorized' or 'PaymentSettled'.

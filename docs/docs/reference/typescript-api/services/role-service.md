@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## RoleService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/role.service.ts" sourceLine="51" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/role.service.ts" sourceLine="51" packageName="@bb-vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/role#role'>Role</a> entities.
 

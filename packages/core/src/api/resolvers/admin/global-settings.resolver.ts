@@ -8,8 +8,8 @@ import {
     Permission,
     ServerConfig,
     UpdateGlobalSettingsResult,
-} from '@vendure/common/lib/generated-types';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+} from '@bb-vendure/common/lib/generated-types';
+import { notNullOrUndefined } from '@bb-vendure/common/lib/shared-utils';
 import {
     GraphQLOutputType,
     GraphQLResolveInfo,

@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { CreateFacetValueInput, Dialog, LanguageCode } from '@vendure/admin-ui/core';
+import { CreateFacetValueInput, Dialog, LanguageCode } from '@bb-vendure/admin-ui/core';
 
-import { normalizeString } from '@vendure/common/lib/normalize-string';
+import { normalizeString } from '@bb-vendure/common/lib/normalize-string';
 
 @Component({
     selector: 'vdr-create-facet-value-dialog',

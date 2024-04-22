@@ -5,7 +5,7 @@ import {
     DataService,
     GetActiveAdministratorQuery,
     getAppConfig,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { Observable } from 'rxjs';
 
 @Component({

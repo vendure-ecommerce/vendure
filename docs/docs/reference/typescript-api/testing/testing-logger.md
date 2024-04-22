@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TestingLogger
 
-<GenerationInfo sourceFile="packages/testing/src/testing-logger.ts" sourceLine="55" packageName="@vendure/testing" />
+<GenerationInfo sourceFile="packages/testing/src/testing-logger.ts" sourceLine="55" packageName="@bb-vendure/testing" />
 
 The TestingLogger can be used in unit tests or e2e tests to make assertions on whether the various
 Logger methods have been called, and which arguments.
@@ -24,7 +24,7 @@ the Jest testing framework, but the TestingLogger should work with other similar
 
 ```ts
 // e2e test example
-import { createTestEnvironment, TestingLogger } from '@vendure/testing';
+import { createTestEnvironment, TestingLogger } from '@bb-vendure/testing';
 
 const testingLogger = new TestingLogger(() => jest.fn());
 
@@ -50,8 +50,8 @@ it('should log an error', async () => {
 ```ts
 // unit test example
 import { Test } from '@nestjs/testing';
-import { Logger } from '@vendure/core';
-import { TestingLogger } from '@vendure/testing';
+import { Logger } from '@bb-vendure/core';
+import { TestingLogger } from '@bb-vendure/testing';
 
 beforeEach(async () => {
   const moduleRef = await Test.createTestingModule({

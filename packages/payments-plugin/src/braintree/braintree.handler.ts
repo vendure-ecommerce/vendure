@@ -1,4 +1,4 @@
-import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { LanguageCode } from '@bb-vendure/common/lib/generated-types';
 import {
     Customer,
     EntityHydrator,
@@ -8,7 +8,7 @@ import {
     PaymentMethodHandler,
     RequestContext,
     TransactionalConnection,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import { BraintreeGateway } from 'braintree';
 
 import { defaultExtractMetadataFn, getGateway } from './braintree-common';

@@ -11,10 +11,10 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TestDbInitializer
 
-<GenerationInfo sourceFile="packages/testing/src/initializers/test-db-initializer.ts" sourceLine="23" packageName="@vendure/testing" />
+<GenerationInfo sourceFile="packages/testing/src/initializers/test-db-initializer.ts" sourceLine="23" packageName="@bb-vendure/testing" />
 
 Defines how the e2e TestService sets up a particular DB to run a single test suite.
-The `@vendure/testing` package ships with initializers for sql.js, MySQL & Postgres.
+The `@bb-vendure/testing` package ships with initializers for sql.js, MySQL & Postgres.
 
 Custom initializers can be created by implementing this interface and registering
 it with the <a href='/reference/typescript-api/testing/register-initializer#registerinitializer'>registerInitializer</a> function:

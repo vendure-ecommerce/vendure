@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { HealthCheckError, HealthIndicator, HealthIndicatorResult } from '@nestjs/terminus';
-import { Logger } from '@vendure/core';
+import { Logger } from '@bb-vendure/core';
 import { RedisConnection } from 'bullmq';
 import { timer } from 'rxjs';
 

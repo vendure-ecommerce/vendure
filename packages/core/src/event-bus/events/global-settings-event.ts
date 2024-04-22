@@ -1,4 +1,4 @@
-import { UpdateGlobalSettingsInput } from '@vendure/common/lib/generated-types';
+import { UpdateGlobalSettingsInput } from '@bb-vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../api';
 import { GlobalSettings } from '../../entity/global-settings/global-settings.entity';

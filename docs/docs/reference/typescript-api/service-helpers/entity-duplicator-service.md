@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EntityDuplicatorService
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/entity-duplicator/entity-duplicator.service.ts" sourceLine="23" packageName="@vendure/core" since="2.2.0" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/entity-duplicator/entity-duplicator.service.ts" sourceLine="23" packageName="@bb-vendure/core" since="2.2.0" />
 
 This service is used to duplicate entities using one of the configured
 <a href='/reference/typescript-api/configuration/entity-duplicator#entityduplicator'>EntityDuplicator</a> functions.

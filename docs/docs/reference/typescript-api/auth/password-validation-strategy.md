@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PasswordValidationStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/auth/password-validation-strategy.ts" sourceLine="19" packageName="@vendure/core" since="1.5.0" />
+<GenerationInfo sourceFile="packages/core/src/config/auth/password-validation-strategy.ts" sourceLine="19" packageName="@bb-vendure/core" since="1.5.0" />
 
 Defines validation to apply to new password (when creating an account or updating an existing account's
 password when using the <a href='/reference/typescript-api/auth/native-authentication-strategy#nativeauthenticationstrategy'>NativeAuthenticationStrategy</a>.

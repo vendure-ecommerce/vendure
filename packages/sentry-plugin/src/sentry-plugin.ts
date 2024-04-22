@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, NestModule } from '@nestjs/common';
-import { PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 
 import { SentryAdminTestResolver } from './api/admin-test.resolver';
 import { testApiExtensions } from './api/api-extensions';
@@ -38,7 +38,7 @@ const SentryOptionsProvider = {
  * Install this plugin as well as the `@sentry/node` package:
  *
  * ```sh
- * npm install --save \@vendure/sentry-plugin \@sentry/node
+ * npm install --save \@bb-vendure/sentry-plugin \@sentry/node
  * ```
  *
  * ## Configuration
@@ -46,8 +46,8 @@ const SentryOptionsProvider = {
  * Before using the plugin, you must configure it with the DSN provided by Sentry:
  *
  * ```ts
- * import { VendureConfig } from '\@vendure/core';
- * import { SentryPlugin } from '\@vendure/sentry-plugin';
+ * import { VendureConfig } from '\@bb-vendure/core';
+ * import { SentryPlugin } from '\@bb-vendure/sentry-plugin';
  *
  * export const config: VendureConfig = {
  *     // ...

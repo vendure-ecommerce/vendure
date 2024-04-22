@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { DefaultFormComponentId } from '@vendure/common/lib/shared-types';
+import { DefaultFormComponentId } from '@bb-vendure/common/lib/shared-types';
 
 import { FormInputComponent } from '../../../common/component-registry-types';
 

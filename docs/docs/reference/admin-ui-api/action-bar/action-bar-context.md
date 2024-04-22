@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ActionBarContext
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/nav-builder/nav-builder-types.ts" sourceLine="90" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/nav-builder/nav-builder-types.ts" sourceLine="90" packageName="@bb-vendure/admin-ui" />
 
 Providers & data available to the `onClick` & `buttonState` functions of an <a href='/reference/admin-ui-api/action-bar/action-bar-item#actionbaritem'>ActionBarItem</a>,
 <a href='/reference/admin-ui-api/action-bar/action-bar-dropdown-menu-item#actionbardropdownmenuitem'>ActionBarDropdownMenuItem</a> or <a href='/reference/admin-ui-api/nav-menu/nav-menu-item#navmenuitem'>NavMenuItem</a>.

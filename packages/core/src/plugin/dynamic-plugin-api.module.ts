@@ -1,6 +1,6 @@
 import { DynamicModule } from '@nestjs/common';
-import { Type } from '@vendure/common/lib/shared-types';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { Type } from '@bb-vendure/common/lib/shared-types';
+import { notNullOrUndefined } from '@bb-vendure/common/lib/shared-utils';
 
 import { getConfig } from '../config/config-helpers';
 

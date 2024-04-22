@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DefaultTaxLineCalculationStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/tax/default-tax-line-calculation-strategy.ts" sourceLine="12" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/tax/default-tax-line-calculation-strategy.ts" sourceLine="12" packageName="@bb-vendure/core" />
 
 The default <a href='/reference/typescript-api/tax/tax-line-calculation-strategy#taxlinecalculationstrategy'>TaxLineCalculationStrategy</a> which applies a single TaxLine to the OrderLine
 based on the applicable <a href='/reference/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>.

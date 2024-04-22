@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## IfMultichannelDirective
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/directives/if-multichannel.directive.ts" sourceLine="21" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/directives/if-multichannel.directive.ts" sourceLine="21" packageName="@bb-vendure/admin-ui" />
 
 Structural directive that displays the given element if the Vendure instance has multiple channels
 configured.

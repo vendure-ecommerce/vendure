@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## IfPermissionsDirective
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/directives/if-permissions.directive.ts" sourceLine="26" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/directives/if-permissions.directive.ts" sourceLine="26" packageName="@bb-vendure/admin-ui" />
 
 Conditionally shows/hides templates based on the current active user having the specified permission.
 Based on the ngIf source. Also support "else" templates:

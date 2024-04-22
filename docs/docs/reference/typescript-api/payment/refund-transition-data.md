@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## RefundTransitionData
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/refund-state-machine/refund-state.ts" sourceLine="33" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/refund-state-machine/refund-state.ts" sourceLine="33" packageName="@bb-vendure/core" />
 
 The data which is passed to the state transition handler of the RefundStateMachine.
 

@@ -110,7 +110,7 @@ It is possible to customize the [defaultOrderProcess](/reference/typescript-api/
 This can be done by creating a custom version of the default process using the [configureDefaultOrderProcess](/reference/typescript-api/orders/order-process/#configuredefaultorderprocess) function, and then passing it to the [`OrderOptions.process`](/reference/typescript-api/orders/order-options/#process) config property.
 
 ```ts title="src/vendure-config.ts"
-import { configureDefaultOrderProcess, VendureConfig } from '@vendure/core';
+import { configureDefaultOrderProcess, VendureConfig } from '@bb-vendure/core';
 
 const myCustomOrderProcess = configureDefaultOrderProcess({
   // Disable the constraint that requires
@@ -165,7 +165,7 @@ AddingItems -> ValidatingCustomer -> ArrangingPayment
 Here's how we would define the new state:
 
 ```ts title="src/plugins/tax-id/customer-validation-process.ts"
-import { OrderProcess } from '@vendure/core';
+import { OrderProcess } from '@bb-vendure/core';
 
 export const customerValidationProcess: OrderProcess<'ValidatingCustomer'> = {
   transitions: {
@@ -188,7 +188,7 @@ This object means:
 And then add this configuration to our main VendureConfig:
 
 ```ts title="src/vendure-config.ts"
-import { defaultOrderProcess, VendureConfig } from '@vendure/core';
+import { defaultOrderProcess, VendureConfig } from '@bb-vendure/core';
 import { customerValidationProcess } from './plugins/tax-id/customer-validation-process';
 
 export const config: VendureConfig = {
@@ -204,7 +204,7 @@ Note that we also include the `defaultOrderProcess` in the array, otherwise we w
 To add multiple new States you need to extend the generic type like this:
 
  ```ts
-import { OrderProcess } from '@vendure/core';
+import { OrderProcess } from '@bb-vendure/core';
 
 export const customerValidationProcess: OrderProcess<'ValidatingCustomer'|'AnotherState'> = {...}
  ```
@@ -217,7 +217,7 @@ Now we have defined our new `ValidatingCustomer` state, but there is as yet noth
 This allows us to perform our custom logic and potentially prevent the transition from occurring. We will also assume that we have a provider named `TaxIdService` available which contains the logic to validate a tax ID.
 
 ```ts title="src/plugins/tax-id/customer-validation-process.ts"
-import { OrderProcess } from '@vendure/core';
+import { OrderProcess } from '@bb-vendure/core';
 import { TaxIdService } from './services/tax-id.service';
 
 let taxIdService: TaxIdService;
@@ -263,7 +263,7 @@ upon successful state transition.
 In this example, we have a referral service which creates a new referral for a customer when they complete an order. We want to create the referral only if the customer has a referral code associated with their account.
 
 ```ts
-import { OrderProcess, OrderState } from '@vendure/core';
+import { OrderProcess, OrderState } from '@bb-vendure/core';
 
 import { ReferralService } from '../service/referral.service';
 
@@ -335,9 +335,9 @@ export const myOrderProcess: OrderProcess<OrderState> = {
 To make your custom states compatible with standard services you should declare your new states in the following way:
 
 ```ts title="src/plugins/tax-id/types.ts"
-import { CustomOrderStates } from '@vendure/core';
+import { CustomOrderStates } from '@bb-vendure/core';
 
-declare module '@vendure/core' {
+declare module '@bb-vendure/core' {
   interface CustomOrderStates {
     ValidatingCustomer: never;
   }

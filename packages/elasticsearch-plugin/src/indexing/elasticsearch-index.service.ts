@@ -1,5 +1,5 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import { assertNever } from '@vendure/common/lib/shared-utils';
+import { assertNever } from '@bb-vendure/common/lib/shared-utils';
 import {
     Asset,
     ID,
@@ -10,7 +10,7 @@ import {
     Product,
     ProductVariant,
     RequestContext,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import { Observable } from 'rxjs';
 
 import { loggerCtx } from '../constants';

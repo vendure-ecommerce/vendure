@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Asset
 
-<GenerationInfo sourceFile="packages/core/src/entity/asset/asset.entity.ts" sourceLine="22" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/asset/asset.entity.ts" sourceLine="22" packageName="@bb-vendure/core" />
 
 An Asset represents a file such as an image which can be associated with certain other entities
 such as Products.

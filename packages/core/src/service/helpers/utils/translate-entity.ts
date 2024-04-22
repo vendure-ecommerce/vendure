@@ -1,4 +1,4 @@
-import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { LanguageCode } from '@bb-vendure/common/lib/generated-types';
 
 import { DEFAULT_LANGUAGE_CODE } from '../../../common/constants';
 import { InternalServerError } from '../../../common/error/errors';

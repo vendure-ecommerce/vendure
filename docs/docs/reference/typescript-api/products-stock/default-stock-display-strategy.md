@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DefaultStockDisplayStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/catalog/default-stock-display-strategy.ts" sourceLine="14" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/catalog/default-stock-display-strategy.ts" sourceLine="14" packageName="@bb-vendure/core" />
 
 Displays the `ProductVariant.stockLevel` as either `'IN_STOCK'`, `'OUT_OF_STOCK'` or `'LOW_STOCK'`.
 Low stock is defined as a saleable stock level less than or equal to the `lowStockLevel` as passed in

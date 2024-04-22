@@ -1,4 +1,4 @@
-import { DeepPartial } from '@vendure/common/lib/shared-types';
+import { DeepPartial } from '@bb-vendure/common/lib/shared-types';
 import { describe, expect, it } from 'vitest';
 
 import { Calculated } from '../../common/index';

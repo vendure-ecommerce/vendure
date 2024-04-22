@@ -1,4 +1,4 @@
-import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { LanguageCode } from '@bb-vendure/common/lib/generated-types';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { TranslationInput } from '../../../common/types/locale-types';

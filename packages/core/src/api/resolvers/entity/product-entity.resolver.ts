@@ -1,7 +1,7 @@
 import { Args, Info, Parent, ResolveField, Resolver } from '@nestjs/graphql';
-import { ProductVariantListOptions } from '@vendure/common/lib/generated-types';
-import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
-import { PaginatedList } from '@vendure/common/lib/shared-types';
+import { ProductVariantListOptions } from '@bb-vendure/common/lib/generated-types';
+import { DEFAULT_CHANNEL_CODE } from '@bb-vendure/common/lib/shared-constants';
+import { PaginatedList } from '@bb-vendure/common/lib/shared-types';
 
 import { Translated } from '../../../common/types/locale-types';
 import { idsAreEqual } from '../../../common/utils';

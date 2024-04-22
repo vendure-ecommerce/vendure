@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrderMergeStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/order-merge-strategy.ts" sourceLine="48" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/order/order-merge-strategy.ts" sourceLine="48" packageName="@bb-vendure/core" />
 
 An OrderMergeStrategy defines what happens when a Customer with an existing Order
 signs in with a guest Order, where both Orders may contain differing OrderLines.
@@ -50,7 +50,7 @@ with the active customer.
 
 ## MergedOrderLine
 
-<GenerationInfo sourceFile="packages/core/src/config/order/order-merge-strategy.ts" sourceLine="15" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/order/order-merge-strategy.ts" sourceLine="15" packageName="@bb-vendure/core" />
 
 The result of the <a href='/reference/typescript-api/orders/order-merge-strategy#ordermergestrategy'>OrderMergeStrategy</a> `merge` method.
 

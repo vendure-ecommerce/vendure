@@ -7,7 +7,7 @@ import {
     DataTableSortCollection,
     ItemOf,
     SharedModule,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import gql from 'graphql-tag';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';

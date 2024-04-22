@@ -8,7 +8,7 @@ import {
     Product,
     ProductVariant,
     RequestContext
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import deepmerge from 'deepmerge';
 
 import {

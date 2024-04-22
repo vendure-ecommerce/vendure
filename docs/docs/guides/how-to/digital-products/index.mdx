@@ -21,7 +21,7 @@ The complete source of the following example plugin can be found here: [example-
 If some products are digital and some are physical, we can distinguish between them by adding a customField to the ProductVariant entity.
 
 ```ts title="src/plugins/digital-products/digital-products-plugin.ts"
-import { LanguageCode, PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { LanguageCode, PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 
 @VendurePlugin({
     imports: [PluginCommonModule],
@@ -44,7 +44,7 @@ export class DigitalProductsPlugin {}
 We will also define a custom field on the `ShippingMethod` entity to indicate that this shipping method is only available for digital products:
 
 ```ts title="src/plugins/digital-products/digital-products-plugin.ts"
-import { LanguageCode, PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { LanguageCode, PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 
 @VendurePlugin({
     imports: [PluginCommonModule],
@@ -68,7 +68,7 @@ Lastly we will define a custom field on the `Fulfillment` entity where we can st
 wish to handle this part differently, e.g. storing download links on the `Order` entity or in a custom entity.
 
 ```ts title="src/plugins/digital-products/digital-products-plugin.ts"
-import { LanguageCode, PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { LanguageCode, PluginCommonModule, VendurePlugin } from '@bb-vendure/core';
 
 @VendurePlugin({
     imports: [PluginCommonModule],
@@ -98,7 +98,7 @@ is responsible for performing the logic related to generating the digital downlo
 In your own implementation, this may look significantly different depending on your requirements.
 
 ```ts title="src/plugins/digital-products/config/digital-fulfillment-handler.ts"
-import { FulfillmentHandler, LanguageCode, OrderLine, TransactionalConnection } from '@vendure/core';
+import { FulfillmentHandler, LanguageCode, OrderLine, TransactionalConnection } from '@bb-vendure/core';
 import { In } from 'typeorm';
 
 let connection: TransactionalConnection;
@@ -163,7 +163,7 @@ We want to ensure that the digital shipping method is only applicable to orders 
 We do this with a custom ShippingEligibilityChecker:
 
 ```ts title="src/plugins/digital-products/config/digital-shipping-eligibility-checker.ts"
-import { LanguageCode, ShippingEligibilityChecker } from '@vendure/core';
+import { LanguageCode, ShippingEligibilityChecker } from '@bb-vendure/core';
 
 export const digitalShippingEligibilityChecker = new ShippingEligibilityChecker({
     code: 'digital-shipping-eligibility-checker',
@@ -193,7 +193,7 @@ import {
     RequestContext,
     ShippingLine,
     ShippingLineAssignmentStrategy,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 
 /**
  * @description
@@ -220,7 +220,7 @@ export class DigitalShippingLineAssignmentStrategy implements ShippingLineAssign
 In order to automatically fulfill any digital products as soon as the order completes, we can define a custom OrderProcess:
 
 ```ts title="src/plugins/digital-products/config/digital-order-process.ts"
-import { OrderProcess, OrderService } from '@vendure/core';
+import { OrderProcess, OrderService } from '@bb-vendure/core';
 
 import { digitalFulfillmentHandler } from './digital-fulfillment-handler';
 
@@ -260,7 +260,7 @@ The complete plugin can be found here: [example-plugins/digital-products](https:
 We can now add the plugin to the VendureConfig:
 
 ```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
+import { VendureConfig } from '@bb-vendure/core';
 import { DigitalProductsPlugin } from './plugins/digital-products/digital-products-plugin';
 
 const config: VendureConfig = {

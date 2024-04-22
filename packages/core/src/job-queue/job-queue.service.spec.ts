@@ -2,7 +2,7 @@
 import { Injectable, OnApplicationBootstrap, OnModuleDestroy } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { JobState } from '@vendure/common/lib/generated-types';
+import { JobState } from '@bb-vendure/common/lib/generated-types';
 import { Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';

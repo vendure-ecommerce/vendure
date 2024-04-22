@@ -11,7 +11,7 @@ Let's say you have a custom order process where certain orders require manual re
 alert to notify the administrator when there are orders that require review:
 
 ```ts title="src/plugins/manual-order-review/ui/providers.ts"
-import { registerAlert } from '@vendure/admin-ui/core';
+import { registerAlert } from '@bb-vendure/admin-ui/core';
 import { Router } from '@angular/router';
 import { interval } from 'rxjs';
 

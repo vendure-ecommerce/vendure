@@ -1,4 +1,4 @@
-import { AssetPreviewStrategy, RequestContext } from '@vendure/core';
+import { AssetPreviewStrategy, RequestContext } from '@bb-vendure/core';
 
 const TEST_IMAGE_BASE_64 =
     // eslint-disable-next-line max-len

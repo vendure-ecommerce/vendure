@@ -7,7 +7,7 @@ import {
     GetPaymentMethodListQuery,
     ItemOf,
     Permission,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
 import { map } from 'rxjs/operators';
 

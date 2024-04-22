@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ID } from '@vendure/common/lib/shared-types';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { ID } from '@bb-vendure/common/lib/shared-types';
+import { notNullOrUndefined } from '@bb-vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { ShippingCalculationResult } from '../../../config/shipping-method/shipping-calculator';

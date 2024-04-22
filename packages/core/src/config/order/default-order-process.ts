@@ -1,6 +1,6 @@
-import { HistoryEntryType } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
-import { unique } from '@vendure/common/lib/unique';
+import { HistoryEntryType } from '@bb-vendure/common/lib/generated-types';
+import { ID } from '@bb-vendure/common/lib/shared-types';
+import { unique } from '@bb-vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/common/request-context';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -137,7 +137,7 @@ export interface DefaultOrderProcessOptions {
  * Using this function allows you to turn off certain checks and constraints that are enabled by default.
  *
  * ```ts
- * import { configureDefaultOrderProcess, VendureConfig } from '\@vendure/core';
+ * import { configureDefaultOrderProcess, VendureConfig } from '\@bb-vendure/core';
  *
  * const myCustomOrderProcess = configureDefaultOrderProcess({
  *   // Disable the constraint that requires

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## HydrateOptions
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/entity-hydrator/entity-hydrator-types.ts" sourceLine="12" packageName="@vendure/core" since="1.3.0" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/entity-hydrator/entity-hydrator-types.ts" sourceLine="12" packageName="@bb-vendure/core" since="1.3.0" />
 
 Options used to control which relations of the entity get hydrated
 when using the <a href='/reference/typescript-api/data-access/entity-hydrator#entityhydrator'>EntityHydrator</a> helper.

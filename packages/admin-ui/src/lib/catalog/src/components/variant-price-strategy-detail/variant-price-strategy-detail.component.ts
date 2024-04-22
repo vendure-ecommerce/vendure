@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import {
     CurrencyCode,
     ProductVariantDetailQueryProductVariantFragmentFragment,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-variant-price-strategy-detail',

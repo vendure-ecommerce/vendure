@@ -11,12 +11,12 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DefaultSearchPlugin
 
-<GenerationInfo sourceFile="packages/core/src/plugin/default-search-plugin/default-search-plugin.ts" sourceLine="69" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/plugin/default-search-plugin/default-search-plugin.ts" sourceLine="69" packageName="@bb-vendure/core" />
 
 The DefaultSearchPlugin provides a full-text Product search based on the full-text searching capabilities of the
 underlying database.
 
-The DefaultSearchPlugin is bundled with the `@vendure/core` package. If you are not using an alternative search
+The DefaultSearchPlugin is bundled with the `@bb-vendure/core` package. If you are not using an alternative search
 plugin, then make sure this one is used, otherwise you will not be able to search products via the
 [`search` query](/reference/graphql-api/shop/queries#search).
 
@@ -28,7 +28,7 @@ the MySQL & Postgres implementations will typically yield better results than th
 *Example*
 
 ```ts
-import { DefaultSearchPlugin, VendureConfig } from '@vendure/core';
+import { DefaultSearchPlugin, VendureConfig } from '@bb-vendure/core';
 
 export const config: VendureConfig = {
   // Add an instance of the plugin to the plugins array

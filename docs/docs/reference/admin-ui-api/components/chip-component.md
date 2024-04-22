@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ChipComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/chip/chip.component.ts" sourceLine="16" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/chip/chip.component.ts" sourceLine="16" packageName="@bb-vendure/admin-ui" />
 
 A chip component for displaying a label with an optional action icon.
 

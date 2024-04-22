@@ -6,7 +6,7 @@ import React, { PropsWithChildren, ReactNode } from 'react';
  *
  * @example
  * ```ts
- * import { ActionBar } from '@vendure/admin-ui/react';
+ * import { ActionBar } from '@bb-vendure/admin-ui/react';
  *
  * export function MyComponent() {
  *   return (

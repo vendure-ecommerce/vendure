@@ -1,5 +1,5 @@
-import { CurrencyCode } from '@vendure/common/lib/generated-types';
-import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
+import { CurrencyCode } from '@bb-vendure/common/lib/generated-types';
+import { DeepPartial, ID } from '@bb-vendure/common/lib/shared-types';
 import { Column, Entity, Index, ManyToOne } from 'typeorm';
 
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';

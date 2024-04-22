@@ -11,14 +11,14 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## usePageMetadata
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-hooks/use-page-metadata.ts" sourceLine="31" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-hooks/use-page-metadata.ts" sourceLine="31" packageName="@bb-vendure/admin-ui" />
 
 Provides functions for setting the current page title and breadcrumb.
 
 *Example*
 
 ```ts
-import { usePageMetadata } from '@vendure/admin-ui/react';
+import { usePageMetadata } from '@bb-vendure/admin-ui/react';
 import { useEffect } from 'react';
 
 export const MyComponent = () => {

@@ -1,11 +1,11 @@
-import '@vendure/core/dist/entity/custom-entity-fields';
-import type { Injector, Order, RequestContext } from '@vendure/core';
+import '@bb-vendure/core/dist/entity/custom-entity-fields';
+import type { Injector, Order, RequestContext } from '@bb-vendure/core';
 import type { Request } from 'express';
 import type Stripe from 'stripe';
 
 // Note: deep import is necessary here because CustomCustomerFields is also extended in the Braintree
 // plugin. Reference: https://github.com/microsoft/TypeScript/issues/46617
-declare module '@vendure/core/dist/entity/custom-entity-fields' {
+declare module '@bb-vendure/core/dist/entity/custom-entity-fields' {
     interface CustomCustomerFields {
         stripeCustomerId?: string;
     }
@@ -42,8 +42,8 @@ export interface StripePluginOptions {
      *
      * @example
      * ```ts
-     * import { EntityHydrator, VendureConfig } from '\@vendure/core';
-     * import { StripePlugin } from '\@vendure/payments-plugin/package/stripe';
+     * import { EntityHydrator, VendureConfig } from '\@bb-vendure/core';
+     * import { StripePlugin } from '\@bb-vendure/payments-plugin/package/stripe';
      *
      * export const config: VendureConfig = {
      *   // ...
@@ -81,8 +81,8 @@ export interface StripePluginOptions {
      *
      * @example
      * ```ts
-     * import { VendureConfig } from '\@vendure/core';
-     * import { StripePlugin } from '\@vendure/payments-plugin/package/stripe';
+     * import { VendureConfig } from '\@bb-vendure/core';
+     * import { StripePlugin } from '\@bb-vendure/payments-plugin/package/stripe';
      *
      * export const config: VendureConfig = {
      *   // ...
@@ -116,8 +116,8 @@ export interface StripePluginOptions {
      *
      * @example
      * ```ts
-     * import { EntityHydrator, VendureConfig } from '\@vendure/core';
-     * import { StripePlugin } from '\@vendure/payments-plugin/package/stripe';
+     * import { EntityHydrator, VendureConfig } from '\@bb-vendure/core';
+     * import { StripePlugin } from '\@bb-vendure/payments-plugin/package/stripe';
      *
      * export const config: VendureConfig = {
      *   // ...

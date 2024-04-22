@@ -12,9 +12,9 @@ import {
     ROLE_FRAGMENT,
     TypedBaseDetailComponent,
     UpdateRoleInput,
-} from '@vendure/admin-ui/core';
-import { normalizeString } from '@vendure/common/lib/normalize-string';
-import { unique } from '@vendure/common/lib/unique';
+} from '@bb-vendure/admin-ui/core';
+import { normalizeString } from '@bb-vendure/common/lib/normalize-string';
+import { unique } from '@bb-vendure/common/lib/unique';
 import { gql } from 'apollo-angular';
 import { mergeMap, take } from 'rxjs/operators';
 

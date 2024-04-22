@@ -7,7 +7,7 @@ import {
     OnInit,
     Output,
 } from '@angular/core';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { notNullOrUndefined } from '@bb-vendure/common/lib/shared-utils';
 
 import { ServerConfigService } from '../../../data/server-config';
 

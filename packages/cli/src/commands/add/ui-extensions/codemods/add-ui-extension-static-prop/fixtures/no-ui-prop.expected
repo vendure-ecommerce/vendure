@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { AdminUiExtension } from '@vendure/ui-devkit/compiler';
-import { PluginCommonModule, Type, VendurePlugin } from '@vendure/core';
+import { AdminUiExtension } from '@bb-vendure/ui-devkit/compiler';
+import { PluginCommonModule, Type, VendurePlugin } from '@bb-vendure/core';
 type PluginInitOptions = any;
 
 @VendurePlugin({

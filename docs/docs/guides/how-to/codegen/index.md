@@ -85,7 +85,7 @@ You would then use these types in your resolvers and service methods, for exampl
 
 ```ts title="src/plugins/organization/services/organization.service.ts"
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { Allow, Ctx, PaginatedList, RequestContext, Transaction } from '@vendure/core';
+import { Allow, Ctx, PaginatedList, RequestContext, Transaction } from '@bb-vendure/core';
 
 import { organizationPermission } from '../constants';
 import { Organization } from '../entities/organization.entity';
@@ -123,7 +123,7 @@ In your service methods you can directly use any input types defined in your sch
 
 ```ts title="src/plugins/organization/services/organization.service.ts"
 import { Injectable } from '@nestjs/common';
-import { RequestContext, TransactionalConnection } from '@vendure/core';
+import { RequestContext, TransactionalConnection } from '@bb-vendure/core';
 
 import { Organization } from '../entities/organization.entity';
 // highlight-next-line
@@ -200,7 +200,7 @@ GraphQL operations. For example:
 
 ```ts title="apps/marketplace/src/plugins/marketplace/ui/components/organization-list/organization-list.component.ts"
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { SharedModule, TypedBaseListComponent } from '@vendure/admin-ui/core';
+import { SharedModule, TypedBaseListComponent } from '@bb-vendure/admin-ui/core';
 import { graphql } from '../../gql';
 
 // highlight-start

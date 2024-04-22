@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DatetimePickerComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/datetime-picker/datetime-picker.component.ts" sourceLine="39" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/datetime-picker/datetime-picker.component.ts" sourceLine="39" packageName="@bb-vendure/admin-ui" />
 
 A form input for selecting datetime values.
 

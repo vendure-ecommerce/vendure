@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## registerAlert
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/register-alert.ts" sourceLine="12" packageName="@vendure/admin-ui" since="2.2.0" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/register-alert.ts" sourceLine="12" packageName="@bb-vendure/admin-ui" since="2.2.0" />
 
 Registers an alert which can be displayed in the Admin UI alert dropdown in the top bar.
 The alert is configured using the <a href='/reference/admin-ui-api/alerts/alert-config#alertconfig'>AlertConfig</a> object.

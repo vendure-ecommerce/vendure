@@ -11,7 +11,7 @@ It is possible to create stand-alone scripts that can be run from the command-li
 Here's a minimal example of a script which will bootstrap the Vendure Worker and then log the number of products in the database:
 
 ```ts title="src/get-product-count.ts"
-import { bootstrapWorker, Logger, ProductService, RequestContextService } from '@vendure/core';
+import { bootstrapWorker, Logger, ProductService, RequestContextService } from '@bb-vendure/core';
 
 import { config } from './vendure-config';
 
@@ -80,7 +80,7 @@ There are 56 products in the database
 The `app` object returned by the `bootstrapWorker()` function is an instance of the [NestJS Application Context](https://docs.nestjs.com/standalone-applications). It has full access to the NestJS dependency injection container, which means that you can use the `app.get()` method to retrieve any of the services defined in the Vendure core or by any plugins.
 
 ```ts title="src/import-customer-data.ts"
-import { bootstrapWorker, CustomerService } from '@vendure/core';
+import { bootstrapWorker, CustomerService } from '@bb-vendure/core';
 import { config } from './vendure-config';
 
 // ...
@@ -102,7 +102,7 @@ When running a stand-alone script, we aren't making any API requests, so we need
 
 ```ts title="src/get-product-count.ts"
 // ...
-import { RequestContextService } from '@vendure/core';
+import { RequestContextService } from '@bb-vendure/core';
 
 async function getProductCount() {
     const { app } = await bootstrapWorker(config);

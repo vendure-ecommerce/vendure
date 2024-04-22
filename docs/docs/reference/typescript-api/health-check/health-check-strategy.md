@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## HealthCheckStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/system/health-check-strategy.ts" sourceLine="48" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/system/health-check-strategy.ts" sourceLine="48" packageName="@bb-vendure/core" />
 
 This strategy defines health checks which are included as part of the
 `/health` endpoint. They should only be used to monitor _critical_ systems
@@ -37,7 +37,7 @@ your VendureConfig.
 *Example*
 
 ```ts
-import { HttpHealthCheckStrategy, TypeORMHealthCheckStrategy } from '@vendure/core';
+import { HttpHealthCheckStrategy, TypeORMHealthCheckStrategy } from '@bb-vendure/core';
 import { MyCustomHealthCheckStrategy } from './config/custom-health-check-strategy';
 
 export const config = {

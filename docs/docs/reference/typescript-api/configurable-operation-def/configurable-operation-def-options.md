@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ConfigurableOperationDefOptions
 
-<GenerationInfo sourceFile="packages/core/src/common/configurable-operation.ts" sourceLine="230" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/common/configurable-operation.ts" sourceLine="230" packageName="@bb-vendure/core" />
 
 Common configuration options used when creating a new instance of a
 <a href='/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a> (

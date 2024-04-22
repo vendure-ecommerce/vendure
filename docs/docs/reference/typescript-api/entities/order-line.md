@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrderLine
 
-<GenerationInfo sourceFile="packages/core/src/entity/order-line/order-line.entity.ts" sourceLine="32" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/order-line/order-line.entity.ts" sourceLine="32" packageName="@bb-vendure/core" />
 
 A single line on an <a href='/reference/typescript-api/entities/order#order'>Order</a> which contains information about the <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> and
 quantity ordered, as well as the price and tax information.

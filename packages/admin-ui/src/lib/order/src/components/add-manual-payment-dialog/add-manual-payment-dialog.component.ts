@@ -10,7 +10,7 @@ import {
     ItemOf,
     ManualPaymentInput,
     PAYMENT_METHOD_FRAGMENT,
-} from '@vendure/admin-ui/core';
+} from '@bb-vendure/admin-ui/core';
 import { gql } from 'apollo-angular';
 import { Observable } from 'rxjs';
 

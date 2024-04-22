@@ -11,8 +11,8 @@ import {
     NotificationService,
     Permission,
     ProductVariant,
-} from '@vendure/admin-ui/core';
-import { unique } from '@vendure/common/lib/unique';
+} from '@bb-vendure/admin-ui/core';
+import { unique } from '@bb-vendure/common/lib/unique';
 import { EMPTY } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { AssignProductsToChannelDialogComponent } from '../assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';

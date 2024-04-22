@@ -31,7 +31,7 @@ the [temporary admin ui `tsconfig.json`](./custom-admin-ui/tsconfig.json) file:
 
 ```
   "paths": {
-      "@vendure/admin-ui/*": ["../../admin-ui/package/*"]
+      "@bb-vendure/admin-ui/*": ["../../admin-ui/package/*"]
   }
 ```
 

@@ -1,5 +1,5 @@
 import { ResolveField, Resolver } from '@nestjs/graphql';
-import { Allow, PermissionDefinition, VendurePlugin } from '@vendure/core';
+import { Allow, PermissionDefinition, VendurePlugin } from '@bb-vendure/core';
 import gql from 'graphql-tag';
 
 export const transactions = new PermissionDefinition({

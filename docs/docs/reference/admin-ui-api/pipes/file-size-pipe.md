@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## FileSizePipe
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/pipes/file-size.pipe.ts" sourceLine="14" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/pipes/file-size.pipe.ts" sourceLine="14" packageName="@bb-vendure/admin-ui" />
 
 Formats a number into a human-readable file size string.
 

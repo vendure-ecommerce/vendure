@@ -1,4 +1,4 @@
-import { createBulkDeleteAction, GetCountryListQuery, ItemOf, Permission } from '@vendure/admin-ui/core';
+import { createBulkDeleteAction, GetCountryListQuery, ItemOf, Permission } from '@bb-vendure/admin-ui/core';
 import { map } from 'rxjs/operators';
 
 export const deleteCountriesBulkAction = createBulkDeleteAction<ItemOf<GetCountryListQuery, 'countries'>>({

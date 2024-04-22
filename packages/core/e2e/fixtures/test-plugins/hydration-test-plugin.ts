@@ -17,7 +17,7 @@ import {
     TransactionalConnection,
     VendureEntity,
     VendurePlugin,
-} from '@vendure/core';
+} from '@bb-vendure/core';
 import gql from 'graphql-tag';
 import { Entity, ManyToOne } from 'typeorm';
 
