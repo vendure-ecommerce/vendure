@@ -1,6 +1,6 @@
 {
     "name": "@bb-vendure/admin-ui",
-    "version": "2.2.1-alpha.0",
+    "version": "2.2.1-alpha.2",
     "license": "MIT",
     "scripts": {
         "ng": "ng",
@@ -39,7 +39,7 @@
         "@angular/platform-browser-dynamic": "^17.2.4",
         "@angular/router": "^17.2.4",
         "@apollo/client": "^3.9.6",
-        "@bb-vendure/common": "^2.2.1-alpha.0",
+        "@bb-vendure/common": "^2.2.1-alpha.2",
         "@biesbjerg/ngx-translate-extract-marker": "^1.0.0",
         "@cds/core": "^6.9.2",
         "@clr/angular": "^17.0.1",
