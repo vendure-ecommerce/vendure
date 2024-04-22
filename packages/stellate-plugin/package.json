@@ -1,6 +1,6 @@
 {
     "name": "@bb-vendure/stellate-plugin",
-    "version": "2.2.1-alpha.8",
+    "version": "2.2.1-alpha.9",
     "license": "MIT",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -21,12 +21,12 @@
         "node-fetch": "^2.7.0"
     },
     "devDependencies": {
-        "@bb-vendure/common": "^2.2.1-alpha.8",
-        "@bb-vendure/core": "^2.2.1-alpha.8"
+        "@bb-vendure/common": "^2.2.1-alpha.9",
+        "@bb-vendure/core": "^2.2.1-alpha.9"
     },
-    "gitHead": "4583f5b635822c35c05713a9dbd97c44b514402c",
+    "gitHead": "b4e7da9ce8be2504e8609f36a68726134c0c28ce",
     "repository": {
-        "url": "https://github.com/TheValkDokk/bb-vendure/",
+        "url": "https://github.com/TheValkDokk/bb-vendure.git",
         "type": "git"
     }
 }

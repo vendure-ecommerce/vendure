@@ -1,6 +1,6 @@
 {
     "name": "@bb-vendure/common",
-    "version": "2.2.1-alpha.8",
+    "version": "2.2.1-alpha.9",
     "main": "index.js",
     "license": "MIT",
     "scripts": {
@@ -22,9 +22,9 @@
         "rimraf": "^5.0.5",
         "typescript": "5.3.3"
     },
-    "gitHead": "4583f5b635822c35c05713a9dbd97c44b514402c",
+    "gitHead": "b4e7da9ce8be2504e8609f36a68726134c0c28ce",
     "repository": {
-        "url": "https://github.com/TheValkDokk/bb-vendure/",
+        "url": "https://github.com/TheValkDokk/bb-vendure.git",
         "type": "git"
     }
 }
