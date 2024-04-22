@@ -1,6 +1,6 @@
 {
     "name": "@bb-vendure/create",
-    "version": "2.2.0",
+    "version": "2.2.1-alpha.0",
     "license": "MIT",
     "bin": {
         "create": "./index.js"
@@ -23,19 +23,19 @@
         "access": "public"
     },
     "devDependencies": {
+        "@bb-vendure/core": "^2.2.1-alpha.0",
         "@types/cross-spawn": "^6.0.6",
         "@types/detect-port": "^1.3.5",
         "@types/fs-extra": "^11.0.4",
         "@types/handlebars": "^4.1.0",
         "@types/semver": "^7.5.8",
-        "@bb-vendure/core": "^2.2.0",
         "rimraf": "^5.0.5",
         "ts-node": "^10.9.2",
         "typescript": "5.3.3"
     },
     "dependencies": {
+        "@bb-vendure/common": "^2.2.1-alpha.0",
         "@clack/prompts": "^0.7.0",
-        "@bb-vendure/common": "^2.2.0",
         "commander": "^11.0.0",
         "cross-spawn": "^7.0.3",
         "detect-port": "^1.5.1",

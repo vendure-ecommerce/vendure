@@ -1,6 +1,6 @@
 {
     "name": "@bb-vendure/harden-plugin",
-    "version": "2.2.0",
+    "version": "2.2.1-alpha.0",
     "license": "MIT",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -21,7 +21,7 @@
         "graphql-query-complexity": "^0.12.0"
     },
     "devDependencies": {
-        "@bb-vendure/common": "^2.2.0",
-        "@bb-vendure/core": "^2.2.0"
+        "@bb-vendure/common": "^2.2.1-alpha.0",
+        "@bb-vendure/core": "^2.2.1-alpha.0"
     }
 }

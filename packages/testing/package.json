@@ -1,6 +1,6 @@
 {
     "name": "@bb-vendure/testing",
-    "version": "2.2.0",
+    "version": "2.2.1-alpha.0",
     "description": "End-to-end testing tools for Vendure projects",
     "keywords": [
         "vendure",
@@ -36,8 +36,8 @@
         "url": "https://github.com/vendure-ecommerce/vendure/issues"
     },
     "dependencies": {
+        "@bb-vendure/common": "^2.2.1-alpha.0",
         "@graphql-typed-document-node/core": "^3.2.0",
-        "@bb-vendure/common": "^2.2.0",
         "faker": "^4.1.0",
         "form-data": "^4.0.0",
         "graphql": "16.8.1",
@@ -46,11 +46,11 @@
         "sql.js": "1.8.0"
     },
     "devDependencies": {
+        "@bb-vendure/core": "^2.2.1-alpha.0",
         "@types/faker": "^5.5.9",
         "@types/mysql": "^2.15.26",
         "@types/node-fetch": "^2.6.4",
         "@types/pg": "^8.11.2",
-        "@bb-vendure/core": "^2.2.0",
         "mysql": "^2.18.1",
         "pg": "^8.11.3",
         "rimraf": "^5.0.5",
