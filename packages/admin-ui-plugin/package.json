@@ -30,7 +30,8 @@
     },
     "dependencies": {
         "date-fns": "^2.30.0",
-        "fs-extra": "^11.2.0"
+        "fs-extra": "^11.2.0",
+        "sharp": "^0.33.3"
     },
     "gitHead": "73ee4ce1834574a938dddef40ef8cec6e2944048",
     "repository": {

@@ -18,7 +18,8 @@
         "registry": "https://npm.pkg.github.com"
     },
     "dependencies": {
-        "graphql-query-complexity": "^0.12.0"
+        "graphql-query-complexity": "^0.12.0",
+        "sharp": "^0.33.3"
     },
     "devDependencies": {
         "@bb-vendure/common": "^2.2.1-alpha.10",

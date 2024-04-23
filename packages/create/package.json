@@ -43,6 +43,7 @@
         "handlebars": "^4.7.8",
         "picocolors": "^1.0.0",
         "semver": "^7.5.4",
+        "sharp": "^0.33.3",
         "tcp-port-used": "^1.0.2"
     },
     "gitHead": "73ee4ce1834574a938dddef40ef8cec6e2944048",

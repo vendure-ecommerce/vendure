@@ -27,7 +27,8 @@
         "fs-extra": "^11.2.0",
         "handlebars": "^4.7.8",
         "mjml": "^4.14.1",
-        "nodemailer": "^6.9.4"
+        "nodemailer": "^6.9.4",
+        "sharp": "^0.33.3"
     },
     "devDependencies": {
         "@bb-vendure/common": "^2.2.1-alpha.10",

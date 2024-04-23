@@ -18,7 +18,8 @@
         "registry": "https://npm.pkg.github.com"
     },
     "dependencies": {
-        "node-fetch": "^2.7.0"
+        "node-fetch": "^2.7.0",
+        "sharp": "^0.33.3"
     },
     "devDependencies": {
         "@bb-vendure/common": "^2.2.1-alpha.10",

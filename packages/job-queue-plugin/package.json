@@ -34,5 +34,8 @@
     "repository": {
         "url": "https://github.com/TheValkDokk/bb-vendure.git",
         "type": "git"
+    },
+    "dependencies": {
+        "sharp": "^0.33.3"
     }
 }

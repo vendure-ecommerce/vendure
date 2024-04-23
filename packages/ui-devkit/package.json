@@ -46,7 +46,8 @@
         "chokidar": "^3.6.0",
         "fs-extra": "^11.2.0",
         "glob": "^9.2.1",
-        "rxjs": "^7.8.1"
+        "rxjs": "^7.8.1",
+        "sharp": "^0.33.3"
     },
     "devDependencies": {
         "@bb-vendure/core": "^2.2.1-alpha.10",
