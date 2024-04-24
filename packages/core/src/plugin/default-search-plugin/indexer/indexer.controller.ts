@@ -13,6 +13,7 @@ import { asyncObservable, idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
 import { Logger } from '../../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
+import { Channel } from '../../../entity/channel/channel.entity';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
 import { Product } from '../../../entity/product/product.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
@@ -67,14 +68,13 @@ export class IndexerController {
         const ctx = MutableRequestContext.deserialize(rawContext);
         return asyncObservable(async observer => {
             const timeStart = Date.now();
-            const qb = this.getSearchIndexQueryBuilder(ctx, ctx.channelId);
+            const channel = ctx.channel ?? (await this.loadChannel(ctx, ctx.channelId));
+            const qb = this.getSearchIndexQueryBuilder(ctx, channel);
             const count = await qb.getCount();
             Logger.verbose(`Reindexing ${count} variants for channel ${ctx.channel.code}`, workerLoggerCtx);
             const batches = Math.ceil(count / BATCH_SIZE);
 
-            await this.connection
-                .getRepository(ctx, SearchIndexItem)
-                .delete({ languageCode: ctx.languageCode, channelId: ctx.channelId });
+            await this.connection.getRepository(ctx, SearchIndexItem).delete({ channelId: ctx.channelId });
             Logger.verbose('Deleted existing index items', workerLoggerCtx);
 
             for (let i = 0; i < batches; i++) {
@@ -109,6 +109,7 @@ export class IndexerController {
 
         return asyncObservable(async observer => {
             const timeStart = Date.now();
+            const channel = ctx.channel ?? (await this.loadChannel(ctx, ctx.channelId));
             if (ids.length) {
                 const batches = Math.ceil(ids.length / BATCH_SIZE);
                 Logger.verbose(`Updating ${ids.length} variants...`);
@@ -121,13 +122,10 @@ export class IndexerController {
                     const end = begin + BATCH_SIZE;
                     Logger.verbose(`Updating ids from index ${begin} to ${end}`);
                     const batchIds = ids.slice(begin, end);
-                    const batch = await this.connection.getRepository(ctx, ProductVariant).find({
-                        relations: variantRelations,
-                        where: {
-                            id: In(batchIds),
-                            deletedAt: IsNull(),
-                        },
-                    });
+                    const batch = await this.getSearchIndexQueryBuilder(ctx, channel)
+                        .where('variants.deletedAt IS NULL AND variants.id IN (:...ids)', { ids: batchIds })
+                        .getMany();
+
                     await this.saveVariants(ctx, batch);
                     observer.next({
                         total: ids.length,
@@ -242,18 +240,14 @@ export class IndexerController {
         productId: ID,
         channelId: ID,
     ): Promise<boolean> {
-        const product = await this.connection.getRepository(ctx, Product).findOne({
-            where: { id: productId },
-            relations: ['variants'],
-        });
+        const channel = await this.loadChannel(ctx, channelId);
+
+        const product = await this.getProductInChannelQueryBuilder(ctx, channel, productId).getOneOrFail();
+
         if (product) {
-            const updatedVariants = await this.connection.getRepository(ctx, ProductVariant).find({
-                relations: variantRelations,
-                where: {
-                    id: In(product.variants.map(v => v.id)),
-                    deletedAt: IsNull(),
-                },
-            });
+            const updatedVariants = await this.getSearchIndexQueryBuilder(ctx, channel)
+                .andWhere('variants.productId = :productId', { productId })
+                .getMany();
             if (updatedVariants.length === 0) {
                 await this.saveSyntheticVariant(ctx, product);
             } else {
@@ -277,13 +271,11 @@ export class IndexerController {
         variantIds: ID[],
         channelId: ID,
     ): Promise<boolean> {
-        const variants = await this.connection.getRepository(ctx, ProductVariant).find({
-            relations: variantRelations,
-            where: {
-                id: In(variantIds),
-                deletedAt: IsNull(),
-            },
-        });
+        const channel = await this.loadChannel(ctx, channelId);
+        const variants = await this.getSearchIndexQueryBuilder(ctx, channel)
+            .andWhere('variants.deletedAt IS NULL AND variants.id IN (:...variantIds)', { variantIds })
+            .getMany();
+
         if (variants) {
             Logger.verbose(`Updating ${variants.length} variants`, workerLoggerCtx);
             await this.saveVariants(ctx, variants);
@@ -296,10 +288,11 @@ export class IndexerController {
         productId: ID,
         channelId: ID,
     ): Promise<boolean> {
-        const product = await this.connection.getRepository(ctx, Product).findOne({
-            where: { id: productId },
-            relations: ['variants'],
-        });
+        const channel = await this.loadChannel(ctx, channelId);
+        const product = await this.getProductInChannelQueryBuilder(ctx, channel, productId)
+            .leftJoinAndSelect('product.variants', 'variants')
+            .getOne();
+
         if (product) {
             const languageVariants = unique([
                 ...product.translations.map(t => t.languageCode),
@@ -316,20 +309,109 @@ export class IndexerController {
         return true;
     }
 
-    private getSearchIndexQueryBuilder(ctx: RequestContext, channelId: ID) {
+    private async loadChannel(ctx: RequestContext, channelId: ID): Promise<Channel> {
+        return await this.connection.getRepository(ctx, Channel).findOneOrFail({ where: { id: channelId } });
+    }
+
+    private getSearchIndexQueryBuilder(ctx: RequestContext, channel: Channel) {
         const qb = this.connection
             .getRepository(ctx, ProductVariant)
             .createQueryBuilder('variants')
             .setFindOptions({
-                relations: variantRelations,
-                loadEagerRelations: true,
+                loadEagerRelations: false,
             })
+            .leftJoinAndSelect('variants.channels', 'variant_channels', 'variant_channels.id = :channelId', {
+                channelId: channel.id,
+            })
+            .leftJoinAndSelect('variant_channels.defaultTaxZone', 'variant_channel_tax_zone')
+            .leftJoinAndSelect('variants.taxCategory', 'variant_tax_category')
+            .leftJoinAndSelect(
+                'variants.productVariantPrices',
+                'product_variant_prices',
+                'product_variant_prices.channelId = :channelId',
+                { channelId: channel.id },
+            )
+            .leftJoinAndSelect(
+                'variants.translations',
+                'product_variant_translations',
+                'product_variant_translations."baseId" = variants.id AND product_variant_translations."languageCode" IN (:...channelLanguages)',
+                {
+                    channelLanguages: channel.availableLanguageCodes,
+                },
+            )
             .leftJoin('variants.product', 'product')
+            .leftJoinAndSelect('variants.facetValues', 'variant_facet_values')
+            .leftJoinAndSelect(
+                'variant_facet_values.translations',
+                'variant_facet_value_translations',
+                'variant_facet_value_translations."languageCode" IN (:...channelLanguages)',
+                {
+                    channelLanguages: channel.availableLanguageCodes,
+                },
+            )
+            .leftJoinAndSelect('variant_facet_values.facet', 'facet_values_facet')
+            .leftJoinAndSelect(
+                'facet_values_facet.translations',
+                'facet_values_facet_translations',
+                'facet_values_facet_translations."languageCode" IN (:...channelLanguages)',
+                {
+                    channelLanguages: channel.availableLanguageCodes,
+                },
+            )
+            .leftJoinAndSelect('variants.collections', 'collections')
+            .leftJoinAndSelect(
+                'collections.translations',
+                'collection_translations',
+                'collection_translations."languageCode" IN (:...channelLanguages)',
+                {
+                    channelLanguages: channel.availableLanguageCodes,
+                },
+            )
             .leftJoin('product.channels', 'channel')
-            .where('channel.id = :channelId', { channelId })
+            .where('channel.id = :channelId', { channelId: channel.id })
             .andWhere('product.deletedAt IS NULL')
             .andWhere('variants.deletedAt IS NULL');
         return qb;
+    }
+
+    private getProductInChannelQueryBuilder(ctx: RequestContext, channel: Channel, productId: ID) {
+        return this.connection
+            .getRepository(ctx, Product)
+            .createQueryBuilder('product')
+            .setFindOptions({
+                loadEagerRelations: false,
+            })
+            .leftJoinAndSelect(
+                'product.translations',
+                'translations',
+                'translations.languageCode IN (:...channelLanguages)',
+                {
+                    channelLanguages: channel.availableLanguageCodes,
+                },
+            )
+            .leftJoinAndSelect('product.featuredAsset', 'product_featured_asset')
+            .leftJoinAndSelect('product.facetValues', 'product_facet_values')
+            .leftJoinAndSelect(
+                'product_facet_values.translations',
+                'product_facet_value_translations',
+                'product_facet_value_translations."languageCode" IN (:...channelLanguages)',
+                {
+                    channelLanguages: channel.availableLanguageCodes,
+                },
+            )
+            .leftJoinAndSelect('product_facet_values.facet', 'product_facet')
+            .leftJoinAndSelect(
+                'product_facet.translations',
+                'product_facet_translations',
+                'product_facet_translations."languageCode" IN (:...channelLanguages)',
+                {
+                    channelLanguages: channel.availableLanguageCodes,
+                },
+            )
+            .leftJoinAndSelect('product.channels', 'channel', 'channel.id = :channelId', {
+                channelId: channel.id,
+            })
+            .where('product.id = :productId', { productId });
     }
 
     private async saveVariants(ctx: MutableRequestContext, variants: ProductVariant[]) {
@@ -341,9 +423,11 @@ export class IndexerController {
         for (const variant of variants) {
             let product = productMap.get(variant.productId);
             if (!product) {
-                product = await this.connection.getEntityOrThrow(ctx, Product, variant.productId, {
-                    relations: productRelations,
-                });
+                product = await this.getProductInChannelQueryBuilder(
+                    ctx,
+                    ctx.channel,
+                    variant.productId,
+                ).getOneOrFail();
                 productMap.set(variant.productId, product);
             }
 
