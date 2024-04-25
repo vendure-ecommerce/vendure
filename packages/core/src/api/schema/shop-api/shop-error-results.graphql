@@ -112,3 +112,21 @@ type NotVerifiedError implements ErrorResult {
     errorCode: ErrorCode!
     message: String!
 }
+
+"""
+Returned if `authOptions.requireVerification` is set to `true` (which is the default)
+and an unverified user attempts to register as a new customer.
+"""
+type VerificationPendingError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
+"""
+Returned if `authOptions.requireVerification` is set to `true` (which is the default)
+and an unverified user attempts to authenticate.
+"""
+type NotVerifiedError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}

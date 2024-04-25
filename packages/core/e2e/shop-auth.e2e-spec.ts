@@ -132,8 +132,7 @@ describe('Shop auth & accounts', () => {
             sendEmailFn = vi.fn();
         });
 
-        it('does not return error result on email address conflict', async () => {
-            // To prevent account enumeration attacks
+        it('returns error result on email address conflict', async () => {
             const { customers } = await adminClient.query<Codegen.GetCustomerListQuery>(GET_CUSTOMER_LIST);
             const input: RegisterCustomerInput = {
                 firstName: 'Duplicate',
@@ -147,7 +146,8 @@ describe('Shop auth & accounts', () => {
             >(REGISTER_ACCOUNT, {
                 input,
             });
-            successErrorGuard.assertSuccess(registerCustomerAccount);
+            currentUserErrorGuard.assertErrorResult(registerCustomerAccount);
+            expect(registerCustomerAccount.errorCode).toBe(ErrorCode.EMAIL_ADDRESS_CONFLICT_ERROR);
         });
 
         it('register a new account without password', async () => {
@@ -190,7 +190,7 @@ describe('Shop auth & accounts', () => {
             ).toEqual(input);
         });
 
-        it('issues a new token if attempting to register a second time', async () => {
+        it('does not issue a new token if attempting to register a second time', async () => {
             const sendEmail = new Promise<string>(resolve => {
                 sendEmailFn.mockImplementation((event: AccountRegistrationEvent) => {
                     resolve(event.user.getNativeAuthenticationMethod().verificationToken!);
@@ -207,15 +207,8 @@ describe('Shop auth & accounts', () => {
             >(REGISTER_ACCOUNT, {
                 input,
             });
-            successErrorGuard.assertSuccess(registerCustomerAccount);
-
-            const newVerificationToken = await sendEmail;
-
-            expect(registerCustomerAccount.success).toBe(true);
-            expect(sendEmailFn).toHaveBeenCalled();
-            expect(newVerificationToken).not.toBe(verificationToken);
-
-            verificationToken = newVerificationToken;
+            currentUserErrorGuard.assertErrorResult(registerCustomerAccount);
+            expect(registerCustomerAccount.errorCode).toBe(ErrorCode.VERIFICATION_PENDING_ERROR);
         });
 
         it('refreshCustomerVerification issues a new token', async () => {
@@ -312,9 +305,8 @@ describe('Shop auth & accounts', () => {
             currentUserErrorGuard.assertSuccess(verifyCustomerAccount);
 
             expect(verifyCustomerAccount.identifier).toBe('test1@test.com');
-            const { activeCustomer } = await shopClient.query<CodegenShop.GetActiveCustomerQuery>(
-                GET_ACTIVE_CUSTOMER,
-            );
+            const { activeCustomer } =
+                await shopClient.query<CodegenShop.GetActiveCustomerQuery>(GET_ACTIVE_CUSTOMER);
             newCustomerId = activeCustomer!.id;
         });
 
@@ -481,9 +473,8 @@ describe('Shop auth & accounts', () => {
             currentUserErrorGuard.assertSuccess(verifyCustomerAccount);
 
             expect(verifyCustomerAccount.identifier).toBe('test2@test.com');
-            const { activeCustomer } = await shopClient.query<CodegenShop.GetActiveCustomerQuery>(
-                GET_ACTIVE_CUSTOMER,
-            );
+            const { activeCustomer } =
+                await shopClient.query<CodegenShop.GetActiveCustomerQuery>(GET_ACTIVE_CUSTOMER);
         });
     });
 
@@ -826,9 +817,8 @@ describe('Shop auth & accounts', () => {
 
         it('can login with new email address after verification', async () => {
             await shopClient.asUserWithCredentials(NEW_EMAIL_ADDRESS, PASSWORD);
-            const { activeCustomer } = await shopClient.query<CodegenShop.GetActiveCustomerQuery>(
-                GET_ACTIVE_CUSTOMER,
-            );
+            const { activeCustomer } =
+                await shopClient.query<CodegenShop.GetActiveCustomerQuery>(GET_ACTIVE_CUSTOMER);
             expect(activeCustomer!.id).toBe(customer!.id);
             expect(activeCustomer!.emailAddress).toBe(NEW_EMAIL_ADDRESS);
         });
@@ -1117,30 +1107,26 @@ describe('Registration without email verification', () => {
     it('can login after registering', async () => {
         await shopClient.asUserWithCredentials(userEmailAddress, 'test');
 
-        const result = await shopClient.query(
-            gql`
-                query GetMe {
-                    me {
-                        identifier
-                    }
+        const result = await shopClient.query(gql`
+            query GetMe {
+                me {
+                    identifier
                 }
-            `,
-        );
+            }
+        `);
         expect(result.me.identifier).toBe(userEmailAddress);
     });
 
     it('can login case insensitive', async () => {
         await shopClient.asUserWithCredentials(userEmailAddress.toUpperCase(), 'test');
 
-        const result = await shopClient.query(
-            gql`
-                query GetMe {
-                    me {
-                        identifier
-                    }
+        const result = await shopClient.query(gql`
+            query GetMe {
+                me {
+                    identifier
                 }
-            `,
-        );
+            }
+        `);
         expect(result.me.identifier).toBe(userEmailAddress);
     });
 
@@ -1258,9 +1244,8 @@ describe('Updating email address without email verification', () => {
         expect(sendEmailFn).toHaveBeenCalledTimes(1);
         expect(sendEmailFn.mock.calls[0][0] instanceof IdentifierChangeEvent).toBe(true);
 
-        const { activeCustomer } = await shopClient.query<CodegenShop.GetActiveCustomerQuery>(
-            GET_ACTIVE_CUSTOMER,
-        );
+        const { activeCustomer } =
+            await shopClient.query<CodegenShop.GetActiveCustomerQuery>(GET_ACTIVE_CUSTOMER);
         expect(activeCustomer!.emailAddress).toBe(NEW_EMAIL_ADDRESS);
     });
 
@@ -1281,9 +1266,8 @@ describe('Updating email address without email verification', () => {
         expect(sendEmailFn).toHaveBeenCalledTimes(1);
         expect(sendEmailFn.mock.calls[0][0] instanceof IdentifierChangeEvent).toBe(true);
 
-        const { activeCustomer } = await shopClient.query<CodegenShop.GetActiveCustomerQuery>(
-            GET_ACTIVE_CUSTOMER,
-        );
+        const { activeCustomer } =
+            await shopClient.query<CodegenShop.GetActiveCustomerQuery>(GET_ACTIVE_CUSTOMER);
         expect(activeCustomer!.emailAddress).toBe('not.normal@test.com');
     });
 });
