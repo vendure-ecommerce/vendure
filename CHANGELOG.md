@@ -1,5 +1,7 @@
 ## <small>2.2.2 (2024-04-25)</small>
 
+This release contains no changes - it was published to fix a mistake 
+in the publishing of the `@vendure/admin-ui@2.2.1` package.
 
 ## <small>2.2.1 (2024-04-25)</small>
 
