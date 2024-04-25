@@ -4,7 +4,8 @@ import { register } from 'ts-node';
 import { VendureConfigRef } from '../../shared/vendure-config-ref';
 import { isRunningInTsNode } from '../../utilities/utils';
 
-export function loadVendureConfigFile(vendureConfig: VendureConfigRef) {
+export async function loadVendureConfigFile(vendureConfig: VendureConfigRef) {
+    await import('dotenv/config');
     if (!isRunningInTsNode()) {
         const tsConfigPath = path.join(process.cwd(), 'tsconfig.json');
         // eslint-disable-next-line @typescript-eslint/no-var-requires

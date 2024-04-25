@@ -34,7 +34,7 @@ async function runGenerateMigration(): Promise<CliCommandReturnVal> {
         cancel(cancelledMessage);
         process.exit(0);
     }
-    const config = loadVendureConfigFile(vendureConfig);
+    const config = await loadVendureConfigFile(vendureConfig);
     const migrationSpinner = spinner();
     migrationSpinner.start('Generating migration...');
     const migrationName = await generateMigration(config, { name, outputDir: './src/migrations' });
