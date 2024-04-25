@@ -16,6 +16,7 @@
 * **core** Fix findOneInChannel with relations object ([b9eb7db](https://github.com/vendure-ecommerce/vendure/commit/b9eb7db)), closes [#2809](https://github.com/vendure-ecommerce/vendure/issues/2809)
 * **core** Fix importer asset channel handling (#2801) ([c7a28b7](https://github.com/vendure-ecommerce/vendure/commit/c7a28b7)), closes [#2801](https://github.com/vendure-ecommerce/vendure/issues/2801)
 * **core** Improved loading of eager-loaded custom field relations ([025a9c7](https://github.com/vendure-ecommerce/vendure/commit/025a9c7)), closes [#2775](https://github.com/vendure-ecommerce/vendure/issues/2775) [#2687](https://github.com/vendure-ecommerce/vendure/issues/2687)
+* **core** Publish OrderEvent when order is deleted ([55f68780](https://github.com/vendure-ecommerce/vendure/commit/55f68780))
 * **core** Remove original entityTable from channels sql request (#2791) ([9c1cb16](https://github.com/vendure-ecommerce/vendure/commit/9c1cb16)), closes [#2791](https://github.com/vendure-ecommerce/vendure/issues/2791)
 * **core** Update relations on Stock Location update (#2805) ([47b1116](https://github.com/vendure-ecommerce/vendure/commit/47b1116)), closes [#2805](https://github.com/vendure-ecommerce/vendure/issues/2805) [#2804](https://github.com/vendure-ecommerce/vendure/issues/2804)
 
