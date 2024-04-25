@@ -1,10 +1,33 @@
-import { log } from '@clack/prompts';
+import { cancel, isCancel, log, select } from '@clack/prompts';
 import fs from 'fs-extra';
 import path from 'node:path';
 import { Directory, Node, Project, ProjectOptions, ScriptKind, SourceFile } from 'ts-morph';
 
 import { defaultManipulationSettings } from '../constants';
 import { EntityRef } from '../shared/entity-ref';
+
+export async function selectTsConfigFile() {
+    const tsConfigFiles = fs.readdirSync(process.cwd()).filter(f => /^tsconfig.*\.json$/.test(f));
+    if (tsConfigFiles.length === 0) {
+        throw new Error('No tsconfig files found in current directory');
+    }
+    if (tsConfigFiles.length === 1) {
+        return tsConfigFiles[0];
+    }
+    const selectedConfigFile = await select({
+        message: 'Multiple tsconfig files found. Select one:',
+        options: tsConfigFiles.map(c => ({
+            value: c,
+            label: path.basename(c),
+        })),
+        maxItems: 10,
+    });
+    if (isCancel(selectedConfigFile)) {
+        cancel();
+        process.exit(0);
+    }
+    return selectedConfigFile as string;
+}
 
 export function getTsMorphProject(options: ProjectOptions = {}) {
     const tsConfigPath = path.join(process.cwd(), 'tsconfig.json');

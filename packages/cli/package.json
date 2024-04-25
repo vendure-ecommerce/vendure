@@ -42,7 +42,8 @@
         "fs-extra": "^11.2.0",
         "picocolors": "^1.0.0",
         "ts-morph": "^21.0.1",
-        "ts-node": "^10.9.2"
+        "ts-node": "^10.9.2",
+        "tsconfig-paths": "^4.2.0"
     },
     "devDependencies": {
         "@vendure/core": "^2.2.0",
