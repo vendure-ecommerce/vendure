@@ -166,6 +166,7 @@ export class ChannelService {
             .select(`channel.${inverseJunctionColumnName}`, 'channelId')
             .from(junctionTableName, 'channel')
             .where(`channel.${junctionColumnName} = :entityId`, { entityId })
+            .andWhere(`${entityType.name}.id = :entityId`, { entityId })
             .execute();
     }
 
