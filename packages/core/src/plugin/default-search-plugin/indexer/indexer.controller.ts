@@ -360,6 +360,12 @@ export class IndexerController {
             )
             .leftJoinAndSelect('variants.collections', 'collections')
             .leftJoinAndSelect(
+                'collections.channels',
+                'collection_channels',
+                'collection_channels.id = :channelId',
+                { channelId: channel.id },
+            )
+            .leftJoinAndSelect(
                 'collections.translations',
                 'collection_translations',
                 'collection_translations."languageCode" IN (:...channelLanguages)',
@@ -369,6 +375,7 @@ export class IndexerController {
             )
             .leftJoin('product.channels', 'channel')
             .where('channel.id = :channelId', { channelId: channel.id })
+            .andWhere('collection_channels.id = :channelId', { channelId: channel.id })
             .andWhere('product.deletedAt IS NULL')
             .andWhere('variants.deletedAt IS NULL');
         return qb;
