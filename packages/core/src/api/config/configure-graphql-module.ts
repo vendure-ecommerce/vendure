@@ -100,7 +100,6 @@ async function createGraphQLOptions(
         path: '/' + options.apiPath,
         typeDefs: printSchema(builtSchema),
         include: [options.resolverModule],
-        inheritResolversFromInterfaces: true,
         fieldResolverEnhancers: ['guards'],
         resolvers,
         // We no longer rely on the upload facility bundled with Apollo Server, and instead
