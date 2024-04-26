@@ -26,7 +26,10 @@ export interface JobQueueStrategy extends InjectableStrategy {
      * @description
      * Add a new job to the queue.
      */
-    add<Data extends JobData<Data> = object>(job: Job<Data>, jobOptions?: JobQueueStrategyJobOptions<Data>): Promise<Job<Data>>;
+    add<Data extends JobData<Data> = object>(
+        job: Job<Data>,
+        jobOptions?: JobQueueStrategyJobOptions<Data>,
+    ): Promise<Job<Data>>;
 
     /**
      * @description

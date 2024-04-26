@@ -56,14 +56,16 @@ describe('ListQueryBuilder', () => {
 
             expect(testEntities.totalItems).toBe(6);
             expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'C', 'D', 'E', 'F']);
-            expect(testEntities.items.map((i: any) => i.name)).toEqual(expect.arrayContaining([
-                'apple',
-                'bike',
-                'cake',
-                'dog',
-                'egg',
-                'baum', // if default en lang does not exist, use next available lang
-            ]));
+            expect(testEntities.items.map((i: any) => i.name)).toEqual(
+                expect.arrayContaining([
+                    'apple',
+                    'bike',
+                    'cake',
+                    'dog',
+                    'egg',
+                    'baum', // if default en lang does not exist, use next available lang
+                ]),
+            );
         });
 
         it('all de', async () => {
@@ -77,14 +79,16 @@ describe('ListQueryBuilder', () => {
 
             expect(testEntities.totalItems).toBe(6);
             expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'C', 'D', 'E', 'F']);
-            expect(testEntities.items.map((i: any) => i.name)).toEqual(expect.arrayContaining([
-                'apfel',
-                'fahrrad',
-                'kuchen',
-                'hund',
-                'egg', // falls back to en translation when de doesn't exist
-                'baum',
-            ]));
+            expect(testEntities.items.map((i: any) => i.name)).toEqual(
+                expect.arrayContaining([
+                    'apfel',
+                    'fahrrad',
+                    'kuchen',
+                    'hund',
+                    'egg', // falls back to en translation when de doesn't exist
+                    'baum',
+                ]),
+            );
         });
 
         it('take', async () => {
@@ -1208,7 +1212,10 @@ describe('ListQueryBuilder', () => {
     // https://github.com/vendure-ecommerce/vendure/issues/1586
     it('using the getMany() of the resulting QueryBuilder', async () => {
         const { testEntitiesGetMany } = await adminClient.query(GET_ARRAY_LIST, {});
-        const actualPrices = testEntitiesGetMany.sort(sortById).map((x: any) => x.price).sort((a: number, b: number) => a - b);
+        const actualPrices = testEntitiesGetMany
+            .sort(sortById)
+            .map((x: any) => x.price)
+            .sort((a: number, b: number) => a - b);
         const expectedPrices = [11, 9, 22, 14, 13, 33].sort((a, b) => a - b);
         expect(actualPrices).toEqual(expectedPrices);
     });

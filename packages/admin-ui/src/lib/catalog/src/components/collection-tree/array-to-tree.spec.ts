@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from 'vitest';
 import { arrayToTree, HasParent, RootNode, TreeNode } from './array-to-tree';
 
 describe('arrayToTree()', () => {

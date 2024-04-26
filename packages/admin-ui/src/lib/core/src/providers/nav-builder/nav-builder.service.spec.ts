@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion, no-console */
 import { TestBed } from '@angular/core/testing';
+import { firstValueFrom } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { NavMenuSection } from './nav-builder-types';
 import { NavBuilderService } from './nav-builder.service';
@@ -13,17 +15,15 @@ describe('NavBuilderService', () => {
         service = TestBed.inject(NavBuilderService);
     });
 
-    it('defineNavMenuSections', done => {
+    it('defineNavMenuSections', async () => {
         service.defineNavMenuSections(getBaseNav());
 
-        service.menuConfig$.pipe(take(1)).subscribe(result => {
-            expect(result).toEqual(getBaseNav());
-            done();
-        });
+        const result = await firstValueFrom(service.menuConfig$);
+        expect(result).toEqual(getBaseNav());
     });
 
     describe('addNavMenuSection', () => {
-        it('adding new section to end', done => {
+        it('adding new section to end', async () => {
             service.defineNavMenuSections(getBaseNav());
             service.addNavMenuSection({
                 id: 'reports',
@@ -31,13 +31,11 @@ describe('NavBuilderService', () => {
                 items: [],
             });
 
-            service.menuConfig$.pipe(take(1)).subscribe(result => {
-                expect(result.map(section => section.id)).toEqual(['catalog', 'sales', 'reports']);
-                done();
-            });
+            const result = await firstValueFrom(service.menuConfig$);
+            expect(result.map(section => section.id)).toEqual(['catalog', 'sales', 'reports']);
         });
 
-        it('adding new section before', done => {
+        it('adding new section before', async () => {
             service.defineNavMenuSections(getBaseNav());
             service.addNavMenuSection(
                 {
@@ -48,13 +46,11 @@ describe('NavBuilderService', () => {
                 'sales',
             );
 
-            service.menuConfig$.pipe(take(1)).subscribe(result => {
-                expect(result.map(section => section.id)).toEqual(['catalog', 'reports', 'sales']);
-                done();
-            });
+            const result = await firstValueFrom(service.menuConfig$);
+            expect(result.map(section => section.id)).toEqual(['catalog', 'reports', 'sales']);
         });
 
-        it('replacing an existing section', done => {
+        it('replacing an existing section', async () => {
             service.defineNavMenuSections(getBaseNav());
             service.addNavMenuSection({
                 id: 'sales',
@@ -62,14 +58,12 @@ describe('NavBuilderService', () => {
                 items: [],
             });
 
-            service.menuConfig$.pipe(take(1)).subscribe(result => {
-                expect(result.map(section => section.id)).toEqual(['catalog', 'sales']);
-                expect(result[1].label).toBe('Custom Sales');
-                done();
-            });
+            const result = await firstValueFrom(service.menuConfig$);
+            expect(result.map(section => section.id)).toEqual(['catalog', 'sales']);
+            expect(result[1].label).toBe('Custom Sales');
         });
 
-        it('replacing and moving', done => {
+        it('replacing and moving', async () => {
             service.defineNavMenuSections(getBaseNav());
             service.addNavMenuSection(
                 {
@@ -80,17 +74,15 @@ describe('NavBuilderService', () => {
                 'catalog',
             );
 
-            service.menuConfig$.pipe(take(1)).subscribe(result => {
-                expect(result.map(section => section.id)).toEqual(['sales', 'catalog']);
-                expect(result[0].label).toBe('Custom Sales');
-                done();
-            });
+            const result = await firstValueFrom(service.menuConfig$);
+            expect(result.map(section => section.id)).toEqual(['sales', 'catalog']);
+            expect(result[0].label).toBe('Custom Sales');
         });
     });
 
     describe('addNavMenuItem()', () => {
-        it('adding to non-existent section', done => {
-            spyOn(console, 'error');
+        it('adding to non-existent section', async () => {
+            vi.spyOn(console, 'error');
             service.defineNavMenuSections(getBaseNav());
             service.addNavMenuItem(
                 {
@@ -101,15 +93,13 @@ describe('NavBuilderService', () => {
                 'farm-tools',
             );
 
-            service.menuConfig$.pipe(take(1)).subscribe(result => {
-                expect(console.error).toHaveBeenCalledWith(
-                    'Could not add menu item "fulfillments", section "farm-tools" does not exist',
-                );
-                done();
-            });
+            await firstValueFrom(service.menuConfig$);
+            expect(console.error).toHaveBeenCalledWith(
+                'Could not add menu item "fulfillments", section "farm-tools" does not exist',
+            );
         });
 
-        it('adding to end of section', done => {
+        it('adding to end of section', async () => {
             service.defineNavMenuSections(getBaseNav());
             service.addNavMenuItem(
                 {
@@ -120,15 +110,13 @@ describe('NavBuilderService', () => {
                 'sales',
             );
 
-            service.menuConfig$.pipe(take(1)).subscribe(result => {
-                const salesSection = result.find(r => r.id === 'sales')!;
+            const result = await firstValueFrom(service.menuConfig$);
+            const salesSection = result.find(r => r.id === 'sales')!;
 
-                expect(salesSection.items.map(item => item.id)).toEqual(['orders', 'fulfillments']);
-                done();
-            });
+            expect(salesSection.items.map(item => item.id)).toEqual(['orders', 'fulfillments']);
         });
 
-        it('adding before existing item', done => {
+        it('adding before existing item', async () => {
             service.defineNavMenuSections(getBaseNav());
             service.addNavMenuItem(
                 {
@@ -140,15 +128,13 @@ describe('NavBuilderService', () => {
                 'orders',
             );
 
-            service.menuConfig$.pipe(take(1)).subscribe(result => {
-                const salesSection = result.find(r => r.id === 'sales')!;
+            const result = await firstValueFrom(service.menuConfig$);
+            const salesSection = result.find(r => r.id === 'sales')!;
 
-                expect(salesSection.items.map(item => item.id)).toEqual(['fulfillments', 'orders']);
-                done();
-            });
+            expect(salesSection.items.map(item => item.id)).toEqual(['fulfillments', 'orders']);
         });
 
-        it('replacing existing item', done => {
+        it('replacing existing item', async () => {
             service.defineNavMenuSections(getBaseNav());
             service.addNavMenuItem(
                 {
@@ -159,16 +145,14 @@ describe('NavBuilderService', () => {
                 'catalog',
             );
 
-            service.menuConfig$.pipe(take(1)).subscribe(result => {
-                const catalogSection = result.find(r => r.id === 'catalog')!;
+            const result = await firstValueFrom(service.menuConfig$);
+            const catalogSection = result.find(r => r.id === 'catalog')!;
 
-                expect(catalogSection.items.map(item => item.id)).toEqual(['products', 'facets']);
-                expect(catalogSection.items[1].label).toBe('Custom Facets');
-                done();
-            });
+            expect(catalogSection.items.map(item => item.id)).toEqual(['products', 'facets']);
+            expect(catalogSection.items[1].label).toBe('Custom Facets');
         });
 
-        it('replacing existing item and moving', done => {
+        it('replacing existing item and moving', async () => {
             service.defineNavMenuSections(getBaseNav());
             service.addNavMenuItem(
                 {
@@ -180,13 +164,11 @@ describe('NavBuilderService', () => {
                 'products',
             );
 
-            service.menuConfig$.pipe(take(1)).subscribe(result => {
-                const catalogSection = result.find(r => r.id === 'catalog')!;
+            const result = await firstValueFrom(service.menuConfig$);
+            const catalogSection = result.find(r => r.id === 'catalog')!;
 
-                expect(catalogSection.items.map(item => item.id)).toEqual(['facets', 'products']);
-                expect(catalogSection.items[0].label).toBe('Custom Facets');
-                done();
-            });
+            expect(catalogSection.items.map(item => item.id)).toEqual(['facets', 'products']);
+            expect(catalogSection.items[0].label).toBe('Custom Facets');
         });
     });
 

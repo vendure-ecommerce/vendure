@@ -1,8 +1,6 @@
-import {
-    ConfigurableOperation,
-    getDefaultConfigArgValue,
-    toConfigurableOperationInput,
-} from '@vendure/admin-ui/core';
+import { describe, expect, it } from 'vitest';
+import { ConfigurableOperation } from '../../common/generated-types';
+import { getDefaultConfigArgValue, toConfigurableOperationInput } from './configurable-operation-utils';
 
 describe('getDefaultConfigArgValue()', () => {
     it('returns a default string value', () => {

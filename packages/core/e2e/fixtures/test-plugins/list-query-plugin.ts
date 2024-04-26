@@ -145,7 +145,7 @@ export class TestEntity extends VendureEntity implements Translatable, HasCustom
     @Column(() => TestEntityCustomFields)
     customFields: TestEntityCustomFields;
 
-    @ManyToOne(() => TestEntity, (type) => type.parent)
+    @ManyToOne(() => TestEntity, type => type.parent)
     parent: TestEntity | null;
 
     @Column('int', { nullable: true })
@@ -403,7 +403,9 @@ export class ListQueryPlugin implements OnApplicationBootstrap {
             // test entity with self-referencing relation without tree structure decorator
             testEntities[0].parent = testEntities[1];
             testEntities[3].parent = testEntities[1];
-            await this.connection.rawConnection.getRepository(TestEntity).save([testEntities[0], testEntities[3]]);
+            await this.connection.rawConnection
+                .getRepository(TestEntity)
+                .save([testEntities[0], testEntities[3]]);
 
             const translations: any = {
                 A: { [LanguageCode.en]: 'apple', [LanguageCode.de]: 'apfel' },
@@ -455,12 +457,14 @@ export class ListQueryPlugin implements OnApplicationBootstrap {
                                 data: nestedContent.data,
                             }),
                         );
-                        await this.connection.rawConnection.getRepository(CustomFieldOtherRelationTestEntity).save(
-                            new CustomFieldOtherRelationTestEntity({
-                                parent: testEntity,
-                                data: nestedContent.data,
-                            }),
-                        );
+                        await this.connection.rawConnection
+                            .getRepository(CustomFieldOtherRelationTestEntity)
+                            .save(
+                                new CustomFieldOtherRelationTestEntity({
+                                    parent: testEntity,
+                                    data: nestedContent.data,
+                                }),
+                            );
                     }
                 }
             }

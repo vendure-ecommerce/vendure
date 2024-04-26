@@ -5,7 +5,7 @@ import {
     MolliePaymentIntent,
     MolliePaymentIntentError,
     MolliePaymentIntentInput,
-    MolliePaymentIntentResult
+    MolliePaymentIntentResult,
 } from './graphql/generated-shop-types';
 import { MollieService } from './mollie.service';
 

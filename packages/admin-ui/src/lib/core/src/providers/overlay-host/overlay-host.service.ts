@@ -1,7 +1,7 @@
 import { Injectable, ViewContainerRef } from '@angular/core';
 
 /**
- * The OverlayHostService is used to get a reference to the ViewConainerRef of the
+ * The OverlayHostService is used to get a reference to the ViewContainerRef of the
  * OverlayHost component, so that other components may insert components & elements
  * into the DOM at that point.
  */

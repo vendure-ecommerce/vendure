@@ -3,6 +3,7 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { By } from '@angular/platform-browser';
 import { Router, Routes } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { ClarityModule } from '@clr/angular';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { BehaviorSubject, Observable, of as observableOf } from 'rxjs';
 
@@ -227,7 +228,7 @@ describe('BeadcrumbsComponent', () => {
         ];
 
         TestBed.configureTestingModule({
-            imports: [RouterTestingModule.withRoutes(baseRouteConfig)],
+            imports: [RouterTestingModule.withRoutes(baseRouteConfig), ClarityModule],
             declarations: [BreadcrumbComponent, TestParentComponent, TestChildComponent, MockTranslatePipe],
             providers: [FooResolver, { provide: DataService, useClass: class {} }],
         }).compileComponents();
@@ -428,7 +429,7 @@ function getBreadcrumbListItems(fixture: ComponentFixture<TestComponent>): HTMLL
 }
 
 function getBreadcrumbLabels(fixture: ComponentFixture<TestComponent>): string[] {
-    const labels = getBreadcrumbListItems(fixture).map(item => item.innerText.trim());
+    const labels = getBreadcrumbListItems(fixture).map(item => item.textContent!.trim());
     return labels;
 }
 
@@ -453,7 +454,9 @@ class TestParentComponent {}
 @Component({
     // eslint-disable-next-line @angular-eslint/component-selector
     selector: 'test-child-component',
-    template: ` <vdr-breadcrumb></vdr-breadcrumb> `,
+    template: `
+        <vdr-breadcrumb></vdr-breadcrumb>
+    `,
 })
 class TestChildComponent {}
 

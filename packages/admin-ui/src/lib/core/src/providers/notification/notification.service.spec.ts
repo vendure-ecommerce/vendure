@@ -82,7 +82,9 @@ describe('NotificationService:', () => {
 });
 
 @Component({
-    template: ` <vdr-overlay-host></vdr-overlay-host> `,
+    template: `
+        <vdr-overlay-host></vdr-overlay-host>
+    `,
 })
 class TestComponent {
     constructor(public notificationService: NotificationService) {}

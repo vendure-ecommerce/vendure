@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { NgModule, Provider } from '@angular/core';
 import { ClarityModule } from '@clr/angular';
-
-import { DataService, FormFieldComponent, FormFieldControlDirective } from '../lib/core/src/public_api';
+import { FormFieldComponent } from '../lib/core/src/shared/components/form-field/form-field.component';
+import { FormFieldControlDirective } from '../lib/core/src/shared/components/form-field/form-field-control.directive';
+import { DataService } from '../lib/core/src/data/providers/data.service';
 
 import { MockTranslatePipe } from './translate.pipe.mock';
 

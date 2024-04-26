@@ -1,4 +1,5 @@
 import { DocumentNode, FieldNode, FragmentDefinitionNode, Kind, OperationTypeNode } from 'graphql';
+import { beforeEach, describe, it } from 'vitest';
 
 import { CustomFieldConfig, CustomFields } from '../../common/generated-types';
 

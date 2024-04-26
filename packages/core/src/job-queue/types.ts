@@ -58,8 +58,8 @@ export interface JobConfig<T extends JobData<T>> {
     settledAt?: Date;
 }
 
-export type JobOptions<Data extends JsonCompatible<Data>> = Pick<JobConfig<Data>, 'retries'>  & {
-    ctx?: RequestContext
+export type JobOptions<Data extends JsonCompatible<Data>> = Pick<JobConfig<Data>, 'retries'> & {
+    ctx?: RequestContext;
 };
 
-export type JobQueueStrategyJobOptions<Data extends JsonCompatible<Data>> = Omit<JobOptions<Data>, "retries">
+export type JobQueueStrategyJobOptions<Data extends JsonCompatible<Data>> = Omit<JobOptions<Data>, 'retries'>;
