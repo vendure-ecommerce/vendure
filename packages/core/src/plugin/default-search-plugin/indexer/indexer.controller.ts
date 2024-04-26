@@ -314,6 +314,9 @@ export class IndexerController {
     }
 
     private getSearchIndexQueryBuilder(ctx: RequestContext, channel: Channel) {
+        const channelLanguages = channel.availableLanguageCodes.concat(
+            this.configService.defaultLanguageCode,
+        );
         const qb = this.connection
             .getRepository(ctx, ProductVariant)
             .createQueryBuilder('variants')
@@ -336,7 +339,7 @@ export class IndexerController {
                 'product_variant_translations',
                 'product_variant_translations."baseId" = variants.id AND product_variant_translations."languageCode" IN (:...channelLanguages)',
                 {
-                    channelLanguages: channel.availableLanguageCodes,
+                    channelLanguages,
                 },
             )
             .leftJoin('variants.product', 'product')
@@ -346,7 +349,7 @@ export class IndexerController {
                 'variant_facet_value_translations',
                 'variant_facet_value_translations."languageCode" IN (:...channelLanguages)',
                 {
-                    channelLanguages: channel.availableLanguageCodes,
+                    channelLanguages,
                 },
             )
             .leftJoinAndSelect('variant_facet_values.facet', 'facet_values_facet')
@@ -355,7 +358,7 @@ export class IndexerController {
                 'facet_values_facet_translations',
                 'facet_values_facet_translations."languageCode" IN (:...channelLanguages)',
                 {
-                    channelLanguages: channel.availableLanguageCodes,
+                    channelLanguages,
                 },
             )
             .leftJoinAndSelect('variants.collections', 'collections')
@@ -363,14 +366,16 @@ export class IndexerController {
                 'collections.channels',
                 'collection_channels',
                 'collection_channels.id = :channelId',
-                { channelId: channel.id },
+                {
+                    channelId: channel.id,
+                },
             )
             .leftJoinAndSelect(
                 'collections.translations',
                 'collection_translations',
                 'collection_translations."languageCode" IN (:...channelLanguages)',
                 {
-                    channelLanguages: channel.availableLanguageCodes,
+                    channelLanguages,
                 },
             )
             .leftJoin('product.channels', 'channel')
@@ -382,6 +387,10 @@ export class IndexerController {
     }
 
     private getProductInChannelQueryBuilder(ctx: RequestContext, channel: Channel, productId: ID) {
+        const channelLanguages = channel.availableLanguageCodes.concat(
+            this.configService.defaultLanguageCode,
+        );
+
         return this.connection
             .getRepository(ctx, Product)
             .createQueryBuilder('product')
@@ -393,7 +402,7 @@ export class IndexerController {
                 'translations',
                 'translations.languageCode IN (:...channelLanguages)',
                 {
-                    channelLanguages: channel.availableLanguageCodes,
+                    channelLanguages,
                 },
             )
             .leftJoinAndSelect('product.featuredAsset', 'product_featured_asset')
@@ -403,7 +412,7 @@ export class IndexerController {
                 'product_facet_value_translations',
                 'product_facet_value_translations."languageCode" IN (:...channelLanguages)',
                 {
-                    channelLanguages: channel.availableLanguageCodes,
+                    channelLanguages,
                 },
             )
             .leftJoinAndSelect('product_facet_values.facet', 'product_facet')
@@ -412,7 +421,7 @@ export class IndexerController {
                 'product_facet_translations',
                 'product_facet_translations."languageCode" IN (:...channelLanguages)',
                 {
-                    channelLanguages: channel.availableLanguageCodes,
+                    channelLanguages,
                 },
             )
             .leftJoinAndSelect('product.channels', 'channel', 'channel.id = :channelId', {
