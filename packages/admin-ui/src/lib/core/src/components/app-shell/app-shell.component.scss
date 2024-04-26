@@ -7,15 +7,8 @@
 }
 
 .left-nav {
-    background-color: var(--color-left-nav-bg);
-    color: var(--color-left-nav-text);
-    display: flex;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    height: 100%;
+    @apply bg-gray-100 text-gray-600 flex flex-col overflow-hidden h-full z-[2];
     border-inline-end: 1px solid var(--color-weight-150);
-    z-index: 2;
     width: var(--left-nav-width);
     max-width: var(--left-nav-width);
 
@@ -85,10 +78,6 @@
     }
 }
 
-.logo {
-    max-width: 100%;
-}
-
 .wordmark {
     font-weight: bold;
     margin-inline-start: 12px;
@@ -100,10 +89,7 @@
 }
 
 .surface {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    background-color: var(--color-surface-bg);
+    @apply flex flex-col flex-1 bg-gray-50;
 }
 
 .content-container {
@@ -133,8 +119,7 @@
     padding: calc(var(--space-unit) * 2) calc(var(--space-unit) * 1);
     background-color: var(--color-page-header);
     @media screen and (min-width: $breakpoint-medium) {
-        padding: calc(var(--space-unit) * 4);
-        padding-inline-start: var(--surface-margin-left);
+        @apply px-5;
     }
 }
 

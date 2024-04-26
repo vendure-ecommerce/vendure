@@ -95,6 +95,7 @@
         "@typescript-eslint/eslint-plugin": "^5.59.2",
         "@typescript-eslint/parser": "^5.59.2",
         "@vendure/ngx-translate-extract": "^8.2.2",
+        "autoprefixer": "^10.4.19",
         "cross-spawn": "^7.0.3",
         "eslint": "^8.41.0",
         "eslint-plugin-import": "^2.27.5",
@@ -110,8 +111,10 @@
         "karma-jasmine-html-reporter": "^1.7.0",
         "karma-mocha-reporter": "^2.2.5",
         "ng-packagr": "17.2.1",
+        "postcss": "^8.4.38",
         "puppeteer": "^19.8.3",
         "rimraf": "^5.0.5",
+        "tailwindcss": "^3.4.3",
         "typescript": "5.3.3"
     }
 }

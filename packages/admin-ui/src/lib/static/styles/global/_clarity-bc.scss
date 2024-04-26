@@ -1,0 +1,12 @@
+.clr-form-control {
+    @apply flex flex-col items-start mt-0 grow;
+}
+.clr-control-label {
+    @apply block text-gray-700 font-semibold;
+}
+.clr-control-container {
+    @apply inline-block;
+}
+.clr-input-wrapper {
+    @apply whitespace-nowrap;
+}

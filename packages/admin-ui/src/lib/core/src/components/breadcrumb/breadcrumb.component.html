@@ -1,14 +1,16 @@
 <nav role="navigation">
-    <ul class="breadcrumbs">
+    <ul class="flex items-center justify-start text-xs">
         <li
             *ngFor="let breadcrumb of breadcrumbs$ | async; let isLast = last"
             [title]="breadcrumb.label | translate"
         >
             <a [routerLink]="breadcrumb.link" *ngIf="!isLast">{{ breadcrumb.label | translate }}</a>
             <ng-container *ngIf="!isLast"
-                ><clr-icon shape="caret right" class="color-weight-400 mx-1"></clr-icon
+                ><clr-icon shape="caret right" class="h-2 w-2 text-gray-300 mx-1"></clr-icon
             ></ng-container>
-            <ng-container *ngIf="isLast">{{ breadcrumb.label | translate }}</ng-container>
+            <ng-container *ngIf="isLast">
+                <span class="text-gray-600 font-semibold">{{ breadcrumb.label | translate }}</span>
+            </ng-container>
         </li>
     </ul>
     <ul class="breadcrumbs mobile" *ngIf="parentBreadcrumb$ | async as parentBreadcrumb">

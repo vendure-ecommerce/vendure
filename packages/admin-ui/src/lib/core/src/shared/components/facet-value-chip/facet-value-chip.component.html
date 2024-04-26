@@ -4,6 +4,6 @@
     (iconClick)="remove.emit()"
     [title]="facetValue.facet.name + ' - ' + facetValue.name"
 >
-    <span *ngIf="displayFacetName" class="facet-name">{{ facetValue.facet.name }}</span>
+    <span class="uppercase me-1 text-[0.7rem]">{{ facetValue.facet.name }}</span>
     <span>{{ facetValue.name }}</span>
 </vdr-chip>

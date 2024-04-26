@@ -8,6 +8,7 @@ import * as path from 'path';
 
 import { DEFAULT_BASE_HREF, MODULES_OUTPUT_DIR } from './constants';
 import { copyGlobalStyleFile, setBaseHref, setupScaffold } from './scaffold';
+import { provideExtensionPaths } from './tailwind';
 import { getAllTranslationFiles, mergeExtensionTranslations } from './translations';
 import {
     StaticAssetDefinition,
@@ -37,6 +38,9 @@ export function compileUiExtensions(
 ): AdminUiAppConfig | AdminUiAppDevModeConfig {
     const { devMode, watchPort, command } = options;
     const usingYarn = command && command === 'npm' ? false : shouldUseYarn();
+
+    provideExtensionPaths(options.extensions);
+
     if (devMode) {
         return runWatchMode({
             watchPort: watchPort || 4200,

@@ -1,11 +1,11 @@
-<div class="login-wrapper" [dir]="direction$ | async">
-    <div class="login-wrapper-inner">
-        <div class="login-wrapper-image">
-            <div class="login-wrapper-image-content">
-                <div class="login-wrapper-image-title">
+<div class="flex h-screen justify-center items-center bg-slate-100" [dir]="direction$ | async">
+    <div class="rounded-lg overflow-hidden w-[1120px] h-[590px] flex bg-white items-start relative justify-start border border-slate-200 shadow-lg hover:shadow-2xl transition-all">
+        <div class="relative h-full grow">
+            <div class="absolute p-10 left-0 bottom-0 w-full z-20 text-white bg-gradient-to-b from-black/0 to-black/50">
+                <div class="text-2xl text-white font-bold">
                     {{ 'common.login-image-title' | translate }}
                 </div>
-                <div class="login-wrapper-image-copyright">
+                <div class="text-sm text-white/80">
                     <p *ngIf="imageCreator" class="creator">
                         Photo by <a [href]="imageCreatorUrl" target="_blank">{{ imageCreator }}</a> on
                         <a [href]="imageUnsplashUrl" target="_blank">Unsplash</a>
@@ -13,14 +13,14 @@
                     <p *ngIf="imageLocation" class="location">{{ imageLocation }}</p>
                 </div>
             </div>
-            <img *ngIf="imageUrl" [src]="imageUrl" [alt]="imageUrl" />
+            <img class="absolute z-10 left-0 right-0 h-full w-full object-cover object-center top-0 bottom-0" *ngIf="imageUrl" [src]="imageUrl" [alt]="imageUrl" />
         </div>
-        <div class="login-wrapper-form">
-            <p class="login-title">
+        <div class="flex h-full p-10 flex-col items-stretch justify-center min-w-[400px]">
+            <p class="text-2xl text-slate-800 font-bold mb-4">
                 {{ 'common.login-title' | translate : { brand: hideVendureBranding ? brand : 'Vendure' } }}
             </p>
             <form class="login-form">
-                <div class="login-group">
+                <div class="flex flex-col gap-2">
                     <input
                         class="username"
                         type="text"
@@ -57,7 +57,7 @@
                             name="rememberme"
                             [(ngModel)]="rememberMe"
                         />
-                        <label>{{ 'common.remember-me' | translate }}</label>
+                        <label class="ml-2 text-slate-600">{{ 'common.remember-me' | translate }}</label>
                     </clr-checkbox-wrapper>
                     <div>
                         <button
@@ -72,6 +72,6 @@
                 </div>
             </form>
         </div>
-        <img class="login-wrapper-logo" src="assets/logo-login.webp" *ngIf="!hideVendureBranding" />
+        <img class="absolute right-5 top-5 h-16 " src="assets/logo-login.webp" *ngIf="!hideVendureBranding" />
     </div>
 </div>

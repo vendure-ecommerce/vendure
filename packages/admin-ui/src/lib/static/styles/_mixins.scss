@@ -1,4 +1,4 @@
-@import "variables";
+@import 'variables';
 
 @mixin no-select {
     -webkit-touch-callout: none;
@@ -9,24 +9,15 @@
     user-select: none;
 }
 @mixin ng-select-facet-values {
-
 }
 @mixin table-base-styles {
     th {
-        border-bottom: 1px solid var(--color-table-header-border);
-        color: var(--color-weight-700);
-        font-size: var(--font-size-xs);
-        font-weight: 600;
-        text-transform: uppercase;
-        position: relative;
-        white-space: nowrap;
-        background-color: transparent;
+        @apply border-b border-gray-200 text-gray-400 text-xs font-semibold relative whitespace-nowrap bg-transparent;
+        @apply px-3 py-1;
     }
 
-    th,
     td {
-        padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 1);
-        color: var(--color-text-100);
+        @apply px-3 py-3;
     }
 
     tr td:first-of-type,

@@ -19,7 +19,7 @@
     </div>
     <div cdkDropListGroup>
         <div
-            class="clr-row dashboard-row"
+            class="dashboard-row grid grid-cols-12 gap-4"
             *ngFor="let row of widgetLayout; index as rowIndex; trackBy: trackRow"
             cdkDropList
             (cdkDropListDropped)="drop($event)"

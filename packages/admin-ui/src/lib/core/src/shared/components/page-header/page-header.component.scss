@@ -5,5 +5,5 @@
 }
 
 .page-header {
-    padding-inline-start: var(--surface-margin-left);
+    @apply px-5;
 }

@@ -42,11 +42,10 @@ vdr-dashboard-widget {
 .dashboard-row {
     padding: 0;
     border-width: 1;
-    margin-bottom: 6px;
-    transition: padding 0.2s, margin 0.2s;
 }
 
-.dashboard-row.cdk-drop-list-dragging, .dashboard-row.cdk-drop-list-receiving  {
+.dashboard-row.cdk-drop-list-dragging,
+.dashboard-row.cdk-drop-list-receiving {
     border: 2px dashed var(--color-component-border-200);
     border-radius: var(--border-radius);
     padding: 6px;

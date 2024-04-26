@@ -1,4 +1,5 @@
-html, body:not([cds-text]) {
+html,
+body:not([cds-text]) {
     font-size: var(--font-size-sm);
     font-family: Inter, sans-serif !important;
     line-height: var(--cds-global-typography-body-line-height);
@@ -12,7 +13,6 @@ body p:not([cds-text]) {
 .page-block {
     margin-inline-start: var(--surface-margin-left);
     margin-inline-end: var(--space-unit);
-    margin-top: var(--space-unit);
     max-width: var(--layout-content-max-width);
 }
 
@@ -38,4 +38,12 @@ body p:not([cds-text]) {
 }
 ::-webkit-scrollbar-track {
     background-color: var(--color-scrollbar-bg);
+}
+
+.clr-sr-only {
+    @apply sr-only;
+}
+
+.table {
+    @apply w-full;
 }
