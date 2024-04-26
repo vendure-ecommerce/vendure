@@ -138,7 +138,7 @@ import {
  * which respond to any of the available [VendureEvents](/reference/typescript-api/events/).
  *
  * A good way to learn how to create your own email handler is to take a look at the
- * [source code of the default handler](https://github.com/vendure-ecommerce/vendure/blob/master/packages/email-plugin/src/default-email-handlers.ts).
+ * [source code of the default handler](https://github.com/vendure-ecommerce/vendure/blob/master/packages/email-plugin/src/handler/default-email-handlers.ts).
  * New handler are defined in exactly the same way.
  *
  * It is also possible to modify the default handler:
