@@ -109,7 +109,7 @@ export async function createNewPlugin(): Promise<CliCommandReturnVal> {
         if (featureType === 'no') {
             done = true;
         } else {
-            const newProject = getTsMorphProject();
+            const newProject = await getTsMorphProject();
             workingProject = newProject;
             const newPlugin = newProject
                 .getSourceFile(workingPlugin.getSourceFile().getFilePath())
@@ -158,7 +158,7 @@ export async function generatePlugin(
     const projectSpinner = spinner();
     projectSpinner.start('Generating plugin scaffold...');
     await pauseForPromptDisplay();
-    const project = getTsMorphProject({ skipAddingFilesFromTsConfig: true });
+    const project = await getTsMorphProject({ skipAddingFilesFromTsConfig: true });
 
     const pluginFile = createFile(project, path.join(__dirname, 'templates/plugin.template.ts'));
     const pluginClass = pluginFile.getClass('TemplatePlugin');

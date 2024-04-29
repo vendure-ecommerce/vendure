@@ -13,19 +13,17 @@ import {
 import { createFile, getTsMorphProject } from '../../../utilities/ast-utils';
 
 export class CodegenConfigRef {
-    private readonly tempProject: Project;
     public readonly sourceFile: SourceFile;
     private configObject: ObjectLiteralExpression | undefined;
-    constructor(rootDir: Directory) {
-        this.tempProject = getTsMorphProject({ skipAddingFilesFromTsConfig: true });
+    constructor(
+        private readonly project: Project,
+        rootDir: Directory,
+    ) {
         const codegenFilePath = path.join(rootDir.getPath(), 'codegen.ts');
         if (fs.existsSync(codegenFilePath)) {
-            this.sourceFile = this.tempProject.addSourceFileAtPath(codegenFilePath);
+            this.sourceFile = this.project.addSourceFileAtPath(codegenFilePath);
         } else {
-            this.sourceFile = createFile(
-                this.tempProject,
-                path.join(__dirname, 'templates/codegen.template.ts'),
-            );
+            this.sourceFile = createFile(this.project, path.join(__dirname, 'templates/codegen.template.ts'));
             this.sourceFile.move(path.join(rootDir.getPath(), 'codegen.ts'));
         }
     }
@@ -58,6 +56,6 @@ export class CodegenConfigRef {
     }
 
     save() {
-        return this.tempProject.save();
+        return this.project.save();
     }
 }

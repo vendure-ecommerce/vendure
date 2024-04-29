@@ -62,7 +62,7 @@ async function addCodegen(options?: AddCodegenOptions): Promise<CliCommandReturn
     configSpinner.start('Configuring codegen file...');
     await pauseForPromptDisplay();
 
-    const codegenFile = new CodegenConfigRef(packageJson.getPackageRootDir());
+    const codegenFile = new CodegenConfigRef(project, packageJson.getPackageRootDir());
 
     const rootDir = project.getDirectory('.');
     if (!rootDir) {
@@ -85,9 +85,9 @@ async function addCodegen(options?: AddCodegenOptions): Promise<CliCommandReturn
             codegenFile.addEntryToGeneratesObject({
                 name: `'${uiExtensionsPath}/gql/'`,
                 kind: StructureKind.PropertyAssignment,
-                initializer: `{ 
+                initializer: `{
                         preset: 'client',
-                        documents: '${uiExtensionsPath}/**/*.ts', 
+                        documents: '${uiExtensionsPath}/**/*.ts',
                         presetConfig: {
                             fragmentMasking: false,
                         },
@@ -101,7 +101,6 @@ async function addCodegen(options?: AddCodegenOptions): Promise<CliCommandReturn
     configSpinner.stop('Configured codegen file');
 
     await project.save();
-    await codegenFile.save();
 
     const nextSteps = [
         `You can run codegen by doing the following:`,

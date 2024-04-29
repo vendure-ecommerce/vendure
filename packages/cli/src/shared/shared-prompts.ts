@@ -20,7 +20,7 @@ export async function analyzeProject(options: {
         const projectSpinner = spinner();
         projectSpinner.start('Analyzing project...');
         await pauseForPromptDisplay();
-        project = getTsMorphProject();
+        project = await getTsMorphProject();
         projectSpinner.stop('Project analyzed');
     }
     return project as Project;
