@@ -1,4 +1,4 @@
-import { log, note, outro, spinner } from '@clack/prompts';
+import { cancel, log, note, outro, spinner } from '@clack/prompts';
 import path from 'path';
 import { StructureKind } from 'ts-morph';
 
@@ -51,6 +51,14 @@ async function addCodegen(options?: AddCodegenOptions): Promise<CliCommandReturn
             isDevDependency: true,
         });
     }
+    const packageManager = packageJson.determinePackageManager();
+    const packageJsonFile = packageJson.locatePackageJsonWithVendureDependency();
+    log.info(`Detected package manager: ${packageManager}`);
+    if (!packageJsonFile) {
+        cancel(`Could not locate package.json file with a dependency on Vendure.`);
+        process.exit(1);
+    }
+    log.info(`Detected package.json: ${packageJsonFile}`);
     try {
         await packageJson.installPackages(packagesToInstall);
     } catch (e: any) {

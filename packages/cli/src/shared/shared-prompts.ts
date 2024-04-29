@@ -3,7 +3,7 @@ import { ClassDeclaration, Project } from 'ts-morph';
 
 import { addServiceCommand } from '../commands/add/service/add-service';
 import { Messages } from '../constants';
-import { getPluginClasses, getTsMorphProject } from '../utilities/ast-utils';
+import { getPluginClasses, getTsMorphProject, selectTsConfigFile } from '../utilities/ast-utils';
 import { pauseForPromptDisplay } from '../utilities/utils';
 
 import { EntityRef } from './entity-ref';
@@ -20,9 +20,10 @@ export async function analyzeProject(options: {
 
     if (!providedVendurePlugin) {
         const projectSpinner = spinner();
+        const tsConfigFile = await selectTsConfigFile();
         projectSpinner.start('Analyzing project...');
         await pauseForPromptDisplay();
-        const { project: _project, tsConfigPath: _tsConfigPath } = await getTsMorphProject();
+        const { project: _project, tsConfigPath: _tsConfigPath } = await getTsMorphProject({}, tsConfigFile);
         project = _project;
         tsConfigPath = _tsConfigPath;
         projectSpinner.stop('Project analyzed');
