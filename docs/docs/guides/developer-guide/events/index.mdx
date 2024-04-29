@@ -341,7 +341,7 @@ export class MyPluginPlugin implements OnModuleInit {
     onModuleInit() {
         // highlight-start
         this.eventBus.registerBlockingEventHandler({
-            type: CustomerEvent,
+            event: CustomerEvent,
             id: 'sync-customer-details-handler',
             handler: async event => {
                 // This hypothetical service method would do nothing
