@@ -628,7 +628,12 @@ function getGraphQLType(type: Type): string | undefined {
 
 function getOrCreateApiExtensionsFile(project: Project, plugin: VendurePluginRef): SourceFile {
     const existingApiExtensionsFile = project.getSourceFiles().find(sf => {
-        return sf.getBaseName() === 'api-extensions.ts' && sf.getDirectory().getPath().endsWith('/api');
+        const filePath = sf.getDirectory().getPath();
+        return (
+            sf.getBaseName() === 'api-extensions.ts' &&
+            filePath.includes(plugin.getPluginDir().getPath()) &&
+            filePath.endsWith('/api')
+        );
     });
     if (existingApiExtensionsFile) {
         return existingApiExtensionsFile;
