@@ -43,7 +43,7 @@ async function addApiExtension(
     options?: AddApiExtensionOptions,
 ): Promise<CliCommandReturnVal<{ serviceRef: ServiceRef }>> {
     const providedVendurePlugin = options?.plugin;
-    const project = await analyzeProject({ providedVendurePlugin, cancelledMessage });
+    const { project } = await analyzeProject({ providedVendurePlugin, cancelledMessage });
     const plugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
     const serviceRef = await selectServiceRef(project, plugin, false);
     const serviceEntityRef = serviceRef.crudEntityRef;

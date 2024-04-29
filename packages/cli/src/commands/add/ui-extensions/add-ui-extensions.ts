@@ -24,7 +24,7 @@ export const addUiExtensionsCommand = new CliCommand<AddUiExtensionsOptions>({
 
 async function addUiExtensions(options?: AddUiExtensionsOptions): Promise<CliCommandReturnVal> {
     const providedVendurePlugin = options?.plugin;
-    const project = await analyzeProject({ providedVendurePlugin });
+    const { project } = await analyzeProject({ providedVendurePlugin });
     const vendurePlugin =
         providedVendurePlugin ?? (await selectPlugin(project, 'Add UI extensions cancelled'));
     const packageJson = new PackageJson(project);

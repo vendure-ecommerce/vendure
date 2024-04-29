@@ -37,7 +37,7 @@ async function addService(
     providedOptions?: Partial<AddServiceOptions>,
 ): Promise<CliCommandReturnVal<{ serviceRef: ServiceRef }>> {
     const providedVendurePlugin = providedOptions?.plugin;
-    const project = await analyzeProject({ providedVendurePlugin, cancelledMessage });
+    const { project } = await analyzeProject({ providedVendurePlugin, cancelledMessage });
     const vendurePlugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
     const modifiedSourceFiles: SourceFile[] = [];
     const type =

@@ -45,7 +45,7 @@ export async function getTsMorphProject(options: ProjectOptions = {}) {
         ...options,
     });
     project.enableLogging(false);
-    return project;
+    return { project, tsConfigPath };
 }
 
 export function getPluginClasses(project: Project) {

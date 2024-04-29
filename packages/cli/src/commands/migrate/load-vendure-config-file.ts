@@ -1,3 +1,4 @@
+import { VendureConfig } from '@vendure/core';
 import path from 'node:path';
 import { register } from 'ts-node';
 
@@ -5,12 +6,21 @@ import { VendureConfigRef } from '../../shared/vendure-config-ref';
 import { selectTsConfigFile } from '../../utilities/ast-utils';
 import { isRunningInTsNode } from '../../utilities/utils';
 
-export async function loadVendureConfigFile(vendureConfig: VendureConfigRef) {
+export async function loadVendureConfigFile(
+    vendureConfig: VendureConfigRef,
+    providedTsConfigPath?: string,
+): Promise<VendureConfig> {
     await import('dotenv/config');
     if (!isRunningInTsNode()) {
-        const tsConfigPath = await selectTsConfigFile();
+        let tsConfigPath: string;
+        if (providedTsConfigPath) {
+            tsConfigPath = providedTsConfigPath;
+        } else {
+            const tsConfigFile = await selectTsConfigFile();
+            tsConfigPath = path.join(process.cwd(), tsConfigFile);
+        }
         // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const compilerOptions = require(path.join(process.cwd(), tsConfigPath)).compilerOptions;
+        const compilerOptions = require(tsConfigPath).compilerOptions;
         register({
             compilerOptions: { ...compilerOptions, moduleResolution: 'NodeNext', module: 'NodeNext' },
             transpileOnly: true,

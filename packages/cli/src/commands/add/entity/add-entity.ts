@@ -37,7 +37,7 @@ async function addEntity(
     options?: Partial<AddEntityOptions>,
 ): Promise<CliCommandReturnVal<{ entityRef: EntityRef }>> {
     const providedVendurePlugin = options?.plugin;
-    const project = await analyzeProject({ providedVendurePlugin, cancelledMessage });
+    const { project } = await analyzeProject({ providedVendurePlugin, cancelledMessage });
     const vendurePlugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
     const modifiedSourceFiles: SourceFile[] = [];
 

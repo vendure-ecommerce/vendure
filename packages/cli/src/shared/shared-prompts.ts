@@ -16,14 +16,18 @@ export async function analyzeProject(options: {
 }) {
     const providedVendurePlugin = options.providedVendurePlugin;
     let project = providedVendurePlugin?.classDeclaration.getProject();
+    let tsConfigPath: string | undefined;
+
     if (!providedVendurePlugin) {
         const projectSpinner = spinner();
         projectSpinner.start('Analyzing project...');
         await pauseForPromptDisplay();
-        project = await getTsMorphProject();
+        const { project: _project, tsConfigPath: _tsConfigPath } = await getTsMorphProject();
+        project = _project;
+        tsConfigPath = _tsConfigPath;
         projectSpinner.stop('Project analyzed');
     }
-    return project as Project;
+    return { project: project as Project, tsConfigPath };
 }
 
 export async function selectPlugin(project: Project, cancelledMessage: string): Promise<VendurePluginRef> {

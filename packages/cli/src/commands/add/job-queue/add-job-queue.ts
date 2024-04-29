@@ -25,7 +25,7 @@ async function addJobQueue(
     options?: AddJobQueueOptions,
 ): Promise<CliCommandReturnVal<{ serviceRef: ServiceRef }>> {
     const providedVendurePlugin = options?.plugin;
-    const project = await analyzeProject({ providedVendurePlugin, cancelledMessage });
+    const { project } = await analyzeProject({ providedVendurePlugin, cancelledMessage });
     const plugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
     const serviceRef = await selectServiceRef(project, plugin);
 
@@ -107,19 +107,19 @@ async function addJobQueue(
                     const totalItems = 10;
                     for (let i = 0; i < totalItems; i++) {
                         await new Promise(resolve => setTimeout(resolve, 500));
-                        
+
                         // You can optionally respond to the job being cancelled
                         // during processing. This can be useful for very long-running
                         // tasks which can be cancelled by the user.
                         if (job.state === JobState.CANCELLED) {
                             throw new Error('Job was cancelled');
                         }
-                        
+
                         // Progress can be reported as a percentage like this
                         job.setProgress(Math.floor(i / totalItems * 100));
                     }
-                  
-                    // The value returned from the \`process\` function is stored 
+
+                    // The value returned from the \`process\` function is stored
                     // as the "result" field of the job
                     return {
                         processedCount: totalItems,
