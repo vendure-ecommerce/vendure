@@ -23,8 +23,11 @@ export class CodegenConfigRef {
         if (fs.existsSync(codegenFilePath)) {
             this.sourceFile = this.project.addSourceFileAtPath(codegenFilePath);
         } else {
-            this.sourceFile = createFile(this.project, path.join(__dirname, 'templates/codegen.template.ts'));
-            this.sourceFile.move(path.join(rootDir.getPath(), 'codegen.ts'));
+            this.sourceFile = createFile(
+                this.project,
+                path.join(__dirname, 'templates/codegen.template.ts'),
+                path.join(rootDir.getPath(), 'codegen.ts'),
+            );
         }
     }
 

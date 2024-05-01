@@ -77,8 +77,13 @@ async function addService(
     }
 
     const serviceSpinner = spinner();
-
+    const serviceFileName = paramCase(options.serviceName).replace(/-service$/, '.service');
     let serviceSourceFile: SourceFile;
+    const serviceSourceFilePath = path.join(
+        vendurePlugin.getPluginDir().getPath(),
+        'services',
+        `${serviceFileName}.ts`,
+    );
     let serviceClassDeclaration: ClassDeclaration;
     if (options.type === 'basic') {
         const name = await text({
@@ -102,7 +107,11 @@ async function addService(
         options.serviceName = name;
         serviceSpinner.start(`Creating ${options.serviceName}...`);
         await pauseForPromptDisplay();
-        serviceSourceFile = createFile(project, path.join(__dirname, 'templates/basic-service.template.ts'));
+        serviceSourceFile = createFile(
+            project,
+            path.join(__dirname, 'templates/basic-service.template.ts'),
+            serviceSourceFilePath,
+        );
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         serviceClassDeclaration = serviceSourceFile
             .getClass('BasicServiceTemplate')!
@@ -110,7 +119,11 @@ async function addService(
     } else {
         serviceSpinner.start(`Creating ${options.serviceName}...`);
         await pauseForPromptDisplay();
-        serviceSourceFile = createFile(project, path.join(__dirname, 'templates/entity-service.template.ts'));
+        serviceSourceFile = createFile(
+            project,
+            path.join(__dirname, 'templates/entity-service.template.ts'),
+            serviceSourceFilePath,
+        );
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         serviceClassDeclaration = serviceSourceFile
             .getClass('EntityServiceTemplate')!
@@ -151,10 +164,6 @@ async function addService(
         removedUnusedConstructorArgs(serviceClassDeclaration, entityRef);
     }
     modifiedSourceFiles.push(serviceSourceFile);
-    const serviceFileName = paramCase(options.serviceName).replace(/-service$/, '.service');
-    serviceSourceFile?.move(
-        path.join(vendurePlugin.getPluginDir().getPath(), 'services', `${serviceFileName}.ts`),
-    );
 
     serviceSpinner.message(`Registering service with plugin...`);
 

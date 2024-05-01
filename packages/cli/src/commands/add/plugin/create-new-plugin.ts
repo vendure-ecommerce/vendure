@@ -158,18 +158,30 @@ export async function generatePlugin(
     const projectSpinner = spinner();
     projectSpinner.start('Generating plugin scaffold...');
     await pauseForPromptDisplay();
-    const { project } = await getTsMorphProject({ skipAddingFilesFromTsConfig: true });
+    const { project } = await getTsMorphProject({ skipAddingFilesFromTsConfig: false });
 
-    const pluginFile = createFile(project, path.join(__dirname, 'templates/plugin.template.ts'));
+    const pluginFile = createFile(
+        project,
+        path.join(__dirname, 'templates/plugin.template.ts'),
+        path.join(options.pluginDir, paramCase(nameWithoutPlugin) + '.plugin.ts'),
+    );
     const pluginClass = pluginFile.getClass('TemplatePlugin');
     if (!pluginClass) {
         throw new Error('Could not find the plugin class in the generated file');
     }
     pluginClass.rename(templateContext.pluginName);
 
-    const typesFile = createFile(project, path.join(__dirname, 'templates/types.template.ts'));
+    const typesFile = createFile(
+        project,
+        path.join(__dirname, 'templates/types.template.ts'),
+        path.join(options.pluginDir, 'types.ts'),
+    );
 
-    const constantsFile = createFile(project, path.join(__dirname, 'templates/constants.template.ts'));
+    const constantsFile = createFile(
+        project,
+        path.join(__dirname, 'templates/constants.template.ts'),
+        path.join(options.pluginDir, 'constants.ts'),
+    );
     constantsFile
         .getVariableDeclaration('TEMPLATE_PLUGIN_OPTIONS')
         ?.rename(templateContext.pluginInitOptionsName)
@@ -177,10 +189,6 @@ export async function generatePlugin(
     constantsFile
         .getVariableDeclaration('loggerCtx')
         ?.set({ initializer: `'${templateContext.pluginName}'` });
-
-    typesFile.move(path.join(options.pluginDir, 'types.ts'));
-    pluginFile.move(path.join(options.pluginDir, paramCase(nameWithoutPlugin) + '.plugin.ts'));
-    constantsFile.move(path.join(options.pluginDir, 'constants.ts'));
 
     projectSpinner.stop('Generated plugin scaffold');
     await project.save();

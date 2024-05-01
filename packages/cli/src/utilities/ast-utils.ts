@@ -38,7 +38,6 @@ export async function getTsMorphProject(options: ProjectOptions = {}, providedTs
     const project = new Project({
         tsConfigFilePath: tsConfigPath,
         manipulationSettings: defaultManipulationSettings,
-        skipFileDependencyResolution: true,
         compilerOptions: {
             skipLibCheck: true,
         },
@@ -123,14 +122,15 @@ export function getRelativeImportPath(locations: {
     return convertPathToRelativeImport(path.relative(fromDir, toPath));
 }
 
-export function createFile(project: Project, templatePath: string) {
+export function createFile(project: Project, templatePath: string, filePath: string) {
     const template = fs.readFileSync(templatePath, 'utf-8');
-    const tempFilePath = path.join('/.vendure-cli-temp/', path.basename(templatePath));
     try {
-        return project.createSourceFile(path.join('/.vendure-cli-temp/', tempFilePath), template, {
+        const file = project.createSourceFile(filePath, template, {
             overwrite: true,
             scriptKind: ScriptKind.TS,
         });
+        project.resolveSourceFileDependencies();
+        return file;
     } catch (e: any) {
         log.error(e.message);
         process.exit(1);

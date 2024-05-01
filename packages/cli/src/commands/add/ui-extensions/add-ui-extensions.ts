@@ -65,11 +65,11 @@ async function addUiExtensions(options?: AddUiExtensionsOptions): Promise<CliCom
 
     const providersFileDest = path.join(pluginDir, 'ui', 'providers.ts');
     if (!fs.existsSync(providersFileDest)) {
-        createFile(project, path.join(__dirname, 'templates/providers.template.ts')).move(providersFileDest);
+        createFile(project, path.join(__dirname, 'templates/providers.template.ts'), providersFileDest);
     }
     const routesFileDest = path.join(pluginDir, 'ui', 'routes.ts');
     if (!fs.existsSync(routesFileDest)) {
-        createFile(project, path.join(__dirname, 'templates/routes.template.ts')).move(routesFileDest);
+        createFile(project, path.join(__dirname, 'templates/routes.template.ts'), routesFileDest);
     }
 
     log.success('Created UI extension scaffold');

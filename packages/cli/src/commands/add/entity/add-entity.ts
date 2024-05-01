@@ -109,13 +109,13 @@ function createEntity(plugin: VendurePluginRef, options: AddEntityOptions) {
     const entityFile = createFile(
         plugin.getSourceFile().getProject(),
         path.join(__dirname, 'templates/entity.template.ts'),
+        path.join(entitiesDir, `${options.fileName}.ts`),
     );
     const translationFile = createFile(
         plugin.getSourceFile().getProject(),
         path.join(__dirname, 'templates/entity-translation.template.ts'),
+        path.join(entitiesDir, `${options.translationFileName}.ts`),
     );
-    entityFile.move(path.join(entitiesDir, `${options.fileName}.ts`));
-    translationFile.move(path.join(entitiesDir, `${options.translationFileName}.ts`));
 
     const entityClass = entityFile.getClass('ScaffoldEntity')?.rename(options.className);
     const customFieldsClass = entityFile
