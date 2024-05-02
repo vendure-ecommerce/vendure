@@ -147,9 +147,15 @@ function createEntity(plugin: VendurePluginRef, options: AddEntityOptions) {
 
     // Rename the entity classes
     entityClass?.rename(options.className);
-    customFieldsClass?.rename(`${options.className}CustomFields`);
-    translationClass?.rename(`${options.className}Translation`);
-    translationCustomFieldsClass?.rename(`${options.className}CustomFieldsTranslation`);
+    if (!customFieldsClass?.wasForgotten()) {
+        customFieldsClass?.rename(`${options.className}CustomFields`);
+    }
+    if (!translationClass?.wasForgotten()) {
+        translationClass?.rename(`${options.className}Translation`);
+    }
+    if (!translationCustomFieldsClass?.wasForgotten()) {
+        translationCustomFieldsClass?.rename(`${options.className}CustomFieldsTranslation`);
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return { entityClass: entityClass!, translationClass: translationClass! };
