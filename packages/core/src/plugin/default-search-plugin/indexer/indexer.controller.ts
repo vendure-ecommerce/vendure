@@ -159,7 +159,11 @@ export class IndexerController {
 
     async deleteProduct(data: UpdateProductMessageData): Promise<boolean> {
         const ctx = MutableRequestContext.deserialize(data.ctx);
-        return this.deleteProductInChannel(ctx, data.productId, ctx.channelId);
+        return this.deleteProductInChannel(
+            ctx,
+            data.productId,
+            (await this.getAllChannels(ctx)).map(x => x.id),
+        );
     }
 
     async deleteVariant(data: UpdateVariantMessageData): Promise<boolean> {
@@ -168,16 +172,10 @@ export class IndexerController {
             where: { id: In(data.variantIds) },
         });
         if (variants.length) {
-            const languageVariants = unique([
-                ...variants
-                    .reduce((vt, v) => [...vt, ...v.translations], [] as Array<Translation<ProductVariant>>)
-                    .map(t => t.languageCode),
-            ]);
             await this.removeSearchIndexItems(
                 ctx,
-                ctx.channelId,
                 variants.map(v => v.id),
-                languageVariants,
+                (await this.getAllChannels(ctx)).map(c => c.id),
             );
         }
         return true;
@@ -190,7 +188,7 @@ export class IndexerController {
 
     async removeProductFromChannel(data: ProductChannelMessageData): Promise<boolean> {
         const ctx = MutableRequestContext.deserialize(data.ctx);
-        return this.deleteProductInChannel(ctx, data.productId, data.channelId);
+        return this.deleteProductInChannel(ctx, data.productId, [data.channelId]);
     }
 
     async assignVariantToChannel(data: VariantChannelMessageData): Promise<boolean> {
@@ -204,7 +202,7 @@ export class IndexerController {
             .getRepository(ctx, ProductVariant)
             .findOne({ where: { id: data.productVariantId } });
         const languageVariants = variant?.translations.map(t => t.languageCode) ?? [];
-        await this.removeSearchIndexItems(ctx, data.channelId, [data.productVariantId], languageVariants);
+        await this.removeSearchIndexItems(ctx, [data.productVariantId], [data.channelId]);
         return true;
     }
 
@@ -246,16 +244,17 @@ export class IndexerController {
     ): Promise<boolean> {
         const channel = await this.loadChannel(ctx, channelId);
         ctx.setChannel(channel);
-
         const product = await this.getProductInChannelQueryBuilder(ctx, productId, channel).getOneOrFail();
-
         if (product) {
-            const updatedVariants = await this.getSearchIndexQueryBuilder(ctx, channel)
+            const updatedVariants = await this.getSearchIndexQueryBuilder(
+                ctx,
+                ...(await this.getAllChannels(ctx)),
+            )
                 .andWhere('variants.productId = :productId', { productId })
                 .getMany();
             if (updatedVariants.length === 0) {
                 const clone = new Product({ id: product.id });
-                await this.entityHydrator.hydrate(ctx, clone, { relations: [] });
+                await this.entityHydrator.hydrate(ctx, clone, { relations: ['translations' as never] });
                 product.translations = clone.translations;
                 await this.saveSyntheticVariant(ctx, product);
             } else {
@@ -265,6 +264,7 @@ export class IndexerController {
                 const variantsInCurrentChannel = updatedVariants.filter(
                     v => !!v.channels.find(c => idsAreEqual(c.id, ctx.channelId)),
                 );
+
                 Logger.verbose(`Updating ${variantsInCurrentChannel.length} variants`, workerLoggerCtx);
                 if (variantsInCurrentChannel.length) {
                     await this.saveVariants(ctx, variantsInCurrentChannel);
@@ -281,7 +281,7 @@ export class IndexerController {
     ): Promise<boolean> {
         const channel = await this.loadChannel(ctx, channelId);
         ctx.setChannel(channel);
-        const variants = await this.getSearchIndexQueryBuilder(ctx, channel)
+        const variants = await this.getSearchIndexQueryBuilder(ctx, ...(await this.getAllChannels(ctx)))
             .andWhere('variants.deletedAt IS NULL AND variants.id IN (:...variantIds)', { variantIds })
             .getMany();
 
@@ -295,25 +295,18 @@ export class IndexerController {
     private async deleteProductInChannel(
         ctx: RequestContext,
         productId: ID,
-        channelId: ID,
+        channelIds: ID[],
     ): Promise<boolean> {
-        const channel = await this.loadChannel(ctx, channelId);
-        const product = await this.getProductInChannelQueryBuilder(ctx, productId, channel)
+        const channels = await Promise.all(channelIds.map(channelId => this.loadChannel(ctx, channelId)));
+        const product = await this.getProductInChannelQueryBuilder(ctx, productId, ...channels)
             .leftJoinAndSelect('product.variants', 'variants')
             .leftJoinAndSelect('variants.translations', 'variants_translations')
             .getOne();
 
         if (product) {
-            const languageVariants = unique([
-                ...product.translations.map(t => t.languageCode),
-                ...product.variants
-                    .reduce((vt, v) => [...vt, ...v.translations], [] as Array<Translation<ProductVariant>>)
-                    .map(t => t.languageCode),
-            ]);
-
             const removedVariantIds = product.variants.map(v => v.id);
             if (removedVariantIds.length) {
-                await this.removeSearchIndexItems(ctx, channelId, removedVariantIds, languageVariants);
+                await this.removeSearchIndexItems(ctx, removedVariantIds, channelIds);
             }
         }
         return true;
@@ -328,7 +321,9 @@ export class IndexerController {
     }
 
     private getSearchIndexQueryBuilder(ctx: RequestContext, ...channels: Channel[]) {
-        const channelLanguages = unique(channels.flatMap(c => c.availableLanguageCodes));
+        const channelLanguages = unique(
+            channels.flatMap(c => c.availableLanguageCodes).concat(this.configService.defaultLanguageCode),
+        );
         const qb = this.connection
             .getRepository(ctx, ProductVariant)
             .createQueryBuilder('variants')
@@ -395,14 +390,16 @@ export class IndexerController {
             )
             .leftJoin('product.channels', 'channel')
             .where('channel.id IN (:...channelId)', { channelId: channels.map(x => x.id) })
-            .andWhere('collection_channels.id IN (:...channelId)', { channelId: channels.map(x => x.id) })
+            // .andWhere('collection_channels.id IS NULL OR collection_channels.id IN (:...channelId)', { channelId: channels.map(x => x.id) })
             .andWhere('product.deletedAt IS NULL')
             .andWhere('variants.deletedAt IS NULL');
         return qb;
     }
 
     private getProductInChannelQueryBuilder(ctx: RequestContext, productId: ID, ...channels: Channel[]) {
-        const channelLanguages = unique(channels.flatMap(c => c.availableLanguageCodes));
+        const channelLanguages = unique(
+            channels.flatMap(c => c.availableLanguageCodes).concat(this.configService.defaultLanguageCode),
+        );
         return this.connection
             .getRepository(ctx, Product)
             .createQueryBuilder('product')
@@ -458,8 +455,10 @@ export class IndexerController {
                 ).getOneOrFail();
                 productMap.set(variant.productId, product);
             }
-
-            for (const languageCode of ctx.channel.availableLanguageCodes) {
+            const availableLanguageCodes = unique(
+                ctx.channel.availableLanguageCodes.concat(this.configService.defaultLanguageCode),
+            );
+            for (const languageCode of availableLanguageCodes) {
                 const productTranslation = this.getTranslation(product, languageCode);
                 const variantTranslation = this.getTranslation(variant, languageCode);
                 const collectionTranslations = variant.collections.map(c =>
@@ -484,11 +483,11 @@ export class IndexerController {
                         priceWithTax: variant.priceWithTax,
                         sku: variant.sku,
                         enabled: product.enabled === false ? false : variant.enabled,
-                        slug: productTranslation?.slug ?? '',
+                        slug: productTranslation.slug ?? '',
                         productId: product.id,
-                        productName: productTranslation?.name ?? '',
-                        description: this.constrainDescription(productTranslation?.description ?? ''),
-                        productVariantName: variantTranslation?.name ?? '',
+                        productName: productTranslation.name ?? '',
+                        description: this.constrainDescription(productTranslation.description ?? ''),
+                        productVariantName: variantTranslation.name ?? '',
                         productAssetId: product.featuredAsset ? product.featuredAsset.id : null,
                         productPreviewFocalPoint: product.featuredAsset
                             ? product.featuredAsset.focalPoint
@@ -503,7 +502,7 @@ export class IndexerController {
                         facetIds: this.getFacetIds(variant, product),
                         facetValueIds: this.getFacetValueIds(variant, product),
                         collectionIds: variant.collections.map(c => c.id.toString()),
-                        collectionSlugs: collectionTranslations?.map(c => c?.slug) ?? [],
+                        collectionSlugs: collectionTranslations.map(c => c.slug) ?? [],
                     });
                     if (this.options.indexStockStatus) {
                         item.inStock =
@@ -619,18 +618,27 @@ export class IndexerController {
      */
     private async removeSearchIndexItems(
         ctx: RequestContext,
-        channelId: ID,
         variantIds: ID[],
-        languageCodes: LanguageCode[],
+        channelIds: ID[],
+        ...languageCodes: LanguageCode[]
     ) {
         const keys: Array<Partial<SearchIndexItem>> = [];
         for (const productVariantId of variantIds) {
-            for (const languageCode of languageCodes) {
-                keys.push({
-                    productVariantId,
-                    channelId,
-                    languageCode,
-                });
+            for (const channelId of channelIds) {
+                if (languageCodes.length > 0) {
+                    for (const languageCode of languageCodes) {
+                        keys.push({
+                            productVariantId,
+                            channelId,
+                            languageCode,
+                        });
+                    }
+                } else {
+                    keys.push({
+                        productVariantId,
+                        channelId,
+                    });
+                }
             }
         }
         await this.queue.push(() => this.connection.getRepository(ctx, SearchIndexItem).delete(keys as any));

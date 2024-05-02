@@ -73,6 +73,8 @@ import {
     AssignProductVariantsToChannelMutationVariables,
     RemoveProductVariantsFromChannelMutation,
     RemoveProductVariantsFromChannelMutationVariables,
+    UpdateChannelMutation,
+    UpdateChannelMutationVariables,
 } from './graphql/generated-e2e-admin-types';
 import {
     LogicalOperator,
@@ -93,6 +95,7 @@ import {
     REMOVE_PRODUCTVARIANT_FROM_CHANNEL,
     REMOVE_PRODUCT_FROM_CHANNEL,
     UPDATE_ASSET,
+    UPDATE_CHANNEL,
     UPDATE_COLLECTION,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
@@ -1365,6 +1368,7 @@ describe('Default search plugin', () => {
                         code: 'second-channel',
                         token: SECOND_CHANNEL_TOKEN,
                         defaultLanguageCode: LanguageCode.en,
+                        availableLanguageCodes: [LanguageCode.en, LanguageCode.de, LanguageCode.zh],
                         currencyCode: CurrencyCode.GBP,
                         pricesIncludeTax: true,
                         defaultTaxZoneId: 'T_1',
@@ -1562,6 +1566,16 @@ describe('Default search plugin', () => {
             beforeAll(async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
 
+                await adminClient.query<UpdateChannelMutation, UpdateChannelMutationVariables>(
+                    UPDATE_CHANNEL,
+                    {
+                        input: {
+                            id: 'T_1',
+                            availableLanguageCodes: [LanguageCode.en, LanguageCode.de, LanguageCode.zh],
+                        },
+                    },
+                );
+
                 const { updateProduct } = await adminClient.query<
                     UpdateProductMutation,
                     UpdateProductMutationVariables
@@ -1702,7 +1716,7 @@ describe('Default search plugin', () => {
                     expect(laptopVariantT4?.description).toEqual('Laptop description en');
                 });
 
-                it('indexes non-default language de', async () => {
+                it('indexes non-default language de when it is available language of channel', async () => {
                     const { search } = await searchInLanguage(LanguageCode.de);
 
                     const laptopVariants = search.items.filter(i => i.productId === 'T_1');
@@ -1733,7 +1747,7 @@ describe('Default search plugin', () => {
                     expect(laptopVariantT4?.description).toEqual('Laptop description de');
                 });
 
-                it('indexes non-default language zh', async () => {
+                it('indexes non-default language zh when it is available language of channel', async () => {
                     const { search } = await searchInLanguage(LanguageCode.zh);
 
                     const laptopVariants = search.items.filter(i => i.productId === 'T_1');
