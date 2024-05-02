@@ -1,3 +1,21 @@
+## <small>2.2.3 (2024-05-02)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix creating customer on draft order ([64b9c60](https://github.com/vendure-ecommerce/vendure/commit/64b9c60))
+* **cli** Fix api extension location detection ([a5fdd86](https://github.com/vendure-ecommerce/vendure/commit/a5fdd86))
+* **cli** Fix maximum call stack error ([464e68b](https://github.com/vendure-ecommerce/vendure/commit/464e68b)), closes [#2819](https://github.com/vendure-ecommerce/vendure/issues/2819)
+* **cli** Fix relative import path for parent dirs ([9379d73](https://github.com/vendure-ecommerce/vendure/commit/9379d73))
+* **cli** Fix translatable entity imports ([e6c9ba8](https://github.com/vendure-ecommerce/vendure/commit/e6c9ba8))
+* **cli** Improve detection of migration file location ([359b236](https://github.com/vendure-ecommerce/vendure/commit/359b236))
+* **cli** Improve plugin generation in monorepos ([40000a4](https://github.com/vendure-ecommerce/vendure/commit/40000a4))
+* **cli** Improve support for multiple tsconfig files ([d871eb7](https://github.com/vendure-ecommerce/vendure/commit/d871eb7))
+* **cli** Improve support for pnpm projects ([4eaf7ff](https://github.com/vendure-ecommerce/vendure/commit/4eaf7ff))
+* **cli** Include plugin options in service constructor ([a77251e](https://github.com/vendure-ecommerce/vendure/commit/a77251e))
+* **core** Improve message for custom field schema errors ([7ac4ac9](https://github.com/vendure-ecommerce/vendure/commit/7ac4ac9))
+* **core** Make featuredAsset optional on collection duplicator (#2824) ([bb10b4c](https://github.com/vendure-ecommerce/vendure/commit/bb10b4c)), closes [#2824](https://github.com/vendure-ecommerce/vendure/issues/2824)
+
 ## <small>2.2.2 (2024-04-25)</small>
 
 This release contains no changes - it was published to fix a mistake 
