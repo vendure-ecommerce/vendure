@@ -170,7 +170,7 @@ export class PackageJson {
                     args.push('--save-dev');
                 }
             }
-            const child = spawn(command, args, { stdio: 'inherit' });
+            const child = spawn(command, args, { stdio: 'ignore' });
             child.on('close', code => {
                 if (code !== 0) {
                     const message = 'An error occurred when installing dependencies.';
