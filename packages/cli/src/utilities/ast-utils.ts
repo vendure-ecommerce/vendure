@@ -143,7 +143,8 @@ function convertPathToRelativeImport(filePath: string): string {
 
     // Remove the file extension
     const parsedPath = path.parse(normalizedPath);
-    return `./${parsedPath.dir}/${parsedPath.name}`.replace(/\/\//g, '/');
+    const prefix = parsedPath.dir.startsWith('..') ? '' : './';
+    return `${prefix}${parsedPath.dir}/${parsedPath.name}`.replace(/\/\//g, '/');
 }
 
 export function customizeCreateUpdateInputInterfaces(sourceFile: SourceFile, entityRef: EntityRef) {
