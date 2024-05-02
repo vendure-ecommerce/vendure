@@ -1,7 +1,7 @@
 import { cancel, isCancel, log, select, spinner, text } from '@clack/prompts';
 import { paramCase } from 'change-case';
 import path from 'path';
-import { ClassDeclaration, SourceFile } from 'ts-morph';
+import { ClassDeclaration, Scope, SourceFile } from 'ts-morph';
 
 import { Messages, pascalCaseRegex } from '../../../constants';
 import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
@@ -77,13 +77,8 @@ async function addService(
     }
 
     const serviceSpinner = spinner();
-    const serviceFileName = paramCase(options.serviceName).replace(/-service$/, '.service');
+
     let serviceSourceFile: SourceFile;
-    const serviceSourceFilePath = path.join(
-        vendurePlugin.getPluginDir().getPath(),
-        'services',
-        `${serviceFileName}.ts`,
-    );
     let serviceClassDeclaration: ClassDeclaration;
     if (options.type === 'basic') {
         const name = await text({
@@ -106,6 +101,7 @@ async function addService(
 
         options.serviceName = name;
         serviceSpinner.start(`Creating ${options.serviceName}...`);
+        const serviceSourceFilePath = getServiceFilePath(vendurePlugin, options.serviceName);
         await pauseForPromptDisplay();
         serviceSourceFile = createFile(
             project,
@@ -119,6 +115,7 @@ async function addService(
     } else {
         serviceSpinner.start(`Creating ${options.serviceName}...`);
         await pauseForPromptDisplay();
+        const serviceSourceFilePath = getServiceFilePath(vendurePlugin, options.serviceName);
         serviceSourceFile = createFile(
             project,
             path.join(__dirname, 'templates/entity-service.template.ts'),
@@ -163,6 +160,27 @@ async function addService(
         customizeUpdateMethod(serviceClassDeclaration, entityRef);
         removedUnusedConstructorArgs(serviceClassDeclaration, entityRef);
     }
+    const pluginOptions = vendurePlugin.getPluginOptions();
+    if (pluginOptions) {
+        addImportsToFile(serviceSourceFile, {
+            moduleSpecifier: pluginOptions.constantDeclaration.getSourceFile(),
+            namedImports: [pluginOptions.constantDeclaration.getName()],
+        });
+        addImportsToFile(serviceSourceFile, {
+            moduleSpecifier: pluginOptions.typeDeclaration.getSourceFile(),
+            namedImports: [pluginOptions.typeDeclaration.getName()],
+        });
+        addImportsToFile(serviceSourceFile, {
+            moduleSpecifier: '@nestjs/common',
+            namedImports: ['Inject'],
+        });
+        serviceClassDeclaration.getConstructors()[0]?.addParameter({
+            scope: Scope.Private,
+            name: 'options',
+            type: pluginOptions.typeDeclaration.getName(),
+            decorators: [{ name: 'Inject', arguments: [pluginOptions.constantDeclaration.getName()] }],
+        });
+    }
     modifiedSourceFiles.push(serviceSourceFile);
 
     serviceSpinner.message(`Registering service with plugin...`);
@@ -182,6 +200,11 @@ async function addService(
         modifiedSourceFiles,
         serviceRef: new ServiceRef(serviceClassDeclaration),
     };
+}
+
+function getServiceFilePath(plugin: VendurePluginRef, serviceName: string) {
+    const serviceFileName = paramCase(serviceName).replace(/-service$/, '.service');
+    return path.join(plugin.getPluginDir().getPath(), 'services', `${serviceFileName}.ts`);
 }
 
 function customizeFindOneMethod(serviceClassDeclaration: ClassDeclaration, entityRef: EntityRef) {
