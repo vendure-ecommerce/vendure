@@ -174,12 +174,15 @@ async function addService(
             moduleSpecifier: '@nestjs/common',
             namedImports: ['Inject'],
         });
-        serviceClassDeclaration.getConstructors()[0]?.addParameter({
-            scope: Scope.Private,
-            name: 'options',
-            type: pluginOptions.typeDeclaration.getName(),
-            decorators: [{ name: 'Inject', arguments: [pluginOptions.constantDeclaration.getName()] }],
-        });
+        serviceClassDeclaration
+            .getConstructors()[0]
+            ?.addParameter({
+                scope: Scope.Private,
+                name: 'options',
+                type: pluginOptions.typeDeclaration.getName(),
+                decorators: [{ name: 'Inject', arguments: [pluginOptions.constantDeclaration.getName()] }],
+            })
+            .formatText();
     }
     modifiedSourceFiles.push(serviceSourceFile);
 

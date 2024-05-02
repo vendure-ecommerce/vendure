@@ -117,16 +117,10 @@ function createEntity(plugin: VendurePluginRef, options: AddEntityOptions) {
         path.join(entitiesDir, `${options.translationFileName}.ts`),
     );
 
-    const entityClass = entityFile.getClass('ScaffoldEntity')?.rename(options.className);
-    const customFieldsClass = entityFile
-        .getClass('ScaffoldEntityCustomFields')
-        ?.rename(`${options.className}CustomFields`);
-    const translationClass = translationFile
-        .getClass('ScaffoldTranslation')
-        ?.rename(`${options.className}Translation`);
-    const translationCustomFieldsClass = translationFile
-        .getClass('ScaffoldEntityCustomFieldsTranslation')
-        ?.rename(`${options.className}CustomFieldsTranslation`);
+    const entityClass = entityFile.getClass('ScaffoldEntity');
+    const customFieldsClass = entityFile.getClass('ScaffoldEntityCustomFields');
+    const translationClass = translationFile.getClass('ScaffoldTranslation');
+    const translationCustomFieldsClass = translationFile.getClass('ScaffoldEntityCustomFieldsTranslation');
 
     if (!options.features.customFields) {
         // Remove custom fields from entity
@@ -142,7 +136,20 @@ function createEntity(plugin: VendurePluginRef, options: AddEntityOptions) {
         entityClass?.getProperty('translations')?.remove();
         removeImplementsFromClass('Translatable', entityClass);
         translationFile.delete();
+    } else {
+        entityFile
+            .getImportDeclaration('./entity-translation.template')
+            ?.setModuleSpecifier(`./${options.translationFileName}`);
+        translationFile
+            .getImportDeclaration('./entity.template')
+            ?.setModuleSpecifier(`./${options.fileName}`);
     }
+
+    // Rename the entity classes
+    entityClass?.rename(options.className);
+    customFieldsClass?.rename(`${options.className}CustomFields`);
+    translationClass?.rename(`${options.className}Translation`);
+    translationCustomFieldsClass?.rename(`${options.className}CustomFieldsTranslation`);
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return { entityClass: entityClass!, translationClass: translationClass! };
