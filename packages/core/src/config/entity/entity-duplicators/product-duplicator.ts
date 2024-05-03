@@ -78,7 +78,7 @@ export const productDuplicator = new EntityDuplicator({
             };
         });
         const productInput: CreateProductInput = {
-            featuredAssetId: product.featuredAsset.id,
+            featuredAssetId: product.featuredAsset?.id,
             enabled: false,
             assetIds: product.assets.map(value => value.assetId),
             facetValueIds: product.facetValues.map(value => value.id),

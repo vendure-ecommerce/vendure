@@ -1,5 +1,4 @@
 import {
-    AfterViewInit,
     ChangeDetectionStrategy,
     Component,
     ElementRef,
@@ -9,8 +8,8 @@ import {
     OnInit,
     ViewChild,
 } from '@angular/core';
-import { Observable } from 'rxjs';
 import { CodeJar } from 'codejar';
+import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { UIExtensionLocationId } from '../../../common/component-registry-types';
@@ -27,7 +26,7 @@ type UiExtensionType = 'actionBar' | 'actionBarDropdown' | 'navMenu' | 'detailCo
 })
 export class UiExtensionPointComponent implements OnInit {
     @Input() locationId: UIExtensionLocationId;
-    @Input() metadata?: any;
+    @Input() metadata?: string;
     @Input() topPx: number;
     @Input() leftPx: number;
     @HostBinding('style.display')
@@ -72,6 +71,7 @@ function highlightTsCode(tsCode: string) {
     tsCode = tsCode.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
     return tsCode.replace(
+        // eslint-disable-next-line max-len
         /\b(abstract|any|as|boolean|break|case|catch|class|const|continue|default|do|else|enum|export|extends|false|finally|for|from|function|get|if|implements|import|in|instanceof|interface|is|keyof|let|module|namespace|never|new|null|number|object|of|private|protected|public|readonly|require|return|set|static|string|super|switch|symbol|this|throw|true|try|type|typeof|undefined|var|void|while|with|yield)\b|\/\/.*|\/\*[\s\S]*?\*\/|"(?:\\[\s\S]|[^\\"])*"|'[^']*'/g,
         (match, ...args) => {
             if (/^"/.test(match) || /^'/.test(match)) {
@@ -79,6 +79,7 @@ function highlightTsCode(tsCode: string) {
             } else if (/\/\/.*|\/\*[\s\S]*?\*\//.test(match)) {
                 return '<span class="ts-comment">' + match + '</span>';
             } else if (
+                // eslint-disable-next-line max-len
                 /\b(abstract|any|as|boolean|break|case|catch|class|const|continue|default|do|else|enum|export|extends|false|finally|for|from|function|get|if|implements|import|in|instanceof|interface|is|keyof|let|module|namespace|never|new|null|number|object|of|private|protected|public|readonly|require|return|set|static|string|super|switch|symbol|this|throw|true|try|type|typeof|undefined|var|void|while|with|yield)\b/.test(
                     match,
                 )
@@ -91,7 +92,10 @@ function highlightTsCode(tsCode: string) {
     );
 }
 
-const codeTemplates: Record<UiExtensionType, (locationId: UIExtensionLocationId, metadata: any) => string> = {
+const codeTemplates: Record<
+    UiExtensionType,
+    (locationId: UIExtensionLocationId, metadata?: string) => string
+> = {
     actionBar: locationId => `
 import { addActionBarItem } from '@vendure/admin-ui/core';
 
@@ -119,7 +123,9 @@ export default [
   addNavMenuSection({
       id: 'my-menu-item',
       label: 'My Menu Item',
-      routerLink: ['/extensions/my-plugin'],
+      items: [{
+          // ...
+      }],
     },
     '${locationId}',
   ),

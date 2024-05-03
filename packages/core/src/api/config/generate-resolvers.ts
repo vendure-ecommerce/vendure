@@ -13,6 +13,7 @@ import { shopErrorOperationTypeResolvers } from '../../common/error/generated-gr
 import { Translatable } from '../../common/types/locale-types';
 import { ConfigService } from '../../config/config.service';
 import { CustomFieldConfig, RelationCustomFieldConfig } from '../../config/custom-field/custom-field-types';
+import { Logger } from '../../config/logger/vendure-logger';
 import { Region } from '../../entity/region/region.entity';
 import { getPluginAPIExtensions } from '../../plugin/plugin-metadata';
 import { CustomFieldRelationResolverService } from '../common/custom-field-relation-resolver.service';
@@ -212,7 +213,17 @@ function generateCustomFieldRelationResolvers(
                     const eagerEntity = source[fieldDef.name];
                     // If the relation is eager-loaded, we can simply try to translate this relation entity if they have translations
                     if (eagerEntity != null) {
-                        return customFieldRelationResolverService.translateEntity(ctx, eagerEntity, fieldDef);
+                        try {
+                            return await customFieldRelationResolverService.translateEntity(
+                                ctx,
+                                eagerEntity,
+                                fieldDef,
+                            );
+                        } catch (e: any) {
+                            Logger.debug(
+                                `Error resolving eager-loaded custom field entity relation "${entityName}.${fieldDef.name}": ${e.message as string}`,
+                            );
+                        }
                     }
                     const entityId = source[ENTITY_ID_KEY];
                     return customFieldRelationResolverService.resolveRelation({

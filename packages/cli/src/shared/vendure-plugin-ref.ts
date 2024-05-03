@@ -1,4 +1,13 @@
-import { ClassDeclaration, Node, StructureKind, SyntaxKind, VariableDeclaration } from 'ts-morph';
+import {
+    ClassDeclaration,
+    InterfaceDeclaration,
+    Node,
+    PropertyAssignment,
+    StructureKind,
+    SyntaxKind,
+    Type,
+    VariableDeclaration,
+} from 'ts-morph';
 
 import { AdminUiExtensionTypeName } from '../constants';
 
@@ -29,6 +38,46 @@ export class VendurePluginRef {
             throw new Error('Could not find VendurePlugin options');
         }
         return pluginOptions;
+    }
+
+    getPluginOptions():
+        | { typeDeclaration: InterfaceDeclaration; constantDeclaration: VariableDeclaration }
+        | undefined {
+        const metadataOptions = this.getMetadataOptions();
+        const staticOptions = this.classDeclaration.getStaticProperty('options');
+        const typeDeclaration = staticOptions
+            ?.getType()
+            .getSymbolOrThrow()
+            .getDeclarations()
+            .find(d => Node.isInterfaceDeclaration(d));
+        if (!typeDeclaration || !Node.isInterfaceDeclaration(typeDeclaration)) {
+            return;
+        }
+        const providersArray = metadataOptions
+            .getProperty('providers')
+            ?.getFirstChildByKind(SyntaxKind.ArrayLiteralExpression);
+        if (!providersArray) {
+            return;
+        }
+        const elements = providersArray.getElements();
+        const optionsProviders = elements
+            .filter(Node.isObjectLiteralExpression)
+            .filter(el => el.getProperty('useFactory')?.getText().includes(`${this.name}.options`));
+
+        if (!optionsProviders.length) {
+            return;
+        }
+        const optionsSymbol = optionsProviders[0].getProperty('provide') as PropertyAssignment;
+        const initializer = optionsSymbol?.getInitializer();
+        if (!initializer || !Node.isIdentifier(initializer)) {
+            return;
+        }
+        const constantDeclaration = initializer.getDefinitions()[0]?.getDeclarationNode();
+        if (!constantDeclaration || !Node.isVariableDeclaration(constantDeclaration)) {
+            return;
+        }
+
+        return { typeDeclaration, constantDeclaration };
     }
 
     addEntity(entityClassName: string) {

@@ -1,7 +1,7 @@
 import { cancel, isCancel, log, select, spinner, text } from '@clack/prompts';
 import { paramCase } from 'change-case';
 import path from 'path';
-import { ClassDeclaration, SourceFile } from 'ts-morph';
+import { ClassDeclaration, Scope, SourceFile } from 'ts-morph';
 
 import { Messages, pascalCaseRegex } from '../../../constants';
 import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
@@ -37,7 +37,7 @@ async function addService(
     providedOptions?: Partial<AddServiceOptions>,
 ): Promise<CliCommandReturnVal<{ serviceRef: ServiceRef }>> {
     const providedVendurePlugin = providedOptions?.plugin;
-    const project = await analyzeProject({ providedVendurePlugin, cancelledMessage });
+    const { project } = await analyzeProject({ providedVendurePlugin, cancelledMessage });
     const vendurePlugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
     const modifiedSourceFiles: SourceFile[] = [];
     const type =
@@ -101,8 +101,13 @@ async function addService(
 
         options.serviceName = name;
         serviceSpinner.start(`Creating ${options.serviceName}...`);
+        const serviceSourceFilePath = getServiceFilePath(vendurePlugin, options.serviceName);
         await pauseForPromptDisplay();
-        serviceSourceFile = createFile(project, path.join(__dirname, 'templates/basic-service.template.ts'));
+        serviceSourceFile = createFile(
+            project,
+            path.join(__dirname, 'templates/basic-service.template.ts'),
+            serviceSourceFilePath,
+        );
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         serviceClassDeclaration = serviceSourceFile
             .getClass('BasicServiceTemplate')!
@@ -110,7 +115,12 @@ async function addService(
     } else {
         serviceSpinner.start(`Creating ${options.serviceName}...`);
         await pauseForPromptDisplay();
-        serviceSourceFile = createFile(project, path.join(__dirname, 'templates/entity-service.template.ts'));
+        const serviceSourceFilePath = getServiceFilePath(vendurePlugin, options.serviceName);
+        serviceSourceFile = createFile(
+            project,
+            path.join(__dirname, 'templates/entity-service.template.ts'),
+            serviceSourceFilePath,
+        );
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         serviceClassDeclaration = serviceSourceFile
             .getClass('EntityServiceTemplate')!
@@ -150,11 +160,31 @@ async function addService(
         customizeUpdateMethod(serviceClassDeclaration, entityRef);
         removedUnusedConstructorArgs(serviceClassDeclaration, entityRef);
     }
+    const pluginOptions = vendurePlugin.getPluginOptions();
+    if (pluginOptions) {
+        addImportsToFile(serviceSourceFile, {
+            moduleSpecifier: pluginOptions.constantDeclaration.getSourceFile(),
+            namedImports: [pluginOptions.constantDeclaration.getName()],
+        });
+        addImportsToFile(serviceSourceFile, {
+            moduleSpecifier: pluginOptions.typeDeclaration.getSourceFile(),
+            namedImports: [pluginOptions.typeDeclaration.getName()],
+        });
+        addImportsToFile(serviceSourceFile, {
+            moduleSpecifier: '@nestjs/common',
+            namedImports: ['Inject'],
+        });
+        serviceClassDeclaration
+            .getConstructors()[0]
+            ?.addParameter({
+                scope: Scope.Private,
+                name: 'options',
+                type: pluginOptions.typeDeclaration.getName(),
+                decorators: [{ name: 'Inject', arguments: [pluginOptions.constantDeclaration.getName()] }],
+            })
+            .formatText();
+    }
     modifiedSourceFiles.push(serviceSourceFile);
-    const serviceFileName = paramCase(options.serviceName).replace(/-service$/, '.service');
-    serviceSourceFile?.move(
-        path.join(vendurePlugin.getPluginDir().getPath(), 'services', `${serviceFileName}.ts`),
-    );
 
     serviceSpinner.message(`Registering service with plugin...`);
 
@@ -173,6 +203,11 @@ async function addService(
         modifiedSourceFiles,
         serviceRef: new ServiceRef(serviceClassDeclaration),
     };
+}
+
+function getServiceFilePath(plugin: VendurePluginRef, serviceName: string) {
+    const serviceFileName = paramCase(serviceName).replace(/-service$/, '.service');
+    return path.join(plugin.getPluginDir().getPath(), 'services', `${serviceFileName}.ts`);
 }
 
 function customizeFindOneMethod(serviceClassDeclaration: ClassDeclaration, entityRef: EntityRef) {

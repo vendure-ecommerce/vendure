@@ -5,8 +5,8 @@ import {
     DataSource,
     EntityManager,
     EntitySchema,
-    FindOneOptions,
     FindManyOptions,
+    FindOneOptions,
     ObjectLiteral,
     ObjectType,
     Repository,
@@ -21,6 +21,7 @@ import { ChannelAware, SoftDeletable } from '../common/types/common-types';
 import { VendureEntity } from '../entity/base/base.entity';
 import { joinTreeRelationsDynamically } from '../service/helpers/utils/tree-relations-qb-joiner';
 
+import { findOptionsObjectToArray } from './find-options-object-to-array';
 import { TransactionWrapper } from './transaction-wrapper';
 import { GetEntityOrThrowOptions } from './types';
 
@@ -278,11 +279,13 @@ export class TransactionalConnection {
     ) {
         const qb = this.getRepository(ctx, entity).createQueryBuilder('entity');
 
-        if (Array.isArray(options.relations) && options.relations.length > 0) {
+        if (options.relations) {
             const joinedRelations = joinTreeRelationsDynamically(qb, entity, options.relations);
             // Remove any relations which are related to the 'collection' tree, as these are handled separately
             // to avoid duplicate joins.
-            options.relations = options.relations.filter(relationPath => !joinedRelations.has(relationPath));
+            options.relations = findOptionsObjectToArray(options.relations).filter(
+                relationPath => !joinedRelations.has(relationPath),
+            );
         }
         qb.setFindOptions({
             relationLoadStrategy: 'query', // default to query strategy for maximum performance

@@ -16,10 +16,10 @@ export const runMigrationCommand = new CliCommand({
 });
 
 async function runRunMigration(): Promise<CliCommandReturnVal> {
-    const project = await analyzeProject({ cancelledMessage });
+    const { project } = await analyzeProject({ cancelledMessage });
     const vendureConfig = new VendureConfigRef(project);
     log.info('Using VendureConfig from ' + vendureConfig.getPathRelativeToProjectRoot());
-    const config = loadVendureConfigFile(vendureConfig);
+    const config = await loadVendureConfigFile(vendureConfig);
 
     const runSpinner = spinner();
     runSpinner.start('Running migrations...');

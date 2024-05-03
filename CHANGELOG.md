@@ -1,3 +1,48 @@
+## <small>2.2.3 (2024-05-02)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix creating customer on draft order ([64b9c60](https://github.com/vendure-ecommerce/vendure/commit/64b9c60))
+* **cli** Fix api extension location detection ([a5fdd86](https://github.com/vendure-ecommerce/vendure/commit/a5fdd86))
+* **cli** Fix maximum call stack error ([464e68b](https://github.com/vendure-ecommerce/vendure/commit/464e68b)), closes [#2819](https://github.com/vendure-ecommerce/vendure/issues/2819)
+* **cli** Fix relative import path for parent dirs ([9379d73](https://github.com/vendure-ecommerce/vendure/commit/9379d73))
+* **cli** Fix translatable entity imports ([e6c9ba8](https://github.com/vendure-ecommerce/vendure/commit/e6c9ba8))
+* **cli** Improve detection of migration file location ([359b236](https://github.com/vendure-ecommerce/vendure/commit/359b236))
+* **cli** Improve plugin generation in monorepos ([40000a4](https://github.com/vendure-ecommerce/vendure/commit/40000a4))
+* **cli** Improve support for multiple tsconfig files ([d871eb7](https://github.com/vendure-ecommerce/vendure/commit/d871eb7))
+* **cli** Improve support for pnpm projects ([4eaf7ff](https://github.com/vendure-ecommerce/vendure/commit/4eaf7ff))
+* **cli** Include plugin options in service constructor ([a77251e](https://github.com/vendure-ecommerce/vendure/commit/a77251e))
+* **core** Improve message for custom field schema errors ([7ac4ac9](https://github.com/vendure-ecommerce/vendure/commit/7ac4ac9))
+* **core** Make featuredAsset optional on collection duplicator (#2824) ([bb10b4c](https://github.com/vendure-ecommerce/vendure/commit/bb10b4c)), closes [#2824](https://github.com/vendure-ecommerce/vendure/issues/2824)
+
+## <small>2.2.2 (2024-04-25)</small>
+
+This release contains no changes - it was published to fix a mistake 
+in the publishing of the `@vendure/admin-ui@2.2.1` package.
+
+## <small>2.2.1 (2024-04-25)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix code snippet for addNavMenuSection ([d1da9ae](https://github.com/vendure-ecommerce/vendure/commit/d1da9ae)), closes [#2807](https://github.com/vendure-ecommerce/vendure/issues/2807)
+* **admin-ui** Fix custom tabs in customer list ([482bca9](https://github.com/vendure-ecommerce/vendure/commit/482bca9)), closes [#2788](https://github.com/vendure-ecommerce/vendure/issues/2788)
+* **admin-ui** Fix default quantity when adding item to order ([277c17e](https://github.com/vendure-ecommerce/vendure/commit/277c17e))
+* **admin-ui** Fix error preventing f key usage in code editor ([6e68226](https://github.com/vendure-ecommerce/vendure/commit/6e68226)), closes [#2771](https://github.com/vendure-ecommerce/vendure/issues/2771)
+* **admin-ui** Fix facet value selection with duplicated labels ([3a9c317](https://github.com/vendure-ecommerce/vendure/commit/3a9c317))
+* **cli** Improve support for migrations in monorepo setups ([3fbf4e4](https://github.com/vendure-ecommerce/vendure/commit/3fbf4e4))
+* **cli** Load .env files automatically for migrations ([777a5a5](https://github.com/vendure-ecommerce/vendure/commit/777a5a5)), closes [#2802](https://github.com/vendure-ecommerce/vendure/issues/2802)
+* **core** Add missing semver dependency ([91484a2](https://github.com/vendure-ecommerce/vendure/commit/91484a2))
+* **core** Add surcharge taxLines to taxSummary (#2798) ([d0166a2](https://github.com/vendure-ecommerce/vendure/commit/d0166a2)), closes [#2798](https://github.com/vendure-ecommerce/vendure/issues/2798)
+* **core** Fix duplication of product without featured asset ([f5e866b](https://github.com/vendure-ecommerce/vendure/commit/f5e866b)), closes [#2803](https://github.com/vendure-ecommerce/vendure/issues/2803)
+* **core** Fix findOneInChannel with relations object ([b9eb7db](https://github.com/vendure-ecommerce/vendure/commit/b9eb7db)), closes [#2809](https://github.com/vendure-ecommerce/vendure/issues/2809)
+* **core** Fix importer asset channel handling (#2801) ([c7a28b7](https://github.com/vendure-ecommerce/vendure/commit/c7a28b7)), closes [#2801](https://github.com/vendure-ecommerce/vendure/issues/2801)
+* **core** Improved loading of eager-loaded custom field relations ([025a9c7](https://github.com/vendure-ecommerce/vendure/commit/025a9c7)), closes [#2775](https://github.com/vendure-ecommerce/vendure/issues/2775) [#2687](https://github.com/vendure-ecommerce/vendure/issues/2687)
+* **core** Publish OrderEvent when order is deleted ([55f68780](https://github.com/vendure-ecommerce/vendure/commit/55f68780))
+* **core** Remove original entityTable from channels sql request (#2791) ([9c1cb16](https://github.com/vendure-ecommerce/vendure/commit/9c1cb16)), closes [#2791](https://github.com/vendure-ecommerce/vendure/issues/2791)
+* **core** Update relations on Stock Location update (#2805) ([47b1116](https://github.com/vendure-ecommerce/vendure/commit/47b1116)), closes [#2805](https://github.com/vendure-ecommerce/vendure/issues/2805) [#2804](https://github.com/vendure-ecommerce/vendure/issues/2804)
+
 ## 2.2.0 (2024-04-15)
 
 
