@@ -357,8 +357,8 @@ export class IndexerController {
             )
             .leftJoinAndSelect(
                 'variants.translations',
-                'product_variant_translations',
-                'product_variant_translations."baseId" = variants.id AND product_variant_translations."languageCode" IN (:...channelLanguages)',
+                'product_variant_translation',
+                'product_variant_translation.baseId = variants.id AND product_variant_translation.languageCode IN (:...channelLanguages)',
                 {
                     channelLanguages,
                 },
@@ -368,7 +368,7 @@ export class IndexerController {
             .leftJoinAndSelect(
                 'variant_facet_values.translations',
                 'variant_facet_value_translations',
-                'variant_facet_value_translations."languageCode" IN (:...channelLanguages)',
+                'variant_facet_value_translations.languageCode IN (:...channelLanguages)',
                 {
                     channelLanguages,
                 },
@@ -377,7 +377,7 @@ export class IndexerController {
             .leftJoinAndSelect(
                 'facet_values_facet.translations',
                 'facet_values_facet_translations',
-                'facet_values_facet_translations."languageCode" IN (:...channelLanguages)',
+                'facet_values_facet_translations.languageCode IN (:...channelLanguages)',
                 {
                     channelLanguages,
                 },
@@ -392,14 +392,13 @@ export class IndexerController {
             .leftJoinAndSelect(
                 'collections.translations',
                 'collection_translations',
-                'collection_translations."languageCode" IN (:...channelLanguages)',
+                'collection_translations.languageCode IN (:...channelLanguages)',
                 {
                     channelLanguages,
                 },
             )
             .leftJoin('product.channels', 'channel')
             .where('channel.id IN (:...channelId)', { channelId: channels.map(x => x.id) })
-            // .andWhere('collection_channels.id IS NULL OR collection_channels.id IN (:...channelId)', { channelId: channels.map(x => x.id) })
             .andWhere('product.deletedAt IS NULL')
             .andWhere('variants.deletedAt IS NULL');
         return qb;
@@ -428,7 +427,7 @@ export class IndexerController {
             .leftJoinAndSelect(
                 'product_facet_values.translations',
                 'product_facet_value_translations',
-                'product_facet_value_translations."languageCode" IN (:...channelLanguages)',
+                'product_facet_value_translations.languageCode IN (:...channelLanguages)',
                 {
                     channelLanguages,
                 },
@@ -437,7 +436,7 @@ export class IndexerController {
             .leftJoinAndSelect(
                 'product_facet.translations',
                 'product_facet_translations',
-                'product_facet_translations."languageCode" IN (:...channelLanguages)',
+                'product_facet_translations.languageCode IN (:...channelLanguages)',
                 {
                     channelLanguages,
                 },
