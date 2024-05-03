@@ -1,9 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { JobState, LanguageCode } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
 import { Observable } from 'rxjs';
-import { In, IsNull } from 'typeorm';
+import { FindManyOptions, In } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
@@ -246,9 +247,14 @@ export class IndexerController {
         ctx.setChannel(channel);
         const product = await this.getProductInChannelQueryBuilder(ctx, productId, channel).getOneOrFail();
         if (product) {
+            const affectedChannels = await this.getAllChannels(ctx, {
+                where: {
+                    availableLanguageCodes: In(product.translations.map(t => t.languageCode)),
+                },
+            });
             const updatedVariants = await this.getSearchIndexQueryBuilder(
                 ctx,
-                ...(await this.getAllChannels(ctx)),
+                ...unique(affectedChannels.concat(channel)),
             )
                 .andWhere('variants.productId = :productId', { productId })
                 .getMany();
@@ -281,7 +287,7 @@ export class IndexerController {
     ): Promise<boolean> {
         const channel = await this.loadChannel(ctx, channelId);
         ctx.setChannel(channel);
-        const variants = await this.getSearchIndexQueryBuilder(ctx, ...(await this.getAllChannels(ctx)))
+        const variants = await this.getSearchIndexQueryBuilder(ctx, channel)
             .andWhere('variants.deletedAt IS NULL AND variants.id IN (:...variantIds)', { variantIds })
             .getMany();
 
@@ -316,8 +322,11 @@ export class IndexerController {
         return await this.connection.getRepository(ctx, Channel).findOneOrFail({ where: { id: channelId } });
     }
 
-    private async getAllChannels(ctx: RequestContext): Promise<Channel[]> {
-        return await this.connection.getRepository(ctx, Channel).find();
+    private async getAllChannels(
+        ctx: RequestContext,
+        options?: FindManyOptions<Channel> | undefined,
+    ): Promise<Channel[]> {
+        return await this.connection.getRepository(ctx, Channel).find(options);
     }
 
     private getSearchIndexQueryBuilder(ctx: RequestContext, ...channels: Channel[]) {
@@ -455,9 +464,7 @@ export class IndexerController {
                 ).getOneOrFail();
                 productMap.set(variant.productId, product);
             }
-            const availableLanguageCodes = unique(
-                ctx.channel.availableLanguageCodes.concat(this.configService.defaultLanguageCode),
-            );
+            const availableLanguageCodes = unique(ctx.channel.availableLanguageCodes);
             for (const languageCode of availableLanguageCodes) {
                 const productTranslation = this.getTranslation(product, languageCode);
                 const variantTranslation = this.getTranslation(variant, languageCode);
@@ -469,7 +476,11 @@ export class IndexerController {
                 await this.entityHydrator.hydrate(ctx, clone, {
                     relations: ['channels', 'channels.defaultTaxZone'],
                 });
-                channelIds.push(...clone.channels.map(x => x.id));
+                channelIds.push(
+                    ...clone.channels
+                        .filter(x => x.availableLanguageCodes.includes(languageCode))
+                        .map(x => x.id),
+                );
                 channelIds = unique(channelIds);
 
                 for (const channel of variant.channels) {
@@ -483,11 +494,11 @@ export class IndexerController {
                         priceWithTax: variant.priceWithTax,
                         sku: variant.sku,
                         enabled: product.enabled === false ? false : variant.enabled,
-                        slug: productTranslation.slug ?? '',
+                        slug: productTranslation?.slug ?? '',
                         productId: product.id,
-                        productName: productTranslation.name ?? '',
-                        description: this.constrainDescription(productTranslation.description ?? ''),
-                        productVariantName: variantTranslation.name ?? '',
+                        productName: productTranslation?.name ?? '',
+                        description: this.constrainDescription(productTranslation?.description ?? ''),
+                        productVariantName: variantTranslation?.name ?? '',
                         productAssetId: product.featuredAsset ? product.featuredAsset.id : null,
                         productPreviewFocalPoint: product.featuredAsset
                             ? product.featuredAsset.focalPoint
@@ -502,7 +513,8 @@ export class IndexerController {
                         facetIds: this.getFacetIds(variant, product),
                         facetValueIds: this.getFacetValueIds(variant, product),
                         collectionIds: variant.collections.map(c => c.id.toString()),
-                        collectionSlugs: collectionTranslations.map(c => c.slug) ?? [],
+                        collectionSlugs:
+                            collectionTranslations.map(c => c?.slug).filter(notNullOrUndefined) ?? [],
                     });
                     if (this.options.indexStockStatus) {
                         item.inStock =
