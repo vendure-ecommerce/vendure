@@ -98,6 +98,7 @@ import { CouponCodeEvent } from '../../event-bus/events/coupon-code-event';
 import { OrderEvent } from '../../event-bus/events/order-event';
 import { OrderLineEvent } from '../../event-bus/events/order-line-event';
 import { OrderStateTransitionEvent } from '../../event-bus/events/order-state-transition-event';
+import { RefundEvent } from '../../event-bus/events/refund-event';
 import { RefundStateTransitionEvent } from '../../event-bus/events/refund-state-transition-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { FulfillmentState } from '../helpers/fulfillment-state-machine/fulfillment-state';
@@ -1419,7 +1420,12 @@ export class OrderService {
             return new RefundOrderStateError({ orderState: order.state });
         }
 
-        return await this.paymentService.createRefund(ctx, input, order, payment);
+        const createdRefund = await this.paymentService.createRefund(ctx, input, order, payment);
+
+        if (createdRefund instanceof Refund) {
+            await this.eventBus.publish(new RefundEvent(ctx, order, createdRefund, 'created'));
+        }
+        return createdRefund;
     }
 
     /**
@@ -1547,7 +1553,9 @@ export class OrderService {
                 .getRepository(ctx, Session)
                 .update(sessions.map(s => s.id) as string[], { activeOrder: null });
         }
+        const deletedOrder = new Order(orderToDelete);
         await this.connection.getRepository(ctx, Order).delete(orderToDelete.id);
+        await this.eventBus.publish(new OrderEvent(ctx, deletedOrder, 'deleted'));
     }
 
     /**
