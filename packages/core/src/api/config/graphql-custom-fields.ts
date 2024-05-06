@@ -7,6 +7,7 @@ import {
     GraphQLSchema,
     parse,
 } from 'graphql';
+import { isObjectType } from 'graphql/index.js';
 
 import { CustomFieldConfig, CustomFields } from '../../config/custom-field/custom-field-types';
 import { Logger } from '../../config/logger/vendure-logger';
@@ -41,6 +42,13 @@ export function addGraphQLCustomFields(
 
     const customFieldsConfig = getCustomFieldsConfigWithoutInterfaces(customFieldConfig, schema);
     for (const [entityName, customFields] of customFieldsConfig) {
+        const gqlType = schema.getType(entityName);
+        if (isObjectType(gqlType) && gqlType.getFields().customFields) {
+            Logger.warn(
+                `The entity type "${entityName}" already has a "customFields" field defined. Skipping automatic custom field extension.`,
+            );
+            continue;
+        }
         const customEntityFields = customFields.filter(config => {
             return !config.internal && (publicOnly === true ? config.public !== false : true);
         });
