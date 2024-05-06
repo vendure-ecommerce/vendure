@@ -5,9 +5,9 @@ import {
     GraphQLInputObjectType,
     GraphQLList,
     GraphQLSchema,
+    isObjectType,
     parse,
 } from 'graphql';
-import { isObjectType } from 'graphql/index.js';
 
 import { CustomFieldConfig, CustomFields } from '../../config/custom-field/custom-field-types';
 import { Logger } from '../../config/logger/vendure-logger';
