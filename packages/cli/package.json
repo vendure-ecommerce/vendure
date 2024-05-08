@@ -43,7 +43,8 @@
         "picocolors": "^1.0.0",
         "ts-morph": "^21.0.1",
         "ts-node": "^10.9.2",
-        "tsconfig-paths": "^4.2.0"
+        "tsconfig-paths": "^4.2.0",
+        "zod": "^3.23.7"
     },
     "devDependencies": {
         "@vendure/core": "^2.2.4",

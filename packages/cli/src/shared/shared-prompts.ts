@@ -10,11 +10,11 @@ import { EntityRef } from './entity-ref';
 import { ServiceRef } from './service-ref';
 import { VendurePluginRef } from './vendure-plugin-ref';
 
-export async function analyzeProject(options: {
+export async function analyzeProject(options?: {
     providedVendurePlugin?: VendurePluginRef;
     cancelledMessage?: string;
 }) {
-    const providedVendurePlugin = options.providedVendurePlugin;
+    const providedVendurePlugin = options?.providedVendurePlugin;
     let project = providedVendurePlugin?.classDeclaration.getProject();
     let tsConfigPath: string | undefined;
 

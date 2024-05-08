@@ -1,4 +1,4 @@
-export interface GeneratePluginOptions {
+export interface GeneratePluginOptions extends Record<string, any> {
     name: string;
     pluginDir: string;
 }

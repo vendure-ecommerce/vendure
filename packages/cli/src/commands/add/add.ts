@@ -9,7 +9,7 @@ import { addApiExtensionCommand } from './api-extension/add-api-extension';
 import { addCodegenCommand } from './codegen/add-codegen';
 import { addEntityCommand } from './entity/add-entity';
 import { addJobQueueCommand } from './job-queue/add-job-queue';
-import { createNewPluginCommand } from './plugin/create-new-plugin';
+import { addPluginCommandInteractive } from './plugin/add-plugin.command.interactive';
 import { addServiceCommand } from './service/add-service';
 import { addUiExtensionsCommand } from './ui-extensions/add-ui-extensions';
 
@@ -20,7 +20,7 @@ export async function addCommand() {
     console.log(`\n`);
     intro(pc.blue("✨ Let's add a new feature to your Vendure project!"));
     const addCommands: Array<CliCommand<any>> = [
-        createNewPluginCommand,
+        addPluginCommandInteractive,
         addEntityCommand,
         addServiceCommand,
         addApiExtensionCommand,

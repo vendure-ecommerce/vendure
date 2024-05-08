@@ -3,6 +3,8 @@
 import { Command } from 'commander';
 import pc from 'picocolors';
 
+import { registerAddPluginNonInteractiveCommand } from './commands/add/plugin/add-plugin.command.non-interactive';
+
 const program = new Command();
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -32,6 +34,8 @@ program
         await addCommand();
         process.exit(0);
     });
+
+registerAddPluginNonInteractiveCommand(program);
 
 program
     .command('migrate')
