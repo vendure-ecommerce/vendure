@@ -1,6 +1,8 @@
-import { EntityMetadata, SelectQueryBuilder } from 'typeorm';
+import { EntityMetadata, FindOneOptions, SelectQueryBuilder } from 'typeorm';
 import { EntityTarget } from 'typeorm/common/EntityTarget';
+import { FindOptionsRelationByString, FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
 
+import { findOptionsObjectToArray } from '../../../connection/find-options-object-to-array';
 import { VendureEntity } from '../../../entity';
 
 /**
@@ -55,11 +57,12 @@ function isTreeEntityMetadata(metadata: EntityMetadata): boolean {
 export function joinTreeRelationsDynamically<T extends VendureEntity>(
     qb: SelectQueryBuilder<T>,
     entity: EntityTarget<T>,
-    requestedRelations: string[] = [],
+    requestedRelations: FindOneOptions['relations'] = {},
     maxEagerDepth: number = 1,
 ): Map<string, string> {
     const joinedRelations = new Map<string, string>();
-    if (!requestedRelations.length) {
+    const relationsArray = findOptionsObjectToArray(requestedRelations);
+    if (!relationsArray.length) {
         return joinedRelations;
     }
 
@@ -147,7 +150,7 @@ export function joinTreeRelationsDynamically<T extends VendureEntity>(
         }
     };
 
-    requestedRelations.forEach(relationPath => {
+    relationsArray.forEach(relationPath => {
         if (!joinedRelations.has(relationPath)) {
             processRelation(sourceMetadata, sourceMetadataIsTree, relationPath, qb.alias);
         }

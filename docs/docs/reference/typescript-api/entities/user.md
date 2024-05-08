@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## User
 
-<GenerationInfo sourceFile="packages/core/src/entity/user/user.entity.ts" sourceLine="20" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/user/user.entity.ts" sourceLine="21" packageName="@vendure/core" />
 
 A User represents any authenticated user of the Vendure API. This includes both
 <a href='/reference/typescript-api/entities/administrator#administrator'>Administrator</a>s as well as registered <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>s.
@@ -34,6 +34,8 @@ class User extends VendureEntity implements HasCustomFields, SoftDeletable {
     lastLogin: Date | null;
     @Column(type => CustomUserFields)
     customFields: CustomUserFields;
+    @OneToMany(type => AuthenticatedSession, session => session.user)
+    sessions: AuthenticatedSession[];
     getNativeAuthenticationMethod() => NativeAuthenticationMethod;
     getNativeAuthenticationMethod(strict?: boolean) => NativeAuthenticationMethod | undefined;
     getNativeAuthenticationMethod(strict?: boolean) => NativeAuthenticationMethod | undefined;
@@ -86,6 +88,11 @@ class User extends VendureEntity implements HasCustomFields, SoftDeletable {
 ### customFields
 
 <MemberInfo kind="property" type={`CustomUserFields`}   />
+
+
+### sessions
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a>[]`}   />
 
 
 ### getNativeAuthenticationMethod

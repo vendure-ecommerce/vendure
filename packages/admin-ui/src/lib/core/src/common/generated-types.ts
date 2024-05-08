@@ -2858,6 +2858,10 @@ export type Mutation = {
   deleteZone: DeletionResponse;
   /** Delete a Zone */
   deleteZones: Array<DeletionResponse>;
+  /**
+   * Duplicate an existing entity using a specific EntityDuplicator.
+   * Since v2.2.0.
+   */
   duplicateEntity: DuplicateEntityResult;
   flushBufferedJobs: Success;
   importProducts?: Maybe<ImportInfo>;
@@ -5079,6 +5083,7 @@ export type Query = {
   customers: CustomerList;
   /** Returns a list of eligible shipping methods for the draft Order */
   eligibleShippingMethodsForDraftOrder: Array<ShippingMethodQuote>;
+  /** Returns all configured EntityDuplicators. */
   entityDuplicators: Array<EntityDuplicatorDefinition>;
   facet?: Maybe<Facet>;
   facetValues: FacetValueList;

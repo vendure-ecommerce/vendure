@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## JobQueueStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/job-queue/job-queue-strategy.ts" sourceLine="23" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/job-queue/job-queue-strategy.ts" sourceLine="24" packageName="@vendure/core" />
 
 Defines how the jobs in the <a href='/reference/typescript-api/job-queue/job-queue-service#jobqueueservice'>JobQueueService</a> are persisted and
 accessed. Custom strategies can be defined to make use of external
@@ -26,7 +26,7 @@ your VendureConfig.
 
 ```ts title="Signature"
 interface JobQueueStrategy extends InjectableStrategy {
-    add<Data extends JobData<Data> = object>(job: Job<Data>): Promise<Job<Data>>;
+    add<Data extends JobData<Data> = object>(job: Job<Data>, jobOptions?: JobQueueStrategyJobOptions<Data>): Promise<Job<Data>>;
     start<Data extends JobData<Data> = object>(
         queueName: string,
         process: (job: Job<Data>) => Promise<any>,
@@ -45,7 +45,7 @@ interface JobQueueStrategy extends InjectableStrategy {
 
 ### add
 
-<MemberInfo kind="method" type={`(job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62;`}   />
+<MemberInfo kind="method" type={`(job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;, jobOptions?: JobQueueStrategyJobOptions&#60;Data&#62;) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62;`}   />
 
 Add a new job to the queue.
 ### start

@@ -14,18 +14,15 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { RequestContextCacheService } from '../../cache/request-context-cache.service';
-import {
-    EntityNotFoundError,
-    ForbiddenError,
-    UserInputError,
-} from '../../common/error/errors';
+import { EntityNotFoundError, ForbiddenError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
-import { idsAreEqual } from '../../common/utils';
+import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { StockLevel } from '../../entity/stock-level/stock-level.entity';
 import { StockLocation } from '../../entity/stock-location/stock-location.entity';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { RequestContextService } from '../helpers/request-context/request-context.service';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -43,6 +40,7 @@ export class StockLocationService {
         private listQueryBuilder: ListQueryBuilder,
         private configService: ConfigService,
         private requestContextCache: RequestContextCacheService,
+        private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
     async initStockLocations() {
@@ -89,7 +87,14 @@ export class StockLocationService {
     async update(ctx: RequestContext, input: UpdateStockLocationInput): Promise<StockLocation> {
         const stockLocation = await this.connection.getEntityOrThrow(ctx, StockLocation, input.id);
         const updatedStockLocation = patchEntity(stockLocation, input);
-        return this.connection.getRepository(ctx, StockLocation).save(updatedStockLocation);
+        await this.connection.getRepository(ctx, StockLocation).save(updatedStockLocation);
+        await this.customFieldRelationService.updateRelations(
+            ctx,
+            StockLocation,
+            input,
+            updatedStockLocation,
+        );
+        return assertFound(this.findOne(ctx, updatedStockLocation.id));
     }
 
     async delete(ctx: RequestContext, input: DeleteStockLocationInput): Promise<DeletionResponse> {

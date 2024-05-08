@@ -68,7 +68,10 @@ export class FacetValueSelectorComponent implements OnInit, OnDestroy, ControlVa
     disabled = false;
     value: Array<string | FacetValueFragment>;
     private subscription: Subscription;
-    constructor(private dataService: DataService, private changeDetectorRef: ChangeDetectorRef) {}
+    constructor(
+        private dataService: DataService,
+        private changeDetectorRef: ChangeDetectorRef,
+    ) {}
 
     ngOnInit(): void {
         this.initSearchResults();
@@ -115,6 +118,9 @@ export class FacetValueSelectorComponent implements OnInit, OnDestroy, ControlVa
     onChange(selected: FacetValueFragment[]) {
         if (this.readonly) {
             return;
+        }
+        for (const sel of selected) {
+            console.log(`selected: ${sel.facet.name}:${sel.code}`);
         }
         this.selectedValuesChange.emit(selected);
         if (this.onChangeFn) {

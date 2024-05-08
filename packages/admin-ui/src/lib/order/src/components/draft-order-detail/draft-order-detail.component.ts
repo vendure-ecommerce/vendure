@@ -110,7 +110,8 @@ export class DraftOrderDetailComponent
                     .setCustomerForDraftOrder(this.id, { customerId: result.id })
                     .subscribe();
             } else if (result) {
-                this.dataService.order.setCustomerForDraftOrder(this.id, { input: result }).subscribe();
+                const { note, ...input } = result;
+                this.dataService.order.setCustomerForDraftOrder(this.id, { input }).subscribe();
             }
         });
     }

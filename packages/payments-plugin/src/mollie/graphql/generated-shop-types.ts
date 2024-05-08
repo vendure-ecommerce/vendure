@@ -128,17 +128,17 @@ export type AuthenticationMethod = Node & {
 export type AuthenticationResult = CurrentUser | InvalidCredentialsError | NotVerifiedError;
 
 export type BooleanCustomFieldConfig = CustomField & {
-  __typename?: 'BooleanCustomFieldConfig';
-  description?: Maybe<Array<LocalizedString>>;
-  internal?: Maybe<Scalars['Boolean']['output']>;
-  label?: Maybe<Array<LocalizedString>>;
-  list: Scalars['Boolean']['output'];
-  name: Scalars['String']['output'];
-  nullable?: Maybe<Scalars['Boolean']['output']>;
-  readonly?: Maybe<Scalars['Boolean']['output']>;
-  requiresPermission?: Maybe<Array<Permission>>;
-  type: Scalars['String']['output'];
-  ui?: Maybe<Scalars['JSON']['output']>;
+    __typename?: 'BooleanCustomFieldConfig';
+    description?: Maybe<Array<LocalizedString>>;
+    internal?: Maybe<Scalars['Boolean']['output']>;
+    label?: Maybe<Array<LocalizedString>>;
+    list: Scalars['Boolean']['output'];
+    name: Scalars['String']['output'];
+    nullable?: Maybe<Scalars['Boolean']['output']>;
+    readonly?: Maybe<Scalars['Boolean']['output']>;
+    requiresPermission?: Maybe<Array<Permission>>;
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
 };
 
 /** Operators for filtering on a list of Boolean fields */
@@ -734,16 +734,16 @@ export type CurrentUserChannel = {
 };
 
 export type CustomField = {
-  description?: Maybe<Array<LocalizedString>>;
-  internal?: Maybe<Scalars['Boolean']['output']>;
-  label?: Maybe<Array<LocalizedString>>;
-  list: Scalars['Boolean']['output'];
-  name: Scalars['String']['output'];
-  nullable?: Maybe<Scalars['Boolean']['output']>;
-  readonly?: Maybe<Scalars['Boolean']['output']>;
-  requiresPermission?: Maybe<Array<Permission>>;
-  type: Scalars['String']['output'];
-  ui?: Maybe<Scalars['JSON']['output']>;
+    description?: Maybe<Array<LocalizedString>>;
+    internal?: Maybe<Scalars['Boolean']['output']>;
+    label?: Maybe<Array<LocalizedString>>;
+    list: Scalars['Boolean']['output'];
+    name: Scalars['String']['output'];
+    nullable?: Maybe<Scalars['Boolean']['output']>;
+    readonly?: Maybe<Scalars['Boolean']['output']>;
+    requiresPermission?: Maybe<Array<Permission>>;
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
 };
 
 export type CustomFieldConfig =
@@ -858,20 +858,20 @@ export type DateRange = {
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
  */
 export type DateTimeCustomFieldConfig = CustomField & {
-  __typename?: 'DateTimeCustomFieldConfig';
-  description?: Maybe<Array<LocalizedString>>;
-  internal?: Maybe<Scalars['Boolean']['output']>;
-  label?: Maybe<Array<LocalizedString>>;
-  list: Scalars['Boolean']['output'];
-  max?: Maybe<Scalars['String']['output']>;
-  min?: Maybe<Scalars['String']['output']>;
-  name: Scalars['String']['output'];
-  nullable?: Maybe<Scalars['Boolean']['output']>;
-  readonly?: Maybe<Scalars['Boolean']['output']>;
-  requiresPermission?: Maybe<Array<Permission>>;
-  step?: Maybe<Scalars['Int']['output']>;
-  type: Scalars['String']['output'];
-  ui?: Maybe<Scalars['JSON']['output']>;
+    __typename?: 'DateTimeCustomFieldConfig';
+    description?: Maybe<Array<LocalizedString>>;
+    internal?: Maybe<Scalars['Boolean']['output']>;
+    label?: Maybe<Array<LocalizedString>>;
+    list: Scalars['Boolean']['output'];
+    max?: Maybe<Scalars['String']['output']>;
+    min?: Maybe<Scalars['String']['output']>;
+    name: Scalars['String']['output'];
+    nullable?: Maybe<Scalars['Boolean']['output']>;
+    readonly?: Maybe<Scalars['Boolean']['output']>;
+    requiresPermission?: Maybe<Array<Permission>>;
+    step?: Maybe<Scalars['Int']['output']>;
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
 };
 
 export type DeletionResponse = {
@@ -1094,20 +1094,20 @@ export type FacetValueTranslation = {
 };
 
 export type FloatCustomFieldConfig = CustomField & {
-  __typename?: 'FloatCustomFieldConfig';
-  description?: Maybe<Array<LocalizedString>>;
-  internal?: Maybe<Scalars['Boolean']['output']>;
-  label?: Maybe<Array<LocalizedString>>;
-  list: Scalars['Boolean']['output'];
-  max?: Maybe<Scalars['Float']['output']>;
-  min?: Maybe<Scalars['Float']['output']>;
-  name: Scalars['String']['output'];
-  nullable?: Maybe<Scalars['Boolean']['output']>;
-  readonly?: Maybe<Scalars['Boolean']['output']>;
-  requiresPermission?: Maybe<Array<Permission>>;
-  step?: Maybe<Scalars['Float']['output']>;
-  type: Scalars['String']['output'];
-  ui?: Maybe<Scalars['JSON']['output']>;
+    __typename?: 'FloatCustomFieldConfig';
+    description?: Maybe<Array<LocalizedString>>;
+    internal?: Maybe<Scalars['Boolean']['output']>;
+    label?: Maybe<Array<LocalizedString>>;
+    list: Scalars['Boolean']['output'];
+    max?: Maybe<Scalars['Float']['output']>;
+    min?: Maybe<Scalars['Float']['output']>;
+    name: Scalars['String']['output'];
+    nullable?: Maybe<Scalars['Boolean']['output']>;
+    readonly?: Maybe<Scalars['Boolean']['output']>;
+    requiresPermission?: Maybe<Array<Permission>>;
+    step?: Maybe<Scalars['Float']['output']>;
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
 };
 
 export type Fulfillment = Node & {
@@ -1277,20 +1277,20 @@ export type InsufficientStockError = ErrorResult & {
 };
 
 export type IntCustomFieldConfig = CustomField & {
-  __typename?: 'IntCustomFieldConfig';
-  description?: Maybe<Array<LocalizedString>>;
-  internal?: Maybe<Scalars['Boolean']['output']>;
-  label?: Maybe<Array<LocalizedString>>;
-  list: Scalars['Boolean']['output'];
-  max?: Maybe<Scalars['Int']['output']>;
-  min?: Maybe<Scalars['Int']['output']>;
-  name: Scalars['String']['output'];
-  nullable?: Maybe<Scalars['Boolean']['output']>;
-  readonly?: Maybe<Scalars['Boolean']['output']>;
-  requiresPermission?: Maybe<Array<Permission>>;
-  step?: Maybe<Scalars['Int']['output']>;
-  type: Scalars['String']['output'];
-  ui?: Maybe<Scalars['JSON']['output']>;
+    __typename?: 'IntCustomFieldConfig';
+    description?: Maybe<Array<LocalizedString>>;
+    internal?: Maybe<Scalars['Boolean']['output']>;
+    label?: Maybe<Array<LocalizedString>>;
+    list: Scalars['Boolean']['output'];
+    max?: Maybe<Scalars['Int']['output']>;
+    min?: Maybe<Scalars['Int']['output']>;
+    name: Scalars['String']['output'];
+    nullable?: Maybe<Scalars['Boolean']['output']>;
+    readonly?: Maybe<Scalars['Boolean']['output']>;
+    requiresPermission?: Maybe<Array<Permission>>;
+    step?: Maybe<Scalars['Int']['output']>;
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
 };
 
 /** Returned if the user authentication credentials are not valid */
@@ -1628,33 +1628,33 @@ export enum LanguageCode {
 }
 
 export type LocaleStringCustomFieldConfig = CustomField & {
-  __typename?: 'LocaleStringCustomFieldConfig';
-  description?: Maybe<Array<LocalizedString>>;
-  internal?: Maybe<Scalars['Boolean']['output']>;
-  label?: Maybe<Array<LocalizedString>>;
-  length?: Maybe<Scalars['Int']['output']>;
-  list: Scalars['Boolean']['output'];
-  name: Scalars['String']['output'];
-  nullable?: Maybe<Scalars['Boolean']['output']>;
-  pattern?: Maybe<Scalars['String']['output']>;
-  readonly?: Maybe<Scalars['Boolean']['output']>;
-  requiresPermission?: Maybe<Array<Permission>>;
-  type: Scalars['String']['output'];
-  ui?: Maybe<Scalars['JSON']['output']>;
+    __typename?: 'LocaleStringCustomFieldConfig';
+    description?: Maybe<Array<LocalizedString>>;
+    internal?: Maybe<Scalars['Boolean']['output']>;
+    label?: Maybe<Array<LocalizedString>>;
+    length?: Maybe<Scalars['Int']['output']>;
+    list: Scalars['Boolean']['output'];
+    name: Scalars['String']['output'];
+    nullable?: Maybe<Scalars['Boolean']['output']>;
+    pattern?: Maybe<Scalars['String']['output']>;
+    readonly?: Maybe<Scalars['Boolean']['output']>;
+    requiresPermission?: Maybe<Array<Permission>>;
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
 };
 
 export type LocaleTextCustomFieldConfig = CustomField & {
-  __typename?: 'LocaleTextCustomFieldConfig';
-  description?: Maybe<Array<LocalizedString>>;
-  internal?: Maybe<Scalars['Boolean']['output']>;
-  label?: Maybe<Array<LocalizedString>>;
-  list: Scalars['Boolean']['output'];
-  name: Scalars['String']['output'];
-  nullable?: Maybe<Scalars['Boolean']['output']>;
-  readonly?: Maybe<Scalars['Boolean']['output']>;
-  requiresPermission?: Maybe<Array<Permission>>;
-  type: Scalars['String']['output'];
-  ui?: Maybe<Scalars['JSON']['output']>;
+    __typename?: 'LocaleTextCustomFieldConfig';
+    description?: Maybe<Array<LocalizedString>>;
+    internal?: Maybe<Scalars['Boolean']['output']>;
+    label?: Maybe<Array<LocalizedString>>;
+    list: Scalars['Boolean']['output'];
+    name: Scalars['String']['output'];
+    nullable?: Maybe<Scalars['Boolean']['output']>;
+    readonly?: Maybe<Scalars['Boolean']['output']>;
+    requiresPermission?: Maybe<Array<Permission>>;
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
 };
 
 export type LocalizedString = {
@@ -3024,19 +3024,19 @@ export type RegisterCustomerInput = {
 };
 
 export type RelationCustomFieldConfig = CustomField & {
-  __typename?: 'RelationCustomFieldConfig';
-  description?: Maybe<Array<LocalizedString>>;
-  entity: Scalars['String']['output'];
-  internal?: Maybe<Scalars['Boolean']['output']>;
-  label?: Maybe<Array<LocalizedString>>;
-  list: Scalars['Boolean']['output'];
-  name: Scalars['String']['output'];
-  nullable?: Maybe<Scalars['Boolean']['output']>;
-  readonly?: Maybe<Scalars['Boolean']['output']>;
-  requiresPermission?: Maybe<Array<Permission>>;
-  scalarFields: Array<Scalars['String']['output']>;
-  type: Scalars['String']['output'];
-  ui?: Maybe<Scalars['JSON']['output']>;
+    __typename?: 'RelationCustomFieldConfig';
+    description?: Maybe<Array<LocalizedString>>;
+    entity: Scalars['String']['output'];
+    internal?: Maybe<Scalars['Boolean']['output']>;
+    label?: Maybe<Array<LocalizedString>>;
+    list: Scalars['Boolean']['output'];
+    name: Scalars['String']['output'];
+    nullable?: Maybe<Scalars['Boolean']['output']>;
+    readonly?: Maybe<Scalars['Boolean']['output']>;
+    requiresPermission?: Maybe<Array<Permission>>;
+    scalarFields: Array<Scalars['String']['output']>;
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
 };
 
 export type RemoveOrderItemsResult = Order | OrderModificationError;
@@ -3229,20 +3229,20 @@ export enum SortOrder {
 }
 
 export type StringCustomFieldConfig = CustomField & {
-  __typename?: 'StringCustomFieldConfig';
-  description?: Maybe<Array<LocalizedString>>;
-  internal?: Maybe<Scalars['Boolean']['output']>;
-  label?: Maybe<Array<LocalizedString>>;
-  length?: Maybe<Scalars['Int']['output']>;
-  list: Scalars['Boolean']['output'];
-  name: Scalars['String']['output'];
-  nullable?: Maybe<Scalars['Boolean']['output']>;
-  options?: Maybe<Array<StringFieldOption>>;
-  pattern?: Maybe<Scalars['String']['output']>;
-  readonly?: Maybe<Scalars['Boolean']['output']>;
-  requiresPermission?: Maybe<Array<Permission>>;
-  type: Scalars['String']['output'];
-  ui?: Maybe<Scalars['JSON']['output']>;
+    __typename?: 'StringCustomFieldConfig';
+    description?: Maybe<Array<LocalizedString>>;
+    internal?: Maybe<Scalars['Boolean']['output']>;
+    label?: Maybe<Array<LocalizedString>>;
+    length?: Maybe<Scalars['Int']['output']>;
+    list: Scalars['Boolean']['output'];
+    name: Scalars['String']['output'];
+    nullable?: Maybe<Scalars['Boolean']['output']>;
+    options?: Maybe<Array<StringFieldOption>>;
+    pattern?: Maybe<Scalars['String']['output']>;
+    readonly?: Maybe<Scalars['Boolean']['output']>;
+    requiresPermission?: Maybe<Array<Permission>>;
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
 };
 
 export type StringFieldOption = {
@@ -3338,17 +3338,17 @@ export type TaxRateList = PaginatedList & {
 };
 
 export type TextCustomFieldConfig = CustomField & {
-  __typename?: 'TextCustomFieldConfig';
-  description?: Maybe<Array<LocalizedString>>;
-  internal?: Maybe<Scalars['Boolean']['output']>;
-  label?: Maybe<Array<LocalizedString>>;
-  list: Scalars['Boolean']['output'];
-  name: Scalars['String']['output'];
-  nullable?: Maybe<Scalars['Boolean']['output']>;
-  readonly?: Maybe<Scalars['Boolean']['output']>;
-  requiresPermission?: Maybe<Array<Permission>>;
-  type: Scalars['String']['output'];
-  ui?: Maybe<Scalars['JSON']['output']>;
+    __typename?: 'TextCustomFieldConfig';
+    description?: Maybe<Array<LocalizedString>>;
+    internal?: Maybe<Scalars['Boolean']['output']>;
+    label?: Maybe<Array<LocalizedString>>;
+    list: Scalars['Boolean']['output'];
+    name: Scalars['String']['output'];
+    nullable?: Maybe<Scalars['Boolean']['output']>;
+    readonly?: Maybe<Scalars['Boolean']['output']>;
+    requiresPermission?: Maybe<Array<Permission>>;
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
 };
 
 export type TransitionOrderToStateResult = Order | OrderStateTransitionError;

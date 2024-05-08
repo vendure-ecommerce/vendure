@@ -26,13 +26,13 @@ class TaxRate extends VendureEntity implements HasCustomFields {
     @Column() enabled: boolean;
     @Column({ type: 'decimal', precision: 5, scale: 2, transformer: new DecimalTransformer() }) value: number;
     @Index()
-    @ManyToOne(type => TaxCategory)
+    @ManyToOne(type => TaxCategory, taxCategory => taxCategory.taxRates)
     category: TaxCategory;
     @Index()
-    @ManyToOne(type => Zone)
+    @ManyToOne(type => Zone, zone => zone.taxRates)
     zone: Zone;
     @Index()
-    @ManyToOne(type => CustomerGroup, { nullable: true })
+    @ManyToOne(type => CustomerGroup, customerGroup => customerGroup.taxRates, { nullable: true })
     customerGroup?: CustomerGroup;
     @Column(type => CustomTaxRateFields)
     customFields: CustomTaxRateFields;

@@ -217,7 +217,7 @@ import { GET_REVIEWS_FOR_PRODUCT } from '../product-reviews-list/product-reviews
                 <clr-icon shape="link"></clr-icon>
             </a>
         </div>
-        <select [formControl]="formControl">
+        <select [formControl]="formControl" [compareWith]="compareFn">
             <option [ngValue]="null">Select a review...</option>
             <option *ngFor="let item of reviews$ | async" [ngValue]="item">
                 <b>{{ item.summary }}</b>
@@ -246,6 +246,10 @@ export class RelationReviewInputComponent implements OnInit, FormInputComponent<
                     .mapSingle(({ product }) => product?.reviews.items ?? []);
             }),
         );
+    }
+
+    compareFn(item1: { id: string } | null, item2: { id: string } | null) {
+        return item1 && item2 ? item1.id === item2.id : item1 === item2;
     }
 }
 ```

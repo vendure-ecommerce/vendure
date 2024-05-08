@@ -11,14 +11,14 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## generateMigration
 
-<GenerationInfo sourceFile="packages/core/src/migrate.ts" sourceLine="107" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/migrate.ts" sourceLine="118" packageName="@vendure/core" />
 
 Generates a new migration file based on any schema changes (e.g. adding or removing CustomFields).
 See [TypeORM migration docs](https://typeorm.io/#/migrations) for more information about the
 underlying migration mechanism.
 
 ```ts title="Signature"
-function generateMigration(userConfig: Partial<VendureConfig>, options: MigrationOptions): void
+function generateMigration(userConfig: Partial<VendureConfig>, options: MigrationOptions): Promise<string | undefined>
 ```
 Parameters
 

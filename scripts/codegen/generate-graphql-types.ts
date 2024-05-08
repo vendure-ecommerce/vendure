@@ -1,5 +1,5 @@
 import { generate } from '@graphql-codegen/cli';
-import { Types } from '@graphql-codegen/plugin-helpers/typings';
+import { Types } from '@graphql-codegen/plugin-helpers';
 import fs from 'fs';
 import { buildClientSchema } from 'graphql';
 import path from 'path';

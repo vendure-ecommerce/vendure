@@ -162,7 +162,7 @@ export class ChannelService {
 
         return await this.connection
             .getRepository(ctx, entityType)
-            .createQueryBuilder()
+            .manager.createQueryBuilder()
             .select(`channel.${inverseJunctionColumnName}`, 'channelId')
             .from(junctionTableName, 'channel')
             .where(`channel.${junctionColumnName} = :entityId`, { entityId })

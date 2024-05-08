@@ -27,7 +27,7 @@ class PaymentMethod extends VendureEntity implements Translatable, ChannelAware,
     @Column() enabled: boolean;
     @Column('simple-json', { nullable: true }) checker: ConfigurableOperation | null;
     @Column('simple-json') handler: ConfigurableOperation;
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.paymentMethods)
     @JoinTable()
     channels: Channel[];
     @Column(type => CustomPaymentMethodFields)
