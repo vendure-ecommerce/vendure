@@ -13,6 +13,7 @@ import { VendurePluginRef } from './vendure-plugin-ref';
 export async function analyzeProject(options: {
     providedVendurePlugin?: VendurePluginRef;
     cancelledMessage?: string;
+    providedTsConfigPath?: string;
 }) {
     const providedVendurePlugin = options.providedVendurePlugin;
     let project = providedVendurePlugin?.classDeclaration.getProject();
@@ -20,7 +21,7 @@ export async function analyzeProject(options: {
 
     if (!providedVendurePlugin) {
         const projectSpinner = spinner();
-        const tsConfigFile = await selectTsConfigFile();
+        const tsConfigFile = options.providedTsConfigPath ?? (await selectTsConfigFile());
         projectSpinner.start('Analyzing project...');
         await pauseForPromptDisplay();
         const { project: _project, tsConfigPath: _tsConfigPath } = await getTsMorphProject({}, tsConfigFile);

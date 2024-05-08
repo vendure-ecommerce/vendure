@@ -30,10 +30,9 @@ export async function selectTsConfigFile() {
 }
 
 export async function getTsMorphProject(options: ProjectOptions = {}, providedTsConfigPath?: string) {
-    const tsConfigFile = providedTsConfigPath ?? (await selectTsConfigFile());
-    const tsConfigPath = path.join(process.cwd(), tsConfigFile);
+    const tsConfigPath = providedTsConfigPath ?? path.join(process.cwd(), await selectTsConfigFile());
     if (!fs.existsSync(tsConfigPath)) {
-        throw new Error('No tsconfig.json found in current directory');
+        throw new Error(`TS config does not exist at path: ${tsConfigPath}`);
     }
     const project = new Project({
         tsConfigFilePath: tsConfigPath,

@@ -30,6 +30,7 @@ export interface CliCommandOptions<T extends BaseCliCommandOptions, R extends Cl
 
 export interface CliCommandInputOptions extends Record<string, any> {
     nonInteractive?: boolean;
+    tsConfigPath?: string;
 }
 
 export class CliCommand<T extends Record<string, any>, R extends CliCommandReturnVal = CliCommandReturnVal> {

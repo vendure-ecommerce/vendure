@@ -31,6 +31,7 @@ program
     .option('-a, --action <action>', 'The add action to perform')
     .option('-n, --name <name>', 'The name of the feature to add')
     .option('-l, --location <location>', 'The location of the generated files')
+    .option('-t, --ts-config-path <ts-config-path>', 'The TS config file to use for resolving file paths')
     .action(async options => {
         const { addCommand } = await import('./commands/add/add');
         await addCommand(options.nonInteractive, options);

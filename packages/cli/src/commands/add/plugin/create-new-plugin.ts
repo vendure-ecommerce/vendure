@@ -41,7 +41,10 @@ export async function createNewPlugin(
         pluginDir: inputOptions?.location ?? '',
     } as any;
     intro('Adding a new Vendure plugin!');
-    const { project } = await analyzeProject({ cancelledMessage });
+    const { project } = await analyzeProject({
+        cancelledMessage,
+        providedTsConfigPath: inputOptions?.tsConfigPath,
+    });
     if (!options.name && !inputOptions?.nonInteractive) {
         const name = await text({
             message: 'What is the name of the plugin?',
@@ -88,7 +91,7 @@ export async function createNewPlugin(
         }
     }
 
-    const { plugin, project, modifiedSourceFiles } = await generatePlugin(options);
+    const { plugin, modifiedSourceFiles } = await generatePlugin(project, options);
 
     const configSpinner = spinner();
     configSpinner.start('Updating VendureConfig...');
