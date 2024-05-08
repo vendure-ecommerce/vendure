@@ -52,7 +52,7 @@ export async function addCommand(nonInteractiveMode: boolean = false, options: N
         if (!command) {
             throw new Error(`Could not find command with id "${featureType as string}"`);
         }
-        const { modifiedSourceFiles, project } = await command.run(nonInteractiveMode ? options : undefined);
+        const { modifiedSourceFiles, project } = await command.run(options);
 
         if (modifiedSourceFiles.length) {
             const importsSpinner = spinner();
