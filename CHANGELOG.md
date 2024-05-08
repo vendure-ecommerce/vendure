@@ -1,3 +1,21 @@
+## <small>2.2.4 (2024-05-08)</small>
+
+
+#### Fixes
+
+* **cli** Fix error when adding non-translatable entity ([b6de420](https://github.com/vendure-ecommerce/vendure/commit/b6de420))
+* **cli** Fix plugin path detection when only 1 plugin exists ([4f31067](https://github.com/vendure-ecommerce/vendure/commit/4f31067))
+* **cli** Hide output when installing packages ([dea7ba7](https://github.com/vendure-ecommerce/vendure/commit/dea7ba7))
+* **core** Correctly generate customFields field for custom entity types ([58943e3](https://github.com/vendure-ecommerce/vendure/commit/58943e3))
+* **core** Fix query on translation filter ([5b42cde](https://github.com/vendure-ecommerce/vendure/commit/5b42cde)), closes [#2833](https://github.com/vendure-ecommerce/vendure/issues/2833)
+* **core** Handle edge case of existing customFields def on gql type ([a889320](https://github.com/vendure-ecommerce/vendure/commit/a889320))
+* **core** Optimize search index update queries (#2808) ([e83dfc6](https://github.com/vendure-ecommerce/vendure/commit/e83dfc6)), closes [#2808](https://github.com/vendure-ecommerce/vendure/issues/2808)
+* **core** Use the shop cookie name for default route (#2839) ([429f88d](https://github.com/vendure-ecommerce/vendure/commit/429f88d)), closes [#2839](https://github.com/vendure-ecommerce/vendure/issues/2839)
+
+#### Features
+
+* **core** Add French translations for API messages (#2837) ([e45e7b7](https://github.com/vendure-ecommerce/vendure/commit/e45e7b7)), closes [#2837](https://github.com/vendure-ecommerce/vendure/issues/2837)
+
 ## <small>2.2.3 (2024-05-02)</small>
 
 
