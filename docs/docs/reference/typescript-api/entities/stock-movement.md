@@ -24,7 +24,7 @@ class StockMovement extends VendureEntity {
     @ManyToOne(type => ProductVariant, variant => variant.stockMovements)
     productVariant: ProductVariant;
     @Index()
-    @ManyToOne(type => StockLocation, { onDelete: 'CASCADE' })
+    @ManyToOne(type => StockLocation, stockLocation => stockLocation.stockMovements, { onDelete: 'CASCADE' })
     stockLocation: StockLocation;
     @EntityId()
     stockLocationId: ID;
@@ -80,7 +80,7 @@ class Allocation extends StockMovement {
     readonly type = StockMovementType.ALLOCATION;
     constructor(input: DeepPartial<Allocation>)
     @Index()
-    @ManyToOne(type => OrderLine)
+    @ManyToOne(type => OrderLine, orderLine => orderLine.allocations)
     orderLine: OrderLine;
 }
 ```
@@ -120,7 +120,7 @@ A Cancellation is created when OrderItems from a fulfilled Order are cancelled.
 class Cancellation extends StockMovement {
     readonly type = StockMovementType.CANCELLATION;
     constructor(input: DeepPartial<Cancellation>)
-    @ManyToOne(type => OrderLine)
+    @ManyToOne(type => OrderLine, orderLine => orderLine.cancellations)
     orderLine: OrderLine;
 }
 ```
@@ -201,7 +201,7 @@ A Sale is created when OrderItems are fulfilled.
 class Sale extends StockMovement {
     readonly type = StockMovementType.SALE;
     constructor(input: DeepPartial<Sale>)
-    @ManyToOne(type => OrderLine)
+    @ManyToOne(type => OrderLine, line => line.sales)
     orderLine: OrderLine;
 }
 ```

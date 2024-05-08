@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## revertLastMigration
 
-<GenerationInfo sourceFile="packages/core/src/migrate.ts" sourceLine="82" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/migrate.ts" sourceLine="89" packageName="@vendure/core" />
 
 Reverts the last applied database migration. See [TypeORM migration docs](https://typeorm.io/#/migrations)
 for more information about the underlying migration mechanism.

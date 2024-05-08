@@ -299,7 +299,11 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
             { rate: number; base: number; tax: number; description: string }
         >();
         const taxId = (taxLine: TaxLine): string => `${taxLine.description}:${taxLine.taxRate}`;
-        const taxableLines = [...(this.lines ?? []), ...(this.shippingLines ?? [])];
+        const taxableLines = [
+            ...(this.lines ?? []),
+            ...(this.shippingLines ?? []),
+            ...(this.surcharges ?? []),
+        ];
         for (const line of taxableLines) {
             const taxRateTotal = summate(line.taxLines, 'taxRate');
             for (const taxLine of line.taxLines) {
@@ -307,9 +311,18 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
                 const row = taxRateMap.get(id);
                 const proportionOfTotalRate = 0 < taxLine.taxRate ? taxLine.taxRate / taxRateTotal : 0;
 
-                const lineBase = line instanceof OrderLine ? line.proratedLinePrice : line.discountedPrice;
+                const lineBase =
+                    line instanceof OrderLine
+                        ? line.proratedLinePrice
+                        : line instanceof Surcharge
+                          ? line.price
+                          : line.discountedPrice;
                 const lineWithTax =
-                    line instanceof OrderLine ? line.proratedLinePriceWithTax : line.discountedPriceWithTax;
+                    line instanceof OrderLine
+                        ? line.proratedLinePriceWithTax
+                        : line instanceof Surcharge
+                          ? line.priceWithTax
+                          : line.discountedPriceWithTax;
                 const amount = Math.round((lineWithTax - lineBase) * proportionOfTotalRate);
                 if (row) {
                     row.tax += amount;

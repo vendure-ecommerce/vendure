@@ -30,6 +30,7 @@ import {
  *   .on(OrderStateTransitionEvent)
  *   .filter(event => event.toState === 'PaymentSettled')
  *   .setRecipient(event => event.order.customer.emailAddress)
+ *   .setFrom('{{ fromAddress }}')
  *   .setSubject(`Order confirmation for #{{ order.code }}`)
  *   .setTemplateVars(event => ({ order: event.order }));
  * ```
@@ -78,13 +79,16 @@ import {
  *   .on(QuoteRequestedEvent)
  *   .setRecipient(event => event.customer.emailAddress)
  *   .setSubject(`Here's the quote you requested`)
+ *   .setFrom('{{ fromAddress }}')
  *   .setTemplateVars(event => ({ details: event.details }));
  * ```
  *
  * ### 2. Create the email template
  *
- * Next you need to make sure there is a template defined at `<app root>/static/email/templates/quote-requested/body.hbs`. The template
- * would look something like this:
+ * Next you need to make sure there is a template defined at `<app root>/static/email/templates/quote-requested/body.hbs`. The path
+ * segment `quote-requested` must match the string passed to the `EmailEventListener` constructor.
+ *
+ * The template would look something like this:
  *
  * ```handlebars
  * {{> header title="Here's the quote you requested" }}
@@ -144,7 +148,10 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
     };
     private _mockEvent: Omit<Event, 'ctx' | 'data'> | undefined;
 
-    constructor(public listener: EmailEventListener<T>, public event: Type<Event>) {}
+    constructor(
+        public listener: EmailEventListener<T>,
+        public event: Type<Event>,
+    ) {}
 
     /** @internal */
     get type(): T {
@@ -297,7 +304,8 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      *   .setTemplateVars(event => ({
      *     order: event.order,
      *     payments: event.data,
-     *   }));
+     *   }))
+     *   // ...
      * ```
      */
     loadData<R>(

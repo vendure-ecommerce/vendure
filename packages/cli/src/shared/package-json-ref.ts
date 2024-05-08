@@ -8,10 +8,21 @@ export interface PackageToInstall {
     pkg: string;
     version?: string;
     isDevDependency?: boolean;
+    installInRoot?: boolean;
 }
 
 export class PackageJson {
+    private _vendurePackageJsonPath: string | undefined;
+    private _rootPackageJsonPath: string | undefined;
     constructor(private readonly project: Project) {}
+
+    get vendurePackageJsonPath() {
+        return this.locatePackageJsonWithVendureDependency();
+    }
+
+    get rootPackageJsonPath() {
+        return this.locateRootPackageJson();
+    }
 
     determineVendureVersion(): string | undefined {
         const packageJson = this.getPackageJsonContent();
@@ -42,8 +53,8 @@ export class PackageJson {
     }
 
     getPackageJsonContent() {
-        const packageJsonPath = path.join(this.getPackageRootDir().getPath(), 'package.json');
-        if (!fs.existsSync(packageJsonPath)) {
+        const packageJsonPath = this.locatePackageJsonWithVendureDependency();
+        if (!packageJsonPath || !fs.existsSync(packageJsonPath)) {
             note(
                 `Could not find a package.json in the current directory. Please run this command from the root of a Vendure project.`,
             );
@@ -73,9 +84,10 @@ export class PackageJson {
         const packageJson = this.getPackageJsonContent();
         packageJson.scripts = packageJson.scripts || {};
         packageJson.scripts[scriptName] = script;
-        const rootDir = this.getPackageRootDir();
-        const packageJsonPath = path.join(rootDir.getPath(), 'package.json');
-        fs.writeJsonSync(packageJsonPath, packageJson, { spaces: 2 });
+        const packageJsonPath = this.vendurePackageJsonPath;
+        if (packageJsonPath) {
+            fs.writeJsonSync(packageJsonPath, packageJson, { spaces: 2 });
+        }
     }
 
     getPackageRootDir() {
@@ -84,6 +96,52 @@ export class PackageJson {
             throw new Error('Could not find the root directory of the project');
         }
         return rootDir;
+    }
+
+    locateRootPackageJson() {
+        if (this._rootPackageJsonPath) {
+            return this._rootPackageJsonPath;
+        }
+        const rootDir = this.getPackageRootDir().getPath();
+        const rootPackageJsonPath = path.join(rootDir, 'package.json');
+        if (fs.existsSync(rootPackageJsonPath)) {
+            this._rootPackageJsonPath = rootPackageJsonPath;
+            return rootPackageJsonPath;
+        }
+        return null;
+    }
+
+    locatePackageJsonWithVendureDependency() {
+        if (this._vendurePackageJsonPath) {
+            return this._vendurePackageJsonPath;
+        }
+        const rootDir = this.getPackageRootDir().getPath();
+        const potentialMonorepoDirs = ['packages', 'apps', 'libs'];
+
+        const rootPackageJsonPath = path.join(this.getPackageRootDir().getPath(), 'package.json');
+        if (this.hasVendureDependency(rootPackageJsonPath)) {
+            return rootPackageJsonPath;
+        }
+        for (const dir of potentialMonorepoDirs) {
+            const monorepoDir = path.join(rootDir, dir);
+            // Check for a package.json in all subdirs
+            for (const subDir of fs.readdirSync(monorepoDir)) {
+                const packageJsonPath = path.join(monorepoDir, subDir, 'package.json');
+                if (this.hasVendureDependency(packageJsonPath)) {
+                    this._vendurePackageJsonPath = packageJsonPath;
+                    return packageJsonPath;
+                }
+            }
+        }
+        return null;
+    }
+
+    private hasVendureDependency(packageJsonPath: string) {
+        if (!fs.existsSync(packageJsonPath)) {
+            return false;
+        }
+        const packageJson = fs.readJsonSync(packageJsonPath);
+        return !!packageJson.dependencies?.['@vendure/core'];
     }
 
     private async runPackageManagerInstall(dependencies: string[], isDev: boolean) {
@@ -99,6 +157,12 @@ export class PackageJson {
                 }
 
                 args = args.concat(dependencies);
+            } else if (packageManager === 'pnpm') {
+                command = 'pnpm';
+                args = ['add', '--save-exact'].concat(dependencies);
+                if (isDev) {
+                    args.push('--save-dev', '--workspace-root');
+                }
             } else {
                 command = 'npm';
                 args = ['install', '--save', '--save-exact', '--loglevel', 'error'].concat(dependencies);

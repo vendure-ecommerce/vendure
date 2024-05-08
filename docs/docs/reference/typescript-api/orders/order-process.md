@@ -196,7 +196,7 @@ Parameters
 
 ## defaultOrderProcess
 
-<GenerationInfo sourceFile="packages/core/src/config/order/default-order-process.ts" sourceLine="476" packageName="@vendure/core" since="2.0.0" />
+<GenerationInfo sourceFile="packages/core/src/config/order/default-order-process.ts" sourceLine="475" packageName="@vendure/core" since="2.0.0" />
 
 This is the built-in <a href='/reference/typescript-api/orders/order-process#orderprocess'>OrderProcess</a> that ships with Vendure. A customized version of this process
 can be created using the <a href='/reference/typescript-api/orders/order-process#configuredefaultorderprocess'>configureDefaultOrderProcess</a> function, which allows you to pass in an object

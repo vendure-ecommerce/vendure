@@ -1547,7 +1547,9 @@ export class OrderService {
                 .getRepository(ctx, Session)
                 .update(sessions.map(s => s.id) as string[], { activeOrder: null });
         }
+        const deletedOrder = new Order(orderToDelete);
         await this.connection.getRepository(ctx, Order).delete(orderToDelete.id);
+        await this.eventBus.publish(new OrderEvent(ctx, deletedOrder, 'deleted'));
     }
 
     /**

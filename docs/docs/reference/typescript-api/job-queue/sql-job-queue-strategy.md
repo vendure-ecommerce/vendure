@@ -20,7 +20,7 @@ This strategy is used by the <a href='/reference/typescript-api/job-queue/defaul
 class SqlJobQueueStrategy extends PollingJobQueueStrategy implements InspectableJobQueueStrategy {
     init(injector: Injector) => ;
     destroy() => ;
-    add(job: Job<Data>) => Promise<Job<Data>>;
+    add(job: Job<Data>, jobOptions?: JobQueueStrategyJobOptions<Data>) => Promise<Job<Data>>;
     next(queueName: string) => Promise<Job | undefined>;
     update(job: Job<any>) => Promise<void>;
     findMany(options?: JobListOptions) => Promise<PaginatedList<Job>>;
@@ -50,7 +50,7 @@ class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Inspectable
 
 ### add
 
-<MemberInfo kind="method" type={`(job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62;`}   />
+<MemberInfo kind="method" type={`(job: <a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;, jobOptions?: JobQueueStrategyJobOptions&#60;Data&#62;) => Promise&#60;<a href='/reference/typescript-api/job-queue/job#job'>Job</a>&#60;Data&#62;&#62;`}   />
 
 
 ### next

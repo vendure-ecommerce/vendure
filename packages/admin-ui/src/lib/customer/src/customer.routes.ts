@@ -1,23 +1,13 @@
 import { Route } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import {
-    CanDeactivateDetailGuard,
-    createResolveData,
-    CustomerFragment,
-    detailBreadcrumb,
-    PageComponent,
-    PageService,
-} from '@vendure/admin-ui/core';
-
-import { CustomerDetailComponent } from './components/customer-detail/customer-detail.component';
-import { CustomerGroupListComponent } from './components/customer-group-list/customer-group-list.component';
-import { CustomerListComponent } from './components/customer-list/customer-list.component';
+import { CustomerFragment, detailBreadcrumb, PageComponent, PageService } from '@vendure/admin-ui/core';
 
 export const createRoutes = (pageService: PageService): Route[] => [
     {
         path: 'customers',
         component: PageComponent,
         data: {
+            locationId: 'customer-list',
             breadcrumb: _('breadcrumb.customers'),
         },
         children: pageService.getPageTabRoutes('customer-list'),

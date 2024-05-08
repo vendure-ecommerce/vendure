@@ -26,7 +26,7 @@ class JobQueue<Data extends JobData<Data> = object> {
     name: string
     started: boolean
     constructor(options: CreateQueueOptions<Data>, jobQueueStrategy: JobQueueStrategy, jobBufferService: JobBufferService)
-    add(data: Data, options?: JobOptions) => Promise<SubscribableJob<Data>>;
+    add(data: Data, options?: JobOptions<Data>) => Promise<SubscribableJob<Data>>;
 }
 ```
 
@@ -49,7 +49,7 @@ class JobQueue<Data extends JobData<Data> = object> {
 
 ### add
 
-<MemberInfo kind="method" type={`(data: Data, options?: Pick&#60;<a href='/reference/typescript-api/job-queue/types#jobconfig'>JobConfig</a>&#60;Data&#62;, 'retries'&#62;) => Promise&#60;<a href='/reference/typescript-api/job-queue/subscribable-job#subscribablejob'>SubscribableJob</a>&#60;Data&#62;&#62;`}   />
+<MemberInfo kind="method" type={`(data: Data, options?: JobOptions&#60;Data&#62;) => Promise&#60;<a href='/reference/typescript-api/job-queue/subscribable-job#subscribablejob'>SubscribableJob</a>&#60;Data&#62;&#62;`}   />
 
 Adds a new <a href='/reference/typescript-api/job-queue/job#job'>Job</a> to the queue. The resolved <a href='/reference/typescript-api/job-queue/subscribable-job#subscribablejob'>SubscribableJob</a> allows the
 calling code to subscribe to updates to the Job:

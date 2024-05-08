@@ -71,7 +71,7 @@ await this.entityHydrator
 
 ```ts title="Signature"
 class EntityHydrator {
-    constructor(connection: TransactionalConnection, productPriceApplicator: ProductPriceApplicator, translator: TranslatorService, listQueryBuilder: ListQueryBuilder)
+    constructor(connection: TransactionalConnection, productPriceApplicator: ProductPriceApplicator, translator: TranslatorService)
     hydrate(ctx: RequestContext, target: Entity, options: HydrateOptions<Entity>) => Promise<Entity>;
 }
 ```
@@ -80,7 +80,7 @@ class EntityHydrator {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, productPriceApplicator: <a href='/reference/typescript-api/service-helpers/product-price-applicator#productpriceapplicator'>ProductPriceApplicator</a>, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>) => EntityHydrator`}   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, productPriceApplicator: <a href='/reference/typescript-api/service-helpers/product-price-applicator#productpriceapplicator'>ProductPriceApplicator</a>, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>) => EntityHydrator`}   />
 
 
 ### hydrate

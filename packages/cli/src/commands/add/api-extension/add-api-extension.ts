@@ -43,7 +43,7 @@ async function addApiExtension(
     options?: AddApiExtensionOptions,
 ): Promise<CliCommandReturnVal<{ serviceRef: ServiceRef }>> {
     const providedVendurePlugin = options?.plugin;
-    const project = await analyzeProject({ providedVendurePlugin, cancelledMessage });
+    const { project } = await analyzeProject({ providedVendurePlugin, cancelledMessage });
     const plugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
     const serviceRef = await selectServiceRef(project, plugin, false);
     const serviceEntityRef = serviceRef.crudEntityRef;
@@ -186,8 +186,8 @@ function createSimpleResolver(
     const resolverSourceFile = createFile(
         project,
         path.join(__dirname, 'templates/simple-resolver.template.ts'),
+        path.join(plugin.getPluginDir().getPath(), 'api', resolverFileName),
     );
-    resolverSourceFile.move(path.join(plugin.getPluginDir().getPath(), 'api', resolverFileName));
 
     const resolverClassDeclaration = resolverSourceFile
         .getClasses()
@@ -245,8 +245,6 @@ function createCrudResolver(
     const resolverSourceFile = createFile(
         project,
         path.join(__dirname, 'templates/crud-resolver.template.ts'),
-    );
-    resolverSourceFile.move(
         path.join(
             plugin.getPluginDir().getPath(),
             'api',
@@ -628,12 +626,19 @@ function getGraphQLType(type: Type): string | undefined {
 
 function getOrCreateApiExtensionsFile(project: Project, plugin: VendurePluginRef): SourceFile {
     const existingApiExtensionsFile = project.getSourceFiles().find(sf => {
-        return sf.getBaseName() === 'api-extensions.ts' && sf.getDirectory().getPath().endsWith('/api');
+        const filePath = sf.getDirectory().getPath();
+        return (
+            sf.getBaseName() === 'api-extensions.ts' &&
+            filePath.includes(plugin.getPluginDir().getPath()) &&
+            filePath.endsWith('/api')
+        );
     });
     if (existingApiExtensionsFile) {
         return existingApiExtensionsFile;
     }
-    return createFile(project, path.join(__dirname, 'templates/api-extensions.template.ts')).move(
+    return createFile(
+        project,
+        path.join(__dirname, 'templates/api-extensions.template.ts'),
         path.join(plugin.getPluginDir().getPath(), 'api', 'api-extensions.ts'),
     );
 }

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ListQueryBuilder
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/list-query-builder/list-query-builder.ts" sourceLine="201" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/list-query-builder/list-query-builder.ts" sourceLine="200" packageName="@vendure/core" />
 
 This helper class is used when fetching entities the database from queries which return a <a href='/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a> type.
 These queries all follow the same format:
@@ -84,7 +84,6 @@ class ListQueryBuilder implements OnApplicationBootstrap {
     constructor(connection: TransactionalConnection, configService: ConfigService)
     filterObjectHasProperty(filterObject: FP | NullOptionals<FP> | null | undefined, property: keyof FP) => boolean;
     build(entity: Type<T>, options: ListQueryOptions<T> = {}, extendedOptions: ExtendedListQueryOptions<T> = {}) => SelectQueryBuilder<T>;
-    joinTreeRelationsDynamically(qb: SelectQueryBuilder<T>, entity: EntityTarget<T>, requestedRelations: string[] = []) => Set<string>;
 }
 ```
 * Implements: <code>OnApplicationBootstrap</code>
@@ -115,11 +114,6 @@ to join that relation.
 <MemberInfo kind="method" type={`(entity: Type&#60;T&#62;, options: ListQueryOptions&#60;T&#62; = {}, extendedOptions: <a href='/reference/typescript-api/data-access/list-query-builder#extendedlistqueryoptions'>ExtendedListQueryOptions</a>&#60;T&#62; = {}) => SelectQueryBuilder&#60;T&#62;`}   />
 
 
-### joinTreeRelationsDynamically
-
-<MemberInfo kind="method" type={`(qb: SelectQueryBuilder&#60;T&#62;, entity: EntityTarget&#60;T&#62;, requestedRelations: string[] = []) => Set&#60;string&#62;`}   />
-
-
 
 
 </div>
@@ -127,7 +121,7 @@ to join that relation.
 
 ## ExtendedListQueryOptions
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/list-query-builder/list-query-builder.ts" sourceLine="42" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/list-query-builder/list-query-builder.ts" sourceLine="41" packageName="@vendure/core" />
 
 Options which can be passed to the ListQueryBuilder's `build()` method.
 

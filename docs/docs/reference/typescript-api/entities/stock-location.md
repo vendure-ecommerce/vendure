@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## StockLocation
 
-<GenerationInfo sourceFile="packages/core/src/entity/stock-location/stock-location.entity.ts" sourceLine="21" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/stock-location/stock-location.entity.ts" sourceLine="22" packageName="@vendure/core" />
 
 A StockLocation represents a physical location where stock is held. For example, a warehouse or a shop.
 
@@ -29,9 +29,11 @@ class StockLocation extends VendureEntity implements HasCustomFields, ChannelAwa
     description: string;
     @Column(type => CustomStockLocationFields)
     customFields: CustomStockLocationFields;
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.stockLocations)
     @JoinTable()
     channels: Channel[];
+    @OneToMany(type => StockMovement, movement => movement.stockLocation)
+    stockMovements: StockMovement[];
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
@@ -66,6 +68,11 @@ class StockLocation extends VendureEntity implements HasCustomFields, ChannelAwa
 ### channels
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]`}   />
+
+
+### stockMovements
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/stock-movement#stockmovement'>StockMovement</a>[]`}   />
 
 
 

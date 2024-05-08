@@ -182,6 +182,20 @@ describe('Facet resolver', () => {
         expect(result.facet?.valueList.totalItems).toBe(3);
     });
 
+    it('facet with valueList with name filter', async () => {
+        const result = await adminClient.query(GetFacetWithValueListDocument, {
+            id: speakerTypeFacet.id,
+            options: {
+                filter: {
+                    name: {
+                        contains: 'spea',
+                    },
+                },
+            },
+        });
+        expect(result.facet?.valueList.totalItems).toBe(2);
+    });
+
     it('product.facetValues resolver omits private facets in shop-api', async () => {
         const publicFacetValue = brandFacet.values[0];
         const privateFacetValue = speakerTypeFacet.values[0];
@@ -661,9 +675,8 @@ describe('Facet resolver', () => {
 
         it('removing from channel with error', async () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { facets: before } = await adminClient.query<Codegen.GetFacetListSimpleQuery>(
-                GET_FACET_LIST_SIMPLE,
-            );
+            const { facets: before } =
+                await adminClient.query<Codegen.GetFacetListSimpleQuery>(GET_FACET_LIST_SIMPLE);
             expect(before.items).toEqual([{ id: 'T_4', name: 'Channel Facet' }]);
 
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
@@ -689,17 +702,15 @@ describe('Facet resolver', () => {
             ]);
 
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { facets: after } = await adminClient.query<Codegen.GetFacetListSimpleQuery>(
-                GET_FACET_LIST_SIMPLE,
-            );
+            const { facets: after } =
+                await adminClient.query<Codegen.GetFacetListSimpleQuery>(GET_FACET_LIST_SIMPLE);
             expect(after.items).toEqual([{ id: 'T_4', name: 'Channel Facet' }]);
         });
 
         it('force removing from channel', async () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { facets: before } = await adminClient.query<Codegen.GetFacetListSimpleQuery>(
-                GET_FACET_LIST_SIMPLE,
-            );
+            const { facets: before } =
+                await adminClient.query<Codegen.GetFacetListSimpleQuery>(GET_FACET_LIST_SIMPLE);
             expect(before.items).toEqual([{ id: 'T_4', name: 'Channel Facet' }]);
 
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
@@ -717,17 +728,15 @@ describe('Facet resolver', () => {
             expect(removeFacetsFromChannel).toEqual([{ id: 'T_4', name: 'Channel Facet' }]);
 
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { facets: after } = await adminClient.query<Codegen.GetFacetListSimpleQuery>(
-                GET_FACET_LIST_SIMPLE,
-            );
+            const { facets: after } =
+                await adminClient.query<Codegen.GetFacetListSimpleQuery>(GET_FACET_LIST_SIMPLE);
             expect(after.items).toEqual([]);
         });
 
         it('assigning to channel', async () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { facets: before } = await adminClient.query<Codegen.GetFacetListSimpleQuery>(
-                GET_FACET_LIST_SIMPLE,
-            );
+            const { facets: before } =
+                await adminClient.query<Codegen.GetFacetListSimpleQuery>(GET_FACET_LIST_SIMPLE);
             expect(before.items).toEqual([]);
 
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
@@ -744,9 +753,8 @@ describe('Facet resolver', () => {
             expect(assignFacetsToChannel).toEqual([{ id: 'T_4', name: 'Channel Facet' }]);
 
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { facets: after } = await adminClient.query<Codegen.GetFacetListSimpleQuery>(
-                GET_FACET_LIST_SIMPLE,
-            );
+            const { facets: after } =
+                await adminClient.query<Codegen.GetFacetListSimpleQuery>(GET_FACET_LIST_SIMPLE);
             expect(after.items).toEqual([{ id: 'T_4', name: 'Channel Facet' }]);
         });
     });
@@ -811,14 +819,14 @@ describe('Facet resolver', () => {
 });
 
 export const GET_FACET_WITH_VALUE_LIST = gql`
-    query GetFacetWithValueList($id: ID!) {
+    query GetFacetWithValueList($id: ID!, $options: FacetValueListOptions) {
         facet(id: $id) {
             id
             languageCode
             isPrivate
             code
             name
-            valueList {
+            valueList(options: $options) {
                 items {
                     ...FacetValue
                 }

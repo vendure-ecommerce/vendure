@@ -125,7 +125,7 @@ export class Populator {
         for (const collectionDef of data.collections) {
             const parent = collectionDef.parentName && collectionMap.get(collectionDef.parentName);
             const parentId = parent ? parent.id.toString() : undefined;
-            const { assets } = await this.assetImporter.getAssets(collectionDef.assetPaths || []);
+            const { assets } = await this.assetImporter.getAssets(collectionDef.assetPaths || [], ctx);
             let filters: ConfigurableOperationInput[] = [];
             try {
                 filters = (collectionDef.filters || []).map(filter =>

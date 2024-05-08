@@ -42,7 +42,7 @@ class Customer extends VendureEntity implements ChannelAware, HasCustomFields, S
     user?: User;
     @Column(type => CustomCustomerFields)
     customFields: CustomCustomerFields;
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.customers)
     @JoinTable()
     channels: Channel[];
 }

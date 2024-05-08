@@ -38,8 +38,8 @@ export function parseFilterParams<
     R extends FP extends { _and: Array<FilterParameter<T>> }
         ? WhereGroup[]
         : FP extends { _or: Array<FilterParameter<T>> }
-        ? WhereGroup[]
-        : WhereCondition[],
+          ? WhereGroup[]
+          : WhereCondition[],
 >(
     connection: DataSource,
     entity: Type<T>,
@@ -67,12 +67,7 @@ export function parseFilterParams<
             if (columns.find(c => c.propertyName === key)) {
                 fieldName = `${alias}.${key}`;
             } else if (translationColumns.find(c => c.propertyName === key)) {
-                const translationsAlias = connection.namingStrategy.joinTableName(
-                    alias,
-                    'translations',
-                    '',
-                    '',
-                );
+                const translationsAlias = [alias, 'translations'].join('__');
                 fieldName = `${translationsAlias}.${key}`;
             } else if (calculatedColumnExpression) {
                 fieldName = escapeCalculatedColumnExpression(connection, calculatedColumnExpression);

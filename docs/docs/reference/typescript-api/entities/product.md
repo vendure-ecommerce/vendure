@@ -40,7 +40,7 @@ class Product extends VendureEntity implements Translatable, HasCustomFields, Ch
     @ManyToMany(type => FacetValue, facetValue => facetValue.products)
     @JoinTable()
     facetValues: FacetValue[];
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.products)
     @JoinTable()
     channels: Channel[];
     @Column(type => CustomProductFields)

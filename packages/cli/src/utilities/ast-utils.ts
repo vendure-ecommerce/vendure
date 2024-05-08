@@ -1,4 +1,4 @@
-import { log } from '@clack/prompts';
+import { cancel, isCancel, log, select } from '@clack/prompts';
 import fs from 'fs-extra';
 import path from 'node:path';
 import { Directory, Node, Project, ProjectOptions, ScriptKind, SourceFile } from 'ts-morph';
@@ -6,22 +6,45 @@ import { Directory, Node, Project, ProjectOptions, ScriptKind, SourceFile } from
 import { defaultManipulationSettings } from '../constants';
 import { EntityRef } from '../shared/entity-ref';
 
-export function getTsMorphProject(options: ProjectOptions = {}) {
-    const tsConfigPath = path.join(process.cwd(), 'tsconfig.json');
+export async function selectTsConfigFile() {
+    const tsConfigFiles = fs.readdirSync(process.cwd()).filter(f => /^tsconfig.*\.json$/.test(f));
+    if (tsConfigFiles.length === 0) {
+        throw new Error('No tsconfig files found in current directory');
+    }
+    if (tsConfigFiles.length === 1) {
+        return tsConfigFiles[0];
+    }
+    const selectedConfigFile = await select({
+        message: 'Multiple tsconfig files found. Select one:',
+        options: tsConfigFiles.map(c => ({
+            value: c,
+            label: path.basename(c),
+        })),
+        maxItems: 10,
+    });
+    if (isCancel(selectedConfigFile)) {
+        cancel();
+        process.exit(0);
+    }
+    return selectedConfigFile as string;
+}
+
+export async function getTsMorphProject(options: ProjectOptions = {}, providedTsConfigPath?: string) {
+    const tsConfigFile = providedTsConfigPath ?? (await selectTsConfigFile());
+    const tsConfigPath = path.join(process.cwd(), tsConfigFile);
     if (!fs.existsSync(tsConfigPath)) {
         throw new Error('No tsconfig.json found in current directory');
     }
     const project = new Project({
         tsConfigFilePath: tsConfigPath,
         manipulationSettings: defaultManipulationSettings,
-        skipFileDependencyResolution: true,
         compilerOptions: {
             skipLibCheck: true,
         },
         ...options,
     });
     project.enableLogging(false);
-    return project;
+    return { project, tsConfigPath };
 }
 
 export function getPluginClasses(project: Project) {
@@ -99,14 +122,15 @@ export function getRelativeImportPath(locations: {
     return convertPathToRelativeImport(path.relative(fromDir, toPath));
 }
 
-export function createFile(project: Project, templatePath: string) {
+export function createFile(project: Project, templatePath: string, filePath: string) {
     const template = fs.readFileSync(templatePath, 'utf-8');
-    const tempFilePath = path.join('/.vendure-cli-temp/', path.basename(templatePath));
     try {
-        return project.createSourceFile(path.join('/.vendure-cli-temp/', tempFilePath), template, {
+        const file = project.createSourceFile(filePath, template, {
             overwrite: true,
             scriptKind: ScriptKind.TS,
         });
+        project.resolveSourceFileDependencies();
+        return file;
     } catch (e: any) {
         log.error(e.message);
         process.exit(1);
@@ -119,7 +143,8 @@ function convertPathToRelativeImport(filePath: string): string {
 
     // Remove the file extension
     const parsedPath = path.parse(normalizedPath);
-    return `./${parsedPath.dir}/${parsedPath.name}`.replace(/\/\//g, '/');
+    const prefix = parsedPath.dir.startsWith('..') ? '' : './';
+    return `${prefix}${parsedPath.dir}/${parsedPath.name}`.replace(/\/\//g, '/');
 }
 
 export function customizeCreateUpdateInputInterfaces(sourceFile: SourceFile, entityRef: EntityRef) {

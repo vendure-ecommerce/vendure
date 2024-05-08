@@ -17,7 +17,7 @@ Runs any pending database migrations. See [TypeORM migration docs](https://typeo
 for more information about the underlying migration mechanism.
 
 ```ts title="Signature"
-function runMigrations(userConfig: Partial<VendureConfig>): void
+function runMigrations(userConfig: Partial<VendureConfig>): Promise<string[]>
 ```
 Parameters
 
