@@ -195,6 +195,9 @@ function findExistingPluginsDir(project: Project): { prefix: string; suffix: str
     if (pluginClasses.length === 0) {
         return;
     }
+    if (pluginClasses.length === 1) {
+        return { prefix: path.dirname(pluginClasses[0].getSourceFile().getDirectoryPath()), suffix: '' };
+    }
     const pluginDirs = pluginClasses.map(c => {
         return c.getSourceFile().getDirectoryPath();
     });
