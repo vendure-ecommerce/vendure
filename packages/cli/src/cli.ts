@@ -27,9 +27,13 @@ Y88  88P 88888888 888  888 888  888 888  888 888    88888888
 program
     .command('add')
     .description('Add a feature to your Vendure project')
-    .action(async () => {
+    .option('-n, --non-interactive', 'Run in non-interactive mode')
+    .option('-a, --action <action>', 'The add action to perform')
+    .option('-n, --name <name>', 'The name of the feature to add')
+    .option('-l, --location <location>', 'The location of the generated files')
+    .action(async options => {
         const { addCommand } = await import('./commands/add/add');
-        await addCommand();
+        await addCommand(options.nonInteractive, options);
         process.exit(0);
     });
 

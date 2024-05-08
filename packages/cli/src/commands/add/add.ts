@@ -15,7 +15,13 @@ import { addUiExtensionsCommand } from './ui-extensions/add-ui-extensions';
 
 const cancelledMessage = 'Add feature cancelled.';
 
-export async function addCommand() {
+interface NonInteractiveOptions {
+    action?: string;
+    name?: string;
+    location?: string;
+}
+
+export async function addCommand(nonInteractiveMode: boolean = false, options: NonInteractiveOptions = {}) {
     // eslint-disable-next-line no-console
     console.log(`\n`);
     intro(pc.blue("✨ Let's add a new feature to your Vendure project!"));
@@ -28,13 +34,15 @@ export async function addCommand() {
         addUiExtensionsCommand,
         addCodegenCommand,
     ];
-    const featureType = await select({
-        message: 'Which feature would you like to add?',
-        options: addCommands.map(c => ({
-            value: c.id,
-            label: `[${c.category}] ${c.description}`,
-        })),
-    });
+    const featureType =
+        options.action ??
+        (await select({
+            message: 'Which feature would you like to add?',
+            options: addCommands.map(c => ({
+                value: c.id,
+                label: `[${c.category}] ${c.description}`,
+            })),
+        }));
     if (isCancel(featureType)) {
         cancel(cancelledMessage);
         process.exit(0);
@@ -44,7 +52,7 @@ export async function addCommand() {
         if (!command) {
             throw new Error(`Could not find command with id "${featureType as string}"`);
         }
-        const { modifiedSourceFiles, project } = await command.run();
+        const { modifiedSourceFiles, project } = await command.run(nonInteractiveMode ? options : undefined);
 
         if (modifiedSourceFiles.length) {
             const importsSpinner = spinner();

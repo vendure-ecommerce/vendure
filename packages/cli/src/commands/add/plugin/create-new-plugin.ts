@@ -3,7 +3,7 @@ import { constantCase, paramCase, pascalCase } from 'change-case';
 import * as fs from 'fs-extra';
 import path from 'path';
 
-import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
+import { CliCommand, CliCommandInputOptions, CliCommandReturnVal } from '../../../shared/cli-command';
 import { VendureConfigRef } from '../../../shared/vendure-config-ref';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
 import { addImportsToFile, createFile, getTsMorphProject } from '../../../utilities/ast-utils';
@@ -17,7 +17,12 @@ import { addUiExtensionsCommand } from '../ui-extensions/add-ui-extensions';
 
 import { GeneratePluginOptions, NewPluginTemplateContext } from './types';
 
-export const createNewPluginCommand = new CliCommand({
+interface CreateNewPluginInputOptions extends CliCommandInputOptions {
+    name?: string;
+    location?: string;
+}
+
+export const createNewPluginCommand = new CliCommand<CreateNewPluginInputOptions>({
     id: 'create-new-plugin',
     category: 'Plugin',
     description: 'Create a new Vendure plugin',
@@ -26,10 +31,15 @@ export const createNewPluginCommand = new CliCommand({
 
 const cancelledMessage = 'Plugin setup cancelled.';
 
-export async function createNewPlugin(): Promise<CliCommandReturnVal> {
-    const options: GeneratePluginOptions = { name: '', customEntityName: '', pluginDir: '' } as any;
+export async function createNewPlugin(
+    inputOptions: CreateNewPluginInputOptions | undefined,
+): Promise<CliCommandReturnVal> {
+    const options: GeneratePluginOptions = {
+        name: inputOptions?.name ?? '',
+        pluginDir: inputOptions?.location ?? '',
+    } as any;
     intro('Adding a new Vendure plugin!');
-    if (!options.name) {
+    if (!options.name && !inputOptions?.nonInteractive) {
         const name = await text({
             message: 'What is the name of the plugin?',
             initialValue: 'my-new-feature',
@@ -48,23 +58,32 @@ export async function createNewPlugin(): Promise<CliCommandReturnVal> {
         }
     }
     const pluginDir = getPluginDirName(options.name);
-    const confirmation = await text({
-        message: 'Plugin location',
-        initialValue: pluginDir,
-        placeholder: '',
-        validate: input => {
-            if (fs.existsSync(input)) {
-                return `A directory named "${input}" already exists. Please specify a different directory.`;
-            }
-        },
-    });
 
-    if (isCancel(confirmation)) {
-        cancel(cancelledMessage);
-        process.exit(0);
+    if (!inputOptions?.nonInteractive) {
+        const confirmation = await text({
+            message: 'Plugin location',
+            initialValue: pluginDir,
+            placeholder: '',
+            validate: input => {
+                if (fs.existsSync(input)) {
+                    return `A directory named "${input}" already exists. Please specify a different directory.`;
+                }
+            },
+        });
+
+        if (isCancel(confirmation)) {
+            cancel(cancelledMessage);
+            process.exit(0);
+        }
+        options.pluginDir = confirmation;
     }
 
-    options.pluginDir = confirmation;
+    for (const key of Object.keys(options)) {
+        if (!options[key as keyof GeneratePluginOptions]) {
+            throw new Error(`Missing option "${key}"`);
+        }
+    }
+
     const { plugin, project, modifiedSourceFiles } = await generatePlugin(options);
 
     const configSpinner = spinner();

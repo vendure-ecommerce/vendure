@@ -28,6 +28,10 @@ export interface CliCommandOptions<T extends BaseCliCommandOptions, R extends Cl
     run: (options?: Partial<T>) => Promise<R>;
 }
 
+export interface CliCommandInputOptions extends Record<string, any> {
+    nonInteractive?: boolean;
+}
+
 export class CliCommand<T extends Record<string, any>, R extends CliCommandReturnVal = CliCommandReturnVal> {
     constructor(private options: CliCommandOptions<T, R>) {}
 
