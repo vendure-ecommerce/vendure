@@ -13,7 +13,7 @@ import { addJobQueueCommand } from '../job-queue/add-job-queue';
 import { addServiceCommand } from '../service/add-service';
 import { addUiExtensionsCommand } from '../ui-extensions/add-ui-extensions';
 
-import { inputDefinitions } from './add-plugin.input-options';
+import { inputDefinitions } from './add-plugin.input-definitions';
 import { generatePlugin } from './add-plugin.service';
 import { GeneratePluginOptions } from './types';
 

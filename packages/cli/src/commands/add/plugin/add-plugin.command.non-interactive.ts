@@ -3,7 +3,7 @@ import { Command } from 'commander';
 import { enrichProgramWithInputOptions } from '../../../shared/program-builder';
 import { analyzeProject } from '../../../shared/shared-prompts';
 
-import { inputDefinitions } from './add-plugin.input-options';
+import { inputDefinitions } from './add-plugin.input-definitions';
 import { generatePlugin } from './add-plugin.service';
 import { GeneratePluginOptions } from './types';
 

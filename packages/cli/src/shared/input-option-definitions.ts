@@ -14,20 +14,25 @@ export class InputOptionSelectChoice {
     hint?: string;
 }
 
-export class InputOptionDefinition {
+export class DefaultInputOptionDefinition {
     name: string;
     shortFlag: string;
     longName: string;
     type: InputOptionType;
-    choices?: InputOptionSelectChoice[];
     help?: string;
-    description?: string;
-    prompt?: string;
+    description: string;
+    prompt: string;
     defaultValue?: (currentOptions: Record<string, any>, project: Project) => any;
     required?: boolean;
     validate?: (value: any) => string | void;
     transform?: (value: any) => any;
 }
+
+export class SelectInputOptionDefinition extends DefaultInputOptionDefinition {
+    choices?: InputOptionSelectChoice[];
+}
+
+export type InputOptionDefinition = DefaultInputOptionDefinition | SelectInputOptionDefinition;
 
 export class InputDefinitions {
     options: InputOptionDefinition[];
