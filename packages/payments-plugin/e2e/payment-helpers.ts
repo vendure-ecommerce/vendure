@@ -152,7 +152,7 @@ export async function createFixedDiscountCoupon(
     }
 }
 /**
- * Create a coupon with the given code and discount amount.
+ * Create a coupon that discounts the shipping costs
  */
 export async function createFreeShippingCoupon(
     adminClient: SimpleGraphQLClient,
