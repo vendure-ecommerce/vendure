@@ -176,6 +176,28 @@ export class MollieService {
         }
         const alreadyPaid = totalCoveredByPayments(order);
         const amountToPay = order.totalWithTax - alreadyPaid;
+        if (amountToPay === 0) {
+            // The order can be transitioned to PaymentSettled, because the order has 0 left to pay
+            // Only admins can add payments, so we need an admin ctx
+            const adminCtx = new RequestContext({
+                apiType: 'admin',
+                isAuthorized: true,
+                authorizedAsOwnerOnly: false,
+                channel: ctx.channel,
+                languageCode: ctx.languageCode,
+            });
+            await this.addPayment(
+                adminCtx,
+                order,
+                amountToPay,
+                { method: 'Settled without Mollie' },
+                paymentMethod.code,
+                'Settled',
+            );
+            return {
+                url: redirectUrl,
+            };
+        }
         const orderInput: CreateParameters = {
             orderNumber: order.code,
             amount: toAmount(amountToPay, order.currencyCode),
@@ -289,17 +311,18 @@ export class MollieService {
             );
             return;
         }
+        const amount = amountToCents(mollieOrder.amount);
         if (mollieOrder.status === OrderStatus.expired) {
             // Expired is fine, a customer can retry the payment later
             return;
         }
         if (mollieOrder.status === OrderStatus.paid) {
             // Paid is only used by 1-step payments without Authorized state. This will settle immediately
-            await this.addPayment(ctx, order, mollieOrder, paymentMethod.code, 'Settled');
+            await this.addPayment(ctx, order, amount, mollieOrder, paymentMethod.code, 'Settled');
             return;
         }
         if (order.state === 'AddingItems' && mollieOrder.status === OrderStatus.authorized) {
-            order = await this.addPayment(ctx, order, mollieOrder, paymentMethod.code, 'Authorized');
+            order = await this.addPayment(ctx, order, amount, mollieOrder, paymentMethod.code, 'Authorized');
             if (autoCapture && mollieOrder.status === OrderStatus.authorized) {
                 // Immediately capture payment if autoCapture is set
                 Logger.info(`Auto capturing payment for order ${order.code}`, loggerCtx);
@@ -327,7 +350,8 @@ export class MollieService {
     async addPayment(
         ctx: RequestContext,
         order: Order,
-        mollieOrder: MollieOrder,
+        amount: number,
+        mollieMetadata: Partial<MollieOrder>,
         paymentMethodCode: string,
         status: 'Authorized' | 'Settled',
     ): Promise<Order> {
@@ -347,15 +371,15 @@ export class MollieService {
         const addPaymentToOrderResult = await this.orderService.addPaymentToOrder(ctx, order.id, {
             method: paymentMethodCode,
             metadata: {
-                amount: amountToCents(mollieOrder.amount),
+                amount,
                 status,
-                orderId: mollieOrder.id,
-                mode: mollieOrder.mode,
-                method: mollieOrder.method,
-                profileId: mollieOrder.profileId,
-                settlementAmount: mollieOrder.amount,
-                authorizedAt: mollieOrder.authorizedAt,
-                paidAt: mollieOrder.paidAt,
+                orderId: mollieMetadata.id,
+                mode: mollieMetadata.mode,
+                method: mollieMetadata.method,
+                profileId: mollieMetadata.profileId,
+                settlementAmount: mollieMetadata.amount,
+                authorizedAt: mollieMetadata.authorizedAt,
+                paidAt: mollieMetadata.paidAt,
             },
         });
         if (!(addPaymentToOrderResult instanceof Order)) {
