@@ -393,7 +393,7 @@ export type SetAttachmentsFn<Event> = (event: Event) => EmailAttachment[] | Prom
  * @docsCategory core plugins/EmailPlugin
  * @docsPage Email Plugin Types
  */
-export type SetSubjectFn<Event> = (event: Event, ctx: RequestContext, injector: Injector) => string;
+export type SetSubjectFn<Event> = (event: Event, ctx: RequestContext, injector: Injector) => string | Promise<string>;
 
 /**
  * @description

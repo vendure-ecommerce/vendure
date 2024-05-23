@@ -379,7 +379,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         const subject = configuration
             ? configuration.subject
             : this.setSubjectFn
-              ? this.setSubjectFn(event, ctx, injector)
+              ? await this.setSubjectFn(event, ctx, injector)
               : this.defaultSubject;
         if (subject == null) {
             throw new Error(
