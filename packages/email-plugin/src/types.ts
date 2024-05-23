@@ -4,9 +4,9 @@ import { Injector, RequestContext, SerializedRequestContext, VendureEvent } from
 import { Attachment } from 'nodemailer/lib/mailer';
 import SESTransport from 'nodemailer/lib/ses-transport';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { EmailEventHandler } from './handler/event-handler';
 
 import { EmailGenerator } from './generator/email-generator';
+import { EmailEventHandler } from './handler/event-handler';
 import { EmailSender } from './sender/email-sender';
 import { TemplateLoader } from './template-loader/template-loader';
 
@@ -386,6 +386,14 @@ export type SetTemplateVarsFn<Event> = (
  * @docsPage Email Plugin Types
  */
 export type SetAttachmentsFn<Event> = (event: Event) => EmailAttachment[] | Promise<EmailAttachment[]>;
+
+/**
+ * @description
+ * A function used to define the subject to be sent with the email.
+ * @docsCategory core plugins/EmailPlugin
+ * @docsPage Email Plugin Types
+ */
+export type SetSubjectFn<Event> = (event: Event, ctx: RequestContext, injector: Injector) => string;
 
 /**
  * @description

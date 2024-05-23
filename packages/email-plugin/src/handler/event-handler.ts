@@ -14,6 +14,7 @@ import {
     LoadDataFn,
     SetAttachmentsFn,
     SetOptionalAddressFieldsFn,
+    SetSubjectFn,
     SetTemplateVarsFn,
 } from '../types';
 
@@ -135,6 +136,7 @@ import {
 export class EmailEventHandler<T extends string = string, Event extends EventWithContext = EventWithContext> {
     private setRecipientFn: (event: Event) => string;
     private setLanguageCodeFn: (event: Event) => LanguageCode | undefined;
+    private setSubjectFn?: SetSubjectFn<Event>;
     private setTemplateVarsFn: SetTemplateVarsFn<Event>;
     private setAttachmentsFn?: SetAttachmentsFn<Event>;
     private setOptionalAddressFieldsFn?: SetOptionalAddressFieldsFn<Event>;
@@ -214,8 +216,12 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      * Sets the default subject of the email. The subject string may use Handlebars variables defined by the
      * setTemplateVars() method.
      */
-    setSubject(defaultSubject: string): EmailEventHandler<T, Event> {
-        this.defaultSubject = defaultSubject;
+    setSubject(defaultSubject: string | SetSubjectFn<Event>): EmailEventHandler<T, Event> {
+        if (typeof defaultSubject === 'string') {
+            this.defaultSubject = defaultSubject;
+        } else {
+            this.setSubjectFn = defaultSubject;
+        }
         return this;
     }
 
@@ -370,7 +376,11 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         const { ctx } = event;
         const languageCode = this.setLanguageCodeFn?.(event) || ctx.languageCode;
         const configuration = this.getBestConfiguration(ctx.channel.code, languageCode);
-        const subject = configuration ? configuration.subject : this.defaultSubject;
+        const subject = configuration
+            ? configuration.subject
+            : this.setSubjectFn
+              ? this.setSubjectFn(event, ctx, injector)
+              : this.defaultSubject;
         if (subject == null) {
             throw new Error(
                 `No subject field has been defined. ` +
