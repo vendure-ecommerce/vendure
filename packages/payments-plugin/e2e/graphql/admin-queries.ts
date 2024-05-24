@@ -114,3 +114,14 @@ export const CREATE_CHANNEL = gql`
         }
     }
 `;
+
+export const CREATE_COUPON = gql`
+    mutation CreatePromotion($input: CreatePromotionInput!) {
+        createPromotion(input: $input) {
+            ... on ErrorResult {
+                errorCode
+            }
+            __typename
+        }
+    }
+`;

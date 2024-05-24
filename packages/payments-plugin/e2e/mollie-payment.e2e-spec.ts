@@ -4,6 +4,7 @@ import {
     EventBus,
     LanguageCode,
     mergeConfig,
+    Order,
     OrderPlacedEvent,
     OrderService,
     RequestContext,
@@ -44,10 +45,17 @@ import {
     GetOrderByCodeQueryVariables,
     TestOrderFragmentFragment,
 } from './graphql/generated-shop-types';
-import { ADD_ITEM_TO_ORDER, GET_ORDER_BY_CODE } from './graphql/shop-queries';
+import {
+    ADD_ITEM_TO_ORDER,
+    APPLY_COUPON_CODE,
+    GET_ACTIVE_ORDER,
+    GET_ORDER_BY_CODE,
+} from './graphql/shop-queries';
 import {
     addManualPayment,
     CREATE_MOLLIE_PAYMENT_INTENT,
+    createFixedDiscountCoupon,
+    createFreeShippingCoupon,
     GET_MOLLIE_PAYMENT_METHODS,
     refundOrderLine,
     setShipping,
@@ -196,7 +204,7 @@ describe('Mollie payments', () => {
                 authorizedAsOwnerOnly: false,
                 channel: await server.app.get(ChannelService).getDefaultChannel(),
             });
-            await server.app.get(OrderService).addSurchargeToOrder(ctx, 1, {
+            await server.app.get(OrderService).addSurchargeToOrder(ctx, order.id.replace('T_', ''), {
                 description: 'Negative test surcharge',
                 listPrice: SURCHARGE_AMOUNT,
             });
@@ -441,6 +449,34 @@ describe('Mollie payments', () => {
             expect(method.maximumAmount).toBeDefined();
             expect(method.image).toBeDefined();
         });
+
+        it('Transitions to PaymentSettled for orders with a total of $0', async () => {
+            await shopClient.asUserWithCredentials(customers[1].emailAddress, 'test');
+            const { addItemToOrder } = await shopClient.query(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_1',
+                quantity: 1,
+            });
+            await setShipping(shopClient);
+            // Discount the order so it has a total of $0
+            await createFixedDiscountCoupon(adminClient, 156880, 'DISCOUNT_ORDER');
+            await createFreeShippingCoupon(adminClient, 'FREE_SHIPPING');
+            await shopClient.query(APPLY_COUPON_CODE, { couponCode: 'DISCOUNT_ORDER' });
+            await shopClient.query(APPLY_COUPON_CODE, { couponCode: 'FREE_SHIPPING' });
+            // Create payment intent
+            const { createMolliePaymentIntent: intent } = await shopClient.query(
+                CREATE_MOLLIE_PAYMENT_INTENT,
+                {
+                    input: {
+                        paymentMethodCode: mockData.methodCode,
+                        redirectUrl: 'https://my-storefront.io/order-confirmation',
+                    },
+                },
+            );
+            const { orderByCode } = await shopClient.query(GET_ORDER_BY_CODE, { code: addItemToOrder.code });
+            expect(intent.url).toBe('https://my-storefront.io/order-confirmation');
+            expect(orderByCode.totalWithTax).toBe(0);
+            expect(orderByCode.state).toBe('PaymentSettled');
+        });
     });
 
     describe('Handle standard payment methods', () => {
@@ -486,6 +522,7 @@ describe('Mollie payments', () => {
                 body: JSON.stringify({ id: mockData.mollieOrderResponse.id }),
                 headers: { 'Content-Type': 'application/json' },
             });
+            await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
             const { orderByCode } = await shopClient.query<GetOrderByCodeQuery, GetOrderByCodeQueryVariables>(
                 GET_ORDER_BY_CODE,
                 {
