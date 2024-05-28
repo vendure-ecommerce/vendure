@@ -25,7 +25,7 @@ import { HostedComponentContext } from '../directives/react-component-host.direc
  *    }`;
  *
  * export const MyComponent = () => {
- *     const { data, loading, error } = useQuery(GET_PRODUCT, { id: '1' });
+ *     const { data, loading, error } = useQuery(GET_PRODUCT, { id: '1' }, { refetchOnChannelChange: true });
  *
  *     if (loading) return <div>Loading...</div>;
  *     if (error) return <div>Error! { error }</div>;
@@ -43,10 +43,16 @@ import { HostedComponentContext } from '../directives/react-component-host.direc
 export function useQuery<T, V extends Record<string, any> = Record<string, any>>(
     query: DocumentNode | TypedDocumentNode<T, V>,
     variables?: V,
+    options: { refetchOnChannelChange: boolean } = { refetchOnChannelChange: false },
 ) {
-    const { data, loading, error, runQuery } = useDataService<T, V>(
-        (dataService, vars) => dataService.query(query, vars).stream$,
-    );
+    const { refetchOnChannelChange } = options;
+    const { data, loading, error, runQuery } = useDataService<T, V>((dataService, vars) => {
+        let queryFn = dataService.query(query, vars);
+        if (refetchOnChannelChange) {
+            queryFn = queryFn.refetchOnChannelChange();
+        }
+        return queryFn.stream$;
+    });
     useEffect(() => {
         const subscription = runQuery(variables).subscribe();
         return () => subscription.unsubscribe();
@@ -58,7 +64,7 @@ export function useQuery<T, V extends Record<string, any> = Record<string, any>>
 
 /**
  * @description
- * A React hook which allows you to execute a GraphQL query.
+ * A React hook which allows you to execute a GraphQL query lazily.
  *
  * @example
  * ```ts
@@ -81,7 +87,7 @@ export function useQuery<T, V extends Record<string, any> = Record<string, any>>
  * }
  *
  * export const MyComponent = () => {
- *     const [getProduct, { data, loading, error }] = useLazyQuery<ProductResponse>(GET_PRODUCT);
+ *     const [getProduct, { data, loading, error }] = useLazyQuery<ProductResponse>(GET_PRODUCT, { refetchOnChannelChange: true });
  *
  *    const handleClick = () => {
  *         getProduct({
@@ -112,10 +118,16 @@ export function useQuery<T, V extends Record<string, any> = Record<string, any>>
  */
 export function useLazyQuery<T, V extends Record<string, any> = Record<string, any>>(
     query: DocumentNode | TypedDocumentNode<T, V>,
+    options: { refetchOnChannelChange: boolean } = { refetchOnChannelChange: false },
 ) {
-    const { data, loading, error, runQuery } = useDataService<T, V>(
-        (dataService, vars) => dataService.query(query, vars).stream$,
-    );
+    const { refetchOnChannelChange } = options;
+    const { data, loading, error, runQuery } = useDataService<T, V>((dataService, vars) => {
+        let queryFn = dataService.query(query, vars);
+        if (refetchOnChannelChange) {
+            queryFn = queryFn.refetchOnChannelChange();
+        }
+        return queryFn.stream$;
+    });
     const rest = { data, loading, error };
     const execute = (variables?: V) => firstValueFrom(runQuery(variables));
     return [execute, rest] as [typeof execute, typeof rest];
