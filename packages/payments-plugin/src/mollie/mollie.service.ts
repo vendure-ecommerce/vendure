@@ -282,6 +282,7 @@ export class MollieService {
                 apiType: 'admin',
                 isAuthorized: true,
                 authorizedAsOwnerOnly: false,
+                req: ctx.req,
                 channel: ctx.channel,
                 languageCode: mollieOrder.metadata.languageCode as LanguageCode,
             });

@@ -539,6 +539,11 @@ describe('Mollie payments', () => {
             expect(orderPlacedEvent?.ctx.languageCode).toBe('nl');
         });
 
+        it('Resulting events should have a ctx.req ', () => {
+            // We've set the languageCode to 'nl' in the mock response's metadata
+            expect(orderPlacedEvent?.ctx?.req).toBeDefined();
+        });
+
         it('Should have Mollie metadata on payment', async () => {
             const {
                 order: { payments },
