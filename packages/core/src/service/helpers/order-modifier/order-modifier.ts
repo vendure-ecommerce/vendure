@@ -616,6 +616,24 @@ export class OrderModifier {
                 return result;
             }
         }
+        const { orderItemPriceCalculationStrategy } = this.configService.orderOptions;
+        for (const orderLine of updatedOrderLines) {
+            const variant = await this.productVariantService.applyChannelPriceAndTax(
+                orderLine.productVariant,
+                ctx,
+                order,
+            );
+            const priceResult = await orderItemPriceCalculationStrategy.calculateUnitPrice(
+                ctx,
+                variant,
+                orderLine.customFields || {},
+                order,
+                orderLine.quantity,
+            );
+            orderLine.listPrice = priceResult.price;
+            orderLine.listPriceIncludesTax = priceResult.priceIncludesTax;
+        }
+
         await this.orderCalculator.applyPriceAdjustments(ctx, order, promotions, updatedOrderLines, {
             recalculateShipping: input.options?.recalculateShipping,
         });

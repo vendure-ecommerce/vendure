@@ -8,8 +8,13 @@ import {
     freeShipping,
     mergeConfig,
     minimumOrderAmount,
+    Order,
+    OrderItemPriceCalculationStrategy,
     orderPercentageDiscount,
+    PriceCalculationResult,
     productsPercentageDiscount,
+    ProductVariant,
+    RequestContext,
     ShippingCalculator,
 } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
@@ -18,7 +23,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { manualFulfillmentHandler } from '../src/config/fulfillment/manual-fulfillment-handler';
 import { orderFixedDiscount } from '../src/config/promotion/actions/order-fixed-discount-action';
 
@@ -64,6 +69,26 @@ import {
 } from './graphql/shop-definitions';
 import { addPaymentToOrder, proceedToArrangingPayment, sortById } from './utils/test-order-utils';
 
+export class TestOrderItemPriceCalculationStrategy implements OrderItemPriceCalculationStrategy {
+    calculateUnitPrice(
+        ctx: RequestContext,
+        productVariant: ProductVariant,
+        orderLineCustomFields: { [key: string]: any },
+        order: Order,
+    ): PriceCalculationResult | Promise<PriceCalculationResult> {
+        if (orderLineCustomFields.color === 'hotpink') {
+            return {
+                price: 1337,
+                priceIncludesTax: true,
+            };
+        }
+        return {
+            price: productVariant.listPrice,
+            priceIncludesTax: productVariant.listPriceIncludesTax,
+        };
+    }
+}
+
 const SHIPPING_GB = 500;
 const SHIPPING_US = 1000;
 const SHIPPING_OTHER = 750;
@@ -106,6 +131,9 @@ describe('Order modification', () => {
                     failsToSettlePaymentMethod,
                     testFailingPaymentMethod,
                 ],
+            },
+            orderOptions: {
+                orderItemPriceCalculationStrategy: new TestOrderItemPriceCalculationStrategy(),
             },
             shippingOptions: {
                 shippingCalculators: [defaultShippingCalculator, testCalculator],
@@ -699,6 +727,37 @@ describe('Order modification', () => {
                     taxRate: 20,
                 },
             ]);
+            await assertOrderIsUnchanged(order!);
+        });
+
+        it('the configured OrderItemPriceCalculationStrategy is applied', async () => {
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
+                {
+                    id: orderId,
+                },
+            );
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: true,
+                    orderId,
+                    adjustOrderLines: [
+                        {
+                            orderLineId: order!.lines[1].id,
+                            quantity: 1,
+                            customFields: { color: 'hotpink' },
+                        } as any,
+                    ],
+                },
+            });
+            orderGuard.assertSuccess(modifyOrder);
+
+            const expectedTotal = order!.totalWithTax - order!.lines[1].unitPriceWithTax;
+            expect(modifyOrder.lines[1].quantity).toBe(1);
+            expect(modifyOrder.lines[1].linePriceWithTax).toBe(1337);
             await assertOrderIsUnchanged(order!);
         });
 
@@ -2067,7 +2126,7 @@ describe('Order modification', () => {
 
             const result = await adminTransitionOrderToState(orderId5, 'ArrangingAdditionalPayment');
             orderGuard.assertSuccess(result);
-            expect(result!.state).toBe('ArrangingAdditionalPayment');
+            expect(result.state).toBe('ArrangingAdditionalPayment');
             const { addManualPaymentToOrder } = await adminClient.query<
                 Codegen.AddManualPaymentMutation,
                 Codegen.AddManualPaymentMutationVariables
