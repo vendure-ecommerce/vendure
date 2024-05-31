@@ -957,7 +957,7 @@ describe('EmailPlugin', () => {
 
             eventBus.publish(new MockEvent(ctx, true));
             await pause();
-            expect(onSend.mock.calls[0][0].subject).toBe('Hello');
+            expect(onSend.mock.calls[0][0].subject).toBe('Hello from loaded data and foo');
             expect(onSend.mock.calls[0][0].recipient).toBe('test@test.com');
             expect(onSend.mock.calls[0][0].from).toBe('"test from" <noreply@test.com>');
         });
@@ -976,7 +976,7 @@ describe('EmailPlugin', () => {
 
             eventBus.publish(new MockEvent(ctx, true));
             await pause();
-            expect(onSend.mock.calls[0][0].subject).toBe('Hello');
+            expect(onSend.mock.calls[0][0].subject).toBe('Hello from loaded data');
             expect(onSend.mock.calls[0][0].recipient).toBe('test@test.com');
             expect(onSend.mock.calls[0][0].from).toBe('"test from" <noreply@test.com>');
         });
