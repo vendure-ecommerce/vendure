@@ -31,6 +31,7 @@ const specFileToIgnore = [
     'relations-decorator.e2e-spec',
     'active-order-strategy.e2e-spec',
     'error-handler-strategy.e2e-spec',
+    'order-multi-vendor.e2e-spec',
 ];
 const E2E_ADMIN_QUERY_FILES = path.join(
     __dirname,

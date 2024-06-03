@@ -17,3 +17,45 @@ export const SEARCH_PRODUCTS_ADMIN = gql`
         }
     }
 `;
+
+export const GET_ORDER_WITH_SELLER_ORDERS = gql`
+    query GetOrderWithSellerOrders($id: ID!) {
+        order(id: $id) {
+            id
+            code
+            state
+            sellerOrders {
+                id
+                aggregateOrderId
+                lines {
+                    id
+                    productVariant {
+                        id
+                        name
+                    }
+                }
+                shippingLines {
+                    id
+                    shippingMethod {
+                        id
+                        code
+                    }
+                }
+            }
+            lines {
+                id
+                productVariant {
+                    id
+                    name
+                }
+            }
+            shippingLines {
+                id
+                shippingMethod {
+                    id
+                    code
+                }
+            }
+        }
+    }
+`;

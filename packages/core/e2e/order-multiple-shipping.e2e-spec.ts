@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { summate } from '@vendure/common/lib/shared-utils';
 import {
-    mergeConfig,
-    RequestContext,
-    ShippingLineAssignmentStrategy,
-    ShippingLine,
-    Order,
-    OrderLine,
-    manualFulfillmentHandler,
     defaultShippingCalculator,
     defaultShippingEligibilityChecker,
+    manualFulfillmentHandler,
+    mergeConfig,
+    Order,
+    OrderLine,
     OrderService,
+    RequestContext,
     RequestContextService,
+    ShippingLine,
+    ShippingLineAssignmentStrategy,
 } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import path from 'path';
@@ -19,20 +19,12 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
-import { hydratingShippingEligibilityChecker } from './fixtures/test-shipping-eligibility-checkers';
-import {
-    CreateAddressInput,
-    CreateShippingMethodDocument,
-    LanguageCode,
-} from './graphql/generated-e2e-admin-types';
 
-import * as Codegen from './graphql/generated-e2e-admin-types';
+import { CreateShippingMethodDocument, LanguageCode } from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
-import { GET_COUNTRY_LIST, UPDATE_COUNTRY } from './graphql/shared-definitions';
 import {
     ADD_ITEM_TO_ORDER,
     GET_ACTIVE_ORDER,
-    GET_AVAILABLE_COUNTRIES,
     GET_ELIGIBLE_SHIPPING_METHODS,
     REMOVE_ITEM_FROM_ORDER,
     SET_SHIPPING_ADDRESS,
@@ -57,7 +49,7 @@ class CustomShippingLineAssignmentStrategy implements ShippingLineAssignmentStra
     }
 }
 
-describe('Shop orders', () => {
+describe('Multiple shipping orders', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
             customFields: {
@@ -220,9 +212,8 @@ describe('Shop orders', () => {
         expect(order?.shippingLines.length).toBe(1);
         expect(order?.shippingLines[0].shippingMethod.code).toBe('less-than-100');
 
-        const { activeOrder: activeOrder2 } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
-            GET_ACTIVE_ORDER,
-        );
+        const { activeOrder: activeOrder2 } =
+            await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
 
         expect(activeOrder2?.shippingWithTax).toBe(summate(activeOrder2!.shippingLines, 'priceWithTax'));
     });
@@ -241,9 +232,8 @@ describe('Shop orders', () => {
         const order = await getInternalOrder(activeOrder!.id);
         expect(order?.lines.length).toBe(0);
 
-        const { activeOrder: activeOrder2 } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
-            GET_ACTIVE_ORDER,
-        );
+        const { activeOrder: activeOrder2 } =
+            await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
 
         expect(activeOrder2?.shippingWithTax).toBe(0);
     });
