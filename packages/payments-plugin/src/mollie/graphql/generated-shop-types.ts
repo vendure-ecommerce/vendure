@@ -15,9 +15,13 @@ export type Scalars = {
     Boolean: { input: boolean; output: boolean };
     Int: { input: number; output: number };
     Float: { input: number; output: number };
+    /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
     DateTime: { input: any; output: any };
+    /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
     JSON: { input: any; output: any };
+    /** The `Money` scalar type represents monetary values and supports signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point). */
     Money: { input: number; output: number };
+    /** The `Upload` scalar type represents a file upload. */
     Upload: { input: any; output: any };
 };
 
@@ -319,12 +323,6 @@ export type Coordinate = {
     y: Scalars['Float']['output'];
 };
 
-/**
- * A Country of the world which your shop operates in.
- *
- * The `code` field is typically a 2-character ISO code such as "GB", "US", "DE" etc. This code is used in certain inputs such as
- * `UpdateAddressInput` and `CreateAddressInput` to specify the country.
- */
 export type Country = Node &
     Region & {
         __typename?: 'Country';
@@ -373,13 +371,6 @@ export type CouponCodeLimitError = ErrorResult & {
     message: Scalars['String']['output'];
 };
 
-/**
- * Input used to create an Address.
- *
- * The countryCode must correspond to a `code` property of a Country that has been defined in the
- * Vendure server. The `code` property is typically a 2-character ISO code such as "GB", "US", "DE" etc.
- * If an invalid code is passed, the mutation will fail.
- */
 export type CreateAddressInput = {
     city?: InputMaybe<Scalars['String']['input']>;
     company?: InputMaybe<Scalars['String']['input']>;
@@ -1684,6 +1675,54 @@ export type MissingPasswordError = ErrorResult & {
     message: Scalars['String']['output'];
 };
 
+export type MollieAmount = {
+    __typename?: 'MollieAmount';
+    currency?: Maybe<Scalars['String']['output']>;
+    value?: Maybe<Scalars['String']['output']>;
+};
+
+export type MolliePaymentIntent = {
+    __typename?: 'MolliePaymentIntent';
+    url: Scalars['String']['output'];
+};
+
+export type MolliePaymentIntentError = ErrorResult & {
+    __typename?: 'MolliePaymentIntentError';
+    errorCode: ErrorCode;
+    message: Scalars['String']['output'];
+};
+
+export type MolliePaymentIntentInput = {
+    molliePaymentMethodCode?: InputMaybe<Scalars['String']['input']>;
+    paymentMethodCode?: InputMaybe<Scalars['String']['input']>;
+    redirectUrl?: InputMaybe<Scalars['String']['input']>;
+    orderId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type MolliePaymentIntentResult = MolliePaymentIntent | MolliePaymentIntentError;
+
+export type MolliePaymentMethod = {
+    __typename?: 'MolliePaymentMethod';
+    code: Scalars['String']['output'];
+    description?: Maybe<Scalars['String']['output']>;
+    id: Scalars['ID']['output'];
+    image?: Maybe<MolliePaymentMethodImages>;
+    maximumAmount?: Maybe<MollieAmount>;
+    minimumAmount?: Maybe<MollieAmount>;
+    status?: Maybe<Scalars['String']['output']>;
+};
+
+export type MolliePaymentMethodImages = {
+    __typename?: 'MolliePaymentMethodImages';
+    size1x?: Maybe<Scalars['String']['output']>;
+    size2x?: Maybe<Scalars['String']['output']>;
+    svg?: Maybe<Scalars['String']['output']>;
+};
+
+export type MolliePaymentMethodsInput = {
+    paymentMethodCode: Scalars['String']['input'];
+};
+
 export type Mutation = {
     __typename?: 'Mutation';
     /** Adds an item to the order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available. */
@@ -1698,6 +1737,7 @@ export type Mutation = {
     authenticate: AuthenticationResult;
     /** Create a new Customer Address */
     createCustomerAddress: Address;
+    createMolliePaymentIntent: MolliePaymentIntentResult;
     /** Delete an existing Address */
     deleteCustomerAddress: Success;
     /** Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})` */
@@ -1802,6 +1842,10 @@ export type MutationAuthenticateArgs = {
 
 export type MutationCreateCustomerAddressArgs = {
     input: CreateAddressInput;
+};
+
+export type MutationCreateMolliePaymentIntentArgs = {
+    input: MolliePaymentIntentInput;
 };
 
 export type MutationDeleteCustomerAddressArgs = {
@@ -2847,6 +2891,7 @@ export type Query = {
     facets: FacetList;
     /** Returns information about the current authenticated User */
     me?: Maybe<CurrentUser>;
+    molliePaymentMethods: Array<MolliePaymentMethod>;
     /** Returns the possible next states that the activeOrder can transition to */
     nextOrderStates: Array<Scalars['String']['output']>;
     /**
@@ -2884,6 +2929,10 @@ export type QueryFacetArgs = {
 
 export type QueryFacetsArgs = {
     options?: InputMaybe<FacetListOptions>;
+};
+
+export type QueryMolliePaymentMethodsArgs = {
+    input: MolliePaymentMethodsInput;
 };
 
 export type QueryOrderArgs = {
@@ -3304,13 +3353,6 @@ export type TextCustomFieldConfig = CustomField & {
 
 export type TransitionOrderToStateResult = Order | OrderStateTransitionError;
 
-/**
- * Input used to update an Address.
- *
- * The countryCode must correspond to a `code` property of a Country that has been defined in the
- * Vendure server. The `code` property is typically a 2-character ISO code such as "GB", "US", "DE" etc.
- * If an invalid code is passed, the mutation will fail.
- */
 export type UpdateAddressInput = {
     city?: InputMaybe<Scalars['String']['input']>;
     company?: InputMaybe<Scalars['String']['input']>;
