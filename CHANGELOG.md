@@ -1,3 +1,23 @@
+## <small>2.2.5 (2024-06-03)</small>
+
+
+#### Fixes
+
+* **admin-ui** Add scrollbar to dropdowns that go out of the viewport ([8a78a70](https://github.com/vendure-ecommerce/vendure/commit/8a78a70))
+* **admin-ui** Fix order of bulk actions in dropdown ([d917874](https://github.com/vendure-ecommerce/vendure/commit/d917874))
+* **admin-ui** Fix stale values in zone selector component ([232ecbb](https://github.com/vendure-ecommerce/vendure/commit/232ecbb)), closes [#2867](https://github.com/vendure-ecommerce/vendure/issues/2867)
+* **admin-ui** Fix update of Channel when removing default currency/lang ([1e0c96f](https://github.com/vendure-ecommerce/vendure/commit/1e0c96f)), closes [#2825](https://github.com/vendure-ecommerce/vendure/issues/2825)
+* **cli** Install React typings when adding ui extensions ([94b6dcf](https://github.com/vendure-ecommerce/vendure/commit/94b6dcf)), closes [#2857](https://github.com/vendure-ecommerce/vendure/issues/2857)
+* **core** Add field resolver for Order.shippingLines ([84ec0aa](https://github.com/vendure-ecommerce/vendure/commit/84ec0aa)), closes [#2859](https://github.com/vendure-ecommerce/vendure/issues/2859)
+* **core** Apply price strategies when modifying order lines ([61fdbbd](https://github.com/vendure-ecommerce/vendure/commit/61fdbbd)), closes [#2870](https://github.com/vendure-ecommerce/vendure/issues/2870)
+* **core** Fix nulling of primitive custom fields when updating relation ([96f0410](https://github.com/vendure-ecommerce/vendure/commit/96f0410)), closes [#2840](https://github.com/vendure-ecommerce/vendure/issues/2840)
+* **core** Fix regression in updating of Order custom fields ([2744068](https://github.com/vendure-ecommerce/vendure/commit/2744068))
+* **core** Fix splitting of shippingLines on multivendor orders ([9112dd8](https://github.com/vendure-ecommerce/vendure/commit/9112dd8)), closes [#2859](https://github.com/vendure-ecommerce/vendure/issues/2859)
+* **core** Keep order of nested relations during hydration (#2864) (#2865) ([b325a83](https://github.com/vendure-ecommerce/vendure/commit/b325a83)), closes [#2864](https://github.com/vendure-ecommerce/vendure/issues/2864) [#2865](https://github.com/vendure-ecommerce/vendure/issues/2865)
+* **create** Move `typescript` to dev dependencies (#2816) ([b3c29e7](https://github.com/vendure-ecommerce/vendure/commit/b3c29e7)), closes [#2816](https://github.com/vendure-ecommerce/vendure/issues/2816)
+* **payments-plugin** Allow mollie orders with $0 (#2855) ([b54c210](https://github.com/vendure-ecommerce/vendure/commit/b54c210)), closes [#2855](https://github.com/vendure-ecommerce/vendure/issues/2855)
+* **payments-plugin** Events triggered by Mollie webhook include request ([4ca4593](https://github.com/vendure-ecommerce/vendure/commit/4ca4593)), closes [#2872](https://github.com/vendure-ecommerce/vendure/issues/2872)
+
 ## <small>2.2.4 (2024-05-08)</small>
 
 
