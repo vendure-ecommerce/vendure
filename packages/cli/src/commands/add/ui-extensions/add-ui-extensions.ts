@@ -55,6 +55,10 @@ async function addUiExtensions(options?: AddUiExtensionsOptions): Promise<CliCom
                 isDevDependency: true,
                 version,
             },
+            {
+                pkg: '@types/react',
+                isDevDependency: true,
+            },
         ]);
     } catch (e: any) {
         log.error(`Failed to install dependencies: ${e.message as string}.`);

@@ -3,6 +3,7 @@ import { TemplatePortal } from '@angular/cdk/portal';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     HostListener,
     Input,
@@ -37,7 +38,7 @@ export type DropdownPosition = 'top-left' | 'top-right' | 'bottom-left' | 'botto
         <ng-template #menu>
             <div [dir]="direction$ | async">
                 <div class="dropdown open">
-                    <div class="dropdown-menu" [ngClass]="customClasses">
+                    <div class="dropdown-menu" [ngClass]="customClasses" [style.maxHeight.px]="maxHeight">
                         <div
                             class="dropdown-content-wrapper"
                             [cdkTrapFocus]="true"
@@ -62,6 +63,27 @@ export class DropdownMenuComponent implements AfterViewInit, OnInit, OnDestroy {
     private menuPortal: TemplatePortal;
     private overlayRef: OverlayRef;
     private backdropClickSub: Subscription;
+    protected maxHeight: number | undefined;
+
+    private resizeObserver = new ResizeObserver(entries => {
+        const margin = 12;
+        for (const entry of entries) {
+            const contentWrapper = entry.target.querySelector('.dropdown-content-wrapper');
+            if (contentWrapper) {
+                const { bottom, top } = contentWrapper?.getBoundingClientRect();
+                if (bottom > window.innerHeight - margin) {
+                    // dropdown is going off the bottom of the screen
+                    this.maxHeight = window.innerHeight - top - margin;
+                    this.changeDetector.markForCheck();
+                }
+                if (top < margin) {
+                    // dropdown is going off the top of the screen
+                    this.maxHeight = bottom - margin;
+                    this.changeDetector.markForCheck();
+                }
+            }
+        }
+    });
 
     @HostListener('window:keydown.escape', ['$event'])
     onEscapeKeydown(event: KeyboardEvent) {
@@ -103,6 +125,7 @@ export class DropdownMenuComponent implements AfterViewInit, OnInit, OnDestroy {
         private viewContainerRef: ViewContainerRef,
         private dropdown: DropdownComponent,
         private localizationService: LocalizationService,
+        private changeDetector: ChangeDetectorRef,
     ) {}
 
     ngOnInit(): void {
@@ -111,8 +134,11 @@ export class DropdownMenuComponent implements AfterViewInit, OnInit, OnDestroy {
         this.dropdown.onOpenChange(isOpen => {
             if (isOpen) {
                 this.overlayRef.attach(this.menuPortal);
+                this.resizeObserver.observe(this.overlayRef.overlayElement);
             } else {
                 this.overlayRef.detach();
+                this.resizeObserver.unobserve(this.overlayRef.overlayElement);
+                this.maxHeight = undefined;
             }
         });
     }
@@ -124,6 +150,7 @@ export class DropdownMenuComponent implements AfterViewInit, OnInit, OnDestroy {
             positionStrategy: this.getPositionStrategy(),
             maxHeight: '70vh',
         });
+
         this.menuPortal = new TemplatePortal(this.menuTemplate, this.viewContainerRef);
         this.backdropClickSub = this.overlayRef.backdropClick().subscribe(() => {
             this.dropdown.toggleOpen();

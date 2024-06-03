@@ -40,17 +40,7 @@ import { AddItemToOrderMutationVariables } from './graphql/generated-e2e-shop-ty
 import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
 import { sortById } from './utils/test-order-utils';
 
-// From https://github.com/microsoft/TypeScript/issues/13298#issuecomment-654906323
-// to ensure that we _always_ test all entities which support custom fields
-type ValueOf<T> = T[keyof T];
-type NonEmptyArray<T> = [T, ...T[]];
-type MustInclude<T, U extends T[]> = [T] extends [ValueOf<U>] ? U : never;
-const enumerate =
-    <T>() =>
-    <U extends NonEmptyArray<T>>(...elements: MustInclude<T, U>) =>
-        elements;
-
-const entitiesWithCustomFields = enumerate<keyof CustomFields>()(
+const entitiesWithCustomFields: Array<keyof CustomFields> = [
     'Address',
     'Administrator',
     'Asset',
@@ -77,11 +67,12 @@ const entitiesWithCustomFields = enumerate<keyof CustomFields>()(
     'TaxRate',
     'User',
     'Zone',
-);
+];
 
 const customFieldConfig: CustomFields = {};
 for (const entity of entitiesWithCustomFields) {
     customFieldConfig[entity] = [
+        { name: 'primitive', type: 'string', list: false, defaultValue: 'test' },
         { name: 'single', type: 'relation', entity: Asset, graphQLType: 'Asset', list: false },
         { name: 'multi', type: 'relation', entity: Asset, graphQLType: 'Asset', list: true },
     ];
@@ -154,7 +145,7 @@ describe('Custom field relations', () => {
             }
         `);
 
-        const single = globalSettings.serverConfig.customFieldConfig.Customer[0];
+        const single = globalSettings.serverConfig.customFieldConfig.Customer[1];
         expect(single.entity).toBe('Asset');
         expect(single.scalarFields).toEqual([
             'id',
@@ -388,6 +379,7 @@ describe('Custom field relations', () => {
 
         const customFieldsSelection = `
             customFields {
+                primitive
                 single {
                     id
                 }
@@ -508,6 +500,25 @@ describe('Custom field relations', () => {
 
                 assertCustomFieldIds(updateCollection.customFields, 'T_2', ['T_3', 'T_4']);
             });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/2840
+            it('updating custom field relation on Collection does not delete primitive values', async () => {
+                const { updateCollection } = await adminClient.query(gql`
+                    mutation {
+                        updateCollection(
+                            input: {
+                                id: "${collectionId}"
+                                customFields: { singleId: "T_3" }
+                            }
+                        ) {
+                            id
+                            ${customFieldsSelection}
+                        }
+                    }
+                `);
+                expect(updateCollection.customFields.single).toEqual({ id: 'T_3' });
+                expect(updateCollection.customFields.primitive).toBe('test');
+            });
         });
 
         describe('Customer entity', () => {
@@ -606,6 +617,25 @@ describe('Custom field relations', () => {
                 `);
                 assertCustomFieldIds(updateFacet.customFields, 'T_2', ['T_3', 'T_4']);
             });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/2840
+            it('updating custom field relation on Facet does not delete primitive values', async () => {
+                const { updateFacet } = await adminClient.query(gql`
+                    mutation {
+                        updateFacet(
+                            input: {
+                                id: "${facetId}"
+                                customFields: { singleId: "T_3" }
+                            }
+                        ) {
+                            id
+                            ${customFieldsSelection}
+                        }
+                    }
+                `);
+                expect(updateFacet.customFields.single).toEqual({ id: 'T_3' });
+                expect(updateFacet.customFields.primitive).toBe('test');
+            });
         });
 
         describe('FacetValue entity', () => {
@@ -647,11 +677,26 @@ describe('Custom field relations', () => {
                 `);
                 assertCustomFieldIds(updateFacetValues[0].customFields, 'T_2', ['T_3', 'T_4']);
             });
-        });
 
-        // describe('Fulfillment entity', () => {
-        //     // Currently no GraphQL API to set customFields on fulfillments
-        // });
+            // https://github.com/vendure-ecommerce/vendure/issues/2840
+            it('updating custom field relation on FacetValue does not delete primitive values', async () => {
+                const { updateFacetValues } = await adminClient.query(gql`
+                    mutation {
+                        updateFacetValues(
+                            input: {
+                                id: "${facetValueId}"
+                                customFields: { singleId: "T_3" }
+                            }
+                        ) {
+                            id
+                            ${customFieldsSelection}
+                        }
+                    }
+                `);
+                expect(updateFacetValues[0].customFields.single).toEqual({ id: 'T_3' });
+                expect(updateFacetValues[0].customFields.primitive).toBe('test');
+            });
+        });
 
         describe('GlobalSettings entity', () => {
             it('admin updateGlobalSettings', async () => {
@@ -807,6 +852,25 @@ describe('Custom field relations', () => {
                 assertCustomFieldIds(updateProduct.customFields, 'T_2', ['T_3', 'T_4']);
             });
 
+            // https://github.com/vendure-ecommerce/vendure/issues/2840
+            it('updating custom field relation on Product does not delete primitive values', async () => {
+                const { updateProduct } = await adminClient.query(gql`
+                    mutation {
+                        updateProduct(
+                            input: {
+                                id: "${productId}"
+                                customFields: { singleId: "T_3" }
+                            }
+                        ) {
+                            id
+                            ${customFieldsSelection}
+                        }
+                    }
+                `);
+                expect(updateProduct.customFields.single).toEqual({ id: 'T_3' });
+                expect(updateProduct.customFields.primitive).toBe('test');
+            });
+
             let productVariantId: string;
             it('admin createProductVariant', async () => {
                 const { createProductVariants } = await adminClient.query(gql`
@@ -844,6 +908,25 @@ describe('Custom field relations', () => {
                     }
                 `);
                 assertCustomFieldIds(updateProductVariants[0].customFields, 'T_2', ['T_3', 'T_4']);
+            });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/2840
+            it('updating custom field relation on ProductVariant does not delete primitive values', async () => {
+                const { updateProductVariants } = await adminClient.query(gql`
+                    mutation {
+                        updateProductVariants(
+                            input: [{
+                                id: "${productVariantId}"
+                                customFields: { singleId: "T_3" }
+                            }]
+                        ) {
+                            id
+                            ${customFieldsSelection}
+                        }
+                    }
+                `);
+                expect(updateProductVariants[0].customFields.single).toEqual({ id: 'T_3' });
+                expect(updateProductVariants[0].customFields.primitive).toBe('test');
             });
 
             describe('issue 1664', () => {
@@ -1013,6 +1096,25 @@ describe('Custom field relations', () => {
                 assertCustomFieldIds(updateProductOptionGroup.customFields, 'T_2', ['T_3', 'T_4']);
             });
 
+            // https://github.com/vendure-ecommerce/vendure/issues/2840
+            it('updating custom field relation on ProductOptionGroup does not delete primitive values', async () => {
+                const { updateProductOptionGroup } = await adminClient.query(gql`
+                    mutation {
+                        updateProductOptionGroup(
+                            input: {
+                                id: "${productOptionGroupId}"
+                                customFields: { singleId: "T_3" }
+                            }
+                        ) {
+                            id
+                            ${customFieldsSelection}
+                        }
+                    }
+                `);
+                expect(updateProductOptionGroup.customFields.single).toEqual({ id: 'T_3' });
+                expect(updateProductOptionGroup.customFields.primitive).toBe('test');
+            });
+
             let productOptionId: string;
             it('admin createProductOption', async () => {
                 const { createProductOption } = await adminClient.query(gql`
@@ -1051,11 +1153,26 @@ describe('Custom field relations', () => {
                 `);
                 assertCustomFieldIds(updateProductOption.customFields, 'T_2', ['T_3', 'T_4']);
             });
-        });
 
-        // describe('User entity', () => {
-        //     // Currently no GraphQL API to set User custom fields
-        // });
+            // https://github.com/vendure-ecommerce/vendure/issues/2840
+            it('updating custom field relation on ProductOption does not delete primitive values', async () => {
+                const { updateProductOption } = await adminClient.query(gql`
+                    mutation {
+                        updateProductOption(
+                            input: {
+                                id: "${productOptionId}"
+                                customFields: { singleId: "T_3" }
+                            }
+                        ) {
+                            id
+                            ${customFieldsSelection}
+                        }
+                    }
+                `);
+                expect(updateProductOption.customFields.single).toEqual({ id: 'T_3' });
+                expect(updateProductOption.customFields.primitive).toBe('test');
+            });
+        });
 
         describe('ShippingMethod entity', () => {
             let shippingMethodId: string;
@@ -1112,6 +1229,26 @@ describe('Custom field relations', () => {
                 assertCustomFieldIds(updateShippingMethod.customFields, 'T_2', ['T_3', 'T_4']);
             });
 
+            // https://github.com/vendure-ecommerce/vendure/issues/2840
+            it('updating custom field relation on ShippingMethod does not delete primitive values', async () => {
+                const { updateShippingMethod } = await adminClient.query(gql`
+                    mutation {
+                        updateShippingMethod(
+                            input: {
+                                id: "${shippingMethodId}"
+                                translations: []
+                                customFields: { singleId: "T_3" }
+                            }
+                        ) {
+                            id
+                            ${customFieldsSelection}
+                        }
+                    }
+                `);
+                expect(updateShippingMethod.customFields.single).toEqual({ id: 'T_3' });
+                expect(updateShippingMethod.customFields.primitive).toBe('test');
+            });
+
             it('shop eligibleShippingMethods (ShippingMethodQuote)', async () => {
                 const { eligibleShippingMethods } = await shopClient.query(gql`
                     query {
@@ -1127,7 +1264,7 @@ describe('Custom field relations', () => {
                 const testShippingMethodQuote = eligibleShippingMethods.find(
                     (quote: any) => quote.code === 'test',
                 );
-                assertCustomFieldIds(testShippingMethodQuote.customFields, 'T_2', ['T_3', 'T_4']);
+                assertCustomFieldIds(testShippingMethodQuote.customFields, 'T_3', ['T_3', 'T_4']);
             });
         });
 
@@ -1175,6 +1312,25 @@ describe('Custom field relations', () => {
                 assertCustomFieldIds(updatePaymentMethod.customFields, 'T_2', ['T_3', 'T_4']);
             });
 
+            // https://github.com/vendure-ecommerce/vendure/issues/2840
+            it('updating custom field relation on PaymentMethod does not delete primitive values', async () => {
+                const { updatePaymentMethod } = await adminClient.query(gql`
+                    mutation {
+                        updatePaymentMethod(
+                            input: {
+                                id: "${paymentMethodId}"
+                                customFields: { singleId: "T_3" }
+                            }
+                        ) {
+                            id
+                            ${customFieldsSelection}
+                        }
+                    }
+                `);
+                expect(updatePaymentMethod.customFields.single).toEqual({ id: 'T_3' });
+                expect(updatePaymentMethod.customFields.primitive).toBe('test');
+            });
+
             it('shop eligiblePaymentMethods (PaymentMethodQuote)', async () => {
                 const { eligiblePaymentMethods } = await shopClient.query(gql`
                     query {
@@ -1186,7 +1342,7 @@ describe('Custom field relations', () => {
                         }
                     }
                 `);
-                assertCustomFieldIds(eligiblePaymentMethods[0].customFields, 'T_2', ['T_3', 'T_4']);
+                assertCustomFieldIds(eligiblePaymentMethods[0].customFields, 'T_3', ['T_3', 'T_4']);
             });
         });
 

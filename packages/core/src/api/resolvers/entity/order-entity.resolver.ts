@@ -64,6 +64,17 @@ export class OrderEntityResolver {
     }
 
     @ResolveField()
+    async shippingLines(@Ctx() ctx: RequestContext, @Parent() order: Order) {
+        if (order.shippingLines) {
+            return order.shippingLines;
+        }
+        const { shippingLines } = await assertFound(
+            this.orderService.findOne(ctx, order.id, ['shippingLines.shippingMethod']),
+        );
+        return shippingLines;
+    }
+
+    @ResolveField()
     async history(
         @Ctx() ctx: RequestContext,
         @Api() apiType: ApiType,

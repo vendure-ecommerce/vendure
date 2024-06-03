@@ -263,9 +263,12 @@ export function getDependencies(
         `@vendure/admin-ui-plugin${vendurePkgVersion}`,
         'dotenv',
         dbDriverPackage(dbType),
+    ];
+    const devDependencies = [
+        `@vendure/cli${vendurePkgVersion}`,
+        'concurrently',
         `typescript@${TYPESCRIPT_VERSION}`,
     ];
-    const devDependencies = ['concurrently', `@vendure/cli${vendurePkgVersion}`];
     return { dependencies, devDependencies };
 }
 

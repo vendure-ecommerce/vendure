@@ -50,6 +50,17 @@ export const TEST_ORDER_FRAGMENT = gql`
                 type
             }
         }
+        shippingAddress {
+            fullName
+            company
+            streetLine1
+            streetLine2
+            city
+            province
+            postalCode
+            country
+            phoneNumber
+        }
         shippingLines {
             shippingMethod {
                 id
@@ -104,17 +115,7 @@ export const SET_SHIPPING_ADDRESS = gql`
     mutation SetShippingAddress($input: CreateAddressInput!) {
         setOrderShippingAddress(input: $input) {
             ... on Order {
-                shippingAddress {
-                    fullName
-                    company
-                    streetLine1
-                    streetLine2
-                    city
-                    province
-                    postalCode
-                    country
-                    phoneNumber
-                }
+                ...TestOrderFragment
             }
             ... on ErrorResult {
                 errorCode
@@ -122,6 +123,7 @@ export const SET_SHIPPING_ADDRESS = gql`
             }
         }
     }
+    ${TEST_ORDER_FRAGMENT}
 `;
 
 export const GET_ELIGIBLE_SHIPPING_METHODS = gql`
@@ -217,6 +219,19 @@ export const GET_ACTIVE_ORDER = gql`
     query GetActiveOrder {
         activeOrder {
             ...TestOrderFragment
+        }
+    }
+    ${TEST_ORDER_FRAGMENT}
+`;
+
+export const APPLY_COUPON_CODE = gql`
+    mutation ApplyCouponCode($couponCode: String!) {
+        applyCouponCode(couponCode: $couponCode) {
+            ...TestOrderFragment
+            ... on ErrorResult {
+                errorCode
+                message
+            }
         }
     }
     ${TEST_ORDER_FRAGMENT}
