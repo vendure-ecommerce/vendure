@@ -132,23 +132,24 @@ export class CatalogModule {
         }
         bulkActionRegistryService.registerBulkAction(assignFacetValuesToProductsBulkAction);
         bulkActionRegistryService.registerBulkAction(assignProductsToChannelBulkAction);
-        bulkActionRegistryService.registerBulkAction(assignProductVariantsToChannelBulkAction);
-        bulkActionRegistryService.registerBulkAction(removeProductsFromChannelBulkAction);
-        bulkActionRegistryService.registerBulkAction(removeProductVariantsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(duplicateProductsBulkAction);
+        bulkActionRegistryService.registerBulkAction(removeProductsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteProductsBulkAction);
-        bulkActionRegistryService.registerBulkAction(deleteProductVariantsBulkAction);
+
         bulkActionRegistryService.registerBulkAction(assignFacetValuesToProductVariantsBulkAction);
+        bulkActionRegistryService.registerBulkAction(assignProductVariantsToChannelBulkAction);
+        bulkActionRegistryService.registerBulkAction(removeProductVariantsFromChannelBulkAction);
+        bulkActionRegistryService.registerBulkAction(deleteProductVariantsBulkAction);
 
         bulkActionRegistryService.registerBulkAction(assignFacetsToChannelBulkAction);
-        bulkActionRegistryService.registerBulkAction(removeFacetsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(duplicateFacetsBulkAction);
+        bulkActionRegistryService.registerBulkAction(removeFacetsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteFacetsBulkAction);
 
         bulkActionRegistryService.registerBulkAction(moveCollectionsBulkAction);
         bulkActionRegistryService.registerBulkAction(assignCollectionsToChannelBulkAction);
-        bulkActionRegistryService.registerBulkAction(removeCollectionsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(duplicateCollectionsBulkAction);
+        bulkActionRegistryService.registerBulkAction(removeCollectionsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(deleteCollectionsBulkAction);
 
         pageService.registerPageTab({
