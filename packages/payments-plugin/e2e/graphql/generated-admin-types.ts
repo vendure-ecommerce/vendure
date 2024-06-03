@@ -6386,6 +6386,16 @@ export type CreateChannelMutation = {
         | { errorCode: ErrorCode; message: string };
 };
 
+export type CreatePromotionMutationVariables = Exact<{
+    input: CreatePromotionInput;
+}>;
+
+export type CreatePromotionMutation = {
+    createPromotion:
+        | { __typename: 'MissingConditionsError'; errorCode: ErrorCode }
+        | { __typename: 'Promotion' };
+};
+
 export const PaymentMethodFragmentDoc = {
     kind: 'Document',
     definitions: [
@@ -6847,3 +6857,58 @@ export const CreateChannelDocument = {
         },
     ],
 } as unknown as DocumentNode<CreateChannelMutation, CreateChannelMutationVariables>;
+export const CreatePromotionDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'CreatePromotion' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'CreatePromotionInput' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'createPromotion' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'input' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                {
+                                    kind: 'InlineFragment',
+                                    typeCondition: {
+                                        kind: 'NamedType',
+                                        name: { kind: 'Name', value: 'ErrorResult' },
+                                    },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'errorCode' } },
+                                        ],
+                                    },
+                                },
+                                { kind: 'Field', name: { kind: 'Name', value: '__typename' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<CreatePromotionMutation, CreatePromotionMutationVariables>;

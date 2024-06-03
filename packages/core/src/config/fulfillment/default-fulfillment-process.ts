@@ -97,7 +97,6 @@ export const defaultFulfillmentProcess: FulfillmentProcess<FulfillmentState> = {
                 quantity: l.quantity,
             }));
             await stockMovementService.createCancellationsForOrderLines(ctx, orderLineInput);
-            // const lines = await groupOrderItemsIntoLines(ctx, orderLineInput);
             await stockMovementService.createAllocationsForOrderLines(ctx, orderLineInput);
         }
         if (fromState === 'Created' && toState === 'Pending') {

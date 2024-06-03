@@ -3329,6 +3329,17 @@ export type TestOrderFragmentFragment = {
             type: AdjustmentType;
         }>;
     }>;
+    shippingAddress?: {
+        fullName?: string | null;
+        company?: string | null;
+        streetLine1?: string | null;
+        streetLine2?: string | null;
+        city?: string | null;
+        province?: string | null;
+        postalCode?: string | null;
+        country?: string | null;
+        phoneNumber?: string | null;
+    } | null;
     shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
     customer?: { id: string; emailAddress: string; user?: { id: string; identifier: string } | null } | null;
     history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
@@ -3389,6 +3400,17 @@ export type AddPaymentToOrderMutation = {
                       type: AdjustmentType;
                   }>;
               }>;
+              shippingAddress?: {
+                  fullName?: string | null;
+                  company?: string | null;
+                  streetLine1?: string | null;
+                  streetLine2?: string | null;
+                  city?: string | null;
+                  province?: string | null;
+                  postalCode?: string | null;
+                  country?: string | null;
+                  phoneNumber?: string | null;
+              } | null;
               shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
               customer?: {
                   id: string;
@@ -3411,6 +3433,52 @@ export type SetShippingAddressMutation = {
     setOrderShippingAddress:
         | { errorCode: ErrorCode; message: string }
         | {
+              id: string;
+              code: string;
+              state: string;
+              active: boolean;
+              subTotal: number;
+              subTotalWithTax: number;
+              shipping: number;
+              shippingWithTax: number;
+              total: number;
+              totalWithTax: number;
+              currencyCode: CurrencyCode;
+              couponCodes: Array<string>;
+              discounts: Array<{
+                  adjustmentSource: string;
+                  amount: number;
+                  amountWithTax: number;
+                  description: string;
+                  type: AdjustmentType;
+              }>;
+              payments?: Array<{
+                  id: string;
+                  transactionId?: string | null;
+                  method: string;
+                  amount: number;
+                  state: string;
+                  metadata?: any | null;
+              }> | null;
+              lines: Array<{
+                  id: string;
+                  quantity: number;
+                  linePrice: number;
+                  linePriceWithTax: number;
+                  unitPrice: number;
+                  unitPriceWithTax: number;
+                  unitPriceChangeSinceAdded: number;
+                  unitPriceWithTaxChangeSinceAdded: number;
+                  proratedUnitPriceWithTax: number;
+                  productVariant: { id: string };
+                  discounts: Array<{
+                      adjustmentSource: string;
+                      amount: number;
+                      amountWithTax: number;
+                      description: string;
+                      type: AdjustmentType;
+                  }>;
+              }>;
               shippingAddress?: {
                   fullName?: string | null;
                   company?: string | null;
@@ -3422,6 +3490,13 @@ export type SetShippingAddressMutation = {
                   country?: string | null;
                   phoneNumber?: string | null;
               } | null;
+              shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
+              customer?: {
+                  id: string;
+                  emailAddress: string;
+                  user?: { id: string; identifier: string } | null;
+              } | null;
+              history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
           };
 };
 
@@ -3509,6 +3584,17 @@ export type SetShippingMethodMutation = {
                       type: AdjustmentType;
                   }>;
               }>;
+              shippingAddress?: {
+                  fullName?: string | null;
+                  company?: string | null;
+                  streetLine1?: string | null;
+                  streetLine2?: string | null;
+                  city?: string | null;
+                  province?: string | null;
+                  postalCode?: string | null;
+                  country?: string | null;
+                  phoneNumber?: string | null;
+              } | null;
               shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
               customer?: {
                   id: string;
@@ -3578,6 +3664,17 @@ export type AddItemToOrderMutation = {
                           type: AdjustmentType;
                       }>;
                   }>;
+                  shippingAddress?: {
+                      fullName?: string | null;
+                      company?: string | null;
+                      streetLine1?: string | null;
+                      streetLine2?: string | null;
+                      city?: string | null;
+                      province?: string | null;
+                      postalCode?: string | null;
+                      country?: string | null;
+                      phoneNumber?: string | null;
+                  } | null;
                   shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
                   customer?: {
                       id: string;
@@ -3635,6 +3732,17 @@ export type AddItemToOrderMutation = {
                       type: AdjustmentType;
                   }>;
               }>;
+              shippingAddress?: {
+                  fullName?: string | null;
+                  company?: string | null;
+                  streetLine1?: string | null;
+                  streetLine2?: string | null;
+                  city?: string | null;
+                  province?: string | null;
+                  postalCode?: string | null;
+                  country?: string | null;
+                  phoneNumber?: string | null;
+              } | null;
               shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
               customer?: {
                   id: string;
@@ -3705,6 +3813,17 @@ export type AdjustOrderLineMutation = {
                           type: AdjustmentType;
                       }>;
                   }>;
+                  shippingAddress?: {
+                      fullName?: string | null;
+                      company?: string | null;
+                      streetLine1?: string | null;
+                      streetLine2?: string | null;
+                      city?: string | null;
+                      province?: string | null;
+                      postalCode?: string | null;
+                      country?: string | null;
+                      phoneNumber?: string | null;
+                  } | null;
                   shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
                   customer?: {
                       id: string;
@@ -3762,6 +3881,17 @@ export type AdjustOrderLineMutation = {
                       type: AdjustmentType;
                   }>;
               }>;
+              shippingAddress?: {
+                  fullName?: string | null;
+                  company?: string | null;
+                  streetLine1?: string | null;
+                  streetLine2?: string | null;
+                  city?: string | null;
+                  province?: string | null;
+                  postalCode?: string | null;
+                  country?: string | null;
+                  phoneNumber?: string | null;
+              } | null;
               shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
               customer?: {
                   id: string;
@@ -3826,6 +3956,17 @@ export type GetOrderByCodeQuery = {
                 type: AdjustmentType;
             }>;
         }>;
+        shippingAddress?: {
+            fullName?: string | null;
+            company?: string | null;
+            streetLine1?: string | null;
+            streetLine2?: string | null;
+            city?: string | null;
+            province?: string | null;
+            postalCode?: string | null;
+            country?: string | null;
+            phoneNumber?: string | null;
+        } | null;
         shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
         customer?: {
             id: string;
@@ -3886,6 +4027,17 @@ export type GetActiveOrderQuery = {
                 type: AdjustmentType;
             }>;
         }>;
+        shippingAddress?: {
+            fullName?: string | null;
+            company?: string | null;
+            streetLine1?: string | null;
+            streetLine2?: string | null;
+            city?: string | null;
+            province?: string | null;
+            postalCode?: string | null;
+            country?: string | null;
+            phoneNumber?: string | null;
+        } | null;
         shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
         customer?: {
             id: string;
@@ -3894,6 +4046,83 @@ export type GetActiveOrderQuery = {
         } | null;
         history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
     } | null;
+};
+
+export type ApplyCouponCodeMutationVariables = Exact<{
+    couponCode: Scalars['String']['input'];
+}>;
+
+export type ApplyCouponCodeMutation = {
+    applyCouponCode:
+        | { errorCode: ErrorCode; message: string }
+        | { errorCode: ErrorCode; message: string }
+        | { errorCode: ErrorCode; message: string }
+        | {
+              id: string;
+              code: string;
+              state: string;
+              active: boolean;
+              subTotal: number;
+              subTotalWithTax: number;
+              shipping: number;
+              shippingWithTax: number;
+              total: number;
+              totalWithTax: number;
+              currencyCode: CurrencyCode;
+              couponCodes: Array<string>;
+              discounts: Array<{
+                  adjustmentSource: string;
+                  amount: number;
+                  amountWithTax: number;
+                  description: string;
+                  type: AdjustmentType;
+              }>;
+              payments?: Array<{
+                  id: string;
+                  transactionId?: string | null;
+                  method: string;
+                  amount: number;
+                  state: string;
+                  metadata?: any | null;
+              }> | null;
+              lines: Array<{
+                  id: string;
+                  quantity: number;
+                  linePrice: number;
+                  linePriceWithTax: number;
+                  unitPrice: number;
+                  unitPriceWithTax: number;
+                  unitPriceChangeSinceAdded: number;
+                  unitPriceWithTaxChangeSinceAdded: number;
+                  proratedUnitPriceWithTax: number;
+                  productVariant: { id: string };
+                  discounts: Array<{
+                      adjustmentSource: string;
+                      amount: number;
+                      amountWithTax: number;
+                      description: string;
+                      type: AdjustmentType;
+                  }>;
+              }>;
+              shippingAddress?: {
+                  fullName?: string | null;
+                  company?: string | null;
+                  streetLine1?: string | null;
+                  streetLine2?: string | null;
+                  city?: string | null;
+                  province?: string | null;
+                  postalCode?: string | null;
+                  country?: string | null;
+                  phoneNumber?: string | null;
+              } | null;
+              shippingLines: Array<{ shippingMethod: { id: string; code: string; description: string } }>;
+              customer?: {
+                  id: string;
+                  emailAddress: string;
+                  user?: { id: string; identifier: string } | null;
+              } | null;
+              history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
+          };
 };
 
 export const TestOrderFragmentFragmentDoc = {
@@ -3990,6 +4219,24 @@ export const TestOrderFragmentFragmentDoc = {
                                         ],
                                     },
                                 },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
                             ],
                         },
                     },
@@ -4279,6 +4526,24 @@ export const AddPaymentToOrderDocument = {
                     },
                     {
                         kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
                         name: { kind: 'Name', value: 'shippingLines' },
                         selectionSet: {
                             kind: 'SelectionSet',
@@ -4389,49 +4654,8 @@ export const SetShippingAddressDocument = {
                                         kind: 'SelectionSet',
                                         selections: [
                                             {
-                                                kind: 'Field',
-                                                name: { kind: 'Name', value: 'shippingAddress' },
-                                                selectionSet: {
-                                                    kind: 'SelectionSet',
-                                                    selections: [
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'fullName' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'company' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'streetLine1' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'streetLine2' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'city' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'province' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'postalCode' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'country' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'phoneNumber' },
-                                                        },
-                                                    ],
-                                                },
+                                                kind: 'FragmentSpread',
+                                                name: { kind: 'Name', value: 'TestOrderFragment' },
                                             },
                                         ],
                                     },
@@ -4447,6 +4671,185 @@ export const SetShippingAddressDocument = {
                                         selections: [
                                             { kind: 'Field', name: { kind: 'Name', value: 'errorCode' } },
                                             { kind: 'Field', name: { kind: 'Name', value: 'message' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'TestOrderFragment' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Order' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'state' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'active' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'subTotal' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'subTotalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'shipping' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'shippingWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'total' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'couponCodes' } },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'discounts' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'adjustmentSource' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'amountWithTax' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'payments' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'transactionId' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'method' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'state' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'metadata' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'lines' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'quantity' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'linePrice' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'linePriceWithTax' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'unitPrice' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'unitPriceWithTax' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'unitPriceChangeSinceAdded' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'unitPriceWithTaxChangeSinceAdded' },
+                                },
+                                { kind: 'Field', name: { kind: 'Name', value: 'proratedUnitPriceWithTax' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'productVariant' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                                    },
+                                },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'discounts' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'adjustmentSource' },
+                                            },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'amountWithTax' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingLines' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'shippingMethod' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'customer' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'emailAddress' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'user' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'identifier' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'history' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'items' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'data' } },
                                         ],
                                     },
                                 },
@@ -4713,6 +5116,24 @@ export const SetShippingMethodDocument = {
                                         ],
                                     },
                                 },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
                             ],
                         },
                     },
@@ -4986,6 +5407,24 @@ export const AddItemToOrderDocument = {
                     },
                     {
                         kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
                         name: { kind: 'Name', value: 'shippingLines' },
                         selectionSet: {
                             kind: 'SelectionSet',
@@ -5251,6 +5690,24 @@ export const AdjustOrderLineDocument = {
                     },
                     {
                         kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
                         name: { kind: 'Name', value: 'shippingLines' },
                         selectionSet: {
                             kind: 'SelectionSet',
@@ -5457,6 +5914,24 @@ export const GetOrderByCodeDocument = {
                     },
                     {
                         kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
                         name: { kind: 'Name', value: 'shippingLines' },
                         selectionSet: {
                             kind: 'SelectionSet',
@@ -5646,6 +6121,24 @@ export const GetActiveOrderDocument = {
                     },
                     {
                         kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
                         name: { kind: 'Name', value: 'shippingLines' },
                         selectionSet: {
                             kind: 'SelectionSet',
@@ -5713,3 +6206,241 @@ export const GetActiveOrderDocument = {
         },
     ],
 } as unknown as DocumentNode<GetActiveOrderQuery, GetActiveOrderQueryVariables>;
+export const ApplyCouponCodeDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'ApplyCouponCode' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'couponCode' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'applyCouponCode' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'couponCode' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'couponCode' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                {
+                                    kind: 'FragmentSpread',
+                                    name: { kind: 'Name', value: 'TestOrderFragment' },
+                                },
+                                {
+                                    kind: 'InlineFragment',
+                                    typeCondition: {
+                                        kind: 'NamedType',
+                                        name: { kind: 'Name', value: 'ErrorResult' },
+                                    },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'errorCode' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'message' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'TestOrderFragment' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Order' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'state' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'active' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'subTotal' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'subTotalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'shipping' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'shippingWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'total' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'couponCodes' } },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'discounts' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'adjustmentSource' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'amountWithTax' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'payments' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'transactionId' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'method' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'state' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'metadata' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'lines' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'quantity' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'linePrice' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'linePriceWithTax' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'unitPrice' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'unitPriceWithTax' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'unitPriceChangeSinceAdded' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'unitPriceWithTaxChangeSinceAdded' },
+                                },
+                                { kind: 'Field', name: { kind: 'Name', value: 'proratedUnitPriceWithTax' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'productVariant' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                                    },
+                                },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'discounts' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'adjustmentSource' },
+                                            },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'amountWithTax' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingLines' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'shippingMethod' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'customer' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'emailAddress' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'user' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'identifier' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'history' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'items' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'data' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<ApplyCouponCodeMutation, ApplyCouponCodeMutationVariables>;
