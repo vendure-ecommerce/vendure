@@ -20,7 +20,7 @@ import {
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { gql } from 'apollo-angular';
 import { Observable } from 'rxjs';
-import { map, mergeMap, take } from 'rxjs/operators';
+import { map, mergeMap, take, takeUntil } from 'rxjs/operators';
 
 export const GET_CHANNEL_DETAIL = gql`
     query GetChannelDetail($id: ID!) {
@@ -74,10 +74,29 @@ export class ChannelDetailComponent
 
     ngOnInit() {
         this.init();
-        // this.zones$ = this.dataService.settings.getZones({ take: 100 }).mapSingle(data => data.zones.items);
         // TODO: make this lazy-loaded autocomplete
         this.sellers$ = this.dataService.settings.getSellerList().mapSingle(data => data.sellers.items);
         this.availableLanguageCodes$ = this.serverConfigService.getAvailableLanguages();
+        this.detailForm.controls.availableCurrencyCodes.valueChanges
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(value => {
+                if (value) {
+                    const defaultCurrencyCode = this.detailForm.controls.defaultCurrencyCode.value;
+                    if (defaultCurrencyCode && !value.includes(defaultCurrencyCode)) {
+                        this.detailForm.controls.defaultCurrencyCode.setValue(value[0] as CurrencyCode);
+                    }
+                }
+            });
+        this.detailForm.controls.availableLanguageCodes.valueChanges
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(value => {
+                if (value) {
+                    const defaultLanguageCode = this.detailForm.controls.defaultLanguageCode.value;
+                    if (defaultLanguageCode && !value.includes(defaultLanguageCode)) {
+                        this.detailForm.controls.defaultLanguageCode.setValue(value[0] as LanguageCode);
+                    }
+                }
+            });
     }
 
     ngOnDestroy() {
