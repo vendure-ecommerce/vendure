@@ -349,6 +349,14 @@ export type UiExtensionCompilerProcessArgument = string | [string, any];
 
 /**
  * @description
+ * The package manager to use when invoking the Angular CLI to build UI extensions.
+ *
+ * @docsCategory UiDevkit
+ */
+export type UiExtensionBuildCommand = 'npm' | 'yarn' | 'pnpm';
+
+/**
+ * @description
  * Options to configure how the Admin UI should be compiled.
  *
  * @docsCategory UiDevkit
@@ -435,11 +443,11 @@ export interface UiExtensionCompilerOptions {
      * @description
      * Internally, the Angular CLI will be invoked as an npm script. By default, the compiler will use Yarn
      * to run the script if it is detected, otherwise it will use npm. This setting allows you to explicitly
-     * set which command to use, rather than relying on the default behavior.
+     * set which command to use, including pnpm, rather than relying on the default behavior.
      *
      * @since 1.5.0
      */
-    command?: 'yarn' | 'npm';
+    command?: UiExtensionBuildCommand;
 
     /**
      * @description
