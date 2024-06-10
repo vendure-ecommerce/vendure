@@ -413,7 +413,7 @@ export function configureSessionCookies(
 
     // If the Admin API and Shop API should have the same cookie name
     // Else, the specific cookie middlewares are handled in the 'AppModule#configure' method
-    if (typeof cookieOptions?.name === 'string') {
+    if (typeof cookieOptions?.name === 'string' || cookieOptions?.name === undefined) {
         app.use(
             cookieSession({
                 ...cookieOptions,
