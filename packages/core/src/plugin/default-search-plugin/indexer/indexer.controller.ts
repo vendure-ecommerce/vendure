@@ -38,7 +38,7 @@ import {
 
 import { MutableRequestContext } from './mutable-request-context';
 
-export const BATCH_SIZE = 100;
+export const BATCH_SIZE = 1000;
 export const productRelations = [
     'translations',
     'featuredAsset',
