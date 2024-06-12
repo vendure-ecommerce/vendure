@@ -2,23 +2,23 @@
 
 :host {
     display: block;
+}
 
-    &:first-of-type {
-        .timeline {
-            &:before {
-                border-left-color: var(--color-weight-200);
-            }
+.first {
+    .timeline {
+        &:before {
+            border-left-color: var(--color-weight-200);
         }
+    }
 
-        .entry-body {
-            max-height: initial;
-            @media screen and (min-width: $breakpoint-small) {
-                flex-direction: column;
-            }
+    .entry-body {
+        max-height: initial;
+        @media screen and (min-width: $breakpoint-small) {
+            flex-direction: column;
         }
-        .featured-entry {
-            width: 100%;
-        }
+    }
+    .featured-entry {
+        width: 100%;
     }
 }
 

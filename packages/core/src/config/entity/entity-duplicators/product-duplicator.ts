@@ -102,6 +102,7 @@ export const productDuplicator = new EntityDuplicator({
                     featuredAsset: true,
                     stockLevels: true,
                     facetValues: true,
+                    productVariantPrices: true,
                 },
             });
             if (product.optionGroups && product.optionGroups.length) {
@@ -165,7 +166,7 @@ export const productDuplicator = new EntityDuplicator({
                 });
                 return {
                     productId: duplicatedProduct.id,
-                    price: variant.price,
+                    price: variant.productVariantPrices[0]?.price ?? variant.price,
                     sku: `${variant.sku}-copy`,
                     stockOnHand: 1,
                     featuredAssetId: variant.featuredAsset?.id,

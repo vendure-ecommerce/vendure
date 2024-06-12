@@ -43,10 +43,6 @@ export const PRODUCT_VARIANT_FRAGMENT = gql`
         currencyCode
         price
         priceWithTax
-        prices {
-            currencyCode
-            price
-        }
         stockOnHand
         trackInventory
         taxRateApplied {

@@ -169,9 +169,8 @@ describe('Duplicating entities', () => {
     });
 
     it('get entity duplicators', async () => {
-        const { entityDuplicators } = await adminClient.query<Codegen.GetEntityDuplicatorsQuery>(
-            GET_ENTITY_DUPLICATORS,
-        );
+        const { entityDuplicators } =
+            await adminClient.query<Codegen.GetEntityDuplicatorsQuery>(GET_ENTITY_DUPLICATORS);
 
         expect(entityDuplicators.find(d => d.code === 'custom-collection-duplicator')).toEqual({
             args: [
@@ -524,6 +523,40 @@ describe('Duplicating entities', () => {
                 expect(product?.variants.find(v => v.name === originalFirstVariant.name)?.stockOnHand).toBe(
                     100,
                 );
+            });
+
+            it('variant prices are duplicated', async () => {
+                const { duplicateEntity } = await adminClient.query<
+                    Codegen.DuplicateEntityMutation,
+                    Codegen.DuplicateEntityMutationVariables
+                >(DUPLICATE_ENTITY, {
+                    input: {
+                        entityName: 'Product',
+                        entityId: 'T_1',
+                        duplicatorInput: {
+                            code: 'product-duplicator',
+                            arguments: [
+                                {
+                                    name: 'includeVariants',
+                                    value: 'true',
+                                },
+                            ],
+                        },
+                    },
+                });
+
+                const { product } = await adminClient.query<
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: duplicateEntity.newEntityId,
+                });
+
+                duplicateEntityGuard.assertSuccess(duplicateEntity);
+                const variant = product?.variants.find(v => v.name === originalFirstVariant.name);
+                expect(variant).not.toBeUndefined();
+                expect(originalFirstVariant.price).toBeGreaterThan(0);
+                expect(variant!.price).toBe(originalFirstVariant.price);
             });
         });
 
