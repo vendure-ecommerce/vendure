@@ -23,6 +23,7 @@ export class TimelineEntryComponent {
     @Input() name: string;
     @Input() featured: boolean;
     @Input() iconShape?: string | [string, string];
+    @Input() isFirst?: boolean;
     @Input() isLast?: boolean;
     @HostBinding('class.collapsed')
     @Input()
