@@ -64,18 +64,6 @@ export class EmailProcessor {
                     templateVars: data.templateVars,
                 },
             );
-            if (this.options.templateLoader.loadSubject) {
-                data.subject = await this.options.templateLoader.loadSubject(
-                    new Injector(this.moduleRef),
-                    ctx,
-                    {
-                        templateName: data.templateFile,
-                        type: data.type,
-                        templateVars: data.templateVars,
-                        subject: data.subject,
-                    },
-                );
-            }
             const generated = this.generator.generate(data.from, data.subject, bodySource, data.templateVars);
             emailDetails = {
                 ...generated,

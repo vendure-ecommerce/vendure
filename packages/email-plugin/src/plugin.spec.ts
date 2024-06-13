@@ -961,25 +961,6 @@ describe('EmailPlugin', () => {
             expect(onSend.mock.calls[0][0].recipient).toBe('test@test.com');
             expect(onSend.mock.calls[0][0].from).toBe('"test from" <noreply@test.com>');
         });
-
-        it('With custom template loader', async () => {
-            const ctx = RequestContext.deserialize({
-                _channel: { code: DEFAULT_CHANNEL_CODE },
-                _languageCode: LanguageCode.en,
-            } as any);
-            const handler = new EmailEventListener('test')
-                .on(MockEvent)
-                .setFrom('"test from" <noreply@test.com>')
-                .setRecipient(() => 'test@test.com')
-
-            await initPluginWithHandlers([handler], { templateLoader: new MockTemplateLoader(path.join(__dirname, '../test-templates')) });
-
-            eventBus.publish(new MockEvent(ctx, true));
-            await pause();
-            expect(onSend.mock.calls[0][0].subject).toBe('Hello from loaded data');
-            expect(onSend.mock.calls[0][0].recipient).toBe('test@test.com');
-            expect(onSend.mock.calls[0][0].from).toBe('"test from" <noreply@test.com>');
-        });
     })
 });
 
@@ -998,37 +979,5 @@ class MockEvent extends VendureEvent {
 class MockService {
     someAsyncMethod() {
         return Promise.resolve('loaded data');
-    }
-}
-
-export class MockTemplateLoader implements TemplateLoader {
-    constructor(private templatePath: string) {}
-
-    async loadTemplate(
-        _injector: Injector,
-        _ctx: RequestContext,
-        { type, templateName }: LoadTemplateInput,
-    ): Promise<string> {
-        const templatePath = path.join(this.templatePath, type, templateName);
-        return fs.readFile(templatePath, 'utf-8');
-    }
-
-    async loadSubject(injector: Injector, ctx: RequestContext, input: LoadTemplateInput & { subject: string; }): Promise<string> {
-        const orderService = injector.get(MockService);
-        const content = await orderService.someAsyncMethod()
-        return `Hello from ${content}`;
-    }
-
-    async loadPartials(): Promise<any[]> {
-        const partialsPath = path.join(this.templatePath, 'partials');
-        const partialsFiles = await fs.readdir(partialsPath);
-        return Promise.all(
-            partialsFiles.map(async file => {
-                return {
-                    name: path.basename(file, '.hbs'),
-                    content: await fs.readFile(path.join(partialsPath, file), 'utf-8'),
-                };
-            }),
-        );
     }
 }

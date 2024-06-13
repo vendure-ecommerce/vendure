@@ -38,16 +38,6 @@ export interface TemplateLoader {
 
     /**
      * @description
-     * Load the email's subject and return it as a string.
-     */
-    loadSubject?(
-        injector: Injector,
-        ctx: RequestContext,
-        input: LoadTemplateInput & { subject: string },
-    ): Promise<string>;
-
-    /**
-     * @description
      * Load partials and return their contents.
      * This method is only called during initialization, i.e. during server startup.
      */
