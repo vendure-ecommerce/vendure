@@ -139,7 +139,7 @@ result will be returned.
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionstartfn'>OnTransitionStartFn</a>&#60;<a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>, <a href='/reference/typescript-api/fulfillment/fulfillment-transition-data#fulfillmenttransitiondata'>FulfillmentTransitionData</a>&#62;`}   />
 
 This allows the handler to intercept state transitions of the created Fulfillment. This works much in the
-same way as the {@link CustomFulfillmentProcess} `onTransitionStart` method (i.e. returning `false` or
+same way as the <a href='/reference/typescript-api/fulfillment/fulfillment-process#fulfillmentprocess'>FulfillmentProcess</a> `onTransitionStart` method (i.e. returning `false` or
 `string` will be interpreted as an error and prevent the state transition), except that it is only invoked
 on Fulfillments which were created with this particular FulfillmentHandler.
 

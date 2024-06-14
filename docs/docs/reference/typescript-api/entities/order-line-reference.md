@@ -140,7 +140,7 @@ class OrderModificationLine extends OrderLineReference {
 
 <GenerationInfo sourceFile="packages/core/src/entity/order-line-reference/refund-line.entity.ts" sourceLine="16" packageName="@vendure/core" />
 
-This entity represents a line from an <a href='/reference/typescript-api/entities/order#order'>Order</a> which has been refunded by a {@link Refund}.
+This entity represents a line from an <a href='/reference/typescript-api/entities/order#order'>Order</a> which has been refunded by a <a href='/reference/typescript-api/entities/refund#refund'>Refund</a>.
 
 ```ts title="Signature"
 class RefundLine extends OrderLineReference {
@@ -165,7 +165,7 @@ class RefundLine extends OrderLineReference {
 
 ### refund
 
-<MemberInfo kind="property" type={`Refund`}   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/refund#refund'>Refund</a>`}   />
 
 
 ### refundId

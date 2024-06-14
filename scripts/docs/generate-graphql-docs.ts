@@ -106,7 +106,7 @@ function generateGraphqlDocs(hugoOutputPath: string) {
                 enumsOutput += codeLine(value.name);
             }
             enumsOutput += codeLine(`&#125;`, ['top-level']);
-            enumsOutput += '\n</div>\n';
+            enumsOutput += '</div>\n';
         }
 
         if (isScalarType(type)) {
@@ -114,7 +114,7 @@ function generateGraphqlDocs(hugoOutputPath: string) {
             objectTypesOutput += `<div class="graphql-code-block">\n`;
             objectTypesOutput += renderDescription(type, 'multi', true);
             objectTypesOutput += codeLine(`scalar ${identifier(type.name)}`, ['top-level']);
-            objectTypesOutput += '\n</div>\n';
+            objectTypesOutput += '</div>\n';
         }
 
         if (isInputObjectType(type)) {
@@ -124,7 +124,7 @@ function generateGraphqlDocs(hugoOutputPath: string) {
             inputTypesOutput += codeLine(`input ${identifier(type.name)} &#123;`, ['top-level']);
             inputTypesOutput += renderFields(type);
             inputTypesOutput += codeLine(`&#125;`, ['top-level']);
-            inputTypesOutput += '\n</div>\n';
+            inputTypesOutput += '</div>\n';
         }
 
         if (isUnionType(type)) {
@@ -133,7 +133,7 @@ function generateGraphqlDocs(hugoOutputPath: string) {
             objectTypesOutput += renderDescription(type);
             objectTypesOutput += codeLine(`union ${identifier(type.name)} =`, ['top-level']);
             objectTypesOutput += renderUnion(type);
-            objectTypesOutput += '\n</div>\n';
+            objectTypesOutput += '</div>\n';
         }
     }
 
@@ -151,7 +151,7 @@ function codeLine(content: string, extraClass?: ['top-level' | 'comment'] | unde
 }
 
 function identifier(name: string): string {
-    return `<span class="graphql-code-identifier">${name}</span>\n`;
+    return `<span class="graphql-code-identifier">${name}</span>`;
 }
 
 /**

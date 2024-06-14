@@ -191,7 +191,7 @@ export class BannerPlugin {}
 
 If you have defined a new database entity, it is likely that you'll want to expose this entity in your GraphQL API. To do so, you'll need to define a corresponding GraphQL type.
 
-Using the `ProductReview` entity from the [Define a database entity guide](/guides/developer-guide/database-entity//), let's see how we can expose it as a new type in the API.
+Using the `ProductReview` entity from the [Define a database entity guide](/guides/developer-guide/database-entity), let's see how we can expose it as a new type in the API.
 
 As a reminder, here is the `ProductReview` entity:
 
