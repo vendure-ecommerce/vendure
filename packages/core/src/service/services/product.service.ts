@@ -75,7 +75,7 @@ export class ProductService {
         options?: ListQueryOptions<Product>,
         relations?: RelationPaths<Product>,
     ): Promise<PaginatedList<Translated<Product>>> {
-        const effectiveRelations = relations || this.relations;
+        const effectiveRelations = relations || this.relations.slice();
         const customPropertyMap: { [name: string]: string } = {};
         const hasFacetValueIdFilter = this.listQueryBuilder.filterObjectHasProperty<ProductFilterParameter>(
             options?.filter,
@@ -118,7 +118,7 @@ export class ProductService {
         productId: ID,
         relations?: RelationPaths<Product>,
     ): Promise<Translated<Product> | undefined> {
-        const effectiveRelations = relations ?? this.relations;
+        const effectiveRelations = relations ?? this.relations.slice();
         if (relations && effectiveRelations.includes('facetValues')) {
             // We need the facet to determine with the FacetValues are public
             // when serving via the Shop API.
