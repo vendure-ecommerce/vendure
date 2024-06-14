@@ -47,7 +47,7 @@ adding or removing an item) will require Vendure to loop through all million ite
 to perform price calculations against active promotions and taxes. This can have a significant
 performance impact for very large values.
 
-Attempting to exceed this limit will cause Vendure to throw a {@link OrderItemsLimitError}.
+Attempting to exceed this limit will cause Vendure to throw a `OrderLimitError`.
 ### orderLineItemsLimit
 
 <MemberInfo kind="property" type={`number`} default="999"   />
@@ -56,7 +56,7 @@ The maximum number of items allowed per order line. This option is an addition
 on the `orderItemsLimit` for more granular control. Note `orderItemsLimit` is still
 important in order to prevent excessive resource usage.
 
-Attempting to exceed this limit will cause Vendure to throw a {@link OrderItemsLimitError}.
+Attempting to exceed this limit will cause Vendure to throw a OrderLimitError`.
 ### orderItemPriceCalculationStrategy
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy'>OrderItemPriceCalculationStrategy</a>`} default="DefaultPriceCalculationStrategy"   />

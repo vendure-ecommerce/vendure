@@ -13,7 +13,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/service/services/global-settings.service.ts" sourceLine="22" packageName="@vendure/core" />
 
-Contains methods relating to the {@link GlobalSettings} entity.
+Contains methods relating to the <a href='/reference/typescript-api/entities/global-settings#globalsettings'>GlobalSettings</a> entity.
 
 ```ts title="Signature"
 class GlobalSettingsService {
@@ -32,12 +32,12 @@ class GlobalSettingsService {
 
 ### getSettings
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;GlobalSettings&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;<a href='/reference/typescript-api/entities/global-settings#globalsettings'>GlobalSettings</a>&#62;`}   />
 
 Returns the GlobalSettings entity.
 ### updateSettings
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateGlobalSettingsInput) => Promise&#60;GlobalSettings&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateGlobalSettingsInput) => Promise&#60;<a href='/reference/typescript-api/entities/global-settings#globalsettings'>GlobalSettings</a>&#62;`}   />
 
 
 

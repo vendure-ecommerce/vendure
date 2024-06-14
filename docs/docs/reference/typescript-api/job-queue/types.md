@@ -39,7 +39,7 @@ type JobUpdate<T extends JobData<T>> = Pick<
 
 <GenerationInfo sourceFile="packages/core/src/job-queue/subscribable-job.ts" sourceLine="34" packageName="@vendure/core" />
 
-Job update options, that you can specify by calling {@link SubscribableJob.updates updates()} method.
+Job update options, that you can specify by calling <a href='/reference/typescript-api/job-queue/subscribable-job#subscribablejob'>SubscribableJob</a> `updates` method.
 
 ```ts title="Signature"
 type JobUpdateOptions = {

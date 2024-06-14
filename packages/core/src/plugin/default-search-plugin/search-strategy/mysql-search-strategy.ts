@@ -21,7 +21,9 @@ import {
 } from './search-strategy-utils';
 
 /**
- * A weighted fulltext search for MySQL / MariaDB.
+ * @description A weighted fulltext search for MySQL / MariaDB.
+ *
+ * @docsCategory DefaultSearchPlugin
  */
 export class MysqlSearchStrategy implements SearchStrategy {
     private readonly minTermLength = 2;

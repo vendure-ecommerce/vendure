@@ -14,7 +14,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/extension/register-data-table-component.ts" sourceLine="45" packageName="@vendure/admin-ui" />
 
 Allows you to override the default component used to render the data of a particular column in a DataTable.
-The component should implement the {@link CustomDataTableColumnComponent} interface. The tableId and columnId can
+The component should implement the <a href='/reference/admin-ui-api/custom-table-components/custom-column-component#customcolumncomponent'>CustomColumnComponent</a> interface. The tableId and columnId can
 be determined by pressing `ctrl + u` when running the Admin UI in dev mode.
 
 *Example*

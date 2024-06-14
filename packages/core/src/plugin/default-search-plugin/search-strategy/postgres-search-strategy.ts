@@ -21,7 +21,9 @@ import {
 } from './search-strategy-utils';
 
 /**
- * A weighted fulltext search for PostgeSQL.
+ * @description A weighted fulltext search for PostgeSQL.
+ *
+ * @docsCategory DefaultSearchPlugin
  */
 export class PostgresSearchStrategy implements SearchStrategy {
     private readonly minTermLength = 2;
