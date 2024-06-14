@@ -34,12 +34,9 @@ export default function Home(): JSX.Element {
                         d="M529.39 28.096c.621 0 1.073-.124 1.344-.361.272-.226.419-.61.419-1.153 0-.531-.147-.904-.419-1.141-.271-.226-.723-.34-1.344-.34h-1.266v2.995h1.266Zm-1.266 2.068v4.407h-3.005V22.92h4.587c1.537 0 2.656.26 3.367.78.724.508 1.074 1.322 1.074 2.44 0 .769-.181 1.401-.554 1.899-.373.485-.926.858-1.683 1.084.418.102.779.317 1.107.644.328.328.655.825.983 1.503l1.638 3.3h-3.197l-1.424-2.893c-.283-.576-.576-.983-.87-1.187-.294-.214-.689-.327-1.175-.327h-.848Z"
                     ></path>
                 </svg>
-                <div className={styles.tagline}>
-                    <div>Developer Documentation</div>
-                </div>
+                <h1 className={styles.tagline}>Developer Documentation</h1>
                 <div className={styles.description}>
-                    Vendure is an open-source headless commerce platform built on Node.js, TypeScript and
-                    GraphQL
+                    Build better multichannel commerce experiences faster. Vendure is the headless commerce platform that is built to adapt to your needs. Not the other way round.
                 </div>
             </div>
             <main>
