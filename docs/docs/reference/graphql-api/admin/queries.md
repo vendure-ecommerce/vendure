@@ -204,6 +204,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## entityDuplicators
 <div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Returns all configured EntityDuplicators.</div>
+<div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span>
  &#123;</div>
 <div class="graphql-code-line ">entityDuplicators: [<a href="/reference/graphql-api/admin/object-types#entityduplicatordefinition">EntityDuplicatorDefinition</a>!]!</div>

@@ -1230,6 +1230,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## duplicateEntity
 <div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Duplicate an existing entity using a specific EntityDuplicator.</div>
+
+<div class="graphql-code-line top-level comment">Since v2.2.0.</div>
+<div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span>
  &#123;</div>
 <div class="graphql-code-line ">duplicateEntity(input: <a href="/reference/graphql-api/admin/input-types#duplicateentityinput">DuplicateEntityInput</a>!): <a href="/reference/graphql-api/admin/object-types#duplicateentityresult">DuplicateEntityResult</a>!</div>
