@@ -6,7 +6,7 @@ An open-source headless commerce platform built on [Node.js](https://nodejs.org)
 ![Publish & Install](https://github.com/vendure-ecommerce/vendure/workflows/Publish%20&%20Install/badge.svg)
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
 
-![vendure_github_banner (1)](https://github.com/vendure-ecommerce/vendure/assets/6275952/0e25b1c7-a648-44a1-ba00-60012f0e7aaa)
+![vendure-github-social-banner](https://github.com/vendure-ecommerce/vendure/assets/24294584/ada25fa3-185d-45ce-896d-bece3685a829)
 
 
 ### [www.vendure.io](https://www.vendure.io/)
