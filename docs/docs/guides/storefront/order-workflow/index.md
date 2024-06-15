@@ -5,21 +5,21 @@ showtoc: true
 
 # Order Workflow
 
-An Order is a collection of one or more ProductVariants which can be purchased by a Customer. Orders are represented internally by the [Order entity]({{< relref "order" >}}) and in the GraphQL API by the [Order type]({{< relref "/reference/graphql-api/shop/object-types#order" >}}).
+An Order is a collection of one or more ProductVariants which can be purchased by a Customer. Orders are represented internally by the [Order entity](/reference/typescript-api/entities/order/) and in the GraphQL API by the [Order type](/reference/graphql-api/admin/enums/#ordertype).
 
 ## Order State
 
-Every Order has a `state` property of type [`OrderState`]({{< relref "order-process" >}}#orderstate). The following diagram shows the default states and how an Order transitions from one to the next.
+Every Order has a `state` property of type [`OrderState`](/reference/typescript-api/orders/order-process/#orderstate). The following diagram shows the default states and how an Order transitions from one to the next.
 
-{{% alert %}}
-Note that this default workflow can be modified to better fit your business processes. See the [Customizing the Order Process guide]({{< relref "customizing-the-order-process" >}}).
-{{< /alert >}}
+:::note
+Note that this default workflow can be modified to better fit your business processes. See the [Customizing the Order Process guide](/guides/core-concepts/orders/#custom-order-processes).
+:::
 
 ![./order_state_diagram.png](./order_state_diagram.png)
 
 ## Structure of an Order
 
-In Vendure an [Order]({{< relref "order" >}}) consists of one or more [OrderLines]({{< relref "order-line" >}}) (representing a given quantity of a particular SKU).
+In Vendure an [Order](/reference/typescript-api/entities/order) consists of one or more [OrderLines](/reference/typescript-api/entities/order-line) (representing a given quantity of a particular SKU).
 
 Here is a simplified diagram illustrating this relationship:
 
@@ -27,7 +27,7 @@ Here is a simplified diagram illustrating this relationship:
 
 ## Shop client order workflow
 
-The [GraphQL Shop API Guide]({{< relref "/guides/storefront/shop-api-guide" >}}#order-flow) lists the GraphQL operations you will need to implement this workflow in your storefront client application.
+The [GraphQL Shop API Guide](/guides/storefront/active-order) lists the GraphQL operations you will need to implement this workflow in your storefront client application.
 
 In this section, we'll cover some examples of how these operations would look in your storefront.
 
@@ -228,4 +228,4 @@ query OrderByCode($code: String!) {
 
 In the above examples, the active Order is always associated with the current session and is therefore implicit - which is why there is no need to pass an ID to each of the above operations.
 
-Sometimes you _do_ want to be able to explicitly specify the Order you wish to operate on. In this case, you need to define a custom [ActiveOrderStrategy]({{< relref "active-order-strategy" >}}).
+Sometimes you _do_ want to be able to explicitly specify the Order you wish to operate on. In this case, you need to define a custom [ActiveOrderStrategy](/reference/typescript-api/orders/active-order-strategy).

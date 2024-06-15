@@ -25,7 +25,7 @@ export const createRoutes = (pageService: PageService): Route[] => [
         path: 'groups',
         component: PageComponent,
         data: {
-            locationId: 'customer-detail',
+            locationId: 'customer-group-list',
             breadcrumb: _('breadcrumb.customer-groups'),
         },
         children: pageService.getPageTabRoutes('customer-group-list'),

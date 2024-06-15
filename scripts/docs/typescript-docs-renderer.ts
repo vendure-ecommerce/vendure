@@ -359,7 +359,7 @@ export class TypescriptDocsRenderer {
             .replace(/\n/g, ' ');
 
         for (const [key, val] of knownTypeMap) {
-            const re = new RegExp(`\\b${key}\\b`, 'g');
+            const re = new RegExp(`(?!<a[^>]*>)\\b${key}\\b(?![^<]*<\/a>)`, 'g');
             const strippedIndex = val.replace(/\/_index$/, '');
             typeText = typeText.replace(re, `<a href='${docsUrl}/${strippedIndex}'>${key}</a>`);
         }

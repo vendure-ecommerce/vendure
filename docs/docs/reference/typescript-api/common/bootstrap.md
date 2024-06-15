@@ -60,7 +60,7 @@ Parameters
 
 ### options
 
-<MemberInfo kind="parameter" type={`<a href='/reference/typescript-api/common/<a href='/reference/typescript-api/common/bootstrap#bootstrap'>bootstrap</a>#bootstrapoptions'>BootstrapOptions</a>`} />
+<MemberInfo kind="parameter" type={`<a href='/reference/typescript-api/common/bootstrap#bootstrapoptions'>BootstrapOptions</a>`} />
 
 
 

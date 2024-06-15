@@ -6,6 +6,11 @@ import { VendureEntity } from '..';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { CustomGlobalSettingsFields } from '../custom-entity-fields';
 
+/**
+ * @description Stores global settings for the whole application
+ *
+ * @docsCategory entities
+ */
 @Entity()
 export class GlobalSettings extends VendureEntity implements HasCustomFields {
     constructor(input?: DeepPartial<GlobalSettings>) {

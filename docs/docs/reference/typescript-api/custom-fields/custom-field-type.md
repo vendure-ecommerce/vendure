@@ -28,7 +28,7 @@ boolean      | tinyint (m), bool (p), boolean (s)    | Boolean
 datetime     | datetime (m,s), timestamp (p)         | DateTime
 relation     | many-to-one / many-to-many relation   | As specified in config
 
-Additionally, the CustomFieldType also dictates which [configuration options](/reference/typescript-api/custom-fields/#configuration-options)
+Additionally, the CustomFieldType also dictates which [configuration options](/reference/typescript-api/custom-fields)
 are available for that custom field.
 
 ```ts title="Signature"

@@ -255,7 +255,7 @@ The `metadata` field is used to store the specific data required by the payment 
 The `metadata` field is required, so if your payment provider does not require any additional data, you can simply pass an empty object: `metadata: {}`.
 :::
 
-3. This mutation internally invokes the [PaymentMethodHandler's `createPayment()` function](/reference/typescript-api/payment/payment-method-config-options/#createpayment). This function returns a [CreatePaymentResult object](/reference/typescript-api/payment/payment-method-types#createpaymentfn) which is used to create a new [Payment](reference/typescript-api/entities/payment). If the Payment amount equals the order total, then the Order is transitioned to either the `PaymentAuthorized` or `PaymentSettled` state and the customer checkout flow is complete.
+3. This mutation internally invokes the [PaymentMethodHandler's `createPayment()` function](/reference/typescript-api/payment/payment-method-config-options/#createpayment). This function returns a [CreatePaymentResult object](/reference/typescript-api/payment/payment-method-types#createpaymentfn) which is used to create a new [Payment](/reference/typescript-api/entities/payment). If the Payment amount equals the order total, then the Order is transitioned to either the `PaymentAuthorized` or `PaymentSettled` state and the customer checkout flow is complete.
 
 ### Single-step
 

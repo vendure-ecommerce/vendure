@@ -8,6 +8,6 @@ showtoc: false
 
 These APIs are used when building your own custom extensions to the Admin UI provided by the AdminUiPlugin.
 
-{{% alert %}}
+:::note
 All documentation in this section is auto-generated from the TypeScript & HTML source of the Vendure Admin UI package.
-{{< /alert >}}
+:::

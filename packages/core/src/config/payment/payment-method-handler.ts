@@ -42,7 +42,7 @@ export interface CreatePaymentResult {
      * In a single-step payment flow, this should be set to `'Settled'`.
      * In a two-step flow, this should be set to `'Authorized'`.
      *
-     * If using a {@link CustomPaymentProcess}, may be something else
+     * If using a {@link PaymentProcess}, may be something else
      * entirely according to your business logic.
      */
     state: Exclude<PaymentState, 'Error'>;
@@ -130,7 +130,7 @@ export interface SettlePaymentErrorResult {
      * Defaults to `Error`. Note that if using a different state, it must be
      * legal to transition to that state from the `Authorized` state according
      * to the PaymentState config (which can be customized using the
-     * {@link CustomPaymentProcess}).
+     * {@link PaymentProcess}).
      */
     state?: Exclude<PaymentState, 'Settled'>;
     /**
@@ -170,7 +170,7 @@ export interface CancelPaymentErrorResult {
      * Defaults to `Error`. Note that if using a different state, it must be
      * legal to transition to that state from the `Authorized` state according
      * to the PaymentState config (which can be customized using the
-     * {@link CustomPaymentProcess}).
+     * {@link PaymentProcess}).
      */
     state?: Exclude<PaymentState, 'Cancelled'>;
     /**

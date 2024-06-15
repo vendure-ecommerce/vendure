@@ -13,7 +13,6 @@
     flex: 1;
     display: grid;
     grid-template-columns: repeat(auto-fill, 150px);
-    grid-template-rows: repeat(auto-fill, 180px);
     grid-gap: 10px 20px;
 
     .card:hover {
@@ -52,16 +51,14 @@ vdr-select-toggle {
 
 .detail {
     display: flex;
-    align-items: center;
+    align-items: normal;
     gap: 4px;
+    min-height: 24px;
     font-size: 12px;
     margin: 3px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    vdr-entity-info {
-        height: 16px;
-    }
 }
 
 .info-bar {

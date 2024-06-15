@@ -14,26 +14,22 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-block">
 
-<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">AdjustmentType</span>
- &#123;</div>
+<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">AdjustmentType</span> &#123;</div>
 <div class="graphql-code-line ">PROMOTION</div>
 <div class="graphql-code-line ">DISTRIBUTED_ORDER_PROMOTION</div>
 <div class="graphql-code-line ">OTHER</div>
 <div class="graphql-code-line top-level">&#125;</div>
-
 </div>
 
 ## AssetType
 
 <div class="graphql-code-block">
 
-<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">AssetType</span>
- &#123;</div>
+<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">AssetType</span> &#123;</div>
 <div class="graphql-code-line ">IMAGE</div>
 <div class="graphql-code-line ">VIDEO</div>
 <div class="graphql-code-line ">BINARY</div>
 <div class="graphql-code-line top-level">&#125;</div>
-
 </div>
 
 ## CurrencyCode
@@ -47,8 +43,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line comment"></div>
 <div class="graphql-code-line comment">"""</div>
 
-<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">CurrencyCode</span>
- &#123;</div>
+<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">CurrencyCode</span> &#123;</div>
 <div class="graphql-code-line comment">"""United Arab Emirates dirham"""</div>
 <div class="graphql-code-line ">AED</div>
 <div class="graphql-code-line comment">"""Afghan afghani"""</div>
@@ -364,29 +359,25 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line comment">"""Zimbabwean dollar"""</div>
 <div class="graphql-code-line ">ZWL</div>
 <div class="graphql-code-line top-level">&#125;</div>
-
 </div>
 
 ## DeletionResult
 
 <div class="graphql-code-block">
 
-<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">DeletionResult</span>
- &#123;</div>
+<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">DeletionResult</span> &#123;</div>
 <div class="graphql-code-line comment">"""The entity was successfully deleted"""</div>
 <div class="graphql-code-line ">DELETED</div>
 <div class="graphql-code-line comment">"""Deletion did not take place, reason given in message"""</div>
 <div class="graphql-code-line ">NOT_DELETED</div>
 <div class="graphql-code-line top-level">&#125;</div>
-
 </div>
 
 ## ErrorCode
 
 <div class="graphql-code-block">
 
-<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">ErrorCode</span>
- &#123;</div>
+<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">ErrorCode</span> &#123;</div>
 <div class="graphql-code-line ">UNKNOWN_ERROR</div>
 <div class="graphql-code-line ">NATIVE_AUTH_STRATEGY_ERROR</div>
 <div class="graphql-code-line ">INVALID_CREDENTIALS_ERROR</div>
@@ -418,28 +409,24 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">PASSWORD_RESET_TOKEN_EXPIRED_ERROR</div>
 <div class="graphql-code-line ">NOT_VERIFIED_ERROR</div>
 <div class="graphql-code-line top-level">&#125;</div>
-
 </div>
 
 ## GlobalFlag
 
 <div class="graphql-code-block">
 
-<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">GlobalFlag</span>
- &#123;</div>
+<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">GlobalFlag</span> &#123;</div>
 <div class="graphql-code-line ">TRUE</div>
 <div class="graphql-code-line ">FALSE</div>
 <div class="graphql-code-line ">INHERIT</div>
 <div class="graphql-code-line top-level">&#125;</div>
-
 </div>
 
 ## HistoryEntryType
 
 <div class="graphql-code-block">
 
-<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">HistoryEntryType</span>
- &#123;</div>
+<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">HistoryEntryType</span> &#123;</div>
 <div class="graphql-code-line ">CUSTOMER_REGISTERED</div>
 <div class="graphql-code-line ">CUSTOMER_VERIFIED</div>
 <div class="graphql-code-line ">CUSTOMER_DETAIL_UPDATED</div>
@@ -466,7 +453,6 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">ORDER_MODIFIED</div>
 <div class="graphql-code-line ">ORDER_CUSTOMER_UPDATED</div>
 <div class="graphql-code-line top-level">&#125;</div>
-
 </div>
 
 ## LanguageCode
@@ -486,8 +472,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line comment"></div>
 <div class="graphql-code-line comment">"""</div>
 
-<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">LanguageCode</span>
- &#123;</div>
+<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">LanguageCode</span> &#123;</div>
 <div class="graphql-code-line comment">"""Afrikaans"""</div>
 <div class="graphql-code-line ">af</div>
 <div class="graphql-code-line comment">"""Akan"""</div>
@@ -803,32 +788,27 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line comment">"""Zulu"""</div>
 <div class="graphql-code-line ">zu</div>
 <div class="graphql-code-line top-level">&#125;</div>
-
 </div>
 
 ## LogicalOperator
 
 <div class="graphql-code-block">
 
-<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">LogicalOperator</span>
- &#123;</div>
+<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">LogicalOperator</span> &#123;</div>
 <div class="graphql-code-line ">AND</div>
 <div class="graphql-code-line ">OR</div>
 <div class="graphql-code-line top-level">&#125;</div>
-
 </div>
 
 ## OrderType
 
 <div class="graphql-code-block">
 
-<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">OrderType</span>
- &#123;</div>
+<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">OrderType</span> &#123;</div>
 <div class="graphql-code-line ">Regular</div>
 <div class="graphql-code-line ">Seller</div>
 <div class="graphql-code-line ">Aggregate</div>
 <div class="graphql-code-line top-level">&#125;</div>
-
 </div>
 
 ## Permission
@@ -894,8 +874,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line comment"></div>
 <div class="graphql-code-line comment">"""</div>
 
-<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">Permission</span>
- &#123;</div>
+<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">Permission</span> &#123;</div>
 <div class="graphql-code-line comment">"""Authenticated means simply that the user is logged in"""</div>
 <div class="graphql-code-line ">Authenticated</div>
 <div class="graphql-code-line comment">"""SuperAdmin has unrestricted access to all operations"""</div>
@@ -1083,17 +1062,14 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line comment">"""Grants permission to delete Zone"""</div>
 <div class="graphql-code-line ">DeleteZone</div>
 <div class="graphql-code-line top-level">&#125;</div>
-
 </div>
 
 ## SortOrder
 
 <div class="graphql-code-block">
 
-<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">SortOrder</span>
- &#123;</div>
+<div class="graphql-code-line top-level">enum <span class="graphql-code-identifier">SortOrder</span> &#123;</div>
 <div class="graphql-code-line ">ASC</div>
 <div class="graphql-code-line ">DESC</div>
 <div class="graphql-code-line top-level">&#125;</div>
-
 </div>
