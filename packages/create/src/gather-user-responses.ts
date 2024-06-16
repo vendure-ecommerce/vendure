@@ -14,6 +14,7 @@ interface PromptAnswers {
     dbSchema?: string | symbol;
     dbUserName: string | symbol;
     dbPassword: string | symbol;
+    dbSSL?: boolean | symbol;
     superadminIdentifier: string | symbol;
     superadminPassword: string | symbol;
     populateProducts: boolean | symbol;
@@ -72,6 +73,18 @@ export async function gatherUserResponses(
               })
             : '';
     checkCancel(dbSchema);
+    const dbSSL =
+        dbType === 'postgres'
+            ? await select({
+                  message: 'Use SSL to connect to the database?',
+                  options: [
+                      { label: 'no', value: false },
+                      { label: 'yes', value: true },
+                  ],
+                  initialValue: false,
+              })
+            : false;
+    checkCancel(dbSSL);
     const dbUserName = hasConnection
         ? await text({
               message: "What's the database user name?",
@@ -113,6 +126,7 @@ export async function gatherUserResponses(
         dbSchema,
         dbUserName,
         dbPassword,
+        dbSSL,
         superadminIdentifier,
         superadminPassword,
         populateProducts,

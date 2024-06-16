@@ -352,6 +352,7 @@ async function checkPostgresDbExists(options: any, root: string): Promise<true> 
         port: options.port,
         database: options.database,
         schema: options.schema,
+        ssl: options.ssl,
     };
     const client = new Client(connectionOptions);
 
