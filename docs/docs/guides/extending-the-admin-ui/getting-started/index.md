@@ -49,6 +49,30 @@ yarn add --dev @vendure/ui-devkit
 </TabItem>
 </Tabs>
 
+:::info
+If you plan to use React components in your UI extensions, you should also install the `@types/react` package:
+
+
+<Tabs>
+<TabItem value="npm" label="npm" default>
+
+```bash
+npm install --save-dev @types/react
+```
+
+</TabItem>
+<TabItem value="yarn" label="yarn">
+
+```bash
+yarn add --dev @types/react
+```
+
+</TabItem>
+</Tabs>
+
+:::
+
+
 You can then create the following folder structure to hold your UI extensions:
 
 ```
