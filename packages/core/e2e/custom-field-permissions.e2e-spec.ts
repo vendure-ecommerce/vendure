@@ -20,30 +20,35 @@ describe('Custom field permissions', () => {
                     {
                         name: 'publicField',
                         type: 'string',
+                        public: true,
                         defaultValue: 'publicField Value',
                     },
                     {
                         name: 'authenticatedField',
                         type: 'string',
                         defaultValue: 'authenticatedField Value',
+                        public: true,
                         requiresPermission: Permission.Authenticated,
                     },
                     {
                         name: 'updateProductField',
                         type: 'string',
                         defaultValue: 'updateProductField Value',
+                        public: true,
                         requiresPermission: Permission.UpdateProduct,
                     },
                     {
                         name: 'updateProductOrCustomerField',
                         type: 'string',
                         defaultValue: 'updateProductOrCustomerField Value',
+                        public: false,
                         requiresPermission: [Permission.UpdateProduct, Permission.UpdateCustomer],
                     },
                     {
                         name: 'superadminField',
                         type: 'string',
                         defaultValue: 'superadminField Value',
+                        public: false,
                         requiresPermission: Permission.SuperAdmin,
                     },
                 ],
@@ -92,38 +97,6 @@ describe('Custom field permissions', () => {
                 }
             }
         `);
-
-    it('anonymous user can only read public custom field', async () => {
-        await shopClient.asAnonymousUser();
-
-        const { product } = await shopClient.query(GET_PRODUCT_WITH_CUSTOM_FIELDS, {
-            id: 'T_1',
-        });
-
-        expect(product.customFields).toEqual({
-            publicField: 'publicField Value',
-            authenticatedField: null,
-            updateProductField: null,
-            updateProductOrCustomerField: null,
-            superadminField: null,
-        });
-    });
-
-    it('authenticated user can read public and authenticated custom fields', async () => {
-        await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
-
-        const { product } = await shopClient.query(GET_PRODUCT_WITH_CUSTOM_FIELDS, {
-            id: 'T_1',
-        });
-
-        expect(product.customFields).toEqual({
-            publicField: 'publicField Value',
-            authenticatedField: 'authenticatedField Value',
-            updateProductField: null,
-            updateProductOrCustomerField: null,
-            superadminField: null,
-        });
-    });
 
     it('readProductUpdateProductAdmin can read public and updateProduct custom fields', async () => {
         await adminClient.asUserWithCredentials(readProductUpdateProductAdmin.emailAddress, 'test');
@@ -267,6 +240,35 @@ describe('Custom field permissions', () => {
         } catch (e: any) {
             expect(e.message).toBe('You are not currently authorized to perform this action');
         }
+    });
+
+    describe('Shop API', () => {
+        const GET_PRODUCT_WITH_PUBLIC_CUSTOM_FIELDS = gql(`
+            query {
+                product(id: "T_1") {
+                    id
+                    customFields {
+                        publicField
+                        authenticatedField
+                        updateProductField
+                    }
+                }
+            }
+        `);
+
+        it('all public fields are accessible in Shop API regardless of permissions', async () => {
+            await shopClient.asAnonymousUser();
+
+            const { product } = await shopClient.query(GET_PRODUCT_WITH_PUBLIC_CUSTOM_FIELDS, {
+                id: 'T_1',
+            });
+
+            expect(product.customFields).toEqual({
+                publicField: 'new publicField Value',
+                authenticatedField: 'new authenticatedField Value',
+                updateProductField: 'new updateProductField Value 2',
+            });
+        });
     });
 });
 

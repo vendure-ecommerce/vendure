@@ -1,5 +1,6 @@
 <div class="entry-list">
-    <vdr-timeline-entry iconShape="note" displayType="muted" [featured]="true" *vdrIfPermissions="'UpdateCustomer'">
+    <vdr-timeline-entry iconShape="note" displayType="muted" [featured]="true" *vdrIfPermissions="'UpdateCustomer'"
+                        [isFirst]="true">
         <div class="note-entry">
             <textarea [(ngModel)]="note" name="note" class="note"></textarea>
             <button class="btn btn-secondary" [disabled]="!note" (click)="addNoteToCustomer()">
@@ -105,11 +106,13 @@
                             {{ 'customer.history-customer-email-update-requested' | translate }}
                             <vdr-history-entry-detail>
                                 <vdr-labeled-data [label]="'customer.old-email-address' | translate">{{
-                                    entry.data.oldEmailAddress
-                                }}</vdr-labeled-data>
+                                        entry.data.oldEmailAddress
+                                    }}
+                                </vdr-labeled-data>
                                 <vdr-labeled-data [label]="'customer.new-email-address' | translate">{{
-                                    entry.data.newEmailAddress
-                                }}</vdr-labeled-data>
+                                        entry.data.newEmailAddress
+                                    }}
+                                </vdr-labeled-data>
                             </vdr-history-entry-detail>
                         </div>
                     </ng-container>
@@ -118,11 +121,13 @@
                             {{ 'customer.history-customer-email-update-verified' | translate }}
                             <vdr-history-entry-detail>
                                 <vdr-labeled-data [label]="'customer.old-email-address' | translate">{{
-                                    entry.data.oldEmailAddress
-                                }}</vdr-labeled-data>
+                                        entry.data.oldEmailAddress
+                                    }}
+                                </vdr-labeled-data>
                                 <vdr-labeled-data [label]="'customer.new-email-address' | translate">{{
-                                    entry.data.newEmailAddress
-                                }}</vdr-labeled-data>
+                                        entry.data.newEmailAddress
+                                    }}
+                                </vdr-labeled-data>
                             </vdr-history-entry-detail>
                         </div>
                     </ng-container>

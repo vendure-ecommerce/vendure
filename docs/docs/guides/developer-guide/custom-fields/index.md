@@ -637,6 +637,16 @@ const config = {
 };
 ```
 
+:::note
+
+The `requiresPermission` property only affects the _Admin API_. Access to a custom field via the _Shop API_ is controlled by the `public` property.
+
+If you need special logic to control access to a custom field in the Shop API, you can set `public: false` and then implement
+a custom [field resolver](/guides/developer-guide/extend-graphql-api/#add-fields-to-existing-types) which contains the necessary logic, and returns
+the entity's custom field value if the current customer meets the requirements.
+
+:::
+
 ### Properties for `string` fields
 
 In addition to the common properties, the `string` custom fields have some type-specific properties:

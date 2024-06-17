@@ -47,7 +47,7 @@ Here's an explanation of each column:
 
 ### Importing Custom Field Data
 
-If you have [CustomFields]({{< relref "customizing-models" >}}) defined on your Product or ProductVariant entities, this data can also be encoded in the import csv:
+If you have [CustomFields](/guides/developer-guide/custom-fields/) defined on your Product or ProductVariant entities, this data can also be encoded in the import csv:
 
 * `product:<customFieldName>`: The value of this column will populate `Product.customFields[customFieldName]`. 
 * `variant:<customFieldName>`: The value of this column will populate `ProductVariant.customFields[customFieldName]`. 

@@ -5,6 +5,7 @@ import { RequestContext } from '../../../api';
 import { InjectableStrategy } from '../../../common';
 
 /**
+ * @description
  * This interface defines the contract that any database-specific search implementations
  * should follow.
  *
@@ -14,6 +15,8 @@ import { InjectableStrategy } from '../../../common';
  * the {@link DefaultSearchPluginInitOptions}.
  *
  * :::
+ *
+ * @docsCategory DefaultSearchPlugin
  */
 export interface SearchStrategy extends InjectableStrategy {
     getSearchResults(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<SearchResult[]>;

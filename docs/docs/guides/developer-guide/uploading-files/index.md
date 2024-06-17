@@ -99,7 +99,7 @@ extend type Mutation {
 
 ### Resolver
 
-The resolver will make use of the built-in [AssetService]({{< relref "asset-service" >}}) to handle the processing of the uploaded file into an Asset.
+The resolver will make use of the built-in [AssetService](/reference/typescript-api/services/asset-service) to handle the processing of the uploaded file into an Asset.
 
 ```ts title="src/plugins/customer-avatar/api/customer-avatar.resolver.ts"
 import { Args, Mutation, Resolver } from '@nestjs/graphql';

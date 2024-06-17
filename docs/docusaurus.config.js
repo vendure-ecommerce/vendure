@@ -33,7 +33,7 @@ const config = {
 
     presets: [
         [
-            'classic',
+            '@docusaurus/preset-classic',
             /** @type {import('@docusaurus/preset-classic').Options} */
             ({
                 docs: {
@@ -42,9 +42,12 @@ const config = {
                     editUrl: 'https://github.com/vendure-ecommerce/vendure/blob/master/docs/',
                     showLastUpdateTime: true,
                     admonitions: {
-                        tag: ':::',
-                        keywords: ['note', 'tip', 'info', 'caution', 'danger', 'cli'],
+                        keywords: ['cli'],
+                        extendDefaults: true,
                     },
+                    exclude: [
+                        'user-guide/**/*'
+                    ]
                 },
                 blog: false,
                 theme: {

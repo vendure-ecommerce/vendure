@@ -250,7 +250,7 @@ function checkPluginCompatibility(config: RuntimeVendureConfig): void {
             if (!satisfies(VENDURE_VERSION, compatibility, { loose: true, includePrerelease: true })) {
                 Logger.error(
                     `Plugin "${pluginName}" is not compatible with this version of Vendure. ` +
-                    `It specifies a semver range of "${compatibility}" but the current version is "${VENDURE_VERSION}".`,
+                        `It specifies a semver range of "${compatibility}" but the current version is "${VENDURE_VERSION}".`,
                 );
                 throw new InternalServerError(
                     `Plugin "${pluginName}" is not compatible with this version of Vendure.`,
@@ -411,15 +411,9 @@ export function configureSessionCookies(
 ): void {
     const { cookieOptions } = userConfig.authOptions;
 
-    // If the Admin API and Shop API should have specific cookies names
-    if (typeof cookieOptions?.name === 'object') {
-        const shopApiCookieName = cookieOptions.name.shop;
-        const adminApiCookieName = cookieOptions.name.admin;
-        const { shopApiPath, adminApiPath } = userConfig.apiOptions;
-        app.use(cookieSession({...cookieOptions, name: shopApiCookieName}));
-        app.use(`/${shopApiPath}`, cookieSession({ ...cookieOptions, name: shopApiCookieName }));
-        app.use(`/${adminApiPath}`, cookieSession({ ...cookieOptions, name: adminApiCookieName }));
-    } else {
+    // If the Admin API and Shop API should have the same cookie name
+    // Else, the specific cookie middlewares are handled in the 'AppModule#configure' method
+    if (typeof cookieOptions?.name === 'string' || cookieOptions?.name === undefined) {
         app.use(
             cookieSession({
                 ...cookieOptions,

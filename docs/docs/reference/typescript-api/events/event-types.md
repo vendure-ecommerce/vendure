@@ -585,7 +585,7 @@ class FulfillmentStateTransitionEvent extends VendureEvent {
 
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/global-settings-event.ts" sourceLine="16" packageName="@vendure/core" since="1.4" />
 
-This event is fired whenever a {@link GlobalSettings} is added. The type is always `updated`, because it's
+This event is fired whenever a <a href='/reference/typescript-api/entities/global-settings#globalsettings'>GlobalSettings</a> is added. The type is always `updated`, because it's
 only created once and never deleted.
 
 ```ts title="Signature"
@@ -593,7 +593,7 @@ class GlobalSettingsEvent extends VendureEntityEvent<GlobalSettings, UpdateGloba
     constructor(ctx: RequestContext, entity: GlobalSettings, input?: UpdateGlobalSettingsInput)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;GlobalSettings, UpdateGlobalSettingsInput&#62;</code>
+* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;<a href='/reference/typescript-api/entities/global-settings#globalsettings'>GlobalSettings</a>, UpdateGlobalSettingsInput&#62;</code>
 
 
 
@@ -601,7 +601,7 @@ class GlobalSettingsEvent extends VendureEntityEvent<GlobalSettings, UpdateGloba
 
 ### constructor
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: GlobalSettings, input?: UpdateGlobalSettingsInput) => GlobalSettingsEvent`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/global-settings#globalsettings'>GlobalSettings</a>, input?: UpdateGlobalSettingsInput) => GlobalSettingsEvent`}   />
 
 
 
@@ -702,7 +702,7 @@ class IdentifierChangeRequestEvent extends VendureEvent {
 
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/initializer-event.ts" sourceLine="11" packageName="@vendure/core" since="1.7.0" />
 
-This event is fired when vendure finished initializing its services inside the {@code InitializerService}
+This event is fired when vendure finished initializing its services inside the <a href='/reference/typescript-api/services/initializer-service#initializerservice'>InitializerService</a>
 
 ```ts title="Signature"
 class InitializerEvent extends VendureEvent {
@@ -1132,10 +1132,7 @@ class ProductOptionGroupEvent extends VendureEntityEvent<
     constructor(ctx: RequestContext, entity: ProductOptionGroup, type: 'created' | 'updated' | 'deleted', input?: ProductOptionGroupInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;
-     <a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>,
-     ProductOptionGroupInputTypes
- &#62;</code>
+* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;     <a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>,     ProductOptionGroupInputTypes &#62;</code>
 
 
 
@@ -1226,10 +1223,7 @@ class ProductVariantPriceEvent extends VendureEntityEvent<
     constructor(ctx: RequestContext, entity: ProductVariantPrice[], type: 'created' | 'updated' | 'deleted', input?: ProductVariantInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;
-     <a href='/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>[],
-     ProductVariantInputTypes
- &#62;</code>
+* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;     <a href='/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>[],     ProductVariantInputTypes &#62;</code>
 
 
 
@@ -1304,7 +1298,7 @@ class ProvinceEvent extends VendureEntityEvent<Province, ProvinceInputTypes> {
 
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/refund-state-transition-event.ts" sourceLine="14" packageName="@vendure/core" />
 
-This event is fired whenever a {@link Refund} transitions from one <a href='/reference/typescript-api/payment/refund-state#refundstate'>RefundState</a> to another.
+This event is fired whenever a <a href='/reference/typescript-api/entities/refund#refund'>Refund</a> transitions from one <a href='/reference/typescript-api/payment/refund-state#refundstate'>RefundState</a> to another.
 
 ```ts title="Signature"
 class RefundStateTransitionEvent extends VendureEvent {
@@ -1319,7 +1313,7 @@ class RefundStateTransitionEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(fromState: <a href='/reference/typescript-api/payment/refund-state#refundstate'>RefundState</a>, toState: <a href='/reference/typescript-api/payment/refund-state#refundstate'>RefundState</a>, ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, refund: Refund, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => RefundStateTransitionEvent`}   />
+<MemberInfo kind="method" type={`(fromState: <a href='/reference/typescript-api/payment/refund-state#refundstate'>RefundState</a>, toState: <a href='/reference/typescript-api/payment/refund-state#refundstate'>RefundState</a>, ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, refund: <a href='/reference/typescript-api/entities/refund#refund'>Refund</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => RefundStateTransitionEvent`}   />
 
 
 

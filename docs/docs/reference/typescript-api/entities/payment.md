@@ -82,7 +82,7 @@ class Payment extends VendureEntity {
 
 ### refunds
 
-<MemberInfo kind="property" type={`Refund[]`}   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/refund#refund'>Refund</a>[]`}   />
 
 
 
