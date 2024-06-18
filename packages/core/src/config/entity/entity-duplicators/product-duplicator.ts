@@ -8,6 +8,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { IsNull } from 'typeorm';
 
+import { idsAreEqual } from '../../../common';
 import { InternalServerError } from '../../../common/error/errors';
 import { Injector } from '../../../common/injector';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
@@ -151,7 +152,6 @@ export const productDuplicator = new EntityDuplicator({
                     options: true,
                 },
             });
-
             const variantInput: CreateProductVariantInput[] = productVariants.map((variant, i) => {
                 const options = variant.options.map(existingOption => {
                     const newOption = newOptionGroups
@@ -164,9 +164,13 @@ export const productDuplicator = new EntityDuplicator({
                     }
                     return newOption;
                 });
+                const price =
+                    variant.productVariantPrices.find(p => idsAreEqual(p.channelId, ctx.channelId))?.price ??
+                    variant.productVariantPrices[0]?.price;
+
                 return {
                     productId: duplicatedProduct.id,
-                    price: variant.productVariantPrices[0]?.price ?? variant.price,
+                    price: price ?? variant.price,
                     sku: `${variant.sku}-copy`,
                     stockOnHand: 1,
                     featuredAssetId: variant.featuredAsset?.id,
