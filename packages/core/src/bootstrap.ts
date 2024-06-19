@@ -412,14 +412,13 @@ export function configureSessionCookies(
 ): void {
     const { cookieOptions } = userConfig.authOptions;
 
-    // If the Admin API and Shop API should have the same cookie name
-    // Else, the specific cookie middlewares are handled in the 'AppModule#configure' method
-    if (typeof cookieOptions?.name === 'string' || cookieOptions?.name === undefined) {
-        app.use(
-            cookieSession({
-                ...cookieOptions,
-                name: cookieOptions?.name ?? DEFAULT_COOKIE_NAME,
-            }),
-        );
-    }
+    // Globally set the cookie session middleware
+    const cookieName =
+        typeof cookieOptions?.name !== 'string' ? cookieOptions.name?.shop : cookieOptions.name;
+    app.use(
+        cookieSession({
+            ...cookieOptions,
+            name: cookieName ?? DEFAULT_COOKIE_NAME,
+        }),
+    );
 }

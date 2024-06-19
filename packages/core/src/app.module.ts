@@ -56,10 +56,6 @@ export class AppModule implements NestModule, OnApplicationShutdown {
                 handler: cookieSession({ ...cookieOptions, name: shopApiCookieName }),
                 route: shopApiPath,
             });
-            allMiddleware.push({
-                handler: cookieSession({ ...cookieOptions, name: shopApiCookieName }),
-                route: '/',
-            });
         }
 
         const consumableMiddlewares = allMiddleware.filter(mid => !mid.beforeListen);
