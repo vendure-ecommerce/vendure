@@ -76,7 +76,8 @@ export async function gatherUserResponses(
     const dbSSL =
         dbType === 'postgres'
             ? await select({
-                  message: 'Use SSL to connect to the database?',
+                  message:
+                      'Use SSL to connect to the database? (only enable if you database provider supports SSL)',
                   options: [
                       { label: 'no', value: false },
                       { label: 'yes', value: true },

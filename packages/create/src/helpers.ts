@@ -372,6 +372,8 @@ async function checkPostgresDbExists(options: any, root: string): Promise<true> 
             throwDatabaseDoesNotExist(options.database);
         } else if (e.message === 'NO_SCHEMA') {
             throwDatabaseSchemaDoesNotExist(options.database, options.schema);
+        } else if (e.code === '28000') {
+            throwSSLConnectionError(e, options.ssl);
         }
         throwConnectionError(e);
         await client.end();
@@ -384,6 +386,18 @@ async function checkPostgresDbExists(options: any, root: string): Promise<true> 
 function throwConnectionError(err: any) {
     throw new Error(
         'Could not connect to the database. ' +
+            `Please check the connection settings in your Vendure config.\n[${
+                (err.message || err.toString()) as string
+            }]`,
+    );
+}
+
+function throwSSLConnectionError(err: any, sslEnabled?: any) {
+    throw new Error(
+        'Could not connect to the database. ' +
+            (sslEnabled === undefined
+                ? 'Is your server requiring an SSL connection?'
+                : 'Are you sure your server supports SSL?') +
             `Please check the connection settings in your Vendure config.\n[${
                 (err.message || err.toString()) as string
             }]`,
