@@ -85,6 +85,9 @@ export const RichTextEditor = forwardRef((props: RichTextEditorType, ref: Forwar
         if (props.onMount && editor) {
             props.onMount(editor);
         }
+        if (typeof props.defaultValue === 'string') {
+            editor.update(props.defaultValue);
+        }
     }, []);
     return (
         <>
