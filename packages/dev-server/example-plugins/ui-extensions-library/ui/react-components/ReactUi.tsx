@@ -76,7 +76,6 @@ export function ReactUi() {
                             <FormField label="Invalid with error" invalid={true}>
                                 <input type="text" />
                             </FormField>
-
                             <RichTextEditor className="form-grid-span" label="Description" readOnly={false} />
                         </div>
                     </Card>
