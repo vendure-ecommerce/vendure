@@ -11,7 +11,7 @@ An open-source headless commerce platform built on [Node.js](https://nodejs.org)
 
 ### [www.vendure.io](https://www.vendure.io/)
 
-* [Getting Started](https://docs.vendure.io/getting-started/): Get Vendure up and running locally in a matter of minutes with a single command
+* [Getting Started](https://docs.vendure.io/guides/getting-started/installation/): Get Vendure up and running locally in a matter of minutes with a single command
 * [Live Demo](https://demo.vendure.io/)
 * [Vendure Discord](https://www.vendure.io/community) Join us on Discord for support and answers to your questions
 
