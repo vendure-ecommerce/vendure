@@ -149,15 +149,3 @@ export function getLocale(countryCode: string, channelLanguage: string): string 
     // If no order locale and no channel locale, return a default, otherwise order creation will fail
     return allowedLocales[0];
 }
-
-export function areOrderLinesEqual(line1: CreateParameters['lines'][0], line2: CreateParameters['lines'][0]): boolean {
-    return (
-        line1.name === line2.name &&
-        line1.quantity === line2.quantity &&
-        line1.unitPrice.value === line2.unitPrice.value &&
-        line1.unitPrice.currency === line2.unitPrice.currency &&
-        line1.totalAmount.value === line2.totalAmount.value &&
-        line1.vatRate === line2.vatRate &&
-        line1.vatAmount.value === line2.vatAmount.value
-    );
-}

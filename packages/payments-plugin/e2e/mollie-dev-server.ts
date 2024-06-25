@@ -102,16 +102,20 @@ async function runMollieDevServer() {
         quantity: 1,
     });
     await setShipping(shopClient);
-    // Comment out these lines if you want to test the payment flow via Mollie
-    await createFixedDiscountCoupon(adminClient, 156880, 'DISCOUNT_ORDER');
-    await createFreeShippingCoupon(adminClient, 'FREE_SHIPPING');
-    await shopClient.query(APPLY_COUPON_CODE, { couponCode: 'DISCOUNT_ORDER' });
     await shopClient.query(APPLY_COUPON_CODE, { couponCode: 'FREE_SHIPPING' });
 
     // Create Payment Intent
     const result = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, { input: {} });
     // eslint-disable-next-line no-console
     console.log('Payment intent result', result);
+
+    // Change order amount and create new intent
+    await createFixedDiscountCoupon(adminClient, 20000, 'DISCOUNT_ORDER');
+    await shopClient.query(APPLY_COUPON_CODE, { couponCode: 'DISCOUNT_ORDER' });
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    const result2 = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, { input: {} });
+    // eslint-disable-next-line no-console
+    console.log('Payment intent result', result2);
 }
 
 (async () => {
