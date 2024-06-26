@@ -33,7 +33,6 @@ export default [
         tabIcon: 'star',
         component: AngularUiComponent,
     }),
-
     registerPageTab({
         location: 'react-ui' as PageLocationId,
         tab: 'Example Tab 1',
