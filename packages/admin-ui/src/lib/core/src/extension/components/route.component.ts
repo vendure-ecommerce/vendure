@@ -1,4 +1,4 @@
-import { Component, inject, InjectionToken } from '@angular/core';
+import { Component, inject, InjectionToken, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { combineLatest, Observable, of, switchMap } from 'rxjs';
@@ -7,6 +7,9 @@ import { BreadcrumbValue } from '../../providers/breadcrumb/breadcrumb.service';
 import { SharedModule } from '../../shared/shared.module';
 import { PageMetadataService } from '../providers/page-metadata.service';
 import { AngularRouteComponentOptions } from '../types';
+import { HeaderTab } from '../../shared/components/page-header-tabs/page-header-tabs.component';
+import { PageService } from '../../providers/page/page.service';
+import { PageLocationId } from '../../common/component-registry-types';
 
 export const ROUTE_COMPONENT_OPTIONS = new InjectionToken<AngularRouteComponentOptions>(
     'ROUTE_COMPONENT_OPTIONS',
@@ -17,6 +20,8 @@ export const ROUTE_COMPONENT_OPTIONS = new InjectionToken<AngularRouteComponentO
     template: `
         <vdr-page-header>
             <vdr-page-title *ngIf="title$ | async as title" [title]="title"></vdr-page-title>
+            <vdr-page-header-description *ngIf="description">{{ description }}</vdr-page-header-description>
+            <vdr-page-header-tabs *ngIf="headerTabs.length > 1" [tabs]="headerTabs"></vdr-page-header-tabs>
         </vdr-page-header>
         <vdr-page-body><ng-content /></vdr-page-body>
     `,
@@ -26,8 +31,14 @@ export const ROUTE_COMPONENT_OPTIONS = new InjectionToken<AngularRouteComponentO
 })
 export class RouteComponent {
     protected title$: Observable<string | undefined>;
+    @Input() protected locationId: PageLocationId;
+    @Input() protected description: string;
+    headerTabs: HeaderTab[] = [];
 
-    constructor(private route: ActivatedRoute) {
+    constructor(
+        private route: ActivatedRoute,
+        private pageService: PageService,
+    ) {
         const breadcrumbLabel$ = this.route.data.pipe(
             switchMap(data => {
                 if (data.breadcrumb instanceof Observable) {
@@ -53,5 +64,14 @@ export class RouteComponent {
         this.title$ = combineLatest([inject(ROUTE_COMPONENT_OPTIONS).title$, breadcrumbLabel$]).pipe(
             map(([title, breadcrumbLabel]) => title ?? breadcrumbLabel),
         );
+
+        this.locationId = this.route.snapshot.data.locationId;
+        this.description = this.route.snapshot.data.description;
+        this.headerTabs = this.pageService.getPageTabs(this.locationId).map(tab => ({
+            id: tab.tab,
+            label: tab.tab,
+            icon: tab.tabIcon,
+            route: tab.route ? [tab.route] : ['./'],
+        }));
     }
 }
