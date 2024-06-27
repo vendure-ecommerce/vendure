@@ -95,7 +95,7 @@ preferable to use the <a href='/reference/typescript-api/services/order-service#
 updating the Order state too.
 ### createRefund
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: RefundOrderInput, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, selectedPayment: <a href='/reference/typescript-api/entities/payment#payment'>Payment</a>) => Promise&#60;Refund | RefundStateTransitionError | RefundAmountError&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: RefundOrderInput, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, selectedPayment: <a href='/reference/typescript-api/entities/payment#payment'>Payment</a>) => Promise&#60;<a href='/reference/typescript-api/entities/refund#refund'>Refund</a> | RefundStateTransitionError | RefundAmountError&#62;`}   />
 
 Creates a Refund against the specified Payment. If the amount to be refunded exceeds the value of the
 specified Payment (in the case of multiple payments on a single Order), then the remaining outstanding

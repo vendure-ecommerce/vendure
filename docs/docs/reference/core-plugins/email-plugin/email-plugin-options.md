@@ -48,7 +48,7 @@ An optional TemplateLoader which can be used to load templates from a custom loc
 The default uses the FileBasedTemplateLoader which loads templates from `<project root>/vendure/email/templates`
 ### transport
 
-<MemberInfo kind="property" type={`| <a href='/reference/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>         | ((               injector?: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>,               ctx?: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>,           ) =&#62; <a href='/reference/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a> | Promise&#60;<a href='/reference/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>&#62;)`}   />
+<MemberInfo kind="property" type={`| <a href='/reference/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>         | ((               injector?: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>,               ctx?: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>,           ) =&#62; <a href='/reference/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a> | Promise&#60;<a href='/reference/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>&#62;)`}   />
 
 Configures how the emails are sent.
 ### handlers

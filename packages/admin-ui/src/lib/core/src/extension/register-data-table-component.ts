@@ -7,7 +7,7 @@ import {
 /**
  * @description
  * Allows you to override the default component used to render the data of a particular column in a DataTable.
- * The component should implement the {@link CustomDataTableColumnComponent} interface. The tableId and columnId can
+ * The component should implement the {@link CustomColumnComponent} interface. The tableId and columnId can
  * be determined by pressing `ctrl + u` when running the Admin UI in dev mode.
  *
  * @example

@@ -223,12 +223,13 @@ export class ProductDetailService {
         );
     }
 
-    updateProductOption(
-        input: UpdateProductOptionInput & { autoUpdate: boolean },
+    updateProductOptions(
+        inputs: UpdateProductOptionInput[],
+        autoUpdateProductNames: boolean,
         product: NonNullable<GetProductDetailQuery['product']>,
         languageCode: LanguageCode,
     ) {
-        const variants$ = input.autoUpdate
+        const variants$ = autoUpdateProductNames
             ? this.dataService.product
                   .getProductVariantsForProduct({}, product.id)
                   .mapSingle(({ productVariants }) => productVariants.items)
@@ -237,44 +238,67 @@ export class ProductDetailService {
         return variants$.pipe(
             mergeMap(variants => {
                 let updateProductVariantNames$: Observable<any> = of([]);
-                if (input.autoUpdate) {
-                    // Update any ProductVariants' names which include the option name
-                    let oldOptionName: string | undefined;
-                    const newOptionName = findTranslation(input, languageCode)?.name;
-                    if (!newOptionName) {
-                        updateProductVariantNames$ = of([]);
+                if (autoUpdateProductNames) {
+                    const replacementMap = new Map<string, string>();
+
+                    for (const input of inputs) {
+                        const newOptionName = findTranslation(input, languageCode)?.name;
+                        let oldOptionName: string | undefined;
+                        for (const variant of variants) {
+                            if (oldOptionName) {
+                                continue;
+                            }
+                            if (variant.options.map(o => o.id).includes(input.id)) {
+                                if (!oldOptionName) {
+                                    oldOptionName = findTranslation(
+                                        variant.options.find(o => o.id === input.id),
+                                        languageCode,
+                                    )?.name;
+                                }
+                            }
+                        }
+                        if (oldOptionName && newOptionName) {
+                            replacementMap.set(oldOptionName, newOptionName);
+                        }
                     }
+
                     const variantsToUpdate: UpdateProductVariantInput[] = [];
-                    for (const variant of variants) {
-                        if (variant.options.map(o => o.id).includes(input.id)) {
-                            if (!oldOptionName) {
-                                oldOptionName = findTranslation(
-                                    variant.options.find(o => o.id === input.id),
-                                    languageCode,
-                                )?.name;
+                    if (replacementMap.size) {
+                        const oldOptionNames = Array.from(replacementMap.keys());
+                        for (const variant of variants) {
+                            const variantName = findTranslation(variant, languageCode)?.name;
+                            if (!variantName) {
+                                continue;
                             }
-                            const variantName = findTranslation(variant, languageCode)?.name || '';
-                            if (oldOptionName && newOptionName && variantName.includes(oldOptionName)) {
-                                variantsToUpdate.push({
-                                    id: variant.id,
-                                    translations: [
-                                        {
-                                            languageCode,
-                                            name: replaceLast(variantName, oldOptionName, newOptionName),
-                                        },
-                                    ],
-                                });
+                            if (!oldOptionNames.some(oldOptionName => variantName.includes(oldOptionName))) {
+                                continue;
                             }
+                            const updatedVariantName = oldOptionNames.reduce(
+                                (name, oldOptionName) =>
+                                    replaceLast(name, oldOptionName, replacementMap.get(oldOptionName)!),
+                                variantName,
+                            );
+                            variantsToUpdate.push({
+                                id: variant.id,
+                                translations: [
+                                    {
+                                        languageCode,
+                                        name: updatedVariantName,
+                                    },
+                                ],
+                            });
                         }
                     }
                     if (variantsToUpdate.length) {
                         updateProductVariantNames$ =
                             this.dataService.product.updateProductVariants(variantsToUpdate);
+                    } else {
+                        updateProductVariantNames$ = of([]);
                     }
                 }
-                return this.dataService.product
-                    .updateProductOption(input)
-                    .pipe(mergeMap(() => updateProductVariantNames$));
+                return forkJoin(
+                    inputs.map(input => this.dataService.product.updateProductOption(input)),
+                ).pipe(mergeMap(() => updateProductVariantNames$));
             }),
         );
     }

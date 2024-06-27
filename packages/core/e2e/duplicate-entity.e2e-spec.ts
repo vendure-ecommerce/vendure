@@ -32,7 +32,9 @@ import {
     RoleFragment,
 } from './graphql/generated-e2e-admin-types';
 import {
+    ASSIGN_PRODUCT_TO_CHANNEL,
     CREATE_ADMINISTRATOR,
+    CREATE_CHANNEL,
     CREATE_COLLECTION,
     CREATE_PROMOTION,
     CREATE_ROLE,
@@ -169,9 +171,8 @@ describe('Duplicating entities', () => {
     });
 
     it('get entity duplicators', async () => {
-        const { entityDuplicators } = await adminClient.query<Codegen.GetEntityDuplicatorsQuery>(
-            GET_ENTITY_DUPLICATORS,
-        );
+        const { entityDuplicators } =
+            await adminClient.query<Codegen.GetEntityDuplicatorsQuery>(GET_ENTITY_DUPLICATORS);
 
         expect(entityDuplicators.find(d => d.code === 'custom-collection-duplicator')).toEqual({
             args: [
@@ -524,6 +525,156 @@ describe('Duplicating entities', () => {
                 expect(product?.variants.find(v => v.name === originalFirstVariant.name)?.stockOnHand).toBe(
                     100,
                 );
+            });
+
+            it('variant prices are duplicated', async () => {
+                const { duplicateEntity } = await adminClient.query<
+                    Codegen.DuplicateEntityMutation,
+                    Codegen.DuplicateEntityMutationVariables
+                >(DUPLICATE_ENTITY, {
+                    input: {
+                        entityName: 'Product',
+                        entityId: 'T_1',
+                        duplicatorInput: {
+                            code: 'product-duplicator',
+                            arguments: [
+                                {
+                                    name: 'includeVariants',
+                                    value: 'true',
+                                },
+                            ],
+                        },
+                    },
+                });
+
+                const { product } = await adminClient.query<
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: duplicateEntity.newEntityId,
+                });
+
+                duplicateEntityGuard.assertSuccess(duplicateEntity);
+                const variant = product?.variants.find(v => v.sku.startsWith(originalFirstVariant.sku));
+                // console.log('pv1', duplicateEntity.newEntityId, product!.variants, variant)
+                expect(variant).not.toBeUndefined();
+                expect(originalFirstVariant.price).toBeGreaterThan(0);
+                expect(variant!.price).toBe(originalFirstVariant.price);
+            });
+
+            it('variant prices are duplicated on a channel specific basis', async () => {
+                const { createChannel } = await adminClient.query<
+                    Codegen.CreateChannelMutation,
+                    Codegen.CreateChannelMutationVariables
+                >(CREATE_CHANNEL, {
+                    input: {
+                        code: 'second-channel',
+                        token: 'second-channel',
+                        defaultLanguageCode: LanguageCode.en,
+                        currencyCode: Codegen.CurrencyCode.USD,
+                        pricesIncludeTax: false,
+                        defaultShippingZoneId: 'T_1',
+                        defaultTaxZoneId: 'T_1',
+                    },
+                });
+
+                await adminClient.query<
+                    Codegen.AssignProductsToChannelMutation,
+                    Codegen.AssignProductsToChannelMutationVariables
+                >(ASSIGN_PRODUCT_TO_CHANNEL, {
+                    input: {
+                        channelId: createChannel.id,
+                        productIds: ['T_1'],
+                    },
+                });
+
+                const { product } = await adminClient.query<
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: 'T_1',
+                });
+                const productVariant = product!.variants[0];
+
+                adminClient.setChannelToken('second-channel');
+
+                await adminClient.query<
+                    Codegen.UpdateProductVariantsMutation,
+                    Codegen.UpdateProductVariantsMutationVariables
+                >(UPDATE_PRODUCT_VARIANTS, {
+                    input: {
+                        id: productVariant.id,
+                        price: productVariant.price + 150,
+                    },
+                });
+
+                adminClient.setChannelToken('e2e-default-channel');
+
+                const { duplicateEntity } = await adminClient.query<
+                    Codegen.DuplicateEntityMutation,
+                    Codegen.DuplicateEntityMutationVariables
+                >(DUPLICATE_ENTITY, {
+                    input: {
+                        entityName: 'Product',
+                        entityId: 'T_1',
+                        duplicatorInput: {
+                            code: 'product-duplicator',
+                            arguments: [
+                                {
+                                    name: 'includeVariants',
+                                    value: 'true',
+                                },
+                            ],
+                        },
+                    },
+                });
+
+                const { product: productWithVariantChannelNull } = await adminClient.query<
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: duplicateEntity.newEntityId,
+                });
+
+                const productVariantChannelNull = productWithVariantChannelNull!.variants.find(v =>
+                    v.sku.startsWith(productVariant.sku),
+                );
+
+                expect(productVariantChannelNull!.price).toEqual(productVariant.price);
+
+                adminClient.setChannelToken('second-channel');
+
+                const { duplicateEntity: duplicateEntitySecondChannel } = await adminClient.query<
+                    Codegen.DuplicateEntityMutation,
+                    Codegen.DuplicateEntityMutationVariables
+                >(DUPLICATE_ENTITY, {
+                    input: {
+                        entityName: 'Product',
+                        entityId: 'T_1',
+                        duplicatorInput: {
+                            code: 'product-duplicator',
+                            arguments: [
+                                {
+                                    name: 'includeVariants',
+                                    value: 'true',
+                                },
+                            ],
+                        },
+                    },
+                });
+
+                const { product: productWithVariantChannel2 } = await adminClient.query<
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: duplicateEntitySecondChannel.newEntityId,
+                });
+
+                const productVariantChannel2 = productWithVariantChannel2!.variants.find(v =>
+                    v.sku.startsWith(productVariant.sku),
+                );
+
+                expect(productVariantChannel2!.price).toEqual(productVariant.price + 150);
             });
         });
 

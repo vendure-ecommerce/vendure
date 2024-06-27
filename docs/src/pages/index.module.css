@@ -12,6 +12,7 @@
 
 .tagline {
     font-size: 2rem;
+    margin-top: 1rem;
     text-align: center;
     display: flex;
     align-items: center;
@@ -53,6 +54,7 @@
     }
     .ctaButtons {
         flex-direction: column;
+        gap: 24px;
         gap: 24px;
     }
 }

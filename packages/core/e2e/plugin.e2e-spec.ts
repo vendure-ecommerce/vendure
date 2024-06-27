@@ -14,6 +14,7 @@ import { TestAPIExtensionPlugin } from './fixtures/test-plugins/with-api-extensi
 import { TestPluginWithConfig } from './fixtures/test-plugins/with-config';
 import { PluginWithGlobalProviders } from './fixtures/test-plugins/with-global-providers';
 import { TestLazyExtensionPlugin } from './fixtures/test-plugins/with-lazy-api-extensions';
+import { WithNewConfigObjectReferencePlugin } from './fixtures/test-plugins/with-new-config-object-reference';
 import { TestPluginWithProvider } from './fixtures/test-plugins/with-provider';
 import { TestRestPlugin } from './fixtures/test-plugins/with-rest-controller';
 
@@ -30,6 +31,7 @@ describe('Plugins', () => {
             TestLazyExtensionPlugin,
             TestRestPlugin,
             PluginWithGlobalProviders,
+            WithNewConfigObjectReferencePlugin,
         ],
     });
 
@@ -50,6 +52,17 @@ describe('Plugins', () => {
         const configService = server.app.get(ConfigService);
         expect(configService instanceof ConfigService).toBe(true);
         expect(configService.defaultLanguageCode).toBe(LanguageCode.zh);
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/2906
+    it('handles plugins that return new config object references', async () => {
+        const configService = server.app.get(ConfigService);
+        expect(configService.customFields.Customer).toEqual([
+            {
+                name: 'testField',
+                type: 'string',
+            },
+        ]);
     });
 
     it('extends the admin API', async () => {

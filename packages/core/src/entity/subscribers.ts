@@ -6,6 +6,11 @@ interface EntityPrototype {
     [CALCULATED_PROPERTIES]: CalculatedColumnDefinition[];
 }
 
+/**
+ * @docs Subscribes to events entities to handle calculated decorators
+ *
+ * @docsCategory data-access
+ */
 @EventSubscriber()
 export class CalculatedPropertySubscriber implements EntitySubscriberInterface {
     afterLoad(event: any) {

@@ -34,7 +34,7 @@ import {
                 <vdr-object-tree [value]="entry.data"></vdr-object-tree>
             </vdr-history-entry-detail>
         </div>
-        <div *ngIf="entry.data.valid">Tax ID {{ entry.data.taxId }} could not be verified</div>
+        <div *ngIf="!entry.data.valid">Tax ID {{ entry.data.taxId }} could not be verified</div>
     `,
     standalone: true,
     imports: [SharedModule],

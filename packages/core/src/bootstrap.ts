@@ -250,7 +250,7 @@ function checkPluginCompatibility(config: RuntimeVendureConfig): void {
             if (!satisfies(VENDURE_VERSION, compatibility, { loose: true, includePrerelease: true })) {
                 Logger.error(
                     `Plugin "${pluginName}" is not compatible with this version of Vendure. ` +
-                    `It specifies a semver range of "${compatibility}" but the current version is "${VENDURE_VERSION}".`,
+                        `It specifies a semver range of "${compatibility}" but the current version is "${VENDURE_VERSION}".`,
                 );
                 throw new InternalServerError(
                     `Plugin "${pluginName}" is not compatible with this version of Vendure.`,
@@ -267,7 +267,8 @@ async function runPluginConfigurations(config: RuntimeVendureConfig): Promise<Ru
     for (const plugin of config.plugins) {
         const configFn = getConfigurationFunction(plugin);
         if (typeof configFn === 'function') {
-            config = await configFn(config);
+            const result = await configFn(config);
+            Object.assign(config, result);
         }
     }
     return config;
@@ -411,20 +412,13 @@ export function configureSessionCookies(
 ): void {
     const { cookieOptions } = userConfig.authOptions;
 
-    // If the Admin API and Shop API should have specific cookies names
-    if (typeof cookieOptions?.name === 'object') {
-        const shopApiCookieName = cookieOptions.name.shop;
-        const adminApiCookieName = cookieOptions.name.admin;
-        const { shopApiPath, adminApiPath } = userConfig.apiOptions;
-        app.use(cookieSession({...cookieOptions, name: shopApiCookieName}));
-        app.use(`/${shopApiPath}`, cookieSession({ ...cookieOptions, name: shopApiCookieName }));
-        app.use(`/${adminApiPath}`, cookieSession({ ...cookieOptions, name: adminApiCookieName }));
-    } else {
-        app.use(
-            cookieSession({
-                ...cookieOptions,
-                name: cookieOptions?.name ?? DEFAULT_COOKIE_NAME,
-            }),
-        );
-    }
+    // Globally set the cookie session middleware
+    const cookieName =
+        typeof cookieOptions?.name !== 'string' ? cookieOptions.name?.shop : cookieOptions.name;
+    app.use(
+        cookieSession({
+            ...cookieOptions,
+            name: cookieName ?? DEFAULT_COOKIE_NAME,
+        }),
+    );
 }
