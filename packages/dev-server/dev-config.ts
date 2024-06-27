@@ -102,24 +102,24 @@ export const devConfig: VendureConfig = {
             route: 'admin',
             port: 5001,
             // Un-comment to compile a custom admin ui
-            // app: compileUiExtensions({
-            //     outputPath: path.join(__dirname, './custom-admin-ui'),
-            //     extensions: [
-            //         {
-            //             id: 'ui-extensions-library',
-            //             extensionPath: path.join(__dirname, 'example-plugins/ui-extensions-library/ui'),
-            //             routes: [{ route: 'ui-library', filePath: 'routes.ts' }],
-            //             providers: ['providers.ts'],
-            //         },
-            //         {
-            //             globalStyles: path.join(
-            //                 __dirname,
-            //                 'test-plugins/with-ui-extension/ui/custom-theme.scss',
-            //             ),
-            //         },
-            //     ],
-            //     devMode: true,
-            // }),
+            app: compileUiExtensions({
+                outputPath: path.join(__dirname, './custom-admin-ui'),
+                extensions: [
+                    {
+                        id: 'ui-extensions-library',
+                        extensionPath: path.join(__dirname, 'example-plugins/ui-extensions-library/ui'),
+                        routes: [{ route: 'ui-library', filePath: 'routes.ts' }],
+                        providers: ['providers.ts'],
+                    },
+                    {
+                        globalStyles: path.join(
+                            __dirname,
+                            'test-plugins/with-ui-extension/ui/custom-theme.scss',
+                        ),
+                    },
+                ],
+                devMode: true,
+            }),
         }),
     ],
 };
