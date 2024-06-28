@@ -39,16 +39,6 @@ import {
 import { MutableRequestContext } from './mutable-request-context';
 
 export const BATCH_SIZE = 1000;
-export const productRelations = ['featuredAsset', 'facetValues', 'facetValues.facet', 'channels'];
-export const variantRelations = [
-    'featuredAsset',
-    'facetValues',
-    'facetValues.facet',
-    'collections',
-    'taxCategory',
-    'channels',
-    'channels.defaultTaxZone',
-];
 
 export const workerLoggerCtx = 'DefaultSearchPlugin Worker';
 
@@ -338,6 +328,7 @@ export class IndexerController {
             .createQueryBuilder('variants')
             .setFindOptions({
                 loadEagerRelations: false,
+                relationLoadStrategy: 'query',
             })
             .leftJoinAndSelect(
                 'variants.channels',
@@ -413,6 +404,7 @@ export class IndexerController {
             .createQueryBuilder('product')
             .setFindOptions({
                 loadEagerRelations: false,
+                relationLoadStrategy: 'query',
             })
             .leftJoinAndSelect(
                 'product.translations',
