@@ -356,23 +356,7 @@ export class IndexerController {
             )
             .leftJoin('variants.product', 'product')
             .leftJoinAndSelect('variants.facetValues', 'variant_facet_values')
-            .leftJoinAndSelect(
-                'variant_facet_values.translations',
-                'variant_facet_value_translations',
-                'variant_facet_value_translations.languageCode IN (:...channelLanguages)',
-                {
-                    channelLanguages,
-                },
-            )
             .leftJoinAndSelect('variant_facet_values.facet', 'facet_values_facet')
-            .leftJoinAndSelect(
-                'facet_values_facet.translations',
-                'facet_values_facet_translations',
-                'facet_values_facet_translations.languageCode IN (:...channelLanguages)',
-                {
-                    channelLanguages,
-                },
-            )
             .leftJoinAndSelect('variants.collections', 'collections')
             .leftJoinAndSelect(
                 'collections.channels',
@@ -416,23 +400,7 @@ export class IndexerController {
             )
             .leftJoinAndSelect('product.featuredAsset', 'product_featured_asset')
             .leftJoinAndSelect('product.facetValues', 'product_facet_values')
-            .leftJoinAndSelect(
-                'product_facet_values.translations',
-                'product_facet_value_translations',
-                'product_facet_value_translations.languageCode IN (:...channelLanguages)',
-                {
-                    channelLanguages,
-                },
-            )
             .leftJoinAndSelect('product_facet_values.facet', 'product_facet')
-            .leftJoinAndSelect(
-                'product_facet.translations',
-                'product_facet_translations',
-                'product_facet_translations.languageCode IN (:...channelLanguages)',
-                {
-                    channelLanguages,
-                },
-            )
             .leftJoinAndSelect('product.channels', 'channel', 'channel.id IN (:...channelId)', {
                 channelId: channels.map(x => x.id),
             })
