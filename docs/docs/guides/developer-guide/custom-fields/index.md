@@ -7,7 +7,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import CustomFieldProperty from '@site/src/components/CustomFieldProperty';
 
-Custom fields allow you to add your own custom data properties almost every Vendure entity. The entities which may have custom fields defined are listed in the [CustomFields interface documentation](/reference/typescript-api/custom-fields/).
+Custom fields allow you to add your own custom data properties to almost every Vendure entity. The entities which may have custom fields defined are listed in the [CustomFields interface documentation](/reference/typescript-api/custom-fields/).
 
 Some use-cases for custom fields include:
 
@@ -1202,7 +1202,7 @@ However, this sacrifices type safety. To make our custom fields type-safe we can
 ```ts
 // types.ts
 
-// Note: we are using deep a import here, rather than importing from `@vendure/core` due to
+// Note: we are using a deep import here, rather than importing from `@vendure/core` due to
 // a possible bug in TypeScript (https://github.com/microsoft/TypeScript/issues/46617) which
 // causes issues when multiple plugins extend the same custom fields interface.
 import { CustomProductFields } from '@vendure/core/dist/entity/custom-entity-fields';
