@@ -1202,7 +1202,7 @@ However, this sacrifices type safety. To make our custom fields type-safe we can
 ```ts
 // types.ts
 
-// Note: we are using deep a import here, rather than importing from `@vendure/core` due to
+// Note: we are using a deep import here, rather than importing from `@vendure/core` due to
 // a possible bug in TypeScript (https://github.com/microsoft/TypeScript/issues/46617) which
 // causes issues when multiple plugins extend the same custom fields interface.
 import { CustomProductFields } from '@vendure/core/dist/entity/custom-entity-fields';
