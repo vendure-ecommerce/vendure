@@ -257,6 +257,7 @@ export class IndexerController {
         const channel = await this.loadChannel(ctx, channelId);
         ctx.setChannel(channel);
         const product = await this.getProductInChannelQueryBuilder(ctx, productId, channel);
+
         if (product) {
             const affectedChannels = await this.getAllChannels(ctx, {
                 where: {
@@ -367,6 +368,7 @@ export class IndexerController {
         if (productVariantIds && productVariantIds.length > 0) {
             where.id = In(productVariantIds);
         }
+        where.channels = { id: In(channels.map(c => c.id)) };
         const [variants, count] = await this.connection.getRepository(ctx, ProductVariant).findAndCount({
             loadEagerRelations: false,
             relations: variantRelations,
@@ -382,18 +384,18 @@ export class IndexerController {
         ctx: RequestContext,
         productId: ID,
         ...channels: Channel[]
-    ): Promise<Product> {
+    ): Promise<Product | undefined> {
         const channelLanguages = unique(
             channels.flatMap(c => c.availableLanguageCodes).concat(this.configService.defaultLanguageCode),
         );
 
-        const product = await this.connection.getRepository(ctx, Product).findOneOrFail({
+        const product = await this.connection.getRepository(ctx, Product).findOne({
             loadEagerRelations: false,
             relations: productRelations,
             relationLoadStrategy: 'query',
             where: { id: Equal(productId), channels: { id: In(channels.map(x => x.id)) } },
         });
-        return product;
+        return product ?? undefined;
     }
 
     private async saveVariants(ctx: MutableRequestContext, variants: ProductVariant[]) {
