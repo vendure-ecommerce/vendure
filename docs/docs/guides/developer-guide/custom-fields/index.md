@@ -7,7 +7,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import CustomFieldProperty from '@site/src/components/CustomFieldProperty';
 
-Custom fields allow you to add your own custom data properties almost every Vendure entity. The entities which may have custom fields defined are listed in the [CustomFields interface documentation](/reference/typescript-api/custom-fields/).
+Custom fields allow you to add your own custom data properties to almost every Vendure entity. The entities which may have custom fields defined are listed in the [CustomFields interface documentation](/reference/typescript-api/custom-fields/).
 
 Some use-cases for custom fields include:
 
