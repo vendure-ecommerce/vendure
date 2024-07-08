@@ -364,6 +364,8 @@ export class FacetDetailComponent
             if (!valueControl) {
                 valueControl = this.formBuilder.group(group);
                 currentValuesFormGroup.addControl(value.id, valueControl);
+            } else {
+                valueControl.patchValue(group);
             }
             if (this.customValueFields.length) {
                 let customValueFieldsGroup = valueControl.get(['customFields']) as

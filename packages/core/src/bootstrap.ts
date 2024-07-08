@@ -267,7 +267,8 @@ async function runPluginConfigurations(config: RuntimeVendureConfig): Promise<Ru
     for (const plugin of config.plugins) {
         const configFn = getConfigurationFunction(plugin);
         if (typeof configFn === 'function') {
-            config = await configFn(config);
+            const result = await configFn(config);
+            Object.assign(config, result);
         }
     }
     return config;

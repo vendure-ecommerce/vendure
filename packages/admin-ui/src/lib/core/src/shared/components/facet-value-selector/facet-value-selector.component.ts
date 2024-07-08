@@ -24,19 +24,11 @@ import { DataService } from '../../../data/providers/data.service';
  * @example
  * ```HTML
  * <vdr-facet-value-selector
- *   [facets]="facets"
  *   (selectedValuesChange)="selectedValues = $event"
  * ></vdr-facet-value-selector>
  * ```
- * The `facets` input should be provided from the parent component
- * like this:
+ * The `selectedValuesChange` event will emit an array of `FacetValue` objects.
  *
- * @example
- * ```ts
- * this.facets = this.dataService
- *   .facet.getAllFacets()
- *   .mapSingle(data => data.facets.items);
- * ```
  * @docsCategory components
  */
 @Component({
