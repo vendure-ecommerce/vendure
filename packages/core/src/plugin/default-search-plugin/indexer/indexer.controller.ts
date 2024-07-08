@@ -50,6 +50,7 @@ export const productRelations = [
 export const variantRelations = [
     'translations',
     'taxCategory',
+    'featuredAsset',
     'productVariantPrices',
     'channels',
     'channels.defaultTaxZone',
