@@ -48,6 +48,7 @@ import { PaymentMethodHandler } from './payment/payment-method-handler';
 import { PaymentProcess } from './payment/payment-process';
 import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
+import { RefundProcess } from './refund/refund-process';
 import { SessionCacheStrategy } from './session-cache/session-cache-strategy';
 import { ShippingCalculator } from './shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from './shipping-method/shipping-eligibility-checker';
@@ -1054,6 +1055,23 @@ export interface SystemOptions {
 
 /**
  * @description
+ * Defines refund-related options in the {@link VendureConfig}.
+ *
+ * @docsCategory refund
+ * */
+export interface RefundOptions {
+    /**
+     * @description
+     * Allows the definition of custom states and transition logic for the refund process state machine.
+     * Takes an array of objects implementing the {@link RefundProcess} interface.
+     *
+     * @default defaultRefundProcess
+     */
+    process?: Array<RefundProcess<any>>;
+}
+
+/**
+ * @description
  * All possible configuration options are defined by the
  * [`VendureConfig`](https://github.com/vendure-ecommerce/vendure/blob/master/server/src/config/vendure-config.ts) interface.
  *
@@ -1180,6 +1198,11 @@ export interface VendureConfig {
      * @since 1.6.0
      */
     systemOptions?: SystemOptions;
+    /**
+     * @description
+     * Configures available refund processing methods.
+     */
+    refundOptions?: RefundOptions;
 }
 
 /**
@@ -1203,6 +1226,7 @@ export interface RuntimeVendureConfig extends Required<VendureConfig> {
     shippingOptions: Required<ShippingOptions>;
     taxOptions: Required<TaxOptions>;
     systemOptions: Required<SystemOptions>;
+    refundOptions: Required<RefundOptions>;
 }
 
 type DeepPartialSimple<T> = {

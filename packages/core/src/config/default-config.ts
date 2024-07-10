@@ -43,6 +43,7 @@ import { DefaultOrderCodeStrategy } from './order/order-code-strategy';
 import { UseGuestStrategy } from './order/use-guest-strategy';
 import { defaultPaymentProcess } from './payment/default-payment-process';
 import { defaultPromotionActions, defaultPromotionConditions } from './promotion';
+import { defaultRefundProcess } from './refund/default-refund-process';
 import { InMemorySessionCacheStrategy } from './session-cache/in-memory-session-cache-strategy';
 import { defaultShippingCalculator } from './shipping-method/default-shipping-calculator';
 import { defaultShippingEligibilityChecker } from './shipping-method/default-shipping-eligibility-checker';
@@ -219,5 +220,8 @@ export const defaultConfig: RuntimeVendureConfig = {
     systemOptions: {
         healthChecks: [new TypeORMHealthCheckStrategy()],
         errorHandlers: [],
+    },
+    refundOptions: {
+        process: [defaultRefundProcess],
     },
 };
