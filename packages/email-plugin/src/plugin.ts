@@ -25,6 +25,7 @@ import { DevMailbox } from './dev-mailbox';
 import { EmailProcessor } from './email-processor';
 import { EmailEventHandler, EmailEventHandlerWithAsyncData } from './handler/event-handler';
 import { FileBasedTemplateLoader } from './template-loader/file-based-template-loader';
+import { GlobalSettingsThemeInjector } from './theme/global-settings-theme-injector';
 import {
     EmailPluginDevModeOptions,
     EmailPluginOptions,
@@ -304,6 +305,10 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
         } else {
             throw new Error('You must either supply a templatePath or provide a custom templateLoader');
         }
+        if (!options.themeInjector) {
+            Logger.info(`No theme injector detected. Using default.`);
+            options.themeInjector = new GlobalSettingsThemeInjector(options.globalTemplateVars ?? {});
+        }
         this.options = options as InitializedEmailPluginOptions;
         return EmailPlugin;
     }
@@ -378,11 +383,8 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
         const { type } = handler;
         try {
             const injector = new Injector(this.moduleRef);
-            const result = await handler.handle(
-                event as any,
-                EmailPlugin.options.globalTemplateVars,
-                injector,
-            );
+            const globalTemplateVars = await this.options.themeInjector.injectTheme(injector, event.ctx);
+            const result = await handler.handle(event as any, globalTemplateVars, injector);
             if (!result) {
                 return;
             }

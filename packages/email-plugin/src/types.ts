@@ -4,11 +4,12 @@ import { Injector, RequestContext, SerializedRequestContext, VendureEvent } from
 import { Attachment } from 'nodemailer/lib/mailer';
 import SESTransport from 'nodemailer/lib/ses-transport';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { EmailEventHandler } from './handler/event-handler';
 
 import { EmailGenerator } from './generator/email-generator';
+import { EmailEventHandler } from './handler/event-handler';
 import { EmailSender } from './sender/email-sender';
 import { TemplateLoader } from './template-loader/template-loader';
+import { EmailThemeInjector } from './theme/theme-injector';
 
 /**
  * @description
@@ -80,6 +81,13 @@ export interface EmailPluginOptions {
     globalTemplateVars?: { [key: string]: any };
     /**
      * @description
+     * An optional theme injector. Injects a `theme` key on globalTemplateVars which can contain
+     * arbitrary values such as channel specific colors and address information for headers and footers.
+     * The default creates an empty theme object.
+     */
+    themeInjector?: EmailThemeInjector;
+    /**
+     * @description
      * An optional allowed EmailSender, used to allow custom implementations of the send functionality
      * while still utilizing the existing emailPlugin functionality.
      *
@@ -97,9 +105,12 @@ export interface EmailPluginOptions {
 }
 
 /**
- * EmailPLuginOptions type after initialization, where templateLoader is no longer optional
+ * EmailPLuginOptions type after initialization, where templateLoader and themeInjector are no longer optional
  */
-export type InitializedEmailPluginOptions = EmailPluginOptions & { templateLoader: TemplateLoader };
+export type InitializedEmailPluginOptions = EmailPluginOptions & {
+    templateLoader: TemplateLoader;
+    themeInjector: EmailThemeInjector;
+};
 
 /**
  * @description
