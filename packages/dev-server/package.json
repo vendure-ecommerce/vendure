@@ -2,7 +2,7 @@
     "name": "dev-server",
     "version": "2.2.7",
     "main": "index.js",
-    "license": "MIT",
+    "license": "GPL-3.0-or-later",
     "private": true,
     "scripts": {
         "populate": "node -r ts-node/register -r dotenv/config populate-dev-server.ts",
