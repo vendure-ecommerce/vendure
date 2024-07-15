@@ -34,6 +34,48 @@ export type EventWithAsyncData<Event extends EventWithContext, R> = Event & { da
 
 /**
  * @description
+ * Allows you to dynamically load the "globalTemplateVars" key sync or async and access Vendure services
+ * to create the object. This is not a requirement. You can also specify a simple static object if your
+ * projects doesn't need to access async or dynamic values.
+ *
+ * @example
+ * ```ts
+ *
+ * EmailPlugin.init({
+ *    globalTemplateVars: async (ctx, injector) => {
+ *          const myAsyncService = injector.get(MyAsyncService);
+ *          const asyncValue = await myAsyncService.get(ctx);
+ *          const channel = ctx.channel;
+ *          const { primaryColor } = channel.customFields.theme;
+ *          const theme = {
+ *              primaryColor,
+ *              asyncValue,
+ *          };
+ *          return theme;
+ *      }
+ *   [...]
+ * })
+ *
+ *
+ * // In vendure-config.ts:
+ * ...
+ * EmailPlugin.init({
+ *     themeInjector: new MyChannelThemeInjector()
+ *     ...
+ * })
+ * ```
+ *
+ * @docsCategory core plugins/EmailPlugin
+ * @docsPage EmailThemeInjector
+ * @docsWeight 0
+ */
+export type GlobalTemplateVarsFn = (
+    ctx: RequestContext,
+    injector: Injector,
+) => Promise<{ [key: string]: any }>;
+
+/**
+ * @description
  * Configuration for the EmailPlugin.
  *
  * @docsCategory core plugins/EmailPlugin
@@ -76,9 +118,10 @@ export interface EmailPluginOptions {
      * @description
      * An object containing variables which are made available to all templates. For example,
      * the storefront URL could be defined here and then used in the "email address verification"
-     * email.
+     * email. Use the GlobalTemplateVarsFn if you need to retrieve variables from Vendure or
+     * plugin services.
      */
-    globalTemplateVars?: { [key: string]: any };
+    globalTemplateVars?: { [key: string]: any } | GlobalTemplateVarsFn;
     /**
      * @description
      * An optional theme injector. Injects a `theme` key on globalTemplateVars which can contain
@@ -109,7 +152,6 @@ export interface EmailPluginOptions {
  */
 export type InitializedEmailPluginOptions = EmailPluginOptions & {
     templateLoader: TemplateLoader;
-    themeInjector: EmailThemeInjector;
 };
 
 /**

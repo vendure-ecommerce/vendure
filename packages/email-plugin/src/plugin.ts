@@ -25,7 +25,6 @@ import { DevMailbox } from './dev-mailbox';
 import { EmailProcessor } from './email-processor';
 import { EmailEventHandler, EmailEventHandlerWithAsyncData } from './handler/event-handler';
 import { FileBasedTemplateLoader } from './template-loader/file-based-template-loader';
-import { GlobalSettingsThemeInjector } from './theme/global-settings-theme-injector';
 import {
     EmailPluginDevModeOptions,
     EmailPluginOptions,
@@ -305,10 +304,6 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
         } else {
             throw new Error('You must either supply a templatePath or provide a custom templateLoader');
         }
-        if (!options.themeInjector) {
-            Logger.info(`No theme injector detected. Using default.`);
-            options.themeInjector = new GlobalSettingsThemeInjector(options.globalTemplateVars ?? {});
-        }
         this.options = options as InitializedEmailPluginOptions;
         return EmailPlugin;
     }
@@ -383,16 +378,15 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
         const { type } = handler;
         try {
             const injector = new Injector(this.moduleRef);
-            const { themeInjector } = this.options;
-            if (this.options.globalTemplateVars?.theme) {
-                Logger.warn('blobalTemplateVars theme key may be overwritten by EmailThemeInjector');
+            let globalTemplateVars = this.options.globalTemplateVars;
+            if (typeof globalTemplateVars === 'function') {
+                globalTemplateVars = await globalTemplateVars(event.ctx, injector);
             }
-            const globalTemplateVars = await themeInjector.injectTheme(
-                event.ctx,
+            const result = await handler.handle(
+                event as any,
+                globalTemplateVars as { [key: string]: any },
                 injector,
-                this.options.globalTemplateVars ?? {},
             );
-            const result = await handler.handle(event as any, globalTemplateVars, injector);
             if (!result) {
                 return;
             }
