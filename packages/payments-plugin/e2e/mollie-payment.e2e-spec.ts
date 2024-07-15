@@ -74,7 +74,36 @@ const mockData = {
                 href: 'https://www.mollie.com/payscreen/select-method/mock-payment',
             },
         },
-        lines: [],
+        lines: [
+            {
+                resource: 'orderline',
+                id: 'odl_3.c0qfy7',
+                orderId: 'ord_1.6i4fed',
+                name: 'Pinelab stickers',
+                status: 'created',
+                isCancelable: false,
+                quantity: 10,
+                createdAt: '2024-06-25T11:41:56+00:00',
+            },
+            {
+                resource: 'orderline',
+                id: 'odl_3.nj3d5u',
+                orderId: 'ord_1.6i4fed',
+                name: 'Express Shipping',
+                isCancelable: false,
+                quantity: 1,
+                createdAt: '2024-06-25T11:41:57+00:00',
+            },
+            {
+                resource: 'orderline',
+                id: 'odl_3.nklsl4',
+                orderId: 'ord_1.6i4fed',
+                name: 'Negative test surcharge',
+                isCancelable: false,
+                quantity: 1,
+                createdAt: '2024-06-25T11:41:57+00:00',
+            },
+        ],
         _embedded: {
             payments: [
                 {
@@ -360,7 +389,7 @@ describe('Mollie payments', () => {
             });
         });
 
-        it('Should update existing Mollie order', async () => {
+        it('Should recreate all order lines in Mollie', async () => {
             // Should fetch the existing order from Mollie
             nock('https://api.mollie.com/')
                 .get('/v2/orders/ord_mockId')
@@ -382,18 +411,21 @@ describe('Mollie payments', () => {
                     paymentMethodCode: mockData.methodCode,
                 },
             });
-            // We expect the patch request to add 3 order lines, because the mock response has 0 lines
             expect(createMolliePaymentIntent.url).toBeDefined();
-            expect(molliePatchRequest.operations).toBeDefined();
-            expect(molliePatchRequest.operations[0].operation).toBe('add');
-            expect(molliePatchRequest.operations[0].data).toHaveProperty('name');
-            expect(molliePatchRequest.operations[0].data).toHaveProperty('quantity');
-            expect(molliePatchRequest.operations[0].data).toHaveProperty('unitPrice');
-            expect(molliePatchRequest.operations[0].data).toHaveProperty('totalAmount');
-            expect(molliePatchRequest.operations[0].data).toHaveProperty('vatRate');
-            expect(molliePatchRequest.operations[0].data).toHaveProperty('vatAmount');
-            expect(molliePatchRequest.operations[1].operation).toBe('add');
-            expect(molliePatchRequest.operations[2].operation).toBe('add');
+            // Should have removed all 3 previous order lines
+            const cancelledLines = molliePatchRequest.operations.filter((o: any) => o.operation === 'cancel');
+            expect(cancelledLines.length).toBe(3);
+            // Should have added all 3 new order lines
+            const addedLines = molliePatchRequest.operations.filter((o: any) => o.operation === 'add');
+            expect(addedLines.length).toBe(3);
+            addedLines.forEach((line: any) => {
+                expect(line.data).toHaveProperty('name');
+                expect(line.data).toHaveProperty('quantity');
+                expect(line.data).toHaveProperty('unitPrice');
+                expect(line.data).toHaveProperty('totalAmount');
+                expect(line.data).toHaveProperty('vatRate');
+                expect(line.data).toHaveProperty('vatAmount');
+            });
         });
 
         it('Should get payment url with deducted amount if a payment is already made', async () => {

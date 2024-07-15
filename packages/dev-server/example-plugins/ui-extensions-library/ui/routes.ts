@@ -1,4 +1,4 @@
-import { registerRouteComponent } from '@vendure/admin-ui/core';
+import { CanDeactivateDetailGuard, registerRouteComponent } from '@vendure/admin-ui/core';
 import { registerReactRouteComponent } from '@vendure/admin-ui/react';
 
 import { AngularUiComponent } from './angular-components/angular-ui/angular-ui.component';
@@ -17,14 +17,9 @@ export default [
         component: AngularUiComponent,
         title: 'Angular UI',
         locationId: "angular-ui",
-        description: "Test description 2"
+        description: "Test description 2",
+        routeConfig: {
+            canDeactivate: [CanDeactivateDetailGuard],
+        },
     }),
-    //Test page tabs on angular components
-    registerRouteComponent({
-        path: 'angular-ui2',
-        component: AngularUiComponent,
-        title: 'Angular UI 2',
-        locationId: "angular-ui",
-        description: "Test description 2"
-    })
-]
+];

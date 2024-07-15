@@ -67,7 +67,7 @@ export class CreateProductVariantDialogComponent implements Dialog<CreateProduct
 
     confirm() {
         const { name, sku, options, price } = this.form.value;
-        if (!name || !sku || !options || !price) {
+        if (!name || !sku || !options || price == null) {
             return;
         }
 

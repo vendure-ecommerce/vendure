@@ -23,7 +23,6 @@ import {
     unicodePatternValidator,
     UpdateProductInput,
     UpdateProductMutation,
-    UpdateProductOptionInput,
     UpdateProductVariantInput,
     UpdateProductVariantsMutation,
 } from '@vendure/admin-ui/core';
@@ -254,28 +253,6 @@ export class ProductDetailComponent
                 this.changeDetector.markForCheck();
             }
         });
-    }
-
-    updateProductOption(input: UpdateProductOptionInput & { autoUpdate: boolean }) {
-        combineLatest(this.entity$, this.languageCode$)
-            .pipe(
-                take(1),
-                mergeMap(([product, languageCode]) =>
-                    this.productDetailService.updateProductOption(input, product, languageCode),
-                ),
-            )
-            .subscribe(
-                () => {
-                    this.notificationService.success(_('common.notify-update-success'), {
-                        entity: 'ProductOption',
-                    });
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-update-error'), {
-                        entity: 'ProductOption',
-                    });
-                },
-            );
     }
 
     removeProductFacetValue(facetValueId: string) {

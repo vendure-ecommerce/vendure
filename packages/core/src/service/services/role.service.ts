@@ -17,6 +17,7 @@ import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
+import { RequestContextCacheService } from '../../cache/request-context-cache.service';
 import { getAllPermissionsMetadata } from '../../common/constants';
 import {
     EntityNotFoundError,
@@ -56,6 +57,7 @@ export class RoleService {
         private listQueryBuilder: ListQueryBuilder,
         private configService: ConfigService,
         private eventBus: EventBus,
+        private requestContextCache: RequestContextCacheService,
     ) {}
 
     async initRoles() {
@@ -206,13 +208,24 @@ export class RoleService {
         ctx: RequestContext,
         channelId: ID,
     ): Promise<Permission[]> {
-        if (ctx.activeUserId == null) {
+        const { activeUserId } = ctx;
+        if (activeUserId == null) {
             return [];
         }
-        const user = await this.connection.getEntityOrThrow(ctx, User, ctx.activeUserId, {
-            relations: ['roles', 'roles.channels'],
-        });
-        const userChannels = getUserChannelsPermissions(user);
+        // For apps with many channels, this is a performance bottleneck as it will be called
+        // for each channel in certain code paths such as the GetActiveAdministrator query in the
+        // admin ui. Caching the result prevents unbounded quadratic slowdown.
+        const userChannels = await this.requestContextCache.get(
+            ctx,
+            `RoleService.getActiveUserPermissionsOnChannel.user(${activeUserId})`,
+            async () => {
+                const user = await this.connection.getEntityOrThrow(ctx, User, activeUserId, {
+                    relations: ['roles', 'roles.channels'],
+                });
+                return getUserChannelsPermissions(user);
+            },
+        );
+
         const channel = userChannels.find(c => idsAreEqual(c.id, channelId));
         if (!channel) {
             return [];

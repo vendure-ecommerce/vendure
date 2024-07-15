@@ -1,3 +1,33 @@
+## <small>2.2.7 (2024-06-27)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix creation of variant with zero price ([317deef](https://github.com/vendure-ecommerce/vendure/commit/317deef)), closes [#2917](https://github.com/vendure-ecommerce/vendure/issues/2917)
+* **admin-ui** Fix defaultValue on React RichTextEditor ([051d56f](https://github.com/vendure-ecommerce/vendure/commit/051d56f)), closes [#2884](https://github.com/vendure-ecommerce/vendure/issues/2884)
+* **admin-ui** Fix error on new product creation ([b06bdaf](https://github.com/vendure-ecommerce/vendure/commit/b06bdaf)), closes [#2915](https://github.com/vendure-ecommerce/vendure/issues/2915)
+* **admin-ui** Fix styling of React RichTextEditor component ([353ae50](https://github.com/vendure-ecommerce/vendure/commit/353ae50)), closes [#2885](https://github.com/vendure-ecommerce/vendure/issues/2885)
+* **admin-ui** Fix support for canDeactivate guard on angular routes ([6d9af1d](https://github.com/vendure-ecommerce/vendure/commit/6d9af1d))
+* **core** Correctly apply global and per-route cookie middlewares (#2911) ([2d2e518](https://github.com/vendure-ecommerce/vendure/commit/2d2e518)), closes [#2911](https://github.com/vendure-ecommerce/vendure/issues/2911)
+* **payments-plugin** Prevent duplicate Mollie order lines (#2922) ([74a8c05](https://github.com/vendure-ecommerce/vendure/commit/74a8c05)), closes [#2922](https://github.com/vendure-ecommerce/vendure/issues/2922)
+
+## <small>2.2.6 (2024-06-18)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix id of customer groups list ([33780ce](https://github.com/vendure-ecommerce/vendure/commit/33780ce)), closes [#2894](https://github.com/vendure-ecommerce/vendure/issues/2894)
+* **admin-ui** Fix layout issues with asset picker dialog ([996710c](https://github.com/vendure-ecommerce/vendure/commit/996710c)), closes [#2898](https://github.com/vendure-ecommerce/vendure/issues/2898)
+* **admin-ui** Fix layout of custom timeline entries ([3e075aa](https://github.com/vendure-ecommerce/vendure/commit/3e075aa))
+* **admin-ui** Fix renaming of multiple product options at once ([3de60b2](https://github.com/vendure-ecommerce/vendure/commit/3de60b2)), closes [#2892](https://github.com/vendure-ecommerce/vendure/issues/2892)
+* **admin-ui** Generate variants even when values have not been changed ([b393538](https://github.com/vendure-ecommerce/vendure/commit/b393538)), closes [#2895](https://github.com/vendure-ecommerce/vendure/issues/2895)
+* **admin-ui** Show correct facet value language version on lang change ([7a62e7a](https://github.com/vendure-ecommerce/vendure/commit/7a62e7a)), closes [#2889](https://github.com/vendure-ecommerce/vendure/issues/2889)
+* **core** Copy prices in product duplicator (#2900) ([18d200c](https://github.com/vendure-ecommerce/vendure/commit/18d200c)), closes [#2900](https://github.com/vendure-ecommerce/vendure/issues/2900)
+* **core** Fix access to protected custom fields in Shop API ([090ff9b](https://github.com/vendure-ecommerce/vendure/commit/090ff9b)), closes [#2878](https://github.com/vendure-ecommerce/vendure/issues/2878)
+* **core** Fix memory leak cause by unbounded array growth ([5a38f42](https://github.com/vendure-ecommerce/vendure/commit/5a38f42))
+* **core** Fix regression in cookie middleware when no name provided ([fd729fd](https://github.com/vendure-ecommerce/vendure/commit/fd729fd)), closes [#2880](https://github.com/vendure-ecommerce/vendure/issues/2880)
+* **core** Support new object ref returned from plugin configuration fn ([45df738](https://github.com/vendure-ecommerce/vendure/commit/45df738)), closes [#2906](https://github.com/vendure-ecommerce/vendure/issues/2906)
+
 ## <small>2.2.5 (2024-06-03)</small>
 
 

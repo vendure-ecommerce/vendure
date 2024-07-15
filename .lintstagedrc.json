@@ -8,7 +8,7 @@
     "npm run format",
     "git add"
   ],
-  "packages/**/*.ts": [
+  "packages/!(dev-server)/**/*.ts": [
     "npm run lint",
     "npm run format",
     "git add"

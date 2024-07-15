@@ -11,6 +11,7 @@ import {
     useInjector,
     usePageMetadata,
 } from '@vendure/admin-ui/react';
+import { RichTextEditor } from '@vendure/admin-ui/react';
 import React, { PropsWithChildren, useState } from 'react';
 
 export function ReactUi() {
@@ -75,6 +76,7 @@ export function ReactUi() {
                             <FormField label="Invalid with error" invalid={true}>
                                 <input type="text" />
                             </FormField>
+                            <RichTextEditor className="form-grid-span" label="Description" readOnly={false} />
                         </div>
                     </Card>
 
