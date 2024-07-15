@@ -482,6 +482,7 @@ export default [
     registerRouteComponent({
         component: TestComponent,
         title: 'Test',
+        locationId: 'my-location-id'
         // highlight-next-line
         breadcrumb: 'Test',
     }),
