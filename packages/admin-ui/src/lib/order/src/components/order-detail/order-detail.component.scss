@@ -12,3 +12,7 @@
         color: var(--color-text-200);
     }
 }
+
+vdr-order-payment-card + vdr-order-payment-card {
+    margin-top: calc(var(--space-unit) * 2);
+}

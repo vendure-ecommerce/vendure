@@ -1,7 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
+    DataTableLocationId,
     LogicalOperator,
+    ProductVariantFilterParameter,
     ProductVariantListQueryDocument,
     TypedBaseListComponent,
 } from '@vendure/admin-ui/core';
@@ -17,6 +19,7 @@ export class ProductVariantListComponent
 {
     @Input() productId?: string;
     @Input() hideLanguageSelect = false;
+    @Input() dataTableId: DataTableLocationId | undefined;
     readonly customFields = this.getCustomFieldConfig('ProductVariant');
     readonly filters = this.createFilterCollection()
         .addIdFilter()
@@ -74,20 +77,41 @@ export class ProductVariantListComponent
         this.configure({
             document: ProductVariantListQueryDocument,
             getItems: data => data.productVariants,
-            setVariables: (skip, take) => ({
-                options: {
-                    skip,
-                    take,
-                    filter: {
-                        sku: {
-                            contains: this.searchTermControl.value,
+            setVariables: (skip, take) => {
+                const searchTerm = this.searchTermControl.value;
+                const filterParam: ProductVariantFilterParameter = { _and: [] };
+                const filterInput = this.filters.createFilterInput();
+                if (Object.keys(filterInput).length) {
+                    filterParam._and?.push(filterInput);
+                }
+                if (searchTerm) {
+                    filterParam._and?.push({
+                        _or: [
+                            {
+                                name: { contains: searchTerm },
+                            },
+                            {
+                                sku: { contains: searchTerm },
+                            },
+                        ],
+                    });
+                }
+                if (this.productId) {
+                    filterParam._and?.push({
+                        productId: {
+                            eq: this.productId,
                         },
-                        ...this.filters.createFilterInput(),
-                        ...(this.productId ? { productId: { eq: this.productId } } : {}),
+                    });
+                }
+                return {
+                    options: {
+                        skip,
+                        take,
+                        filter: filterParam,
+                        sort: this.sorts.createSortInput(),
                     },
-                    sort: this.sorts.createSortInput(),
-                },
-            }),
+                };
+            },
             refreshListOnChanges: [this.sorts.valueChanges, this.filters.valueChanges],
         });
     }

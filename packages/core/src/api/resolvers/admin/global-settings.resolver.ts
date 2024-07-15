@@ -1,12 +1,15 @@
 import { Args, Info, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import {
     CustomFields as GraphQLCustomFields,
+    CustomFieldConfig as GraphQLCustomFieldConfig,
+    RelationCustomFieldConfig as GraphQLRelationCustomFieldConfig,
+    EntityCustomFields,
     MutationUpdateGlobalSettingsArgs,
-    OrderProcessState,
     Permission,
     ServerConfig,
     UpdateGlobalSettingsResult,
 } from '@vendure/common/lib/generated-types';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import {
     GraphQLOutputType,
     GraphQLResolveInfo,
@@ -16,13 +19,10 @@ import {
     isNonNullType,
     isObjectType,
     isScalarType,
-    NamedTypeNode,
-    TypeNode,
 } from 'graphql';
 
 import { getAllPermissionsMetadata } from '../../../common/constants';
 import { ErrorResultUnion } from '../../../common/error/error-result';
-import { UserInputError } from '../../../common/error/errors';
 import { ChannelDefaultLanguageError } from '../../../common/error/generated-graphql-admin-errors';
 import { ConfigService } from '../../../config/config.service';
 import {
@@ -64,9 +64,11 @@ export class GlobalSettingsResolver {
         ).filter(p => !p.internal);
         return {
             customFieldConfig: this.generateCustomFieldConfig(info),
+            entityCustomFields: this.generateEntityCustomFieldConfig(info),
             orderProcess: this.orderService.getOrderProcessStates(),
             permittedAssetTypes: this.configService.assetOptions.permittedFileTypes,
             permissions,
+            moneyStrategyPrecision: this.configService.entityOptions.moneyStrategy.precision ?? 2,
         };
     }
 
@@ -95,12 +97,13 @@ export class GlobalSettingsResolver {
         return this.globalSettingsService.updateSettings(ctx, args.input);
     }
 
+    // TODO: Remove in v3
     private generateCustomFieldConfig(info: GraphQLResolveInfo): GraphQLCustomFields {
         const exposedCustomFieldConfig: CustomFields = {};
         for (const [entityType, customFields] of Object.entries(this.configService.customFields)) {
             exposedCustomFieldConfig[entityType as keyof CustomFields] = customFields
                 // Do not expose custom fields marked as "internal".
-                .filter(c => !c.internal)
+                ?.filter(c => !c.internal)
                 .map(c => ({ ...c, list: !!c.list as any }))
                 .map((c: any) => {
                     // In the VendureConfig, the relation entity is specified
@@ -114,6 +117,53 @@ export class GlobalSettingsResolver {
         }
 
         return exposedCustomFieldConfig as GraphQLCustomFields;
+    }
+
+    private generateEntityCustomFieldConfig(info: GraphQLResolveInfo): EntityCustomFields[] {
+        return Object.entries(this.configService.customFields)
+            .map(([entityType, customFields]) => {
+                if (!customFields || !customFields.length) {
+                    return;
+                }
+                const customFieldsConfig = customFields
+                    // Do not expose custom fields marked as "internal".
+                    .filter(c => !c.internal)
+                    .map(c => ({ ...c, list: !!c.list as any }))
+                    .map(c => {
+                        const { requiresPermission } = c;
+                        c.requiresPermission = Array.isArray(requiresPermission)
+                            ? requiresPermission
+                            : !!requiresPermission
+                            ? [requiresPermission]
+                            : [];
+                        return c;
+                    })
+                    .map(c => {
+                        // In the VendureConfig, the relation entity is specified
+                        // as the class, but the GraphQL API exposes it as a string.
+                        const customFieldConfig: GraphQLCustomFieldConfig = { ...c } as any;
+                        if (this.isRelationGraphQLType(customFieldConfig) && this.isRelationConfigType(c)) {
+                            customFieldConfig.entity = c.entity.name;
+                            customFieldConfig.scalarFields = this.getScalarFieldsOfType(
+                                info,
+                                c.graphQLType || c.entity.name,
+                            );
+                        }
+                        return customFieldConfig;
+                    });
+                return { entityName: entityType, customFields: customFieldsConfig };
+            })
+            .filter(notNullOrUndefined);
+    }
+
+    private isRelationGraphQLType(
+        config: GraphQLCustomFieldConfig,
+    ): config is GraphQLRelationCustomFieldConfig {
+        return config.type === 'relation';
+    }
+
+    private isRelationConfigType(config: CustomFieldConfig): config is RelationCustomFieldConfig {
+        return config.type === 'relation';
     }
 
     private getScalarFieldsOfType(info: GraphQLResolveInfo, typeName: string): string[] {

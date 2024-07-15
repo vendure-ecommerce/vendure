@@ -31,7 +31,7 @@ const flatRateCalculator = new ShippingCalculator({
       ui: { component: 'number-form-input', suffix: '%' },
     },
   },
-  calculate: (order, args) => {
+  calculate: (ctx, order, args) => {
     return {
       price: args.rate,
       taxRate: args.taxRate,
@@ -64,7 +64,7 @@ class ShippingCalculator<T extends ConfigArgs = ConfigArgs> extends Configurable
 
 ## ShippingCalculationResult
 
-<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-calculator.ts" sourceLine="74" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-calculator.ts" sourceLine="79" packageName="@vendure/core" />
 
 The return value of the <a href='/reference/typescript-api/shipping/shipping-calculator#calculateshippingfn'>CalculateShippingFn</a>.
 
@@ -108,7 +108,7 @@ needed in the storefront application when listing eligible shipping methods.
 
 ## CalculateShippingFn
 
-<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-calculator.ts" sourceLine="114" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-calculator.ts" sourceLine="119" packageName="@vendure/core" />
 
 A function which implements the specific shipping calculation logic. It takes an <a href='/reference/typescript-api/entities/order#order'>Order</a> and
 an arguments object and should return the shipping price as an integer in cents.
@@ -120,6 +120,6 @@ type CalculateShippingFn<T extends ConfigArgs> = (
     ctx: RequestContext,
     order: Order,
     args: ConfigArgValues<T>,
-    method: ShippingMethod
+    method: ShippingMethod,
 ) => CalculateShippingFnResult
 ```

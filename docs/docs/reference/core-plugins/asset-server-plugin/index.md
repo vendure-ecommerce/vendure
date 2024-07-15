@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AssetServerPlugin
 
-<GenerationInfo sourceFile="packages/asset-server-plugin/src/plugin.ts" sourceLine="139" packageName="@vendure/asset-server-plugin" />
+<GenerationInfo sourceFile="packages/asset-server-plugin/src/plugin.ts" sourceLine="153" packageName="@vendure/asset-server-plugin" />
 
 The `AssetServerPlugin` serves assets (images and other files) from the local file system, and can also be configured to use
 other storage strategies (e.g. <a href='/reference/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3assetstoragestrategy'>S3AssetStorageStrategy</a>. It can also perform on-the-fly image transformations
@@ -84,6 +84,16 @@ supports them. Supported values for `format` are:
 * `avif`
 
 The `format` parameter can also be combined with presets (see below).
+
+### Quality
+
+Since v2.2.0, the image quality can be specified by adding the `q` query parameter:
+
+`http://localhost:3000/assets/some-asset.jpg?q=75`
+
+This applies to the `jpg`, `webp` and `avif` formats. The default quality value for `jpg` and `webp` is 80, and for `avif` is 50.
+
+The `q` parameter can also be combined with presets (see below).
 
 ### Transform presets
 

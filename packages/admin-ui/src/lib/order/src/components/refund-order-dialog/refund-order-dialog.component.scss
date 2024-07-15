@@ -1,7 +1,9 @@
+@import 'variables';
 
 :host {
     height: 100%;
     display: flex;
+    flex-direction: column;
     min-height: 64vh;
 }
 .refund-wrapper {
@@ -18,6 +20,11 @@
         color: var(--color-grey-300);
     }
 }
+
+::ng-deep .refund-wrapper .table-wrapper {
+    max-width: initial !important;
+}
+
 .quantity-col {
     background-color: var(--color-warning-100);
 }
@@ -33,26 +40,30 @@ clr-checkbox-wrapper {
 }
 .refund-details {
     display: flex;
+    flex-direction: column;
+    padding-bottom: var(--space-unit);
+    @media screen and (min-width: $breakpoint-medium) {
+        flex-direction: row;
+    }
+    gap: calc(var(--space-unit) * 2);
     justify-content: space-between;
-    &.faded {
-        opacity: 0.5;
+    vdr-card.unselected {
+        opacity: 0.8;
+    }
+    vdr-card.selected {
+        ::ng-deep .card-container {
+            //border-color: var(--color-success-300);
+        }
+    }
+    > * {
+        flex: 1;
     }
 }
-.totals {
-    margin-top: 48px;
-    .refund-total {
-        font-size: 18px;
-    }
-    .refund-total-error {
-        color: var(--color-error-500);
-    }
-    .refund-total-warning {
-        color: var(--color-warning-600);
-        max-width: 250px;
-    }
-    &.disabled {
-        color: var(--color-grey-300);
-    }
+.errors {
+    display: flex;
+    justify-content: flex-end;
+    gap: calc(var(--space-unit) * 2);
+    margin: calc(var(--space-unit) * 2) 0;
 }
 .prorated-wrapper {
     display: flex;
@@ -66,4 +77,15 @@ clr-checkbox-wrapper {
     .promotion-amount {
         margin-inline-start: 12px;
     }
+}
+
+vdr-card.faded {
+    opacity: 0.8;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+    gap: var(--clr-modal-footer-gap, 0.6rem);
 }

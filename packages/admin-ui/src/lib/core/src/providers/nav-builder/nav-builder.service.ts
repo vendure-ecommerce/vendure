@@ -8,6 +8,7 @@ import { Permission } from '../../common/generated-types';
 
 import {
     ActionBarContext,
+    ActionBarDropdownMenuItem,
     ActionBarItem,
     NavMenuBadgeType,
     NavMenuItem,
@@ -24,6 +25,7 @@ import {
 export class NavBuilderService {
     menuConfig$: Observable<NavMenuSection[]>;
     actionBarConfig$: Observable<ActionBarItem[]>;
+    actionBarDropdownConfig$: Observable<ActionBarDropdownMenuItem[]>;
     sectionBadges: { [sectionId: string]: Observable<NavMenuBadgeType> } = {};
 
     private initialNavMenuConfig$ = new BehaviorSubject<NavMenuSection[]>([]);
@@ -34,6 +36,7 @@ export class NavBuilderService {
         before?: string;
     }> = [];
     private addedActionBarItems: ActionBarItem[] = [];
+    private addedActionBarDropdownMenuItems: ActionBarDropdownMenuItem[] = [];
 
     constructor() {
         this.setupStreams();
@@ -80,6 +83,20 @@ export class NavBuilderService {
     addActionBarItem(config: ActionBarItem) {
         if (!this.addedActionBarItems.find(item => item.id === config.id)) {
             this.addedActionBarItems.push({
+                requiresPermission: Permission.Authenticated,
+                ...config,
+            });
+        }
+    }
+
+    /**
+     * Adds a dropdown menu to the ActionBar at the top right of each list or detail view. The locationId can
+     * be determined by inspecting the DOM and finding the `<vdr-action-bar>` element and its
+     * `data-location-id` attribute.
+     */
+    addActionBarDropdownMenuItem(config: ActionBarDropdownMenuItem) {
+        if (!this.addedActionBarDropdownMenuItems.find(item => item.id === config.id)) {
+            this.addedActionBarDropdownMenuItems.push({
                 requiresPermission: Permission.Authenticated,
                 ...config,
             });
@@ -185,5 +202,6 @@ export class NavBuilderService {
         );
 
         this.actionBarConfig$ = of(this.addedActionBarItems);
+        this.actionBarDropdownConfig$ = of(this.addedActionBarDropdownMenuItems);
     }
 }

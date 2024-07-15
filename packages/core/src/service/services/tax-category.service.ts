@@ -9,10 +9,9 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { EntityNotFoundError } from '../../common/error/errors';
-import { ListQueryOptions } from '../../common/index';
+import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { Tag } from '../../entity/index';
 import { TaxCategory } from '../../entity/tax-category/tax-category.entity';
 import { TaxRate } from '../../entity/tax-rate/tax-rate.entity';
 import { EventBus } from '../../event-bus';
@@ -62,7 +61,7 @@ export class TaxCategoryService {
                 .update({ isDefault: true }, { isDefault: false });
         }
         const newTaxCategory = await this.connection.getRepository(ctx, TaxCategory).save(taxCategory);
-        this.eventBus.publish(new TaxCategoryEvent(ctx, newTaxCategory, 'created', input));
+        await this.eventBus.publish(new TaxCategoryEvent(ctx, newTaxCategory, 'created', input));
         return assertFound(this.findOne(ctx, newTaxCategory.id));
     }
 
@@ -78,7 +77,7 @@ export class TaxCategoryService {
                 .update({ isDefault: true }, { isDefault: false });
         }
         await this.connection.getRepository(ctx, TaxCategory).save(updatedTaxCategory, { reload: false });
-        this.eventBus.publish(new TaxCategoryEvent(ctx, taxCategory, 'updated', input));
+        await this.eventBus.publish(new TaxCategoryEvent(ctx, taxCategory, 'updated', input));
         return assertFound(this.findOne(ctx, taxCategory.id));
     }
 
@@ -102,7 +101,7 @@ export class TaxCategoryService {
         try {
             const deletedTaxCategory = new TaxCategory(taxCategory);
             await this.connection.getRepository(ctx, TaxCategory).remove(taxCategory);
-            this.eventBus.publish(new TaxCategoryEvent(ctx, deletedTaxCategory, 'deleted', id));
+            await this.eventBus.publish(new TaxCategoryEvent(ctx, deletedTaxCategory, 'deleted', id));
             return {
                 result: DeletionResult.DELETED,
             };

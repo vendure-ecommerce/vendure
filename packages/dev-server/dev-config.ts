@@ -77,8 +77,9 @@ export const devConfig: VendureConfig = {
             assetUploadDir: path.join(__dirname, 'assets'),
         }),
         DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: false }),
-        BullMQJobQueuePlugin.init({}),
-        // DefaultJobQueuePlugin.init({}),
+        // Enable if you need to debug the job queue
+        // BullMQJobQueuePlugin.init({}),
+        DefaultJobQueuePlugin.init({}),
         // JobQueueTestPlugin.init({ queueCount: 10 }),
         // ElasticsearchPlugin.init({
         //     host: 'http://localhost',
@@ -101,53 +102,24 @@ export const devConfig: VendureConfig = {
             route: 'admin',
             port: 5001,
             // Un-comment to compile a custom admin ui
-            // app: compileUiExtensions({
-            //     outputPath: path.join(__dirname, './custom-admin-ui'),
-            //     extensions: [
-            //         {
-            //             id: 'test-ui-extension',
-            //             extensionPath: path.join(__dirname, 'test-plugins/with-ui-extension/ui'),
-            //             ngModules: [
-            //                 {
-            //                     type: 'lazy',
-            //                     route: 'greetz',
-            //                     ngModuleFileName: 'greeter.module.ts',
-            //                     ngModuleName: 'GreeterModule',
-            //                 },
-            //                 {
-            //                     type: 'shared',
-            //                     ngModuleFileName: 'greeter-shared.module.ts',
-            //                     ngModuleName: 'GreeterSharedModule',
-            //                 },
-            //             ],
-            //         },
-            //         {
-            //             globalStyles: path.join(
-            //                 __dirname,
-            //                 'test-plugins/with-ui-extension/ui/custom-theme.scss',
-            //             ),
-            //         },
-            //         {
-            //             id: 'external-ui-extension',
-            //             extensionPath: path.join(__dirname, 'test-plugins/with-external-ui-extension'),
-            //             ngModules: [
-            //                 {
-            //                     type: 'lazy',
-            //                     route: 'greet',
-            //                     ngModuleFileName: 'external-ui-extension.ts',
-            //                     ngModuleName: 'ExternalUiExtensionModule',
-            //                 },
-            //             ],
-            //             staticAssets: [
-            //                 {
-            //                     path: path.join(__dirname, 'test-plugins/with-external-ui-extension/app'),
-            //                     rename: 'external-app',
-            //                 },
-            //             ],
-            //         },
-            //     ],
-            //     devMode: true,
-            // }),
+            app: compileUiExtensions({
+                outputPath: path.join(__dirname, './custom-admin-ui'),
+                extensions: [
+                    {
+                        id: 'ui-extensions-library',
+                        extensionPath: path.join(__dirname, 'example-plugins/ui-extensions-library/ui'),
+                        routes: [{ route: 'ui-library', filePath: 'routes.ts' }],
+                        providers: ['providers.ts'],
+                    },
+                    {
+                        globalStyles: path.join(
+                            __dirname,
+                            'test-plugins/with-ui-extension/ui/custom-theme.scss',
+                        ),
+                    },
+                ],
+                devMode: true,
+            }),
         }),
     ],
 };
@@ -192,7 +164,7 @@ function getDbConfig(): DataSourceOptions {
                 port: 3306,
                 username: 'root',
                 password: '',
-                database: 'vendure2-dev',
+                database: 'vendure-dev',
             };
     }
 }

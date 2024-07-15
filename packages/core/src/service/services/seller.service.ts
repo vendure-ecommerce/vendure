@@ -8,8 +8,8 @@ import {
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
-import { assertFound } from '../../common/index';
 import { ListQueryOptions } from '../../common/types/common-types';
+import { assertFound } from '../../common/utils';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Seller } from '../../entity/seller/seller.entity';
 import { EventBus, SellerEvent } from '../../event-bus/index';
@@ -61,7 +61,7 @@ export class SellerService {
             input,
             seller,
         );
-        this.eventBus.publish(new SellerEvent(ctx, sellerWithRelations, 'created', input));
+        await this.eventBus.publish(new SellerEvent(ctx, sellerWithRelations, 'created', input));
         return assertFound(this.findOne(ctx, seller.id));
     }
 
@@ -75,7 +75,7 @@ export class SellerService {
             input,
             seller,
         );
-        this.eventBus.publish(new SellerEvent(ctx, sellerWithRelations, 'updated', input));
+        await this.eventBus.publish(new SellerEvent(ctx, sellerWithRelations, 'updated', input));
         return seller;
     }
 
@@ -83,7 +83,7 @@ export class SellerService {
         const seller = await this.connection.getEntityOrThrow(ctx, Seller, id);
         await this.connection.getRepository(ctx, Seller).remove(seller);
         const deletedSeller = new Seller(seller);
-        this.eventBus.publish(new SellerEvent(ctx, deletedSeller, 'deleted', id));
+        await this.eventBus.publish(new SellerEvent(ctx, deletedSeller, 'deleted', id));
         return {
             result: DeletionResult.DELETED,
         };

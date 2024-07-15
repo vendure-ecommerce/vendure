@@ -126,6 +126,8 @@ export const PAYMENT_WITH_REFUNDS_FRAGMENT = gql`
 export const ORDER_LINE_FRAGMENT = gql`
     fragment OrderLine on OrderLine {
         id
+        createdAt
+        updatedAt
         featuredAsset {
             preview
         }
@@ -211,6 +213,8 @@ export const ORDER_DETAIL_FRAGMENT = gql`
         shipping
         shippingWithTax
         shippingLines {
+            id
+            discountedPriceWithTax
             shippingMethod {
                 id
                 code

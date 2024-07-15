@@ -35,6 +35,7 @@ export class AppComponent implements OnInit {
             .mapStream(data => data.uiState.theme)
             .subscribe(theme => {
                 this._document?.body.setAttribute('data-theme', theme);
+                this._document?.body.setAttribute('cds-theme', theme === 'dark' ? 'dark' : 'light');
             });
 
         // Once logged in, keep the localStorage "contentLanguageCode" in sync with the

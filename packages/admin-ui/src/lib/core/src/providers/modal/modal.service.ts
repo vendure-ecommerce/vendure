@@ -31,7 +31,7 @@ export class ModalService {
      * displayed in the modal dialog. See example:
      *
      * @example
-     * ```HTML
+     * ```ts
      * class MyDialog implements Dialog {
      *  resolveWith: (result?: any) => void;
      *
@@ -48,7 +48,7 @@ export class ModalService {
      * ```
      *
      * @example
-     * ```HTML
+     * ```html
      * <ng-template vdrDialogTitle>Title of the modal</ng-template>
      *
      * <p>

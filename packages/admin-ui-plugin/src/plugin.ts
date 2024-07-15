@@ -1,5 +1,8 @@
 import { MiddlewareConsumer, NestModule } from '@nestjs/common';
-import { DEFAULT_AUTH_TOKEN_HEADER_KEY, DEFAULT_CHANNEL_TOKEN_KEY } from '@vendure/common/lib/shared-constants';
+import {
+    DEFAULT_AUTH_TOKEN_HEADER_KEY,
+    DEFAULT_CHANNEL_TOKEN_KEY,
+} from '@vendure/common/lib/shared-constants';
 import {
     AdminUiAppConfig,
     AdminUiAppDevModeConfig,
@@ -27,6 +30,7 @@ import {
     defaultLocale,
     DEFAULT_APP_PATH,
     loggerCtx,
+    defaultAvailableLocales,
 } from './constants';
 import { MetricsService } from './service/metrics.service';
 
@@ -41,7 +45,7 @@ export interface AdminUiPluginOptions {
      * @description
      * The route to the Admin UI.
      *
-     * Note: If you are using the {@link compileUiExtensions} function to compile a custom version of the Admin UI, then
+     * Note: If you are using the `compileUiExtensions` function to compile a custom version of the Admin UI, then
      * the route should match the `baseHref` option passed to that function. The default value of `baseHref` is `/admin/`,
      * so it only needs to be changed if you set this `route` option to something other than `"admin"`.
      */
@@ -134,7 +138,10 @@ export interface AdminUiPluginOptions {
 export class AdminUiPlugin implements NestModule {
     private static options: AdminUiPluginOptions | undefined;
 
-    constructor(private configService: ConfigService, private processContext: ProcessContext) {}
+    constructor(
+        private configService: ConfigService,
+        private processContext: ProcessContext,
+    ) {}
 
     /**
      * @description
@@ -257,8 +264,17 @@ export class AdminUiPlugin implements NestModule {
         const propOrDefault = <Prop extends keyof AdminUiConfig>(
             prop: Prop,
             defaultVal: AdminUiConfig[Prop],
+            isArray: boolean = false,
         ): AdminUiConfig[Prop] => {
-            return partialConfig ? (partialConfig as AdminUiConfig)[prop] || defaultVal : defaultVal;
+            if (isArray) {
+                const isValidArray = !!partialConfig
+                    ? !!((partialConfig as AdminUiConfig)[prop] as any[])?.length
+                    : false;
+
+                return !!partialConfig && isValidArray ? (partialConfig as AdminUiConfig)[prop] : defaultVal;
+            } else {
+                return partialConfig ? (partialConfig as AdminUiConfig)[prop] || defaultVal : defaultVal;
+            }
         };
         return {
             adminApiPath: propOrDefault('adminApiPath', apiOptions.adminApiPath),
@@ -274,11 +290,12 @@ export class AdminUiPlugin implements NestModule {
             ),
             channelTokenKey: propOrDefault(
                 'channelTokenKey',
-                apiOptions.channelTokenKey || DEFAULT_CHANNEL_TOKEN_KEY
+                apiOptions.channelTokenKey || DEFAULT_CHANNEL_TOKEN_KEY,
             ),
             defaultLanguage: propOrDefault('defaultLanguage', defaultLanguage),
             defaultLocale: propOrDefault('defaultLocale', defaultLocale),
-            availableLanguages: propOrDefault('availableLanguages', defaultAvailableLanguages),
+            availableLanguages: propOrDefault('availableLanguages', defaultAvailableLanguages, true),
+            availableLocales: propOrDefault('availableLocales', defaultAvailableLocales, true),
             loginUrl: options.adminUiConfig?.loginUrl,
             brand: options.adminUiConfig?.brand,
             hideVendureBranding: propOrDefault(

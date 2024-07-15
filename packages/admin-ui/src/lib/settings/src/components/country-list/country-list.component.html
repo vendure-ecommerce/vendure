@@ -5,9 +5,10 @@
                 [availableLanguageCodes]="availableLanguages$ | async"
                 [currentLanguageCode]="contentLanguage$ | async"
                 (languageCodeChange)="setLanguage($event)"
-            ></vdr-language-selector></vdr-ab-left>
+            />
+        </vdr-ab-left>
         <vdr-ab-right>
-            <vdr-action-bar-items locationId="country-list"></vdr-action-bar-items>
+            <vdr-action-bar-items locationId="country-list" />
             <a
                 class="btn btn-primary"
                 *vdrIfPermissions="['CreateSettings', 'CreateCountry']"
@@ -16,6 +17,7 @@
                 <clr-icon shape="plus"></clr-icon>
                 {{ 'settings.create-new-country' | translate }}
             </a>
+            <vdr-action-bar-dropdown-menu locationId="country-list" />
         </vdr-ab-right>
     </vdr-action-bar>
 </vdr-page-block>
@@ -45,7 +47,8 @@
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.created-at' | translate" id="created-at"
+        [heading]="'common.created-at' | translate"
+        id="created-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('createdAt')"
     >
@@ -54,7 +57,8 @@
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.updated-at' | translate" id="updated-at"
+        [heading]="'common.updated-at' | translate"
+        id="updated-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('updatedAt')"
     >
@@ -62,7 +66,12 @@
             {{ country.updatedAt | localeDate : 'short' }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.name' | translate" id="name" [optional]="false" [sort]="sorts.get('name')">
+    <vdr-dt2-column
+        [heading]="'common.name' | translate"
+        id="name"
+        [optional]="false"
+        [sort]="sorts.get('name')"
+    >
         <ng-template let-country="item">
             <a class="button-ghost" [routerLink]="['./', country.id]"
                 ><span>{{ country.name }}</span>

@@ -26,7 +26,7 @@ export type JobUpdate<T extends JobData<T>> = Pick<
 
 /**
  * @description
- * Job update options, that you can specify by calling {@link SubscribableJob.updates updates()} method.
+ * Job update options, that you can specify by calling {@link SubscribableJob} `updates` method.
  *
  * @docsCategory JobQueue
  * @docsPage types
@@ -75,6 +75,7 @@ export class SubscribableJob<T extends JobData<T> = any> extends Job<T> {
      * to obtain updates. If this updates are not subscribed to, then no polling occurs.
      *
      * Polling interval, timeout and other options may be configured with an options arguments {@link JobUpdateOptions}.
+     *
      */
     updates(options?: JobUpdateOptions): Observable<JobUpdate<T>> {
         const pollInterval = Math.max(50, options?.pollInterval ?? 200);

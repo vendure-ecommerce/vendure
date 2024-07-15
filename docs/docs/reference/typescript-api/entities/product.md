@@ -27,7 +27,7 @@ class Product extends VendureEntity implements Translatable, HasCustomFields, Ch
     @Column({ default: true })
     enabled: boolean;
     @Index()
-    @ManyToOne(type => Asset, { onDelete: 'SET NULL' })
+    @ManyToOne(type => Asset, asset => asset.featuredInProducts, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
     @OneToMany(type => ProductAsset, productAsset => productAsset.product)
     assets: ProductAsset[];
@@ -37,14 +37,14 @@ class Product extends VendureEntity implements Translatable, HasCustomFields, Ch
     variants: ProductVariant[];
     @OneToMany(type => ProductOptionGroup, optionGroup => optionGroup.product)
     optionGroups: ProductOptionGroup[];
-    @ManyToMany(type => FacetValue)
+    @ManyToMany(type => FacetValue, facetValue => facetValue.products)
     @JoinTable()
     facetValues: FacetValue[];
-    @Column(type => CustomProductFields)
-    customFields: CustomProductFields;
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.products)
     @JoinTable()
     channels: Channel[];
+    @Column(type => CustomProductFields)
+    customFields: CustomProductFields;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
@@ -116,14 +116,14 @@ class Product extends VendureEntity implements Translatable, HasCustomFields, Ch
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>[]`}   />
 
 
-### customFields
-
-<MemberInfo kind="property" type={`CustomProductFields`}   />
-
-
 ### channels
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]`}   />
+
+
+### customFields
+
+<MemberInfo kind="property" type={`CustomProductFields`}   />
 
 
 

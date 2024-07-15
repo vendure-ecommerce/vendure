@@ -7,22 +7,23 @@ import { DocumentNode } from 'graphql/language/ast';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { CustomFields } from '../../common/generated-types';
+import { CustomFieldConfig } from '../../common/generated-types';
 import { QueryResult } from '../query-result';
 import { ServerConfigService } from '../server-config';
 import { addCustomFields } from '../utils/add-custom-fields';
-import {
-    isEntityCreateOrUpdateMutation,
-    removeReadonlyCustomFields,
-} from '../utils/remove-readonly-custom-fields';
+import { removeReadonlyCustomFields } from '../utils/remove-readonly-custom-fields';
 import { transformRelationCustomFieldInputs } from '../utils/transform-relation-custom-field-inputs';
+import { isEntityCreateOrUpdateMutation } from '../utils/is-entity-create-or-update-mutation';
 
 @Injectable()
 export class BaseDataService {
-    constructor(private apollo: Apollo, private serverConfigService: ServerConfigService) {}
+    constructor(
+        private apollo: Apollo,
+        private serverConfigService: ServerConfigService,
+    ) {}
 
-    private get customFields(): CustomFields {
-        return this.serverConfigService.serverConfig.customFieldConfig || {};
+    private get customFields(): Map<string, CustomFieldConfig[]> {
+        return this.serverConfigService.customFieldsMap;
     }
 
     /**
@@ -66,7 +67,7 @@ export class BaseDataService {
     private prepareCustomFields<V>(mutation: DocumentNode, variables: V): V {
         const entity = isEntityCreateOrUpdateMutation(mutation);
         if (entity) {
-            const customFieldConfig = this.customFields[entity];
+            const customFieldConfig = this.customFields.get(entity);
             if (variables && customFieldConfig) {
                 let variablesClone = simpleDeepClone(variables as any);
                 variablesClone = removeReadonlyCustomFields(variablesClone, customFieldConfig);

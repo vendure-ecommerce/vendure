@@ -16,7 +16,8 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/common/request-context';
-import { RelationPaths } from '../../api/index';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
+import { RequestContextCacheService } from '../../cache/request-context-cache.service';
 import { getAllPermissionsMetadata } from '../../common/constants';
 import {
     EntityNotFoundError,
@@ -56,6 +57,7 @@ export class RoleService {
         private listQueryBuilder: ListQueryBuilder,
         private configService: ConfigService,
         private eventBus: EventBus,
+        private requestContextCache: RequestContextCacheService,
     ) {}
 
     async initRoles() {
@@ -70,12 +72,21 @@ export class RoleService {
         relations?: RelationPaths<Role>,
     ): Promise<PaginatedList<Role>> {
         return this.listQueryBuilder
-            .build(Role, options, { relations: relations ?? ['channels'], ctx })
+            .build(Role, options, { relations: unique([...(relations ?? []), 'channels']), ctx })
             .getManyAndCount()
-            .then(([items, totalItems]) => ({
-                items,
-                totalItems,
-            }));
+            .then(async ([items, totalItems]) => {
+                const visibleRoles: Role[] = [];
+                for (const item of items) {
+                    const canRead = await this.activeUserCanReadRole(ctx, item);
+                    if (canRead) {
+                        visibleRoles.push(item);
+                    }
+                }
+                return {
+                    items: visibleRoles,
+                    totalItems,
+                };
+            });
     }
 
     findOne(ctx: RequestContext, roleId: ID, relations?: RelationPaths<Role>): Promise<Role | undefined> {
@@ -83,9 +94,13 @@ export class RoleService {
             .getRepository(ctx, Role)
             .findOne({
                 where: { id: roleId },
-                relations: relations ?? ['channels'],
+                relations: unique([...(relations ?? []), 'channels']),
             })
-            .then(result => result ?? undefined);
+            .then(async result => {
+                if (result && (await this.activeUserCanReadRole(ctx, result))) {
+                    return result;
+                }
+            });
     }
 
     getChannelsForRole(ctx: RequestContext, roleId: ID): Promise<Channel[]> {
@@ -156,6 +171,21 @@ export class RoleService {
         return false;
     }
 
+    private async activeUserCanReadRole(ctx: RequestContext, role: Role): Promise<boolean> {
+        const permissionsRequired = getChannelPermissions([role]);
+        for (const channelPermissions of permissionsRequired) {
+            const activeUserHasRequiredPermissions = await this.userHasAllPermissionsOnChannel(
+                ctx,
+                channelPermissions.id,
+                channelPermissions.permissions,
+            );
+            if (!activeUserHasRequiredPermissions) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * @description
      * Returns true if the User has all the specified permissions on that Channel
@@ -178,13 +208,24 @@ export class RoleService {
         ctx: RequestContext,
         channelId: ID,
     ): Promise<Permission[]> {
-        if (ctx.activeUserId == null) {
+        const { activeUserId } = ctx;
+        if (activeUserId == null) {
             return [];
         }
-        const user = await this.connection.getEntityOrThrow(ctx, User, ctx.activeUserId, {
-            relations: ['roles', 'roles.channels'],
-        });
-        const userChannels = getUserChannelsPermissions(user);
+        // For apps with many channels, this is a performance bottleneck as it will be called
+        // for each channel in certain code paths such as the GetActiveAdministrator query in the
+        // admin ui. Caching the result prevents unbounded quadratic slowdown.
+        const userChannels = await this.requestContextCache.get(
+            ctx,
+            `RoleService.getActiveUserPermissionsOnChannel.user(${activeUserId})`,
+            async () => {
+                const user = await this.connection.getEntityOrThrow(ctx, User, activeUserId, {
+                    relations: ['roles', 'roles.channels'],
+                });
+                return getUserChannelsPermissions(user);
+            },
+        );
+
         const channel = userChannels.find(c => idsAreEqual(c.id, channelId));
         if (!channel) {
             return [];
@@ -203,7 +244,7 @@ export class RoleService {
         }
         await this.checkActiveUserHasSufficientPermissions(ctx, targetChannels, input.permissions);
         const role = await this.createRoleForChannels(ctx, input, targetChannels);
-        this.eventBus.publish(new RoleEvent(ctx, role, 'created', input));
+        await this.eventBus.publish(new RoleEvent(ctx, role, 'created', input));
         return role;
     }
 
@@ -237,7 +278,7 @@ export class RoleService {
             updatedRole.channels = targetChannels;
         }
         await this.connection.getRepository(ctx, Role).save(updatedRole, { reload: false });
-        this.eventBus.publish(new RoleEvent(ctx, role, 'updated', input));
+        await this.eventBus.publish(new RoleEvent(ctx, role, 'updated', input));
         return await assertFound(this.findOne(ctx, role.id));
     }
 
@@ -251,7 +292,7 @@ export class RoleService {
         }
         const deletedRole = new Role(role);
         await this.connection.getRepository(ctx, Role).remove(role);
-        this.eventBus.publish(new RoleEvent(ctx, deletedRole, 'deleted', id));
+        await this.eventBus.publish(new RoleEvent(ctx, deletedRole, 'deleted', id));
         return {
             result: DeletionResult.DELETED,
         };

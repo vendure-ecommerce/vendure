@@ -30,6 +30,10 @@
     }
 }
 
+.version {
+    color: var(--color-grey-300);
+}
+
 // fade in animation
 @keyframes fade-in {
     0% {
@@ -72,7 +76,7 @@
 }
 
 .settings-nav-container {
-    margin: calc(var(--space-unit) * 3) 0;
+    margin: calc(var(--space-unit) * 3) 0 -10px 0;
     hr {
         margin: 0 calc(var(--space-unit) * 4);
         margin-bottom: calc(var(--space-unit) * 4);

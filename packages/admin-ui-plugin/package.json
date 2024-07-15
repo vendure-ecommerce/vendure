@@ -1,6 +1,6 @@
 {
     "name": "@vendure/admin-ui-plugin",
-    "version": "2.1.0",
+    "version": "2.2.7",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "files": [
@@ -8,7 +8,7 @@
     ],
     "license": "MIT",
     "scripts": {
-        "build": "rimraf lib && node -r ts-node/register build.ts && yarn compile",
+        "build": "rimraf lib && node -r ts-node/register build.ts && npm run compile",
         "watch": "tsc -p ./tsconfig.build.json --watch",
         "lint": "eslint --fix .",
         "compile": "tsc -p ./tsconfig.build.json"
@@ -19,16 +19,17 @@
         "access": "public"
     },
     "devDependencies": {
-        "@types/express": "^4.17.8",
-        "@types/fs-extra": "^9.0.1",
-        "@vendure/common": "^2.1.0",
-        "@vendure/core": "^2.1.0",
-        "express": "^4.17.1",
-        "rimraf": "^3.0.2",
-        "typescript": "4.9.5"
+        "@types/express": "^4.17.21",
+        "@types/fs-extra": "^11.0.4",
+        "@vendure/admin-ui": "^2.2.7",
+        "@vendure/common": "^2.2.7",
+        "@vendure/core": "^2.2.7",
+        "express": "^4.18.3",
+        "rimraf": "^5.0.5",
+        "typescript": "5.4.2"
     },
     "dependencies": {
         "date-fns": "^2.30.0",
-        "fs-extra": "^11.1.1"
+        "fs-extra": "^11.2.0"
     }
 }

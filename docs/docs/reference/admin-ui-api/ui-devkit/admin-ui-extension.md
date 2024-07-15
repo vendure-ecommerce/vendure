@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AdminUiExtension
 
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="98" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="130" packageName="@vendure/ui-devkit" />
 
 Defines extensions to the Admin UI application by specifying additional
 Angular [NgModules](https://angular.io/guide/ngmodules) which are compiled
@@ -28,10 +28,7 @@ interface AdminUiExtension extends Partial<TranslationExtension>,
     extensionPath: string;
     ngModules?: Array<AdminUiExtensionSharedModule | AdminUiExtensionLazyModule>;
     providers?: string[];
-    routes?: Array<{
-        route: string;
-        filePath: string;
-    }>;
+    routes?: UiExtensionRouteDefinition[];
     pathAlias?: string;
     exclude?: string[];
 }
@@ -68,7 +65,7 @@ Defines the paths to a file that exports an array of shared providers such as na
 custom detail components, action bar items, custom history entry components.
 ### routes
 
-<MemberInfo kind="property" type={`Array&#60;{         route: string;         filePath: string;     }&#62;`}   />
+<MemberInfo kind="property" type={`<a href='/reference/admin-ui-api/ui-devkit/admin-ui-extension#uiextensionroutedefinition'>UiExtensionRouteDefinition</a>[]`}   />
 
 Defines routes that will be lazy-loaded at the `/extensions/` route. The filePath should point to a file
 relative to the `extensionPath` which exports an array of Angular route definitions.
@@ -288,9 +285,50 @@ default values defined in Clarity.
 </div>
 
 
+## UiExtensionRouteDefinition
+
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="92" packageName="@vendure/ui-devkit" />
+
+Defines a route which will be added to the Admin UI application.
+
+```ts title="Signature"
+interface UiExtensionRouteDefinition {
+    route: string;
+    filePath: string;
+    prefix?: string;
+}
+```
+
+<div className="members-wrapper">
+
+### route
+
+<MemberInfo kind="property" type={`string`}   />
+
+The name of the route. This will be used as the path in the URL.
+### filePath
+
+<MemberInfo kind="property" type={`string`}   />
+
+The path to the file which exports an array of Angular route definitions.
+### prefix
+
+<MemberInfo kind="property" type={`string`}  since="2.2.0"  />
+
+All extensions will be mounted under the `/extensions/` route. This option allows you to specify a
+custom prefix rather than `/extensions/`. For example, setting this to `custom` would cause the extension
+to be mounted at `/custom/<route>` instead.
+
+A common use case for this is to mount the extension at the root of the Admin UI, by setting this to an empty string.
+This is useful when the extension is intended to replace the default Admin UI, rather than extend it.
+
+
+</div>
+
+
 ## StaticAssetDefinition
 
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="251" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="280" packageName="@vendure/ui-devkit" />
 
 A static asset can be provided as a path to the asset, or as an object containing a path and a new
 name, which will cause the compiler to copy and then rename the asset.
@@ -302,7 +340,7 @@ type StaticAssetDefinition = string | { path: string; rename: string }
 
 ## AdminUiExtensionSharedModule
 
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="260" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="289" packageName="@vendure/ui-devkit" />
 
 Configuration defining a single NgModule with which to extend the Admin UI.
 
@@ -340,7 +378,7 @@ The name of the extension module class.
 
 ## AdminUiExtensionLazyModule
 
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="287" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="316" packageName="@vendure/ui-devkit" />
 
 Configuration defining a single NgModule with which to extend the Admin UI.
 

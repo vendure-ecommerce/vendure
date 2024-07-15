@@ -1,4 +1,4 @@
-import { RequestContext } from '../../api/index';
+import { RequestContext } from '../../api/common/request-context';
 import { InjectableStrategy } from '../../common/types/injectable-strategy';
 
 /**

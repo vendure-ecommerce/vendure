@@ -14,10 +14,10 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { RelationPaths } from '../../api/index';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { EntityNotFoundError, ForbiddenError, UserInputError } from '../../common/error/errors';
-import { Translated } from '../../common/index';
 import { ListQueryOptions } from '../../common/types/common-types';
+import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Logger } from '../../config/logger/vendure-logger';
@@ -133,7 +133,9 @@ export class ShippingMethodService {
             input,
             newShippingMethod,
         );
-        this.eventBus.publish(new ShippingMethodEvent(ctx, shippingMethodWithRelations, 'created', input));
+        await this.eventBus.publish(
+            new ShippingMethodEvent(ctx, shippingMethodWithRelations, 'created', input),
+        );
         return assertFound(this.findOne(ctx, newShippingMethod.id));
     }
 
@@ -166,16 +168,16 @@ export class ShippingMethodService {
                 input.fulfillmentHandler,
             );
         }
-        await this.connection
-            .getRepository(ctx, ShippingMethod)
-            .save(updatedShippingMethod, { reload: false });
         await this.customFieldRelationService.updateRelations(
             ctx,
             ShippingMethod,
             input,
             updatedShippingMethod,
         );
-        this.eventBus.publish(new ShippingMethodEvent(ctx, shippingMethod, 'updated', input));
+        await this.connection
+            .getRepository(ctx, ShippingMethod)
+            .save(updatedShippingMethod, { reload: false });
+        await this.eventBus.publish(new ShippingMethodEvent(ctx, shippingMethod, 'updated', input));
         return assertFound(this.findOne(ctx, shippingMethod.id));
     }
 
@@ -186,7 +188,7 @@ export class ShippingMethodService {
         });
         shippingMethod.deletedAt = new Date();
         await this.connection.getRepository(ctx, ShippingMethod).save(shippingMethod, { reload: false });
-        this.eventBus.publish(new ShippingMethodEvent(ctx, shippingMethod, 'deleted', id));
+        await this.eventBus.publish(new ShippingMethodEvent(ctx, shippingMethod, 'deleted', id));
         return {
             result: DeletionResult.DELETED,
         };

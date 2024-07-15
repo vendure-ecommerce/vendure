@@ -8,7 +8,6 @@ import {
     GetServerConfigQuery,
     OrderProcessState,
     PermissionDefinition,
-    ServerConfig,
 } from '../common/generated-types';
 
 import { GET_GLOBAL_SETTINGS, GET_SERVER_CONFIG } from './definitions/settings-definitions';
@@ -24,8 +23,8 @@ export function initializeServerConfigService(serverConfigService: ServerConfigS
  */
 @Injectable()
 export class ServerConfigService {
-    private _serverConfig: ServerConfig = {} as any;
-
+    private _serverConfig: GetServerConfigQuery['globalSettings']['serverConfig'] = {} as any;
+    customFieldsMap: Map<string, CustomFieldConfig[]> = new Map();
     private get baseDataService() {
         return this.injector.get<BaseDataService>(BaseDataService);
     }
@@ -49,6 +48,9 @@ export class ServerConfigService {
         ).then(
             result => {
                 this._serverConfig = result.globalSettings.serverConfig;
+                for (const entityCustomFields of this._serverConfig.entityCustomFields) {
+                    this.customFieldsMap.set(entityCustomFields.entityName, entityCustomFields.customFields);
+                }
             },
             err => {
                 // Let the error fall through to be caught by the http interceptor.
@@ -73,8 +75,8 @@ export class ServerConfigService {
     /**
      * Retrieves the custom field configs for the given entity type.
      */
-    getCustomFieldsFor(type: Exclude<keyof CustomFields, '__typename'>): CustomFieldConfig[] {
-        return this.serverConfig.customFieldConfig[type] || [];
+    getCustomFieldsFor(type: Exclude<keyof CustomFields, '__typename'> | string): CustomFieldConfig[] {
+        return this.customFieldsMap.get(type) || [];
     }
 
     getOrderProcessStates(): OrderProcessState[] {
@@ -89,7 +91,7 @@ export class ServerConfigService {
         return this.serverConfig.permissions;
     }
 
-    get serverConfig(): ServerConfig {
+    get serverConfig(): GetServerConfigQuery['globalSettings']['serverConfig'] {
         return this._serverConfig;
     }
 }

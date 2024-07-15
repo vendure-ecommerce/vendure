@@ -72,6 +72,7 @@ export type PageLocationId =
     | 'job-list'
     | 'order-detail'
     | 'order-list'
+    | 'modify-order'
     | 'payment-method-detail'
     | 'payment-method-list'
     | 'product-detail'
@@ -97,7 +98,8 @@ export type PageLocationId =
 
 /**
  * @description
- * The valid locationIds for registering action bar items.
+ * The valid locationIds for registering action bar items. For a list of
+ * values, see {@link PageLocationId}.
  *
  * @docsCategory action-bar
  */

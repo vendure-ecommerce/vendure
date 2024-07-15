@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { GlobalFlag, LanguageCode } from '@vendure/common/lib/generated-types';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { unique } from '@vendure/common/lib/unique';
-import parse from 'csv-parse';
+import { parse, Options } from 'csv-parse';
 import { Stream } from 'stream';
 
 import { InternalServerError } from '../../../common/error/errors';
@@ -163,7 +163,7 @@ export class ImportParser {
         input: string | Stream,
         mainLanguage: LanguageCode = this.configService.defaultLanguageCode,
     ): Promise<ParseResult<ParsedProductWithVariants>> {
-        const options: parse.Options = {
+        const options: Options = {
             trim: true,
             relax_column_count: true,
         };

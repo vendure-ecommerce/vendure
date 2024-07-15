@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Middleware
 
-<GenerationInfo sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="209" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="212" packageName="@vendure/core" />
 
 Defines API middleware, set in the <a href='/reference/typescript-api/configuration/api-options#apioptions'>ApiOptions</a>. Middleware can be either
 [Express middleware](https://expressjs.com/en/guide/using-middleware.html) or [NestJS middleware](https://docs.nestjs.com/middleware).

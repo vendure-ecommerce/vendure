@@ -23,7 +23,7 @@ Let's imagine that your project has an external content management system (CMS) 
 
 ```ts title="src/plugins/cms/ui/components/product-info/product-info.component.ts"
 import { Component, OnInit } from '@angular/core';
-import { switchMap } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 import { FormGroup } from '@angular/forms';
 import { DataService, CustomDetailComponent, SharedModule } from '@vendure/admin-ui/core';
 import { CmsDataService } from '../../providers/cms-data.service';

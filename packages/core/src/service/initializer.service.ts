@@ -17,8 +17,11 @@ import { TaxRateService } from './services/tax-rate.service';
 import { ZoneService } from './services/zone.service';
 
 /**
+ * @description
  * Only used internally to run the various service init methods in the correct
  * sequence on bootstrap.
+ *
+ * @docsCategory services
  */
 @Injectable()
 export class InitializerService {
@@ -53,7 +56,7 @@ export class InitializerService {
         await this.shippingMethodService.initShippingMethods();
         await this.taxRateService.initTaxRates();
         await this.stockLocationService.initStockLocations();
-        this.eventBus.publish(new InitializerEvent());
+        await this.eventBus.publish(new InitializerEvent());
     }
 
     /**

@@ -1,4 +1,27 @@
 <vdr-order-data-table id="order-detail-list" [items]="order.lines" [order]="order">
+    <vdr-dt2-column id="id" [heading]="'common.id' | translate" [hiddenByDefault]="true">
+        <ng-template let-line="item">
+            {{ line.id }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column
+            id="created-at"
+            [heading]="'common.created-at' | translate"
+            [hiddenByDefault]="true"
+    >
+        <ng-template let-line="item">
+            {{ line.createdAt | localeDate : 'short' }}
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column
+            id="updated-at"
+            [heading]="'common.updated-at' | translate"
+            [hiddenByDefault]="true"
+    >
+        <ng-template let-line="item">
+            {{ line.updatedAt | localeDate : 'short' }}
+        </ng-template>
+    </vdr-dt2-column>
     <vdr-dt2-column [heading]="'common.image' | translate" id="image">
         <ng-template let-line="item">
             <div class="image-placeholder">

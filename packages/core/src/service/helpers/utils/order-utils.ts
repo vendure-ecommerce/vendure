@@ -4,9 +4,10 @@ import { summate } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
 import { In } from 'typeorm';
 
-import { RequestContext } from '../../../api/index';
-import { EntityNotFoundError, idsAreEqual } from '../../../common/index';
-import { TransactionalConnection } from '../../../connection/index';
+import { RequestContext } from '../../../api/common/request-context';
+import { EntityNotFoundError } from '../../../common/error/errors';
+import { idsAreEqual } from '../../../common/utils';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { Order } from '../../../entity/order/order.entity';
 import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { FulfillmentLine } from '../../../entity/order-line-reference/fulfillment-line.entity';

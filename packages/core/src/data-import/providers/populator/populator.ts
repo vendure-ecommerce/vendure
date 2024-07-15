@@ -11,7 +11,7 @@ import {
     Logger,
 } from '../../../config';
 import { manualFulfillmentHandler } from '../../../config/fulfillment/manual-fulfillment-handler';
-import { TransactionalConnection } from '../../../connection/index';
+import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { Channel, Collection, FacetValue, TaxCategory, User } from '../../../entity';
 import {
     CollectionService,
@@ -125,7 +125,7 @@ export class Populator {
         for (const collectionDef of data.collections) {
             const parent = collectionDef.parentName && collectionMap.get(collectionDef.parentName);
             const parentId = parent ? parent.id.toString() : undefined;
-            const { assets } = await this.assetImporter.getAssets(collectionDef.assetPaths || []);
+            const { assets } = await this.assetImporter.getAssets(collectionDef.assetPaths || [], ctx);
             let filters: ConfigurableOperationInput[] = [];
             try {
                 filters = (collectionDef.filters || []).map(filter =>
@@ -148,6 +148,7 @@ export class Populator {
                 assetIds: assets.map(a => a.id.toString()),
                 featuredAssetId: assets.length ? assets[0].id.toString() : undefined,
                 filters,
+                inheritFilters: collectionDef.inheritFilters ?? true,
             });
             collectionMap.set(collectionDef.name, collection);
         }

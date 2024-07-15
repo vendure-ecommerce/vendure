@@ -3,7 +3,6 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     DataService,
     FACET_WITH_VALUE_LIST_FRAGMENT,
-    FACET_WITH_VALUES_FRAGMENT,
     GetFacetListDocument,
     GetFacetListQuery,
     ItemOf,
@@ -13,7 +12,7 @@ import {
 import { gql } from 'apollo-angular';
 
 export const FACET_LIST_QUERY = gql`
-    query GetFacetList($options: FacetListOptions) {
+    query GetFacetList($options: FacetListOptions, $facetValueListOptions: FacetValueListOptions) {
         facets(options: $options) {
             items {
                 ...FacetWithValueList
@@ -77,6 +76,9 @@ export class FacetListComponent
                         ...this.filters.createFilterInput(),
                     },
                     sort: this.sorts.createSortInput(),
+                },
+                facetValueListOptions: {
+                    take: 100,
                 },
             }),
             refreshListOnChanges: [this.filters.valueChanges, this.sorts.valueChanges],

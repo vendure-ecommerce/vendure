@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Channel
 
-<GenerationInfo sourceFile="packages/core/src/entity/channel/channel.entity.ts" sourceLine="31" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/channel/channel.entity.ts" sourceLine="37" packageName="@vendure/core" />
 
 A Channel represents a distinct sales channel and configures defaults for that
 channel.
@@ -39,7 +39,7 @@ class Channel extends VendureEntity {
     @Column({ default: '', nullable: true })
     description: string;
     @Index()
-    @ManyToOne(type => Seller)
+    @ManyToOne(type => Seller, seller => seller.channels)
     seller?: Seller;
     @EntityId({ nullable: true })
     sellerId?: ID;
@@ -47,10 +47,10 @@ class Channel extends VendureEntity {
     @Column({ type: 'simple-array', nullable: true })
     availableLanguageCodes: LanguageCode[];
     @Index()
-    @ManyToOne(type => Zone)
+    @ManyToOne(type => Zone, zone => zone.defaultTaxZoneChannels)
     defaultTaxZone: Zone;
     @Index()
-    @ManyToOne(type => Zone)
+    @ManyToOne(type => Zone, zone => zone.defaultShippingZoneChannels)
     defaultShippingZone: Zone;
     @Column('varchar')
     defaultCurrencyCode: CurrencyCode;
@@ -63,6 +63,28 @@ class Channel extends VendureEntity {
     @Column(type => CustomChannelFields)
     customFields: CustomChannelFields;
     @Column() pricesIncludeTax: boolean;
+    @ManyToMany(type => Product, product => product.channels, { onDelete: 'CASCADE' })
+    products: Product[];
+    @ManyToMany(type => ProductVariant, productVariant => productVariant.channels, { onDelete: 'CASCADE' })
+    productVariants: ProductVariant[];
+    @ManyToMany(type => FacetValue, facetValue => facetValue.channels, { onDelete: 'CASCADE' })
+    facetValues: FacetValue[];
+    @ManyToMany(type => Facet, facet => facet.channels, { onDelete: 'CASCADE' })
+    facets: Facet[];
+    @ManyToMany(type => Collection, collection => collection.channels, { onDelete: 'CASCADE' })
+    collections: Collection[];
+    @ManyToMany(type => Promotion, promotion => promotion.channels, { onDelete: 'CASCADE' })
+    promotions: Promotion[];
+    @ManyToMany(type => PaymentMethod, paymentMethod => paymentMethod.channels, { onDelete: 'CASCADE' })
+    paymentMethods: PaymentMethod[];
+    @ManyToMany(type => ShippingMethod, shippingMethod => shippingMethod.channels, { onDelete: 'CASCADE' })
+    shippingMethods: ShippingMethod[];
+    @ManyToMany(type => Customer, customer => customer.channels, { onDelete: 'CASCADE' })
+    customers: Customer[];
+    @ManyToMany(type => Role, role => role.channels, { onDelete: 'CASCADE' })
+    roles: Role[];
+    @ManyToMany(type => StockLocation, stockLocation => stockLocation.channels, { onDelete: 'CASCADE' })
+    stockLocations: StockLocation[];
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
@@ -153,6 +175,61 @@ out of stock.
 ### pricesIncludeTax
 
 <MemberInfo kind="property" type={`boolean`}   />
+
+
+### products
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product#product'>Product</a>[]`}   />
+
+
+### productVariants
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[]`}   />
+
+
+### facetValues
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/facet-value#facetvalue'>FacetValue</a>[]`}   />
+
+
+### facets
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/facet#facet'>Facet</a>[]`}   />
+
+
+### collections
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/collection#collection'>Collection</a>[]`}   />
+
+
+### promotions
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a>[]`}   />
+
+
+### paymentMethods
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>[]`}   />
+
+
+### shippingMethods
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>[]`}   />
+
+
+### customers
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/customer#customer'>Customer</a>[]`}   />
+
+
+### roles
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/role#role'>Role</a>[]`}   />
+
+
+### stockLocations
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>[]`}   />
 
 
 

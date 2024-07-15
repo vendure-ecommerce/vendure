@@ -8,7 +8,7 @@ import { StateMachineConfig, Transitions } from '../../../common/finite-state-ma
 import { validateTransitionDefinition } from '../../../common/finite-state-machine/validate-transition-definition';
 import { awaitPromiseOrObservable } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
-import { TransactionalConnection } from '../../../connection/index';
+import { Logger } from '../../../config/logger/vendure-logger';
 import { Fulfillment } from '../../../entity/fulfillment/fulfillment.entity';
 import { Order } from '../../../entity/order/order.entity';
 
@@ -19,7 +19,7 @@ export class FulfillmentStateMachine {
     readonly config: StateMachineConfig<FulfillmentState, FulfillmentTransitionData>;
     private readonly initialState: FulfillmentState = 'Created';
 
-    constructor(private configService: ConfigService, private connection: TransactionalConnection) {
+    constructor(private configService: ConfigService) {
         this.config = this.initConfig();
     }
 
@@ -58,8 +58,14 @@ export class FulfillmentStateMachine {
             {} as Transitions<FulfillmentState>,
         );
 
-        const validationResult = validateTransitionDefinition(allTransitions, 'Pending');
-
+        const validationResult = validateTransitionDefinition(allTransitions, this.initialState);
+        if (!validationResult.valid && validationResult.error) {
+            Logger.error(`The fulfillment process has an invalid configuration:`);
+            throw new Error(validationResult.error);
+        }
+        if (validationResult.valid && validationResult.error) {
+            Logger.warn(`Fulfillment process: ${validationResult.error}`);
+        }
         return {
             transitions: allTransitions,
             onTransitionStart: async (fromState, toState, data) => {

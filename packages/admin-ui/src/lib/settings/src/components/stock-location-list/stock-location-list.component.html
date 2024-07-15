@@ -2,7 +2,7 @@
     <vdr-action-bar>
         <vdr-ab-left> </vdr-ab-left>
         <vdr-ab-right>
-            <vdr-action-bar-items locationId="stock-location-list"></vdr-action-bar-items>
+            <vdr-action-bar-items locationId="stock-location-list" />
             <a
                 class="button primary"
                 *vdrIfPermissions="['CreateStockLocation']"
@@ -11,6 +11,7 @@
                 <clr-icon shape="plus"></clr-icon>
                 {{ 'catalog.create-new-stock-location' | translate }}
             </a>
+            <vdr-action-bar-dropdown-menu locationId="stock-location-list" />
         </vdr-ab-right>
     </vdr-action-bar>
 </vdr-page-block>

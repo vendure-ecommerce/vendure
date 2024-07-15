@@ -44,7 +44,7 @@ export class Product
     enabled: boolean;
 
     @Index()
-    @ManyToOne(type => Asset, { onDelete: 'SET NULL' })
+    @ManyToOne(type => Asset, asset => asset.featuredInProducts, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
 
     @OneToMany(type => ProductAsset, productAsset => productAsset.product)
@@ -59,14 +59,14 @@ export class Product
     @OneToMany(type => ProductOptionGroup, optionGroup => optionGroup.product)
     optionGroups: ProductOptionGroup[];
 
-    @ManyToMany(type => FacetValue)
+    @ManyToMany(type => FacetValue, facetValue => facetValue.products)
     @JoinTable()
     facetValues: FacetValue[];
 
-    @Column(type => CustomProductFields)
-    customFields: CustomProductFields;
-
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.products)
     @JoinTable()
     channels: Channel[];
+
+    @Column(type => CustomProductFields)
+    customFields: CustomProductFields;
 }

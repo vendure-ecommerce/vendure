@@ -1,7 +1,4 @@
-import { exec } from 'child_process';
-import fs from 'fs-extra';
-import { dest, parallel, series, src, watch as gulpWatch } from 'gulp';
-import path from 'path';
+import { dest, parallel, src, watch as gulpWatch } from 'gulp';
 
 const SCHEMAS_GLOB = ['../src/**/*.graphql'];
 const MESSAGES_GLOB = ['../src/i18n/messages/**/*'];

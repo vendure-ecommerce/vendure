@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## FulfillmentHandler
 
-<GenerationInfo sourceFile="packages/core/src/config/fulfillment/fulfillment-handler.ts" sourceLine="150" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/fulfillment/fulfillment-handler.ts" sourceLine="149" packageName="@vendure/core" />
 
 A FulfillmentHandler is used when creating a new <a href='/reference/typescript-api/entities/fulfillment#fulfillment'>Fulfillment</a>. When the `addFulfillmentToOrder` mutation
 is executed, the specified handler will be used and it's `createFulfillment` method is called. This method
@@ -110,7 +110,7 @@ class FulfillmentHandler<T extends ConfigArgs = ConfigArgs> extends Configurable
 
 ## FulfillmentHandlerConfig
 
-<GenerationInfo sourceFile="packages/core/src/config/fulfillment/fulfillment-handler.ts" sourceLine="49" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/fulfillment/fulfillment-handler.ts" sourceLine="48" packageName="@vendure/core" />
 
 The configuration object used to instantiate a <a href='/reference/typescript-api/fulfillment/fulfillment-handler#fulfillmenthandler'>FulfillmentHandler</a>.
 
@@ -139,7 +139,7 @@ result will be returned.
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/state-machine/state-machine-config#ontransitionstartfn'>OnTransitionStartFn</a>&#60;<a href='/reference/typescript-api/fulfillment/fulfillment-state#fulfillmentstate'>FulfillmentState</a>, <a href='/reference/typescript-api/fulfillment/fulfillment-transition-data#fulfillmenttransitiondata'>FulfillmentTransitionData</a>&#62;`}   />
 
 This allows the handler to intercept state transitions of the created Fulfillment. This works much in the
-same way as the {@link CustomFulfillmentProcess} `onTransitionStart` method (i.e. returning `false` or
+same way as the <a href='/reference/typescript-api/fulfillment/fulfillment-process#fulfillmentprocess'>FulfillmentProcess</a> `onTransitionStart` method (i.e. returning `false` or
 `string` will be interpreted as an error and prevent the state transition), except that it is only invoked
 on Fulfillments which were created with this particular FulfillmentHandler.
 
@@ -152,7 +152,7 @@ shipping API.
 
 ## CreateFulfillmentFn
 
-<GenerationInfo sourceFile="packages/core/src/config/fulfillment/fulfillment-handler.ts" sourceLine="34" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/fulfillment/fulfillment-handler.ts" sourceLine="33" packageName="@vendure/core" />
 
 The function called when creating a new Fulfillment
 
@@ -168,7 +168,7 @@ type CreateFulfillmentFn<T extends ConfigArgs> = (
 
 ## CreateFulfillmentResult
 
-<GenerationInfo sourceFile="packages/core/src/config/fulfillment/fulfillment-handler.ts" sourceLine="24" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/fulfillment/fulfillment-handler.ts" sourceLine="23" packageName="@vendure/core" />
 
 
 

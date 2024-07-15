@@ -11,7 +11,7 @@ import { ProductVariant } from '../../../entity/product-variant/product-variant.
 import { Job } from '../../../job-queue/job';
 import { JobQueue } from '../../../job-queue/job-queue';
 import { JobQueueService } from '../../../job-queue/job-queue.service';
-import { ReindexMessageResponse, UpdateIndexQueueJobData } from '../types';
+import { ReindexMessageResponse, UpdateIndexQueueJobData, UpdateVariantsByIdJobData } from '../types';
 
 import { IndexerController } from './indexer.controller';
 
@@ -32,7 +32,7 @@ export class SearchIndexService implements OnApplicationBootstrap {
                 switch (data.type) {
                     case 'reindex':
                         Logger.verbose('sending ReindexMessage');
-                        return this.jobWithProgress(job, this.indexerController.reindex(data));
+                        return this.jobWithProgress(job, this.indexerController.reindex(job));
                     case 'update-product':
                         return this.indexerController.updateProduct(data);
                     case 'update-variants':
@@ -42,7 +42,10 @@ export class SearchIndexService implements OnApplicationBootstrap {
                     case 'delete-variant':
                         return this.indexerController.deleteVariant(data);
                     case 'update-variants-by-id':
-                        return this.jobWithProgress(job, this.indexerController.updateVariantsById(data));
+                        return this.jobWithProgress(
+                            job,
+                            this.indexerController.updateVariantsById(job as Job<UpdateVariantsByIdJobData>),
+                        );
                     case 'update-asset':
                         return this.indexerController.updateAsset(data);
                     case 'delete-asset':
@@ -64,7 +67,7 @@ export class SearchIndexService implements OnApplicationBootstrap {
     }
 
     reindex(ctx: RequestContext) {
-        return this.updateIndexQueue.add({ type: 'reindex', ctx: ctx.serialize() });
+        return this.updateIndexQueue.add({ type: 'reindex', ctx: ctx.serialize() }, { ctx });
     }
 
     updateProduct(ctx: RequestContext, product: Product) {
@@ -72,12 +75,13 @@ export class SearchIndexService implements OnApplicationBootstrap {
             type: 'update-product',
             ctx: ctx.serialize(),
             productId: product.id,
-        });
+        },
+        {   ctx   });
     }
 
     updateVariants(ctx: RequestContext, variants: ProductVariant[]) {
         const variantIds = variants.map(v => v.id);
-        return this.updateIndexQueue.add({ type: 'update-variants', ctx: ctx.serialize(), variantIds });
+        return this.updateIndexQueue.add({ type: 'update-variants', ctx: ctx.serialize(), variantIds }, { ctx });
     }
 
     deleteProduct(ctx: RequestContext, product: Product) {
@@ -85,24 +89,25 @@ export class SearchIndexService implements OnApplicationBootstrap {
             type: 'delete-product',
             ctx: ctx.serialize(),
             productId: product.id,
-        });
+        },
+        {   ctx   });
     }
 
     deleteVariant(ctx: RequestContext, variants: ProductVariant[]) {
         const variantIds = variants.map(v => v.id);
-        return this.updateIndexQueue.add({ type: 'delete-variant', ctx: ctx.serialize(), variantIds });
+        return this.updateIndexQueue.add({ type: 'delete-variant', ctx: ctx.serialize(), variantIds }, { ctx });
     }
 
     updateVariantsById(ctx: RequestContext, ids: ID[]) {
-        return this.updateIndexQueue.add({ type: 'update-variants-by-id', ctx: ctx.serialize(), ids });
+        return this.updateIndexQueue.add({ type: 'update-variants-by-id', ctx: ctx.serialize(), ids }, { ctx });
     }
 
     updateAsset(ctx: RequestContext, asset: Asset) {
-        return this.updateIndexQueue.add({ type: 'update-asset', ctx: ctx.serialize(), asset: asset as any });
+        return this.updateIndexQueue.add({ type: 'update-asset', ctx: ctx.serialize(), asset: asset as any }, { ctx });
     }
 
     deleteAsset(ctx: RequestContext, asset: Asset) {
-        return this.updateIndexQueue.add({ type: 'delete-asset', ctx: ctx.serialize(), asset: asset as any });
+        return this.updateIndexQueue.add({ type: 'delete-asset', ctx: ctx.serialize(), asset: asset as any }, { ctx });
     }
 
     assignProductToChannel(ctx: RequestContext, productId: ID, channelId: ID) {
@@ -111,7 +116,8 @@ export class SearchIndexService implements OnApplicationBootstrap {
             ctx: ctx.serialize(),
             productId,
             channelId,
-        });
+        },
+        {   ctx   });
     }
 
     removeProductFromChannel(ctx: RequestContext, productId: ID, channelId: ID) {
@@ -120,7 +126,8 @@ export class SearchIndexService implements OnApplicationBootstrap {
             ctx: ctx.serialize(),
             productId,
             channelId,
-        });
+        },
+        {   ctx   });
     }
 
     assignVariantToChannel(ctx: RequestContext, productVariantId: ID, channelId: ID) {
@@ -129,7 +136,8 @@ export class SearchIndexService implements OnApplicationBootstrap {
             ctx: ctx.serialize(),
             productVariantId,
             channelId,
-        });
+        },
+        {   ctx   });
     }
 
     removeVariantFromChannel(ctx: RequestContext, productVariantId: ID, channelId: ID) {
@@ -138,7 +146,8 @@ export class SearchIndexService implements OnApplicationBootstrap {
             ctx: ctx.serialize(),
             productVariantId,
             channelId,
-        });
+        },
+        {   ctx   });
     }
 
     private jobWithProgress(

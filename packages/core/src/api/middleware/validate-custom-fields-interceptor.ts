@@ -59,7 +59,7 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
                                 : [variables[inputName]];
 
                             for (const inputVariable of inputVariables) {
-                                await this.validateInput(typeName, ctx.languageCode, injector, inputVariable);
+                                await this.validateInput(typeName, ctx, injector, inputVariable);
                             }
                         }
                     }
@@ -71,7 +71,7 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
 
     private async validateInput(
         typeName: string,
-        languageCode: LanguageCode,
+        ctx: RequestContext,
         injector: Injector,
         variableValues?: { [key: string]: any },
     ) {
@@ -83,7 +83,7 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
                 // mutations.
                 await this.validateCustomFieldsObject(
                     this.configService.customFields.OrderLine,
-                    languageCode,
+                    ctx,
                     variableValues,
                     injector,
                 );
@@ -91,7 +91,7 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
             if (variableValues.customFields) {
                 await this.validateCustomFieldsObject(
                     customFieldConfig,
-                    languageCode,
+                    ctx,
                     variableValues.customFields,
                     injector,
                 );
@@ -102,7 +102,7 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
                     if (translation.customFields) {
                         await this.validateCustomFieldsObject(
                             customFieldConfig,
-                            languageCode,
+                            ctx,
                             translation.customFields,
                             injector,
                         );
@@ -114,14 +114,14 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
 
     private async validateCustomFieldsObject(
         customFieldConfig: CustomFieldConfig[],
-        languageCode: LanguageCode,
+        ctx: RequestContext,
         customFieldsObject: { [key: string]: any },
         injector: Injector,
     ) {
         for (const [key, value] of Object.entries(customFieldsObject)) {
             const config = customFieldConfig.find(c => getGraphQlInputName(c) === key);
             if (config) {
-                await validateCustomFieldValue(config, value, injector, languageCode);
+                await validateCustomFieldValue(config, value, injector, ctx);
             }
         }
     }

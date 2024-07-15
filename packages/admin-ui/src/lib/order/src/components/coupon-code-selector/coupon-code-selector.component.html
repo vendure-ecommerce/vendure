@@ -14,7 +14,9 @@
     (remove)="removeCouponCode.emit($event.value?.code)"
 >
     <ng-template ng-option-tmp let-item="item">
-        <vdr-chip>{{ item.code }}</vdr-chip>
-        {{ item.promotionName }}
+        <div class="flex items-center">
+            <vdr-chip class="mr-1">{{ item.code }}</vdr-chip>
+            <span>{{ item.promotionName }}</span>
+        </div>
     </ng-template>
 </ng-select>

@@ -1,4 +1,4 @@
-import { ConfigArgType, CustomFieldType } from '@vendure/common/lib/shared-types';
+import { ConfigArgType } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 
 import {
@@ -15,7 +15,14 @@ import {
  */
 export function getConfigArgValue(value: any) {
     try {
-        return value != null ? JSON.parse(value) : undefined;
+        const result = value != null ? JSON.parse(value) : undefined;
+        if (result && typeof result === 'object' && !Array.isArray(result)) {
+            // There is an edge-case where the value is a valid JSON-encoded string and
+            // will get parsed as an object, but we actually want it to be a string.
+            return JSON.stringify(result);
+        } else {
+            return result;
+        }
     } catch (e: any) {
         return value;
     }
@@ -29,14 +36,14 @@ export function encodeConfigArgValue(value: any): string {
  * Creates an empty ConfigurableOperation object based on the definition.
  */
 export function configurableDefinitionToInstance(
-    def: ConfigurableOperationDefinition,
+    def: Omit<ConfigurableOperationDefinition, '__typename'>,
 ): ConfigurableOperation {
     return {
         ...def,
         args: def.args.map(arg => ({
-                ...arg,
-                value: getDefaultConfigArgValue(arg),
-            })),
+            ...arg,
+            value: getDefaultConfigArgValue(arg),
+        })),
     } as ConfigurableOperation;
 }
 
@@ -61,7 +68,7 @@ export function configurableDefinitionToInstance(
  * ```
  */
 export function toConfigurableOperationInput(
-    operation: ConfigurableOperation,
+    operation: Omit<ConfigurableOperation, '__typename'>,
     formValueOperations: { args: Record<string, string> | Array<{ name: string; value: string }> },
 ): ConfigurableOperationInput {
     const argsArray = Array.isArray(formValueOperations.args) ? formValueOperations.args : undefined;

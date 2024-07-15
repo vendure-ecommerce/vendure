@@ -14,13 +14,14 @@ import {
     OrderDetailFragment,
     OrderDetailQueryDocument,
     Refund,
+    SetOrderCustomerDocument,
     SortOrder,
     TimelineHistoryEntry,
     TypedBaseDetailComponent,
 } from '@vendure/admin-ui/core';
 import { assertNever, summate } from '@vendure/common/lib/shared-utils';
 import { gql } from 'apollo-angular';
-import { EMPTY, Observable, of, Subject } from 'rxjs';
+import { EMPTY, forkJoin, Observable, of, Subject } from 'rxjs';
 import { map, mapTo, startWith, switchMap, take } from 'rxjs/operators';
 
 import { OrderTransitionService } from '../../providers/order-transition.service';
@@ -29,6 +30,7 @@ import { CancelOrderDialogComponent } from '../cancel-order-dialog/cancel-order-
 import { FulfillOrderDialogComponent } from '../fulfill-order-dialog/fulfill-order-dialog.component';
 import { OrderProcessGraphDialogComponent } from '../order-process-graph-dialog/order-process-graph-dialog.component';
 import { RefundOrderDialogComponent } from '../refund-order-dialog/refund-order-dialog.component';
+import { SelectCustomerDialogComponent } from '../select-customer-dialog/select-customer-dialog.component';
 import { SettleRefundDialogComponent } from '../settle-refund-dialog/settle-refund-dialog.component';
 
 type Payment = NonNullable<OrderDetailFragment['payments']>[number];
@@ -40,6 +42,20 @@ export const ORDER_DETAIL_QUERY = gql`
         }
     }
     ${ORDER_DETAIL_FRAGMENT}
+`;
+
+export const SET_ORDER_CUSTOMER_MUTATION = gql`
+    mutation SetOrderCustomer($input: SetOrderCustomerInput!) {
+        setOrderCustomer(input: $input) {
+            id
+            customer {
+                id
+                firstName
+                lastName
+                emailAddress
+            }
+        }
+    }
 `;
 
 @Component({
@@ -132,6 +148,41 @@ export class OrderDetailComponent
                 ),
             )
             .subscribe();
+    }
+
+    setOrderCustomer() {
+        this.modalService
+            .fromComponent(SelectCustomerDialogComponent, {
+                locals: {
+                    canCreateNew: false,
+                    includeNoteInput: true,
+                    title: _('order.assign-order-to-another-customer'),
+                },
+            })
+            .pipe(
+                switchMap(result => {
+                    function isExisting(input: any): input is { id: string } {
+                        return typeof input === 'object' && !!input.id;
+                    }
+                    if (isExisting(result)) {
+                        return this.dataService.mutate(SetOrderCustomerDocument, {
+                            input: {
+                                customerId: result.id,
+                                orderId: this.id,
+                                note: result.note,
+                            },
+                        });
+                    } else {
+                        return EMPTY;
+                    }
+                }),
+                switchMap(result => this.refetchOrder(result)),
+            )
+            .subscribe(result => {
+                if (result) {
+                    this.notificationService.success(_('order.set-customer-success'));
+                }
+            });
     }
 
     transitionToState(state: string) {
@@ -567,7 +618,12 @@ export class OrderDetailComponent
                                 switch (result.__typename) {
                                     case 'Order':
                                         this.refetchOrder(result).subscribe();
-                                        this.notificationService.success(_('order.cancelled-order-success'));
+                                        this.notificationService.success(
+                                            _('order.cancelled-order-items-success'),
+                                            {
+                                                count: summate(input.cancel.lines, 'quantity'),
+                                            },
+                                        );
                                         return input;
                                     case 'CancelActiveOrderError':
                                     case 'QuantityTooGreatError':
@@ -587,35 +643,39 @@ export class OrderDetailComponent
                     if (!input) {
                         return of(undefined);
                     }
-                    if (input.refund.lines.length) {
-                        return this.dataService.order
-                            .refundOrder(input.refund)
-                            .pipe(map(res => res.refundOrder));
+                    if (input.refunds.length) {
+                        return forkJoin(
+                            input.refunds.map(refund =>
+                                this.dataService.order.refundOrder(refund).pipe(map(res => res.refundOrder)),
+                            ),
+                        );
                     } else {
                         return [undefined];
                     }
                 }),
             )
-            .subscribe(result => {
-                if (result) {
-                    switch (result.__typename) {
-                        case 'Refund':
-                            this.refetchOrder(result).subscribe();
-                            if (result.state === 'Failed') {
-                                this.notificationService.error(_('order.refund-order-failed'));
-                            } else {
-                                this.notificationService.success(_('order.refund-order-success'));
-                            }
-                            break;
-                        case 'AlreadyRefundedError':
-                        case 'NothingToRefundError':
-                        case 'PaymentOrderMismatchError':
-                        case 'RefundOrderStateError':
-                        case 'RefundStateTransitionError':
-                            this.notificationService.error(result.message);
-                            break;
+            .subscribe(results => {
+                for (const result of results ?? []) {
+                    if (result) {
+                        switch (result.__typename) {
+                            case 'Refund':
+                                if (result.state === 'Failed') {
+                                    this.notificationService.error(_('order.refund-order-failed'));
+                                } else {
+                                    this.notificationService.success(_('order.refund-order-success'));
+                                }
+                                break;
+                            case 'AlreadyRefundedError':
+                            case 'NothingToRefundError':
+                            case 'PaymentOrderMismatchError':
+                            case 'RefundOrderStateError':
+                            case 'RefundStateTransitionError':
+                                this.notificationService.error(result.message);
+                                break;
+                        }
                     }
                 }
+                this.refetchOrder(results?.[0]).subscribe();
             });
     }
 

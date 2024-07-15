@@ -31,7 +31,13 @@ describe('JobQueue', () => {
 
     const { server, adminClient } = createTestEnvironment(
         mergeConfig(activeConfig, {
-            plugins: [DefaultJobQueuePlugin, PluginWithJobQueue],
+            plugins: [
+                DefaultJobQueuePlugin.init({
+                    pollInterval: 50,
+                    gracefulShutdownTimeout: 1_000,
+                }),
+                PluginWithJobQueue,
+            ],
         }),
     );
 
@@ -141,6 +147,8 @@ describe('JobQueue', () => {
         const jobs2 = await getJobsInTestQueue(JobState.CANCELLED);
         expect(jobs.items.length).toBe(1);
         expect(jobs.items[0].id).toBe(jobId);
+
+        PluginWithJobQueue.jobSubject.next();
     });
 
     it('subscribe to result of job', async () => {

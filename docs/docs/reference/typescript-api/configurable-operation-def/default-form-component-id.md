@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DefaultFormComponentId
 
-<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="134" packageName="@vendure/common" />
+<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="135" packageName="@vendure/common" />
 
 The ids of the default form input components that ship with the
 Admin UI.

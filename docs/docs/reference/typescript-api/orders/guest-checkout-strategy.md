@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## GuestCheckoutStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/order/guest-checkout-strategy.ts" sourceLine="32" packageName="@vendure/core" since="2.0.0" />
+<GenerationInfo sourceFile="packages/core/src/config/order/guest-checkout-strategy.ts" sourceLine="33" packageName="@vendure/core" since="2.0.0" />
 
 A strategy that determines how to deal with guest checkouts - i.e. when a customer
 checks out without being logged in. For example, a strategy could be used to implement
@@ -51,7 +51,7 @@ interface GuestCheckoutStrategy extends InjectableStrategy {
 
 ### setCustomerForOrder
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, input: CreateCustomerInput) => | ErrorResultUnion&#60;SetCustomerForOrderResult, <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;         | Promise&#60;ErrorResultUnion&#60;SetCustomerForOrderResult, <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, input: CreateCustomerInput) => | <a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;SetCustomerForOrderResult, <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;         | Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;SetCustomerForOrderResult, <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>&#62;&#62;`}   />
 
 This method is called when the `setCustomerForOrder` mutation is executed.
 It should return either a Customer object or an ErrorResult.

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Type } from '@vendure/common/lib/shared-types';
-import { isObject } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
+import { SelectQueryBuilder } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { InternalServerError } from '../../../common/error/errors';
@@ -10,22 +10,46 @@ import { VendureEntity } from '../../../entity/base/base.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { ProductPriceApplicator } from '../product-price-applicator/product-price-applicator';
 import { TranslatorService } from '../translator/translator.service';
+import { joinTreeRelationsDynamically } from '../utils/tree-relations-qb-joiner';
 
 import { HydrateOptions } from './entity-hydrator-types';
+import { mergeDeep } from './merge-deep';
 
 /**
  * @description
  * This is a helper class which is used to "hydrate" entity instances, which means to populate them
- * with the specified relations. This is useful when writing plugin code which receives an entity
+ * with the specified relations. This is useful when writing plugin code which receives an entity,
  * and you need to ensure that one or more relations are present.
  *
  * @example
  * ```ts
- * const product = await this.productVariantService
- *   .getProductForVariant(ctx, variantId);
+ * import { Injectable } from '\@nestjs/common';
+ * import { ID, RequestContext, EntityHydrator, ProductVariantService } from '\@vendure/core';
  *
- * await this.entityHydrator
- *   .hydrate(ctx, product, { relations: ['facetValues.facet' ]});
+ * \@Injectable()
+ * export class MyService {
+ *
+ *   constructor(
+ *      // highlight-next-line
+ *      private entityHydrator: EntityHydrator,
+ *      private productVariantService: ProductVariantService,
+ *   ) {}
+ *
+ *   myMethod(ctx: RequestContext, variantId: ID) {
+ *     const product = await this.productVariantService
+ *       .getProductForVariant(ctx, variantId);
+ *
+ *     // at this stage, we don't know which of the Product relations
+ *     // will be joined at runtime.
+ *
+ *     // highlight-start
+ *     await this.entityHydrator
+ *       .hydrate(ctx, product, { relations: ['facetValues.facet' ]});
+ *
+ *     // You can be sure now that the `facetValues` & `facetValues.facet` relations are populated
+ *     // highlight-end
+ *   }
+ * }
  *```
  *
  * In this above example, the `product` instance will now have the `facetValues` relation
@@ -94,13 +118,23 @@ export class EntityHydrator {
             }
 
             if (missingRelations.length) {
-                const hydrated = await this.connection.getRepository(ctx, target.constructor).findOne({
+                const hydratedQb: SelectQueryBuilder<any> = this.connection
+                    .getRepository(ctx, target.constructor)
+                    .createQueryBuilder(target.constructor.name);
+                const joinedRelations = joinTreeRelationsDynamically(
+                    hydratedQb,
+                    target.constructor,
+                    missingRelations,
+                );
+                hydratedQb.setFindOptions({
+                    relationLoadStrategy: 'query',
                     where: { id: target.id },
-                    relations: missingRelations,
+                    relations: missingRelations.filter(relationPath => !joinedRelations.has(relationPath)),
                 });
+                const hydrated = await hydratedQb.getOne();
                 const propertiesToAdd = unique(missingRelations.map(relation => relation.split('.')[0]));
                 for (const prop of propertiesToAdd) {
-                    (target as any)[prop] = this.mergeDeep((target as any)[prop], (hydrated as any)[prop]);
+                    (target as any)[prop] = mergeDeep((target as any)[prop], hydrated[prop]);
                 }
 
                 const relationsWithEntities = missingRelations.map(relation => ({
@@ -187,7 +221,7 @@ export class EntityHydrator {
                 }
             }
         }
-        return unique(missingRelations);
+        return unique(missingRelations.filter(relation => !relation.endsWith('.customFields')));
     }
 
     private getRequiredProductVariantRelations<Entity extends VendureEntity>(
@@ -199,6 +233,7 @@ export class EntityHydrator {
             const entityType = this.getRelationEntityTypeAtPath(target, relation);
             if (entityType === ProductVariant) {
                 relationsToAdd.push([relation, 'taxCategory'].join('.'));
+                relationsToAdd.push([relation, 'productVariantPrices'].join('.'));
             }
         }
         return relationsToAdd;
@@ -230,6 +265,8 @@ export class EntityHydrator {
                         visit(item, parts.slice());
                     }
                 }
+            } else if (target === null) {
+                result.push(target);
             } else {
                 if (parts.length === 0) {
                     result.push(target);
@@ -268,31 +305,5 @@ export class EntityHydrator {
         return Array.isArray(input)
             ? input[0]?.hasOwnProperty('translations') ?? false
             : input?.hasOwnProperty('translations') ?? false;
-    }
-
-    /**
-     * Merges properties into a target entity. This is needed for the cases in which a
-     * property already exists on the target, but the hydrated version also contains that
-     * property with a different set of properties. This prevents the original target
-     * entity from having data overwritten.
-     */
-    private mergeDeep<T extends { [key: string]: any }>(a: T | undefined, b: T): T {
-        if (!a) {
-            return b;
-        }
-        for (const [key, value] of Object.entries(b)) {
-            if (Object.getOwnPropertyDescriptor(b, key)?.writable) {
-                if (Array.isArray(value)) {
-                    (a as any)[key] = value.map((v, index) =>
-                        this.mergeDeep(a?.[key]?.[index], b[key][index]),
-                    );
-                } else if (isObject(value)) {
-                    (a as any)[key] = this.mergeDeep(a?.[key], b[key]);
-                } else {
-                    (a as any)[key] = b[key];
-                }
-            }
-        }
-        return a ?? b;
     }
 }

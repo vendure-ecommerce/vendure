@@ -19,14 +19,17 @@
     background-color: var(--color-page-header-item-bg);
     border-radius: var(--border-radius-lg);
     li {
-        display: inline-block;
+        display: inline-flex;
         white-space: nowrap;
+        line-height: 14px;
         a:link,
         a:visited {
             color: var(--color-weight-700);
+            font-size: var(--font-size-sm);
         }
         &:last-child {
             font-weight: 600;
+            color: var(--color-weight-700);
         }
 
         max-width: 300px;

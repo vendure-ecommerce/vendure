@@ -1,45 +1,25 @@
-<ng-template vdrDialogTitle>{{ 'order.set-customer-for-order' | translate }}</ng-template>
+<ng-template vdrDialogTitle>{{ title | translate }}</ng-template>
 
-<clr-tabs>
+<ng-container *ngIf="!canCreateNew">
+    <ng-container *ngTemplateOutlet="customerSelect"></ng-container>
+    <vdr-form-field [label]="'common.add-note' | translate" *ngIf="includeNoteInput" class="mt-4">
+        <textarea [(ngModel)]="note"></textarea>
+    </vdr-form-field>
+</ng-container>
+
+<clr-tabs *ngIf="canCreateNew" class="pt-1">
     <clr-tab>
         <button clrTabLink>{{ 'order.existing-customer' | translate }}</button>
 
         <ng-template [(clrIfActive)]="useExisting">
             <clr-tab-content>
                 <div class="mt-4">
-                    <ng-select
-                        [items]="customers$ | async"
-                        appendTo="body"
-                        bindLabel="name"
-                        [addTag]="false"
-                        [multiple]="true"
-                        [hideSelected]="true"
-                        [trackByFn]="trackByFn"
-                        [minTermLength]="2"
-                        [loading]="isLoading"
-                        [typeahead]="input$"
-                        [(ngModel)]="selectedCustomer"
-                    >
-                        <ng-template ng-label-tmp let-item="item" let-clear="clear">
-                            <span class="item-row">
-                            <clr-icon shape="user" class="is-solid"></clr-icon
-                            ><span class="mx-1">{{ item.firstName }} {{ item.lastName }}</span>
-                            <vdr-chip>{{ item.emailAddress }}</vdr-chip>
-                            </span>
-                        </ng-template>
-                        <ng-template ng-option-tmp let-item="item">
-                            <span class="item-row">
-                            <clr-icon shape="user" class="is-solid"></clr-icon
-                            ><span class="mx-1">{{ item.firstName }} {{ item.lastName }}</span>
-                            <vdr-chip>{{ item.emailAddress }}</vdr-chip>
-                            </span>
-                        </ng-template>
-                    </ng-select>
+                    <ng-container *ngTemplateOutlet="customerSelect"></ng-container>
                 </div>
             </clr-tab-content>
         </ng-template>
     </clr-tab>
-    <clr-tab>
+    <clr-tab *ngIf="canCreateNew">
         <button clrTabLink>{{ 'customer.create-new-customer' | translate }}</button>
 
         <ng-template [(clrIfActive)]="createNew">
@@ -65,6 +45,37 @@
         </ng-template>
     </clr-tab>
 </clr-tabs>
+
+<ng-template #customerSelect>
+    <ng-select
+        [items]="customers$ | async"
+        appendTo="body"
+        bindLabel="name"
+        [addTag]="false"
+        [multiple]="true"
+        [hideSelected]="true"
+        [trackByFn]="trackByFn"
+        [minTermLength]="2"
+        [loading]="isLoading"
+        [typeahead]="input$"
+        [(ngModel)]="selectedCustomer"
+    >
+        <ng-template ng-label-tmp let-item="item" let-clear="clear">
+            <span class="item-row">
+                <clr-icon shape="user" class="is-solid"></clr-icon
+                ><span class="mx-1">{{ item.firstName }} {{ item.lastName }}</span>
+                <vdr-chip>{{ item.emailAddress }}</vdr-chip>
+            </span>
+        </ng-template>
+        <ng-template ng-option-tmp let-item="item">
+            <span class="item-row">
+                <clr-icon shape="user" class="is-solid"></clr-icon
+                ><span class="mx-1">{{ item.firstName }} {{ item.lastName }}</span>
+                <vdr-chip>{{ item.emailAddress }}</vdr-chip>
+            </span>
+        </ng-template>
+    </ng-select>
+</ng-template>
 
 <ng-template vdrDialogButtons>
     <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>

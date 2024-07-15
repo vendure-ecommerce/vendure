@@ -1,11 +1,11 @@
 {
   "error": {
     "active-user-does-not-have-sufficient-permissions": "Active user does not have sufficient permissions",
+    "available-currency-codes-must-include-default": "availableCurrencyCodes must include the defaultCurrencyCode ({ defaultCurrencyCode })",
     "cannot-delete-role": "The role \"{ roleCode }\" cannot be deleted",
     "cannot-delete-sole-superadmin": "The sole SuperAdmin cannot be deleted",
     "cannot-locate-customer-for-user": "Cannot locate a Customer for the user",
     "cannot-modify-role": "The role \"{ roleCode }\" cannot be modified",
-    "cannot-create-sales-for-active-order": "Cannot create a Sale for an Order which is still active",
     "cannot-move-collection-into-self": "Cannot move a Collection into itself",
     "cannot-transition-payment-from-to": "Cannot transition Payment from \"{ fromState }\" to \"{ toState }\"",
     "cannot-transition-refund-from-to": "Cannot transition Refund from \"{ fromState }\" to \"{ toState }\"",
@@ -26,6 +26,7 @@
     "field-invalid-datetime-range-max": "The custom field \"{ name }\" value [{ value }] is greater than the maximum [{ max }]",
     "field-invalid-datetime-range-min": "The custom field \"{ name }\" value [{ value }] is less than the minimum [{ min }]",
     "field-invalid-non-nullable": "The custom field \"{ name }\" value cannot be set to null",
+    "field-invalid-no-permission": "You do not have the required permissions to update the \"{ name }\" field",
     "field-invalid-number-range-max": "The custom field \"{ name }\" value [{ value }] is greater than the maximum [{ max }]",
     "field-invalid-number-range-min": "The custom field \"{ name }\" value [{ value }] is less than the minimum [{ min }]",
     "field-invalid-readonly": "The custom field \"{ name }\" is readonly",
@@ -50,6 +51,7 @@
     "promotion-channels-can-only-be-changed-from-default-channel": "Promotions channels may only be changed from the Default Channel",
     "stockonhand-cannot-be-negative": "stockOnHand cannot be a negative value",
     "superadmin-must-have-superadmin-role": "Cannot remove the SuperAdmin role from the sole SuperAdmin",
+    "target-customer-not-assigned-to-order-channels": "The target Customer is not assigned to the same Channels as the Order. Missing channels IDs: { missingChannelIds }",
     "unauthorized": "The credentials did not match. Please check and try again"
   },
   "errorResult": {
@@ -62,6 +64,7 @@
     "COUPON_CODE_INVALID_ERROR": "Coupon code \"{ couponCode }\" is not valid",
     "COUPON_CODE_LIMIT_ERROR": "Coupon code cannot be used more than {limit, plural, one {once} other {# times}} per customer",
     "CREATE_FULFILLMENT_ERROR": "An error occurred when attempting to create the Fulfillment",
+    "DUPLICATE_ENTITY_ERROR": "The entity could not be duplicated",
     "EMAIL_ADDRESS_CONFLICT_ERROR": "The email address is not available.",
     "EMPTY_ORDER_LINE_SELECTION_ERROR": "At least one OrderLine must be specified",
     "FACET_IN_USE_ERROR": "The Facet \"{ facetCode }\" includes FacetValues which are assigned to {productCount, plural, =0 {} one {1 Product} other {# Products}} {variantCount, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}}",
@@ -94,6 +97,7 @@
     "PAYMENT_STATE_TRANSITION_ERROR": "Cannot transition Payment from \"{ fromState }\" to \"{ toState }\"",
     "PRODUCT_OPTION_IN_USE_ERROR": "Cannot remove ProductOptionGroup \"{ optionGroupCode }\" as it is used by {productVariantCount, plural, one {1 ProductVariant} other {# ProductVariants}}. Use the `force` argument to remove it anyway",
     "QUANTITY_TOO_GREAT_ERROR": "The specified quantity is greater than the available OrderItems",
+    "REFUND_AMOUNT_ERROR": "The amount specified exceeds the refundable amount for this payment",
     "REFUND_ORDER_STATE_ERROR": "Cannot refund an Order in the \"{ orderState }\" state",
     "SETTLE_PAYMENT_ERROR": "Settling the payment failed",
     "VERIFICATION_TOKEN_EXPIRED_ERROR": "Verification token has expired. Use refreshCustomerVerification to send a new token.",
@@ -120,6 +124,8 @@
     "cannot-transition-without-modification-payment": "Can only transition to the \"ArrangingAdditionalPayment\" state",
     "cannot-transition-without-settled-payments": "Cannot transition Order to the \"PaymentSettled\" state when the total is not covered by settled Payments",
     "country-used-in-addresses": "The selected Country cannot be deleted as it is used in {count, plural, one {1 Address} other {# Addresses}}",
+    "entity-duplication-no-permission": "You do not have the required permissions to duplicate this entity",
+    "entity-duplication-no-strategy-found": "No duplication strategy with code \"{ code }\" was found for the entity type \"{ entityName }\"",
     "facet-force-deleted": "The Facet was deleted and its FacetValues were removed from {products, plural, =0 {} one {1 Product} other {# Products}}{both, select, both {, } single {} other {}}{variants, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}}",
     "facet-used": "The Facet \"{ facetCode }\" includes FacetValues which are assigned to {products, plural, =0 {} one {1 Product} other {# Products}}{both, select, both {, } single {} other {}}{variants, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}}",
     "facet-value-force-deleted": "The selected FacetValue was removed from {products, plural, =0 {} one {1 Product} other {# Products}}{both, select, both {, } single {} other {}}{variants, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}} and deleted",

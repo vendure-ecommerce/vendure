@@ -14,7 +14,7 @@ on:
       - minor
 env:
   CI: true
-  node: 18.x
+  node: 20.x
 jobs:
   build:
     name: build
@@ -25,18 +25,12 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ env.node }}
-#    - uses: actions/cache@v3
-#      id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-#      with:
-#        path: '**/node_modules'
-#        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-#        restore-keys: |
-#          ${{ runner.os }}-yarn-
-    - name: Yarn install
-#      if: steps.yarn-cache.outputs.cache-hit != 'true'
-      run: yarn install
+    - name: npm install
+      run: |
+        npm install
+        npm install --os=linux --cpu=x64 sharp
     - name: Build
-      run: yarn build
+      run: npm run build
   unit-tests:
     name: unit tests
     runs-on: ubuntu-latest
@@ -46,20 +40,14 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.node }}
-#      - uses: actions/cache@v3
-#        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-#        with:
-#          path: '**/node_modules'
-#          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-#          restore-keys: |
-#            ${{ runner.os }}-yarn-
-      - name: Yarn install
-#        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn install --prefer-offline
+      - name: npm install
+        run: |
+          npm install
+          npm install --os=linux --cpu=x64 sharp
       - name: Build
-        run: yarn lerna run ci
+        run: lerna run ci
       - name: Unit tests
-        run: yarn test
+        run: npm run test
   e2e-tests:
     name: e2e tests
     runs-on: ubuntu-latest
@@ -113,18 +101,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.node }}
-#      - uses: actions/cache@v3
-#        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-#        with:
-#          path: '**/node_modules'
-#          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-#          restore-keys: |
-#            ${{ runner.os }}-yarn-
-      - name: Yarn install
-#        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn install --prefer-offline
+      - name: npm install
+        run: |
+          npm install
+          npm install --os=linux --cpu=x64 sharp
       - name: Build
-        run: yarn lerna run ci
+        run: lerna run ci
       - name: df
         run: |
           df -h
@@ -136,4 +118,4 @@ jobs:
           E2E_POSTGRES_PORT: ${{ job.services.postgres.ports['5432'] }}
           E2E_ELASTIC_PORT: ${{ job.services.elastic.ports['9200'] }}
           DB: ${{ matrix.db }}
-        run: yarn e2e
+        run: npm run e2e

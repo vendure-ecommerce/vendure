@@ -43,7 +43,7 @@ The <a href='/reference/typescript-api/payment/payment-state#paymentstate'>Payme
 In a single-step payment flow, this should be set to `'Settled'`.
 In a two-step flow, this should be set to `'Authorized'`.
 
-If using a {@link CustomPaymentProcess}, may be something else
+If using a <a href='/reference/typescript-api/payment/payment-process#paymentprocess'>PaymentProcess</a>, may be something else
 entirely according to your business logic.
 ### transactionId
 
@@ -221,7 +221,7 @@ The state to transition this Payment to upon unsuccessful settlement.
 Defaults to `Error`. Note that if using a different state, it must be
 legal to transition to that state from the `Authorized` state according
 to the PaymentState config (which can be customized using the
-{@link CustomPaymentProcess}).
+<a href='/reference/typescript-api/payment/payment-process#paymentprocess'>PaymentProcess</a>).
 ### errorMessage
 
 <MemberInfo kind="property" type={`string`}   />
@@ -300,7 +300,7 @@ The state to transition this Payment to upon unsuccessful cancellation.
 Defaults to `Error`. Note that if using a different state, it must be
 legal to transition to that state from the `Authorized` state according
 to the PaymentState config (which can be customized using the
-{@link CustomPaymentProcess}).
+<a href='/reference/typescript-api/payment/payment-process#paymentprocess'>PaymentProcess</a>).
 ### errorMessage
 
 <MemberInfo kind="property" type={`string`}   />

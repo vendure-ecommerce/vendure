@@ -463,6 +463,10 @@ class MockConfigService implements OnApplicationBootstrap, OnModuleDestroy {
         jobBufferStorageStrategy: testJobBufferStorageStrategy,
     };
 
+    systemOptions = {
+        errorHandlers: [],
+    };
+
     async onApplicationBootstrap() {
         const injector = new Injector(this.moduleRef);
         this.jobQueueOptions.jobQueueStrategy.init(injector);

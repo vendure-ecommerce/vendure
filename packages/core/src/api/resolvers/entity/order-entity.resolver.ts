@@ -3,11 +3,9 @@ import { HistoryEntryListOptions, OrderHistoryArgs, SortOrder } from '@vendure/c
 
 import { assertFound, idsAreEqual } from '../../../common/utils';
 import { Order } from '../../../entity/order/order.entity';
-import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
-import { TranslatorService } from '../../../service/index';
+import { CustomerService, TranslatorService } from '../../../service/index';
 import { HistoryService } from '../../../service/services/history.service';
 import { OrderService } from '../../../service/services/order.service';
-import { ShippingMethodService } from '../../../service/services/shipping-method.service';
 import { ApiType } from '../../common/get-api-type';
 import { RequestContext } from '../../common/request-context';
 import { Api } from '../../decorators/api.decorator';
@@ -17,7 +15,7 @@ import { Ctx } from '../../decorators/request-context.decorator';
 export class OrderEntityResolver {
     constructor(
         private orderService: OrderService,
-        private shippingMethodService: ShippingMethodService,
+        private customerService: CustomerService,
         private historyService: HistoryService,
         private translator: TranslatorService,
     ) {}
@@ -47,12 +45,33 @@ export class OrderEntityResolver {
     }
 
     @ResolveField()
+    async customer(@Ctx() ctx: RequestContext, @Parent() order: Order) {
+        if (order.customer) {
+            return order.customer;
+        }
+        if (order.customerId) {
+            return this.customerService.findOne(ctx, order.customerId);
+        }
+    }
+
+    @ResolveField()
     async lines(@Ctx() ctx: RequestContext, @Parent() order: Order) {
         if (order.lines) {
             return order.lines;
         }
         const { lines } = await assertFound(this.orderService.findOne(ctx, order.id));
         return lines;
+    }
+
+    @ResolveField()
+    async shippingLines(@Ctx() ctx: RequestContext, @Parent() order: Order) {
+        if (order.shippingLines) {
+            return order.shippingLines;
+        }
+        const { shippingLines } = await assertFound(
+            this.orderService.findOne(ctx, order.id, ['shippingLines.shippingMethod']),
+        );
+        return shippingLines;
     }
 
     @ResolveField()

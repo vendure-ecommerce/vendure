@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EmailSender
 
-<GenerationInfo sourceFile="packages/email-plugin/src/email-sender.ts" sourceLine="45" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/sender/email-sender.ts" sourceLine="45" packageName="@vendure/email-plugin" />
 
 An EmailSender is responsible for sending the email, e.g. via an SMTP connection
 or using some other mail-sending API. By default, the EmailPlugin uses the
@@ -40,7 +40,7 @@ const config: VendureConfig = {
   // ...
   plugins: [
     EmailPlugin.init({
-       // ... template, handlers config omitted
+       // ... template, handler config omitted
       transport: { type: 'none' },
        emailSender: new SendgridEmailSender(),
     }),
@@ -71,7 +71,7 @@ interface EmailSender extends InjectableStrategy {
 
 ## NodemailerEmailSender
 
-<GenerationInfo sourceFile="packages/email-plugin/src/nodemailer-email-sender.ts" sourceLine="38" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/sender/nodemailer-email-sender.ts" sourceLine="39" packageName="@vendure/email-plugin" />
 
 Uses the configured transport to send the generated email.
 

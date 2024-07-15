@@ -9,10 +9,15 @@ import { LanguageCode } from '../../common/generated-types';
     providedIn: 'root',
 })
 export class I18nService {
+    _availableLocales: string[] = [];
     _availableLanguages: LanguageCode[] = [];
 
     get availableLanguages(): LanguageCode[] {
         return [...this._availableLanguages];
+    }
+
+    get availableLocales(): string[] {
+        return [...this._availableLocales];
     }
 
     constructor(private ngxTranslate: TranslateService, @Inject(DOCUMENT) private document: Document) {}
@@ -39,6 +44,13 @@ export class I18nService {
      */
     setAvailableLanguages(languages: LanguageCode[]) {
         this._availableLanguages = languages;
+    }
+
+    /**
+     * Set the available UI locales
+     */
+    setAvailableLocales(locales: string[]) {
+        this._availableLocales = locales;
     }
 
     /**

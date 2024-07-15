@@ -33,16 +33,21 @@ const config = {
 
     presets: [
         [
-            'classic',
+            '@docusaurus/preset-classic',
             /** @type {import('@docusaurus/preset-classic').Options} */
             ({
                 docs: {
                     routeBasePath: '/',
                     sidebarPath: require.resolve('./sidebars.js'),
-                    // Please change this to your repo.
-                    // Remove this to remove the "edit this page" links.
-                    editUrl: 'https://github.com/vendure-ecommerce/vendure/tree/new-docs/docs/',
+                    editUrl: 'https://github.com/vendure-ecommerce/vendure/blob/master/docs/',
                     showLastUpdateTime: true,
+                    admonitions: {
+                        keywords: ['cli'],
+                        extendDefaults: true,
+                    },
+                    exclude: [
+                        'user-guide/**/*'
+                    ]
                 },
                 blog: false,
                 theme: {

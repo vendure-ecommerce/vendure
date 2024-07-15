@@ -1,23 +1,21 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { Ctx, Injector, InternalServerError, Logger, RequestContext } from '@vendure/core';
+import { EventBus, Injector, Logger, RequestContext } from '@vendure/core';
 import fs from 'fs-extra';
 
 import { deserializeAttachments } from './attachment-utils';
 import { isDevModeOptions, resolveTransportSettings } from './common';
 import { EMAIL_PLUGIN_OPTIONS, loggerCtx } from './constants';
-import { EmailGenerator } from './email-generator';
-import { EmailSender } from './email-sender';
-import { HandlebarsMjmlGenerator } from './handlebars-mjml-generator';
-import { NodemailerEmailSender } from './nodemailer-email-sender';
-import { FileBasedTemplateLoader } from './template-loader';
+import { EmailSendEvent } from './email-send-event';
+import { EmailGenerator } from './generator/email-generator';
+import { HandlebarsMjmlGenerator } from './generator/handlebars-mjml-generator';
+import { EmailSender } from './sender/email-sender';
+import { NodemailerEmailSender } from './sender/nodemailer-email-sender';
 import {
     EmailDetails,
-    EmailPluginOptions,
     EmailTransportOptions,
     InitializedEmailPluginOptions,
     IntermediateEmailDetails,
-    TemplateLoader,
 } from './types';
 
 /**
@@ -33,6 +31,7 @@ export class EmailProcessor {
     constructor(
         @Inject(EMAIL_PLUGIN_OPTIONS) protected options: InitializedEmailPluginOptions,
         private moduleRef: ModuleRef,
+        private eventBus: EventBus,
     ) {}
 
     async init() {
@@ -53,8 +52,9 @@ export class EmailProcessor {
     }
 
     async process(data: IntermediateEmailDetails) {
+        const ctx = RequestContext.deserialize(data.ctx);
+        let emailDetails: EmailDetails = {} as any;
         try {
-            const ctx = RequestContext.deserialize(data.ctx);
             const bodySource = await this.options.templateLoader.loadTemplate(
                 new Injector(this.moduleRef),
                 ctx,
@@ -65,7 +65,7 @@ export class EmailProcessor {
                 },
             );
             const generated = this.generator.generate(data.from, data.subject, bodySource, data.templateVars);
-            const emailDetails: EmailDetails = {
+            emailDetails = {
                 ...generated,
                 recipient: data.recipient,
                 attachments: deserializeAttachments(data.attachments),
@@ -75,6 +75,7 @@ export class EmailProcessor {
             };
             const transportSettings = await this.getTransportSettings(ctx);
             await this.emailSender.send(emailDetails, transportSettings);
+            await this.eventBus.publish(new EmailSendEvent(ctx, emailDetails, true));
             return true;
         } catch (err: unknown) {
             if (err instanceof Error) {
@@ -82,6 +83,8 @@ export class EmailProcessor {
             } else {
                 Logger.error(String(err), loggerCtx);
             }
+
+            await this.eventBus.publish(new EmailSendEvent(ctx, emailDetails, false, err as Error));
             throw err;
         }
     }

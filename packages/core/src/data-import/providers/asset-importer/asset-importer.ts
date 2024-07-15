@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import path from 'path';
 
-import { RequestContext } from '../../../api/index';
+import { RequestContext } from '../../../api/common/request-context';
 import { isGraphQlErrorResult } from '../../../common/index';
 import { ConfigService } from '../../../config/config.service';
 import { Asset } from '../../../entity/asset/asset.entity';

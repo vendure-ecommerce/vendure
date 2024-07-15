@@ -12,6 +12,7 @@ import {
     LanguageCode,
     NotificationService,
     Permission,
+    PermissionsService,
     ProductOptionFragment,
     ProductOptionGroupFragment,
     ServerConfigService,
@@ -48,12 +49,13 @@ export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWi
         protected router: Router,
         protected serverConfigService: ServerConfigService,
         protected dataService: DataService,
+        protected permissionsService: PermissionsService,
         private productDetailService: ProductDetailService,
         private formBuilder: UntypedFormBuilder,
         private changeDetector: ChangeDetectorRef,
         private notificationService: NotificationService,
     ) {
-        super(route, router, serverConfigService, dataService);
+        super(route, router, serverConfigService, dataService, permissionsService);
         this.optionGroupCustomFields = this.getCustomFieldConfig('ProductOptionGroup');
         this.optionCustomFields = this.getCustomFieldConfig('ProductOption');
     }
@@ -97,6 +99,7 @@ export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWi
                 take(1),
                 mergeMap(([{ optionGroups }, languageCode, product]) => {
                     const updateOperations: Array<Observable<any>> = [];
+                    const updatedProductOptionInputs: UpdateProductOptionInput[] = [];
                     for (const optionGroupForm of this.getOptionGroups()) {
                         if (optionGroupForm.dirty) {
                             const optionGroupEntity = optionGroups.find(
@@ -125,16 +128,20 @@ export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWi
                                         optionForm,
                                         languageCode,
                                     );
-                                    updateOperations.push(
-                                        this.productDetailService.updateProductOption(
-                                            { ...input, autoUpdate: this.autoUpdateVariantNames },
-                                            product,
-                                            languageCode,
-                                        ),
-                                    );
+                                    updatedProductOptionInputs.push(input);
                                 }
                             }
                         }
+                    }
+                    if (updatedProductOptionInputs.length) {
+                        updateOperations.push(
+                            this.productDetailService.updateProductOptions(
+                                updatedProductOptionInputs,
+                                this.autoUpdateVariantNames,
+                                product,
+                                languageCode,
+                            ),
+                        );
                     }
                     return forkJoin(updateOperations);
                 }),

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PriceCalculationResult
 
-<GenerationInfo sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="171" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/common/types/common-types.ts" sourceLine="174" packageName="@vendure/core" />
 
 The result of the price calculation from the <a href='/reference/typescript-api/products-stock/product-variant-price-calculation-strategy#productvariantpricecalculationstrategy'>ProductVariantPriceCalculationStrategy</a> or the
 <a href='/reference/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy'>OrderItemPriceCalculationStrategy</a>.

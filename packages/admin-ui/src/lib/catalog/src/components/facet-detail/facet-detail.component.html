@@ -10,7 +10,7 @@
         </vdr-ab-left>
 
         <vdr-ab-right>
-            <vdr-action-bar-items locationId="facet-detail"></vdr-action-bar-items>
+            <vdr-action-bar-items locationId="facet-detail" />
             <button
                 class="btn btn-primary"
                 *ngIf="isNew$ | async; else updateButton"
@@ -29,6 +29,7 @@
                     {{ 'common.update' | translate }}
                 </button>
             </ng-template>
+            <vdr-action-bar-dropdown-menu locationId="facet-detail" />
         </vdr-ab-right>
     </vdr-action-bar>
 </vdr-page-block>
@@ -108,7 +109,7 @@
                         [placeholder]="'catalog.filter-by-name' | translate"
                     />
                 </ng-template>
-                <ng-container *ngIf="filteredValues$ | async as filteredValues">
+                <ng-container *ngIf="values$ | async as filteredValues">
                     <table class="facet-values-list table" formArrayName="values">
                         <thead>
                             <tr>
@@ -130,7 +131,7 @@
                                             : {
                                                   currentPage: currentPage,
                                                   itemsPerPage: itemsPerPage,
-                                                  totalItems: filteredValues.length
+                                                  totalItems: totalItems,
                                               };
                                     let i = index
                                 "
@@ -186,13 +187,13 @@
                     <div class="pagination-wrapper">
                         <vdr-items-per-page-controls
                             [itemsPerPage]="itemsPerPage"
-                            (itemsPerPageChange)="itemsPerPage = $event"
+                            (itemsPerPageChange)="setItemsPerPage($event)"
                         ></vdr-items-per-page-controls>
                         <vdr-pagination-controls
                             [currentPage]="currentPage"
                             [itemsPerPage]="itemsPerPage"
-                            [totalItems]="filteredValues.length"
-                            (pageChange)="currentPage = $event"
+                            [totalItems]="totalItems"
+                            (pageChange)="setCurrentPage($event)"
                         ></vdr-pagination-controls>
                     </div>
                 </ng-container>

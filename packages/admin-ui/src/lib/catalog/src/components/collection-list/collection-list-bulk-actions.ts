@@ -5,6 +5,7 @@ import {
     createBulkDeleteAction,
     createBulkRemoveFromChannelAction,
     DataService,
+    DuplicateEntityDialogComponent,
     GetCollectionListQuery,
     ItemOf,
     ModalService,
@@ -79,13 +80,15 @@ export const assignCollectionsToChannelBulkAction = createBulkAssignToChannelAct
         userPermissions.includes(Permission.UpdateCatalog) ||
         userPermissions.includes(Permission.UpdateCollection),
     getItemName: item => item.name,
-    bulkAssignToChannel: (dataService, collectionIds, channelId) =>
-        dataService.collection
-            .assignCollectionsToChannel({
-                collectionIds,
-                channelId,
-            })
-            .pipe(map(res => res.assignCollectionsToChannel)),
+    bulkAssignToChannel: (dataService, collectionIds, channelIds) =>
+        channelIds.map(channelId =>
+            dataService.collection
+                .assignCollectionsToChannel({
+                    collectionIds,
+                    channelId,
+                })
+                .pipe(map(res => res.assignCollectionsToChannel)),
+        ),
 });
 
 export const removeCollectionsFromChannelBulkAction = createBulkRemoveFromChannelAction<
@@ -104,3 +107,30 @@ export const removeCollectionsFromChannelBulkAction = createBulkRemoveFromChanne
             })
             .pipe(map(res => res.removeCollectionsFromChannel)),
 });
+
+export const duplicateCollectionsBulkAction: BulkAction<
+    ItemOf<GetCollectionListQuery, 'collections'>,
+    CollectionListComponent
+> = {
+    location: 'collection-list',
+    label: _('common.duplicate'),
+    icon: 'copy',
+    onClick: ({ injector, selection, hostComponent, clearSelection }) => {
+        const modalService = injector.get(ModalService);
+        modalService
+            .fromComponent(DuplicateEntityDialogComponent<ItemOf<GetCollectionListQuery, 'collections'>>, {
+                locals: {
+                    entities: selection,
+                    entityName: 'Collection',
+                    title: _('catalog.duplicate-collections'),
+                    getEntityName: entity => entity.name,
+                },
+            })
+            .subscribe(result => {
+                if (result) {
+                    clearSelection();
+                    hostComponent.refresh();
+                }
+            });
+    },
+};

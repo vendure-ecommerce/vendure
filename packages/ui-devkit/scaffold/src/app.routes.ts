@@ -14,6 +14,10 @@ export const routes: Route[] = [
             breadcrumb: _('breadcrumb.dashboard'),
         },
         children: [
+            // Defining the extension routes before the built-in routes allows
+            // the extension routes to take precedence over the built-in routes, enabling
+            // the extensions to override built-in functionality.
+            ...extensionRoutes,
             {
                 path: '',
                 pathMatch: 'full',
@@ -43,7 +47,6 @@ export const routes: Route[] = [
                 path: 'system',
                 loadChildren: () => import('@vendure/admin-ui/system').then(m => m.SystemModule),
             },
-            ...extensionRoutes,
         ],
     },
 ];

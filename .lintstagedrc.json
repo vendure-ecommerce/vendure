@@ -1,16 +1,16 @@
 {
   "admin-ui/**/*.ts": [
-    "yarn lint",
-    "yarn format",
+    "npm run lint",
+    "npm run format",
     "git add"
   ],
   "admin-ui/**/*.html": [
-    "yarn format",
+    "npm run format",
     "git add"
   ],
-  "packages/**/*.ts": [
-    "yarn lint",
-    "yarn format",
+  "packages/!(dev-server)/**/*.ts": [
+    "npm run lint",
+    "npm run format",
     "git add"
   ]
 }

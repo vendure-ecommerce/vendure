@@ -1,4 +1,4 @@
-import { ConfigArg, FulfillOrderInput, OrderLineInput } from '@vendure/common/lib/generated-types';
+import { ConfigArg, OrderLineInput } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import {
@@ -14,7 +14,6 @@ import {
     FulfillmentState,
     FulfillmentTransitionData,
 } from '../../service/helpers/fulfillment-state-machine/fulfillment-state';
-import { CalculateShippingFnResult } from '../shipping-method/shipping-calculator';
 
 /**
  * @docsCategory fulfillment
@@ -58,7 +57,7 @@ export interface FulfillmentHandlerConfig<T extends ConfigArgs> extends Configur
     /**
      * @description
      * This allows the handler to intercept state transitions of the created Fulfillment. This works much in the
-     * same way as the {@link CustomFulfillmentProcess} `onTransitionStart` method (i.e. returning `false` or
+     * same way as the {@link FulfillmentProcess} `onTransitionStart` method (i.e. returning `false` or
      * `string` will be interpreted as an error and prevent the state transition), except that it is only invoked
      * on Fulfillments which were created with this particular FulfillmentHandler.
      *

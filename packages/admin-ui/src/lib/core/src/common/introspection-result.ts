@@ -81,6 +81,10 @@
       "StringCustomFieldConfig",
       "TextCustomFieldConfig"
     ],
+    "DuplicateEntityResult": [
+      "DuplicateEntityError",
+      "DuplicateEntitySuccess"
+    ],
     "ErrorResult": [
       "AlreadyRefundedError",
       "CancelActiveOrderError",
@@ -90,6 +94,7 @@
       "CouponCodeInvalidError",
       "CouponCodeLimitError",
       "CreateFulfillmentError",
+      "DuplicateEntityError",
       "EmailAddressConflictError",
       "EmptyOrderLineSelectionError",
       "FacetInUseError",
@@ -120,6 +125,7 @@
       "PaymentStateTransitionError",
       "ProductOptionInUseError",
       "QuantityTooGreatError",
+      "RefundAmountError",
       "RefundOrderStateError",
       "RefundPaymentIdMissingError",
       "RefundStateTransitionError",
@@ -129,6 +135,7 @@
       "CouponCodeExpiredError",
       "CouponCodeInvalidError",
       "CouponCodeLimitError",
+      "IneligibleShippingMethodError",
       "InsufficientStockError",
       "NegativeQuantityError",
       "NoChangesSpecifiedError",
@@ -223,6 +230,7 @@
       "PaymentOrderMismatchError",
       "QuantityTooGreatError",
       "Refund",
+      "RefundAmountError",
       "RefundOrderStateError",
       "RefundStateTransitionError"
     ],

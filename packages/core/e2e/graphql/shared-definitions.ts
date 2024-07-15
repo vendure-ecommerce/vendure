@@ -1029,3 +1029,46 @@ export const UPDATE_ADMINISTRATOR = gql`
     }
     ${ADMINISTRATOR_FRAGMENT}
 `;
+
+export const ASSIGN_COLLECTIONS_TO_CHANNEL = gql`
+    mutation AssignCollectionsToChannel($input: AssignCollectionsToChannelInput!) {
+        assignCollectionsToChannel(input: $input) {
+            ...Collection
+        }
+    }
+    ${COLLECTION_FRAGMENT}
+`;
+
+export const GET_COLLECTION = gql`
+    query GetCollection($id: ID, $slug: String, $variantListOptions: ProductVariantListOptions) {
+        collection(id: $id, slug: $slug) {
+            ...Collection
+            productVariants(options: $variantListOptions) {
+                items {
+                    id
+                    name
+                    price
+                }
+            }
+        }
+    }
+    ${COLLECTION_FRAGMENT}
+`;
+
+export const GET_FACET_WITH_VALUES = gql`
+    query GetFacetWithValues($id: ID!) {
+        facet(id: $id) {
+            ...FacetWithValues
+        }
+    }
+    ${FACET_WITH_VALUES_FRAGMENT}
+`;
+
+export const GET_PROMOTION = gql`
+    query GetPromotion($id: ID!) {
+        promotion(id: $id) {
+            ...Promotion
+        }
+    }
+    ${PROMOTION_FRAGMENT}
+`;

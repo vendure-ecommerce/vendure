@@ -17,17 +17,12 @@
                 <clr-icon shape="plus"></clr-icon>
                 {{ 'catalog.create-new-product' | translate }}
             </a>
-            <vdr-dropdown>
-                <button class="icon-button" vdrDropdownTrigger>
-                    <clr-icon shape="ellipsis-vertical"></clr-icon>
+            <vdr-action-bar-dropdown-menu [alwaysShow]="true" locationId="product-list">
+                <button type="button" vdrDropdownItem (click)="rebuildSearchIndex()">
+                    <clr-icon shape="refresh" class=""></clr-icon>
+                    {{ 'catalog.rebuild-search-index' | translate }}
                 </button>
-                <vdr-dropdown-menu vdrPosition="bottom-right">
-                    <button type="button" vdrDropdownItem (click)="rebuildSearchIndex()">
-                        <clr-icon shape="refresh" class=""></clr-icon>
-                        {{ 'catalog.rebuild-search-index' | translate }}
-                    </button>
-                </vdr-dropdown-menu>
-            </vdr-dropdown>
+            </vdr-action-bar-dropdown-menu>
         </vdr-ab-right>
     </vdr-action-bar>
 </vdr-page-block>
@@ -49,7 +44,7 @@
     ></vdr-bulk-action-menu>
     <vdr-dt2-search
         [searchTermControl]="searchTermControl"
-        [searchTermPlaceholder]="'catalog.filter-by-name' | translate"
+        [searchTermPlaceholder]="'settings.search-by-product-name-or-sku' | translate"
     />
     <vdr-dt2-column [heading]="'common.id' | translate" id="id" [hiddenByDefault]="true" [sort]="sorts.get('id')">
         <ng-template let-product="item">

@@ -2,11 +2,14 @@ import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
-import { awaitPromiseOrObservable, InternalServerError, isGraphQlErrorResult } from '../../common/index';
+import { isGraphQlErrorResult } from '../../common/error/error-result';
+import { InternalServerError } from '../../common/error/errors';
+import { awaitPromiseOrObservable } from '../../common/utils';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
 import { Order } from '../../entity/order/order.entity';
+import { FulfillmentState } from '../../service/helpers/fulfillment-state-machine/fulfillment-state';
+import { OrderState } from '../../service/helpers/order-state-machine/order-state';
 import { orderItemsAreDelivered, orderItemsAreShipped } from '../../service/helpers/utils/order-utils';
-import { FulfillmentState, OrderState } from '../../service/index';
 
 import { FulfillmentProcess } from './fulfillment-process';
 
@@ -94,7 +97,6 @@ export const defaultFulfillmentProcess: FulfillmentProcess<FulfillmentState> = {
                 quantity: l.quantity,
             }));
             await stockMovementService.createCancellationsForOrderLines(ctx, orderLineInput);
-            // const lines = await groupOrderItemsIntoLines(ctx, orderLineInput);
             await stockMovementService.createAllocationsForOrderLines(ctx, orderLineInput);
         }
         if (fromState === 'Created' && toState === 'Pending') {

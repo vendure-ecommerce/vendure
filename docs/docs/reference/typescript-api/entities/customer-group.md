@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CustomerGroup
 
-<GenerationInfo sourceFile="packages/core/src/entity/customer-group/customer-group.entity.ts" sourceLine="16" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/customer-group/customer-group.entity.ts" sourceLine="17" packageName="@vendure/core" />
 
 A grouping of <a href='/reference/typescript-api/entities/customer#customer'>Customer</a>s which enables features such as group-based promotions
 or tax rules.
@@ -24,6 +24,8 @@ class CustomerGroup extends VendureEntity implements HasCustomFields {
     customers: Customer[];
     @Column(type => CustomCustomerGroupFields)
     customFields: CustomCustomerGroupFields;
+    @OneToMany(type => TaxRate, taxRate => taxRate.zone)
+    taxRates: TaxRate[];
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
@@ -53,6 +55,11 @@ class CustomerGroup extends VendureEntity implements HasCustomFields {
 ### customFields
 
 <MemberInfo kind="property" type={`CustomCustomerGroupFields`}   />
+
+
+### taxRates
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>[]`}   />
 
 
 

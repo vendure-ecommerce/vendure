@@ -1,4 +1,9 @@
-import createMollieClient, { OrderEmbed, PaymentStatus, RefundStatus } from '@mollie/api-client';
+import createMollieClient, {
+    OrderEmbed,
+    PaymentStatus,
+    RefundStatus,
+    Order as MollieOrder,
+} from '@mollie/api-client';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import {
     CreatePaymentErrorResult,
@@ -43,24 +48,27 @@ export const molliePaymentHandler = new PaymentMethodHandler({
         },
         redirectUrl: {
             type: 'string',
-            required: false,
+            required: true,
             defaultValue: '',
-            label: [{ languageCode: LanguageCode.en, value: 'Redirect URL' }],
+            label: [{ languageCode: LanguageCode.en, value: 'Fallback redirect URL' }],
             description: [
-                { languageCode: LanguageCode.en, value: 'Redirect the client to this URL after payment' },
+                {
+                    languageCode: LanguageCode.en,
+                    value: 'Redirect URL to use when no URL is given by the storefront. Order code is appended to this URL',
+                },
             ],
-        }
+        },
     },
     init(injector) {
         mollieService = injector.get(MollieService);
     },
-    createPayment: async (
+    createPayment: (
         ctx,
         order,
-        _amount, // Don't use this amount, but the amount from the metadata
+        _amount, // Don't use this amount, but the amount from the metadata, because that has the actual paid amount from Mollie
         args,
         metadata,
-    ): Promise<CreatePaymentResult | CreatePaymentErrorResult> => {
+    ): CreatePaymentResult | CreatePaymentErrorResult => {
         // Only Admins and internal calls should be allowed to settle and authorize payments
         if (ctx.apiType !== 'admin' && ctx.apiType !== 'custom') {
             throw Error(`CreatePayment is not allowed for apiType '${ctx.apiType}'`);
@@ -72,7 +80,12 @@ export const molliePaymentHandler = new PaymentMethodHandler({
                 }. Only Authorized or Settled are allowed.`,
             );
         }
-        Logger.info(`Payment for order ${order.code} with amount ${metadata.amount} created with state '${metadata.status}'`, loggerCtx);
+        Logger.info(
+            `Payment for order ${order.code} with amount ${metadata.amount as string} created with state '${
+                metadata.status as string
+            }'`,
+            loggerCtx,
+        );
         return {
             amount: metadata.amount,
             state: metadata.status,

@@ -16,6 +16,10 @@ interface DocsSectionConfig {
 
 const sections: DocsSectionConfig[] = [
     {
+        sourceDirs: ['packages/job-queue-plugin/src/'],
+        outputPath: '',
+    },
+    {
         sourceDirs: ['packages/core/src/', 'packages/common/src/', 'packages/testing/src/'],
         exclude: [/generated-shop-types/],
         outputPath: 'typescript-api',
@@ -37,16 +41,20 @@ const sections: DocsSectionConfig[] = [
         outputPath: '',
     },
     {
-        sourceDirs: ['packages/job-queue-plugin/src/'],
-        outputPath: '',
-    },
-    {
         sourceDirs: ['packages/payments-plugin/src/'],
         exclude: [/generated-shop-types/],
         outputPath: '',
     },
     {
         sourceDirs: ['packages/harden-plugin/src/'],
+        outputPath: '',
+    },
+    {
+        sourceDirs: ['packages/stellate-plugin/src/'],
+        outputPath: '',
+    },
+    {
+        sourceDirs: ['packages/sentry-plugin/src/'],
         outputPath: '',
     },
     {
@@ -64,7 +72,7 @@ if (watchMode) {
     sections.forEach(section => {
         section.sourceDirs.forEach(dir => {
             fs.watch(dir, { recursive: true }, (eventType, file) => {
-                if (extname(file) === '.ts') {
+                if (file && extname(file) === '.ts') {
                     console.log(`Changes detected in ${dir}`);
                     generateTypescriptDocs([section], true);
                 }

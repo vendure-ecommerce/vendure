@@ -1,13 +1,20 @@
-import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 
 import { NotificationType } from '../../providers/notification/notification.service';
+
+import {
+    LocalizationDirectionType,
+    LocalizationService,
+} from '../../providers/localization/localization.service';
 
 @Component({
     selector: 'vdr-notification',
     templateUrl: './notification.component.html',
     styleUrls: ['./notification.component.scss'],
 })
-export class NotificationComponent {
+export class NotificationComponent implements OnInit {
+    direction$: LocalizationDirectionType;
+
     @ViewChild('wrapper', { static: true }) wrapper: ElementRef;
     offsetTop = 0;
     message = '';
@@ -17,6 +24,15 @@ export class NotificationComponent {
     private onClickFn: () => void = () => {
         /* */
     };
+
+    /**
+     *
+     */
+    constructor(private localizationService: LocalizationService) {}
+
+    ngOnInit(): void {
+        this.direction$ = this.localizationService.direction$;
+    }
 
     registerOnClickFn(fn: () => void): void {
         this.onClickFn = fn;

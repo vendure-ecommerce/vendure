@@ -1,6 +1,9 @@
 import { INestApplication, INestApplicationContext } from '@nestjs/common';
+import { NestApplicationContextOptions } from '@nestjs/common/interfaces/nest-application-context-options.interface';
+import { NestApplicationOptions } from '@nestjs/common/interfaces/nest-application-options.interface';
 import { NestFactory } from '@nestjs/core';
 import { getConnectionToken } from '@nestjs/typeorm';
+import { DEFAULT_COOKIE_NAME } from '@vendure/common/lib/shared-constants';
 import { Type } from '@vendure/common/lib/shared-types';
 import cookieSession = require('cookie-session');
 import { satisfies } from 'semver';
@@ -28,6 +31,40 @@ export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestA
 
 /**
  * @description
+ * Additional options that can be used to configure the bootstrap process of the
+ * Vendure server.
+ *
+ * @since 2.2.0
+ * @docsCategory common
+ * @docsPage bootstrap
+ */
+export interface BootstrapOptions {
+    /**
+     * @description
+     * These options get passed directly to the `NestFactory.create()` method.
+     */
+    nestApplicationOptions: NestApplicationOptions;
+}
+
+/**
+ * @description
+ * Additional options that can be used to configure the bootstrap process of the
+ * Vendure worker.
+ *
+ * @since 2.2.0
+ * @docsCategory worker
+ * @docsPage bootstrapWorker
+ */
+export interface BootstrapWorkerOptions {
+    /**
+     * @description
+     * These options get passed directly to the `NestFactory.createApplicationContext` method.
+     */
+    nestApplicationContextOptions: NestApplicationContextOptions;
+}
+
+/**
+ * @description
  * Bootstraps the Vendure server. This is the entry point to the application.
  *
  * @example
@@ -36,12 +73,40 @@ export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestA
  * import { config } from './vendure-config';
  *
  * bootstrap(config).catch(err => {
- *     console.log(err);
+ *   console.log(err);
+ *   process.exit(1);
+ * });
+ * ```
+ *
+ * ### Passing additional options
+ *
+ * Since v2.2.0, you can pass additional options to the NestJs application via the `options` parameter.
+ * For example, to integrate with the [Nest Devtools](https://docs.nestjs.com/devtools/overview), you need to
+ * pass the `snapshot` option:
+ *
+ * ```ts
+ * import { bootstrap } from '\@vendure/core';
+ * import { config } from './vendure-config';
+ *
+ * bootstrap(config, {
+ *   // highlight-start
+ *   nestApplicationOptions: {
+ *     snapshot: true,
+ *   }
+ *   // highlight-end
+ * }).catch(err => {
+ *   console.log(err);
+ *   process.exit(1);
  * });
  * ```
  * @docsCategory common
+ * @docsPage bootstrap
+ * @docsWeight 0
  * */
-export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INestApplication> {
+export async function bootstrap(
+    userConfig: Partial<VendureConfig>,
+    options?: BootstrapOptions,
+): Promise<INestApplication> {
     const config = await preBootstrapConfig(userConfig);
     Logger.useLogger(config.logger);
     Logger.info(`Bootstrapping Vendure Server (pid: ${process.pid})...`);
@@ -57,6 +122,7 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     const app = await NestFactory.create(appModule.AppModule, {
         cors,
         logger: new Logger(),
+        ...options?.nestApplicationOptions,
     });
     DefaultLogger.restoreOriginalLogLevel();
     app.useLogger(new Logger());
@@ -64,8 +130,7 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     const usingCookie =
         tokenMethod === 'cookie' || (Array.isArray(tokenMethod) && tokenMethod.includes('cookie'));
     if (usingCookie) {
-        const { cookieOptions } = config.authOptions;
-        app.use(cookieSession(cookieOptions));
+        configureSessionCookies(app, config);
     }
     const earlyMiddlewares = middleware.filter(mid => mid.beforeListen);
     earlyMiddlewares.forEach(mid => {
@@ -95,11 +160,17 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
  *   .then(worker => worker.startHealthCheckServer({ port: 3020 }))
  *   .catch(err => {
  *     console.log(err);
+ *     process.exit(1);
  *   });
  * ```
  * @docsCategory worker
+ * @docsPage bootstrapWorker
+ * @docsWeight 0
  * */
-export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promise<VendureWorker> {
+export async function bootstrapWorker(
+    userConfig: Partial<VendureConfig>,
+    options?: BootstrapWorkerOptions,
+): Promise<VendureWorker> {
     const vendureConfig = await preBootstrapConfig(userConfig);
     const config = disableSynchronize(vendureConfig);
     config.logger.setDefaultContext?.('Vendure Worker');
@@ -113,6 +184,7 @@ export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promi
     const WorkerModule = await import('./worker/worker.module.js').then(m => m.WorkerModule);
     const workerApp = await NestFactory.createApplicationContext(WorkerModule, {
         logger: new Logger(),
+        ...options?.nestApplicationContextOptions,
     });
     DefaultLogger.restoreOriginalLogLevel();
     workerApp.useLogger(new Logger());
@@ -132,7 +204,7 @@ export async function preBootstrapConfig(
         await setConfig(userConfig);
     }
 
-    const entities = await getAllEntities(userConfig);
+    const entities = getAllEntities(userConfig);
     const { coreSubscribersMap } = await import('./entity/subscribers.js');
     await setConfig({
         dbConnectionOptions: {
@@ -147,6 +219,10 @@ export async function preBootstrapConfig(
     });
 
     let config = getConfig();
+    // The logger is set here so that we are able to log any messages prior to the final
+    // logger (which may depend on config coming from a plugin) being set.
+    Logger.useLogger(config.logger);
+    config = await runPluginConfigurations(config);
     const entityIdStrategy = config.entityOptions.entityIdStrategy ?? config.entityIdStrategy;
     setEntityIdStrategy(entityIdStrategy, entities);
     const moneyStrategy = config.entityOptions.moneyStrategy;
@@ -156,7 +232,6 @@ export async function preBootstrapConfig(
         process.exitCode = 1;
         throw new Error('CustomFields config error:\n- ' + customFieldValidationResult.errors.join('\n- '));
     }
-    config = await runPluginConfigurations(config);
     registerCustomEntityFields(config);
     await runEntityMetadataModifiers(config);
     setExposedHeaders(config);
@@ -192,7 +267,8 @@ async function runPluginConfigurations(config: RuntimeVendureConfig): Promise<Ru
     for (const plugin of config.plugins) {
         const configFn = getConfigurationFunction(plugin);
         if (typeof configFn === 'function') {
-            config = await configFn(config);
+            const result = await configFn(config);
+            Object.assign(config, result);
         }
     }
     return config;
@@ -201,7 +277,7 @@ async function runPluginConfigurations(config: RuntimeVendureConfig): Promise<Ru
 /**
  * Returns an array of core entities and any additional entities defined in plugins.
  */
-export async function getAllEntities(userConfig: Partial<VendureConfig>): Promise<Array<Type<any>>> {
+export function getAllEntities(userConfig: Partial<VendureConfig>): Array<Type<any>> {
     const coreEntities = Object.values(coreEntitiesMap) as Array<Type<any>>;
     const pluginEntities = getEntitiesFromPlugins(userConfig.plugins);
 
@@ -328,4 +404,21 @@ async function validateDbTablesForWorker(worker: INestApplicationContext) {
         }
         reject('Could not validate DB table structure. Aborting bootstrap.');
     });
+}
+
+export function configureSessionCookies(
+    app: INestApplication,
+    userConfig: Readonly<RuntimeVendureConfig>,
+): void {
+    const { cookieOptions } = userConfig.authOptions;
+
+    // Globally set the cookie session middleware
+    const cookieName =
+        typeof cookieOptions?.name !== 'string' ? cookieOptions.name?.shop : cookieOptions.name;
+    app.use(
+        cookieSession({
+            ...cookieOptions,
+            name: cookieName ?? DEFAULT_COOKIE_NAME,
+        }),
+    );
 }

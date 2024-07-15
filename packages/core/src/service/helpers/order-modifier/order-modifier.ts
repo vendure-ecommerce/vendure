@@ -27,11 +27,12 @@ import {
     RefundPaymentIdMissingError,
 } from '../../../common/error/generated-graphql-admin-errors';
 import {
+    IneligibleShippingMethodError,
     InsufficientStockError,
     NegativeQuantityError,
     OrderLimitError,
 } from '../../../common/error/generated-graphql-shop-errors';
-import { assertFound, idsAreEqual } from '../../../common/utils';
+import { idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
 import { CustomFieldConfig } from '../../../config/custom-field/custom-field-types';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
@@ -50,7 +51,7 @@ import { Release } from '../../../entity/stock-movement/release.entity';
 import { Sale } from '../../../entity/stock-movement/sale.entity';
 import { Surcharge } from '../../../entity/surcharge/surcharge.entity';
 import { EventBus } from '../../../event-bus/event-bus';
-import { OrderLineEvent } from '../../../event-bus/index';
+import { OrderLineEvent } from '../../../event-bus/events/order-line-event';
 import { CountryService } from '../../services/country.service';
 import { HistoryService } from '../../services/history.service';
 import { PaymentService } from '../../services/payment.service';
@@ -58,8 +59,8 @@ import { ProductVariantService } from '../../services/product-variant.service';
 import { PromotionService } from '../../services/promotion.service';
 import { StockMovementService } from '../../services/stock-movement.service';
 import { CustomFieldRelationService } from '../custom-field-relation/custom-field-relation.service';
-import { EntityHydrator } from '../entity-hydrator/entity-hydrator.service';
 import { OrderCalculator } from '../order-calculator/order-calculator';
+import { ShippingCalculator } from '../shipping-calculator/shipping-calculator';
 import { TranslatorService } from '../translator/translator.service';
 import { getOrdersFromLines, orderLinesAreAllCancelled } from '../utils/order-utils';
 import { patchEntity } from '../utils/patch-entity';
@@ -90,7 +91,7 @@ export class OrderModifier {
         private customFieldRelationService: CustomFieldRelationService,
         private promotionService: PromotionService,
         private eventBus: EventBus,
-        private entityHydrator: EntityHydrator,
+        private shippingCalculator: ShippingCalculator,
         private historyService: HistoryService,
         private translator: TranslatorService,
     ) {}
@@ -99,17 +100,29 @@ export class OrderModifier {
      * @description
      * Ensure that the ProductVariant has sufficient saleable stock to add the given
      * quantity to an Order.
+     *
+     * - `existingOrderLineQuantity` is used when adding an item to the order, since if an OrderLine
+     * already exists then we will be adding the new quantity to the existing quantity.
+     * - `quantityInOtherOrderLines` is used when we have more than 1 OrderLine containing the same
+     * ProductVariant. This occurs when there are custom fields defined on the OrderLine and the lines
+     * have differing values for one or more custom fields. In this case, we need to take _all_ of these
+     * OrderLines into account when constraining the quantity. See https://github.com/vendure-ecommerce/vendure/issues/2702
+     * for more on this.
      */
     async constrainQuantityToSaleable(
         ctx: RequestContext,
         variant: ProductVariant,
         quantity: number,
-        existingQuantity = 0,
+        existingOrderLineQuantity = 0,
+        quantityInOtherOrderLines = 0,
     ) {
-        let correctedQuantity = quantity + existingQuantity;
+        let correctedQuantity = quantity + existingOrderLineQuantity;
         const saleableStockLevel = await this.productVariantService.getSaleableStockLevel(ctx, variant);
-        if (saleableStockLevel < correctedQuantity) {
-            correctedQuantity = Math.max(saleableStockLevel - existingQuantity, 0);
+        if (saleableStockLevel < correctedQuantity + quantityInOtherOrderLines) {
+            correctedQuantity = Math.max(
+                saleableStockLevel - existingOrderLineQuantity - quantityInOtherOrderLines,
+                0,
+            );
         }
         return correctedQuantity;
     }
@@ -194,7 +207,7 @@ export class OrderModifier {
         );
         order.lines.push(lineWithRelations);
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
-        this.eventBus.publish(new OrderLineEvent(ctx, order, lineWithRelations, 'created'));
+        await this.eventBus.publish(new OrderLineEvent(ctx, order, lineWithRelations, 'created'));
         return lineWithRelations;
     }
 
@@ -237,7 +250,7 @@ export class OrderModifier {
             }
         }
         await this.connection.getRepository(ctx, OrderLine).save(orderLine);
-        this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'updated'));
+        await this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'updated'));
         return orderLine;
     }
 
@@ -328,6 +341,8 @@ export class OrderModifier {
                 await this.connection.getRepository(ctx, OrderLine).update(line.orderLineId, {
                     quantity: orderLine.quantity - line.quantity,
                 });
+
+                await this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'cancelled'));
             }
         }
 
@@ -387,13 +402,19 @@ export class OrderModifier {
         const { orderItemsLimit } = this.configService.orderOptions;
         let currentItemsCount = summate(order.lines, 'quantity');
         const updatedOrderLineIds: ID[] = [];
-        const refundInput: RefundOrderInput = {
+        const refundInputArray = Array.isArray(input.refunds)
+            ? input.refunds
+            : input.refund
+              ? [input.refund]
+              : [];
+        const refundInputs: RefundOrderInput[] = refundInputArray.map(refund => ({
             lines: [],
             adjustment: 0,
             shipping: 0,
-            paymentId: input.refund?.paymentId || '',
-            reason: input.refund?.reason || input.note,
-        };
+            paymentId: refund.paymentId,
+            amount: refund.amount,
+            reason: refund.reason || input.note,
+        }));
 
         for (const row of input.addItems ?? []) {
             const { productVariantId, quantity } = row;
@@ -477,9 +498,12 @@ export class OrderModifier {
 
                 if (correctedQuantity < initialLineQuantity) {
                     const qtyDelta = initialLineQuantity - correctedQuantity;
-                    refundInput.lines?.push({
-                        orderLineId: orderLine.id,
-                        quantity: qtyDelta,
+
+                    refundInputs.forEach(ri => {
+                        ri.lines.push({
+                            orderLineId: orderLine.id,
+                            quantity: qtyDelta,
+                        });
                     });
                 }
             }
@@ -509,7 +533,7 @@ export class OrderModifier {
             order.surcharges.push(surcharge);
             modification.surcharges.push(surcharge);
             if (surcharge.priceWithTax < 0) {
-                refundInput.adjustment += Math.abs(surcharge.priceWithTax);
+                refundInputs.forEach(ri => (ri.adjustment += Math.abs(surcharge.priceWithTax)));
             }
         }
         if (input.surcharges?.length) {
@@ -588,6 +612,30 @@ export class OrderModifier {
         const updatedOrderLines = order.lines.filter(l => updatedOrderLineIds.includes(l.id));
         const promotions = await this.promotionService.getActivePromotionsInChannel(ctx);
         const activePromotionsPre = await this.promotionService.getActivePromotionsOnOrder(ctx, order.id);
+        if (input.shippingMethodIds) {
+            const result = await this.setShippingMethods(ctx, order, input.shippingMethodIds);
+            if (isGraphQlErrorResult(result)) {
+                return result;
+            }
+        }
+        const { orderItemPriceCalculationStrategy } = this.configService.orderOptions;
+        for (const orderLine of updatedOrderLines) {
+            const variant = await this.productVariantService.applyChannelPriceAndTax(
+                orderLine.productVariant,
+                ctx,
+                order,
+            );
+            const priceResult = await orderItemPriceCalculationStrategy.calculateUnitPrice(
+                ctx,
+                variant,
+                orderLine.customFields || {},
+                order,
+                orderLine.quantity,
+            );
+            orderLine.listPrice = priceResult.price;
+            orderLine.listPriceIncludesTax = priceResult.priceIncludesTax;
+        }
+
         await this.orderCalculator.applyPriceAdjustments(ctx, order, promotions, updatedOrderLines, {
             recalculateShipping: input.options?.recalculateShipping,
         });
@@ -607,22 +655,34 @@ export class OrderModifier {
         const newTotalWithTax = order.totalWithTax;
         const delta = newTotalWithTax - initialTotalWithTax;
         if (delta < 0) {
-            if (!input.refund) {
+            if (refundInputs.length === 0) {
                 return new RefundPaymentIdMissingError();
             }
+            // If there are multiple refunds, we select the largest one as the
+            // "primary" refund to associate with the OrderModification.
+            const primaryRefund = refundInputs.slice().sort((a, b) => (b.amount || 0) - (a.amount || 0))[0];
+
+            // TODO: the following code can be removed once we remove the deprecated
+            // support for "shipping" and "adjustment" input fields for refunds
             const shippingDelta = order.shippingWithTax - initialShippingWithTax;
             if (shippingDelta < 0) {
-                refundInput.shipping = shippingDelta * -1;
+                primaryRefund.shipping = shippingDelta * -1;
             }
-            refundInput.adjustment += await this.calculateRefundAdjustment(ctx, delta, refundInput);
-            const existingPayments = await this.getOrderPayments(ctx, order.id);
-            const payment = existingPayments.find(p => idsAreEqual(p.id, input.refund?.paymentId));
-            if (payment) {
-                const refund = await this.paymentService.createRefund(ctx, refundInput, order, payment);
-                if (!isGraphQlErrorResult(refund)) {
-                    modification.refund = refund;
-                } else {
-                    throw new InternalServerError(refund.message);
+            primaryRefund.adjustment += await this.calculateRefundAdjustment(ctx, delta, primaryRefund);
+            // end
+
+            for (const refundInput of refundInputs) {
+                const existingPayments = await this.getOrderPayments(ctx, order.id);
+                const payment = existingPayments.find(p => idsAreEqual(p.id, refundInput.paymentId));
+                if (payment) {
+                    const refund = await this.paymentService.createRefund(ctx, refundInput, order, payment);
+                    if (!isGraphQlErrorResult(refund)) {
+                        if (idsAreEqual(payment.id, primaryRefund.paymentId)) {
+                            modification.refund = refund;
+                        }
+                    } else {
+                        throw new InternalServerError(refund.message);
+                    }
                 }
             }
         }
@@ -636,6 +696,69 @@ export class OrderModifier {
         return { order, modification: createdModification };
     }
 
+    async setShippingMethods(ctx: RequestContext, order: Order, shippingMethodIds: ID[]) {
+        for (const [i, shippingMethodId] of shippingMethodIds.entries()) {
+            const shippingMethod = await this.shippingCalculator.getMethodIfEligible(
+                ctx,
+                order,
+                shippingMethodId,
+            );
+            if (!shippingMethod) {
+                return new IneligibleShippingMethodError();
+            }
+            let shippingLine: ShippingLine | undefined = order.shippingLines[i];
+            if (shippingLine) {
+                shippingLine.shippingMethod = shippingMethod;
+                shippingLine.shippingMethodId = shippingMethod.id;
+            } else {
+                shippingLine = await this.connection.getRepository(ctx, ShippingLine).save(
+                    new ShippingLine({
+                        shippingMethod,
+                        order,
+                        adjustments: [],
+                        listPrice: 0,
+                        listPriceIncludesTax: ctx.channel.pricesIncludeTax,
+                        taxLines: [],
+                    }),
+                );
+                if (order.shippingLines) {
+                    order.shippingLines.push(shippingLine);
+                } else {
+                    order.shippingLines = [shippingLine];
+                }
+            }
+
+            await this.connection.getRepository(ctx, ShippingLine).save(shippingLine);
+        }
+        // remove any now-unused ShippingLines
+        if (shippingMethodIds.length < order.shippingLines.length) {
+            const shippingLinesToDelete = order.shippingLines.splice(shippingMethodIds.length - 1);
+            await this.connection.getRepository(ctx, ShippingLine).remove(shippingLinesToDelete);
+        }
+        // assign the ShippingLines to the OrderLines
+        await this.connection
+            .getRepository(ctx, OrderLine)
+            .createQueryBuilder('line')
+            .update({ shippingLine: undefined })
+            .whereInIds(order.lines.map(l => l.id))
+            .execute();
+        const { shippingLineAssignmentStrategy } = this.configService.shippingOptions;
+        for (const shippingLine of order.shippingLines) {
+            const orderLinesForShippingLine =
+                await shippingLineAssignmentStrategy.assignShippingLineToOrderLines(ctx, shippingLine, order);
+            await this.connection
+                .getRepository(ctx, OrderLine)
+                .createQueryBuilder('line')
+                .update({ shippingLineId: shippingLine.id })
+                .whereInIds(orderLinesForShippingLine.map(l => l.id))
+                .execute();
+            orderLinesForShippingLine.forEach(line => {
+                line.shippingLine = shippingLine;
+            });
+        }
+        return order;
+    }
+
     private noChangesSpecified(input: ModifyOrderInput): boolean {
         const noChanges =
             !input.adjustOrderLines?.length &&
@@ -644,7 +767,8 @@ export class OrderModifier {
             !input.updateShippingAddress &&
             !input.updateBillingAddress &&
             !input.couponCodes &&
-            !(input as any).customFields;
+            !(input as any).customFields &&
+            (!input.shippingMethodIds || input.shippingMethodIds.length === 0);
         return noChanges;
     }
 
@@ -653,6 +777,9 @@ export class OrderModifier {
      * Because a Refund's amount is calculated based on the orderItems changed, plus shipping change,
      * we need to make sure the amount gets adjusted to match any changes caused by other factors,
      * i.e. promotions that were previously active but are no longer.
+     *
+     * TODO: Deprecated - can be removed once we remove support for the "shipping" & "adjustment" input
+     * fields for refunds.
      */
     private async calculateRefundAdjustment(
         ctx: RequestContext,

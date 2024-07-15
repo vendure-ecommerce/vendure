@@ -39,7 +39,7 @@ type JobUpdate<T extends JobData<T>> = Pick<
 
 <GenerationInfo sourceFile="packages/core/src/job-queue/subscribable-job.ts" sourceLine="34" packageName="@vendure/core" />
 
-Job update options, that you can specify by calling {@link SubscribableJob.updates updates()} method.
+Job update options, that you can specify by calling <a href='/reference/typescript-api/job-queue/subscribable-job#subscribablejob'>SubscribableJob</a> `updates` method.
 
 ```ts title="Signature"
 type JobUpdateOptions = {
@@ -73,7 +73,7 @@ type JobUpdateOptions = {
 
 ## CreateQueueOptions
 
-<GenerationInfo sourceFile="packages/core/src/job-queue/types.ts" sourceLine="13" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/job-queue/types.ts" sourceLine="15" packageName="@vendure/core" />
 
 Used to configure a new <a href='/reference/typescript-api/job-queue/#jobqueue'>JobQueue</a> instance.
 
@@ -104,10 +104,9 @@ should resolve when the job is complete, or be rejected in case of an error.
 
 ## JobData
 
-<GenerationInfo sourceFile="packages/core/src/job-queue/types.ts" sourceLine="35" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/job-queue/types.ts" sourceLine="37" packageName="@vendure/core" />
 
-A JSON-serializable data type which provides a <a href='/reference/typescript-api/job-queue/job#job'>Job</a>
-with the data it needs to be processed.
+A JSON-serializable data type which provides a <a href='/reference/typescript-api/job-queue/job#job'>Job</a>with the data it needs to be processed.
 
 ```ts title="Signature"
 type JobData<T> = JsonCompatible<T>
@@ -116,7 +115,7 @@ type JobData<T> = JsonCompatible<T>
 
 ## JobConfig
 
-<GenerationInfo sourceFile="packages/core/src/job-queue/types.ts" sourceLine="44" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/job-queue/types.ts" sourceLine="46" packageName="@vendure/core" />
 
 Used to instantiate a new <a href='/reference/typescript-api/job-queue/job#job'>Job</a>
 

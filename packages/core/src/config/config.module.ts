@@ -70,6 +70,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
         const {
             productVariantPriceCalculationStrategy,
             productVariantPriceSelectionStrategy,
+            productVariantPriceUpdateStrategy,
             stockDisplayStrategy,
             stockLocationStrategy,
         } = this.configService.catalogOptions;
@@ -103,7 +104,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
         const { customPaymentProcess, process: paymentProcess } = this.configService.paymentOptions;
         const { entityIdStrategy: entityIdStrategyDeprecated } = this.configService;
         const { entityIdStrategy } = this.configService.entityOptions;
-        const { healthChecks } = this.configService.systemOptions;
+        const { healthChecks, errorHandlers } = this.configService.systemOptions;
         const { assetImportStrategy } = this.configService.importExportOptions;
         return [
             ...adminAuthenticationStrategy,
@@ -125,6 +126,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             entityIdStrategyDeprecated,
             ...[entityIdStrategy].filter(notNullOrUndefined),
             productVariantPriceCalculationStrategy,
+            productVariantPriceUpdateStrategy,
             orderItemPriceCalculationStrategy,
             ...orderProcess,
             ...customFulfillmentProcess,
@@ -134,6 +136,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             stockAllocationStrategy,
             stockDisplayStrategy,
             ...healthChecks,
+            ...errorHandlers,
             assetImportStrategy,
             changedPriceHandlingStrategy,
             ...(Array.isArray(activeOrderStrategy) ? activeOrderStrategy : [activeOrderStrategy]),
@@ -148,6 +151,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
     private getConfigurableOperations(): Array<ConfigurableOperationDef<any>> {
         const { paymentMethodHandlers, paymentMethodEligibilityCheckers } = this.configService.paymentOptions;
         const { collectionFilters } = this.configService.catalogOptions;
+        const { entityDuplicators } = this.configService.entityOptions;
         const { promotionActions, promotionConditions } = this.configService.promotionOptions;
         const { shippingCalculators, shippingEligibilityCheckers, fulfillmentHandlers } =
             this.configService.shippingOptions;
@@ -160,6 +164,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             ...(shippingCalculators || []),
             ...(shippingEligibilityCheckers || []),
             ...(fulfillmentHandlers || []),
+            ...(entityDuplicators || []),
         ];
     }
 }

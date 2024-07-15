@@ -164,7 +164,10 @@ export class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements
 
     private applyFilters(items: Job[], filters: JobFilterParameter): Job[] {
         for (const [prop, operator] of Object.entries(filters)) {
-            const key = prop as keyof Required<JobFilterParameter>;
+            const key = prop as keyof Required<Omit<JobFilterParameter, '_and' | '_or'>>;
+            if (Array.isArray(operator)) {
+                continue;
+            }
             if (operator?.eq !== undefined) {
                 items = items.filter(i => i[key] === operator.eq);
             }

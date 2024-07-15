@@ -180,6 +180,10 @@ Form inputs are styled globally, so you don't need to use special components for
     <vdr-form-field label="Invalid with error">
         <input type="text" [formControl]="invalidFormControl" />
     </vdr-form-field>
+    <vdr-rich-text-editor
+        class="form-grid-span"
+        label="Description"
+    ></vdr-rich-text-editor>
 </div>
 ```
 
@@ -189,7 +193,7 @@ Form inputs are styled globally, so you don't need to use special components for
 ```tsx
 import React from 'react';
 import { starIcon, userIcon } from '@cds/core/icon';
-import { FormField } from '@vendure/admin-ui/react';
+import { FormField, RichTextEditor } from '@vendure/admin-ui/react';
 
 export function DemoComponent() {
     return (
@@ -215,6 +219,7 @@ export function DemoComponent() {
             <FormField label="Invalid with error" invalid>
                 <input type="text" />
             </FormField>
+            <RichTextEditor className="form-grid-span" label="Description" readOnly={false} />
         </div>
     );
 }
@@ -222,6 +227,19 @@ export function DemoComponent() {
 
 </TabItem>
 </Tabs>
+
+The `form-grid` class is used to lay out the form fields into a 2-column grid on larger screens, and a single column on smaller screens.
+If you want to force a particular field to always take up the full width (i.e. to span 2 columns at all screen sizes), you can add the
+`form-grid-span` class to that form field.
+
+```html
+<div class="form-grid">
+    // highlight-next-line
+    <vdr-form-field label="Page title" class="form-grid-span">
+        <input type="text" />
+    </vdr-form-field>
+</div>
+```
 
 ## Cards
 

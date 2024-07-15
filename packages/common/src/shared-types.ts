@@ -34,6 +34,7 @@ export type DeepRequired<T, U extends object | undefined = undefined> = T extend
 /**
  * A type representing the type rather than instance of a class.
  */
+// eslint-disable-next-line @typescript-eslint/ban-types
 export interface Type<T> extends Function {
     // eslint-disable-next-line @typescript-eslint/prefer-function-type
     new (...args: any[]): T;
@@ -87,7 +88,7 @@ export type ID = string | number;
  * string       | varchar                               | String
  * localeString | varchar                               | String
  * text         | longtext(m), text(p,s)                | String
- * localText    | longtext(m), text(p,s)                | String
+ * localeText    | longtext(m), text(p,s)                | String
  * int          | int                                   | Int
  * float        | double precision                      | Float
  * boolean      | tinyint (m), bool (p), boolean (s)    | Boolean
@@ -273,9 +274,12 @@ export interface AdminUiConfig {
     /**
      * @description
      * The default locale for the Admin UI. The locale affects the formatting of
-     * currencies & dates.
+     * currencies & dates. Must be one of the items specified
+     * in the `availableLocales` property.
      *
      * If not set, the browser default locale will be used.
+     *
+     * @since 2.2.0
      */
     defaultLocale?: string;
     /**
@@ -283,6 +287,13 @@ export interface AdminUiConfig {
      * An array of languages for which translations exist for the Admin UI.
      */
     availableLanguages: LanguageCode[];
+    /**
+     * @description
+     * An array of locales to be used on Admin UI.
+     *
+     * @since 2.2.0
+     */
+    availableLocales: string[];
     /**
      * @description
      * If you are using an external {@link AuthenticationStrategy} for the Admin API, you can configure

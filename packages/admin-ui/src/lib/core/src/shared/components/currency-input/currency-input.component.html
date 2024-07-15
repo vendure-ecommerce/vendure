@@ -4,7 +4,7 @@
 >
     <input
         type="number"
-        [step]="hasFractionPart ? 0.01 : 1"
+        [step]="hasFractionPart ? 1 / precisionFactor : 1"
         [value]="_inputValue"
         [disabled]="disabled"
         [readonly]="readonly"

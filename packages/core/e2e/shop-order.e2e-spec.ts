@@ -10,26 +10,30 @@ import {
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
-import { vi } from 'vitest';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import {
     testErrorPaymentMethod,
     testFailingPaymentMethod,
     testSuccessfulPaymentMethod,
 } from './fixtures/test-payment-methods';
-import { countryCodeShippingEligibilityChecker } from './fixtures/test-shipping-eligibility-checkers';
+import {
+    countryCodeShippingEligibilityChecker,
+    hydratingShippingEligibilityChecker,
+} from './fixtures/test-shipping-eligibility-checkers';
+import * as Codegen from './graphql/generated-e2e-admin-types';
 import {
     CreateAddressInput,
+    CreateShippingMethodDocument,
     CreateShippingMethodInput,
+    GlobalFlag,
     LanguageCode,
 } from './graphql/generated-e2e-admin-types';
-import * as Codegen from './graphql/generated-e2e-admin-types';
-import { ErrorCode } from './graphql/generated-e2e-shop-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
+import { ErrorCode, RemoveItemFromOrderDocument } from './graphql/generated-e2e-shop-types';
 import {
     ATTEMPT_LOGIN,
     CANCEL_ORDER,
@@ -83,6 +87,7 @@ describe('Shop orders', () => {
                 shippingEligibilityCheckers: [
                     defaultShippingEligibilityChecker,
                     countryCodeShippingEligibilityChecker,
+                    hydratingShippingEligibilityChecker,
                 ],
             },
             customFields: {
@@ -156,9 +161,8 @@ describe('Shop orders', () => {
             },
         );
 
-        const result = await shopClient.query<CodegenShop.GetAvailableCountriesQuery>(
-            GET_AVAILABLE_COUNTRIES,
-        );
+        const result =
+            await shopClient.query<CodegenShop.GetAvailableCountriesQuery>(GET_AVAILABLE_COUNTRIES);
         expect(result.availableCountries.length).toBe(countries.items.length - 1);
         expect(result.availableCountries.find(c => c.id === AT.id)).toBeUndefined();
     });
@@ -687,6 +691,7 @@ describe('Shop orders', () => {
             const order = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
             expect(order.activeOrder?.lines[1].quantity).toBe(100);
 
+            // clean up
             const { adjustOrderLine: adjustLine2 } = await shopClient.query<
                 CodegenShop.AdjustItemQuantityMutation,
                 CodegenShop.AdjustItemQuantityMutationVariables
@@ -697,6 +702,254 @@ describe('Shop orders', () => {
             orderResultGuard.assertSuccess(adjustLine2);
             expect(adjustLine2.lines.length).toBe(1);
             expect(adjustLine2.lines.map(i => i.productVariant.id)).toEqual(['T_1']);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/2702
+        it('stockOnHand check works with multiple order lines with different custom fields', async () => {
+            const variantId = 'T_27';
+            const { updateProductVariants } = await adminClient.query<
+                Codegen.UpdateProductVariantsMutation,
+                Codegen.UpdateProductVariantsMutationVariables
+            >(UPDATE_PRODUCT_VARIANTS, {
+                input: [
+                    {
+                        id: variantId,
+                        stockOnHand: 10,
+                        outOfStockThreshold: 0,
+                        useGlobalOutOfStockThreshold: false,
+                        trackInventory: GlobalFlag.TRUE,
+                    },
+                ],
+            });
+
+            expect(updateProductVariants[0]?.stockOnHand).toBe(10);
+            expect(updateProductVariants[0]?.id).toBe('T_27');
+            expect(updateProductVariants[0]?.trackInventory).toBe(GlobalFlag.TRUE);
+
+            const { addItemToOrder: add1 } = await shopClient.query<CodegenShop.AddItemToOrderMutation, any>(
+                ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                {
+                    productVariantId: variantId,
+                    quantity: 9,
+                    customFields: {
+                        notes: 'abc',
+                    },
+                },
+            );
+
+            orderResultGuard.assertSuccess(add1);
+
+            expect(add1.lines.length).toBe(2);
+            expect(add1.lines[1].quantity).toBe(9);
+            expect(add1.lines[1].productVariant.id).toBe(variantId);
+
+            const { addItemToOrder: add2 } = await shopClient.query<CodegenShop.AddItemToOrderMutation, any>(
+                ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                {
+                    productVariantId: variantId,
+                    quantity: 2,
+                    customFields: {
+                        notes: 'def',
+                    },
+                },
+            );
+
+            orderResultGuard.assertErrorResult(add2);
+
+            expect(add2.errorCode).toBe('INSUFFICIENT_STOCK_ERROR');
+            expect(add2.message).toBe('Only 1 item was added to the order due to insufficient stock');
+
+            const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+            expect(activeOrder?.lines.length).toBe(3);
+            expect(activeOrder?.lines[1].quantity).toBe(9);
+            expect(activeOrder?.lines[2].quantity).toBe(1);
+
+            // clean up
+            await shopClient.query<
+                CodegenShop.RemoveItemFromOrderMutation,
+                CodegenShop.RemoveItemFromOrderMutationVariables
+            >(REMOVE_ITEM_FROM_ORDER, {
+                orderLineId: activeOrder!.lines[1].id,
+            });
+            await shopClient.query<
+                CodegenShop.RemoveItemFromOrderMutation,
+                CodegenShop.RemoveItemFromOrderMutationVariables
+            >(REMOVE_ITEM_FROM_ORDER, {
+                orderLineId: activeOrder!.lines[2].id,
+            });
+        });
+
+        it('adjustOrderLine handles stockOnHand correctly with multiple order lines with different custom fields when out of stock', async () => {
+            const variantId = 'T_27';
+            const { updateProductVariants } = await adminClient.query<
+                Codegen.UpdateProductVariantsMutation,
+                Codegen.UpdateProductVariantsMutationVariables
+            >(UPDATE_PRODUCT_VARIANTS, {
+                input: [
+                    {
+                        id: variantId,
+                        stockOnHand: 10,
+                        outOfStockThreshold: 0,
+                        useGlobalOutOfStockThreshold: false,
+                        trackInventory: GlobalFlag.TRUE,
+                    },
+                ],
+            });
+
+            expect(updateProductVariants[0]?.stockOnHand).toBe(10);
+            expect(updateProductVariants[0]?.id).toBe('T_27');
+            expect(updateProductVariants[0]?.trackInventory).toBe(GlobalFlag.TRUE);
+
+            const { addItemToOrder: add1 } = await shopClient.query<CodegenShop.AddItemToOrderMutation, any>(
+                ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                {
+                    productVariantId: variantId,
+                    quantity: 5,
+                    customFields: {
+                        notes: 'abc',
+                    },
+                },
+            );
+
+            orderResultGuard.assertSuccess(add1);
+
+            expect(add1.lines.length).toBe(2);
+            expect(add1.lines[1].quantity).toBe(5);
+            expect(add1.lines[1].productVariant.id).toBe(variantId);
+
+            const { addItemToOrder: add2 } = await shopClient.query<CodegenShop.AddItemToOrderMutation, any>(
+                ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                {
+                    productVariantId: variantId,
+                    quantity: 5,
+                    customFields: {
+                        notes: 'def',
+                    },
+                },
+            );
+
+            orderResultGuard.assertSuccess(add2);
+
+            expect(add2.lines.length).toBe(3);
+            expect(add2.lines[2].quantity).toBe(5);
+            expect(add2.lines[2].productVariant.id).toBe(variantId);
+
+            const { adjustOrderLine } = await shopClient.query<
+                CodegenShop.AdjustItemQuantityMutation,
+                CodegenShop.AdjustItemQuantityMutationVariables
+            >(ADJUST_ITEM_QUANTITY, {
+                orderLineId: add2.lines[1].id,
+                quantity: 10,
+            });
+            orderResultGuard.assertErrorResult(adjustOrderLine);
+
+            expect(adjustOrderLine.message).toBe(
+                'Only 5 items were added to the order due to insufficient stock',
+            );
+            expect(adjustOrderLine.errorCode).toBe(ErrorCode.INSUFFICIENT_STOCK_ERROR);
+
+            const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+            expect(activeOrder?.lines.length).toBe(3);
+            expect(activeOrder?.lines[1].quantity).toBe(5);
+            expect(activeOrder?.lines[2].quantity).toBe(5);
+
+            // clean up
+            await shopClient.query<
+                CodegenShop.RemoveItemFromOrderMutation,
+                CodegenShop.RemoveItemFromOrderMutationVariables
+            >(REMOVE_ITEM_FROM_ORDER, {
+                orderLineId: activeOrder!.lines[1].id,
+            });
+            await shopClient.query<
+                CodegenShop.RemoveItemFromOrderMutation,
+                CodegenShop.RemoveItemFromOrderMutationVariables
+            >(REMOVE_ITEM_FROM_ORDER, {
+                orderLineId: activeOrder!.lines[2].id,
+            });
+        });
+
+        it('adjustOrderLine handles stockOnHand correctly with multiple order lines with different custom fields', async () => {
+            const variantId = 'T_27';
+            const { updateProductVariants } = await adminClient.query<
+                Codegen.UpdateProductVariantsMutation,
+                Codegen.UpdateProductVariantsMutationVariables
+            >(UPDATE_PRODUCT_VARIANTS, {
+                input: [
+                    {
+                        id: variantId,
+                        stockOnHand: 10,
+                        outOfStockThreshold: 0,
+                        useGlobalOutOfStockThreshold: false,
+                        trackInventory: GlobalFlag.TRUE,
+                    },
+                ],
+            });
+
+            expect(updateProductVariants[0]?.stockOnHand).toBe(10);
+            expect(updateProductVariants[0]?.id).toBe('T_27');
+            expect(updateProductVariants[0]?.trackInventory).toBe(GlobalFlag.TRUE);
+
+            const { addItemToOrder: add1 } = await shopClient.query<CodegenShop.AddItemToOrderMutation, any>(
+                ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                {
+                    productVariantId: variantId,
+                    quantity: 5,
+                    customFields: {
+                        notes: 'abc',
+                    },
+                },
+            );
+
+            orderResultGuard.assertSuccess(add1);
+
+            expect(add1.lines.length).toBe(2);
+            expect(add1.lines[1].quantity).toBe(5);
+            expect(add1.lines[1].productVariant.id).toBe(variantId);
+
+            const { addItemToOrder: add2 } = await shopClient.query<CodegenShop.AddItemToOrderMutation, any>(
+                ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS,
+                {
+                    productVariantId: variantId,
+                    quantity: 5,
+                    customFields: {
+                        notes: 'def',
+                    },
+                },
+            );
+
+            orderResultGuard.assertSuccess(add2);
+
+            expect(add2.lines.length).toBe(3);
+            expect(add2.lines[2].quantity).toBe(5);
+            expect(add2.lines[2].productVariant.id).toBe(variantId);
+
+            const { adjustOrderLine } = await shopClient.query<
+                CodegenShop.AdjustItemQuantityMutation,
+                CodegenShop.AdjustItemQuantityMutationVariables
+            >(ADJUST_ITEM_QUANTITY, {
+                orderLineId: add2.lines[1].id,
+                quantity: 3,
+            });
+
+            orderResultGuard.assertSuccess(adjustOrderLine);
+
+            expect(adjustOrderLine?.lines.length).toBe(3);
+            expect(adjustOrderLine?.lines[1].quantity).toBe(3);
+            expect(adjustOrderLine?.lines[2].quantity).toBe(5);
+
+            // clean up
+            await shopClient.query<
+                CodegenShop.RemoveItemFromOrderMutation,
+                CodegenShop.RemoveItemFromOrderMutationVariables
+            >(REMOVE_ITEM_FROM_ORDER, {
+                orderLineId: adjustOrderLine.lines[1].id,
+            });
+            await shopClient.query<
+                CodegenShop.RemoveItemFromOrderMutation,
+                CodegenShop.RemoveItemFromOrderMutationVariables
+            >(REMOVE_ITEM_FROM_ORDER, {
+                orderLineId: adjustOrderLine.lines[2].id,
+            });
         });
 
         it('adjustOrderLine errors when going beyond orderItemsLimit', async () => {
@@ -1265,9 +1518,8 @@ describe('Shop orders', () => {
                     id: shippingMethods[1].id,
                 });
 
-                const activeOrderResult = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
-                    GET_ACTIVE_ORDER,
-                );
+                const activeOrderResult =
+                    await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
 
                 const order = activeOrderResult.activeOrder!;
 
@@ -1279,9 +1531,8 @@ describe('Shop orders', () => {
             });
 
             it('shipping method is preserved after adjustOrderLine', async () => {
-                const activeOrderResult = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
-                    GET_ACTIVE_ORDER,
-                );
+                const activeOrderResult =
+                    await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
                 activeOrder = activeOrderResult.activeOrder!;
                 const { adjustOrderLine } = await shopClient.query<
                     CodegenShop.AdjustItemQuantityMutation,
@@ -1455,9 +1706,10 @@ describe('Shop orders', () => {
                 expect(addPaymentToOrder.errorCode).toBe(ErrorCode.PAYMENT_FAILED_ERROR);
                 expect((addPaymentToOrder as any).paymentErrorMessage).toBe('Something went horribly wrong');
 
-                const result = await shopClient.query<CodegenShop.GetActiveOrderPaymentsQuery>(
-                    GET_ACTIVE_ORDER_PAYMENTS,
-                );
+                const result =
+                    await shopClient.query<CodegenShop.GetActiveOrderPaymentsQuery>(
+                        GET_ACTIVE_ORDER_PAYMENTS,
+                    );
                 const payment = result.activeOrder!.payments![1];
                 expect(result.activeOrder!.payments!.length).toBe(2);
                 expect(payment.method).toBe(testErrorPaymentMethod.code);
@@ -1805,9 +2057,8 @@ describe('Shop orders', () => {
                 },
             });
 
-            const { activeOrder } = await shopClient.query<CodegenShop.GetCustomerAddressesQuery>(
-                GET_ACTIVE_ORDER_ADDRESSES,
-            );
+            const { activeOrder } =
+                await shopClient.query<CodegenShop.GetCustomerAddressesQuery>(GET_ACTIVE_ORDER_ADDRESSES);
 
             expect(activeOrder!.customer!.addresses).toEqual([]);
         });
@@ -1833,9 +2084,8 @@ describe('Shop orders', () => {
                 },
             });
 
-            const { activeOrder } = await shopClient.query<CodegenShop.GetCustomerOrdersQuery>(
-                GET_ACTIVE_ORDER_ORDERS,
-            );
+            const { activeOrder } =
+                await shopClient.query<CodegenShop.GetCustomerOrdersQuery>(GET_ACTIVE_ORDER_ORDERS);
 
             expect(activeOrder!.customer!.orders.items).toEqual([]);
         });
@@ -2074,9 +2324,8 @@ describe('Shop orders', () => {
 
         beforeAll(async () => {
             // First we will remove all ShippingMethods and set up 2 specialized ones
-            const { shippingMethods } = await adminClient.query<Codegen.GetShippingMethodListQuery>(
-                GET_SHIPPING_METHOD_LIST,
-            );
+            const { shippingMethods } =
+                await adminClient.query<Codegen.GetShippingMethodListQuery>(GET_SHIPPING_METHOD_LIST);
             for (const method of shippingMethods.items) {
                 await adminClient.query<
                     Codegen.DeleteShippingMethodMutation,
@@ -2226,12 +2475,12 @@ describe('Shop orders', () => {
                     id: minPriceShippingMethodId,
                 },
             );
-            const result1 = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            const result1 = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
             expect(result1.activeOrder?.shippingLines[0].shippingMethod.id).toBe(minPriceShippingMethodId);
 
             const { removeAllOrderLines } = await shopClient.query<
-                RemoveAllOrderLines.Mutation,
-                RemoveAllOrderLines.Variables
+                CodegenShop.RemoveAllOrderLinesMutation,
+                CodegenShop.RemoveAllOrderLinesMutationVariables
             >(REMOVE_ALL_ORDER_LINES);
             orderResultGuard.assertSuccess(removeAllOrderLines);
             expect(removeAllOrderLines.shippingLines.length).toBe(0);
@@ -2305,6 +2554,77 @@ describe('Shop orders', () => {
 
             expect(activeOrder.shippingAddress).toEqual(shippingAddress);
             expect(activeOrder.billingAddress).toEqual(billingAddress);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/2548
+        it('hydrating Order in the ShippingEligibilityChecker does not break order modification', async () => {
+            // First we'll create a ShippingMethod that uses the hydrating checker
+            await adminClient.query(CreateShippingMethodDocument, {
+                input: {
+                    code: 'hydrating-checker',
+                    translations: [
+                        { languageCode: LanguageCode.en, name: 'hydrating checker', description: '' },
+                    ],
+                    fulfillmentHandler: manualFulfillmentHandler.code,
+                    checker: {
+                        code: hydratingShippingEligibilityChecker.code,
+                        arguments: [],
+                    },
+                    calculator: {
+                        code: defaultShippingCalculator.code,
+                        arguments: [
+                            { name: 'rate', value: '1000' },
+                            { name: 'taxRate', value: '0' },
+                            { name: 'includesTax', value: 'auto' },
+                        ],
+                    },
+                },
+            });
+
+            await shopClient.asAnonymousUser();
+            await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_1',
+                quantity: 1,
+            });
+            await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_2',
+                quantity: 3,
+            });
+
+            const result1 = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+
+            expect(result1.activeOrder?.lines.map(l => l.linePriceWithTax).sort()).toEqual([155880, 503640]);
+            expect(result1.activeOrder?.subTotalWithTax).toBe(659520);
+
+            // set the shipping method that uses the hydrating checker
+            const { eligibleShippingMethods } = await shopClient.query<CodegenShop.GetShippingMethodsQuery>(
+                GET_ELIGIBLE_SHIPPING_METHODS,
+            );
+            const { setOrderShippingMethod } = await shopClient.query<
+                CodegenShop.SetShippingMethodMutation,
+                CodegenShop.SetShippingMethodMutationVariables
+            >(SET_SHIPPING_METHOD, {
+                id: eligibleShippingMethods.find(m => m.code === 'hydrating-checker')!.id,
+            });
+            orderResultGuard.assertSuccess(setOrderShippingMethod);
+
+            // Remove an item from the order
+            const { removeOrderLine } = await shopClient.query(RemoveItemFromOrderDocument, {
+                orderLineId: result1.activeOrder!.lines[0].id,
+            });
+            orderResultGuard.assertSuccess(removeOrderLine);
+            expect(removeOrderLine.lines.length).toBe(1);
+
+            const result2 = await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+
+            expect(result2.activeOrder?.lines.map(l => l.linePriceWithTax).sort()).toEqual([503640]);
+            expect(result2.activeOrder?.subTotalWithTax).toBe(503640);
         });
     });
 });

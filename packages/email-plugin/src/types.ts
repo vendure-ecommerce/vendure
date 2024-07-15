@@ -5,9 +5,10 @@ import { Attachment } from 'nodemailer/lib/mailer';
 import SESTransport from 'nodemailer/lib/ses-transport';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
-import { EmailGenerator } from './email-generator';
-import { EmailSender } from './email-sender';
-import { EmailEventHandler } from './event-handler';
+import { EmailGenerator } from './generator/email-generator';
+import { EmailEventHandler } from './handler/event-handler';
+import { EmailSender } from './sender/email-sender';
+import { TemplateLoader } from './template-loader/template-loader';
 
 /**
  * @description
@@ -178,7 +179,7 @@ export interface SMTPTransportOptions extends SMTPTransport.Options {
  *   // Add an instance of the plugin to the plugins array
  *   plugins: [
  *     EmailPlugin.init({
- *       handlers: defaultEmailHandlers,
+ *       handler: defaultEmailHandlers,
  *       templatePath: path.join(__dirname, 'static/email/templates'),
  *       transport: {
  *         type: 'ses',
@@ -364,44 +365,6 @@ export interface Partial {
 
 /**
  * @description
- * Load an email template based on the given request context, type and template name
- * and return the template as a string.
- *
- * @example
- * ```ts
- * import { EmailPlugin, TemplateLoader } from '\@vendure/email-plugin';
- *
- * class MyTemplateLoader implements TemplateLoader {
- *      loadTemplate(injector, ctx, { type, templateName }){
- *          return myCustomTemplateFunction(ctx);
- *      }
- * }
- *
- * // In vendure-config.ts:
- * ...
- * EmailPlugin.init({
- *     templateLoader: new MyTemplateLoader()
- *     ...
- * })
- * ```
- *
- * @docsCategory core plugins/EmailPlugin
- * @docsPage Custom Template Loader
- */
-export interface TemplateLoader {
-    /**
-     * Load template and return it's content as a string
-     */
-    loadTemplate(injector: Injector, ctx: RequestContext, input: LoadTemplateInput): Promise<string>;
-    /**
-     * Load partials and return their contents.
-     * This method is only called during initalization, i.e. during server startup.
-     */
-    loadPartials?(): Promise<Partial[]>;
-}
-
-/**
- * @description
  * A function used to define template variables available to email templates.
  * See {@link EmailEventHandler}.setTemplateVars().
  *
@@ -423,6 +386,14 @@ export type SetTemplateVarsFn<Event> = (
  * @docsPage Email Plugin Types
  */
 export type SetAttachmentsFn<Event> = (event: Event) => EmailAttachment[] | Promise<EmailAttachment[]>;
+
+/**
+ * @description
+ * A function used to define the subject to be sent with the email.
+ * @docsCategory core plugins/EmailPlugin
+ * @docsPage Email Plugin Types
+ */
+export type SetSubjectFn<Event> = (event: Event, ctx: RequestContext, injector: Injector) => string | Promise<string>;
 
 /**
  * @description

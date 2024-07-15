@@ -7,11 +7,11 @@ sidebar_position: 2
 
 Vendure v2 introduces a number of breaking changes to the database schema, some of which require quite complex migrations in order to preserve existing data. To make this process as smooth as possible, we have created a migration tool which will handle the hard parts for you!
 
-{{< alert "warning" >}}
+:::warning
 **Important!** It is _critical_ that you back up your production data prior to attempting this migration.
 
 **Note for MySQL/MariaDB users:** transactions for migrations are [not supported by these databases](https://dev.mysql.com/doc/refman/5.7/en/cannot-roll-back.html). This means that if the migration fails for some reason, the statements that have executed will not get rolled back, and your DB schema can be left in an inconsistent state from which is it can be hard to recover. Therefore, it is doubly critical that you have a good backup that you can easily restore prior to attempting this migration.
-{{< /alert >}}
+:::
 
 1. Make sure all your Vendure packages to the latest v2 versions.
 2. Use your package manager to install the [v2 migration tool](https://github.com/vendure-ecommerce/v2-migration-tool): `npm install @vendure/migrate-v2`

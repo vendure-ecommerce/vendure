@@ -7,6 +7,7 @@ import {
     LocaleStringCustomFieldConfig as GraphQLLocaleStringCustomFieldConfig,
     LocaleTextCustomFieldConfig as GraphQLLocaleTextCustomFieldConfig,
     LocalizedString,
+    Permission,
     RelationCustomFieldConfig as GraphQLRelationCustomFieldConfig,
     StringCustomFieldConfig as GraphQLStringCustomFieldConfig,
     TextCustomFieldConfig as GraphQLTextCustomFieldConfig,
@@ -19,6 +20,7 @@ import {
     UiComponentConfig,
 } from '@vendure/common/lib/shared-types';
 
+import { RequestContext } from '../../api/common/request-context';
 import { Injector } from '../../common/injector';
 import { VendureEntity } from '../../entity/base/base.entity';
 
@@ -32,17 +34,26 @@ export type DefaultValueType<T extends CustomFieldType> =
 
 export type BaseTypedCustomFieldConfig<T extends CustomFieldType, C extends CustomField> = Omit<
     C,
-    '__typename' | 'list'
+    '__typename' | 'list' | 'requiresPermission'
 > & {
     type: T;
     /**
      * @description
-     * Whether or not the custom field is available via the Shop API.
+     * Whether the custom field is available via the Shop API.
      * @default true
      */
     public?: boolean;
     nullable?: boolean;
     unique?: boolean;
+    /**
+     * @description
+     * The permission(s) required to read or write to this field.
+     * If the user has at least one of these permissions, they will be
+     * able to access the field.
+     *
+     * @since 2.2.0
+     */
+    requiresPermission?: Array<Permission | string> | Permission | string;
     ui?: UiComponentConfig<DefaultFormComponentId | string>;
 };
 
@@ -61,6 +72,7 @@ export type TypedCustomSingleFieldConfig<
     validate?: (
         value: DefaultValueType<T>,
         injector: Injector,
+        ctx: RequestContext,
     ) => string | LocalizedString[] | void | Promise<string | LocalizedString[] | void>;
 };
 
@@ -100,7 +112,7 @@ export type RelationCustomFieldConfig = TypedCustomFieldConfig<
     entity: Type<VendureEntity>;
     graphQLType?: string;
     eager?: boolean;
-    inverseSide?: string | ((object: VendureEntity) => any);
+    inverseSide?: string | ((object: any) => any);
 };
 
 /**
@@ -144,7 +156,7 @@ export type CustomFieldConfig =
  *
  * @docsCategory custom-fields
  */
-export interface CustomFields {
+export type CustomFields = {
     Address?: CustomFieldConfig[];
     Administrator?: CustomFieldConfig[];
     Asset?: CustomFieldConfig[];
@@ -163,6 +175,7 @@ export interface CustomFields {
     ProductOption?: CustomFieldConfig[];
     ProductOptionGroup?: CustomFieldConfig[];
     ProductVariant?: CustomFieldConfig[];
+    ProductVariantPrice?: CustomFieldConfig[];
     Promotion?: CustomFieldConfig[];
     Region?: CustomFieldConfig[];
     Seller?: CustomFieldConfig[];
@@ -172,7 +185,7 @@ export interface CustomFields {
     TaxRate?: CustomFieldConfig[];
     User?: CustomFieldConfig[];
     Zone?: CustomFieldConfig[];
-}
+} & { [entity: string]: CustomFieldConfig[] };
 
 /**
  * This interface should be implemented by any entity which can be extended

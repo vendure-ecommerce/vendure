@@ -8,7 +8,7 @@ import {
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
-import { RelationPaths } from '../../api/index';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
@@ -73,7 +73,7 @@ export class ProvinceService {
             entityType: Province as Type<Region>,
             translationType: RegionTranslation,
         });
-        this.eventBus.publish(new ProvinceEvent(ctx, province, 'created', input));
+        await this.eventBus.publish(new ProvinceEvent(ctx, province, 'created', input));
         return assertFound(this.findOne(ctx, province.id));
     }
 
@@ -84,7 +84,7 @@ export class ProvinceService {
             entityType: Province as Type<Region>,
             translationType: RegionTranslation,
         });
-        this.eventBus.publish(new ProvinceEvent(ctx, province, 'updated', input));
+        await this.eventBus.publish(new ProvinceEvent(ctx, province, 'updated', input));
         return assertFound(this.findOne(ctx, province.id));
     }
 
@@ -93,7 +93,7 @@ export class ProvinceService {
 
         const deletedProvince = new Province(region);
         await this.connection.getRepository(ctx, Province).remove(region);
-        this.eventBus.publish(new ProvinceEvent(ctx, deletedProvince, 'deleted', id));
+        await this.eventBus.publish(new ProvinceEvent(ctx, deletedProvince, 'deleted', id));
         return {
             result: DeletionResult.DELETED,
             message: '',

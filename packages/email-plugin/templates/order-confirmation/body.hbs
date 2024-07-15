@@ -61,7 +61,7 @@
     </mj-column>
     <mj-column>
         <mj-text css-class="callout-large"><strong>Total Price</strong></mj-text>
-        <mj-text css-class="callout-small">${{ formatMoney order.total }}</mj-text>
+        <mj-text css-class="callout-small">{{ formatMoney order.total order.currencyCode 'en' }}</mj-text>
     </mj-column>
 </mj-section>
 
@@ -101,7 +101,7 @@
                     </td>
                     <td>{{ quantity }} x {{ productVariant.name }}</td>
                     <td>{{ productVariant.quantity }}</td>
-                    <td>${{ formatMoney discountedLinePriceWithTax }}</td>
+                    <td>{{ formatMoney discountedLinePriceWithTax ../order.currencyCode 'en' }}</td>
                 </tr>
             {{/each}}
             {{#each order.discounts }}
@@ -109,22 +109,22 @@
                     <td colspan="3">
                         {{ description }}
                     </td>
-                    <td>${{ formatMoney amount }}</td>
+                    <td>{{ formatMoney amount ../order.currencyCode 'en' }}</td>
                 </tr>
             {{/each}}
             <tr class="order-row">
                 <td colspan="3">Sub-total:</td>
-                <td>${{ formatMoney order.subTotalWithTax }}</td>
+                <td>{{ formatMoney order.subTotalWithTax order.currencyCode 'en' }}</td>
             </tr>
             {{#each shippingLines }}
             <tr class="order-row">
                 <td colspan="3">Shipping ({{ shippingMethod.name }}):</td>
-                <td>${{ formatMoney priceWithTax }}</td>
+                <td>{{ formatMoney priceWithTax ../order.currencyCode 'en' }}</td>
             </tr>
             {{/each}}
             <tr class="order-row total-row">
                 <td colspan="3">Total:</td>
-                <td>${{ formatMoney order.totalWithTax }}</td>
+                <td>{{ formatMoney order.totalWithTax order.currencyCode 'en' }}</td>
             </tr>
         </mj-table>
     </mj-column>

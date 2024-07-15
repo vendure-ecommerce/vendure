@@ -1,6 +1,6 @@
 import { HealthIndicatorFunction, TypeOrmHealthIndicator } from '@nestjs/terminus';
 
-import { Injector } from '../common/index';
+import { Injector } from '../common/injector';
 import { HealthCheckStrategy } from '../config/system/health-check-strategy';
 
 let indicator: TypeOrmHealthIndicator;

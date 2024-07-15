@@ -6,7 +6,7 @@ import { unique } from '@vendure/common/lib/unique';
 import { In, Not } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { RelationPaths } from '../../api/index';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
 import {
     CreateFulfillmentError,
     FulfillmentStateTransitionError,
@@ -110,7 +110,7 @@ export class FulfillmentService {
             fulfillmentPartial,
             newFulfillment,
         );
-        this.eventBus.publish(
+        await this.eventBus.publish(
             new FulfillmentEvent(ctx, fulfillmentWithRelations, {
                 orders,
                 lines,
@@ -183,7 +183,7 @@ export class FulfillmentService {
             return new FulfillmentStateTransitionError({ transitionError, fromState, toState: state });
         }
         await this.connection.getRepository(ctx, Fulfillment).save(fulfillment, { reload: false });
-        this.eventBus.publish(new FulfillmentStateTransitionEvent(fromState, state, ctx, fulfillment));
+        await this.eventBus.publish(new FulfillmentStateTransitionEvent(fromState, state, ctx, fulfillment));
         await finalize();
         return { fulfillment, orders, fromState, toState: state };
     }

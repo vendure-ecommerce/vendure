@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { UpdateGlobalSettingsInput } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../api/common/request-context';
-import { RequestContextCacheService } from '../../cache/index';
+import { RequestContextCacheService } from '../../cache/request-context-cache.service';
+import { CacheKey } from '../../common/constants';
 import { InternalServerError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -58,7 +59,7 @@ export class GlobalSettingsService {
      * Returns the GlobalSettings entity.
      */
     async getSettings(ctx: RequestContext): Promise<GlobalSettings> {
-        const settings = await this.requestCache.get(ctx, 'globalSettings', () =>
+        const settings = await this.requestCache.get(ctx, CacheKey.GlobalSettings, () =>
             this.connection
                 .getRepository(ctx, GlobalSettings)
                 .createQueryBuilder('global_settings')
@@ -73,7 +74,7 @@ export class GlobalSettingsService {
 
     async updateSettings(ctx: RequestContext, input: UpdateGlobalSettingsInput): Promise<GlobalSettings> {
         const settings = await this.getSettings(ctx);
-        this.eventBus.publish(new GlobalSettingsEvent(ctx, settings, input));
+        await this.eventBus.publish(new GlobalSettingsEvent(ctx, settings, input));
         patchEntity(settings, input);
         await this.customFieldRelationService.updateRelations(ctx, GlobalSettings, input, settings);
         return this.connection.getRepository(ctx, GlobalSettings).save(settings);

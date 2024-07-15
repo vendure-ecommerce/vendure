@@ -84,6 +84,38 @@ export interface SassVariableOverridesExtension {
 
 /**
  * @description
+ * Defines a route which will be added to the Admin UI application.
+ *
+ * @docsCategory UiDevkit
+ * @docsPage AdminUiExtension
+ */
+export interface UiExtensionRouteDefinition {
+    /**
+     * @description
+     * The name of the route. This will be used as the path in the URL.
+     */
+    route: string;
+    /**
+     * @description
+     * The path to the file which exports an array of Angular route definitions.
+     */
+    filePath: string;
+    /**
+     * @description
+     * All extensions will be mounted under the `/extensions/` route. This option allows you to specify a
+     * custom prefix rather than `/extensions/`. For example, setting this to `custom` would cause the extension
+     * to be mounted at `/custom/<route>` instead.
+     *
+     * A common use case for this is to mount the extension at the root of the Admin UI, by setting this to an empty string.
+     * This is useful when the extension is intended to replace the default Admin UI, rather than extend it.
+     *
+     * @since 2.2.0
+     */
+    prefix?: string;
+}
+
+/**
+ * @description
  * Defines extensions to the Admin UI application by specifying additional
  * Angular [NgModules](https://angular.io/guide/ngmodules) which are compiled
  * into the application.
@@ -135,10 +167,7 @@ export interface AdminUiExtension
      * Defines routes that will be lazy-loaded at the `/extensions/` route. The filePath should point to a file
      * relative to the `extensionPath` which exports an array of Angular route definitions.
      */
-    routes?: Array<{
-        route: string;
-        filePath: string;
-    }>;
+    routes?: UiExtensionRouteDefinition[];
 
     /**
      * @description
@@ -320,6 +349,14 @@ export type UiExtensionCompilerProcessArgument = string | [string, any];
 
 /**
  * @description
+ * The package manager to use when invoking the Angular CLI to build UI extensions.
+ *
+ * @docsCategory UiDevkit
+ */
+export type UiExtensionBuildCommand = 'npm' | 'yarn' | 'pnpm';
+
+/**
+ * @description
  * Options to configure how the Admin UI should be compiled.
  *
  * @docsCategory UiDevkit
@@ -406,11 +443,11 @@ export interface UiExtensionCompilerOptions {
      * @description
      * Internally, the Angular CLI will be invoked as an npm script. By default, the compiler will use Yarn
      * to run the script if it is detected, otherwise it will use npm. This setting allows you to explicitly
-     * set which command to use, rather than relying on the default behavior.
+     * set which command to use, including pnpm, rather than relying on the default behavior.
      *
      * @since 1.5.0
      */
-    command?: 'yarn' | 'npm';
+    command?: UiExtensionBuildCommand;
 
     /**
      * @description

@@ -46,10 +46,10 @@ and also performs optimizations to minimize the amount of work that needs to be 
 the worker.
 ### searchStrategy
 
-<MemberInfo kind="property" type={`SearchStrategy`} default="undefined"  since="1.6.0"  />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/default-search-plugin/search-strategy#searchstrategy'>SearchStrategy</a>`} default="undefined"  since="1.6.0"  />
 
-Set a custom search strategy that implements {@link SearchStrategy} or extends an existing search strategy
-such as {@link MysqlSearchStrategy}, {@link PostgresSearchStrategy} or {@link SqliteSearchStrategy}.
+Set a custom search strategy that implements <a href='/reference/typescript-api/default-search-plugin/search-strategy#searchstrategy'>SearchStrategy</a> or extends an existing search strategy
+such as <a href='/reference/typescript-api/default-search-plugin/mysql-search-strategy#mysqlsearchstrategy'>MysqlSearchStrategy</a>, <a href='/reference/typescript-api/default-search-plugin/postgres-search-strategy#postgressearchstrategy'>PostgresSearchStrategy</a> or <a href='/reference/typescript-api/default-search-plugin/sqlite-search-strategy#sqlitesearchstrategy'>SqliteSearchStrategy</a>.
 
 *Example*
 

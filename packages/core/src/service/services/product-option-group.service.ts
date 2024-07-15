@@ -8,7 +8,7 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { FindManyOptions, Like } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { RelationPaths } from '../../api/index';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { Logger } from '../../config/logger/vendure-logger';
@@ -92,7 +92,7 @@ export class ProductOptionGroupService {
 
     async create(
         ctx: RequestContext,
-        input: CreateProductOptionGroupInput,
+        input: Omit<CreateProductOptionGroupInput, 'options'>,
     ): Promise<Translated<ProductOptionGroup>> {
         const group = await this.translatableSaver.create({
             ctx,
@@ -106,7 +106,7 @@ export class ProductOptionGroupService {
             input,
             group,
         );
-        this.eventBus.publish(new ProductOptionGroupEvent(ctx, groupWithRelations, 'created', input));
+        await this.eventBus.publish(new ProductOptionGroupEvent(ctx, groupWithRelations, 'created', input));
         return assertFound(this.findOne(ctx, group.id));
     }
 
@@ -121,7 +121,7 @@ export class ProductOptionGroupService {
             translationType: ProductOptionGroupTranslation,
         });
         await this.customFieldRelationService.updateRelations(ctx, ProductOptionGroup, input, group);
-        this.eventBus.publish(new ProductOptionGroupEvent(ctx, group, 'updated', input));
+        await this.eventBus.publish(new ProductOptionGroupEvent(ctx, group, 'updated', input));
         return assertFound(this.findOne(ctx, group.id));
     }
 
@@ -133,6 +133,8 @@ export class ProductOptionGroupService {
      */
     async deleteGroupAndOptionsFromProduct(ctx: RequestContext, id: ID, productId: ID) {
         const optionGroup = await this.connection.getEntityOrThrow(ctx, ProductOptionGroup, id, {
+            relationLoadStrategy: 'query',
+            loadEagerRelations: false,
             relations: ['options', 'product'],
         });
         const deletedOptionGroup = new ProductOptionGroup(optionGroup);
@@ -165,6 +167,8 @@ export class ProductOptionGroupService {
             // hard delete
 
             const product = await this.connection.getRepository(ctx, Product).findOne({
+                relationLoadStrategy: 'query',
+                loadEagerRelations: false,
                 where: { id: productId },
                 relations: ['optionGroups'],
             });
@@ -179,7 +183,7 @@ export class ProductOptionGroupService {
                 Logger.error(e.message, undefined, e.stack);
             }
         }
-        this.eventBus.publish(new ProductOptionGroupEvent(ctx, deletedOptionGroup, 'deleted', id));
+        await this.eventBus.publish(new ProductOptionGroupEvent(ctx, deletedOptionGroup, 'deleted', id));
         return {
             result: DeletionResult.DELETED,
         };

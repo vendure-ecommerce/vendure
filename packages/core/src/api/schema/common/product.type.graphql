@@ -6,6 +6,7 @@ type Product implements Node {
     name: String!
     slug: String!
     description: String!
+    enabled: Boolean!
     featuredAsset: Asset
     assets: [Asset!]!
     "Returns all ProductVariants"

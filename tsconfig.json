@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "Node",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "noLib": false,
     "skipLibCheck": true,
     "lib": ["es2019", "esnext.asynciterable"],

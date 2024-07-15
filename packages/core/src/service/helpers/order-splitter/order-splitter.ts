@@ -39,7 +39,14 @@ export class OrderSplitter {
             }
             const shippingLines: ShippingLine[] = [];
             for (const shippingLine of partialOrder.shippingLines) {
-                shippingLines.push(await this.duplicateShippingLine(ctx, shippingLine));
+                const newShippingLine = await this.duplicateShippingLine(ctx, shippingLine);
+                for (const line of lines) {
+                    if (shippingLine.id === line.shippingLineId) {
+                        line.shippingLineId = newShippingLine.id;
+                        await this.connection.getRepository(ctx, OrderLine).save(line);
+                    }
+                }
+                shippingLines.push(newShippingLine);
             }
             const sellerOrder = await this.connection.getRepository(ctx, Order).save(
                 new Order({

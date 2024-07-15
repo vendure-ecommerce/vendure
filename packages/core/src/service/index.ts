@@ -1,6 +1,7 @@
 export * from './helpers/active-order/active-order.service';
 export * from './helpers/config-arg/config-arg.service';
 export * from './helpers/custom-field-relation/custom-field-relation.service';
+export * from './helpers/entity-duplicator/entity-duplicator.service';
 export * from './helpers/entity-hydrator/entity-hydrator.service';
 export * from './helpers/external-authentication/external-authentication.service';
 export * from './helpers/fulfillment-state-machine/fulfillment-state';
@@ -12,6 +13,7 @@ export * from './helpers/order-merger/order-merger';
 export * from './helpers/order-modifier/order-modifier';
 export * from './helpers/order-splitter/order-splitter';
 export * from './helpers/order-state-machine/order-state';
+export * from './helpers/order-state-machine/order-state-machine';
 export * from './helpers/password-cipher/password-cipher';
 export * from './helpers/payment-state-machine/payment-state';
 export * from './helpers/product-price-applicator/product-price-applicator';

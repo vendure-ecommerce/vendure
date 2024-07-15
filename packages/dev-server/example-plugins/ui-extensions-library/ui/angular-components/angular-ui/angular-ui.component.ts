@@ -32,6 +32,10 @@ export class AngularUiComponent {
         private pageMetadataService: PageMetadataService,
     ) {}
 
+    canDeactivate() {
+        return this.pageTitleControl.pristine;
+    }
+
     updateTitle() {
         const title = this.pageTitleControl.value;
         if (title) {

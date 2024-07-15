@@ -38,7 +38,9 @@ class CurrencyInputComponent implements ControlValueAccessor, OnInit, OnChanges,
     onChange: (val: any) => void;
     onTouch: () => void;
     _inputValue: string;
-    constructor(dataService: DataService, changeDetectorRef: ChangeDetectorRef)
+    readonly precision: number;
+    readonly precisionFactor: number;
+    constructor(dataService: DataService, currencyService: CurrencyService)
     ngOnInit() => ;
     ngOnChanges(changes: SimpleChanges) => ;
     ngOnDestroy() => ;
@@ -111,9 +113,19 @@ class CurrencyInputComponent implements ControlValueAccessor, OnInit, OnChanges,
 <MemberInfo kind="property" type={`string`}   />
 
 
+### precision
+
+<MemberInfo kind="property" type={`number`}   />
+
+
+### precisionFactor
+
+<MemberInfo kind="property" type={`number`}   />
+
+
 ### constructor
 
-<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/services/data-service#dataservice'>DataService</a>, changeDetectorRef: ChangeDetectorRef) => CurrencyInputComponent`}   />
+<MemberInfo kind="method" type={`(dataService: <a href='/reference/admin-ui-api/services/data-service#dataservice'>DataService</a>, currencyService: CurrencyService) => CurrencyInputComponent`}   />
 
 
 ### ngOnInit

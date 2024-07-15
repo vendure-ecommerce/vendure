@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CatalogOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="653" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="674" packageName="@vendure/core" />
 
 Options related to products and collections.
 
@@ -20,6 +20,7 @@ interface CatalogOptions {
     collectionFilters?: Array<CollectionFilter<any>>;
     productVariantPriceSelectionStrategy?: ProductVariantPriceSelectionStrategy;
     productVariantPriceCalculationStrategy?: ProductVariantPriceCalculationStrategy;
+    productVariantPriceUpdateStrategy?: ProductVariantPriceUpdateStrategy;
     stockDisplayStrategy?: StockDisplayStrategy;
     stockLocationStrategy?: StockLocationStrategy;
 }
@@ -44,6 +45,13 @@ such as the active Channel and active CurrencyCode.
 
 Defines the strategy used for calculating the price of ProductVariants based
 on the Channel settings and active tax Zone.
+### productVariantPriceUpdateStrategy
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/configuration/product-variant-price-update-strategy#productvariantpriceupdatestrategy'>ProductVariantPriceUpdateStrategy</a>`} default="<a href='/reference/typescript-api/configuration/product-variant-price-update-strategy#defaultproductvariantpriceupdatestrategy'>DefaultProductVariantPriceUpdateStrategy</a>"  since="2.2.0"  />
+
+Defines the strategy which determines what happens to a ProductVariant's prices
+when one of the prices gets updated. For instance, this can be used to synchronize
+prices across multiple Channels.
 ### stockDisplayStrategy
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/products-stock/stock-display-strategy#stockdisplaystrategy'>StockDisplayStrategy</a>`} default="<a href='/reference/typescript-api/products-stock/default-stock-display-strategy#defaultstockdisplaystrategy'>DefaultStockDisplayStrategy</a>"   />

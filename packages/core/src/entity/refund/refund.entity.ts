@@ -9,16 +9,33 @@ import { Money } from '../money.decorator';
 import { RefundLine } from '../order-line-reference/refund-line.entity';
 import { Payment } from '../payment/payment.entity';
 
+/**
+ * @description A refund the belongs to an order
+ *
+ * @docsCategory entities
+ */
 @Entity()
 export class Refund extends VendureEntity {
     constructor(input?: DeepPartial<Refund>) {
         super(input);
     }
 
+    /**
+     * @deprecated Since v2.2, the `items` field will not be used by default. Instead, the `total` field
+     * alone will be used to determine the refund amount.
+     */
     @Money() items: number;
 
+    /**
+     * @deprecated Since v2.2, the `shipping` field will not be used by default. Instead, the `total` field
+     * alone will be used to determine the refund amount.
+     */
     @Money() shipping: number;
 
+    /**
+     * @deprecated Since v2.2, the `adjustment` field will not be used by default. Instead, the `total` field
+     * alone will be used to determine the refund amount.
+     */
     @Money() adjustment: number;
 
     @Money() total: number;
@@ -36,7 +53,7 @@ export class Refund extends VendureEntity {
     lines: RefundLine[];
 
     @Index()
-    @ManyToOne(type => Payment)
+    @ManyToOne(type => Payment, payment => payment.refunds)
     @JoinColumn()
     payment: Payment;
 

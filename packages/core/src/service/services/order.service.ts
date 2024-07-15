@@ -30,6 +30,7 @@ import {
     OrderType,
     RefundOrderInput,
     RefundOrderResult,
+    SetOrderCustomerInput,
     SettlePaymentResult,
     SettleRefundInput,
     ShippingMethodQuote,
@@ -45,6 +46,7 @@ import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { RequestContextCacheService } from '../../cache/request-context-cache.service';
+import { CacheKey } from '../../common/constants';
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
 import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
 import {
@@ -61,7 +63,6 @@ import {
     SettlePaymentError,
 } from '../../common/error/generated-graphql-admin-errors';
 import {
-    IneligibleShippingMethodError,
     InsufficientStockError,
     NegativeQuantityError,
     OrderLimitError,
@@ -93,13 +94,12 @@ import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
 import { Surcharge } from '../../entity/surcharge/surcharge.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
-import {
-    CouponCodeEvent,
-    OrderEvent,
-    OrderLineEvent,
-    OrderStateTransitionEvent,
-    RefundStateTransitionEvent,
-} from '../../event-bus/index';
+import { CouponCodeEvent } from '../../event-bus/events/coupon-code-event';
+import { OrderEvent } from '../../event-bus/events/order-event';
+import { OrderLineEvent } from '../../event-bus/events/order-line-event';
+import { OrderStateTransitionEvent } from '../../event-bus/events/order-state-transition-event';
+import { RefundEvent } from '../../event-bus/events/refund-event';
+import { RefundStateTransitionEvent } from '../../event-bus/events/refund-state-transition-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { FulfillmentState } from '../helpers/fulfillment-state-machine/fulfillment-state';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
@@ -109,7 +109,6 @@ import { OrderModifier } from '../helpers/order-modifier/order-modifier';
 import { OrderState } from '../helpers/order-state-machine/order-state';
 import { OrderStateMachine } from '../helpers/order-state-machine/order-state-machine';
 import { PaymentState } from '../helpers/payment-state-machine/payment-state';
-import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-state-machine';
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
 import { TranslatorService } from '../helpers/translator/translator.service';
@@ -126,7 +125,6 @@ import { PaymentService } from './payment.service';
 import { ProductVariantService } from './product-variant.service';
 import { PromotionService } from './promotion.service';
 import { StockLevelService } from './stock-level.service';
-import { StockMovementService } from './stock-movement.service';
 
 /**
  * @description
@@ -147,11 +145,9 @@ export class OrderService {
         private orderStateMachine: OrderStateMachine,
         private orderMerger: OrderMerger,
         private paymentService: PaymentService,
-        private paymentStateMachine: PaymentStateMachine,
         private paymentMethodService: PaymentMethodService,
         private fulfillmentService: FulfillmentService,
         private listQueryBuilder: ListQueryBuilder,
-        private stockMovementService: StockMovementService,
         private refundStateMachine: RefundStateMachine,
         private historyService: HistoryService,
         private promotionService: PromotionService,
@@ -430,7 +426,7 @@ export class OrderService {
         }
         await this.channelService.assignToCurrentChannel(newOrder, ctx);
         const order = await this.connection.getRepository(ctx, Order).save(newOrder);
-        this.eventBus.publish(new OrderEvent(ctx, order, 'created'));
+        await this.eventBus.publish(new OrderEvent(ctx, order, 'created'));
         const transitionResult = await this.transitionToState(ctx, order.id, 'AddingItems');
         if (isGraphQlErrorResult(transitionResult)) {
             // this should never occur, so we will throw rather than return
@@ -444,7 +440,7 @@ export class OrderService {
         newOrder.active = false;
         await this.channelService.assignToCurrentChannel(newOrder, ctx);
         const order = await this.connection.getRepository(ctx, Order).save(newOrder);
-        this.eventBus.publish(new OrderEvent(ctx, order, 'created'));
+        await this.eventBus.publish(new OrderEvent(ctx, order, 'created'));
         const transitionResult = await this.transitionToState(ctx, order.id, 'Draft');
         if (isGraphQlErrorResult(transitionResult)) {
             // this should never occur, so we will throw rather than return
@@ -477,9 +473,56 @@ export class OrderService {
     async updateCustomFields(ctx: RequestContext, orderId: ID, customFields: any) {
         let order = await this.getOrderOrThrow(ctx, orderId);
         order = patchEntity(order, { customFields });
-        await this.customFieldRelationService.updateRelations(ctx, Order, { customFields }, order);
         const updatedOrder = await this.connection.getRepository(ctx, Order).save(order);
-        this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated'));
+        await this.customFieldRelationService.updateRelations(ctx, Order, { customFields }, updatedOrder);
+        await this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated'));
+        return updatedOrder;
+    }
+
+    /**
+     * @description
+     * Updates the Customer which is assigned to a given Order. The target Customer must be assigned to the same
+     * Channels as the Order, otherwise an error will be thrown.
+     *
+     * @since 2.2.0
+     */
+    async updateOrderCustomer(ctx: RequestContext, { customerId, orderId, note }: SetOrderCustomerInput) {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        const currentCustomer = order.customer;
+        if (currentCustomer?.id === customerId) {
+            // No change in customer, so just return the order as-is
+            return order;
+        }
+        const targetCustomer = await this.customerService.findOne(ctx, customerId, ['channels']);
+        if (!targetCustomer) {
+            throw new EntityNotFoundError('Customer', customerId);
+        }
+
+        // ensure the customer is assigned to the same channels as the order
+        const channelIds = order.channels.map(c => c.id);
+        const customerChannelIds = targetCustomer.channels.map(c => c.id);
+        const missingChannelIds = channelIds.filter(id => !customerChannelIds.includes(id));
+        if (missingChannelIds.length) {
+            throw new UserInputError(`error.target-customer-not-assigned-to-order-channels`, {
+                channelIds: missingChannelIds.join(', '),
+            });
+        }
+
+        const updatedOrder = await this.addCustomerToOrder(ctx, order.id, targetCustomer);
+        await this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated'));
+        await this.historyService.createHistoryEntryForOrder({
+            ctx,
+            orderId,
+            type: HistoryEntryType.ORDER_CUSTOMER_UPDATED,
+            data: {
+                previousCustomerId: currentCustomer?.id,
+                previousCustomerName:
+                    currentCustomer && `${currentCustomer.firstName} ${currentCustomer.lastName}`,
+                newCustomerId: targetCustomer.id,
+                newCustomerName: `${targetCustomer.firstName} ${targetCustomer.lastName}`,
+                note,
+            },
+        });
         return updatedOrder;
     }
 
@@ -520,11 +563,20 @@ export class OrderService {
         if (variant.product.enabled === false) {
             throw new EntityNotFoundError('ProductVariant', productVariantId);
         }
+        const existingQuantityInOtherLines = summate(
+            order.lines.filter(
+                l =>
+                    idsAreEqual(l.productVariantId, productVariantId) &&
+                    !idsAreEqual(l.id, existingOrderLine?.id),
+            ),
+            'quantity',
+        );
         const correctedQuantity = await this.orderModifier.constrainQuantityToSaleable(
             ctx,
             variant,
             quantity,
             existingOrderLine?.quantity,
+            existingQuantityInOtherLines,
         );
         if (correctedQuantity === 0) {
             return new InsufficientStockError({ order, quantityAvailable: correctedQuantity });
@@ -580,16 +632,27 @@ export class OrderService {
                 orderLine,
             );
         }
+        const existingQuantityInOtherLines = summate(
+            order.lines.filter(
+                l =>
+                    idsAreEqual(l.productVariantId, orderLine.productVariantId) &&
+                    !idsAreEqual(l.id, orderLineId),
+            ),
+            'quantity',
+        );
         const correctedQuantity = await this.orderModifier.constrainQuantityToSaleable(
             ctx,
             orderLine.productVariant,
             quantity,
+            0,
+            existingQuantityInOtherLines,
         );
         let updatedOrderLines = [orderLine];
         if (correctedQuantity === 0) {
             order.lines = order.lines.filter(l => !idsAreEqual(l.id, orderLine.id));
+            const deletedOrderLine = new OrderLine(orderLine);
             await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
-            this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'deleted'));
+            await this.eventBus.publish(new OrderLineEvent(ctx, order, deletedOrderLine, 'deleted'));
             updatedOrderLines = [];
         } else {
             await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, correctedQuantity, order);
@@ -619,9 +682,15 @@ export class OrderService {
         }
         const orderLine = this.getOrderLineOrThrow(order, orderLineId);
         order.lines = order.lines.filter(line => !idsAreEqual(line.id, orderLineId));
+        // Persist the orderLine removal before applying price adjustments
+        // so that any hydration of the Order entity during the course of the
+        // `applyPriceAdjustments()` (e.g. in a ShippingEligibilityChecker etc)
+        // will not re-add the OrderLine.
+        await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
+        const deletedOrderLine = new OrderLine(orderLine);
         await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
-        this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'deleted'));
+        await this.eventBus.publish(new OrderLineEvent(ctx, order, deletedOrderLine, 'deleted'));
         return updatedOrder;
     }
 
@@ -714,7 +783,7 @@ export class OrderService {
             type: HistoryEntryType.ORDER_COUPON_APPLIED,
             data: { couponCode, promotionId: validationResult.id },
         });
-        this.eventBus.publish(new CouponCodeEvent(ctx, couponCode, orderId, 'assigned'));
+        await this.eventBus.publish(new CouponCodeEvent(ctx, couponCode, orderId, 'assigned'));
         return this.applyPriceAdjustments(ctx, order);
     }
 
@@ -740,7 +809,7 @@ export class OrderService {
                 type: HistoryEntryType.ORDER_COUPON_REMOVED,
                 data: { couponCode },
             });
-            this.eventBus.publish(new CouponCodeEvent(ctx, couponCode, orderId, 'removed'));
+            await this.eventBus.publish(new CouponCodeEvent(ctx, couponCode, orderId, 'removed'));
             const result = await this.applyPriceAdjustments(ctx, order);
             await this.connection.getRepository(ctx, OrderLine).save(affectedOrderLines);
             return result;
@@ -788,7 +857,8 @@ export class OrderService {
         // Since a changed ShippingAddress could alter the activeTaxZone,
         // we will remove any cached activeTaxZone, so it can be re-calculated
         // as needed.
-        this.requestCache.set(ctx, 'activeTaxZone', undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone, undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA, undefined);
         return this.applyPriceAdjustments(ctx, order, order.lines);
     }
 
@@ -811,7 +881,8 @@ export class OrderService {
         // Since a changed BillingAddress could alter the activeTaxZone,
         // we will remove any cached activeTaxZone, so it can be re-calculated
         // as needed.
-        this.requestCache.set(ctx, 'activeTaxZone', undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone, undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA, undefined);
         return this.applyPriceAdjustments(ctx, order, order.lines);
     }
 
@@ -864,67 +935,13 @@ export class OrderService {
         if (validationError) {
             return validationError;
         }
-        for (const [i, shippingMethodId] of shippingMethodIds.entries()) {
-            const shippingMethod = await this.shippingCalculator.getMethodIfEligible(
-                ctx,
-                order,
-                shippingMethodId,
-            );
-            if (!shippingMethod) {
-                return new IneligibleShippingMethodError();
-            }
-            let shippingLine: ShippingLine | undefined = order.shippingLines[i];
-            if (shippingLine) {
-                shippingLine.shippingMethod = shippingMethod;
-            } else {
-                shippingLine = await this.connection.getRepository(ctx, ShippingLine).save(
-                    new ShippingLine({
-                        shippingMethod,
-                        order,
-                        adjustments: [],
-                        listPrice: 0,
-                        listPriceIncludesTax: ctx.channel.pricesIncludeTax,
-                        taxLines: [],
-                    }),
-                );
-                if (order.shippingLines) {
-                    order.shippingLines.push(shippingLine);
-                } else {
-                    order.shippingLines = [shippingLine];
-                }
-            }
-
-            await this.connection.getRepository(ctx, ShippingLine).save(shippingLine);
-        }
-        // remove any now-unused ShippingLines
-        if (shippingMethodIds.length < order.shippingLines.length) {
-            const shippingLinesToDelete = order.shippingLines.splice(shippingMethodIds.length - 1);
-            await this.connection.getRepository(ctx, ShippingLine).remove(shippingLinesToDelete);
-        }
-        // assign the ShippingLines to the OrderLines
-        await this.connection
-            .getRepository(ctx, OrderLine)
-            .createQueryBuilder('line')
-            .update({ shippingLine: undefined })
-            .whereInIds(order.lines.map(l => l.id))
-            .execute();
-        const { shippingLineAssignmentStrategy } = this.configService.shippingOptions;
-        for (const shippingLine of order.shippingLines) {
-            const orderLinesForShippingLine =
-                await shippingLineAssignmentStrategy.assignShippingLineToOrderLines(ctx, shippingLine, order);
-            await this.connection
-                .getRepository(ctx, OrderLine)
-                .createQueryBuilder('line')
-                .update({ shippingLineId: shippingLine.id })
-                .whereInIds(orderLinesForShippingLine.map(l => l.id))
-                .execute();
-            orderLinesForShippingLine.forEach(line => {
-                line.shippingLine = shippingLine;
-            });
+        const result = await this.orderModifier.setShippingMethods(ctx, order, shippingMethodIds);
+        if (isGraphQlErrorResult(result)) {
+            return result;
         }
         const updatedOrder = await this.getOrderOrThrow(ctx, orderId);
-        await this.applyPriceAdjustments(ctx, order);
-        return this.connection.getRepository(ctx, Order).save(order);
+        await this.applyPriceAdjustments(ctx, updatedOrder);
+        return this.connection.getRepository(ctx, Order).save(updatedOrder);
     }
 
     /**
@@ -948,7 +965,7 @@ export class OrderService {
             return new OrderStateTransitionError({ transitionError, fromState, toState: state });
         }
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
-        this.eventBus.publish(new OrderStateTransitionEvent(fromState, state, ctx, order));
+        await this.eventBus.publish(new OrderStateTransitionEvent(fromState, state, ctx, order));
         await finalize();
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         return order;
@@ -1379,7 +1396,8 @@ export class OrderService {
     ): Promise<ErrorResultUnion<RefundOrderResult, Refund>> {
         if (
             (!input.lines || input.lines.length === 0 || summate(input.lines, 'quantity') === 0) &&
-            input.shipping === 0
+            input.shipping === 0 &&
+            !input.amount
         ) {
             return new NothingToRefundError();
         }
@@ -1402,7 +1420,12 @@ export class OrderService {
             return new RefundOrderStateError({ orderState: order.state });
         }
 
-        return await this.paymentService.createRefund(ctx, input, order, payment);
+        const createdRefund = await this.paymentService.createRefund(ctx, input, order, payment);
+
+        if (createdRefund instanceof Refund) {
+            await this.eventBus.publish(new RefundEvent(ctx, order, createdRefund, 'created'));
+        }
+        return createdRefund;
     }
 
     /**
@@ -1424,7 +1447,7 @@ export class OrderService {
         );
         await this.connection.getRepository(ctx, Refund).save(refund);
         await finalize();
-        this.eventBus.publish(
+        await this.eventBus.publish(
             new RefundStateTransitionEvent(fromState, toState, ctx, refund, refund.payment.order),
         );
         return refund;
@@ -1434,14 +1457,21 @@ export class OrderService {
      * @description
      * Associates a Customer with the Order.
      */
-    async addCustomerToOrder(ctx: RequestContext, orderId: ID, customer: Customer): Promise<Order> {
-        const order = await this.getOrderOrThrow(ctx, orderId);
+    async addCustomerToOrder(
+        ctx: RequestContext,
+        orderIdOrOrder: ID | Order,
+        customer: Customer,
+    ): Promise<Order> {
+        const order =
+            orderIdOrOrder instanceof Order
+                ? orderIdOrOrder
+                : await this.getOrderOrThrow(ctx, orderIdOrOrder);
         order.customer = customer;
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
+        let updatedOrder = order;
         // Check that any applied couponCodes are still valid now that
         // we know the Customer.
-        let updatedOrder = order;
-        if (order.couponCodes) {
+        if (order.active && order.couponCodes) {
             for (const couponCode of order.couponCodes.slice()) {
                 const validationResult = await this.promotionService.validateCouponCode(
                     ctx,
@@ -1449,7 +1479,7 @@ export class OrderService {
                     customer.id,
                 );
                 if (isGraphQlErrorResult(validationResult)) {
-                    updatedOrder = await this.removeCouponCode(ctx, orderId, couponCode);
+                    updatedOrder = await this.removeCouponCode(ctx, order.id, couponCode);
                 }
             }
         }
@@ -1523,7 +1553,9 @@ export class OrderService {
                 .getRepository(ctx, Session)
                 .update(sessions.map(s => s.id) as string[], { activeOrder: null });
         }
+        const deletedOrder = new Order(orderToDelete);
         await this.connection.getRepository(ctx, Order).delete(orderToDelete.id);
+        await this.eventBus.publish(new OrderEvent(ctx, deletedOrder, 'deleted'));
     }
 
     /**
@@ -1667,6 +1699,14 @@ export class OrderService {
     ): Promise<Order> {
         const promotions = await this.promotionService.getActivePromotionsInChannel(ctx);
         const activePromotionsPre = await this.promotionService.getActivePromotionsOnOrder(ctx, order.id);
+
+        // When changing the Order's currencyCode (on account of passing
+        // a different currencyCode into the RequestContext), we need to make sure
+        // to update all existing OrderLines to use prices in this new currency.
+        if (ctx.currencyCode !== order.currencyCode) {
+            updatedOrderLines = order.lines;
+            order.currencyCode = ctx.currencyCode;
+        }
 
         if (updatedOrderLines?.length) {
             const { orderItemPriceCalculationStrategy, changedPriceHandlingStrategy } =

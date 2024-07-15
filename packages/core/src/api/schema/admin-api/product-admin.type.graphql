@@ -1,5 +1,4 @@
 type Product implements Node {
-    enabled: Boolean!
     channels: [Channel!]!
 }
 

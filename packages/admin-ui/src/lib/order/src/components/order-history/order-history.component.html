@@ -1,5 +1,5 @@
 <div class="entry-list" [class.expanded]="expanded">
-    <vdr-timeline-entry iconShape="note" displayType="muted" [featured]="true">
+    <vdr-timeline-entry iconShape="note" displayType="muted" [featured]="true" [isFirst]="true">
         <div class="note-entry">
             <textarea [(ngModel)]="note" name="note" class="note"></textarea>
             <button class="btn btn-secondary" [disabled]="!note" (click)="addNoteToOrder()">
@@ -48,7 +48,7 @@
                         <ng-template [ngIf]="entry.data.to !== 'Cancelled' && entry.data.to !== 'Delivered'">
                             {{
                                 'order.history-order-transition'
-                                    | translate: { from: entry.data.from, to: entry.data.to }
+                                    | translate : { from: entry.data.from, to: entry.data.to }
                             }}
                         </ng-template>
                     </ng-container>
@@ -56,15 +56,18 @@
                         <div class="title">
                             {{ 'order.history-order-modified' | translate }}
                         </div>
-                        <ng-container *ngIf="getModification(entry.data.modificationId) as modification">
+                        <div
+                            class="flex items-center"
+                            *ngIf="getModification(entry.data.modificationId) as modification"
+                        >
                             {{ 'order.modify-order-price-difference' | translate }}:
                             <strong>{{
-                                modification.priceChange | localeCurrency: order.currencyCode
+                                modification.priceChange | localeCurrency : order.currencyCode
                             }}</strong>
-                            <vdr-chip colorType="success" *ngIf="modification.isSettled">{{
+                            <vdr-chip colorType="success" class="mx-1" *ngIf="modification.isSettled">{{
                                 'order.modification-settled' | translate
                             }}</vdr-chip>
-                            <vdr-chip colorType="error" *ngIf="!modification.isSettled">{{
+                            <vdr-chip colorType="error" class="mx-1" *ngIf="!modification.isSettled">{{
                                 'order.modification-not-settled' | translate
                             }}</vdr-chip>
                             <vdr-history-entry-detail>
@@ -73,20 +76,24 @@
                                     [modification]="modification"
                                 ></vdr-modification-detail>
                             </vdr-history-entry-detail>
-                        </ng-container>
+                        </div>
                     </ng-container>
                     <ng-container *ngSwitchCase="type.ORDER_PAYMENT_TRANSITION">
                         <ng-container *ngIf="entry.data.to === 'Settled'; else regularPaymentTransition">
                             <div class="title">
                                 {{ 'order.history-payment-settled' | translate }}
                             </div>
-                            {{ 'order.transaction-id' | translate }}: {{ getPayment(entry)?.transactionId }}
-                            <vdr-history-entry-detail *ngIf="getPayment(entry) as payment">
-                                <vdr-payment-detail
-                                    [payment]="payment"
-                                    [currencyCode]="order.currencyCode"
-                                ></vdr-payment-detail>
-                            </vdr-history-entry-detail>
+                            <div class="flex items-center">
+                                <vdr-chip *ngIf="getPayment(entry) as payment" class="mr-1">{{
+                                    payment.amount | localeCurrency : order.currencyCode
+                                }}</vdr-chip>
+                                <vdr-history-entry-detail *ngIf="getPayment(entry) as payment">
+                                    <vdr-payment-detail
+                                        [payment]="payment"
+                                        [currencyCode]="order.currencyCode"
+                                    ></vdr-payment-detail>
+                                </vdr-history-entry-detail>
+                            </div>
                         </ng-container>
                         <ng-template #regularPaymentTransition>
                             {{
@@ -101,18 +108,44 @@
                         </ng-template>
                     </ng-container>
                     <ng-container *ngSwitchCase="type.ORDER_REFUND_TRANSITION">
-                        {{
-                            'order.history-refund-transition'
-                                | translate
-                                    : { from: entry.data.from, to: entry.data.to, id: entry.data.refundId }
-                        }}
+                        <ng-container *ngIf="entry.data.to === 'Settled'; else regularRefundTransition">
+                            <ng-container *ngIf="getRefund(entry) as refund">
+                                <div class="title">{{ 'order.refund' | translate }} #{{ refund.id }}</div>
+                                <div class="flex items-center">
+                                    <vdr-chip colorType="warning" class="mr-1">{{
+                                        refund.total | localeCurrency : order.currencyCode
+                                    }}</vdr-chip>
+                                    <vdr-history-entry-detail>
+                                        <vdr-labeled-data [label]="'order.cancellation-reason' | translate">
+                                            {{ entry.data.reason }}
+                                        </vdr-labeled-data>
+                                        <vdr-labeled-data [label]="'order.contents' | translate">
+                                            <vdr-simple-item-list
+                                                [items]="getCancelledItems(refund.lines)"
+                                            ></vdr-simple-item-list>
+                                        </vdr-labeled-data>
+                                    </vdr-history-entry-detail>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                        <ng-template #regularRefundTransition>
+                            {{
+                                'order.history-refund-transition'
+                                    | translate
+                                        : {
+                                              from: entry.data.from,
+                                              to: entry.data.to,
+                                              id: entry.data.refundId
+                                          }
+                            }}
+                        </ng-template>
                     </ng-container>
                     <ng-container *ngSwitchCase="type.ORDER_CANCELLATION">
                         {{
                             'order.history-items-cancelled'
-                                | translate: { count: getCancelledQuantity(entry) }
+                                | translate : { count: getCancelledQuantity(entry) }
                         }}
-                        <vdr-history-entry-detail *ngIf="getCancelledItems(entry) as items">
+                        <vdr-history-entry-detail *ngIf="getCancelledItems(entry.data.lines) as items">
                             <vdr-labeled-data [label]="'order.cancellation-reason' | translate">
                                 {{ entry.data.reason }}
                             </vdr-labeled-data>
@@ -149,7 +182,7 @@
                         <ng-container *ngIf="entry.data.to !== 'Delivered' && entry.data.to !== 'Shipped'">
                             {{
                                 'order.history-fulfillment-transition'
-                                    | translate: { from: entry.data.from, to: entry.data.to }
+                                    | translate : { from: entry.data.from, to: entry.data.to }
                             }}
                         </ng-container>
                         <vdr-history-entry-detail *ngIf="getFulfillment(entry) as fulfillment">
@@ -172,8 +205,8 @@
                             </div>
                             <div class="flex-spacer"></div>
                             <vdr-dropdown>
-                                <button class="icon-button" vdrDropdownTrigger>
-                                    <clr-icon shape="ellipsis-vertical"></clr-icon>
+                                <button class="button-small ml-1" vdrDropdownTrigger>
+                                    <clr-icon shape="ellipsis-vertical" size="12"></clr-icon>
                                 </button>
                                 <vdr-dropdown-menu vdrPosition="bottom-right">
                                     <button
@@ -210,6 +243,48 @@
                         <vdr-chip
                             ><span class="cancelled-coupon-code">{{ entry.data.couponCode }}</span></vdr-chip
                         >
+                    </ng-container>
+                    <ng-container *ngSwitchCase="type.ORDER_CUSTOMER_UPDATED">
+                        <div class="title">
+                            {{
+                                'order.history-customer-updated'
+                                    | translate : { newCustomerName: entry.data.newCustomerName }
+                            }}
+                        </div>
+                        <div class="flex">
+                            <div class="note-text">
+                                {{ entry.data.note }}
+                            </div>
+                            <div class="flex-spacer"></div>
+                            <vdr-history-entry-detail>
+                                <vdr-labeled-data [label]="'order.previous-customer' | translate">
+                                    <a
+                                        *ngIf="entry.data.previousCustomerId"
+                                        class="button-ghost"
+                                        [routerLink]="[
+                                            '/customer',
+                                            'customers',
+                                            entry.data.previousCustomerId
+                                        ]"
+                                    >
+                                        <clr-icon shape="user" class="is-solid"></clr-icon>
+                                        <span>{{ entry.data.previousCustomerName }}</span>
+                                        <clr-icon shape="arrow right"></clr-icon>
+                                    </a>
+                                </vdr-labeled-data>
+                                <vdr-labeled-data [label]="'order.new-customer' | translate">
+                                    <a
+                                        *ngIf="entry.data.newCustomerId"
+                                        class="button-ghost"
+                                        [routerLink]="['/customer', 'customers', entry.data.newCustomerId]"
+                                    >
+                                        <clr-icon shape="user" class="is-solid"></clr-icon>
+                                        <span>{{ entry.data.newCustomerName }}</span>
+                                        <clr-icon shape="arrow right"></clr-icon>
+                                    </a>
+                                </vdr-labeled-data>
+                            </vdr-history-entry-detail>
+                        </div>
                     </ng-container>
                     <ng-container *ngSwitchDefault>
                         <div class="title">

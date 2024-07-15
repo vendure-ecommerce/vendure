@@ -17,7 +17,10 @@ import { VendureEntity } from '../../../entity/base/base.entity';
 
 @Injectable()
 export class CustomFieldRelationService {
-    constructor(private connection: TransactionalConnection, private configService: ConfigService) {}
+    constructor(
+        private connection: TransactionalConnection,
+        private configService: ConfigService,
+    ) {}
 
     /**
      * @description
@@ -54,7 +57,14 @@ export class CustomFieldRelationService {
                             .findOne({ where: { id: idOrIds } });
                     }
                     if (relations !== undefined) {
-                        entity.customFields = { ...entity.customFields, [field.name]: relations };
+                        const entityWithCustomFields = await this.connection
+                            .getRepository(ctx, entityType)
+                            .findOne({ where: { id: entity.id } as any, loadEagerRelations: false });
+                        entity.customFields = {
+                            ...entity.customFields,
+                            ...entityWithCustomFields?.customFields,
+                            [field.name]: relations,
+                        };
                         await this.connection
                             .getRepository(ctx, entityType)
                             .save(pick(entity, ['id', 'customFields']) as any, { reload: false });

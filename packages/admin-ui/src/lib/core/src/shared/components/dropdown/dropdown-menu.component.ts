@@ -1,18 +1,10 @@
-import {
-    ConnectedPosition,
-    HorizontalConnectionPos,
-    Overlay,
-    OverlayRef,
-    PositionStrategy,
-    VerticalConnectionPos,
-} from '@angular/cdk/overlay';
+import { ConnectedPosition, Overlay, OverlayRef, PositionStrategy } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
-    ContentChild,
-    ElementRef,
     HostListener,
     Input,
     OnDestroy,
@@ -23,7 +15,10 @@ import {
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { DropdownTriggerDirective } from './dropdown-trigger.directive';
+import {
+    LocalizationDirectionType,
+    LocalizationService,
+} from '../../../providers/localization/localization.service';
 import { DropdownComponent } from './dropdown.component';
 
 export type DropdownPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
@@ -41,14 +36,16 @@ export type DropdownPosition = 'top-left' | 'top-right' | 'bottom-left' | 'botto
     selector: 'vdr-dropdown-menu',
     template: `
         <ng-template #menu>
-            <div class="dropdown open">
-                <div class="dropdown-menu" [ngClass]="customClasses">
-                    <div
-                        class="dropdown-content-wrapper"
-                        [cdkTrapFocus]="true"
-                        [cdkTrapFocusAutoCapture]="true"
-                    >
-                        <ng-content></ng-content>
+            <div [dir]="direction$ | async">
+                <div class="dropdown open">
+                    <div class="dropdown-menu" [ngClass]="customClasses" [style.maxHeight.px]="maxHeight">
+                        <div
+                            class="dropdown-content-wrapper"
+                            [cdkTrapFocus]="true"
+                            [cdkTrapFocusAutoCapture]="true"
+                        >
+                            <ng-content></ng-content>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -58,12 +55,35 @@ export type DropdownPosition = 'top-left' | 'top-right' | 'bottom-left' | 'botto
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DropdownMenuComponent implements AfterViewInit, OnInit, OnDestroy {
+    direction$: LocalizationDirectionType;
+
     @Input('vdrPosition') private position: DropdownPosition = 'bottom-left';
     @Input() customClasses: string;
     @ViewChild('menu', { static: true }) private menuTemplate: TemplateRef<any>;
     private menuPortal: TemplatePortal;
     private overlayRef: OverlayRef;
     private backdropClickSub: Subscription;
+    protected maxHeight: number | undefined;
+
+    private resizeObserver = new ResizeObserver(entries => {
+        const margin = 12;
+        for (const entry of entries) {
+            const contentWrapper = entry.target.querySelector('.dropdown-content-wrapper');
+            if (contentWrapper) {
+                const { bottom, top } = contentWrapper?.getBoundingClientRect();
+                if (bottom > window.innerHeight - margin) {
+                    // dropdown is going off the bottom of the screen
+                    this.maxHeight = window.innerHeight - top - margin;
+                    this.changeDetector.markForCheck();
+                }
+                if (top < margin) {
+                    // dropdown is going off the top of the screen
+                    this.maxHeight = bottom - margin;
+                    this.changeDetector.markForCheck();
+                }
+            }
+        }
+    });
 
     @HostListener('window:keydown.escape', ['$event'])
     onEscapeKeydown(event: KeyboardEvent) {
@@ -104,14 +124,21 @@ export class DropdownMenuComponent implements AfterViewInit, OnInit, OnDestroy {
         private overlay: Overlay,
         private viewContainerRef: ViewContainerRef,
         private dropdown: DropdownComponent,
+        private localizationService: LocalizationService,
+        private changeDetector: ChangeDetectorRef,
     ) {}
 
     ngOnInit(): void {
+        this.direction$ = this.localizationService.direction$;
+
         this.dropdown.onOpenChange(isOpen => {
             if (isOpen) {
                 this.overlayRef.attach(this.menuPortal);
+                this.resizeObserver.observe(this.overlayRef.overlayElement);
             } else {
                 this.overlayRef.detach();
+                this.resizeObserver.unobserve(this.overlayRef.overlayElement);
+                this.maxHeight = undefined;
             }
         });
     }
@@ -123,6 +150,7 @@ export class DropdownMenuComponent implements AfterViewInit, OnInit, OnDestroy {
             positionStrategy: this.getPositionStrategy(),
             maxHeight: '70vh',
         });
+
         this.menuPortal = new TemplatePortal(this.menuTemplate, this.viewContainerRef);
         this.backdropClickSub = this.overlayRef.backdropClick().subscribe(() => {
             this.dropdown.toggleOpen();

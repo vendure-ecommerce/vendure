@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     Asset,
@@ -20,12 +19,10 @@ import {
     PRODUCT_DETAIL_FRAGMENT,
     ProductDetailFragment,
     ProductVariantFragment,
-    ServerConfigService,
     TypedBaseDetailComponent,
     unicodePatternValidator,
     UpdateProductInput,
     UpdateProductMutation,
-    UpdateProductOptionInput,
     UpdateProductVariantInput,
     UpdateProductVariantsMutation,
 } from '@vendure/admin-ui/core';
@@ -33,17 +30,8 @@ import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { unique } from '@vendure/common/lib/unique';
 import { gql } from 'apollo-angular';
-import { combineLatest, concat, EMPTY, from, Observable } from 'rxjs';
-import {
-    distinctUntilChanged,
-    map,
-    mergeMap,
-    shareReplay,
-    skip,
-    switchMap,
-    switchMapTo,
-    take,
-} from 'rxjs/operators';
+import { combineLatest, concat, EMPTY, from, Observable, of } from 'rxjs';
+import { distinctUntilChanged, map, mergeMap, shareReplay, switchMap, take } from 'rxjs/operators';
 
 import { ProductDetailService } from '../../providers/product-detail/product-detail.service';
 import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
@@ -91,9 +79,6 @@ export class ProductDetailComponent
     public readonly updatePermissions = [Permission.UpdateCatalog, Permission.UpdateProduct];
 
     constructor(
-        route: ActivatedRoute,
-        router: Router,
-        serverConfigService: ServerConfigService,
         private productDetailService: ProductDetailService,
         private formBuilder: FormBuilder,
         private modalService: ModalService,
@@ -106,11 +91,15 @@ export class ProductDetailComponent
 
     ngOnInit() {
         this.init();
-        const productFacetValues$ = this.entity$.pipe(map(product => product.facetValues));
+
+        const productFacetValues$ = this.isNew$.pipe(
+            switchMap(isNew => {
+                return isNew ? of([]) : this.entity$.pipe(map(product => product.facetValues));
+            }),
+        );
         const productGroup = this.detailForm;
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const formFacetValueIdChanges$ = productGroup.get('facetValueIds')!.valueChanges.pipe(
-            skip(1),
             distinctUntilChanged(),
             switchMap(ids =>
                 this.dataService.facet
@@ -121,7 +110,7 @@ export class ProductDetailComponent
         );
         this.facetValues$ = concat(
             productFacetValues$.pipe(take(1)),
-            productFacetValues$.pipe(switchMapTo(formFacetValueIdChanges$)),
+            productFacetValues$.pipe(switchMap(() => formFacetValueIdChanges$)),
         );
         this.productChannels$ = this.entity$.pipe(map(p => p.channels));
     }
@@ -261,30 +250,9 @@ export class ProductDetailComponent
                     facetValueIds: unique([...currentFacetValueIds, ...facetValueIds]),
                 });
                 productGroup.markAsDirty();
+                this.changeDetector.markForCheck();
             }
         });
-    }
-
-    updateProductOption(input: UpdateProductOptionInput & { autoUpdate: boolean }) {
-        combineLatest(this.entity$, this.languageCode$)
-            .pipe(
-                take(1),
-                mergeMap(([product, languageCode]) =>
-                    this.productDetailService.updateProductOption(input, product, languageCode),
-                ),
-            )
-            .subscribe(
-                () => {
-                    this.notificationService.success(_('common.notify-update-success'), {
-                        entity: 'ProductOption',
-                    });
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-update-error'), {
-                        entity: 'ProductOption',
-                    });
-                },
-            );
     }
 
     removeProductFacetValue(facetValueId: string) {
@@ -372,8 +340,7 @@ export class ProductDetailComponent
                     return this.productDetailService.updateProduct({
                         product,
                         languageCode,
-                        autoUpdate:
-                            this.detailForm.get(['product', 'autoUpdateVariantNames'])?.value ?? false,
+                        autoUpdate: this.detailForm.get(['autoUpdateVariantNames'])?.value ?? false,
                         productInput,
                         variantsInput,
                     });

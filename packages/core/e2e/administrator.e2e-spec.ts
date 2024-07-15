@@ -1,16 +1,21 @@
 import { SUPER_ADMIN_USER_IDENTIFIER } from '@vendure/common/lib/shared-constants';
-import { createTestEnvironment } from '@vendure/testing';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import { fail } from 'assert';
 import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { ADMINISTRATOR_FRAGMENT } from './graphql/fragments';
 import * as Codegen from './graphql/generated-e2e-admin-types';
-import { AdministratorFragment, DeletionResult } from './graphql/generated-e2e-admin-types';
+import {
+    AdministratorFragment,
+    AttemptLoginDocument,
+    CurrentUser,
+    DeletionResult,
+} from './graphql/generated-e2e-admin-types';
 import { CREATE_ADMINISTRATOR, UPDATE_ADMINISTRATOR } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
@@ -234,6 +239,32 @@ describe('Administrator resolver', () => {
 
         expect(activeAdministrator?.firstName).toBe('Thomas');
         expect(activeAdministrator?.user.identifier).toBe('neo@metacortex.com');
+    });
+
+    it('supports case-sensitive admin identifiers', async () => {
+        const loginResultGuard: ErrorResultGuard<CurrentUser> = createErrorResultGuard(
+            input => !!input.identifier,
+        );
+        const { createAdministrator } = await adminClient.query<
+            Codegen.CreateAdministratorMutation,
+            Codegen.CreateAdministratorMutationVariables
+        >(CREATE_ADMINISTRATOR, {
+            input: {
+                emailAddress: 'NewAdmin',
+                firstName: 'New',
+                lastName: 'Admin',
+                password: 'password',
+                roleIds: ['1'],
+            },
+        });
+
+        const { login } = await adminClient.query(AttemptLoginDocument, {
+            username: 'NewAdmin',
+            password: 'password',
+        });
+
+        loginResultGuard.assertSuccess(login);
+        expect(login.identifier).toBe('NewAdmin');
     });
 });
 

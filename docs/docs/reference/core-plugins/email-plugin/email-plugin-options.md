@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EmailPluginOptions
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="40" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="41" packageName="@vendure/email-plugin" />
 
 Configuration for the EmailPlugin.
 
@@ -42,13 +42,13 @@ The path to the location of the email templates. In a default Vendure installati
 the templates are installed to `<project root>/vendure/email/templates`.
 ### templateLoader
 
-<MemberInfo kind="property" type={`<a href='/reference/core-plugins/email-plugin/custom-template-loader#templateloader'>TemplateLoader</a>`}  since="2.0.0"  />
+<MemberInfo kind="property" type={`<a href='/reference/core-plugins/email-plugin/template-loader#templateloader'>TemplateLoader</a>`}  since="2.0.0"  />
 
 An optional TemplateLoader which can be used to load templates from a custom location or async service.
 The default uses the FileBasedTemplateLoader which loads templates from `<project root>/vendure/email/templates`
 ### transport
 
-<MemberInfo kind="property" type={`| <a href='/reference/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>         | ((               injector?: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>,               ctx?: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>,           ) =&#62; <a href='/reference/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a> | Promise&#60;<a href='/reference/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>&#62;)`}   />
+<MemberInfo kind="property" type={`| <a href='/reference/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>         | ((               injector?: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>,               ctx?: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>,           ) =&#62; <a href='/reference/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a> | Promise&#60;<a href='/reference/core-plugins/email-plugin/transport-options#emailtransportoptions'>EmailTransportOptions</a>&#62;)`}   />
 
 Configures how the emails are sent.
 ### handlers
@@ -83,7 +83,7 @@ better match with custom email sending functionality.
 
 ## EmailPluginDevModeOptions
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="110" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="111" packageName="@vendure/email-plugin" />
 
 Configuration for running the EmailPlugin in development mode.
 

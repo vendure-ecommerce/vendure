@@ -6,6 +6,7 @@ import {
     CreateCollectionInput,
     DeletionResponse,
     DeletionResult,
+    JobState,
     MoveCollectionInput,
     Permission,
     PreviewCollectionVariantsInput,
@@ -15,12 +16,13 @@ import {
 import { pick } from '@vendure/common/lib/pick';
 import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { unique } from '@vendure/common/lib/unique';
 import { merge } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { In, IsNull } from 'typeorm';
 
 import { RequestContext, SerializedRequestContext } from '../../api/common/request-context';
-import { RelationPaths } from '../../api/index';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { ForbiddenError, IllegalOperationError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
@@ -102,7 +104,8 @@ export class CollectionService implements OnModuleInit {
                 await this.applyFiltersQueue.add({
                     ctx: event.ctx.serialize(),
                     collectionIds: collections.map(c => c.id),
-                });
+                },
+                {   ctx: event.ctx   });
             });
 
         this.applyFiltersQueue = await this.jobQueueService.createQueue({
@@ -113,6 +116,9 @@ export class CollectionService implements OnModuleInit {
                 Logger.verbose(`Processing ${job.data.collectionIds.length} Collections`);
                 let completed = 0;
                 for (const collectionId of job.data.collectionIds) {
+                    if (job.state === JobState.CANCELLED) {
+                        throw new Error(`Job was cancelled`);
+                    }
                     let collection: Collection | undefined;
                     try {
                         collection = await this.connection.getEntityOrThrow(ctx, Collection, collectionId, {
@@ -141,7 +147,7 @@ export class CollectionService implements OnModuleInit {
                         }
                         job.setProgress(Math.ceil((completed / job.data.collectionIds.length) * 100));
                         if (affectedVariantIds.length) {
-                            this.eventBus.publish(
+                            await this.eventBus.publish(
                                 new CollectionModificationEvent(ctx, collection, affectedVariantIds),
                             );
                         }
@@ -165,8 +171,9 @@ export class CollectionService implements OnModuleInit {
         });
 
         if (options?.topLevelOnly === true) {
-            qb.leftJoin('collection.parent', 'parent');
-            qb.andWhere('parent.isRoot = :isRoot', { isRoot: true });
+            qb.innerJoin('collection.parent', 'parent_filter', 'parent_filter.isRoot = :isRoot', {
+                isRoot: true,
+            });
         }
 
         return qb.getManyAndCount().then(async ([collections, totalItems]) => {
@@ -222,7 +229,14 @@ export class CollectionService implements OnModuleInit {
     ): Promise<Translated<Collection> | undefined> {
         const translations = await this.connection.getRepository(ctx, CollectionTranslation).find({
             relations: ['base'],
-            where: { slug },
+            where: {
+                slug,
+                base: {
+                    channels: {
+                        id: ctx.channelId,
+                    },
+                },
+            },
         });
 
         if (!translations?.length) {
@@ -458,8 +472,9 @@ export class CollectionService implements OnModuleInit {
         await this.applyFiltersQueue.add({
             ctx: ctx.serialize(),
             collectionIds: [collection.id],
-        });
-        this.eventBus.publish(new CollectionEvent(ctx, collectionWithRelations, 'created', input));
+        },
+        {   ctx   });
+        await this.eventBus.publish(new CollectionEvent(ctx, collectionWithRelations, 'created', input));
         return assertFound(this.findOne(ctx, collection.id));
     }
 
@@ -484,12 +499,13 @@ export class CollectionService implements OnModuleInit {
                 ctx: ctx.serialize(),
                 collectionIds: [collection.id],
                 applyToChangedVariantsOnly: false,
-            });
+            },
+            {   ctx   });
         } else {
             const affectedVariantIds = await this.getCollectionProductVariantIds(collection);
-            this.eventBus.publish(new CollectionModificationEvent(ctx, collection, affectedVariantIds));
+            await this.eventBus.publish(new CollectionModificationEvent(ctx, collection, affectedVariantIds));
         }
-        this.eventBus.publish(new CollectionEvent(ctx, collection, 'updated', input));
+        await this.eventBus.publish(new CollectionEvent(ctx, collection, 'updated', input));
         return assertFound(this.findOne(ctx, collection.id));
     }
 
@@ -513,9 +529,11 @@ export class CollectionService implements OnModuleInit {
                     .remove(chunkedDeleteId);
             }
             await this.connection.getRepository(ctx, Collection).remove(coll);
-            this.eventBus.publish(new CollectionModificationEvent(ctx, deletedColl, affectedVariantIds));
+            await this.eventBus.publish(
+                new CollectionModificationEvent(ctx, deletedColl, affectedVariantIds),
+            );
         }
-        this.eventBus.publish(new CollectionEvent(ctx, deletedCollection, 'deleted', id));
+        await this.eventBus.publish(new CollectionEvent(ctx, deletedCollection, 'deleted', id));
         return {
             result: DeletionResult.DELETED,
         };
@@ -556,7 +574,8 @@ export class CollectionService implements OnModuleInit {
         await this.applyFiltersQueue.add({
             ctx: ctx.serialize(),
             collectionIds: [target.id],
-        });
+        },
+        {   ctx   });
         return assertFound(this.findOne(ctx, input.collectionId));
     }
 
@@ -798,7 +817,7 @@ export class CollectionService implements OnModuleInit {
         }
         const collectionsToAssign = await this.connection
             .getRepository(ctx, Collection)
-            .find({ where: { id: In(input.collectionIds) } });
+            .find({ where: { id: In(input.collectionIds) }, relations: { assets: true } });
 
         await Promise.all(
             collectionsToAssign.map(collection =>
@@ -806,10 +825,16 @@ export class CollectionService implements OnModuleInit {
             ),
         );
 
+        const assetIds: ID[] = unique(
+            ([] as ID[]).concat(...collectionsToAssign.map(c => c.assets.map(a => a.assetId))),
+        );
+        await this.assetService.assignToChannel(ctx, { channelId: input.channelId, assetIds });
+
         await this.applyFiltersQueue.add({
             ctx: ctx.serialize(),
             collectionIds: collectionsToAssign.map(collection => collection.id),
-        });
+        },
+        {   ctx   });
 
         return this.connection
             .findByIdsInChannel(
@@ -851,7 +876,9 @@ export class CollectionService implements OnModuleInit {
                 await this.channelService.removeFromChannels(ctx, Collection, collection.id, [
                     input.channelId,
                 ]);
-                this.eventBus.publish(new CollectionModificationEvent(ctx, collection, affectedVariantIds));
+                await this.eventBus.publish(
+                    new CollectionModificationEvent(ctx, collection, affectedVariantIds),
+                );
             }),
         );
 

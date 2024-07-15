@@ -19,7 +19,7 @@ export abstract class OrderLineReference extends VendureEntity {
     quantity: number;
 
     @Index()
-    @ManyToOne(type => OrderLine, { onDelete: 'CASCADE' })
+    @ManyToOne(type => OrderLine, line => line.linesReferences, { onDelete: 'CASCADE' })
     orderLine: OrderLine;
 
     @EntityId()

@@ -1,5 +1,9 @@
 @import 'variables';
-@import 'prosemirror/prosemirror';
+
+// Note: the custom styling for the Prosemirror editor is located
+// in /src/lib/static/styles/component/prosemirror.scss, because it is
+// shared also by the corresponding React component. Therefore it is not
+// scoped to this Angular component.
 
 :host {
     display: block;
@@ -12,74 +16,6 @@
     }
 }
 
-label.rich-text-label {
-    font-size: var(--font-size-sm);
-    color: var(--font-weight-700);
-}
-
-::ng-deep .ProseMirror-menubar {
-    position: sticky;
-    border: 1px solid var(--color-weight-200);
-    border-bottom: none;
-    background-color: var(--color-component-bg-200);
-    color: var(--color-icon-button);
-    border-radius: var(--border-radius-input) var(--border-radius-input) 0 0;
-    padding: 6px 12px;
-    display: flex;
-    flex-wrap: wrap;
-}
-
-::ng-deep .vdr-prosemirror {
-    background: var(--color-form-input-bg);
-    color: var(--color-text-100);
-    min-height: 128px;
-    max-height: 600px;
-    min-width: 200px;
-    border: 1px solid var(--color-weight-200);
-    border-radius: 0 0 var(--border-radius-input) var(--border-radius-input);
-    transition: border-color 0.2s;
-    overflow: auto;
-    text-align: initial;
-
-    &:focus {
-        border-color: var(--color-primary-500) !important;
-        box-shadow: 0 0 1px 1px var(--color-primary-100);
-    }
-
-    /* Add space around the hr to make clicking it easier */
-
-    hr {
-        padding: 2px 10px;
-        border: none;
-        margin: 1em 0;
-    }
-
-    hr:after {
-        content: '';
-        display: block;
-        height: 1px;
-        background-color: silver;
-        line-height: 2px;
-    }
-
-    img {
-        cursor: default;
-        max-width: 100%;
-    }
-
-    a:link,
-    a:visited {
-        color: var(--color-primary-700);
-        text-decoration: none;
-    }
-
-    .iframe-wrapper {
-        width: 100%;
-        text-align: center;
-        padding: 6px;
-        transition: background-color 0.3s;
-        &:hover {
-            background-color: var(--color-primary-100);
-        }
-    }
+.context-menu {
+    position: fixed;
 }

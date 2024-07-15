@@ -8,8 +8,13 @@ import {
     freeShipping,
     mergeConfig,
     minimumOrderAmount,
+    Order,
+    OrderItemPriceCalculationStrategy,
     orderPercentageDiscount,
+    PriceCalculationResult,
     productsPercentageDiscount,
+    ProductVariant,
+    RequestContext,
     ShippingCalculator,
 } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
@@ -18,7 +23,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { manualFulfillmentHandler } from '../src/config/fulfillment/manual-fulfillment-handler';
 import { orderFixedDiscount } from '../src/config/promotion/actions/order-fixed-discount-action';
 
@@ -64,24 +69,50 @@ import {
 } from './graphql/shop-definitions';
 import { addPaymentToOrder, proceedToArrangingPayment, sortById } from './utils/test-order-utils';
 
+export class TestOrderItemPriceCalculationStrategy implements OrderItemPriceCalculationStrategy {
+    calculateUnitPrice(
+        ctx: RequestContext,
+        productVariant: ProductVariant,
+        orderLineCustomFields: { [key: string]: any },
+        order: Order,
+    ): PriceCalculationResult | Promise<PriceCalculationResult> {
+        if (orderLineCustomFields.color === 'hotpink') {
+            return {
+                price: 1337,
+                priceIncludesTax: true,
+            };
+        }
+        return {
+            price: productVariant.listPrice,
+            priceIncludesTax: productVariant.listPriceIncludesTax,
+        };
+    }
+}
+
 const SHIPPING_GB = 500;
 const SHIPPING_US = 1000;
 const SHIPPING_OTHER = 750;
 const testCalculator = new ShippingCalculator({
     code: 'test-calculator',
     description: [{ languageCode: LanguageCode.en, value: 'Has metadata' }],
-    args: {},
+    args: {
+        surcharge: {
+            type: 'int',
+            defaultValue: 0,
+        },
+    },
     calculate: (ctx, order, args) => {
         let price;
+        const surcharge = args.surcharge || 0;
         switch (order.shippingAddress.countryCode) {
             case 'GB':
-                price = SHIPPING_GB;
+                price = SHIPPING_GB + surcharge;
                 break;
             case 'US':
-                price = SHIPPING_US;
+                price = SHIPPING_US + surcharge;
                 break;
             default:
-                price = SHIPPING_OTHER;
+                price = SHIPPING_OTHER + surcharge;
         }
         return {
             price,
@@ -101,6 +132,9 @@ describe('Order modification', () => {
                     testFailingPaymentMethod,
                 ],
             },
+            orderOptions: {
+                orderItemPriceCalculationStrategy: new TestOrderItemPriceCalculationStrategy(),
+            },
             shippingOptions: {
                 shippingCalculators: [defaultShippingCalculator, testCalculator],
             },
@@ -113,6 +147,7 @@ describe('Order modification', () => {
 
     let orderId: string;
     let testShippingMethodId: string;
+    let testExpressShippingMethodId: string;
     const orderGuard: ErrorResultGuard<
         UpdatedOrderFragment | OrderWithModificationsFragment | OrderFragment
     > = createErrorResultGuard(input => !!input.id);
@@ -185,6 +220,38 @@ describe('Order modification', () => {
             },
         });
         testShippingMethodId = createShippingMethod.id;
+
+        const { createShippingMethod: shippingMethod2 } = await adminClient.query<
+            Codegen.CreateShippingMethodMutation,
+            Codegen.CreateShippingMethodMutationVariables
+        >(CREATE_SHIPPING_METHOD, {
+            input: {
+                code: 'new-method-express',
+                fulfillmentHandler: manualFulfillmentHandler.code,
+                checker: {
+                    code: defaultShippingEligibilityChecker.code,
+                    arguments: [
+                        {
+                            name: 'orderMinimum',
+                            value: '0',
+                        },
+                    ],
+                },
+                calculator: {
+                    code: testCalculator.code,
+                    arguments: [
+                        {
+                            name: 'surcharge',
+                            value: '500',
+                        },
+                    ],
+                },
+                translations: [
+                    { languageCode: LanguageCode.en, name: 'test method express', description: '' },
+                ],
+            },
+        });
+        testExpressShippingMethodId = shippingMethod2.id;
 
         // create an order and check out
         await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
@@ -658,6 +725,71 @@ describe('Order modification', () => {
                     price: -250,
                     priceWithTax: -300,
                     taxRate: 20,
+                },
+            ]);
+            await assertOrderIsUnchanged(order!);
+        });
+
+        it('the configured OrderItemPriceCalculationStrategy is applied', async () => {
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
+                {
+                    id: orderId,
+                },
+            );
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: true,
+                    orderId,
+                    adjustOrderLines: [
+                        {
+                            orderLineId: order!.lines[1].id,
+                            quantity: 1,
+                            customFields: { color: 'hotpink' },
+                        } as any,
+                    ],
+                },
+            });
+            orderGuard.assertSuccess(modifyOrder);
+
+            const expectedTotal = order!.totalWithTax - order!.lines[1].unitPriceWithTax;
+            expect(modifyOrder.lines[1].quantity).toBe(1);
+            expect(modifyOrder.lines[1].linePriceWithTax).toBe(1337);
+            await assertOrderIsUnchanged(order!);
+        });
+
+        it('changing shipping method', async () => {
+            const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
+                GET_ORDER,
+                {
+                    id: orderId,
+                },
+            );
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: true,
+                    orderId,
+                    shippingMethodIds: [testExpressShippingMethodId],
+                },
+            });
+            orderGuard.assertSuccess(modifyOrder);
+
+            const expectedTotal = order!.totalWithTax + 500;
+            expect(modifyOrder.totalWithTax).toBe(expectedTotal);
+            expect(modifyOrder.shippingLines).toEqual([
+                {
+                    id: 'T_1',
+                    discountedPriceWithTax: 1500,
+                    shippingMethod: {
+                        id: testExpressShippingMethodId,
+                        name: 'test method express',
+                    },
                 },
             ]);
             await assertOrderIsUnchanged(order!);
@@ -1994,7 +2126,7 @@ describe('Order modification', () => {
 
             const result = await adminTransitionOrderToState(orderId5, 'ArrangingAdditionalPayment');
             orderGuard.assertSuccess(result);
-            expect(result!.state).toBe('ArrangingAdditionalPayment');
+            expect(result.state).toBe('ArrangingAdditionalPayment');
             const { addManualPaymentToOrder } = await adminClient.query<
                 Codegen.AddManualPaymentMutation,
                 Codegen.AddManualPaymentMutationVariables
@@ -2510,6 +2642,14 @@ export const ORDER_WITH_MODIFICATION_FRAGMENT = gql`
             province
             countryCode
             country
+        }
+        shippingLines {
+            id
+            discountedPriceWithTax
+            shippingMethod {
+                id
+                name
+            }
         }
     }
 `;

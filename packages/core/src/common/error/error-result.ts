@@ -37,6 +37,9 @@ export type JustErrorResults<T extends GraphQLErrorResult | U, U = any> = Exclud
  * type UpdateOrderItemsResult = Order | OrderModificationError | OrderLimitError | NegativeQuantityError;
  * type T1 = ErrorResultUnion<UpdateOrderItemsResult, VendureEntityOrder>;
  * // T1 = VendureEntityOrder | OrderModificationError | OrderLimitError | NegativeQuantityError;
+ * ```
+ *
+ * @docsCategory errors
  */
 export type ErrorResultUnion<T extends GraphQLErrorResult | U, E extends VendureEntity, U = any> =
     | JustErrorResults<T>
@@ -44,7 +47,26 @@ export type ErrorResultUnion<T extends GraphQLErrorResult | U, E extends Vendure
 
 /**
  * @description
- * Returns true if the ErrorResultUnion is actually an ErrorResult type.
+ * Returns true if the {@link ErrorResultUnion} is actually an ErrorResult type. This is useful when dealing with
+ * certain internal service method that return an ErrorResultUnion.
+ *
+ * @example
+ * ```ts
+ * import { isGraphQlErrorResult } from '\@vendure/core';
+ *
+ * // ...
+ *
+ * const transitionResult = await this.orderService.transitionToState(ctx, order.id, newState);
+ * if (isGraphQlErrorResult(transitionResult)) {
+ *     // The transition failed with an ErrorResult
+ *     throw transitionResult;
+ * } else {
+ *     // TypeScript will correctly infer the type of `transitionResult` to be `Order`
+ *     return transitionResult;
+ * }
+ * ```
+ *
+ * @docsCategory errors
  */
 export function isGraphQlErrorResult<T extends GraphQLErrorResult | U, U = any>(
     input: T,

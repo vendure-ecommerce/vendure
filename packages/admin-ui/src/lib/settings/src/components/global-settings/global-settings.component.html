@@ -1,7 +1,7 @@
 <vdr-page-block>
     <vdr-action-bar>
         <vdr-ab-right>
-            <vdr-action-bar-items locationId="global-settings-detail"></vdr-action-bar-items>
+            <vdr-action-bar-items locationId="global-setting-detail" />
             <button
                 class="btn btn-primary"
                 (click)="save()"
@@ -10,6 +10,7 @@
             >
                 {{ 'common.update' | translate }}
             </button>
+            <vdr-action-bar-dropdown-menu locationId="global-setting-detail" />
         </vdr-ab-right>
     </vdr-action-bar>
 </vdr-page-block>

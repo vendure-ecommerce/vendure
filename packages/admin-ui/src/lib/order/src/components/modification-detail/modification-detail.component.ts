@@ -12,11 +12,13 @@ export class ModificationDetailComponent implements OnChanges {
     @Input() modification: OrderDetailFragment['modifications'][number];
     private addedItems = new Map<OrderDetailFragment['lines'][number], number>();
     private removedItems = new Map<OrderDetailFragment['lines'][number], number>();
+    private modifiedItems = new Set<OrderDetailFragment['lines'][number]>();
 
     ngOnChanges(): void {
-        const { added, removed } = this.getModifiedLines();
+        const { added, removed, modified } = this.getModifiedLines();
         this.addedItems = added;
         this.removedItems = removed;
+        this.modifiedItems = modified;
     }
 
     getSurcharge(id: string) {
@@ -37,20 +39,29 @@ export class ModificationDetailComponent implements OnChanges {
         }));
     }
 
+    getModifiedItems() {
+        return [...this.modifiedItems].map(line => ({
+            name: line.productVariant.name,
+        }));
+    }
+
     private getModifiedLines() {
         const added = new Map<OrderDetailFragment['lines'][number], number>();
         const removed = new Map<OrderDetailFragment['lines'][number], number>();
+        const modified = new Set<OrderDetailFragment['lines'][number]>();
         for (const modificationLine of this.modification.lines || []) {
             const line = this.order.lines.find(l => l.id === modificationLine.orderLineId);
             if (!line) {
                 continue;
             }
-            if (modificationLine.quantity < 0) {
+            if (modificationLine.quantity === 0) {
+                modified.add(line);
+            } else if (modificationLine.quantity < 0) {
                 removed.set(line, -modificationLine.quantity);
             } else {
                 added.set(line, modificationLine.quantity);
             }
         }
-        return { added, removed };
+        return { added, removed, modified };
     }
 }

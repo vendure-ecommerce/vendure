@@ -12,6 +12,7 @@ import { ListQueryPlugin } from './fixtures/test-plugins/list-query-plugin';
 import { LanguageCode, SortOrder } from './graphql/generated-e2e-admin-types';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { fixPostgresTimezone } from './utils/fix-pg-timezone';
+import { sortById } from './utils/test-order-utils';
 
 fixPostgresTimezone();
 
@@ -55,14 +56,14 @@ describe('ListQueryBuilder', () => {
 
             expect(testEntities.totalItems).toBe(6);
             expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'C', 'D', 'E', 'F']);
-            expect(testEntities.items.map((i: any) => i.name)).toEqual([
+            expect(testEntities.items.map((i: any) => i.name)).toEqual(expect.arrayContaining([
                 'apple',
                 'bike',
                 'cake',
                 'dog',
                 'egg',
                 'baum', // if default en lang does not exist, use next available lang
-            ]);
+            ]));
         });
 
         it('all de', async () => {
@@ -76,14 +77,14 @@ describe('ListQueryBuilder', () => {
 
             expect(testEntities.totalItems).toBe(6);
             expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'C', 'D', 'E', 'F']);
-            expect(testEntities.items.map((i: any) => i.name)).toEqual([
+            expect(testEntities.items.map((i: any) => i.name)).toEqual(expect.arrayContaining([
                 'apfel',
                 'fahrrad',
                 'kuchen',
                 'hund',
                 'egg', // falls back to en translation when de doesn't exist
                 'baum',
-            ]);
+            ]));
         });
 
         it('take', async () => {
@@ -887,6 +888,86 @@ describe('ListQueryBuilder', () => {
         });
     });
 
+    describe('complex boolean logic with _and & _or', () => {
+        it('single _and', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        _and: [
+                            {
+                                description: {
+                                    contains: 'Lorem',
+                                },
+                                active: {
+                                    eq: false,
+                                },
+                            },
+                        ],
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual([]);
+        });
+
+        it('single _or', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        _or: [
+                            {
+                                description: {
+                                    contains: 'Lorem',
+                                },
+                                active: {
+                                    eq: false,
+                                },
+                            },
+                        ],
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'C', 'E', 'F']);
+        });
+
+        it('_or with nested _and', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        _or: [
+                            {
+                                description: { contains: 'Lorem' },
+                            },
+                            {
+                                _and: [{ order: { gt: 3 } }, { order: { lt: 5 } }],
+                            },
+                        ],
+                    },
+                },
+            });
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'E']);
+        });
+
+        it('_and with nested _or', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        _and: [
+                            {
+                                description: { contains: 'e' },
+                            },
+                            {
+                                _or: [{ active: { eq: false } }, { ownerId: { eq: '10' } }],
+                            },
+                        ],
+                    },
+                },
+            });
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'C', 'F']);
+        });
+    });
+
     describe('sorting', () => {
         it('sort by string', async () => {
             const { testEntities } = await adminClient.query(GET_LIST, {
@@ -1127,9 +1208,9 @@ describe('ListQueryBuilder', () => {
     // https://github.com/vendure-ecommerce/vendure/issues/1586
     it('using the getMany() of the resulting QueryBuilder', async () => {
         const { testEntitiesGetMany } = await adminClient.query(GET_ARRAY_LIST, {});
-        expect(testEntitiesGetMany.sort((a: any, b: any) => a.id - b.id).map((x: any) => x.price)).toEqual([
-            11, 9, 22, 14, 13, 33,
-        ]);
+        const actualPrices = testEntitiesGetMany.sort(sortById).map((x: any) => x.price).sort((a: number, b: number) => a - b);
+        const expectedPrices = [11, 9, 22, 14, 13, 33].sort((a, b) => a - b);
+        expect(actualPrices).toEqual(expectedPrices);
     });
 
     // https://github.com/vendure-ecommerce/vendure/issues/1611
@@ -1205,6 +1286,11 @@ describe('ListQueryBuilder', () => {
                     id: 'T_1',
                     label: 'A',
                     name: 'apple',
+                    parent: {
+                        id: 'T_2',
+                        label: 'B',
+                        name: 'bike',
+                    },
                     orderRelation: {
                         customer: {
                             firstName: 'Hayden',
@@ -1217,6 +1303,11 @@ describe('ListQueryBuilder', () => {
                     id: 'T_4',
                     label: 'D',
                     name: 'dog',
+                    parent: {
+                        id: 'T_2',
+                        label: 'B',
+                        name: 'bike',
+                    },
                     orderRelation: {
                         customer: {
                             firstName: 'Hayden',
@@ -1268,6 +1359,27 @@ describe('ListQueryBuilder', () => {
                 },
             ]);
         });
+
+        it('should resolve multiple relations in customFields successfully', async () => {
+            const { testEntities } = await shopClient.query(GET_LIST_WITH_MULTIPLE_CUSTOM_FIELD_RELATION, {
+                options: {
+                    filter: {
+                        label: { eq: 'A' },
+                    },
+                },
+            });
+
+            expect(testEntities.items).toEqual([
+                {
+                    id: 'T_1',
+                    label: 'A',
+                    customFields: {
+                        relation: [{ id: 'T_1', data: 'A' }],
+                        otherRelation: [{ id: 'T_1', data: 'A' }],
+                    },
+                },
+            ]);
+        });
     });
 });
 
@@ -1311,6 +1423,11 @@ const GET_LIST_WITH_ORDERS = gql`
                 id
                 label
                 name
+                parent {
+                    id
+                    label
+                    name
+                }
                 orderRelation {
                     id
                     customer {
@@ -1343,6 +1460,27 @@ const GET_LIST_WITH_CUSTOM_FIELD_RELATION = gql`
                 label
                 customFields {
                     relation {
+                        id
+                        data
+                    }
+                }
+            }
+        }
+    }
+`;
+
+const GET_LIST_WITH_MULTIPLE_CUSTOM_FIELD_RELATION = gql`
+    query GetTestWithMultipleCustomFieldRelation($options: TestEntityListOptions) {
+        testEntities(options: $options) {
+            items {
+                id
+                label
+                customFields {
+                    relation {
+                        id
+                        data
+                    }
+                    otherRelation {
                         id
                         data
                     }

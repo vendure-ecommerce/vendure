@@ -15,6 +15,16 @@ h6:not([cds-text]) {
     font-family: Inter, sans-serif !important;
 }
 
+.p0:not([cds-text]),
+.p1:not([cds-text]),
+.p2:not([cds-text]),
+.p3:not([cds-text]),
+.p4:not([cds-text]),
+.p5:not([cds-text]),
+.p6:not([cds-text]) {
+    font-family: Inter, sans-serif !important;
+}
+
 a:link,
 a:visited {
     text-decoration: none;
@@ -112,6 +122,10 @@ button.icon-button {
 .btn.btn-link.nav-link {
     background-color: transparent;
 }
+clr-tabs .btn.btn-link {
+    box-shadow: none;
+}
+
 
 .alert {
     border: 1px solid var(--color-primary-150);
@@ -136,5 +150,16 @@ button.icon-button {
         border-color: var(--color-chip-warning-border);
         background-color: var(--color-chip-warning-bg);
         color: var(--color-chip-warning-text);
+    }
+}
+
+.dropdown {
+    .dropdown-item {
+        color: var(--color-text-200);
+        font-size: var(--font-size-sm);
+        gap: 2px;
+    }
+    .dropdown-divider {
+        margin: 0.3rem 0;
     }
 }

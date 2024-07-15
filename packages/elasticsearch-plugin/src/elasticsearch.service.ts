@@ -197,7 +197,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                     body: elasticSearchBody,
                 });
                 const totalItems = await this.totalHits(ctx, input, groupByProduct);
-                this.eventBus.publish(new SearchEvent(ctx, input));
+                await this.eventBus.publish(new SearchEvent(ctx, input));
                 return {
                     items: body.hits.hits.map(hit => this.mapProductToSearchResult(hit)),
                     totalItems,
@@ -222,7 +222,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                     index: indexPrefix + VARIANT_INDEX_NAME,
                     body: elasticSearchBody,
                 });
-                this.eventBus.publish(new SearchEvent(ctx, input));
+                await this.eventBus.publish(new SearchEvent(ctx, input));
                 return {
                     items: body.hits.hits.map(hit => this.mapVariantToSearchResult(hit)),
                     totalItems: body.hits.total ? body.hits.total.value : 0,
@@ -475,7 +475,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 max: aggregations.maxPriceWithTax.value || 0,
             },
             buckets: aggregations.prices.buckets.map(mapPriceBuckets).filter(x => 0 < x.count),
-            bucketsWithTax: aggregations.prices.buckets.map(mapPriceBuckets).filter(x => 0 < x.count),
+            bucketsWithTax: aggregations.pricesWithTax.buckets.map(mapPriceBuckets).filter(x => 0 < x.count),
         };
     }
 

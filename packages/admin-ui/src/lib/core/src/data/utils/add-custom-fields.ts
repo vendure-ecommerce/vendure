@@ -7,13 +7,21 @@ import {
     SelectionNode,
 } from 'graphql';
 
-import { CustomFields, RelationCustomFieldFragment } from '../../common/generated-types';
+import {
+    CustomFieldConfig,
+    CustomFields,
+    EntityCustomFields,
+    RelationCustomFieldFragment,
+} from '../../common/generated-types';
 
 /**
  * Given a GraphQL AST (DocumentNode), this function looks for fragment definitions and adds and configured
  * custom fields to those fragments.
  */
-export function addCustomFields(documentNode: DocumentNode, customFields: CustomFields): DocumentNode {
+export function addCustomFields(
+    documentNode: DocumentNode,
+    customFields: Map<string, CustomFieldConfig[]>,
+): DocumentNode {
     const fragmentDefs = documentNode.definitions.filter(isFragmentDefinition);
 
     for (const fragmentDef of fragmentDefs) {
@@ -28,7 +36,12 @@ export function addCustomFields(documentNode: DocumentNode, customFields: Custom
             entityType = 'Address';
         }
 
-        const customFieldsForType = customFields[entityType];
+        if (entityType === ('Country' as any)) {
+            // Country is an alias of Region
+            entityType = 'Region';
+        }
+
+        const customFieldsForType = customFields.get(entityType);
         if (customFieldsForType && customFieldsForType.length) {
             (fragmentDef.selectionSet.selections as SelectionNode[]).push({
                 name: {

@@ -14,6 +14,7 @@ import { PromotionDetailComponent } from './components/promotion-detail/promotio
 import {
     assignPromotionsToChannelBulkAction,
     deletePromotionsBulkAction,
+    duplicatePromotionsBulkAction,
     removePromotionsFromChannelBulkAction,
 } from './components/promotion-list/promotion-list-bulk-actions';
 import { PromotionListComponent } from './components/promotion-list/promotion-list.component';
@@ -32,8 +33,14 @@ import { createRoutes } from './marketing.routes';
     declarations: [PromotionListComponent, PromotionDetailComponent],
 })
 export class MarketingModule {
-    constructor(private bulkActionRegistryService: BulkActionRegistryService, pageService: PageService) {
+    private static hasRegisteredTabsAndBulkActions = false;
+
+    constructor(bulkActionRegistryService: BulkActionRegistryService, pageService: PageService) {
+        if (MarketingModule.hasRegisteredTabsAndBulkActions) {
+            return;
+        }
         bulkActionRegistryService.registerBulkAction(assignPromotionsToChannelBulkAction);
+        bulkActionRegistryService.registerBulkAction(duplicatePromotionsBulkAction);
         bulkActionRegistryService.registerBulkAction(removePromotionsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(deletePromotionsBulkAction);
 
@@ -61,5 +68,6 @@ export class MarketingModule {
                 ],
             }),
         });
+        MarketingModule.hasRegisteredTabsAndBulkActions = true;
     }
 }

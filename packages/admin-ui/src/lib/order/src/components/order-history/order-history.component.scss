@@ -39,6 +39,7 @@ textarea.note {
 .note-text {
     color: var(--color-grey-800);
     white-space: pre-wrap;
+    max-width: 580px;
 }
 
 .cancelled-coupon-code {

@@ -11,13 +11,14 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EntityOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="914" packageName="@vendure/core" since="1.3.0" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="945" packageName="@vendure/core" since="1.3.0" />
 
 Options relating to the internal handling of entities.
 
 ```ts title="Signature"
 interface EntityOptions {
     entityIdStrategy?: EntityIdStrategy<any>;
+    entityDuplicators?: Array<EntityDuplicator<any>>;
     moneyStrategy?: MoneyStrategy;
     channelCacheTtl?: number;
     zoneCacheTtl?: number;
@@ -43,6 +44,12 @@ on an existing Vendure database will lead to problems with broken foreign-key
 references. To change primary key types like this, you'll need to start with
 a fresh database.
 :::
+### entityDuplicators
+
+<MemberInfo kind="property" type={`Array&#60;<a href='/reference/typescript-api/configuration/entity-duplicator#entityduplicator'>EntityDuplicator</a>&#60;any&#62;&#62;`} default="defaultEntityDuplicators"  since="2.2.0"  />
+
+An array of <a href='/reference/typescript-api/configuration/entity-duplicator#entityduplicator'>EntityDuplicator</a> instances which are used to duplicate entities
+when using the `duplicateEntity` mutation.
 ### moneyStrategy
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/money/money-strategy#moneystrategy'>MoneyStrategy</a>`} default="<a href='/reference/typescript-api/money/default-money-strategy#defaultmoneystrategy'>DefaultMoneyStrategy</a>"  since="2.0.0"  />

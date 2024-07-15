@@ -13,7 +13,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { pick } from '../../common/lib/pick';
 
 import { COLLECTION_FRAGMENT, FACET_VALUE_FRAGMENT } from './graphql/fragments';
@@ -28,11 +28,13 @@ import {
     SortOrder,
 } from './graphql/generated-e2e-admin-types';
 import {
+    ASSIGN_COLLECTIONS_TO_CHANNEL,
     CREATE_CHANNEL,
     CREATE_COLLECTION,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
     GET_ASSET_LIST,
+    GET_COLLECTION,
     GET_COLLECTIONS,
     UPDATE_COLLECTION,
     UPDATE_PRODUCT,
@@ -252,7 +254,7 @@ describe('Collection resolver', () => {
                 'accessories',
             );
             expect(createCollection.translations.find(t => t.languageCode === LanguageCode.de)?.slug).toBe(
-                'zubehor',
+                'zubehoer',
             );
         });
 
@@ -284,7 +286,7 @@ describe('Collection resolver', () => {
                 'accessories-2',
             );
             expect(createCollection.translations.find(t => t.languageCode === LanguageCode.de)?.slug).toBe(
-                'zubehor-2',
+                'zubehoer-2',
             );
         });
 
@@ -316,7 +318,7 @@ describe('Collection resolver', () => {
                 'accessories',
             );
             expect(createCollection.translations.find(t => t.languageCode === LanguageCode.de)?.slug).toBe(
-                'zubehor',
+                'zubehoer',
             );
         });
 
@@ -2399,22 +2401,6 @@ describe('Collection resolver', () => {
     }
 });
 
-export const GET_COLLECTION = gql`
-    query GetCollection($id: ID, $slug: String, $variantListOptions: ProductVariantListOptions) {
-        collection(id: $id, slug: $slug) {
-            ...Collection
-            productVariants(options: $variantListOptions) {
-                items {
-                    id
-                    name
-                    price
-                }
-            }
-        }
-    }
-    ${COLLECTION_FRAGMENT}
-`;
-
 export const GET_COLLECTION_LIST = gql`
     query GetCollectionListAdmin($options: CollectionListOptions) {
         collections(options: $options) {
@@ -2577,15 +2563,6 @@ const PREVIEW_COLLECTION_VARIANTS = gql`
             totalItems
         }
     }
-`;
-
-const ASSIGN_COLLECTIONS_TO_CHANNEL = gql`
-    mutation AssignCollectionsToChannel($input: AssignCollectionsToChannelInput!) {
-        assignCollectionsToChannel(input: $input) {
-            ...Collection
-        }
-    }
-    ${COLLECTION_FRAGMENT}
 `;
 
 const REMOVE_COLLECTIONS_FROM_CHANNEL = gql`

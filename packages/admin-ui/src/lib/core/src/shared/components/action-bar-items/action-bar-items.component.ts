@@ -1,27 +1,9 @@
-import {
-    ChangeDetectionStrategy,
-    Component,
-    HostBinding,
-    Injector,
-    Input,
-    OnChanges,
-    OnInit,
-    SimpleChanges,
-} from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ChangeDetectionStrategy, Component, OnChanges, OnInit } from '@angular/core';
 import { assertNever } from '@vendure/common/lib/shared-utils';
-import { BehaviorSubject, combineLatest, mergeAll, Observable, of } from 'rxjs';
+import { combineLatest } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-
-import { ActionBarLocationId } from '../../../common/component-registry-types';
-import { DataService } from '../../../data/providers/data.service';
-import {
-    ActionBarButtonState,
-    ActionBarContext,
-    ActionBarItem,
-} from '../../../providers/nav-builder/nav-builder-types';
-import { NavBuilderService } from '../../../providers/nav-builder/nav-builder.service';
-import { NotificationService } from '../../../providers/notification/notification.service';
+import { ActionBarItem } from '../../../providers/nav-builder/nav-builder-types';
+import { ActionBarBaseComponent } from './action-bar-base.component';
 
 @Component({
     selector: 'vdr-action-bar-items',
@@ -29,58 +11,13 @@ import { NotificationService } from '../../../providers/notification/notificatio
     styleUrls: ['./action-bar-items.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ActionBarItemsComponent implements OnInit, OnChanges {
-    @HostBinding('attr.data-location-id')
-    @Input()
-    locationId: ActionBarLocationId;
-
-    items$: Observable<ActionBarItem[]>;
-    buttonStates: { [id: string]: Observable<ActionBarButtonState> } = {};
-    private locationId$ = new BehaviorSubject<string>('');
-
-    constructor(
-        private navBuilderService: NavBuilderService,
-        private route: ActivatedRoute,
-        private dataService: DataService,
-        private notificationService: NotificationService,
-        private injector: Injector,
-    ) {}
-
+export class ActionBarItemsComponent extends ActionBarBaseComponent<ActionBarItem> implements OnInit {
     ngOnInit() {
-        this.items$ = combineLatest(this.navBuilderService.actionBarConfig$, this.locationId$).pipe(
+        this.items$ = combineLatest([this.navBuilderService.actionBarConfig$, this.locationId$]).pipe(
             map(([items, locationId]) => items.filter(config => config.locationId === locationId)),
             tap(items => {
-                const context = this.createContext();
-                for (const item of items) {
-                    const buttonState$ =
-                        typeof item.buttonState === 'function'
-                            ? item.buttonState(context)
-                            : of({
-                                  disabled: false,
-                                  visible: true,
-                              });
-                    this.buttonStates[item.id] = buttonState$;
-                }
+                this.buildButtonStates(items);
             }),
-        );
-    }
-
-    ngOnChanges(changes: SimpleChanges): void {
-        if ('locationId' in changes) {
-            this.locationId$.next(changes['locationId'].currentValue);
-        }
-    }
-
-    handleClick(event: MouseEvent, item: ActionBarItem) {
-        if (typeof item.onClick === 'function') {
-            item.onClick(event, this.createContext());
-        }
-    }
-
-    getRouterLink(item: ActionBarItem): any[] | null {
-        return this.navBuilderService.getRouterLink(
-            { routerLink: item.routerLink, context: this.createContext() },
-            this.route,
         );
     }
 
@@ -108,14 +45,5 @@ export class ActionBarItemsComponent implements OnInit, OnChanges {
                 assertNever(item.buttonColor);
                 return '';
         }
-    }
-
-    private createContext(): ActionBarContext {
-        return {
-            route: this.route,
-            injector: this.injector,
-            dataService: this.dataService,
-            notificationService: this.notificationService,
-        };
     }
 }

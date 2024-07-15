@@ -101,7 +101,8 @@ export class CollectionResolver {
     ): Promise<Translated<Collection>> {
         const { input } = args;
         this.configurableOperationCodec.decodeConfigurableOperationIds(CollectionFilter, input.filters);
-        return this.collectionService.create(ctx, input);
+        const collection = await this.collectionService.create(ctx, input);
+        return collection;
     }
 
     @Transaction()

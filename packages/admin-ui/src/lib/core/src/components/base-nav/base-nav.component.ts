@@ -1,7 +1,7 @@
 import { Directive, Injector, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { Subscription } from 'rxjs';
+import { of, Subscription } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 
 import { Permission } from '../../common/generated-types';
@@ -10,7 +10,7 @@ import { HealthCheckService } from '../../providers/health-check/health-check.se
 import { JobQueueService } from '../../providers/job-queue/job-queue.service';
 import { ActionBarContext, NavMenuBadge, NavMenuItem } from '../../providers/nav-builder/nav-builder-types';
 import { NavBuilderService } from '../../providers/nav-builder/nav-builder.service';
-// import { NotificationService } from '../../providers/notification/notification.service';
+import { NotificationService } from '../../providers/notification/notification.service';
 
 @Directive({
     selector: '[vdrBaseNav]',
@@ -24,7 +24,7 @@ export class BaseNavComponent implements OnInit, OnDestroy {
         protected healthCheckService: HealthCheckService,
         protected jobQueueService: JobQueueService,
         protected dataService: DataService,
-        // protected notificationService: any,
+        protected notificationService: NotificationService,
         protected injector: Injector,
     ) {}
 
@@ -325,7 +325,8 @@ export class BaseNavComponent implements OnInit, OnDestroy {
             route: this.route,
             injector: this.injector,
             dataService: this.dataService,
-            notificationService: {} as any,
+            notificationService: this.notificationService,
+            entity$: of(undefined),
         };
     }
 }

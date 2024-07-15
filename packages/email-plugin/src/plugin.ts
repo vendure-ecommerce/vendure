@@ -15,23 +15,19 @@ import {
     PluginCommonModule,
     ProcessContext,
     registerPluginStartupMessage,
-    RequestContext,
     Type,
-    UserInputError,
     VendurePlugin,
 } from '@vendure/core';
-import Module from 'module';
 
 import { isDevModeOptions, resolveTransportSettings } from './common';
 import { EMAIL_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { DevMailbox } from './dev-mailbox';
 import { EmailProcessor } from './email-processor';
-import { EmailEventHandler, EmailEventHandlerWithAsyncData } from './event-handler';
-import { FileBasedTemplateLoader } from './template-loader';
+import { EmailEventHandler, EmailEventHandlerWithAsyncData } from './handler/event-handler';
+import { FileBasedTemplateLoader } from './template-loader/file-based-template-loader';
 import {
     EmailPluginDevModeOptions,
     EmailPluginOptions,
-    EmailTransportOptions,
     EventWithContext,
     InitializedEmailPluginOptions,
     IntermediateEmailDetails,
@@ -43,17 +39,16 @@ import {
  * email generator to generate the email body and [Nodemailer](https://nodemailer.com/about/) to send the emails.
  *
  * ## High-level description
- * Vendure has an internal events system (see {@link EventBus}) that allows plugins to subscribe to events. The EmailPlugin is configured with
- * {@link EmailEventHandler}s that listen for a specific event and when it is published, the handler defines which template to use to generate
- * the resulting email.
+ * Vendure has an internal events system (see {@link EventBus}) that allows plugins to subscribe to events. The EmailPlugin is configured with {@link EmailEventHandler}s
+ * that listen for a specific event and when it is published, the handler defines which template to use to generate the resulting email.
  *
- * The plugin comes with a set of default handlers for the following events:
+ * The plugin comes with a set of default handler for the following events:
  * - Order confirmation
  * - New customer email address verification
  * - Password reset request
  * - Email address change request
  *
- * You can also create your own handlers and register them with the plugin - see the {@link EmailEventHandler} docs for more details.
+ * You can also create your own handler and register them with the plugin - see the {@link EmailEventHandler} docs for more details.
  *
  * ## Installation
  *
@@ -71,7 +66,7 @@ import {
  *   // Add an instance of the plugin to the plugins array
  *   plugins: [
  *     EmailPlugin.init({
- *       handlers: defaultEmailHandlers,
+ *       handler: defaultEmailHandlers,
  *       templatePath: path.join(__dirname, 'static/email/templates'),
  *       transport: {
  *         type: 'smtp',
@@ -113,7 +108,7 @@ import {
  *
  * Dynamic data such as the recipient's name or order items are specified using [Handlebars syntax](https://handlebarsjs.com/):
  *
- * ```HTML
+ * ```html
  * <p>Dear {{ order.customer.firstName }} {{ order.customer.lastName }},</p>
  *
  * <p>Thank you for your order!</p>
@@ -136,21 +131,21 @@ import {
  * * `formatMoney`: Formats an amount of money (which are always stored as integers in Vendure) as a decimal, e.g. `123` => `1.23`
  * * `formatDate`: Formats a Date value with the [dateformat](https://www.npmjs.com/package/dateformat) package.
  *
- * ## Extending the default email handlers
+ * ## Extending the default email handler
  *
- * The `defaultEmailHandlers` array defines the default handlers such as for handling new account registration, order confirmation, password reset
+ * The `defaultEmailHandlers` array defines the default handler such as for handling new account registration, order confirmation, password reset
  * etc. These defaults can be extended by adding custom templates for languages other than the default, or even completely new types of emails
  * which respond to any of the available [VendureEvents](/reference/typescript-api/events/).
  *
- * A good way to learn how to create your own email handlers is to take a look at the
- * [source code of the default handlers](https://github.com/vendure-ecommerce/vendure/blob/master/packages/email-plugin/src/default-email-handlers.ts).
- * New handlers are defined in exactly the same way.
+ * A good way to learn how to create your own email handler is to take a look at the
+ * [source code of the default handler](https://github.com/vendure-ecommerce/vendure/blob/master/packages/email-plugin/src/handler/default-email-handlers.ts).
+ * New handler are defined in exactly the same way.
  *
- * It is also possible to modify the default handlers:
+ * It is also possible to modify the default handler:
  *
  * ```ts
  * // Rather than importing `defaultEmailHandlers`, you can
- * // import the handlers individually
+ * // import the handler individually
  * import {
  *   orderConfirmationHandler,
  *   emailVerificationHandler,
@@ -161,12 +156,12 @@ import {
  *
  * // This allows you to then customize each handler to your needs.
  * // For example, let's set a new subject line to the order confirmation:
- * orderConfirmationHandler
+ * const myOrderConfirmationHandler = orderConfirmationHandler
  *   .setSubject(`We received your order!`);
  *
  * // Another example: loading additional data and setting new
  * // template variables.
- * passwordResetHandler
+ * const myPasswordResetHandler = passwordResetHandler
  *   .loadData(async ({ event, injector }) => {
  *     const customerService = injector.get(CustomerService);
  *     const customer = await customerService.findOneByUserId(event.ctx, event.user.id);
@@ -177,13 +172,13 @@ import {
  *     customer: event.data.customer,
  *   }));
  *
- * // Then you pass the handlers to the EmailPlugin init method
+ * // Then you pass the handler to the EmailPlugin init method
  * // individually
  * EmailPlugin.init({
- *   handlers: [
- *     orderConfirmationHandler,
+ *   handler: [
+ *     myOrderConfirmationHandler,
+ *     myPasswordResetHandler,
  *     emailVerificationHandler,
- *     passwordResetHandler,
  *     emailAddressChangeHandler,
  *   ],
  *   // ...
@@ -204,17 +199,17 @@ import {
  * const config: VendureConfig = {
  *   plugins: [
  *     EmailPlugin.init({
- *       handlers: defaultEmailHandlers,
+ *       handler: defaultEmailHandlers,
  *       templatePath: path.join(__dirname, 'static/email/templates'),
  *       transport: (injector, ctx) => {
  *         if (ctx) {
  *           return injector.get(MyTransportService).getSettings(ctx);
  *         } else {
  *           return {
-                type: 'smtp',
-                host: 'smtp.example.com',
-                // ... etc.
-              }
+ *             type: 'smtp',
+ *             host: 'smtp.example.com',
+ *             // ... etc.
+ *           }
  *         }
  *       }
  *     }),
@@ -232,7 +227,7 @@ import {
  * EmailPlugin.init({
  *   devMode: true,
  *   route: 'mailbox',
- *   handlers: defaultEmailHandlers,
+ *   handler: defaultEmailHandlers,
  *   templatePath: path.join(__dirname, 'vendure/email/templates'),
  *   outputPath: path.join(__dirname, 'test-emails'),
  * })
@@ -321,7 +316,7 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
         if (!isDevModeOptions(this.options) && transport.type === 'testing') {
             // When running tests, we don't want to go through the JobQueue system,
             // so we just call the email sending logic directly.
-            this.testingProcessor = new EmailProcessor(this.options, this.moduleRef);
+            this.testingProcessor = new EmailProcessor(this.options, this.moduleRef, this.eventBus);
             await this.testingProcessor.init();
         } else {
             await this.emailProcessor.init();

@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import {
     AssignProductsToChannelInput,
     CreateProductInput,
-    CustomerListOptions,
     DeletionResponse,
     DeletionResult,
+    ProductFilterParameter,
     ProductListOptions,
     RemoveOptionGroupFromProductResult,
     RemoveProductsFromChannelInput,
@@ -41,12 +41,9 @@ import { TranslatorService } from '../helpers/translator/translator.service';
 
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
-import { CollectionService } from './collection.service';
 import { FacetValueService } from './facet-value.service';
 import { ProductOptionGroupService } from './product-option-group.service';
 import { ProductVariantService } from './product-variant.service';
-import { RoleService } from './role.service';
-import { TaxRateService } from './tax-rate.service';
 
 /**
  * @description
@@ -61,12 +58,9 @@ export class ProductService {
     constructor(
         private connection: TransactionalConnection,
         private channelService: ChannelService,
-        private roleService: RoleService,
         private assetService: AssetService,
         private productVariantService: ProductVariantService,
         private facetValueService: FacetValueService,
-        private taxRateService: TaxRateService,
-        private collectionService: CollectionService,
         private listQueryBuilder: ListQueryBuilder,
         private translatableSaver: TranslatableSaver,
         private eventBus: EventBus,
@@ -81,12 +75,23 @@ export class ProductService {
         options?: ListQueryOptions<Product>,
         relations?: RelationPaths<Product>,
     ): Promise<PaginatedList<Translated<Product>>> {
-        const effectiveRelations = relations || this.relations;
+        const effectiveRelations = relations || this.relations.slice();
         const customPropertyMap: { [name: string]: string } = {};
-        const hasFacetValueIdFilter = !!(options as ProductListOptions)?.filter?.facetValueId;
+        const hasFacetValueIdFilter = this.listQueryBuilder.filterObjectHasProperty<ProductFilterParameter>(
+            options?.filter,
+            'facetValueId',
+        );
+        const hasSkuFilter = this.listQueryBuilder.filterObjectHasProperty<ProductFilterParameter>(
+            options?.filter,
+            'sku',
+        );
         if (hasFacetValueIdFilter) {
             effectiveRelations.push('facetValues');
             customPropertyMap.facetValueId = 'facetValues.id';
+        }
+        if (hasSkuFilter) {
+            effectiveRelations.push('variants');
+            customPropertyMap.sku = 'variants.sku';
         }
         return this.listQueryBuilder
             .build(Product, options, {
@@ -113,19 +118,14 @@ export class ProductService {
         productId: ID,
         relations?: RelationPaths<Product>,
     ): Promise<Translated<Product> | undefined> {
-        const effectiveRelations = relations ?? this.relations;
+        const effectiveRelations = relations ?? this.relations.slice();
         if (relations && effectiveRelations.includes('facetValues')) {
             // We need the facet to determine with the FacetValues are public
             // when serving via the Shop API.
             effectiveRelations.push('facetValues.facet');
         }
         const product = await this.connection.findOneInChannel(ctx, Product, productId, ctx.channelId, {
-            // relations: unique(effectiveRelations),
-            relations: {
-                facetValues: {
-                    facet: true,
-                },
-            },
+            relations: unique(effectiveRelations),
             where: {
                 deletedAt: IsNull(),
             },
@@ -235,7 +235,7 @@ export class ProductService {
         });
         await this.customFieldRelationService.updateRelations(ctx, Product, input, product);
         await this.assetService.updateEntityAssets(ctx, product, input);
-        this.eventBus.publish(new ProductEvent(ctx, product, 'created', input));
+        await this.eventBus.publish(new ProductEvent(ctx, product, 'created', input));
         return assertFound(this.findOne(ctx, product.id));
     }
 
@@ -265,18 +265,20 @@ export class ProductService {
             },
         });
         await this.customFieldRelationService.updateRelations(ctx, Product, input, updatedProduct);
-        this.eventBus.publish(new ProductEvent(ctx, updatedProduct, 'updated', input));
+        await this.eventBus.publish(new ProductEvent(ctx, updatedProduct, 'updated', input));
         return assertFound(this.findOne(ctx, updatedProduct.id));
     }
 
     async softDelete(ctx: RequestContext, productId: ID): Promise<DeletionResponse> {
         const product = await this.connection.getEntityOrThrow(ctx, Product, productId, {
+            relationLoadStrategy: 'query',
+            loadEagerRelations: false,
             channelId: ctx.channelId,
             relations: ['variants', 'optionGroups'],
         });
         product.deletedAt = new Date();
         await this.connection.getRepository(ctx, Product).save(product, { reload: false });
-        this.eventBus.publish(new ProductEvent(ctx, product, 'deleted', productId));
+        await this.eventBus.publish(new ProductEvent(ctx, product, 'deleted', productId));
 
         const variantResult = await this.productVariantService.softDelete(
             ctx,
@@ -287,14 +289,16 @@ export class ProductService {
             return variantResult;
         }
         for (const optionGroup of product.optionGroups) {
-            const groupResult = await this.productOptionGroupService.deleteGroupAndOptionsFromProduct(
-                ctx,
-                optionGroup.id,
-                productId,
-            );
-            if (groupResult.result === DeletionResult.NOT_DELETED) {
-                await this.connection.rollBackTransaction(ctx);
-                return groupResult;
+            if (!optionGroup.deletedAt) {
+                const groupResult = await this.productOptionGroupService.deleteGroupAndOptionsFromProduct(
+                    ctx,
+                    optionGroup.id,
+                    productId,
+                );
+                if (groupResult.result === DeletionResult.NOT_DELETED) {
+                    await this.connection.rollBackTransaction(ctx);
+                    return groupResult;
+                }
             }
         }
         return {
@@ -333,7 +337,7 @@ export class ProductService {
             .getRepository(ctx, Product)
             .find({ where: { id: In(input.productIds) } });
         for (const product of products) {
-            this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'assigned'));
+            await this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'assigned'));
         }
         return this.findByIds(
             ctx,
@@ -359,7 +363,7 @@ export class ProductService {
             .getRepository(ctx, Product)
             .find({ where: { id: In(input.productIds) } });
         for (const product of products) {
-            this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'removed'));
+            await this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'removed'));
         }
         return this.findByIds(
             ctx,
@@ -395,7 +399,9 @@ export class ProductService {
         }
 
         await this.connection.getRepository(ctx, Product).save(product, { reload: false });
-        this.eventBus.publish(new ProductOptionGroupChangeEvent(ctx, product, optionGroupId, 'assigned'));
+        await this.eventBus.publish(
+            new ProductOptionGroupChangeEvent(ctx, product, optionGroupId, 'assigned'),
+        );
         return assertFound(this.findOne(ctx, productId));
     }
 
@@ -443,12 +449,16 @@ export class ProductService {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             throw new InternalServerError(result.message!);
         }
-        this.eventBus.publish(new ProductOptionGroupChangeEvent(ctx, product, optionGroupId, 'removed'));
+        await this.eventBus.publish(
+            new ProductOptionGroupChangeEvent(ctx, product, optionGroupId, 'removed'),
+        );
         return assertFound(this.findOne(ctx, productId));
     }
 
     private async getProductWithOptionGroups(ctx: RequestContext, productId: ID): Promise<Product> {
         const product = await this.connection.getRepository(ctx, Product).findOne({
+            relationLoadStrategy: 'query',
+            loadEagerRelations: false,
             where: { id: productId, deletedAt: IsNull() },
             relations: ['optionGroups', 'variants', 'variants.options'],
         });

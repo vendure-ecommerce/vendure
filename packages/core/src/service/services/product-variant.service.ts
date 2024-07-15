@@ -7,8 +7,7 @@ import {
     DeletionResult,
     GlobalFlag,
     Permission,
-    ProductListOptions,
-    ProductVariantListOptions,
+    ProductVariantFilterParameter,
     RemoveProductVariantsFromChannelInput,
     UpdateProductVariantInput,
 } from '@vendure/common/lib/generated-types';
@@ -24,6 +23,7 @@ import { roundMoney } from '../../common/round-money';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { idsAreEqual } from '../../common/utils';
+import { UpdatedProductVariantPrice } from '../../config/catalog/product-variant-price-update-strategy';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import {
@@ -42,6 +42,7 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
 import { EventBus } from '../../event-bus/event-bus';
 import { ProductVariantChannelEvent } from '../../event-bus/events/product-variant-channel-event';
 import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
+import { ProductVariantPriceEvent } from '../../event-bus/events/product-variant-price-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { ProductPriceApplicator } from '../helpers/product-price-applicator/product-price-applicator';
@@ -92,7 +93,11 @@ export class ProductVariantService {
     ): Promise<PaginatedList<Translated<ProductVariant>>> {
         const relations = ['featuredAsset', 'taxCategory', 'channels'];
         const customPropertyMap: { [name: string]: string } = {};
-        const hasFacetValueIdFilter = !!(options as ProductVariantListOptions)?.filter?.facetValueId;
+        const hasFacetValueIdFilter =
+            this.listQueryBuilder.filterObjectHasProperty<ProductVariantFilterParameter>(
+                options?.filter,
+                'facetValueId',
+            );
         if (hasFacetValueIdFilter) {
             relations.push('facetValues');
             customPropertyMap.facetValueId = 'facetValues.id';
@@ -291,9 +296,16 @@ export class ProductVariantService {
      * page, this method returns only the Product itself.
      */
     async getProductForVariant(ctx: RequestContext, variant: ProductVariant): Promise<Translated<Product>> {
-        const product = await this.connection.getEntityOrThrow(ctx, Product, variant.productId, {
-            includeSoftDeleted: true,
-        });
+        let product;
+
+        if (!variant.product) {
+            product = await this.connection.getEntityOrThrow(ctx, Product, variant.productId, {
+                includeSoftDeleted: true,
+            });
+        } else {
+            product = variant.product;
+        }
+
         return this.translator.translate(product, ctx);
     }
 
@@ -374,7 +386,7 @@ export class ProductVariantService {
             ids.push(id);
         }
         const createdVariants = await this.findByIds(ctx, ids);
-        this.eventBus.publish(new ProductVariantEvent(ctx, createdVariants, 'created', input));
+        await this.eventBus.publish(new ProductVariantEvent(ctx, createdVariants, 'created', input));
         return createdVariants;
     }
 
@@ -389,7 +401,7 @@ export class ProductVariantService {
             ctx,
             input.map(i => i.id),
         );
-        this.eventBus.publish(new ProductVariantEvent(ctx, updatedVariants, 'updated', input));
+        await this.eventBus.publish(new ProductVariantEvent(ctx, updatedVariants, 'updated', input));
         return updatedVariants;
     }
 
@@ -443,9 +455,9 @@ export class ProductVariantService {
             );
         }
 
-        const defaultChannelId = (await this.channelService.getDefaultChannel(ctx)).id;
+        const defaultChannel = await this.channelService.getDefaultChannel(ctx);
         await this.createOrUpdateProductVariantPrice(ctx, createdVariant.id, input.price, ctx.channelId);
-        if (!idsAreEqual(ctx.channelId, defaultChannelId)) {
+        if (!idsAreEqual(ctx.channelId, defaultChannel.id)) {
             // When creating a ProductVariant _not_ in the default Channel, we still need to
             // create a ProductVariantPrice for it in the default Channel, otherwise errors will
             // result when trying to query it there.
@@ -453,7 +465,8 @@ export class ProductVariantService {
                 ctx,
                 createdVariant.id,
                 input.price,
-                defaultChannelId,
+                defaultChannel.id,
+                defaultChannel.defaultCurrencyCode,
             );
         }
         return createdVariant.id;
@@ -526,18 +539,12 @@ export class ProductVariantService {
         if (input.prices) {
             for (const priceInput of input.prices) {
                 if (priceInput.delete === true) {
-                    const variantPrice = await this.connection
-                        .getRepository(ctx, ProductVariantPrice)
-                        .findOne({
-                            where: {
-                                variant: { id: input.id },
-                                channelId: ctx.channelId,
-                                currencyCode: priceInput.currencyCode,
-                            },
-                        });
-                    if (variantPrice) {
-                        await this.connection.getRepository(ctx, ProductVariantPrice).remove(variantPrice);
-                    }
+                    await this.deleteProductVariantPrice(
+                        ctx,
+                        input.id,
+                        ctx.channelId,
+                        priceInput.currencyCode,
+                    );
                 } else {
                     await this.createOrUpdateProductVariantPrice(
                         ctx,
@@ -564,13 +571,17 @@ export class ProductVariantService {
         channelId: ID,
         currencyCode?: CurrencyCode,
     ): Promise<ProductVariantPrice> {
-        let variantPrice = await this.connection.getRepository(ctx, ProductVariantPrice).findOne({
+        const { productVariantPriceUpdateStrategy } = this.configService.catalogOptions;
+        const allPrices = await this.connection.getRepository(ctx, ProductVariantPrice).find({
             where: {
                 variant: { id: productVariantId },
-                channelId,
-                currencyCode: currencyCode ?? ctx.channel.defaultCurrencyCode,
             },
         });
+        let targetPrice = allPrices.find(
+            p =>
+                idsAreEqual(p.channelId, channelId) &&
+                p.currencyCode === (currencyCode ?? ctx.channel.defaultCurrencyCode),
+        );
         if (currencyCode) {
             const channel = await this.channelService.findOne(ctx, channelId);
             if (!channel?.availableCurrencyCodes.includes(currencyCode)) {
@@ -579,15 +590,89 @@ export class ProductVariantService {
                 });
             }
         }
-        if (!variantPrice) {
-            variantPrice = new ProductVariantPrice({
-                channelId,
-                variant: new ProductVariant({ id: productVariantId }),
-                currencyCode: currencyCode ?? ctx.channel.defaultCurrencyCode,
-            });
+        let additionalPricesToUpdate: UpdatedProductVariantPrice[] = [];
+        if (!targetPrice) {
+            const createdPrice = await this.connection.getRepository(ctx, ProductVariantPrice).save(
+                new ProductVariantPrice({
+                    channelId,
+                    price,
+                    variant: new ProductVariant({ id: productVariantId }),
+                    currencyCode: currencyCode ?? ctx.channel.defaultCurrencyCode,
+                }),
+            );
+            await this.eventBus.publish(new ProductVariantPriceEvent(ctx, [createdPrice], 'created'));
+            additionalPricesToUpdate = await productVariantPriceUpdateStrategy.onPriceCreated(
+                ctx,
+                createdPrice,
+                allPrices,
+            );
+            targetPrice = createdPrice;
+        } else {
+            targetPrice.price = price;
+            const updatedPrice = await this.connection
+                .getRepository(ctx, ProductVariantPrice)
+                .save(targetPrice);
+            await this.eventBus.publish(new ProductVariantPriceEvent(ctx, [updatedPrice], 'updated'));
+            additionalPricesToUpdate = await productVariantPriceUpdateStrategy.onPriceUpdated(
+                ctx,
+                updatedPrice,
+                allPrices,
+            );
         }
-        variantPrice.price = price;
-        return this.connection.getRepository(ctx, ProductVariantPrice).save(variantPrice);
+        const uniqueAdditionalPricesToUpdate = unique(additionalPricesToUpdate, 'id').filter(
+            p =>
+                // We don't save the targetPrice again unless it has been assigned
+                // a different price by the ProductVariantPriceUpdateStrategy.
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                !(idsAreEqual(p.id, targetPrice!.id) && p.price === targetPrice!.price),
+        );
+        if (uniqueAdditionalPricesToUpdate.length) {
+            const updatedAdditionalPrices = await this.connection
+                .getRepository(ctx, ProductVariantPrice)
+                .save(uniqueAdditionalPricesToUpdate);
+            await this.eventBus.publish(
+                new ProductVariantPriceEvent(ctx, updatedAdditionalPrices, 'updated'),
+            );
+        }
+        return targetPrice;
+    }
+
+    async deleteProductVariantPrice(
+        ctx: RequestContext,
+        variantId: ID,
+        channelId: ID,
+        currencyCode: CurrencyCode,
+    ) {
+        const variantPrice = await this.connection.getRepository(ctx, ProductVariantPrice).findOne({
+            where: {
+                variant: { id: variantId },
+                channelId,
+                currencyCode,
+            },
+        });
+        if (variantPrice) {
+            await this.connection.getRepository(ctx, ProductVariantPrice).remove(variantPrice);
+            await this.eventBus.publish(new ProductVariantPriceEvent(ctx, [variantPrice], 'deleted'));
+            const { productVariantPriceUpdateStrategy } = this.configService.catalogOptions;
+            const allPrices = await this.connection.getRepository(ctx, ProductVariantPrice).find({
+                where: {
+                    variant: { id: variantId },
+                },
+            });
+            const additionalPricesToUpdate = await productVariantPriceUpdateStrategy.onPriceDeleted(
+                ctx,
+                variantPrice,
+                allPrices,
+            );
+            if (additionalPricesToUpdate.length) {
+                const updatedAdditionalPrices = await this.connection
+                    .getRepository(ctx, ProductVariantPrice)
+                    .save(additionalPricesToUpdate);
+                await this.eventBus.publish(
+                    new ProductVariantPriceEvent(ctx, updatedAdditionalPrices, 'updated'),
+                );
+            }
+        }
     }
 
     async softDelete(ctx: RequestContext, id: ID | ID[]): Promise<DeletionResponse> {
@@ -599,7 +684,7 @@ export class ProductVariantService {
             variant.deletedAt = new Date();
         }
         await this.connection.getRepository(ctx, ProductVariant).save(variants, { reload: false });
-        this.eventBus.publish(new ProductVariantEvent(ctx, variants, 'deleted', id));
+        await this.eventBus.publish(new ProductVariantEvent(ctx, variants, 'deleted', id));
         return {
             result: DeletionResult.DELETED,
         };
@@ -643,7 +728,7 @@ export class ProductVariantService {
                         );
                         variant.taxCategory = variantWithTaxCategory.taxCategory;
                     }
-                    resolve(await this.applyChannelPriceAndTax(variant, ctx));
+                    resolve(await this.applyChannelPriceAndTax(variant, ctx, undefined, true));
                 } catch (e: any) {
                     reject(e);
                 }
@@ -683,8 +768,9 @@ export class ProductVariantService {
         variant: ProductVariant,
         ctx: RequestContext,
         order?: Order,
+        throwIfNoPriceFound = false,
     ): Promise<ProductVariant> {
-        return this.productPriceApplicator.applyChannelPriceAndTax(variant, ctx, order);
+        return this.productPriceApplicator.applyChannelPriceAndTax(variant, ctx, order, throwIfNoPriceFound);
     }
 
     /**
@@ -735,7 +821,9 @@ export class ProductVariantService {
             variants.map(v => v.id),
         );
         for (const variant of variants) {
-            this.eventBus.publish(new ProductVariantChannelEvent(ctx, variant, input.channelId, 'assigned'));
+            await this.eventBus.publish(
+                new ProductVariantChannelEvent(ctx, variant, input.channelId, 'assigned'),
+            );
         }
         return result;
     }
@@ -789,7 +877,9 @@ export class ProductVariantService {
         // whereby an event listener triggers a query which does not yet have access to the changes
         // within the current transaction.
         for (const variant of variants) {
-            this.eventBus.publish(new ProductVariantChannelEvent(ctx, variant, input.channelId, 'removed'));
+            await this.eventBus.publish(
+                new ProductVariantChannelEvent(ctx, variant, input.channelId, 'removed'),
+            );
         }
         return result;
     }

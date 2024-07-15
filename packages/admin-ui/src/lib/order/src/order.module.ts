@@ -38,6 +38,7 @@ import { OrderStateSelectDialogComponent } from './components/order-state-select
 import { OrderTableComponent } from './components/order-table/order-table.component';
 import { PaymentDetailComponent } from './components/payment-detail/payment-detail.component';
 import { PaymentStateLabelComponent } from './components/payment-state-label/payment-state-label.component';
+import { RefundDetailComponent } from './components/refund-detail/refund-detail.component';
 import { RefundOrderDialogComponent } from './components/refund-order-dialog/refund-order-dialog.component';
 import { RefundStateLabelComponent } from './components/refund-state-label/refund-state-label.component';
 import { SelectAddressDialogComponent } from './components/select-address-dialog/select-address-dialog.component';
@@ -48,6 +49,8 @@ import { SettleRefundDialogComponent } from './components/settle-refund-dialog/s
 import { SimpleItemListComponent } from './components/simple-item-list/simple-item-list.component';
 import { createRoutes } from './order.routes';
 import { OrderDataTableComponent } from './components/order-data-table/order-data-table.component';
+import { PaymentForRefundSelectorComponent } from './components/payment-for-refund-selector/payment-for-refund-selector.component';
+import { OrderModificationSummaryComponent } from './components/order-modification-summary/order-modification-summary.component';
 
 @NgModule({
     imports: [SharedModule, RouterModule.forChild([])],
@@ -98,11 +101,19 @@ import { OrderDataTableComponent } from './components/order-data-table/order-dat
         SellerOrdersCardComponent,
         OrderDataTableComponent,
         OrderTotalColumnComponent,
+        PaymentForRefundSelectorComponent,
+        OrderModificationSummaryComponent,
+        RefundDetailComponent,
     ],
     exports: [OrderCustomFieldsCardComponent],
 })
 export class OrderModule {
-    constructor(private pageService: PageService) {
+    private static hasRegisteredTabsAndBulkActions = false;
+
+    constructor(pageService: PageService) {
+        if (OrderModule.hasRegisteredTabsAndBulkActions) {
+            return;
+        }
         pageService.registerPageTab({
             priority: 0,
             location: 'order-list',
@@ -160,5 +171,27 @@ export class OrderModule {
                 ],
             }),
         });
+        pageService.registerPageTab({
+            priority: 0,
+            location: 'modify-order',
+            tab: _('order.order'),
+            route: '',
+            component: detailComponentWithResolver({
+                component: OrderEditorComponent,
+                query: OrderDetailQueryDocument,
+                entityKey: 'order',
+                getBreadcrumbs: entity => [
+                    {
+                        label: entity?.code || 'order',
+                        link: ['/orders/', entity?.id],
+                    },
+                    {
+                        label: _('breadcrumb.modifying-order'),
+                        link: [entity?.id],
+                    },
+                ],
+            }),
+        });
+        OrderModule.hasRegisteredTabsAndBulkActions = true;
     }
 }

@@ -15,7 +15,7 @@ export class OrderLineEvent extends VendureEvent {
         public ctx: RequestContext,
         public order: Order,
         public orderLine: OrderLine,
-        public type: 'created' | 'updated' | 'deleted',
+        public type: 'created' | 'updated' | 'deleted' | 'cancelled',
     ) {
         super();
     }

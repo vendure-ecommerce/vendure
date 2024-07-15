@@ -8,6 +8,7 @@ import { RequestWithRawBody } from './types';
  * Stripe to properly verify webhook events.
  */
 export const rawBodyMiddleware = raw({
+    type: '*/*',
     verify(req: RequestWithRawBody, res: http.ServerResponse, buf: Buffer, encoding: string) {
         if (Buffer.isBuffer(buf)) {
             req.rawBody = Buffer.from(buf);

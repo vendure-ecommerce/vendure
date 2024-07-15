@@ -191,7 +191,7 @@ export class BannerPlugin {}
 
 If you have defined a new database entity, it is likely that you'll want to expose this entity in your GraphQL API. To do so, you'll need to define a corresponding GraphQL type.
 
-Using the `ProductReview` entity from the [Define a database entity guide](/guides/developer-guide/database-entity//), let's see how we can expose it as a new type in the API.
+Using the `ProductReview` entity from the [Define a database entity guide](/guides/developer-guide/database-entity), let's see how we can expose it as a new type in the API.
 
 As a reminder, here is the `ProductReview` entity:
 
@@ -269,7 +269,7 @@ export class ReviewsPlugin {}
 
 Let's say you want to add a new field to the `ProductVariant` type to allow the storefront to display some indication of how long a particular product variant would take to deliver, based on data from some external service. 
 
-First we extend the `Product` GraphQL type:
+First we extend the `ProductVariant` GraphQL type:
 
 ```ts title="src/plugins/delivery-time/api/api-extensions.ts"
 import gql from 'graphql-tag';

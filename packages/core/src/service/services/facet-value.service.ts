@@ -10,13 +10,13 @@ import {
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
-import { RelationPaths } from '../../api/index';
-import { ListQueryOptions } from '../../common/index';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
+import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { Asset, Product, ProductVariant } from '../../entity';
+import { Product, ProductVariant } from '../../entity';
 import { Facet } from '../../entity/facet/facet.entity';
 import { FacetValueTranslation } from '../../entity/facet-value/facet-value-translation.entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
@@ -185,7 +185,7 @@ export class FacetValueService {
             input as CreateFacetValueInput,
             facetValue,
         );
-        this.eventBus.publish(new FacetValueEvent(ctx, facetValueWithRelations, 'created', input));
+        await this.eventBus.publish(new FacetValueEvent(ctx, facetValueWithRelations, 'created', input));
         return assertFound(this.findOne(ctx, facetValue.id));
     }
 
@@ -197,7 +197,7 @@ export class FacetValueService {
             translationType: FacetValueTranslation,
         });
         await this.customFieldRelationService.updateRelations(ctx, FacetValue, input, facetValue);
-        this.eventBus.publish(new FacetValueEvent(ctx, facetValue, 'updated', input));
+        await this.eventBus.publish(new FacetValueEvent(ctx, facetValue, 'updated', input));
         return assertFound(this.findOne(ctx, facetValue.id));
     }
 
@@ -222,11 +222,11 @@ export class FacetValueService {
 
         if (!isInUse) {
             await this.connection.getRepository(ctx, FacetValue).remove(facetValue);
-            this.eventBus.publish(new FacetValueEvent(ctx, deletedFacetValue, 'deleted', id));
+            await this.eventBus.publish(new FacetValueEvent(ctx, deletedFacetValue, 'deleted', id));
             result = DeletionResult.DELETED;
         } else if (force) {
             await this.connection.getRepository(ctx, FacetValue).remove(facetValue);
-            this.eventBus.publish(new FacetValueEvent(ctx, deletedFacetValue, 'deleted', id));
+            await this.eventBus.publish(new FacetValueEvent(ctx, deletedFacetValue, 'deleted', id));
             message = ctx.translate('message.facet-value-force-deleted', i18nVars);
             result = DeletionResult.DELETED;
         } else {

@@ -30,7 +30,7 @@ class Collection extends VendureEntity implements Translatable, HasCustomFields,
     @OneToMany(type => CollectionTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<Collection>>;
     @Index()
-    @ManyToOne(type => Asset, { onDelete: 'SET NULL' })
+    @ManyToOne(type => Asset, asset => asset.featuredInCollections, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
     @OneToMany(type => CollectionAsset, collectionAsset => collectionAsset.collection)
     assets: CollectionAsset[];
@@ -47,7 +47,7 @@ class Collection extends VendureEntity implements Translatable, HasCustomFields,
     parent: Collection;
     @EntityId({ nullable: true })
     parentId: ID;
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.collections)
     @JoinTable()
     channels: Channel[];
 }

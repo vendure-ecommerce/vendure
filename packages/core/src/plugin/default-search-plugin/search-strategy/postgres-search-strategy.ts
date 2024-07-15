@@ -21,7 +21,9 @@ import {
 } from './search-strategy-utils';
 
 /**
- * A weighted fulltext search for PostgeSQL.
+ * @description A weighted fulltext search for PostgeSQL.
+ *
+ * @docsCategory DefaultSearchPlugin
  */
 export class PostgresSearchStrategy implements SearchStrategy {
     private readonly minTermLength = 2;
@@ -95,6 +97,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
                 .addSelect('MIN(si.priceWithTax)', 'minPriceWithTax')
                 .addSelect('MAX(si.priceWithTax)', 'maxPriceWithTax');
         }
+
         this.applyTermAndFilters(ctx, qb, input);
 
         if (sort) {
@@ -104,13 +107,14 @@ export class PostgresSearchStrategy implements SearchStrategy {
             if (sort.price) {
                 qb.addOrderBy('"si_price"', sort.price);
             }
-        } else {
-            if (input.term && input.term.length > this.minTermLength) {
-                qb.addOrderBy('score', 'DESC');
-            } else {
-                qb.addOrderBy('"si_productVariantId"', 'ASC');
-            }
+        } else if (input.term && input.term.length > this.minTermLength) {
+            qb.addOrderBy('score', 'DESC');
         }
+
+        // Required to ensure deterministic sorting.
+        // E.g. in case of sorting products with duplicate name, price or score results.
+        qb.addOrderBy('"si_productVariantId"', 'ASC');
+
         if (enabledOnly) {
             qb.andWhere('"si"."enabled" = :enabled', { enabled: true });
         }
@@ -247,11 +251,13 @@ export class PostgresSearchStrategy implements SearchStrategy {
             });
         }
 
-        applyLanguageConstraints(qb, ctx.languageCode, ctx.channel.defaultLanguageCode);
         qb.andWhere('si.channelId = :channelId', { channelId: ctx.channelId });
+        applyLanguageConstraints(qb, ctx.languageCode, ctx.channel.defaultLanguageCode);
+
         if (input.groupByProduct === true) {
             qb.groupBy('si.productId');
         }
+
         return qb;
     }
 

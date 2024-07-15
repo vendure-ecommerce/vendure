@@ -182,6 +182,24 @@ describe('Product resolver', () => {
             expect(result.products.items[0].name).toBe('Cruiser Skateboard');
         });
 
+        it('filters by sku admin', async () => {
+            const result = await adminClient.query<
+                Codegen.GetProductListQuery,
+                Codegen.GetProductListQueryVariables
+            >(GET_PRODUCT_LIST, {
+                options: {
+                    filter: {
+                        sku: {
+                            contains: 'IHD455T1',
+                        },
+                    },
+                },
+            });
+
+            expect(result.products.items.length).toBe(1);
+            expect(result.products.items[0].name).toBe('Hard Drive');
+        });
+
         it('sorts by name shop', async () => {
             const result = await shopClient.query<
                 Codegen.GetProductListQuery,

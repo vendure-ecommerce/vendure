@@ -1,7 +1,6 @@
 import { ChangeDetectorRef, OnDestroy, Pipe, PipeTransform } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
-
-import { DataService } from '../../data/providers/data.service';
+import { Subscription } from 'rxjs';
+import { PermissionsService } from '../../providers/permissions/permissions.service';
 
 /**
  * @description
@@ -20,15 +19,13 @@ import { DataService } from '../../data/providers/data.service';
 })
 export class HasPermissionPipe implements PipeTransform, OnDestroy {
     private hasPermission = false;
-    private currentPermissions$: Observable<string[]>;
     private lastPermissions: string | null = null;
     private subscription: Subscription;
 
-    constructor(private dataService: DataService, private changeDetectorRef: ChangeDetectorRef) {
-        this.currentPermissions$ = this.dataService.client
-            .userStatus()
-            .mapStream(data => data.userStatus.permissions);
-    }
+    constructor(
+        private permissionsService: PermissionsService,
+        private changeDetectorRef: ChangeDetectorRef,
+    ) {}
 
     transform(input: string | string[]): any {
         const requiredPermissions = Array.isArray(input) ? input : [input];
@@ -37,8 +34,8 @@ export class HasPermissionPipe implements PipeTransform, OnDestroy {
             this.lastPermissions = requiredPermissionsString;
             this.hasPermission = false;
             this.dispose();
-            this.subscription = this.currentPermissions$.subscribe(permissions => {
-                this.hasPermission = this.checkPermissions(permissions, requiredPermissions);
+            this.subscription = this.permissionsService.currentUserPermissions$.subscribe(() => {
+                this.hasPermission = this.permissionsService.userHasPermissions(requiredPermissions);
                 this.changeDetectorRef.markForCheck();
             });
         }
@@ -48,15 +45,6 @@ export class HasPermissionPipe implements PipeTransform, OnDestroy {
 
     ngOnDestroy() {
         this.dispose();
-    }
-
-    private checkPermissions(userPermissions: string[], requiredPermissions: string[]): boolean {
-        for (const perm of requiredPermissions) {
-            if (userPermissions.includes(perm)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private dispose() {

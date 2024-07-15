@@ -1,0 +1,28 @@
+{
+    "name": "@vendure/sentry-plugin",
+    "version": "2.2.7",
+    "license": "MIT",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "files": [
+        "lib/**/*"
+    ],
+    "scripts": {
+        "watch": "tsc -p ./tsconfig.build.json --watch",
+        "build": "rimraf lib && tsc -p ./tsconfig.build.json",
+        "lint": "eslint --fix ."
+    },
+    "homepage": "https://www.vendure.io",
+    "funding": "https://github.com/sponsors/michaelbromley",
+    "publishConfig": {
+        "access": "public"
+    },
+    "peerDependencies": {
+        "@sentry/node": "^7.106.1"
+    },
+    "devDependencies": {
+        "@sentry/node": "^7.106.1",
+        "@vendure/common": "^2.2.7",
+        "@vendure/core": "^2.2.7"
+    }
+}

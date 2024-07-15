@@ -1,8 +1,6 @@
-import { stitchSchemas, ValidationLevel } from '@graphql-tools/stitch';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import {
     buildSchema,
-    getNamedType,
     GraphQLEnumType,
     GraphQLField,
     GraphQLInputField,
@@ -13,6 +11,7 @@ import {
     GraphQLInt,
     GraphQLList,
     GraphQLNamedType,
+    GraphQLNonNull,
     GraphQLObjectType,
     GraphQLOutputType,
     GraphQLSchema,
@@ -25,6 +24,10 @@ import {
     // hazard issue when testing this file in vitest. See https://github.com/vitejs/vite/issues/7879
 } from 'graphql/index.js';
 
+// Using require here to prevent issues when running vitest tests also.
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { stitchSchemas, ValidationLevel } = require('@graphql-tools/stitch');
+
 /**
  * Generates ListOptions inputs for queries which return PaginatedList types.
  */
@@ -36,10 +39,13 @@ export function generateListOptions(typeDefsOrSchema: string | GraphQLSchema): G
     }
     const logicalOperatorEnum = schema.getType('LogicalOperator');
     const objectTypes = Object.values(schema.getTypeMap()).filter(isObjectType);
-    const allFields = objectTypes.reduce((fields, type) => {
-        const typeFields = Object.values(type.getFields()).filter(f => isListQueryType(f.type));
-        return [...fields, ...typeFields];
-    }, [] as Array<GraphQLField<any, any>>);
+    const allFields = objectTypes.reduce(
+        (fields, type) => {
+            const typeFields = Object.values(type.getFields()).filter(f => isListQueryType(f.type));
+            return [...fields, ...typeFields];
+        },
+        [] as Array<GraphQLField<any, any>>,
+    );
     const generatedTypes: GraphQLNamedType[] = [];
 
     for (const query of allFields) {
@@ -69,7 +75,7 @@ export function generateListOptions(typeDefsOrSchema: string | GraphQLSchema): G
                               filterOperator: {
                                   type: logicalOperatorEnum as GraphQLEnumType,
                                   description:
-                                      'Specifies whether multiple "filter" arguments should be combines ' +
+                                      'Specifies whether multiple top-level "filter" fields should be combined ' +
                                       'with a logical AND or OR operation. Defaults to AND.',
                               },
                           }
@@ -161,24 +167,6 @@ function createFilterParameter(schema: GraphQLSchema, targetType: GraphQLObjectT
         fields.push(...Object.values(existingInput.getFields()));
     }
 
-    return new GraphQLInputObjectType({
-        name: inputName,
-        fields: fields.reduce((result, field) => {
-            const fieldType = field.type;
-            const filterType = isInputObjectType(fieldType) ? fieldType : getFilterType(field);
-            if (!filterType) {
-                return result;
-            }
-            const fieldConfig: GraphQLInputFieldConfig = {
-                type: filterType,
-            };
-            return {
-                ...result,
-                [field.name]: fieldConfig,
-            };
-        }, {} as GraphQLInputFieldConfigMap),
-    });
-
     function getFilterType(field: GraphQLField<any, any> | GraphQLInputField): GraphQLInputType | undefined {
         const innerType = unwrapNonNullType(field.type);
         if (isListType(innerType)) {
@@ -204,6 +192,33 @@ function createFilterParameter(schema: GraphQLSchema, targetType: GraphQLObjectT
                 return;
         }
     }
+
+    const FilterInputType: GraphQLInputObjectType = new GraphQLInputObjectType({
+        name: inputName,
+        fields: () => {
+            const namedFields = fields.reduce((result, field) => {
+                const fieldType = field.type;
+                const filterType = isInputObjectType(fieldType) ? fieldType : getFilterType(field);
+                if (!filterType) {
+                    return result;
+                }
+                const fieldConfig: GraphQLInputFieldConfig = {
+                    type: filterType,
+                };
+                return {
+                    ...result,
+                    [field.name]: fieldConfig,
+                };
+            }, {} as GraphQLInputFieldConfigMap);
+            return {
+                ...namedFields,
+                _and: { type: new GraphQLList(new GraphQLNonNull(FilterInputType)) },
+                _or: { type: new GraphQLList(new GraphQLNonNull(FilterInputType)) },
+            };
+        },
+    });
+
+    return FilterInputType;
 }
 
 function getCommonTypes(schema: GraphQLSchema) {

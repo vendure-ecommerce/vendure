@@ -71,4 +71,27 @@ Running the server will compile our new shared module into the app, and the resu
 
 It is also possible to override one of the default (built-in) nav menu sections or items. This can be useful for example if you wish to provide a completely different implementation of the product list view.
 
-This is done by setting the `id` property to that of an existing nav menu section or item.
+This is done by setting the `id` property to that of an existing nav menu section or item. The `id` can be found by inspecting the link element in your browser's dev tools for the `data-item-id` attribute:
+
+![Navbar menu id](./nav-menu-id.webp)
+
+## Removing existing nav items
+
+If you would like to remove an existing nav item, you can do so by overriding it and setting the `requiresPermission` property to an invalid value:
+
+```ts title="src/plugins/greeter/ui/providers.ts"
+import { SharedModule, addNavMenuItem} from '@vendure/admin-ui/core';
+
+export default [
+    addNavMenuItem({
+        id: 'collections',  // <-- we will override the "collections" menu item
+        label: 'Collections',
+        routerLink: ['/catalog', 'collections'],
+        // highlight-start
+        // we use an invalid permission which ensures it is hidden from all users
+        requiresPermission: '__disable__'
+        // highlight-end
+    },
+    'catalog'),
+];
+```

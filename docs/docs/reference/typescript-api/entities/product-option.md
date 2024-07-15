@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ProductOption
 
-<GenerationInfo sourceFile="packages/core/src/entity/product-option/product-option.entity.ts" sourceLine="20" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/product-option/product-option.entity.ts" sourceLine="21" packageName="@vendure/core" />
 
 A ProductOption is used to differentiate <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>s from one another.
 
@@ -29,6 +29,8 @@ class ProductOption extends VendureEntity implements Translatable, HasCustomFiel
     group: ProductOptionGroup;
     @EntityId()
     groupId: ID;
+    @ManyToMany(type => ProductVariant, variant => variant.options)
+    productVariants: ProductVariant[];
     @Column(type => CustomProductOptionFields)
     customFields: CustomProductOptionFields;
 }
@@ -75,6 +77,11 @@ class ProductOption extends VendureEntity implements Translatable, HasCustomFiel
 ### groupId
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
+
+
+### productVariants
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[]`}   />
 
 
 ### customFields

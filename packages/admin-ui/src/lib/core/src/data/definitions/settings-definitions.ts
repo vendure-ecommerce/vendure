@@ -560,6 +560,7 @@ export const CUSTOM_FIELD_CONFIG_FRAGMENT = gql`
         }
         readonly
         nullable
+        requiresPermission
         ui
     }
 `;
@@ -685,6 +686,7 @@ export const GET_SERVER_CONFIG = gql`
         globalSettings {
             id
             serverConfig {
+                moneyStrategyPrecision
                 orderProcess {
                     name
                     to
@@ -695,86 +697,9 @@ export const GET_SERVER_CONFIG = gql`
                     description
                     assignable
                 }
-                customFieldConfig {
-                    Address {
-                        ...CustomFields
-                    }
-                    Administrator {
-                        ...CustomFields
-                    }
-                    Asset {
-                        ...CustomFields
-                    }
-                    Channel {
-                        ...CustomFields
-                    }
-                    Collection {
-                        ...CustomFields
-                    }
-                    Customer {
-                        ...CustomFields
-                    }
-                    CustomerGroup {
-                        ...CustomFields
-                    }
-                    Facet {
-                        ...CustomFields
-                    }
-                    FacetValue {
-                        ...CustomFields
-                    }
-                    Fulfillment {
-                        ...CustomFields
-                    }
-                    GlobalSettings {
-                        ...CustomFields
-                    }
-                    Order {
-                        ...CustomFields
-                    }
-                    OrderLine {
-                        ...CustomFields
-                    }
-                    PaymentMethod {
-                        ...CustomFields
-                    }
-                    Product {
-                        ...CustomFields
-                    }
-                    ProductOption {
-                        ...CustomFields
-                    }
-                    ProductOptionGroup {
-                        ...CustomFields
-                    }
-                    ProductVariant {
-                        ...CustomFields
-                    }
-                    Promotion {
-                        ...CustomFields
-                    }
-                    Region {
-                        ...CustomFields
-                    }
-                    Seller {
-                        ...CustomFields
-                    }
-                    ShippingMethod {
-                        ...CustomFields
-                    }
-                    StockLocation {
-                        ...CustomFields
-                    }
-                    TaxCategory {
-                        ...CustomFields
-                    }
-                    TaxRate {
-                        ...CustomFields
-                    }
-                    User {
-                        ...CustomFields
-                    }
-                    Zone {
+                entityCustomFields {
+                    entityName
+                    customFields {
                         ...CustomFields
                     }
                 }

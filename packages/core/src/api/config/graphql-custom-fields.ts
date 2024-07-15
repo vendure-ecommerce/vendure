@@ -5,11 +5,12 @@ import {
     GraphQLInputObjectType,
     GraphQLList,
     GraphQLSchema,
-    isInterfaceType,
+    isObjectType,
     parse,
 } from 'graphql';
 
 import { CustomFieldConfig, CustomFields } from '../../config/custom-field/custom-field-types';
+import { Logger } from '../../config/logger/vendure-logger';
 
 import { getCustomFieldsConfigWithoutInterfaces } from './get-custom-fields-config-without-interfaces';
 
@@ -41,18 +42,36 @@ export function addGraphQLCustomFields(
 
     const customFieldsConfig = getCustomFieldsConfigWithoutInterfaces(customFieldConfig, schema);
     for (const [entityName, customFields] of customFieldsConfig) {
+        const gqlType = schema.getType(entityName);
+        if (isObjectType(gqlType) && gqlType.getFields().customFields) {
+            Logger.warn(
+                `The entity type "${entityName}" already has a "customFields" field defined. Skipping automatic custom field extension.`,
+            );
+            continue;
+        }
         const customEntityFields = customFields.filter(config => {
             return !config.internal && (publicOnly === true ? config.public !== false : true);
         });
 
         for (const fieldDef of customEntityFields) {
             if (fieldDef.type === 'relation') {
-                if (!schema.getType(fieldDef.graphQLType || fieldDef.entity.name)) {
-                    throw new Error(
-                        `The GraphQL type "${
-                            fieldDef?.graphQLType ?? '(unknown)'
-                        }" specified by the ${entityName}.${fieldDef.name} custom field does not exist`,
-                    );
+                const graphQlTypeName = fieldDef.graphQLType || fieldDef.entity.name;
+                if (!schema.getType(graphQlTypeName)) {
+                    const customFieldPath = `${entityName}.${fieldDef.name}`;
+                    const errorMessage = `The GraphQL type "${
+                        graphQlTypeName ?? '(unknown)'
+                    }" specified by the ${customFieldPath} custom field does not exist in the ${publicOnly ? 'Shop API' : 'Admin API'} schema.`;
+                    Logger.warn(errorMessage);
+                    if (publicOnly) {
+                        Logger.warn(
+                            [
+                                `This can be resolved by either:`,
+                                `  - setting \`public: false\` in the ${customFieldPath} custom field config`,
+                                `  - defining the "${graphQlTypeName}" type in the Shop API schema`,
+                            ].join('\n'),
+                        );
+                    }
+                    throw new Error(errorMessage);
                 }
             }
         }
@@ -235,6 +254,10 @@ export function addServerConfigCustomFields(
 ) {
     const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
     const customFieldTypeDefs = `
+            """
+            This type is deprecated in v2.2 in favor of the EntityCustomFields type,
+            which allows custom fields to be defined on user-supplies entities.
+            """
             type CustomFields {
                 ${Object.keys(customFieldConfig).reduce(
                     (output, name) => output + name + ': [CustomFieldConfig!]!\n',
@@ -242,8 +265,18 @@ export function addServerConfigCustomFields(
                 )}
             }
 
+            type EntityCustomFields {
+                entityName: String!
+                customFields: [CustomFieldConfig!]!
+            }
+
             extend type ServerConfig {
+                """
+                This field is deprecated in v2.2 in favor of the entityCustomFields field,
+                which allows custom fields to be defined on user-supplies entities.
+                """
                 customFieldConfig: CustomFields!
+                entityCustomFields: [EntityCustomFields!]!
             }
         `;
 

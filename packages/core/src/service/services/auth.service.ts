@@ -52,7 +52,7 @@ export class AuthService {
         authenticationMethod: string,
         authenticationData: any,
     ): Promise<AuthenticatedSession | InvalidCredentialsError | NotVerifiedError> {
-        this.eventBus.publish(
+        await this.eventBus.publish(
             new AttemptedLoginEvent(
                 ctx,
                 authenticationMethod,
@@ -104,7 +104,7 @@ export class AuthService {
             user,
             authenticationStrategyName,
         );
-        this.eventBus.publish(new LoginEvent(ctx, user));
+        await this.eventBus.publish(new LoginEvent(ctx, user));
         return session;
     }
 
@@ -147,7 +147,7 @@ export class AuthService {
             if (typeof authenticationStrategy.onLogOut === 'function') {
                 await authenticationStrategy.onLogOut(ctx, session.user);
             }
-            this.eventBus.publish(new LogoutEvent(ctx));
+            await this.eventBus.publish(new LogoutEvent(ctx));
             return this.sessionService.deleteSessionsByUser(ctx, session.user);
         }
     }

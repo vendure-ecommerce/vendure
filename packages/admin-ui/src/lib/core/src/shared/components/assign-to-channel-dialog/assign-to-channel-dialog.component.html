@@ -20,7 +20,7 @@
     <vdr-form-field [label]="'common.channel' | translate" class="mb-4">
         <vdr-channel-assignment-control
             clrInput
-            [multiple]="false"
+            [multiple]="true"
             [includeDefaultChannel]="false"
             [formControl]="selectedChannelIdControl"
         ></vdr-channel-assignment-control>
@@ -29,12 +29,17 @@
 
 <ng-template vdrDialogButtons>
     <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
-    <button type="submit" (click)="assign()" [disabled]="!selectedChannel" class="btn btn-primary">
-        <ng-template [ngIf]="selectedChannel" [ngIfElse]="noSelection">
-            {{ 'catalog.assign-to-named-channel' | translate : { channelCode: selectedChannel?.code } }}
+    <button
+        type="submit"
+        (click)="assign()"
+        [disabled]="selectedChannels.length <= 0"
+        class="btn btn-primary"
+    >
+        <ng-template [ngIf]="selectedChannels.length > 0" [ngIfElse]="noSelection">
+            {{ 'common.assign-to-channels' | translate : { count: selectedChannels.length } }}
         </ng-template>
         <ng-template #noSelection>
-            {{ 'catalog.no-channel-selected' | translate }}
+            {{ 'common.no-channel-selected' | translate : { count: selectedChannels.length } }}
         </ng-template>
     </button>
 </ng-template>

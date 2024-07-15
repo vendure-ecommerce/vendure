@@ -81,7 +81,7 @@ For example, let's imagine we are creating a plugin which adds a new entity call
 ```ts title="src/plugins/product-review/constants.ts"
 import { CrudPermissionDefinition } from '@vendure/core';
 
-export const productReview = new CrudPermissionDefinition(ProductReview);
+export const productReviewPermission = new CrudPermissionDefinition('ProductReview');
 ```
 
 These permissions can then be used in our resolver:
@@ -89,20 +89,20 @@ These permissions can then be used in our resolver:
 ```ts title="src/plugins/product-review/api/product-review.resolver.ts"
 import { Mutation, Resolver } from '@nestjs/graphql';
 import { Allow, Transaction } from '@vendure/core';
-import { productReview } from '../constants';
+import { productReviewPermission } from '../constants';
 
 @Resolver()
 export class ProductReviewResolver {
 
     // highlight-next-line
-    @Allow(productReview.Read)
+    @Allow(productReviewPermission.Read)
     @Query()
     productReviews(/* ... */) {
         // ...
     }
     
     // highlight-next-line
-    @Allow(productReview.Create)
+    @Allow(productReviewPermission.Create)
     @Mutation()
     @Transaction()
     createProductReview(/* ... */) {
@@ -110,7 +110,7 @@ export class ProductReviewResolver {
     }
     
     // highlight-next-line
-    @Allow(productReview.Update)
+    @Allow(productReviewPermission.Update)
     @Mutation()
     @Transaction()
     updateProductReview(/* ... */) {
@@ -118,7 +118,7 @@ export class ProductReviewResolver {
     }
     
     // highlight-next-line
-    @Allow(productReview.Delete)
+    @Allow(productReviewPermission.Delete)
     @Mutation()
     @Transaction()
     deleteProductReview(/* ... */) {
@@ -134,7 +134,7 @@ import gql from 'graphql-tag';
 import { VendurePlugin } from '@vendure/core';
 
 import { ProductReviewResolver } from './api/product-review.resolver'
-import { productReview } from './constants';
+import { productReviewPermission } from './constants';
 
 @VendurePlugin({
     adminApiExtensions: {
@@ -145,7 +145,40 @@ import { productReview } from './constants';
     },
     configuration: config => {
         // highlight-next-line
-        config.authOptions.customPermissions.push(productReview);
+        config.authOptions.customPermissions.push(productReviewPermission);
+        return config;
+    },
+})
+export class ProductReviewPlugin {}
+```
+
+## Custom permissions for custom fields
+
+Since Vendure v2.2.0, it is possible to define custom permissions for custom fields. This is useful when you want to 
+control access to specific custom fields on an entity. For example, imagine a "product reviews" plugin which adds a
+`rating` custom field to the `Product` entity. 
+
+You may want to restrict access to this custom field to only those roles which have permissions on the product review
+plugin.
+
+```ts title="src/plugins/product-review.plugin.ts"
+import { VendurePlugin } from '@vendure/core';
+import { productReviewPermission } from './constants';
+
+@VendurePlugin({
+    configuration: config => {
+        config.authOptions.customPermissions.push(productReviewPermission);
+        
+        config.customFields.Product.push({
+            name: 'rating',
+            type: 'int',
+            // highlight-start
+            requiresPermission: [
+                productReviewPermission.Read, 
+                productReviewPermission.Update,
+            ],
+            // highlight-end
+        });
         return config;
     },
 })

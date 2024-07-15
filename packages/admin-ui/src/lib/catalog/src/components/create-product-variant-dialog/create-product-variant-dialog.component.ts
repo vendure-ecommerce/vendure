@@ -21,7 +21,7 @@ export class CreateProductVariantDialogComponent implements Dialog<CreateProduct
     form = this.formBuilder.group({
         name: ['', Validators.required],
         sku: ['', Validators.required],
-        price: ['', Validators.required],
+        price: [''],
         options: this.formBuilder.record<string>({}),
     });
     existingVariant: NonNullable<GetProductVariantOptionsQuery['product']>['variants'][number] | undefined;
@@ -30,7 +30,7 @@ export class CreateProductVariantDialogComponent implements Dialog<CreateProduct
     constructor(private formBuilder: FormBuilder) {}
 
     ngOnInit() {
-        this.currencyCode = this.product.variants[0].currencyCode;
+        this.currencyCode = this.product.variants[0]?.currencyCode;
         for (const optionGroup of this.product.optionGroups) {
             (this.form.get('options') as FormRecord).addControl(
                 optionGroup.code,
@@ -67,7 +67,7 @@ export class CreateProductVariantDialogComponent implements Dialog<CreateProduct
 
     confirm() {
         const { name, sku, options, price } = this.form.value;
-        if (!name || !sku || !options || !price) {
+        if (!name || !sku || !options || price == null) {
             return;
         }
 

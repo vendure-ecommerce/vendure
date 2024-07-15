@@ -32,7 +32,7 @@ export interface ShippingCalculatorConfig<T extends ConfigArgs> extends Configur
          ui: { component: 'number-form-input', suffix: '%' },
        },
  *   },
- *   calculate: (order, args) => {
+ *   calculate: (ctx, order, args) => {
  *     return {
  *       price: args.rate,
  *       taxRate: args.taxRate,
@@ -59,7 +59,12 @@ export class ShippingCalculator<T extends ConfigArgs = ConfigArgs> extends Confi
      *
      * @internal
      */
-    calculate(ctx: RequestContext, order: Order, args: ConfigArg[], method: ShippingMethod): CalculateShippingFnResult {
+    calculate(
+        ctx: RequestContext,
+        order: Order,
+        args: ConfigArg[],
+        method: ShippingMethod,
+    ): CalculateShippingFnResult {
         return this.calculateFn(ctx, order, this.argsArrayToHash(args), method);
     }
 }
@@ -115,5 +120,5 @@ export type CalculateShippingFn<T extends ConfigArgs> = (
     ctx: RequestContext,
     order: Order,
     args: ConfigArgValues<T>,
-    method: ShippingMethod
+    method: ShippingMethod,
 ) => CalculateShippingFnResult;

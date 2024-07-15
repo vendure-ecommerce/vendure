@@ -2,11 +2,12 @@
     <vdr-action-bar>
         <vdr-ab-left> </vdr-ab-left>
         <vdr-ab-right>
-            <vdr-action-bar-items locationId="seller-list"></vdr-action-bar-items>
+            <vdr-action-bar-items locationId="seller-list" />
             <a class="btn btn-primary" *vdrIfPermissions="['SuperAdmin', 'CreateSeller']" [routerLink]="['./', 'create']">
                 <clr-icon shape="plus"></clr-icon>
                 {{ 'settings.create-new-seller' | translate }}
             </a>
+            <vdr-action-bar-dropdown-menu locationId="seller-list" />
         </vdr-ab-right>
     </vdr-action-bar>
 </vdr-page-block>

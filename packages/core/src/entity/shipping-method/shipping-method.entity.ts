@@ -62,7 +62,7 @@ export class ShippingMethod
     @Column()
     fulfillmentHandlerCode: string;
 
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.shippingMethods)
     @JoinTable()
     channels: Channel[];
 

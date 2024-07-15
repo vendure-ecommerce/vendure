@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import {
     CurrencyCode,
     DataService,
@@ -49,7 +49,10 @@ export class GenerateProductVariantsComponent implements OnInit {
     } = {};
     stockLocations$: Observable<Array<ItemOf<GetStockLocationListQuery, 'stockLocations'>>>;
     selectedStockLocationId: string | null = null;
-    constructor(private dataService: DataService, private formBuilder: FormBuilder) {}
+    constructor(
+        private dataService: DataService,
+        private formBuilder: FormBuilder,
+    ) {}
 
     ngOnInit() {
         this.dataService.settings.getActiveChannel().single$.subscribe(data => {
@@ -67,6 +70,7 @@ export class GenerateProductVariantsComponent implements OnInit {
                 tap(items => {
                     if (items.length) {
                         this.selectedStockLocationId = items[0].id;
+                        this.onFormChange();
                     }
                 }),
             );
@@ -119,6 +123,7 @@ export class GenerateProductVariantsComponent implements OnInit {
                 this.variantFormValues[variant.id] = formGroup;
             }
         });
+        this.onFormChange();
     }
 
     trackByFn(index: number, variant: { name: string; values: string[] }) {

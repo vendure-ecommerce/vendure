@@ -3,8 +3,10 @@ import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms
 import { CreateCustomerInput, DataService, Dialog, GetCustomerListQuery } from '@vendure/admin-ui/core';
 import { concat, Observable, of, Subject } from 'rxjs';
 import { catchError, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 
 export type Customer = GetCustomerListQuery['customers']['items'][number];
+export type SelectCustomerDialogResult = (Customer | CreateCustomerInput) & { note: string };
 
 @Component({
     selector: 'vdr-select-customer-dialog',
@@ -12,8 +14,14 @@ export type Customer = GetCustomerListQuery['customers']['items'][number];
     styleUrls: ['./select-customer-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SelectCustomerDialogComponent implements OnInit, Dialog<Customer | CreateCustomerInput> {
-    resolveWith: (result?: Customer | CreateCustomerInput) => void;
+export class SelectCustomerDialogComponent implements OnInit, Dialog<SelectCustomerDialogResult> {
+    resolveWith: (result?: SelectCustomerDialogResult) => void;
+
+    // populated by the dialog service
+    canCreateNew = true;
+    includeNoteInput = false;
+    title: string = _('order.set-customer-for-order');
+
     customerForm: UntypedFormGroup;
     customers$: Observable<Customer[]>;
     isLoading = false;
@@ -21,6 +29,7 @@ export class SelectCustomerDialogComponent implements OnInit, Dialog<Customer | 
     selectedCustomer: Customer[] = [];
     useExisting = true;
     createNew = false;
+    note = '';
 
     constructor(private dataService: DataService, private formBuilder: UntypedFormBuilder) {
         this.customerForm = this.formBuilder.group({
@@ -62,11 +71,10 @@ export class SelectCustomerDialogComponent implements OnInit, Dialog<Customer | 
 
     select() {
         if (this.useExisting && this.selectedCustomer.length === 1) {
-            this.resolveWith(this.selectedCustomer[0]);
-        }
-        if (this.createNew && this.customerForm.valid) {
+            this.resolveWith({ ...this.selectedCustomer[0], note: this.note });
+        } else if (this.createNew && this.customerForm.valid) {
             const formValue = this.customerForm.value;
-            this.resolveWith(formValue);
+            this.resolveWith({ ...formValue, note: this.note });
         }
     }
 }

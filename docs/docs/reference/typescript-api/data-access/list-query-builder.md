@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ListQueryBuilder
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/list-query-builder/list-query-builder.ts" sourceLine="199" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/list-query-builder/list-query-builder.ts" sourceLine="200" packageName="@vendure/core" />
 
 This helper class is used when fetching entities the database from queries which return a <a href='/reference/typescript-api/common/paginated-list#paginatedlist'>PaginatedList</a> type.
 These queries all follow the same format:
@@ -82,6 +82,7 @@ export class BlogPostService {
 ```ts title="Signature"
 class ListQueryBuilder implements OnApplicationBootstrap {
     constructor(connection: TransactionalConnection, configService: ConfigService)
+    filterObjectHasProperty(filterObject: FP | NullOptionals<FP> | null | undefined, property: keyof FP) => boolean;
     build(entity: Type<T>, options: ListQueryOptions<T> = {}, extendedOptions: ExtendedListQueryOptions<T> = {}) => SelectQueryBuilder<T>;
 }
 ```
@@ -96,11 +97,23 @@ class ListQueryBuilder implements OnApplicationBootstrap {
 <MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService) => ListQueryBuilder`}   />
 
 
+### filterObjectHasProperty
+
+<MemberInfo kind="method" type={`(filterObject: FP | NullOptionals&#60;FP&#62; | null | undefined, property: keyof FP) => boolean`}   />
+
+Used to determine whether a list query `filter` object contains the
+given property, either at the top level or nested inside a boolean
+`_and` or `_or` expression.
+
+This is useful when a custom property map is used to map a filter
+field to a related entity, and we need to determine whether the
+filter object contains that property, which then means we would need
+to join that relation.
 ### build
 
 <MemberInfo kind="method" type={`(entity: Type&#60;T&#62;, options: ListQueryOptions&#60;T&#62; = {}, extendedOptions: <a href='/reference/typescript-api/data-access/list-query-builder#extendedlistqueryoptions'>ExtendedListQueryOptions</a>&#60;T&#62; = {}) => SelectQueryBuilder&#60;T&#62;`}   />
 
-Creates and configures a SelectQueryBuilder for queries that return paginated lists of entities.
+
 
 
 </div>
@@ -108,7 +121,7 @@ Creates and configures a SelectQueryBuilder for queries that return paginated li
 
 ## ExtendedListQueryOptions
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/list-query-builder/list-query-builder.ts" sourceLine="40" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/list-query-builder/list-query-builder.ts" sourceLine="41" packageName="@vendure/core" />
 
 Options which can be passed to the ListQueryBuilder's `build()` method.
 

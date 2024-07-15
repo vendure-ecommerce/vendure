@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ElasticsearchPlugin
 
-<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/plugin.ts" sourceLine="222" packageName="@vendure/elasticsearch-plugin" />
+<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/plugin.ts" sourceLine="223" packageName="@vendure/elasticsearch-plugin" />
 
 This plugin allows your product search to be powered by [Elasticsearch](https://github.com/elastic/elasticsearch) - a powerful Open Source search
 engine. This is a drop-in replacement for the DefaultSearchPlugin which exposes many powerful configuration options enabling your storefront
@@ -22,7 +22,8 @@ advanced Elasticsearch features like spacial search.
 
 **Requires Elasticsearch v7.0 < required Elasticsearch version < 7.10 **
 Elasticsearch version 7.10.2 will throw error due to incompatibility with elasticsearch-js client.
-[Check here for more info](https://github.com/elastic/elasticsearch-js/issues/1519)
+[Check here for more info](https://github.com/elastic/elasticsearch-js/issues/1519).
+
 `yarn add @elastic/elasticsearch @vendure/elasticsearch-plugin`
 
 or

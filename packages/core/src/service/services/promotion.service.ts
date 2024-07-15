@@ -18,7 +18,7 @@ import { unique } from '@vendure/common/lib/unique';
 import { In, IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { RelationPaths } from '../../api/index';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { ErrorResultUnion, JustErrorResults } from '../../common/error/error-result';
 import { IllegalOperationError, UserInputError } from '../../common/error/errors';
 import { MissingConditionsError } from '../../common/error/generated-graphql-admin-errors';
@@ -148,7 +148,7 @@ export class PromotionService {
             input,
             newPromotion,
         );
-        this.eventBus.publish(new PromotionEvent(ctx, promotionWithRelations, 'created', input));
+        await this.eventBus.publish(new PromotionEvent(ctx, promotionWithRelations, 'created', input));
         return assertFound(this.findOne(ctx, newPromotion.id));
     }
 
@@ -187,7 +187,7 @@ export class PromotionService {
             },
         });
         await this.customFieldRelationService.updateRelations(ctx, Promotion, input, updatedPromotion);
-        this.eventBus.publish(new PromotionEvent(ctx, promotion, 'updated', input));
+        await this.eventBus.publish(new PromotionEvent(ctx, promotion, 'updated', input));
         return assertFound(this.findOne(ctx, updatedPromotion.id));
     }
 
@@ -196,7 +196,7 @@ export class PromotionService {
         await this.connection
             .getRepository(ctx, Promotion)
             .update({ id: promotionId }, { deletedAt: new Date() });
-        this.eventBus.publish(new PromotionEvent(ctx, promotion, 'deleted', promotionId));
+        await this.eventBus.publish(new PromotionEvent(ctx, promotion, 'deleted', promotionId));
 
         return {
             result: DeletionResult.DELETED,

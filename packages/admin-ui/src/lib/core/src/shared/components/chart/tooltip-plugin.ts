@@ -4,11 +4,13 @@
  */
 /* global Chartist */
 
-import { LineChart, PieChart, DrawEvent } from 'chartist';
+import { DrawEvent, LineChart } from 'chartist';
 import { ChartFormatOptions } from './chart.component';
 
 const defaultOptions = {
     currency: undefined,
+    currencyPrecision: 2,
+    currencyPrecisionFactor: 100,
     currencyFormatCallback: undefined,
     tooltipOffset: {
         x: 0,
@@ -20,13 +22,12 @@ const defaultOptions = {
     pointClass: 'ct-point',
 };
 
-export function tooltipPlugin(userOptions?: any) {
+export function tooltipPlugin(userOptions?: Partial<typeof defaultOptions>) {
     return function tooltip(chart: LineChart) {
         const options = {
             ...defaultOptions,
             ...userOptions,
         };
-        const tooltipSelector = options.pointClass;
 
         const $chart = (chart as any).container as HTMLDivElement;
         let $toolTip = $chart.querySelector('.chartist-tooltip') as HTMLDivElement;
@@ -97,8 +98,6 @@ export function tooltipPlugin(userOptions?: any) {
             closestPoint.element.addClass('ct-tooltip-hover');
 
             const $point = closestPoint.element.getNode() as HTMLElement;
-
-            const seriesName = 'ct:series-name';
             const meta: {
                 label: string;
                 formatOptions: ChartFormatOptions;
@@ -111,8 +110,9 @@ export function tooltipPlugin(userOptions?: any) {
                     ? new Intl.NumberFormat(meta.formatOptions.locale, {
                           style: 'currency',
                           currency: meta.formatOptions.currencyCode,
-                          minimumFractionDigits: 2,
-                      }).format(+(value ?? 0) / 100)
+                          minimumFractionDigits: options.currencyPrecision,
+                          maximumFractionDigits: options.currencyPrecision,
+                      }).format(+(value ?? 0) / options.currencyPrecisionFactor)
                     : new Intl.NumberFormat(meta.formatOptions.locale).format(+(value ?? 0));
 
             const tooltipText = `
@@ -172,16 +172,6 @@ function hasClass(element, className) {
     return (' ' + element.getAttribute('class') + ' ').indexOf(' ' + className + ' ') > -1;
 }
 
-function next(element, className) {
-    do {
-        element = element.nextSibling;
-    } while (element && !hasClass(element, className));
-    return element;
-}
-
-function text(element) {
-    return element.innerText || element.textContent;
-}
 function calculateDistance(x1, x2) {
     return Math.abs(x2 - x1);
 }

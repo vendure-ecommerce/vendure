@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ProductVariant
 
-<GenerationInfo sourceFile="packages/core/src/entity/product-variant/product-variant.entity.ts" sourceLine="37" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/product-variant/product-variant.entity.ts" sourceLine="38" packageName="@vendure/core" />
 
 A ProductVariant represents a single stock keeping unit (SKU) in the store's inventory.
 Whereas a <a href='/reference/typescript-api/entities/product#product'>Product</a> is a "container" of variants, the variant itself holds the
@@ -35,14 +35,14 @@ class ProductVariant extends VendureEntity implements Translatable, HasCustomFie
     priceWithTax: number
     taxRateApplied: TaxRate;
     @Index()
-    @ManyToOne(type => Asset, { onDelete: 'SET NULL' })
+    @ManyToOne(type => Asset, asset => asset.featuredInVariants, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
     @OneToMany(type => ProductVariantAsset, productVariantAsset => productVariantAsset.productVariant, {
         onDelete: 'SET NULL',
     })
     assets: ProductVariantAsset[];
     @Index()
-    @ManyToOne(type => TaxCategory)
+    @ManyToOne(type => TaxCategory, taxCategory => taxCategory.productVariants)
     taxCategory: TaxCategory;
     @OneToMany(type => ProductVariantPrice, price => price.variant, { eager: true })
     productVariantPrices: ProductVariantPrice[];
@@ -63,19 +63,21 @@ class ProductVariant extends VendureEntity implements Translatable, HasCustomFie
     stockLevels: StockLevel[];
     @OneToMany(type => StockMovement, stockMovement => stockMovement.productVariant)
     stockMovements: StockMovement[];
-    @ManyToMany(type => ProductOption)
+    @ManyToMany(type => ProductOption, productOption => productOption.productVariants)
     @JoinTable()
     options: ProductOption[];
-    @ManyToMany(type => FacetValue)
+    @ManyToMany(type => FacetValue, facetValue => facetValue.productVariants)
     @JoinTable()
     facetValues: FacetValue[];
     @Column(type => CustomProductVariantFields)
     customFields: CustomProductVariantFields;
     @ManyToMany(type => Collection, collection => collection.productVariants)
     collections: Collection[];
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.productVariants)
     @JoinTable()
     channels: Channel[];
+    @OneToMany(type => OrderLine, orderLine => orderLine.productVariant)
+    lines: OrderLine[];
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
@@ -227,6 +229,11 @@ value set on this ProductVariant will be ignored.
 ### channels
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]`}   />
+
+
+### lines
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>[]`}   />
 
 
 

@@ -1,7 +1,7 @@
 {
     "packages": ["packages/*"],
-    "version": "2.1.0",
-    "npmClient": "yarn",
+    "version": "2.2.7",
+    "npmClient": "npm",
     "command": {
         "version": {
             "push": false

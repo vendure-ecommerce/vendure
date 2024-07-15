@@ -39,7 +39,8 @@ It will create a directory called `my-app` inside the current folder.
 
 ### `--use-npm`
 
-By default, Vendure Create will attempt to use Yarn to install all dependencies if it is available. You can override this and force it to use npm with the `--use-npm` flag.
+By default, Vendure Create will detect whether a compatible version of Yarn is installed, and if so will display a prompt to select the preferred package manager.
+You can override this and force it to use npm with the `--use-npm` flag.
 
 ### `--log-level`
 

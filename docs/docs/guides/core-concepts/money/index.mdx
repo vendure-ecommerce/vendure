@@ -8,6 +8,8 @@ This is a common practice in financial applications, as it avoids the rounding e
 
 For example, here's the response from a query for a product's variant prices:
 
+
+
 ```json
 {
   "data": {
@@ -77,6 +79,16 @@ If you are building an Admin UI extension, you can use the built-in [`LocaleCurr
 </div>
 ```
 
+## Support for multiple currencies
+
+Vendure supports multiple currencies out-of-the-box. The available currencies must first be set at the Channel level
+(see the [Channels, Currencies & Prices section](/guides/core-concepts/channels/#channels-currencies--prices)), and then
+a price may be set on a `ProductVariant` in each of the available currencies.
+
+When using multiple currencies, the [ProductVariantPriceSelectionStrategy](/reference/typescript-api/configuration/product-variant-price-selection-strategy/)
+is used to determine which of the available prices to return when fetching the details of a `ProductVariant`. The default strategy
+is to return the price in the currency of the current session request context, which is determined firstly by any `?currencyCode=XXX` query parameter
+on the request, and secondly by the `defaultCurrencyCode` of the Channel.
 
 ## The GraphQL `Money` scalar
 
@@ -110,7 +122,7 @@ then you should also use the `Money` scalar for any monetary values.
 
 ## The `@Money()` decorator
 
-When [defining new database entities](/guides/developer-guide/database-entity//), if you need to store a monetary value, then rather than using the TypeORM `@Column()`
+When [defining new database entities](/guides/developer-guide/database-entity), if you need to store a monetary value, then rather than using the TypeORM `@Column()`
 decorator, you should use Vendure's [`@Money()` decorator](/reference/typescript-api/money/money-decorator).
 
 Using this decorator allows Vendure to correctly store the value in the database according to the configured `MoneyStrategy` (see below).
@@ -161,6 +173,7 @@ The `MoneyStrategy` allows you to define:
 
 - How the value is stored and retrieved from the database
 - How rounding is applied internally
+- The precision represented by the monetary value (since v2.2.0)
 
 For example, in addition to the [`DefaultMoneyStrategy`](/reference/typescript-api/money/default-money-strategy), Vendure
 also provides the [`BigIntMoneyStrategy`](/reference/typescript-api/money/big-int-money-strategy) which stores monetary values
@@ -175,6 +188,52 @@ export const config: VendureConfig = {
     // ...
     entityOptions: {
         moneyStrategy: new BigIntMoneyStrategy(),
+    }
+}
+```
+
+### Example: supporting three decimal places
+
+Let's say you have a B2B store which sells products in bulk, and you want to support prices with three decimal places.
+For example, you want to be able to sell a product for `$1.234` per unit. To do this, you would need to:
+
+1. Configure the `MoneyStrategy` to use three decimal places
+
+```ts
+import { DefaultMoneyStrategy, VendureConfig } from '@vendure/core';
+
+export class ThreeDecimalPlacesMoneyStrategy extends DefaultMoneyStrategy {
+    // highlight-next-line
+    readonly precision = 3;
+}
+
+export const config: VendureConfig = {
+    // ...
+    entityOptions: {
+        moneyStrategy: new ThreeDecimalPlacesMoneyStrategy(),
+    }
+};
+```
+
+2. Set up your storefront to correctly convert the integer value to a decimal value with three decimal places. Using the
+`formatCurrency` example above, we can modify it to divide by 1000 instead of 100:
+
+```ts title="src/utils/format-currency.ts"
+export function formatCurrency(value: number, currencyCode: string, locale?: string) {
+    // highlight-next-line
+    const majorUnits = value / 1000;
+    try {
+        return new Intl.NumberFormat(locale, {
+            style: 'currency',
+            currency: currencyCode,
+            // highlight-start
+            minimumFractionDigits: 3,
+            maximumFractionDigits: 3,
+            // highlight-end
+        }).format(majorUnits);
+    } catch (e: any) {
+         // highlight-next-line
+        return majorUnits.toFixed(3);
     }
 }
 ```

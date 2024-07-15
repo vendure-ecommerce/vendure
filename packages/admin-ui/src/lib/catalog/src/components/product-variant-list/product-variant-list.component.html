@@ -7,7 +7,7 @@
 </vdr-page-block>
 <vdr-data-table-2
     class="mt-2"
-    id="product-variant-list"
+    [id]="dataTableId || 'product-variant-list'"
     [items]="items$ | async"
     [itemsPerPage]="itemsPerPage$ | async"
     [totalItems]="totalItems$ | async"
@@ -23,7 +23,7 @@
     />
     <vdr-dt2-search
         [searchTermControl]="searchTermControl"
-        [searchTermPlaceholder]="'catalog.filter-by-sku' | translate"
+        [searchTermPlaceholder]="'settings.search-by-product-name-or-sku' | translate"
     />
     <vdr-dt2-column [heading]="'common.id' | translate" id="id" [hiddenByDefault]="true" [sort]="sorts.get('id')">
         <ng-template let-variant="item">

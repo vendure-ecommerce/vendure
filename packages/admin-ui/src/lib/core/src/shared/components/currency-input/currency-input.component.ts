@@ -1,5 +1,4 @@
 import {
-    ChangeDetectorRef,
     Component,
     EventEmitter,
     Input,
@@ -14,6 +13,7 @@ import { BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { DataService } from '../../../data/providers/data.service';
+import { CurrencyService } from '../../../providers/currency/currency.service';
 
 /**
  * @description
@@ -56,8 +56,13 @@ export class CurrencyInputComponent implements ControlValueAccessor, OnInit, OnC
     _inputValue: string;
     private currencyCode$ = new BehaviorSubject<string>('');
     private subscription: Subscription;
+    readonly precision: number;
+    readonly precisionFactor: number;
 
-    constructor(private dataService: DataService, private changeDetectorRef: ChangeDetectorRef) {}
+    constructor(private dataService: DataService, private currencyService: CurrencyService) {
+        this.precision = currencyService.precision;
+        this.precisionFactor = currencyService.precisionFactor;
+    }
 
     ngOnInit() {
         const languageCode$ = this.dataService.client.uiState().mapStream(data => data.uiState.language);
@@ -133,7 +138,7 @@ export class CurrencyInputComponent implements ControlValueAccessor, OnInit, OnC
     }
 
     onInput(value: string) {
-        const integerValue = Math.round(+value * 100);
+        const integerValue = Math.round(+value * this.currencyService.precisionFactor);
         if (typeof this.onChange === 'function') {
             this.onChange(integerValue);
         }
@@ -155,11 +160,11 @@ export class CurrencyInputComponent implements ControlValueAccessor, OnInit, OnC
     writeValue(value: any): void {
         const numericValue = +value;
         if (!Number.isNaN(numericValue)) {
-            this._inputValue = this.toNumericString(Math.floor(value) / 100);
+            this._inputValue = this.toNumericString(this.currencyService.toMajorUnits(Math.floor(value)));
         }
     }
 
     private toNumericString(value: number | string): string {
-        return this.hasFractionPart ? Number(value).toFixed(2) : Number(value).toFixed(0);
+        return this.hasFractionPart ? Number(value).toFixed(this.precision) : Number(value).toFixed(0);
     }
 }

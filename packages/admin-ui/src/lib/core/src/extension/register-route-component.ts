@@ -25,11 +25,13 @@ export type RegisterRouteComponentOptions<
 > = {
     component: Type<Component> | Component;
     title?: string;
+    locationId?: string;
+    description?: string;
     breadcrumb?: BreadcrumbValue;
     path?: string;
     query?: T;
     getBreadcrumbs?: (entity: Exclude<ResultOf<T>[R], 'Query'>) => BreadcrumbValue;
-    entityKey?: Component extends BaseDetailComponent<any> ? R : undefined;
+    entityKey?: Component extends BaseDetailComponent<any> ? R : string;
     variables?: T extends TypedDocumentNode<any, infer V> ? Omit<V, 'id'> : never;
     routeConfig?: Route;
 } & (Component extends BaseDetailComponent<any> ? { entityKey: R } : unknown);
@@ -81,10 +83,23 @@ export function registerRouteComponent<
     Field extends keyof ResultOf<T>,
     R extends Field,
 >(options: RegisterRouteComponentOptions<Component, Entity, T, Field, R>) {
-    const { query, entityKey, variables, getBreadcrumbs } = options;
+    const { query, entityKey, variables, getBreadcrumbs, locationId, description } = options;
 
     const breadcrumbSubject$ = new BehaviorSubject<BreadcrumbValue>(options.breadcrumb ?? '');
     const titleSubject$ = new BehaviorSubject<string | undefined>(options.title);
+
+    if (getBreadcrumbs != null && (query == null || entityKey == null)) {
+        console.error(
+            [
+                `[${
+                    options.path ?? 'custom'
+                } route] When using the "getBreadcrumbs" option, the "query" and "entityKey" options must also be provided.`,
+                ``,
+                `Alternatively, use the "breadcrumb" option instead, or use the "PageMetadataService" inside your Angular component`,
+                `or the "usePageMetadata" React hook to set the breadcrumb.`,
+            ].join('\n'),
+        );
+    }
 
     const resolveFn:
         | ResolveFn<{
@@ -116,9 +131,11 @@ export function registerRouteComponent<
         ...(options.routeConfig ?? {}),
         resolve: { ...(resolveFn ? { detail: resolveFn } : {}), ...(options.routeConfig?.resolve ?? {}) },
         data: {
+            locationId,
+            description,
             breadcrumb: breadcrumbSubject$,
             ...(options.routeConfig?.data ?? {}),
-            ...(getBreadcrumbs
+            ...(getBreadcrumbs && query && entityKey
                 ? {
                       breadcrumb: data =>
                           data.detail.entity.pipe(map((entity: any) => getBreadcrumbs(entity))),

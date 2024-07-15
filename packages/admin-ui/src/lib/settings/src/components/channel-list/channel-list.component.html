@@ -2,11 +2,12 @@
     <vdr-action-bar>
         <vdr-ab-left> </vdr-ab-left>
         <vdr-ab-right>
-            <vdr-action-bar-items locationId="channel-list"></vdr-action-bar-items>
+            <vdr-action-bar-items locationId="channel-list" />
             <a class="btn btn-primary" *vdrIfPermissions="['SuperAdmin', 'CreateChannel']" [routerLink]="['./', 'create']">
                 <clr-icon shape="plus"></clr-icon>
                 {{ 'settings.create-new-channel' | translate }}
             </a>
+            <vdr-action-bar-dropdown-menu locationId="channel-list" />
         </vdr-ab-right>
     </vdr-action-bar>
 </vdr-page-block>

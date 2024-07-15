@@ -56,7 +56,7 @@ export const createRoutes = (pageService: PageService): Route[] => [
         path: 'channels/:id',
         component: PageComponent,
         data: {
-            locationId: 'channel-list',
+            locationId: 'channel-detail',
             breadcrumb: { label: _('breadcrumb.channels'), link: ['../', 'channels'] },
         },
         children: pageService.getPageTabRoutes('channel-detail'),
@@ -74,7 +74,7 @@ export const createRoutes = (pageService: PageService): Route[] => [
         path: 'stock-locations/:id',
         component: PageComponent,
         data: {
-            locationId: 'stock-location-list',
+            locationId: 'stock-location-detail',
             breadcrumb: { label: _('breadcrumb.stock-locations'), link: ['../', 'stock-locations'] },
         },
         children: pageService.getPageTabRoutes('stock-location-detail'),
@@ -92,7 +92,7 @@ export const createRoutes = (pageService: PageService): Route[] => [
         path: 'sellers/:id',
         component: PageComponent,
         data: {
-            locationId: 'seller-list',
+            locationId: 'seller-detail',
             breadcrumb: { label: _('breadcrumb.sellers'), link: ['../', 'sellers'] },
         },
         children: pageService.getPageTabRoutes('seller-detail'),

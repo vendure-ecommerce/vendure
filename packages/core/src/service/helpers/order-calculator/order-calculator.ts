@@ -4,6 +4,7 @@ import { AdjustmentType } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
+import { CacheKey } from '../../../common/constants';
 import { InternalServerError } from '../../../common/error/errors';
 import { idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
@@ -58,7 +59,7 @@ export class OrderCalculator {
         // must be revalidated on any changes to an Order.
         order.promotions = [];
         const zones = await this.zoneService.getAllWithMembers(ctx);
-        const activeTaxZone = await this.requestContextCache.get(ctx, 'activeTaxZone', () =>
+        const activeTaxZone = await this.requestContextCache.get(ctx, CacheKey.ActiveTaxZone, () =>
             taxZoneStrategy.determineTaxZone(ctx, zones, ctx.channel, order),
         );
 
@@ -306,6 +307,13 @@ export class OrderCalculator {
     }
 
     private async applyShipping(ctx: RequestContext, order: Order) {
+        // First we need to remove any ShippingLines which are no longer applicable
+        // to the Order, i.e. there is no OrderLine which is assigned to the ShippingLine's
+        // ShippingMethod.
+        const orderLineShippingLineIds = order.lines.map(line => line.shippingLineId);
+        order.shippingLines = order.shippingLines.filter(shippingLine =>
+            orderLineShippingLineIds.includes(shippingLine.id),
+        );
         for (const shippingLine of order.shippingLines) {
             const currentShippingMethod =
                 shippingLine?.shippingMethodId &&

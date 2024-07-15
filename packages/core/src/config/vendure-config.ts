@@ -20,9 +20,11 @@ import { PasswordValidationStrategy } from './auth/password-validation-strategy'
 import { CollectionFilter } from './catalog/collection-filter';
 import { ProductVariantPriceCalculationStrategy } from './catalog/product-variant-price-calculation-strategy';
 import { ProductVariantPriceSelectionStrategy } from './catalog/product-variant-price-selection-strategy';
+import { ProductVariantPriceUpdateStrategy } from './catalog/product-variant-price-update-strategy';
 import { StockDisplayStrategy } from './catalog/stock-display-strategy';
 import { StockLocationStrategy } from './catalog/stock-location-strategy';
 import { CustomFields } from './custom-field/custom-field-types';
+import { EntityDuplicator } from './entity/entity-duplicator';
 import { EntityIdStrategy } from './entity/entity-id-strategy';
 import { MoneyStrategy } from './entity/money-strategy';
 import { EntityMetadataModifier } from './entity-metadata/entity-metadata-modifier';
@@ -50,6 +52,7 @@ import { SessionCacheStrategy } from './session-cache/session-cache-strategy';
 import { ShippingCalculator } from './shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from './shipping-method/shipping-eligibility-checker';
 import { ShippingLineAssignmentStrategy } from './shipping-method/shipping-line-assignment-strategy';
+import { ErrorHandlerStrategy } from './system/error-handler-strategy';
 import { HealthCheckStrategy } from './system/health-check-strategy';
 import { TaxLineCalculationStrategy } from './tax/tax-line-calculation-strategy';
 import { TaxZoneStrategy } from './tax/tax-zone-strategy';
@@ -221,11 +224,13 @@ export interface ApiOptions {
 export interface CookieOptions {
     /**
      * @description
-     * The name of the cookie to set.
+     * The name of the cookies to set.
+     * If set to a string, both cookies for the Admin API and Shop API will have the same name.
+     * If set as an object, it makes it possible to give different names to the Admin API and the Shop API cookies
      *
      * @default 'session'
      */
-    name?: string;
+    name?: string | { shop: string; admin: string };
 
     /**
      * @description
@@ -297,6 +302,22 @@ export interface CookieOptions {
      * the same request with the same name (regardless of path or domain) are filtered out of the Set-Cookie header when setting this cookie.
      */
     overwrite?: boolean;
+
+    /**
+     * @description
+     * A number representing the milliseconds from Date.now() for expiry
+     *
+     * @since 2.2.0
+     */
+    maxAge?: number;
+
+    /**
+     * @description
+     * a Date object indicating the cookie's expiration date (expires at the end of session by default).
+     *
+     * @since 2.2.0
+     */
+    expires?: Date;
 }
 
 /**
@@ -468,7 +489,7 @@ export interface OrderOptions {
      * to perform price calculations against active promotions and taxes. This can have a significant
      * performance impact for very large values.
      *
-     * Attempting to exceed this limit will cause Vendure to throw a {@link OrderItemsLimitError}.
+     * Attempting to exceed this limit will cause Vendure to throw a `OrderLimitError`.
      *
      * @default 999
      */
@@ -479,7 +500,7 @@ export interface OrderOptions {
      * on the `orderItemsLimit` for more granular control. Note `orderItemsLimit` is still
      * important in order to prevent excessive resource usage.
      *
-     * Attempting to exceed this limit will cause Vendure to throw a {@link OrderItemsLimitError}.
+     * Attempting to exceed this limit will cause Vendure to throw a OrderLimitError`.
      *
      * @default 999
      */
@@ -675,6 +696,16 @@ export interface CatalogOptions {
      * @default DefaultTaxCalculationStrategy
      */
     productVariantPriceCalculationStrategy?: ProductVariantPriceCalculationStrategy;
+    /**
+     * @description
+     * Defines the strategy which determines what happens to a ProductVariant's prices
+     * when one of the prices gets updated. For instance, this can be used to synchronize
+     * prices across multiple Channels.
+     *
+     * @default DefaultProductVariantPriceUpdateStrategy
+     * @since 2.2.0
+     */
+    productVariantPriceUpdateStrategy?: ProductVariantPriceUpdateStrategy;
     /**
      * @description
      * Defines how the `ProductVariant.stockLevel` value is obtained. It is usually not desirable
@@ -932,6 +963,15 @@ export interface EntityOptions {
     entityIdStrategy?: EntityIdStrategy<any>;
     /**
      * @description
+     * An array of {@link EntityDuplicator} instances which are used to duplicate entities
+     * when using the `duplicateEntity` mutation.
+     *
+     * @since 2.2.0
+     * @default defaultEntityDuplicators
+     */
+    entityDuplicators?: Array<EntityDuplicator<any>>;
+    /**
+     * @description
      * Defines the strategy used to store and round monetary values.
      *
      * @since 2.0.0
@@ -1001,6 +1041,15 @@ export interface SystemOptions {
      * @since 1.6.0
      */
     healthChecks?: HealthCheckStrategy[];
+    /**
+     * @description
+     * Defines an array of {@link ErrorHandlerStrategy} instances which are used to define logic to be executed
+     * when an error occurs, either on the server or the worker.
+     *
+     * @default []
+     * @since 2.2.0
+     */
+    errorHandlers?: ErrorHandlerStrategy[];
 }
 
 /**
@@ -1162,10 +1211,10 @@ type DeepPartialSimple<T> = {
         | (T[P] extends Array<infer U>
               ? Array<DeepPartialSimple<U>>
               : T[P] extends ReadonlyArray<infer X>
-              ? ReadonlyArray<DeepPartialSimple<X>>
-              : T[P] extends Type<any>
-              ? T[P]
-              : DeepPartialSimple<T[P]>);
+                ? ReadonlyArray<DeepPartialSimple<X>>
+                : T[P] extends Type<any>
+                  ? T[P]
+                  : DeepPartialSimple<T[P]>);
 };
 
 export type PartialVendureConfig = DeepPartialSimple<VendureConfig>;

@@ -104,8 +104,12 @@ export function checkNodeVersion(requiredVersion: string) {
 
 export function yarnIsAvailable() {
     try {
-        execSync('yarnpkg --version', { stdio: 'ignore' });
-        return true;
+        const yarnVersion = execSync('yarnpkg --version');
+        if (semver.major(yarnVersion.toString()) > 1) {
+            return true;
+        } else {
+            return false;
+        }
     } catch (e: any) {
         return false;
     }
@@ -259,9 +263,12 @@ export function getDependencies(
         `@vendure/admin-ui-plugin${vendurePkgVersion}`,
         'dotenv',
         dbDriverPackage(dbType),
+    ];
+    const devDependencies = [
+        `@vendure/cli${vendurePkgVersion}`,
+        'concurrently',
         `typescript@${TYPESCRIPT_VERSION}`,
     ];
-    const devDependencies = ['concurrently', 'ts-node'];
     return { dependencies, devDependencies };
 }
 
@@ -345,6 +352,7 @@ async function checkPostgresDbExists(options: any, root: string): Promise<true> 
         port: options.port,
         database: options.database,
         schema: options.schema,
+        ssl: options.ssl,
     };
     const client = new Client(connectionOptions);
 
@@ -364,6 +372,8 @@ async function checkPostgresDbExists(options: any, root: string): Promise<true> 
             throwDatabaseDoesNotExist(options.database);
         } else if (e.message === 'NO_SCHEMA') {
             throwDatabaseSchemaDoesNotExist(options.database, options.schema);
+        } else if (e.code === '28000') {
+            throwSSLConnectionError(e, options.ssl);
         }
         throwConnectionError(e);
         await client.end();
@@ -376,6 +386,18 @@ async function checkPostgresDbExists(options: any, root: string): Promise<true> 
 function throwConnectionError(err: any) {
     throw new Error(
         'Could not connect to the database. ' +
+            `Please check the connection settings in your Vendure config.\n[${
+                (err.message || err.toString()) as string
+            }]`,
+    );
+}
+
+function throwSSLConnectionError(err: any, sslEnabled?: any) {
+    throw new Error(
+        'Could not connect to the database. ' +
+            (sslEnabled === undefined
+                ? 'Is your server requiring an SSL connection?'
+                : 'Are you sure your server supports SSL?') +
             `Please check the connection settings in your Vendure config.\n[${
                 (err.message || err.toString()) as string
             }]`,

@@ -26,7 +26,7 @@ import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 import { camelCase } from 'typeorm/util/StringUtils';
 
 import { RequestContext } from '../../api/common/request-context';
-import { RelationPaths } from '../../api/index';
+import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { isGraphQlErrorResult } from '../../common/error/error-result';
 import { ForbiddenError, InternalServerError } from '../../common/error/errors';
 import { MimeTypeError } from '../../common/error/generated-graphql-admin-errors';
@@ -311,7 +311,7 @@ export class AssetService {
                 result.tags = tags;
                 await this.connection.getRepository(ctx, Asset).save(result);
             }
-            this.eventBus.publish(new AssetEvent(ctx, result, 'created', input));
+            await this.eventBus.publish(new AssetEvent(ctx, result, 'created', input));
             resolve(result);
         });
     }
@@ -333,7 +333,7 @@ export class AssetService {
             asset.tags = await this.tagService.valuesToTags(ctx, input.tags);
         }
         const updatedAsset = await this.connection.getRepository(ctx, Asset).save(asset);
-        this.eventBus.publish(new AssetEvent(ctx, updatedAsset, 'updated', input));
+        await this.eventBus.publish(new AssetEvent(ctx, updatedAsset, 'updated', input));
         return updatedAsset;
     }
 
@@ -385,7 +385,7 @@ export class AssetService {
             await Promise.all(
                 assets.map(async asset => {
                     await this.channelService.removeFromChannels(ctx, Asset, asset.id, [ctx.channelId]);
-                    this.eventBus.publish(new AssetChannelEvent(ctx, asset, ctx.channelId, 'removed'));
+                    await this.eventBus.publish(new AssetChannelEvent(ctx, asset, ctx.channelId, 'removed'));
                 }),
             );
             const isOnlyChannel = channelsOfAssets.length === 1;
@@ -401,7 +401,7 @@ export class AssetService {
         await Promise.all(
             assets.map(async asset => {
                 await this.channelService.removeFromChannels(ctx, Asset, asset.id, channelsOfAssets);
-                this.eventBus.publish(new AssetChannelEvent(ctx, asset, ctx.channelId, 'removed'));
+                await this.eventBus.publish(new AssetChannelEvent(ctx, asset, ctx.channelId, 'removed'));
             }),
         );
         return this.deleteUnconditional(ctx, assets);
@@ -426,7 +426,9 @@ export class AssetService {
         await Promise.all(
             assets.map(async asset => {
                 await this.channelService.assignToChannels(ctx, Asset, asset.id, [input.channelId]);
-                return this.eventBus.publish(new AssetChannelEvent(ctx, asset, input.channelId, 'assigned'));
+                return await this.eventBus.publish(
+                    new AssetChannelEvent(ctx, asset, input.channelId, 'assigned'),
+                );
             }),
         );
         return this.connection.findByIdsInChannel(
@@ -465,8 +467,8 @@ export class AssetService {
                 maybeFilePathOrCtx instanceof RequestContext
                     ? maybeFilePathOrCtx
                     : maybeCtx instanceof RequestContext
-                    ? maybeCtx
-                    : RequestContext.empty();
+                      ? maybeCtx
+                      : RequestContext.empty();
             return this.createAssetInternal(ctx, stream, filename, mimetype);
         } else {
             throw new InternalServerError('error.path-should-be-a-string-got-buffer');
@@ -500,7 +502,7 @@ export class AssetService {
             } catch (e: any) {
                 Logger.error('error.could-not-delete-asset-file', undefined, e.stack);
             }
-            this.eventBus.publish(new AssetEvent(ctx, deletedAsset, 'deleted', deletedAsset.id));
+            await this.eventBus.publish(new AssetEvent(ctx, deletedAsset, 'deleted', deletedAsset.id));
         }
         return {
             result: DeletionResult.DELETED,

@@ -60,7 +60,7 @@ export class OrderSummaryWidgetComponent implements OnInit {
         );
         this.totalOrderCount$ = orderSummary$.pipe(map(res => res.totalItems));
         this.totalOrderValue$ = orderSummary$.pipe(
-            map(res => res.items.reduce((total, order) => total + order.totalWithTax, 0) / 100),
+            map(res => res.items.reduce((total, order) => total + order.totalWithTax, 0)),
         );
         this.currencyCode$ = this.dataService.settings
             .getActiveChannel()

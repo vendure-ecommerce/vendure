@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
-import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
+import pc from 'picocolors';
 import { Connection, createConnection, DataSourceOptions } from 'typeorm';
 import { MysqlDriver } from 'typeorm/driver/mysql/MysqlDriver';
 import { camelCase } from 'typeorm/util/StringUtils';
@@ -37,37 +37,44 @@ export interface MigrationOptions {
  *
  * @docsCategory migration
  */
-export async function runMigrations(userConfig: Partial<VendureConfig>) {
+export async function runMigrations(userConfig: Partial<VendureConfig>): Promise<string[]> {
     const config = await preBootstrapConfig(userConfig);
     const connection = await createConnection(createConnectionOptions(config));
+    const migrationsRan: string[] = [];
     try {
         const migrations = await disableForeignKeysForSqLite(connection, () =>
             connection.runMigrations({ transaction: 'each' }),
         );
         for (const migration of migrations) {
-            console.log(chalk.green(`Successfully ran migration: ${migration.name}`));
+            log(pc.green(`Successfully ran migration: ${migration.name}`));
+            migrationsRan.push(migration.name);
         }
     } catch (e: any) {
-        console.log(chalk.red('An error occurred when running migrations:'));
-        console.log(e.message);
-        process.exitCode = 1;
+        log(pc.red('An error occurred when running migrations:'));
+        log(e.message);
+        if (isRunningFromVendureCli()) {
+            throw e;
+        } else {
+            process.exitCode = 1;
+        }
     } finally {
         await checkMigrationStatus(connection);
         await connection.close();
         resetConfig();
     }
+    return migrationsRan;
 }
 
 async function checkMigrationStatus(connection: Connection) {
     const builderLog = await connection.driver.createSchemaBuilder().log();
     if (builderLog.upQueries.length) {
-        console.log(
-            chalk.yellow(
+        log(
+            pc.yellow(
                 'Your database schema does not match your current configuration. Generate a new migration for the following changes:',
             ),
         );
         for (const query of builderLog.upQueries) {
-            console.log(' - ' + chalk.yellow(query.query));
+            log(' - ' + pc.yellow(query.query));
         }
     }
 }
@@ -87,9 +94,13 @@ export async function revertLastMigration(userConfig: Partial<VendureConfig>) {
             connection.undoLastMigration({ transaction: 'each' }),
         );
     } catch (e: any) {
-        console.log(chalk.red('An error occurred when reverting migration:'));
-        console.log(e.message);
-        process.exitCode = 1;
+        log(pc.red('An error occurred when reverting migration:'));
+        log(e.message);
+        if (isRunningFromVendureCli()) {
+            throw e;
+        } else {
+            process.exitCode = 1;
+        }
     } finally {
         await connection.close();
         resetConfig();
@@ -104,7 +115,10 @@ export async function revertLastMigration(userConfig: Partial<VendureConfig>) {
  *
  * @docsCategory migration
  */
-export async function generateMigration(userConfig: Partial<VendureConfig>, options: MigrationOptions) {
+export async function generateMigration(
+    userConfig: Partial<VendureConfig>,
+    options: MigrationOptions,
+): Promise<string | undefined> {
     const config = await preBootstrapConfig(userConfig);
     const connection = await createConnection(createConnectionOptions(config));
 
@@ -113,6 +127,7 @@ export async function generateMigration(userConfig: Partial<VendureConfig>, opti
     const sqlInMemory = await connection.driver.createSchemaBuilder().log();
     const upSqls: string[] = [];
     const downSqls: string[] = [];
+    let migrationName: string | undefined;
 
     // mysql is exceptional here because it uses ` character in to escape names in queries, that's why for mysql
     // we are using simple quoted string instead of template string syntax
@@ -168,13 +183,15 @@ export async function generateMigration(userConfig: Partial<VendureConfig>, opti
             await fs.ensureFile(outputPath);
             fs.writeFileSync(outputPath, fileContent);
 
-            console.log(chalk.green(`Migration ${chalk.blue(outputPath)} has been generated successfully.`));
+            log(pc.green(`Migration ${pc.blue(outputPath)} has been generated successfully.`));
+            migrationName = outputPath;
         }
     } else {
-        console.log(chalk.yellow('No changes in database schema were found - cannot generate a migration.'));
+        log(pc.yellow('No changes in database schema were found - cannot generate a migration.'));
     }
     await connection.close();
     resetConfig();
+    return migrationName;
 }
 
 function createConnectionOptions(userConfig: Partial<VendureConfig>): DataSourceOptions {
@@ -224,4 +241,17 @@ ${downSqls.join(`
 
 }
 `;
+}
+
+function log(message: string) {
+    // If running from within the Vendure CLI, we allow the CLI app
+    // to handle the logging.
+    if (isRunningFromVendureCli()) {
+        return;
+    }
+    console.log(message);
+}
+
+function isRunningFromVendureCli(): boolean {
+    return process.env.VENDURE_RUNNING_IN_CLI != null;
 }

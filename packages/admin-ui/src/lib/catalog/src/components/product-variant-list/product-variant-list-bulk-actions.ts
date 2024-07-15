@@ -1,21 +1,22 @@
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BulkAction,
+    createBulkRemoveFromChannelAction,
     DataService,
     DeletionResult,
     GetProductVariantListQuery,
+    isMultiChannel,
     ItemOf,
     ModalService,
     NotificationService,
     Permission,
-    createBulkRemoveFromChannelAction,
-    isMultiChannel,
     ProductVariant,
 } from '@vendure/admin-ui/core';
 import { unique } from '@vendure/common/lib/unique';
 import { EMPTY } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { AssignProductsToChannelDialogComponent } from '../assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
+import { BulkAddFacetValuesDialogComponent } from '../bulk-add-facet-values-dialog/bulk-add-facet-values-dialog.component';
 import { ProductVariantListComponent } from './product-variant-list.component';
 
 export const assignProductVariantsToChannelBulkAction: BulkAction<
@@ -23,7 +24,7 @@ export const assignProductVariantsToChannelBulkAction: BulkAction<
     ProductVariantListComponent
 > = {
     location: 'product-variant-list',
-    label: _('catalog.assign-to-channel'),
+    label: _('common.assign-to-channel'),
     icon: 'layers',
     requiresPermission: userPermissions =>
         userPermissions.includes(Permission.UpdateCatalog) ||
@@ -114,6 +115,41 @@ export const deleteProductVariantsBulkAction: BulkAction<ProductVariant, Product
                 }
                 hostComponent.refresh();
                 clearSelection();
+            });
+    },
+};
+
+export const assignFacetValuesToProductVariantsBulkAction: BulkAction<
+    ItemOf<GetProductVariantListQuery, 'productVariants'>,
+    ProductVariantListComponent
+> = {
+    location: 'product-variant-list',
+    label: _('catalog.edit-facet-values'),
+    icon: 'tag',
+    requiresPermission: userPermissions =>
+        userPermissions.includes(Permission.UpdateCatalog) ||
+        userPermissions.includes(Permission.UpdateProduct),
+    onClick: ({ injector, selection, clearSelection }) => {
+        const modalService = injector.get(ModalService);
+        const notificationService = injector.get(NotificationService);
+        const mode = 'variant';
+        const ids = unique(selection.map(p => p.id));
+        return modalService
+            .fromComponent(BulkAddFacetValuesDialogComponent, {
+                size: 'xl',
+                locals: {
+                    mode,
+                    ids,
+                },
+            })
+            .subscribe(result => {
+                if (result) {
+                    notificationService.success(_('common.notify-bulk-update-success'), {
+                        count: selection.length,
+                        entity: mode === 'variant' ? 'Products' : 'ProductVariants',
+                    });
+                    clearSelection();
+                }
             });
     },
 };

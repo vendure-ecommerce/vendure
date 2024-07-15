@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CustomColumnComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/data-table-2/data-table-custom-component.service.ts" sourceLine="43" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/data-table-2/data-table-custom-component.service.ts" sourceLine="44" packageName="@vendure/admin-ui" />
 
 Components which are to be used to render custom cells in a data table should implement this interface.
 

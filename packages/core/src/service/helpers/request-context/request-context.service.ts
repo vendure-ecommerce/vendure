@@ -7,6 +7,7 @@ import ms from 'ms';
 
 import { ApiType, getApiType } from '../../../api/common/get-api-type';
 import { RequestContext } from '../../../api/common/request-context';
+import { UserInputError } from '../../../common/error/errors';
 import { idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
 import { CachedSession, CachedSessionUser } from '../../../config/session-cache/session-cache-strategy';
@@ -138,7 +139,13 @@ export class RequestContextService {
     }
 
     private getCurrencyCode(req: Request, channel: Channel): CurrencyCode | undefined {
-        return (req.query && (req.query.currencyCode as CurrencyCode)) ?? channel.defaultCurrencyCode;
+        const queryCurrencyCode = req.query && (req.query.currencyCode as CurrencyCode);
+        if (queryCurrencyCode && !channel.availableCurrencyCodes.includes(queryCurrencyCode)) {
+            throw new UserInputError('error.currency-not-available-in-channel', {
+                currencyCode: queryCurrencyCode,
+            });
+        }
+        return queryCurrencyCode ?? channel.defaultCurrencyCode;
     }
 
     /**

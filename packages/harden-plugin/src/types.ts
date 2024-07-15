@@ -1,4 +1,4 @@
-import { ComplexityEstimator } from 'graphql-query-complexity/dist/cjs/QueryComplexity';
+import { ComplexityEstimator } from 'graphql-query-complexity';
 
 /**
  * @description

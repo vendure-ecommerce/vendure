@@ -1,5 +1,4 @@
 import {
-    AfterViewInit,
     ChangeDetectionStrategy,
     Component,
     ElementRef,
@@ -9,15 +8,15 @@ import {
     OnInit,
     ViewChild,
 } from '@angular/core';
-import { Observable } from 'rxjs';
 import { CodeJar } from 'codejar';
+import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { UIExtensionLocationId } from '../../../common/component-registry-types';
 import { DataService } from '../../../data/providers/data.service';
 import { DropdownComponent } from '../dropdown/dropdown.component';
 
-type UiExtensionType = 'actionBar' | 'navMenu' | 'detailComponent' | 'dataTable';
+type UiExtensionType = 'actionBar' | 'actionBarDropdown' | 'navMenu' | 'detailComponent' | 'dataTable';
 
 @Component({
     selector: 'vdr-ui-extension-point',
@@ -25,9 +24,9 @@ type UiExtensionType = 'actionBar' | 'navMenu' | 'detailComponent' | 'dataTable'
     styleUrls: ['./ui-extension-point.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UiExtensionPointComponent implements OnInit, AfterViewInit {
+export class UiExtensionPointComponent implements OnInit {
     @Input() locationId: UIExtensionLocationId;
-    @Input() metadata?: any;
+    @Input() metadata?: string;
     @Input() topPx: number;
     @Input() leftPx: number;
     @HostBinding('style.display')
@@ -66,19 +65,13 @@ export class UiExtensionPointComponent implements OnInit, AfterViewInit {
                 }),
             );
     }
-
-    ngAfterViewInit() {
-        // this.dropdownComponent.onOpenChange(isOpen => {
-        //     if (isOpen) {
-        //     }
-        // });
-    }
 }
 
 function highlightTsCode(tsCode: string) {
     tsCode = tsCode.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
     return tsCode.replace(
+        // eslint-disable-next-line max-len
         /\b(abstract|any|as|boolean|break|case|catch|class|const|continue|default|do|else|enum|export|extends|false|finally|for|from|function|get|if|implements|import|in|instanceof|interface|is|keyof|let|module|namespace|never|new|null|number|object|of|private|protected|public|readonly|require|return|set|static|string|super|switch|symbol|this|throw|true|try|type|typeof|undefined|var|void|while|with|yield)\b|\/\/.*|\/\*[\s\S]*?\*\/|"(?:\\[\s\S]|[^\\"])*"|'[^']*'/g,
         (match, ...args) => {
             if (/^"/.test(match) || /^'/.test(match)) {
@@ -86,6 +79,7 @@ function highlightTsCode(tsCode: string) {
             } else if (/\/\/.*|\/\*[\s\S]*?\*\//.test(match)) {
                 return '<span class="ts-comment">' + match + '</span>';
             } else if (
+                // eslint-disable-next-line max-len
                 /\b(abstract|any|as|boolean|break|case|catch|class|const|continue|default|do|else|enum|export|extends|false|finally|for|from|function|get|if|implements|import|in|instanceof|interface|is|keyof|let|module|namespace|never|new|null|number|object|of|private|protected|public|readonly|require|return|set|static|string|super|switch|symbol|this|throw|true|try|type|typeof|undefined|var|void|while|with|yield)\b/.test(
                     match,
                 )
@@ -98,7 +92,10 @@ function highlightTsCode(tsCode: string) {
     );
 }
 
-const codeTemplates: Record<UiExtensionType, (locationId: UIExtensionLocationId, metadata: any) => string> = {
+const codeTemplates: Record<
+    UiExtensionType,
+    (locationId: UIExtensionLocationId, metadata?: string) => string
+> = {
     actionBar: locationId => `
 import { addActionBarItem } from '@vendure/admin-ui/core';
 
@@ -107,8 +104,18 @@ export default [
     id: 'my-button',
     label: 'My Action',
     locationId: '${locationId}',
-  });
-]`,
+  }),
+];`,
+    actionBarDropdown: locationId => `
+import { addActionBarDropdownMenuItem } from '@vendure/admin-ui/core';
+
+export default [
+  addActionBarDropdownMenuItem({
+    id: 'my-dropdown-item',
+    label: 'My Action',
+    locationId: '${locationId}',
+  }),
+];`,
     navMenu: locationId => `
 import { addNavMenuSection } from '@vendure/admin-ui/core';
 
@@ -116,11 +123,13 @@ export default [
   addNavMenuSection({
       id: 'my-menu-item',
       label: 'My Menu Item',
-      routerLink: ['/extensions/my-plugin'],
-    }
-    '${locationId}'
-  );
-]`,
+      items: [{
+          // ...
+      }],
+    },
+    '${locationId}',
+  ),
+];`,
     detailComponent: locationId => `
 import { registerCustomDetailComponent } from '@vendure/admin-ui/core';
 
@@ -128,8 +137,8 @@ export default [
   registerCustomDetailComponent({
     locationId: '${locationId}',
     component: MyCustomComponent,
-  });
-]`,
+  }),
+];`,
     dataTable: (locationId, metadata) => `
 import { registerDataTableComponent } from '@vendure/admin-ui/core';
 
@@ -138,6 +147,6 @@ export default [
     tableId: '${locationId}',
     columnId: '${metadata}',
     component: MyCustomComponent,
-  });
-]`,
+  }),
+];`,
 };

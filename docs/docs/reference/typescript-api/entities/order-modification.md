@@ -84,7 +84,7 @@ class OrderModification extends VendureEntity {
 
 ### refund
 
-<MemberInfo kind="property" type={`Refund`}   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/refund#refund'>Refund</a>`}   />
 
 
 ### shippingAddressChange

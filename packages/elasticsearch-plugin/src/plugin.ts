@@ -66,7 +66,8 @@ function getCustomResolvers(options: ElasticsearchRuntimeOptions) {
  *
  * **Requires Elasticsearch v7.0 < required Elasticsearch version < 7.10 **
  * Elasticsearch version 7.10.2 will throw error due to incompatibility with elasticsearch-js client.
- * [Check here for more info](https://github.com/elastic/elasticsearch-js/issues/1519)
+ * [Check here for more info](https://github.com/elastic/elasticsearch-js/issues/1519).
+ *
  * `yarn add \@elastic/elasticsearch \@vendure/elasticsearch-plugin`
  *
  * or

@@ -41,7 +41,7 @@ class TestController implements OnModuleInit {
         return job
             .updates()
             .toPromise()
-            .then(update => update.result);
+            .then(update => update?.result);
     }
 }
 

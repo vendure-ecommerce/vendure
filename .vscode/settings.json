@@ -1,0 +1,22 @@
+{
+    "conventionalCommits.scopes": [
+        "admin-ui",
+        "admin-ui-plugin",
+        "asset-server-plugin",
+        "cli",
+        "common",
+        "core",
+        "create",
+        "dev-server",
+        "elasticsearch-plugin",
+        "email-plugin",
+        "harden-plugin",
+        "job-queue-plugin",
+        "sentry-plugin",
+        "stellate-plugin",
+        "testing",
+        "ui-devkit",
+        "repo"
+    ],
+    "conventionalCommits.gitmoji": false
+}
