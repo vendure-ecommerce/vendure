@@ -9,7 +9,7 @@ import { Injector, RequestContext } from '@vendure/core';
  * import { EmailPlugin, ThemeInjector } from '\@vendure/email-plugin';
  *
  * class MyChannelThemeInjector implements ThemeInjector {
- *      async injectTheme(injector, ctx) {
+ *      async injectTheme(ctx, injector, globalTemplateVars) {
  *          const myAsyncService = injector.get(MyAsyncService);
  *          const asyncValue = await myAsyncService.get(ctx);
  *          const channel = ctx.channel;
@@ -21,7 +21,7 @@ import { Injector, RequestContext } from '@vendure/core';
  *              city,
  *              asyncValue,
  *          };
- *          return { theme };
+ *          return { ...globalTemplateVars, theme };
  *      }
  * }
  *
@@ -43,7 +43,10 @@ export interface EmailThemeInjector {
      * Create global theme settings
      */
     injectTheme(
-        injector: Injector,
         ctx: RequestContext,
-    ): Promise<{ [key: string]: any; theme: any }> | { [key: string]: any; theme: any };
+        injector: Injector,
+        globalTemplateVars: { [key: string]: any },
+    ):
+        | Promise<{ [key: string]: any; theme: { [key: string]: any } }>
+        | { [key: string]: any; theme: { [key: string]: any } };
 }

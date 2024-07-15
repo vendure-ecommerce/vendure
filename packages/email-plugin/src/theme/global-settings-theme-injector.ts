@@ -1,15 +1,9 @@
 import { Injector, RequestContext } from '@vendure/core';
 
-import { EmailThemeInjector } from './theme-injector';
+import BaseThemeInjector from './BaseThemeInjector';
 
-export class GlobalSettingsThemeInjector implements EmailThemeInjector {
-    private globalTemplateVars;
-
-    constructor(globalTemplateVars: { [key: string]: any }) {
-        this.globalTemplateVars = globalTemplateVars;
-    }
-
-    injectTheme(_injector: Injector, _ctx: RequestContext) {
-        return { ...this.globalTemplateVars, theme: {} };
+export class GlobalSettingsThemeInjector extends BaseThemeInjector {
+    injectTheme(_ctx: RequestContext, _injector: Injector, globalTemplateVars: { [key: string]: any }) {
+        return { theme: {}, ...globalTemplateVars };
     }
 }

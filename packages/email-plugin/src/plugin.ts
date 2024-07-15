@@ -383,7 +383,15 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
         const { type } = handler;
         try {
             const injector = new Injector(this.moduleRef);
-            const globalTemplateVars = await this.options.themeInjector.injectTheme(injector, event.ctx);
+            const { themeInjector } = this.options;
+            if (this.options.globalTemplateVars?.theme) {
+                Logger.warn('blobalTemplateVars theme key may be overwritten by EmailThemeInjector');
+            }
+            const globalTemplateVars = await themeInjector.injectTheme(
+                event.ctx,
+                injector,
+                this.options.globalTemplateVars ?? {},
+            );
             const result = await handler.handle(event as any, globalTemplateVars, injector);
             if (!result) {
                 return;
