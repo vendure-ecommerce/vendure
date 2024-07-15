@@ -34,7 +34,7 @@ export type EventWithAsyncData<Event extends EventWithContext, R> = Event & { da
 
 /**
  * @description
- * Allows you to dynamically load the "globalTemplateVars" key sync or async and access Vendure services
+ * Allows you to dynamically load the "globalTemplateVars" key async and access Vendure services
  * to create the object. This is not a requirement. You can also specify a simple static object if your
  * projects doesn't need to access async or dynamic values.
  *
@@ -56,13 +56,6 @@ export type EventWithAsyncData<Event extends EventWithContext, R> = Event & { da
  *   [...]
  * })
  *
- *
- * // In vendure-config.ts:
- * ...
- * EmailPlugin.init({
- *     themeInjector: new MyChannelThemeInjector()
- *     ...
- * })
  * ```
  *
  * @docsCategory core plugins/EmailPlugin
