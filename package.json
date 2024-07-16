@@ -50,6 +50,7 @@
     "lerna": "^8.1.2",
     "lint-staged": "^10.5.4",
     "prettier": "^3.2.5",
+    "rollup": "^4.18.0",
     "tinybench": "^2.6.0",
     "ts-node": "^10.9.2",
     "typescript": "5.3.3",
