@@ -53,6 +53,7 @@ import {
     CancelPaymentError,
     EmptyOrderLineSelectionError,
     FulfillmentStateTransitionError,
+    RefundStateTransitionError,
     InsufficientStockOnHandError,
     ItemsAlreadyFulfilledError,
     ManualPaymentStateError,
@@ -109,6 +110,7 @@ import { OrderModifier } from '../helpers/order-modifier/order-modifier';
 import { OrderState } from '../helpers/order-state-machine/order-state';
 import { OrderStateMachine } from '../helpers/order-state-machine/order-state-machine';
 import { PaymentState } from '../helpers/payment-state-machine/payment-state';
+import { RefundState } from '../helpers/refund-state-machine/refund-state';
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
 import { TranslatorService } from '../helpers/translator/translator.service';
@@ -986,6 +988,38 @@ export class OrderService {
             return result;
         }
         return result.fulfillment;
+    }
+
+    /**
+     * @description
+     * Transitions a Refund to the given state
+     */
+    async transitionRefundToState(
+        ctx: RequestContext,
+        refundId: ID,
+        state: RefundState,
+        transactionId?: string,
+    ): Promise<Refund | RefundStateTransitionError> {
+        const refund = await this.connection.getEntityOrThrow(ctx, Refund, refundId, {
+            relations: ['payment', 'payment.order'],
+        });
+        if (transactionId && refund.transactionId !== transactionId) {
+            refund.transactionId = transactionId;
+        }
+        const fromState = refund.state;
+        const toState = state;
+        const { finalize } = await this.refundStateMachine.transition(
+            ctx,
+            refund.payment.order,
+            refund,
+            toState,
+        );
+        await this.connection.getRepository(ctx, Refund).save(refund);
+        await finalize();
+        await this.eventBus.publish(
+            new RefundStateTransitionEvent(fromState, toState, ctx, refund, refund.payment.order),
+        );
+        return refund;
     }
 
     /**

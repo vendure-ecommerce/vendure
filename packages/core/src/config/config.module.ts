@@ -14,7 +14,10 @@ import { ConfigService } from './config.service';
     exports: [ConfigService],
 })
 export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdown {
-    constructor(private configService: ConfigService, private moduleRef: ModuleRef) {}
+    constructor(
+        private configService: ConfigService,
+        private moduleRef: ModuleRef,
+    ) {}
 
     async onApplicationBootstrap() {
         await this.initInjectableStrategies();
@@ -106,6 +109,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
         const { entityIdStrategy } = this.configService.entityOptions;
         const { healthChecks, errorHandlers } = this.configService.systemOptions;
         const { assetImportStrategy } = this.configService.importExportOptions;
+        const { refundProcess: refundProcess } = this.configService.paymentOptions;
         return [
             ...adminAuthenticationStrategy,
             ...shopAuthenticationStrategy,
@@ -145,6 +149,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             stockLocationStrategy,
             productVariantPriceSelectionStrategy,
             guestCheckoutStrategy,
+            ...refundProcess,
         ];
     }
 
