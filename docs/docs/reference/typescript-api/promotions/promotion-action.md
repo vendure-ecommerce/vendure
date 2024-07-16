@@ -58,7 +58,7 @@ Represents a PromotionAction which applies to individual <a href='/reference/typ
 const itemPercentageDiscount = new PromotionItemAction({
     code: 'item_percentage_discount',
     args: { discount: 'percentage' },
-    execute(ctx, orderItem, orderLine, args) {
+    execute(ctx, orderLine, args) {
         return -orderLine.unitPrice * (args.discount / 100);
     },
     description: 'Discount every item by { discount }%',
