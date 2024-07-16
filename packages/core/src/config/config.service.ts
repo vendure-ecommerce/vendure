@@ -120,10 +120,6 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.systemOptions;
     }
 
-    get refundOptions() {
-        return this.activeConfig.refundOptions;
-    }
-
     private getCustomFieldsForAllEntities(): Required<CustomFields> {
         const definedCustomFields = this.activeConfig.customFields;
         const metadataArgsStorage = getMetadataArgsStorage();

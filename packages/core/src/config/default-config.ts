@@ -171,6 +171,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         paymentMethodHandlers: [],
         customPaymentProcess: [],
         process: [defaultPaymentProcess],
+        refundProcess: [defaultRefundProcess],
     },
     taxOptions: {
         taxZoneStrategy: new DefaultTaxZoneStrategy(),
@@ -220,8 +221,5 @@ export const defaultConfig: RuntimeVendureConfig = {
     systemOptions: {
         healthChecks: [new TypeORMHealthCheckStrategy()],
         errorHandlers: [],
-    },
-    refundOptions: {
-        process: [defaultRefundProcess],
     },
 };

@@ -109,7 +109,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
         const { entityIdStrategy } = this.configService.entityOptions;
         const { healthChecks, errorHandlers } = this.configService.systemOptions;
         const { assetImportStrategy } = this.configService.importExportOptions;
-        const { process: refundProcess } = this.configService.refundOptions;
+        const { refundProcess: refundProcess } = this.configService.paymentOptions;
         return [
             ...adminAuthenticationStrategy,
             ...shopAuthenticationStrategy,

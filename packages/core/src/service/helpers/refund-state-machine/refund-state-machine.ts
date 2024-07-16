@@ -40,7 +40,7 @@ export class RefundStateMachine {
     }
 
     private initConfig(): StateMachineConfig<RefundState, RefundTransitionData> {
-        const processes = [...(this.configService.refundOptions.process ?? [])];
+        const processes = [...(this.configService.paymentOptions.refundProcess ?? [])];
         const allTransitions = processes.reduce(
             (transitions, process) =>
                 mergeTransitionDefinitions(transitions, process.transitions as Transitions<any>),
