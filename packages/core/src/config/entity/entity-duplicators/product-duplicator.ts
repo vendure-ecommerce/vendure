@@ -104,6 +104,7 @@ export const productDuplicator = new EntityDuplicator({
                     stockLevels: true,
                     facetValues: true,
                     productVariantPrices: true,
+                    taxCategory: true,
                 },
             });
             if (product.optionGroups && product.optionGroups.length) {
@@ -167,13 +168,13 @@ export const productDuplicator = new EntityDuplicator({
                 const price =
                     variant.productVariantPrices.find(p => idsAreEqual(p.channelId, ctx.channelId))?.price ??
                     variant.productVariantPrices[0]?.price;
-
                 return {
                     productId: duplicatedProduct.id,
                     price: price ?? variant.price,
                     sku: `${variant.sku}-copy`,
                     stockOnHand: 1,
                     featuredAssetId: variant.featuredAsset?.id,
+                    taxCategoryId: variant.taxCategory?.id,
                     useGlobalOutOfStockThreshold: variant.useGlobalOutOfStockThreshold,
                     trackInventory: variant.trackInventory,
                     assetIds: variant.assets.map(value => value.assetId),

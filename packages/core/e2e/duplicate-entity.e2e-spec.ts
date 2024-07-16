@@ -556,7 +556,6 @@ describe('Duplicating entities', () => {
 
                 duplicateEntityGuard.assertSuccess(duplicateEntity);
                 const variant = product?.variants.find(v => v.sku.startsWith(originalFirstVariant.sku));
-                // console.log('pv1', duplicateEntity.newEntityId, product!.variants, variant)
                 expect(variant).not.toBeUndefined();
                 expect(originalFirstVariant.price).toBeGreaterThan(0);
                 expect(variant!.price).toBe(originalFirstVariant.price);
@@ -675,6 +674,52 @@ describe('Duplicating entities', () => {
                 );
 
                 expect(productVariantChannel2!.price).toEqual(productVariant.price + 150);
+            });
+
+            it('tax categories are duplicated', async () => {
+                // update existing variant with a non 1 first tax category
+                // bc tax category defaults to the first available
+                const { product } = await adminClient.query<
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: 'T_1',
+                });
+                const { updateProductVariants } = await adminClient.query<
+                    Codegen.UpdateProductVariantsMutation,
+                    Codegen.UpdateProductVariantsMutationVariables
+                >(UPDATE_PRODUCT_VARIANTS, {
+                    input: [{ id: product!.variants[0].id, taxCategoryId: 'T_2' }],
+                });
+                const { duplicateEntity } = await adminClient.query<
+                    Codegen.DuplicateEntityMutation,
+                    Codegen.DuplicateEntityMutationVariables
+                >(DUPLICATE_ENTITY, {
+                    input: {
+                        entityName: 'Product',
+                        entityId: 'T_1',
+                        duplicatorInput: {
+                            code: 'product-duplicator',
+                            arguments: [
+                                {
+                                    name: 'includeVariants',
+                                    value: 'true',
+                                },
+                            ],
+                        },
+                    },
+                });
+                const { product: productReloaded } = await adminClient.query<
+                    Codegen.GetProductWithVariantsQuery,
+                    Codegen.GetProductWithVariantsQueryVariables
+                >(GET_PRODUCT_WITH_VARIANTS, {
+                    id: duplicateEntity.newEntityId,
+                });
+                const variant = productReloaded?.variants.find(v =>
+                    v.sku.startsWith(product!.variants[0].sku),
+                );
+                expect(variant).not.toBeUndefined();
+                expect(variant!.taxCategory.id).toEqual('T_2');
             });
         });
 
