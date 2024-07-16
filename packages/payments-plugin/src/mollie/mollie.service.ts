@@ -39,14 +39,7 @@ import {
     MolliePaymentMethod,
 } from './graphql/generated-shop-types';
 import { molliePaymentHandler } from './mollie.handler';
-import {
-    amountToCents,
-    areOrderLinesEqual,
-    getLocale,
-    toAmount,
-    toMollieAddress,
-    toMollieOrderLines,
-} from './mollie.helpers';
+import { amountToCents, getLocale, toAmount, toMollieAddress, toMollieOrderLines } from './mollie.helpers';
 import { MolliePluginOptions } from './mollie.plugin';
 
 interface OrderStatusInput {
@@ -483,48 +476,32 @@ export class MollieService {
     }
 
     /**
-     * Compare existing order lines with the new input,
-     * and update, add or cancel the order lines accordingly.
-     *
-     * We compare and update order lines based on their index, because there is no unique identifier
+     * Delete all order lines of current Mollie order, and create new ones based on the new Vendure order lines
      */
     private async updateMollieOrderLines(
         mollieClient: ExtendedMollieClient,
         existingMollieOrder: MollieOrder,
+        /**
+         * These are the new order lines based on the Vendure order
+         */
         newMollieOrderLines: CreateParameters['lines'],
     ): Promise<MollieOrder> {
         const manageOrderLinesInput: ManageOrderLineInput = {
             operations: [],
         };
-        // Update or add new order lines
-        newMollieOrderLines.forEach((newLine, index) => {
-            const existingLine = existingMollieOrder.lines[index];
-            if (existingLine && !areOrderLinesEqual(existingLine, newLine)) {
-                // Update if exists but not equal
-                manageOrderLinesInput.operations.push({
-                    operation: 'update',
-                    data: {
-                        ...newLine,
-                        id: existingLine.id,
-                    },
-                });
-            } else {
-                // Add new line if it doesn't exist
-                manageOrderLinesInput.operations.push({
-                    operation: 'add',
-                    data: newLine,
-                });
-            }
+        // Cancel all previous order lines and create new ones
+        existingMollieOrder.lines.forEach(existingLine => {
+            manageOrderLinesInput.operations.push({
+                operation: 'cancel',
+                data: { id: existingLine.id },
+            });
         });
-        // Cancel any order lines that are in the existing Mollie order, but not in the new input
-        existingMollieOrder.lines.forEach((existingLine, index) => {
-            const newLine = newMollieOrderLines[index];
-            if (!newLine) {
-                manageOrderLinesInput.operations.push({
-                    operation: 'cancel',
-                    data: { id: existingLine.id },
-                });
-            }
+        // Add new order lines
+        newMollieOrderLines.forEach(newLine => {
+            manageOrderLinesInput.operations.push({
+                operation: 'add',
+                data: newLine,
+            });
         });
         return await mollieClient.manageOrderLines(existingMollieOrder.id, manageOrderLinesInput);
     }

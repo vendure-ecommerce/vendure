@@ -1,3 +1,16 @@
+## <small>2.2.7 (2024-06-27)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix creation of variant with zero price ([317deef](https://github.com/vendure-ecommerce/vendure/commit/317deef)), closes [#2917](https://github.com/vendure-ecommerce/vendure/issues/2917)
+* **admin-ui** Fix defaultValue on React RichTextEditor ([051d56f](https://github.com/vendure-ecommerce/vendure/commit/051d56f)), closes [#2884](https://github.com/vendure-ecommerce/vendure/issues/2884)
+* **admin-ui** Fix error on new product creation ([b06bdaf](https://github.com/vendure-ecommerce/vendure/commit/b06bdaf)), closes [#2915](https://github.com/vendure-ecommerce/vendure/issues/2915)
+* **admin-ui** Fix styling of React RichTextEditor component ([353ae50](https://github.com/vendure-ecommerce/vendure/commit/353ae50)), closes [#2885](https://github.com/vendure-ecommerce/vendure/issues/2885)
+* **admin-ui** Fix support for canDeactivate guard on angular routes ([6d9af1d](https://github.com/vendure-ecommerce/vendure/commit/6d9af1d))
+* **core** Correctly apply global and per-route cookie middlewares (#2911) ([2d2e518](https://github.com/vendure-ecommerce/vendure/commit/2d2e518)), closes [#2911](https://github.com/vendure-ecommerce/vendure/issues/2911)
+* **payments-plugin** Prevent duplicate Mollie order lines (#2922) ([74a8c05](https://github.com/vendure-ecommerce/vendure/commit/74a8c05)), closes [#2922](https://github.com/vendure-ecommerce/vendure/issues/2922)
+
 ## <small>2.2.6 (2024-06-18)</small>
 
 

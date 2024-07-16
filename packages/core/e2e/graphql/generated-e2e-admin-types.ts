@@ -6907,6 +6907,7 @@ export type SearchGetAssetsQuery = {
         totalItems: number;
         items: Array<{
             productId: string;
+            productVariantId: string;
             productName: string;
             productVariantName: string;
             productAsset?: {
@@ -18024,6 +18025,10 @@ export const SearchGetAssetsDocument = {
                                         kind: 'SelectionSet',
                                         selections: [
                                             { kind: 'Field', name: { kind: 'Name', value: 'productId' } },
+                                            {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'productVariantId' },
+                                            },
                                             { kind: 'Field', name: { kind: 'Name', value: 'productName' } },
                                             {
                                                 kind: 'Field',

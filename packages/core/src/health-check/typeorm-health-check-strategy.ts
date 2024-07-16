@@ -22,12 +22,14 @@ export interface TypeORMHealthCheckOptions {
  *
  * export const config = {
  *   // ...
- *   systemOptions: [
- *     // The default key is "database" and the default timeout is 1000ms
- *     // Sometimes this is too short and leads to false negatives in the
- *     // /health endpoint.
- *     new TypeORMHealthCheckStrategy({ key: 'postgres-db', timeout: 5000 }),
- *   ]
+ *   systemOptions: {
+ *     healthChecks:[
+ *         // The default key is "database" and the default timeout is 1000ms
+ *         // Sometimes this is too short and leads to false negatives in the
+ *         // /health endpoint.
+ *         new TypeORMHealthCheckStrategy({ key: 'postgres-db', timeout: 5000 }),
+ *     ]
+ *   }
  * }
  * ```
  *

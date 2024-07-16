@@ -427,7 +427,19 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
     }
 
     private customPropertyIsBeingUsed(property: string, options: ListQueryOptions<any>): boolean {
-        return !!(options.sort?.[property] || options.filter?.[property]);
+        return !!(options.sort?.[property] || this.isPropertyUsedInFilter(property, options.filter));
+    }
+
+    private isPropertyUsedInFilter(
+        property: string,
+        filter?: NullOptionals<FilterParameter<any>> | null,
+    ): boolean {
+        return !!(
+            filter &&
+            (filter[property] ||
+                filter._and?.some(nestedFilter => this.isPropertyUsedInFilter(property, nestedFilter)) ||
+                filter._or?.some(nestedFilter => this.isPropertyUsedInFilter(property, nestedFilter)))
+        );
     }
 
     /**

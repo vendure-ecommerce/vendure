@@ -1084,6 +1084,28 @@ describe('Default search plugin', () => {
 
                     expect(search2.items[0].productAsset).toBeNull();
                 });
+
+                it('updates index when asset is added to a ProductVariant', async () => {
+                    const { search: search1 } = await searchForLaptop();
+
+                    expect(search1.items[0].productVariantAsset).toBeNull();
+
+                    await adminClient.query<
+                        UpdateProductVariantsMutation,
+                        UpdateProductVariantsMutationVariables
+                    >(UPDATE_PRODUCT_VARIANTS, {
+                        input: search1.items.map(item => ({
+                            id: item.productVariantId,
+                            featuredAssetId: 'T_2',
+                        })),
+                    });
+
+                    await awaitRunningJobs(adminClient);
+
+                    const { search: search2 } = await searchForLaptop();
+
+                    expect(search2.items[0].productVariantAsset!.id).toBe('T_2');
+                });
             });
 
             it('does not include deleted ProductVariants in index', async () => {
@@ -1971,6 +1993,7 @@ export const SEARCH_GET_ASSETS = gql`
             totalItems
             items {
                 productId
+                productVariantId
                 productName
                 productVariantName
                 productAsset {
