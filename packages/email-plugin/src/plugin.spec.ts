@@ -6,6 +6,7 @@ import {
     DefaultLogger,
     EventBus,
     Injector,
+    JobQueueService,
     LanguageCode,
     Logger,
     LogLevel,
@@ -237,6 +238,37 @@ describe('EmailPlugin', () => {
             eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(onSend.mock.calls[0][0].subject).toBe('Hello baz');
+        });
+
+        it('loads globalTemplateVars async', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Job {{ name }}, {{ primaryColor }}');
+
+            await initPluginWithHandlers([handler], {
+                globalTemplateVars: async (_ctxLocal: RequestContext, injector: Injector) => {
+                    const jobQueueService = injector.get(JobQueueService);
+                    const jobQueue = await jobQueueService.createQueue({
+                        name: 'hello-service',
+                        // eslint-disable-next-line
+                        process: async job => {
+                            return 'hello';
+                        },
+                    });
+                    const name = jobQueue.name;
+
+                    return {
+                        name,
+                        primaryColor: 'blue',
+                    };
+                },
+            });
+
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+            expect(onSend.mock.calls[0][0].subject).toBe(`Job hello-service, blue`);
         });
 
         it('interpolates from', async () => {
@@ -922,7 +954,10 @@ class FakeCustomSender implements EmailSender {
 const pause = () => new Promise(resolve => setTimeout(resolve, 100));
 
 class MockEvent extends VendureEvent {
-    constructor(public ctx: RequestContext, public shouldSend: boolean) {
+    constructor(
+        public ctx: RequestContext,
+        public shouldSend: boolean,
+    ) {
         super();
     }
 }

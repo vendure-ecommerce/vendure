@@ -9,7 +9,6 @@ import { EmailGenerator } from './generator/email-generator';
 import { EmailEventHandler } from './handler/event-handler';
 import { EmailSender } from './sender/email-sender';
 import { TemplateLoader } from './template-loader/template-loader';
-import { EmailThemeInjector } from './theme/theme-injector';
 
 /**
  * @description
@@ -59,7 +58,7 @@ export type EventWithAsyncData<Event extends EventWithContext, R> = Event & { da
  * ```
  *
  * @docsCategory core plugins/EmailPlugin
- * @docsPage EmailThemeInjector
+ * @docsPage EmailPluginOptions
  * @docsWeight 0
  */
 export type GlobalTemplateVarsFn = (
@@ -115,13 +114,6 @@ export interface EmailPluginOptions {
      * plugin services.
      */
     globalTemplateVars?: { [key: string]: any } | GlobalTemplateVarsFn;
-    /**
-     * @description
-     * An optional theme injector. Injects a `theme` key on globalTemplateVars which can contain
-     * arbitrary values such as channel specific colors and address information for headers and footers.
-     * The default creates an empty theme object.
-     */
-    themeInjector?: EmailThemeInjector;
     /**
      * @description
      * An optional allowed EmailSender, used to allow custom implementations of the send functionality

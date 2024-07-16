@@ -124,6 +124,38 @@ import {
  * </mj-table>
  * ```
  *
+ * ### Setting global variables using `globalTemplateVars`
+ *
+ * `globalTemplateVars` is an object that can be passed to the configuration of the Email Plugin with static object variables.
+ * You can also pass an async function that will be called with the `RequestContext` and the `Injector` so you can access services
+ * and e.g. load channel specific theme configurations.
+ *
+ * @example
+ * ```ts
+ * EmailPlugin.init({
+ *    globalTemplateVars: {
+ *      primaryColor: '#FF0000',
+ *      fromAddress: 'no-reply@ourstore.com'
+ *    }
+ * })
+ * ```
+ * or
+ * ```ts
+ * EmailPlugin.init({
+ *    globalTemplateVars: async (ctx, injector) => {
+ *      const myAsyncService = injector.get(MyAsyncService);
+ *      const asyncValue = await myAsyncService.get(ctx);
+ *      const channel = ctx.channel;
+ *      const { primaryColor } = channel.customFields.theme;
+ *      const theme = {
+ *         primaryColor,
+ *         asyncValue,
+ *      };
+ *      return theme;
+ *    }
+ * })
+ * ```
+ *
  * ### Handlebars helpers
  *
  * The following helper functions are available for use in email templates:
