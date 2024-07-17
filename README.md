@@ -20,7 +20,7 @@ An open-source headless commerce platform built on [Node.js](https://nodejs.org)
 - `master` - The latest stable release, currently the 2.x series.
 - `minor` - The next patch release, including new features
 - `major` - The next major release (v3.0)
-- `v1` - The 1.x series, which is no longer actively developed but may still receive critical fixes.
+- `v2.x` - The 2.x line, which will receive critical fixes until the end-of-life on 31.12.2024. The code in this branch is under the MIT license.
 
 ## Structure
 
@@ -30,7 +30,8 @@ This project is a monorepo managed with [Lerna](https://github.com/lerna/lerna).
 vendure/
 ├── docs/           # Documentation source
 ├── e2e-common/     # Shared config for package e2e tests
-├── packages/       # Source for the Vendure server, admin-ui & plugin packages
+├── license/        # License information & CLA signature log
+├── packages/       # Source for the Vendure server, admin-ui & core plugin packages
 ├── scripts/
     ├── changelog/  # Scripts used to generate the changelog based on the git history
     ├── codegen/    # Scripts used to generate TypeScript code from the GraphQL APIs
@@ -39,7 +40,9 @@ vendure/
 
 ## Development
 
-The following instructions are for those who want to develop the Vendure core framework or plugins (e.g. if you intend to make a pull request). For instructions on how to build a project *using* Vendure, please see the [Getting Started guide](https://docs.vendure.io/guides/getting-started/installation/).
+> [!IMPORTANT]
+> The following instructions are for those who want to develop the Vendure core framework or plugins (e.g. if you intend to make a pull request). For instructions on how to build a project *using* Vendure, please see the [Getting Started guide](https://docs.vendure.io/guides/getting-started/installation/).
+
 
 ### 1. Install top-level dependencies
 
@@ -169,7 +172,7 @@ It will run `lerna publish` which will prompt for which version to update to. Al
 
 Next it will build all packages to ensure the distributed files are up to date.
 
-Finally the command will create changelog entries for this release.
+Finally, the command will create changelog entries for this release.
 
 ##### 2. `git push origin master --follow-tags`
 
