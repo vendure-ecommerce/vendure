@@ -292,7 +292,7 @@ export class TypescriptDocsRenderer {
             if (member.kind === 'property') {
                 type = this.renderType(member.type, knownTypeMap, docsUrl);
                 defaultParam = member.defaultValue
-                    ? `default="${this.renderType(member.defaultValue, knownTypeMap, docsUrl)}" `
+                    ? `default={\`${this.renderType(member.defaultValue, knownTypeMap, docsUrl)}\`} `
                     : '';
             } else {
                 const args = member.parameters
