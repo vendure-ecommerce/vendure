@@ -2805,7 +2805,12 @@ export type Mutation = {
     duplicateEntity: DuplicateEntityResult;
     flushBufferedJobs: Success;
     importProducts?: Maybe<ImportInfo>;
-    /** Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})` */
+    /**
+     * Authenticates the user using the native authentication strategy. This mutation is an alias for authenticate({ native: { ... }})
+     *
+     * The `rememberMe` option applies when using cookie-based sessions, and if `true` it will set the maxAge of the session cookie
+     * to 1 year.
+     */
     login: NativeAuthenticationResult;
     logout: Success;
     /**

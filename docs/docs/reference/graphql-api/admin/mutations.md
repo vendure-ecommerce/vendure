@@ -1167,7 +1167,13 @@ import MemberDescription from '@site/src/components/MemberDescription';
 ## login
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level comment">"""</div>
-<div class="graphql-code-line top-level comment">Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate(&#123; native: &#123; ... &#125;&#125;)`</div>
+<div class="graphql-code-line top-level comment">Authenticates the user using the native authentication strategy. This mutation is an alias for authenticate(&#123; native: &#123; ... &#125;&#125;)</div>
+
+<div class="graphql-code-line top-level comment"></div>
+
+<div class="graphql-code-line top-level comment">The <code>rememberMe</code> option applies when using cookie-based sessions, and if <code>true</code> it will set the maxAge of the session cookie</div>
+
+<div class="graphql-code-line top-level comment">to 1 year.</div>
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>
 <div class="graphql-code-line ">login(username: <a href="/reference/graphql-api/admin/object-types#string">String</a>!, password: <a href="/reference/graphql-api/admin/object-types#string">String</a>!, rememberMe: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a>): <a href="/reference/graphql-api/admin/object-types#nativeauthenticationresult">NativeAuthenticationResult</a>!</div>

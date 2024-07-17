@@ -1700,7 +1700,12 @@ export type Mutation = {
     createCustomerAddress: Address;
     /** Delete an existing Address */
     deleteCustomerAddress: Success;
-    /** Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})` */
+    /**
+     * Authenticates the user using the native authentication strategy. This mutation is an alias for authenticate({ native: { ... }})
+     *
+     * The `rememberMe` option applies when using cookie-based sessions, and if `true` it will set the maxAge of the session cookie
+     * to 1 year.
+     */
     login: NativeAuthenticationResult;
     /** End the current authenticated session */
     logout: Success;
