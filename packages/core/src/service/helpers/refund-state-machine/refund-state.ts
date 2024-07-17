@@ -14,7 +14,7 @@ export interface CustomRefundStates {}
  * @description
  * An interface to extend standard {@link RefundState}.
  *
- * @docsCategory refund
+ * @docsCategory payment
  */
 export interface RefundStates {}
 
@@ -22,7 +22,7 @@ export interface RefundStates {}
  * @description
  * These are the default states of the refund process.
  *
- * @docsCategory refund
+ * @docsCategory payment
  */
 export type RefundState = 'Pending' | 'Settled' | 'Failed' | keyof CustomRefundStates | keyof RefundStates;
 

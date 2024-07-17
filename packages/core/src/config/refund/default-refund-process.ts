@@ -11,7 +11,7 @@ let historyService: import('../../service/index').HistoryService;
  * @description
  * The default {@link RefundProcess}.
  *
- * @docsCategory refund
+ * @docsCategory payment
  */
 export const defaultRefundProcess: RefundProcess<RefundState> = {
     transitions: {

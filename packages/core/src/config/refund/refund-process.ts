@@ -20,7 +20,7 @@ import {
  *
  * For detailed description of the interface members, see the {@link StateMachineConfig} docs.
  *
- * @docsCategory refund
+ * @docsCategory payment
  */
 export interface RefundProcess<State extends keyof CustomRefundStates | string> extends InjectableStrategy {
     transitions?: Transitions<State, State | RefundState> & Partial<Transitions<RefundState | State>>;
