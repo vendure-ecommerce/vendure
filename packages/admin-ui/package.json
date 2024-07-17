@@ -1,7 +1,7 @@
 {
     "name": "@vendure/admin-ui",
     "version": "2.2.7",
-    "license": "MIT",
+    "license": "GPL-3.0-or-later",
     "scripts": {
         "ng": "ng",
         "start": "node scripts/set-version.js && ng serve",
