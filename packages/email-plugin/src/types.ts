@@ -59,7 +59,7 @@ export type EventWithAsyncData<Event extends EventWithContext, R> = Event & { da
  *
  * @docsCategory core plugins/EmailPlugin
  * @docsPage EmailPluginOptions
- * @docsWeight 0
+ * @since 2.3.0
  */
 export type GlobalTemplateVarsFn = (
     ctx: RequestContext,
@@ -72,6 +72,7 @@ export type GlobalTemplateVarsFn = (
  *
  * @docsCategory core plugins/EmailPlugin
  * @docsPage EmailPluginOptions
+ * @docsWeight 0
  * */
 export interface EmailPluginOptions {
     /**
@@ -431,7 +432,11 @@ export type SetAttachmentsFn<Event> = (event: Event) => EmailAttachment[] | Prom
  * @docsCategory core plugins/EmailPlugin
  * @docsPage Email Plugin Types
  */
-export type SetSubjectFn<Event> = (event: Event, ctx: RequestContext, injector: Injector) => string | Promise<string>;
+export type SetSubjectFn<Event> = (
+    event: Event,
+    ctx: RequestContext,
+    injector: Injector,
+) => string | Promise<string>;
 
 /**
  * @description
