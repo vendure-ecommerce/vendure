@@ -252,7 +252,7 @@ function getCustomResolvers(options: ElasticsearchRuntimeOptions) {
         // which looks like possibly a TS/definitions bug.
         schema: () => generateSchemaExtensions(ElasticsearchPlugin.options as any),
     },
-    compatibility: '^2.0.0',
+    compatibility: '^3.0.0',
 })
 export class ElasticsearchPlugin implements OnApplicationBootstrap {
     private static options: ElasticsearchRuntimeOptions;

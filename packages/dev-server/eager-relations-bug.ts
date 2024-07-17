@@ -182,6 +182,6 @@ export class EagerRelationsBugOrderResolver {
         );
         return config;
     },
-    compatibility: '^2.1.0',
+    compatibility: '^3.0.0',
 })
 export class EagerRelationsBugPlugin {}

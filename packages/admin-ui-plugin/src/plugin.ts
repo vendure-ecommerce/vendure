@@ -133,7 +133,7 @@ export interface AdminUiPluginOptions {
         resolvers: [MetricsResolver],
     },
     providers: [MetricsService],
-    compatibility: '^2.0.0',
+    compatibility: '^3.0.0',
 })
 export class AdminUiPlugin implements NestModule {
     private static options: AdminUiPluginOptions | undefined;
