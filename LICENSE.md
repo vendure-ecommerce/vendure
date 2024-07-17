@@ -31,6 +31,7 @@ Commercial Distributions - must be used in accordance with the terms and conditi
 contained in a separate written agreement between you and Vendure GmbH.
 For more information about the Vendure Commercial License (VCL) please contact contact@vendure.io.
 
-Please see also (files in this directory):
-[Licensing FAQ - license-faq.md](license/license-faq.md)
-[GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 - gpl-3.0.txt](license/gpl-3.0.txt)
+Please see also:
+
+- [Licensing FAQ - license-faq.md](license/license-faq.md)
+- [GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007 - gpl-3.0.txt](license/gpl-3.0.txt)
