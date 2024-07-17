@@ -9,7 +9,7 @@
     ],
     "author": "Michael Bromley <michael@michaelbromley.co.uk>",
     "homepage": "https://www.vendure.io/",
-    "license": "MIT",
+    "license": "GPL-3.0-or-later",
     "files": [
         "client",
         "compiler",

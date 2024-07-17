@@ -6,7 +6,7 @@
     "files": [
         "lib/**/*"
     ],
-    "license": "MIT",
+    "license": "GPL-3.0-or-later",
     "scripts": {
         "build": "rimraf lib && node -r ts-node/register build.ts && npm run compile",
         "watch": "tsc -p ./tsconfig.build.json --watch",

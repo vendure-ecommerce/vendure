@@ -2,7 +2,7 @@
     "name": "@vendure/common",
     "version": "2.3.0",
     "main": "index.js",
-    "license": "MIT",
+    "license": "GPL-3.0-or-later",
     "scripts": {
         "watch": "tsc -p ./tsconfig.build.json -w",
         "build": "rimraf lib && tsc -p ./tsconfig.build.json",

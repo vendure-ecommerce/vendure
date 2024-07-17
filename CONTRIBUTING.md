@@ -97,3 +97,9 @@ After cloning the Vendure repo, please follow the [Development guide](https://gi
 ## Contributing Admin UI translations
 
 If you wish to contribute translations of the Admin UI into another language (or improve an existing set of translations), please see the [Localization guide](https://github.com/vendure-ecommerce/vendure/blob/master/packages/admin-ui/README.md#localization) in the admin-ui package.
+
+## Contributor License Agreement
+
+All contributors are required to agree to the [Contributor License Agreement](./license/CLA.md) before their contributions can be merged.
+
+This is done via an automation bot which will prompt you to sign the CLA when you open a pull request.
