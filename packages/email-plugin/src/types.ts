@@ -4,9 +4,9 @@ import { Injector, RequestContext, SerializedRequestContext, VendureEvent } from
 import { Attachment } from 'nodemailer/lib/mailer';
 import SESTransport from 'nodemailer/lib/ses-transport';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { EmailEventHandler } from './handler/event-handler';
 
 import { EmailGenerator } from './generator/email-generator';
+import { EmailEventHandler } from './handler/event-handler';
 import { EmailSender } from './sender/email-sender';
 import { TemplateLoader } from './template-loader/template-loader';
 
@@ -30,6 +30,41 @@ export type EventWithContext = VendureEvent & { ctx: RequestContext };
  * @docsPage Email Plugin Types
  */
 export type EventWithAsyncData<Event extends EventWithContext, R> = Event & { data: R };
+
+/**
+ * @description
+ * Allows you to dynamically load the "globalTemplateVars" key async and access Vendure services
+ * to create the object. This is not a requirement. You can also specify a simple static object if your
+ * projects doesn't need to access async or dynamic values.
+ *
+ * @example
+ * ```ts
+ *
+ * EmailPlugin.init({
+ *    globalTemplateVars: async (ctx, injector) => {
+ *          const myAsyncService = injector.get(MyAsyncService);
+ *          const asyncValue = await myAsyncService.get(ctx);
+ *          const channel = ctx.channel;
+ *          const { primaryColor } = channel.customFields.theme;
+ *          const theme = {
+ *              primaryColor,
+ *              asyncValue,
+ *          };
+ *          return theme;
+ *      }
+ *   [...]
+ * })
+ *
+ * ```
+ *
+ * @docsCategory core plugins/EmailPlugin
+ * @docsPage EmailPluginOptions
+ * @docsWeight 0
+ */
+export type GlobalTemplateVarsFn = (
+    ctx: RequestContext,
+    injector: Injector,
+) => Promise<{ [key: string]: any }>;
 
 /**
  * @description
@@ -75,9 +110,10 @@ export interface EmailPluginOptions {
      * @description
      * An object containing variables which are made available to all templates. For example,
      * the storefront URL could be defined here and then used in the "email address verification"
-     * email.
+     * email. Use the GlobalTemplateVarsFn if you need to retrieve variables from Vendure or
+     * plugin services.
      */
-    globalTemplateVars?: { [key: string]: any };
+    globalTemplateVars?: { [key: string]: any } | GlobalTemplateVarsFn;
     /**
      * @description
      * An optional allowed EmailSender, used to allow custom implementations of the send functionality
@@ -97,9 +133,11 @@ export interface EmailPluginOptions {
 }
 
 /**
- * EmailPLuginOptions type after initialization, where templateLoader is no longer optional
+ * EmailPLuginOptions type after initialization, where templateLoader and themeInjector are no longer optional
  */
-export type InitializedEmailPluginOptions = EmailPluginOptions & { templateLoader: TemplateLoader };
+export type InitializedEmailPluginOptions = EmailPluginOptions & {
+    templateLoader: TemplateLoader;
+};
 
 /**
  * @description
