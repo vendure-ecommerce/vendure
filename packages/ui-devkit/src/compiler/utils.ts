@@ -23,14 +23,14 @@ export const logger = {
 };
 
 /**
- * Checks for the global yarn binary and returns true if found.
+ * Checks for the global yarn binary to determine whether to use yarn or npm.
  */
-export function shouldUseYarn(): boolean {
+export function determinePackageManager(): 'yarn' | 'npm' {
     try {
         execSync('yarnpkg --version', { stdio: 'ignore' });
-        return true;
+        return 'yarn';
     } catch (e: any) {
-        return false;
+        return 'npm';
     }
 }
 

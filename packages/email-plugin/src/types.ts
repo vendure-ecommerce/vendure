@@ -427,6 +427,14 @@ export type SetAttachmentsFn<Event> = (event: Event) => EmailAttachment[] | Prom
 
 /**
  * @description
+ * A function used to define the subject to be sent with the email.
+ * @docsCategory core plugins/EmailPlugin
+ * @docsPage Email Plugin Types
+ */
+export type SetSubjectFn<Event> = (event: Event, ctx: RequestContext, injector: Injector) => string | Promise<string>;
+
+/**
+ * @description
  * Optional address-related fields for sending the email.
  *
  * @since 1.1.0

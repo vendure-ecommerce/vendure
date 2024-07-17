@@ -53,6 +53,7 @@ import {
     CancelPaymentError,
     EmptyOrderLineSelectionError,
     FulfillmentStateTransitionError,
+    RefundStateTransitionError,
     InsufficientStockOnHandError,
     ItemsAlreadyFulfilledError,
     ManualPaymentStateError,
@@ -98,6 +99,7 @@ import { CouponCodeEvent } from '../../event-bus/events/coupon-code-event';
 import { OrderEvent } from '../../event-bus/events/order-event';
 import { OrderLineEvent } from '../../event-bus/events/order-line-event';
 import { OrderStateTransitionEvent } from '../../event-bus/events/order-state-transition-event';
+import { RefundEvent } from '../../event-bus/events/refund-event';
 import { RefundStateTransitionEvent } from '../../event-bus/events/refund-state-transition-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { FulfillmentState } from '../helpers/fulfillment-state-machine/fulfillment-state';
@@ -108,6 +110,7 @@ import { OrderModifier } from '../helpers/order-modifier/order-modifier';
 import { OrderState } from '../helpers/order-state-machine/order-state';
 import { OrderStateMachine } from '../helpers/order-state-machine/order-state-machine';
 import { PaymentState } from '../helpers/payment-state-machine/payment-state';
+import { RefundState } from '../helpers/refund-state-machine/refund-state';
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
 import { TranslatorService } from '../helpers/translator/translator.service';
@@ -989,6 +992,38 @@ export class OrderService {
 
     /**
      * @description
+     * Transitions a Refund to the given state
+     */
+    async transitionRefundToState(
+        ctx: RequestContext,
+        refundId: ID,
+        state: RefundState,
+        transactionId?: string,
+    ): Promise<Refund | RefundStateTransitionError> {
+        const refund = await this.connection.getEntityOrThrow(ctx, Refund, refundId, {
+            relations: ['payment', 'payment.order'],
+        });
+        if (transactionId && refund.transactionId !== transactionId) {
+            refund.transactionId = transactionId;
+        }
+        const fromState = refund.state;
+        const toState = state;
+        const { finalize } = await this.refundStateMachine.transition(
+            ctx,
+            refund.payment.order,
+            refund,
+            toState,
+        );
+        await this.connection.getRepository(ctx, Refund).save(refund);
+        await finalize();
+        await this.eventBus.publish(
+            new RefundStateTransitionEvent(fromState, toState, ctx, refund, refund.payment.order),
+        );
+        return refund;
+    }
+
+    /**
+     * @description
      * Allows the Order to be modified, which allows several aspects of the Order to be changed:
      *
      * * Changes to OrderLine quantities
@@ -1419,7 +1454,12 @@ export class OrderService {
             return new RefundOrderStateError({ orderState: order.state });
         }
 
-        return await this.paymentService.createRefund(ctx, input, order, payment);
+        const createdRefund = await this.paymentService.createRefund(ctx, input, order, payment);
+
+        if (createdRefund instanceof Refund) {
+            await this.eventBus.publish(new RefundEvent(ctx, order, createdRefund, 'created'));
+        }
+        return createdRefund;
     }
 
     /**

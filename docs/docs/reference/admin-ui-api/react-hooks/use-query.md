@@ -31,7 +31,7 @@ const GET_PRODUCT = gql`
    }`;
 
 export const MyComponent = () => {
-    const { data, loading, error } = useQuery(GET_PRODUCT, { id: '1' });
+    const { data, loading, error } = useQuery(GET_PRODUCT, { id: '1' }, { refetchOnChannelChange: true });
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error! { error }</div>;
@@ -45,7 +45,7 @@ export const MyComponent = () => {
 ```
 
 ```ts title="Signature"
-function useQuery<T, V extends Record<string, any> = Record<string, any>>(query: DocumentNode | TypedDocumentNode<T, V>, variables?: V): void
+function useQuery<T, V extends Record<string, any> = Record<string, any>>(query: DocumentNode | TypedDocumentNode<T, V>, variables?: V, options: { refetchOnChannelChange: boolean } = { refetchOnChannelChange: false }): void
 ```
 Parameters
 
@@ -56,4 +56,8 @@ Parameters
 ### variables
 
 <MemberInfo kind="parameter" type={`V`} />
+
+### options
+
+<MemberInfo kind="parameter" type={`{ refetchOnChannelChange: boolean }`} />
 

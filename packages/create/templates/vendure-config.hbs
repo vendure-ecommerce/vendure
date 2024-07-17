@@ -52,6 +52,9 @@ export const config: VendureConfig = {
         {{#if dbSchema}}
         schema: process.env.DB_SCHEMA,
         {{/if}}
+        {{#if dbSSL}}
+        ssl: true,
+        {{/if}}
         {{#if isSQLjs}}
         location: path.join(__dirname, 'vendure.sqlite'),
         autoSave: true,

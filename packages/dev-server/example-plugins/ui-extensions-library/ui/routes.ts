@@ -9,11 +9,15 @@ export default [
         path: 'react-ui',
         component: ReactUi,
         title: 'React UI',
+        description: "Test description",
+        locationId: "react-ui"
     }),
     registerRouteComponent({
         path: 'angular-ui',
         component: AngularUiComponent,
         title: 'Angular UI',
+        locationId: "angular-ui",
+        description: "Test description 2",
         routeConfig: {
             canDeactivate: [CanDeactivateDetailGuard],
         },

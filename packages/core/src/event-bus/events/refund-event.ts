@@ -1,21 +1,20 @@
 import { RequestContext } from '../../api/common/request-context';
-import { Order, OrderLine } from '../../entity';
+import { Order, Refund } from '../../entity';
 import { VendureEvent } from '../vendure-event';
 
 /**
  * @description
- * This event is fired whenever an {@link OrderLine} is added, updated
- * or deleted.
+ * This event is fired whenever a {@link Refund} is created
  *
  * @docsCategory events
  * @docsPage Event Types
  */
-export class OrderLineEvent extends VendureEvent {
+export class RefundEvent extends VendureEvent {
     constructor(
         public ctx: RequestContext,
         public order: Order,
-        public orderLine: OrderLine,
-        public type: 'created' | 'updated' | 'deleted' | 'cancelled',
+        public refund: Refund,
+        public type: 'created',
     ) {
         super();
     }

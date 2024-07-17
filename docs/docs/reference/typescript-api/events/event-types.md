@@ -811,12 +811,11 @@ class OrderEvent extends VendureEvent {
 
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/order-line-event.ts" sourceLine="13" packageName="@vendure/core" />
 
-This event is fired whenever an <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a> is added, updated
-or deleted.
+This event is fired whenever an <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a> is added, updated, deleted or cancelled.
 
 ```ts title="Signature"
 class OrderLineEvent extends VendureEvent {
-    constructor(ctx: RequestContext, order: Order, orderLine: OrderLine, type: 'created' | 'updated' | 'deleted')
+    constructor(ctx: RequestContext, order: Order, orderLine: OrderLine, type: 'created' | 'updated' | 'deleted' | 'cancelled')
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>

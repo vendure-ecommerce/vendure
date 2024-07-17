@@ -25,6 +25,8 @@ export type RegisterRouteComponentOptions<
 > = {
     component: Type<Component> | Component;
     title?: string;
+    locationId?: string;
+    description?: string;
     breadcrumb?: BreadcrumbValue;
     path?: string;
     query?: T;
@@ -81,7 +83,7 @@ export function registerRouteComponent<
     Field extends keyof ResultOf<T>,
     R extends Field,
 >(options: RegisterRouteComponentOptions<Component, Entity, T, Field, R>) {
-    const { query, entityKey, variables, getBreadcrumbs } = options;
+    const { query, entityKey, variables, getBreadcrumbs, locationId, description } = options;
 
     const breadcrumbSubject$ = new BehaviorSubject<BreadcrumbValue>(options.breadcrumb ?? '');
     const titleSubject$ = new BehaviorSubject<string | undefined>(options.title);
@@ -129,6 +131,8 @@ export function registerRouteComponent<
         ...(options.routeConfig ?? {}),
         resolve: { ...(resolveFn ? { detail: resolveFn } : {}), ...(options.routeConfig?.resolve ?? {}) },
         data: {
+            locationId,
+            description,
             breadcrumb: breadcrumbSubject$,
             ...(options.routeConfig?.data ?? {}),
             ...(getBreadcrumbs && query && entityKey

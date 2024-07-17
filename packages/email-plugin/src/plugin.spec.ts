@@ -29,7 +29,9 @@ import { EmailSender } from './sender/email-sender';
 import { EmailEventHandler } from './handler/event-handler';
 import { EmailEventListener } from './event-listener';
 import { EmailPlugin } from './plugin';
-import { EmailDetails, EmailPluginOptions, EmailTransportOptions } from './types';
+import { EmailDetails, EmailPluginOptions, EmailTransportOptions, LoadTemplateInput } from './types';
+import { TemplateLoader } from './template-loader/template-loader';
+import fs from 'fs-extra';
 
 describe('EmailPlugin', () => {
     let eventBus: EventBus;
@@ -945,6 +947,53 @@ describe('EmailPlugin', () => {
             expect(transport.type).toBe('testing');
         });
     });
+
+    describe('Dynamic subject handling', () => {
+        it('With string', async () => {
+            const ctx = RequestContext.deserialize({
+                _channel: { code: DEFAULT_CHANNEL_CODE },
+                _languageCode: LanguageCode.en,
+            } as any);
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello')
+                .setTemplateVars(event => ({ subjectVar: 'foo' }));
+
+            await initPluginWithHandlers([handler]);
+
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+            expect(onSend.mock.calls[0][0].subject).toBe('Hello');
+            expect(onSend.mock.calls[0][0].recipient).toBe('test@test.com');
+            expect(onSend.mock.calls[0][0].from).toBe('"test from" <noreply@test.com>');
+        });
+        it('With callback function', async () => {
+            const ctx = RequestContext.deserialize({
+                _channel: { code: DEFAULT_CHANNEL_CODE },
+                _languageCode: LanguageCode.en,
+            } as any);
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject(async (_e, _ctx, _i) => {
+                    const service = _i.get(MockService)
+                    const mockData = await service.someAsyncMethod()
+                    return `Hello from ${mockData} and {{ subjectVar }}`;
+                })
+                .setTemplateVars(event => ({ subjectVar: 'foo' }));
+
+            await initPluginWithHandlers([handler]);
+
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+            expect(onSend.mock.calls[0][0].subject).toBe('Hello from loaded data and foo');
+            expect(onSend.mock.calls[0][0].recipient).toBe('test@test.com');
+            expect(onSend.mock.calls[0][0].from).toBe('"test from" <noreply@test.com>');
+        });
+    })
 });
 
 class FakeCustomSender implements EmailSender {

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## UiExtensionCompilerOptions
 
-<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="356" packageName="@vendure/ui-devkit" />
+<GenerationInfo sourceFile="packages/ui-devkit/src/compiler/types.ts" sourceLine="364" packageName="@vendure/ui-devkit" />
 
 Options to configure how the Admin UI should be compiled.
 
@@ -23,7 +23,7 @@ interface UiExtensionCompilerOptions {
     devMode?: boolean;
     baseHref?: string;
     watchPort?: number;
-    command?: 'yarn' | 'npm';
+    command?: UiExtensionBuildCommand;
     additionalProcessArguments?: UiExtensionCompilerProcessArgument[];
 }
 ```
@@ -102,11 +102,11 @@ In watch mode, allows the port of the dev server to be specified. Defaults to th
 of `4200`.
 ### command
 
-<MemberInfo kind="property" type={`'yarn' | 'npm'`}  since="1.5.0"  />
+<MemberInfo kind="property" type={`<a href='/reference/admin-ui-api/ui-devkit/ui-extension-build-command#uiextensionbuildcommand'>UiExtensionBuildCommand</a>`}  since="1.5.0"  />
 
 Internally, the Angular CLI will be invoked as an npm script. By default, the compiler will use Yarn
 to run the script if it is detected, otherwise it will use npm. This setting allows you to explicitly
-set which command to use, rather than relying on the default behavior.
+set which command to use, including pnpm, rather than relying on the default behavior.
 ### additionalProcessArguments
 
 <MemberInfo kind="property" type={`<a href='/reference/admin-ui-api/ui-devkit/ui-extension-compiler-process-argument#uiextensioncompilerprocessargument'>UiExtensionCompilerProcessArgument</a>[]`} default="undefined"  since="1.5.0"  />
