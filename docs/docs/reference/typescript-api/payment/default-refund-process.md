@@ -1,5 +1,5 @@
 ---
-title: "DefaultConfig"
+title: "DefaultRefundProcess"
 isDefaultIndex: false
 generated: true
 ---
@@ -9,9 +9,9 @@ import GenerationInfo from '@site/src/components/GenerationInfo';
 import MemberDescription from '@site/src/components/MemberDescription';
 
 
-## defaultConfig
+## defaultRefundProcess
 
-<GenerationInfo sourceFile="packages/core/src/config/default-config.ts" sourceLine="61" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/refund/default-refund-process.ts" sourceLine="16" packageName="@vendure/core" />
 
-The default configuration settings which are used if not explicitly overridden in the bootstrap() call.
+The default <a href='/reference/typescript-api/payment/refund-process#refundprocess'>RefundProcess</a>.
 

@@ -184,13 +184,13 @@ UpperCamelCased.
 A description of the permission.
 ### assignable
 
-<MemberInfo kind="property" type={`boolean`} default="true"   />
+<MemberInfo kind="property" type={`boolean`} default={`true`}   />
 
 Whether this permission can be assigned to a Role. In general this
 should be left as the default `true` except in special cases.
 ### internal
 
-<MemberInfo kind="property" type={`boolean`} default="false"   />
+<MemberInfo kind="property" type={`boolean`} default={`false`}   />
 
 Internal permissions are not exposed via the API and are reserved for
 special use-cases such at the `Owner` or `Public` permissions.

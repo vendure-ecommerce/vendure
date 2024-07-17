@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EmailPlugin
 
-<GenerationInfo sourceFile="packages/email-plugin/src/plugin.ts" sourceLine="272" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/plugin.ts" sourceLine="304" packageName="@vendure/email-plugin" />
 
 The EmailPlugin creates and sends transactional emails based on Vendure events. By default, it uses an [MJML](https://mjml.io/)-based
 email generator to generate the email body and [Nodemailer](https://nodemailer.com/about/) to send the emails.
@@ -101,6 +101,39 @@ Dynamic data such as the recipient's name or order items are specified using [Ha
     </tr>
   {{/each}}
 </mj-table>
+```
+
+### Setting global variables using `globalTemplateVars`
+
+`globalTemplateVars` is an object that can be passed to the configuration of the Email Plugin with static object variables.
+You can also pass an async function that will be called with the `RequestContext` and the `Injector` so you can access services
+and e.g. load channel specific theme configurations.
+
+*Example*
+
+```ts
+EmailPlugin.init({
+   globalTemplateVars: {
+     primaryColor: '#FF0000',
+     fromAddress: 'no-reply@ourstore.com'
+   }
+})
+```
+or
+```ts
+EmailPlugin.init({
+   globalTemplateVars: async (ctx, injector) => {
+     const myAsyncService = injector.get(MyAsyncService);
+     const asyncValue = await myAsyncService.get(ctx);
+     const channel = ctx.channel;
+     const { primaryColor } = channel.customFields.theme;
+     const theme = {
+        primaryColor,
+        asyncValue,
+     };
+     return theme;
+   }
+})
 ```
 
 ### Handlebars helpers

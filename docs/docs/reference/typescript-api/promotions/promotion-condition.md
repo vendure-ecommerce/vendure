@@ -33,7 +33,7 @@ class PromotionCondition<T extends ConfigArgs = ConfigArgs, C extends string = s
 
 ### priorityValue
 
-<MemberInfo kind="property" type={`number`} default="0"   />
+<MemberInfo kind="property" type={`number`} default={`0`}   />
 
 Used to determine the order of application of multiple Promotions
 on the same Order. See the <a href='/reference/typescript-api/entities/promotion#promotion'>Promotion</a> `priorityScore` field for

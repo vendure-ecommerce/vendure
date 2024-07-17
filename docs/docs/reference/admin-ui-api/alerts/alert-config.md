@@ -48,7 +48,7 @@ This function will be called once when the Admin UI app bootstraps, and can be a
 set to run at regular intervals by setting the `recheckIntervalMs` property.
 ### recheck
 
-<MemberInfo kind="property" type={`(context: <a href='/reference/admin-ui-api/alerts/alert-context#alertcontext'>AlertContext</a>) =&#62; Observable&#60;any&#62;`} default="undefined"   />
+<MemberInfo kind="property" type={`(context: <a href='/reference/admin-ui-api/alerts/alert-context#alertcontext'>AlertContext</a>) =&#62; Observable&#60;any&#62;`} default={`undefined`}   />
 
 A function which returns an Observable which is used to determine when to re-run the `check`
 function. Whenever the observable emits, the `check` function will be called again.
@@ -78,7 +78,7 @@ function.
 A function which is called when the alert is clicked in the Admin UI.
 ### label
 
-<MemberInfo kind="property" type={`(         data: T,         context: <a href='/reference/admin-ui-api/alerts/alert-context#alertcontext'>AlertContext</a>,     ) =&#62; { text: string; translationVars?: { [key: string]: string | number } }`}   />
+<MemberInfo kind="property" type={`(         data: T,         context: <a href='/reference/admin-ui-api/alerts/alert-context#alertcontext'>AlertContext</a>,     ) =&#62; { text: string; translationVars?: { [key: string]: string | number } }`}   />
 
 A function which returns the text used in the UI to describe the alert.
 ### requiredPermissions

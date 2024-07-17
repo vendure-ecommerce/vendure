@@ -282,12 +282,12 @@ interface BraintreePluginOptions {
 
 ### environment
 
-<MemberInfo kind="property" type={`Environment`} default="Environment.Sandbox"   />
+<MemberInfo kind="property" type={`Environment`} default={`Environment.Sandbox`}   />
 
 The Braintree environment being targeted, e.g. sandbox or production.
 ### storeCustomersInBraintree
 
-<MemberInfo kind="property" type={`boolean`} default="false"   />
+<MemberInfo kind="property" type={`boolean`} default={`false`}   />
 
 If set to `true`, a [Customer](https://developer.paypal.com/braintree/docs/guides/customers) object
 will be created in Braintree, which allows the secure storage ("vaulting") of previously-used payment methods.

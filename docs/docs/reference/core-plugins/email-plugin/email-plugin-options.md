@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EmailPluginOptions
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="41" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="77" packageName="@vendure/email-plugin" />
 
 Configuration for the EmailPlugin.
 
@@ -26,7 +26,7 @@ interface EmailPluginOptions {
               ctx?: RequestContext,
           ) => EmailTransportOptions | Promise<EmailTransportOptions>);
     handlers: Array<EmailEventHandler<string, any>>;
-    globalTemplateVars?: { [key: string]: any };
+    globalTemplateVars?: { [key: string]: any } | GlobalTemplateVarsFn;
     emailSender?: EmailSender;
     emailGenerator?: EmailGenerator;
 }
@@ -59,20 +59,21 @@ An array of <a href='/reference/core-plugins/email-plugin/email-event-handler#em
 emails, and how those emails are generated.
 ### globalTemplateVars
 
-<MemberInfo kind="property" type={`{ [key: string]: any }`}   />
+<MemberInfo kind="property" type={`{ [key: string]: any } | <a href='/reference/core-plugins/email-plugin/email-plugin-options#globaltemplatevarsfn'>GlobalTemplateVarsFn</a>`}   />
 
 An object containing variables which are made available to all templates. For example,
 the storefront URL could be defined here and then used in the "email address verification"
-email.
+email. Use the GlobalTemplateVarsFn if you need to retrieve variables from Vendure or
+plugin services.
 ### emailSender
 
-<MemberInfo kind="property" type={`<a href='/reference/core-plugins/email-plugin/email-sender#emailsender'>EmailSender</a>`} default="<a href='/reference/core-plugins/email-plugin/email-sender#nodemaileremailsender'>NodemailerEmailSender</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/core-plugins/email-plugin/email-sender#emailsender'>EmailSender</a>`} default={`<a href='/reference/core-plugins/email-plugin/email-sender#nodemaileremailsender'>NodemailerEmailSender</a>`}   />
 
 An optional allowed EmailSender, used to allow custom implementations of the send functionality
 while still utilizing the existing emailPlugin functionality.
 ### emailGenerator
 
-<MemberInfo kind="property" type={`<a href='/reference/core-plugins/email-plugin/email-generator#emailgenerator'>EmailGenerator</a>`} default="<a href='/reference/core-plugins/email-plugin/email-generator#handlebarsmjmlgenerator'>HandlebarsMjmlGenerator</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/core-plugins/email-plugin/email-generator#emailgenerator'>EmailGenerator</a>`} default={`<a href='/reference/core-plugins/email-plugin/email-generator#handlebarsmjmlgenerator'>HandlebarsMjmlGenerator</a>`}   />
 
 An optional allowed EmailGenerator, used to allow custom email generation functionality to
 better match with custom email sending functionality.
@@ -81,9 +82,46 @@ better match with custom email sending functionality.
 </div>
 
 
+## GlobalTemplateVarsFn
+
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="64" packageName="@vendure/email-plugin" since="2.3.0" />
+
+Allows you to dynamically load the "globalTemplateVars" key async and access Vendure services
+to create the object. This is not a requirement. You can also specify a simple static object if your
+projects doesn't need to access async or dynamic values.
+
+*Example*
+
+```ts
+
+EmailPlugin.init({
+   globalTemplateVars: async (ctx, injector) => {
+         const myAsyncService = injector.get(MyAsyncService);
+         const asyncValue = await myAsyncService.get(ctx);
+         const channel = ctx.channel;
+         const { primaryColor } = channel.customFields.theme;
+         const theme = {
+             primaryColor,
+             asyncValue,
+         };
+         return theme;
+     }
+  [...]
+})
+
+```
+
+```ts title="Signature"
+type GlobalTemplateVarsFn = (
+    ctx: RequestContext,
+    injector: Injector,
+) => Promise<{ [key: string]: any }>
+```
+
+
 ## EmailPluginDevModeOptions
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="111" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="150" packageName="@vendure/email-plugin" />
 
 Configuration for running the EmailPlugin in development mode.
 

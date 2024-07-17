@@ -811,7 +811,8 @@ class OrderEvent extends VendureEvent {
 
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/order-line-event.ts" sourceLine="13" packageName="@vendure/core" />
 
-This event is fired whenever an <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a> is added, updated, deleted or cancelled.
+This event is fired whenever an <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a> is added, updated
+or deleted.
 
 ```ts title="Signature"
 class OrderLineEvent extends VendureEvent {
@@ -826,7 +827,7 @@ class OrderLineEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, type: 'created' | 'updated' | 'deleted') => OrderLineEvent`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, type: 'created' | 'updated' | 'deleted' | 'cancelled') => OrderLineEvent`}   />
 
 
 
@@ -1132,7 +1133,7 @@ class ProductOptionGroupEvent extends VendureEntityEvent<
     constructor(ctx: RequestContext, entity: ProductOptionGroup, type: 'created' | 'updated' | 'deleted', input?: ProductOptionGroupInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;     <a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>,     ProductOptionGroupInputTypes &#62;</code>
+* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;     <a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a>,     ProductOptionGroupInputTypes &#62;</code>
 
 
 
@@ -1223,7 +1224,7 @@ class ProductVariantPriceEvent extends VendureEntityEvent<
     constructor(ctx: RequestContext, entity: ProductVariantPrice[], type: 'created' | 'updated' | 'deleted', input?: ProductVariantInputTypes)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;     <a href='/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>[],     ProductVariantInputTypes &#62;</code>
+* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;     <a href='/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>[],     ProductVariantInputTypes &#62;</code>
 
 
 
@@ -1287,6 +1288,33 @@ class ProvinceEvent extends VendureEntityEvent<Province, ProvinceInputTypes> {
 ### constructor
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/province#province'>Province</a>, type: 'created' | 'updated' | 'deleted', input?: ProvinceInputTypes) => ProvinceEvent`}   />
+
+
+
+
+</div>
+
+
+## RefundEvent
+
+<GenerationInfo sourceFile="packages/core/src/event-bus/events/refund-event.ts" sourceLine="12" packageName="@vendure/core" />
+
+This event is fired whenever a <a href='/reference/typescript-api/entities/refund#refund'>Refund</a> is created
+
+```ts title="Signature"
+class RefundEvent extends VendureEvent {
+    constructor(ctx: RequestContext, order: Order, refund: Refund, type: 'created')
+}
+```
+* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+
+
+
+<div className="members-wrapper">
+
+### constructor
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, refund: <a href='/reference/typescript-api/entities/refund#refund'>Refund</a>, type: 'created') => RefundEvent`}   />
 
 
 

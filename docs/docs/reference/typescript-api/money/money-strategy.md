@@ -88,7 +88,7 @@ interface MoneyStrategy extends InjectableStrategy {
 Defines the TypeORM column used to store monetary values.
 ### precision
 
-<MemberInfo kind="property" type={`number`} default="2"  since="2.2.0"  />
+<MemberInfo kind="property" type={`number`} default={`2`}  since="2.2.0"  />
 
 Defines the precision (i.e. number of decimal places) represented by the monetary values.
 For example, consider a product variant with a price value of `12345`.

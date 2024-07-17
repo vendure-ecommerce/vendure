@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## FacetValueSelectorComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/facet-value-selector/facet-value-selector.component.ts" sourceLine="42" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/shared/components/facet-value-selector/facet-value-selector.component.ts" sourceLine="34" packageName="@vendure/admin-ui" />
 
 A form control for selecting facet values.
 
@@ -19,20 +19,10 @@ A form control for selecting facet values.
 
 ```HTML
 <vdr-facet-value-selector
-  [facets]="facets"
   (selectedValuesChange)="selectedValues = $event"
 ></vdr-facet-value-selector>
 ```
-The `facets` input should be provided from the parent component
-like this:
-
-*Example*
-
-```ts
-this.facets = this.dataService
-  .facet.getAllFacets()
-  .mapSingle(data => data.facets.items);
-```
+The `selectedValuesChange` event will emit an array of `FacetValue` objects.
 
 ```ts title="Signature"
 class FacetValueSelectorComponent implements OnInit, OnDestroy, ControlValueAccessor {

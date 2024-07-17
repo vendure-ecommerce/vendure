@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## JobQueueOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="904" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="913" packageName="@vendure/core" />
 
 Options related to the built-in job queue.
 
@@ -28,7 +28,7 @@ interface JobQueueOptions {
 
 ### jobQueueStrategy
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a>`} default="<a href='/reference/typescript-api/job-queue/in-memory-job-queue-strategy#inmemoryjobqueuestrategy'>InMemoryJobQueueStrategy</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a>`} default={`<a href='/reference/typescript-api/job-queue/in-memory-job-queue-strategy#inmemoryjobqueuestrategy'>InMemoryJobQueueStrategy</a>`}   />
 
 Defines how the jobs in the queue are persisted and accessed.
 ### jobBufferStorageStrategy

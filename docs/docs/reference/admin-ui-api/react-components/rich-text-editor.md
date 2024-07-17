@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## RichTextEditor
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-components/RichTextEditor.tsx" sourceLine="59" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-components/RichTextEditor.tsx" sourceLine="60" packageName="@vendure/admin-ui" />
 
 A rich text editor component which uses ProseMirror (rich text editor) under the hood.
 

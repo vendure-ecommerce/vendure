@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EmailEventHandler
 
-<GenerationInfo sourceFile="packages/email-plugin/src/handler/event-handler.ts" sourceLine="135" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/handler/event-handler.ts" sourceLine="136" packageName="@vendure/email-plugin" />
 
 The EmailEventHandler defines how the EmailPlugin will respond to a given event.
 
@@ -133,7 +133,7 @@ class EmailEventHandler<T extends string = string, Event extends EventWithContex
     setRecipient(setRecipientFn: (event: Event) => string) => EmailEventHandler<T, Event>;
     setLanguageCode(setLanguageCodeFn: (event: Event) => LanguageCode | undefined) => EmailEventHandler<T, Event>;
     setTemplateVars(templateVarsFn: SetTemplateVarsFn<Event>) => EmailEventHandler<T, Event>;
-    setSubject(defaultSubject: string) => EmailEventHandler<T, Event>;
+    setSubject(defaultSubject: string | SetSubjectFn<Event>) => EmailEventHandler<T, Event>;
     setFrom(from: string) => EmailEventHandler<T, Event>;
     setOptionalAddressFields(optionalAddressFieldsFn: SetOptionalAddressFieldsFn<Event>) => ;
     setAttachments(setAttachmentsFn: SetAttachmentsFn<Event>) => ;
@@ -178,7 +178,7 @@ A function which returns an object hash of variables which will be made availabl
 and subject line for interpolation.
 ### setSubject
 
-<MemberInfo kind="method" type={`(defaultSubject: string) => <a href='/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;`}   />
+<MemberInfo kind="method" type={`(defaultSubject: string | <a href='/reference/core-plugins/email-plugin/email-plugin-types#setsubjectfn'>SetSubjectFn</a>&#60;Event&#62;) => <a href='/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;`}   />
 
 Sets the default subject of the email. The subject string may use Handlebars variables defined by the
 setTemplateVars() method.

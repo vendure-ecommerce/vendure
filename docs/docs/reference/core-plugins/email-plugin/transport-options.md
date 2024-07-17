@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EmailTransportOptions
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="132" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="171" packageName="@vendure/email-plugin" />
 
 A union of all the possible transport options for sending emails.
 
@@ -27,7 +27,7 @@ type EmailTransportOptions = | SMTPTransportOptions
 
 ## SMTPTransportOptions
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="147" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="186" packageName="@vendure/email-plugin" />
 
 The SMTP transport options of [Nodemailer](https://nodemailer.com/smtp/)
 
@@ -50,7 +50,7 @@ interface SMTPTransportOptions extends SMTPTransport.Options {
 
 ### logging
 
-<MemberInfo kind="property" type={`boolean`} default="false"   />
+<MemberInfo kind="property" type={`boolean`} default={`false`}   />
 
 If true, uses the configured <a href='/reference/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a> to log messages from Nodemailer as it interacts with
 the SMTP server.
@@ -61,7 +61,7 @@ the SMTP server.
 
 ## SESTransportOptions
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="196" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="235" packageName="@vendure/email-plugin" />
 
 The SES transport options of [Nodemailer](https://nodemailer.com/transports/ses//)
 
@@ -120,7 +120,7 @@ interface SESTransportOptions extends SESTransport.Options {
 
 ## SendmailTransportOptions
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="207" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="246" packageName="@vendure/email-plugin" />
 
 Uses the local Sendmail program to send the email.
 
@@ -156,7 +156,7 @@ interface SendmailTransportOptions {
 
 ## FileTransportOptions
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="222" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="261" packageName="@vendure/email-plugin" />
 
 Outputs the email as an HTML file for development purposes.
 
@@ -192,7 +192,7 @@ interface FileTransportOptions {
 
 ## NoopTransportOptions
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="238" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="277" packageName="@vendure/email-plugin" />
 
 Does nothing with the generated email. Intended for use in testing where we don't care about the email transport,
 or when using a custom <a href='/reference/core-plugins/email-plugin/email-sender#emailsender'>EmailSender</a> which does not require transport options.
@@ -217,7 +217,7 @@ interface NoopTransportOptions {
 
 ## TestingTransportOptions
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="267" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="306" packageName="@vendure/email-plugin" />
 
 Forwards the raw GeneratedEmailContext object to a provided callback, for use in testing.
 

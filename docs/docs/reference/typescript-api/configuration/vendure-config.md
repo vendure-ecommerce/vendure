@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## VendureConfig
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1062" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1071" packageName="@vendure/core" />
 
 All possible configuration options are defined by the
 [`VendureConfig`](https://github.com/vendure-ecommerce/vendure/blob/master/server/src/config/vendure-config.ts) interface.
@@ -66,7 +66,7 @@ Configuration for authorization.
 Configuration for Products and Collections.
 ### customFields
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/#customfields'>CustomFields</a>`} default="{}"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/custom-fields/#customfields'>CustomFields</a>`} default={`{}`}   />
 
 Defines custom fields which can be used to extend the built-in entities.
 ### dbConnectionOptions
@@ -78,18 +78,18 @@ See the [TypeORM documentation](https://typeorm.io/#/connection-options) for a
 full description of all available options.
 ### defaultChannelToken
 
-<MemberInfo kind="property" type={`string | null`} default="null"   />
+<MemberInfo kind="property" type={`string | null`} default={`null`}   />
 
 The token for the default channel. If not specified, a token
 will be randomly generated.
 ### defaultLanguageCode
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>`} default="<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>.en"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>`} default={`<a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>.en`}   />
 
 The default languageCode of the app.
 ### entityIdStrategy
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/configuration/entity-id-strategy#entityidstrategy'>EntityIdStrategy</a>&#60;any&#62;`} default="<a href='/reference/typescript-api/configuration/entity-id-strategy#autoincrementidstrategy'>AutoIncrementIdStrategy</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/configuration/entity-id-strategy#entityidstrategy'>EntityIdStrategy</a>&#60;any&#62;`} default={`<a href='/reference/typescript-api/configuration/entity-id-strategy#autoincrementidstrategy'>AutoIncrementIdStrategy</a>`}   />
 
 Defines the strategy used for both storing the primary keys of entities
 in the database, and the encoding & decoding of those ids when exposing
@@ -117,7 +117,7 @@ Configuration settings governing how orders are handled.
 Configures available payment processing methods.
 ### plugins
 
-<MemberInfo kind="property" type={`Array&#60;DynamicModule | Type&#60;any&#62;&#62;`} default="[]"   />
+<MemberInfo kind="property" type={`Array&#60;DynamicModule | Type&#60;any&#62;&#62;`} default={`[]`}   />
 
 An array of plugins.
 ### promotionOptions
@@ -132,7 +132,7 @@ Configures the Conditions and Actions available when creating Promotions.
 Configures the available checkers and calculators for ShippingMethods.
 ### logger
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a>`} default="<a href='/reference/typescript-api/logger/default-logger#defaultlogger'>DefaultLogger</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a>`} default={`<a href='/reference/typescript-api/logger/default-logger#defaultlogger'>DefaultLogger</a>`}   />
 
 Provide a logging service which implements the <a href='/reference/typescript-api/logger/vendure-logger#vendurelogger'>VendureLogger</a> interface.
 Note that the logging of SQL queries is controlled separately by the

@@ -82,12 +82,12 @@ interface DefaultGuestCheckoutStrategyOptions {
 
 ### allowGuestCheckouts
 
-<MemberInfo kind="property" type={`boolean`} default="true"   />
+<MemberInfo kind="property" type={`boolean`} default={`true`}   />
 
 Whether to allow guest checkouts.
 ### allowGuestCheckoutForRegisteredCustomers
 
-<MemberInfo kind="property" type={`boolean`} default="false"   />
+<MemberInfo kind="property" type={`boolean`} default={`false`}   />
 
 Whether to allow guest checkouts for customers who already have an account.
 Note that when this is enabled, the details provided in the `CreateCustomerInput`

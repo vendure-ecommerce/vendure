@@ -38,7 +38,7 @@ The path to the uncompiled UI app source files. This path should contain the `ve
 The port on which the dev server is listening. Overrides the value set by `AdminUiOptions.port`.
 ### route
 
-<MemberInfo kind="property" type={`string`} default="'admin'"   />
+<MemberInfo kind="property" type={`string`} default={`'admin'`}   />
 
 Specifies the url route to the Admin UI app.
 ### compile

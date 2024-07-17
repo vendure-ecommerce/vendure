@@ -34,7 +34,7 @@ default build is used. This path should contain the `vendure-ui-config.json` fil
 index.html, the compiled js bundles etc.
 ### route
 
-<MemberInfo kind="property" type={`string`} default="'admin'"   />
+<MemberInfo kind="property" type={`string`} default={`'admin'`}   />
 
 Specifies the url route to the Admin UI app.
 ### compile

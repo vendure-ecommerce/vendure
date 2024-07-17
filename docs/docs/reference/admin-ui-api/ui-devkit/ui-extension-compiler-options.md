@@ -63,7 +63,7 @@ compileUiExtensions({
 ```
 ### devMode
 
-<MemberInfo kind="property" type={`boolean`} default="false"   />
+<MemberInfo kind="property" type={`boolean`} default={`false`}   />
 
 Set to `true` in order to compile the Admin UI in development mode (using the Angular CLI
 [ng serve](https://angular.io/cli/serve) command). When in dev mode, any changes to
@@ -71,7 +71,7 @@ UI extension files will be watched and trigger a rebuild of the Admin UI with li
 reloading.
 ### baseHref
 
-<MemberInfo kind="property" type={`string`} default="'/admin/'"   />
+<MemberInfo kind="property" type={`string`} default={`'/admin/'`}   />
 
 Allows the baseHref of the compiled Admin UI app to be set. This determines the prefix
 of the app, for example with the default value of `'/admin/'`, the Admin UI app
@@ -96,7 +96,7 @@ AdminUiPlugin.init({
 ```
 ### watchPort
 
-<MemberInfo kind="property" type={`number`} default="4200 | undefined"   />
+<MemberInfo kind="property" type={`number`} default={`4200 | undefined`}   />
 
 In watch mode, allows the port of the dev server to be specified. Defaults to the Angular CLI default
 of `4200`.
@@ -109,7 +109,7 @@ to run the script if it is detected, otherwise it will use npm. This setting all
 set which command to use, including pnpm, rather than relying on the default behavior.
 ### additionalProcessArguments
 
-<MemberInfo kind="property" type={`<a href='/reference/admin-ui-api/ui-devkit/ui-extension-compiler-process-argument#uiextensioncompilerprocessargument'>UiExtensionCompilerProcessArgument</a>[]`} default="undefined"  since="1.5.0"  />
+<MemberInfo kind="property" type={`<a href='/reference/admin-ui-api/ui-devkit/ui-extension-compiler-process-argument#uiextensioncompilerprocessargument'>UiExtensionCompilerProcessArgument</a>[]`} default={`undefined`}  since="1.5.0"  />
 
 Additional command-line arguments which will get passed to the [ng build](https://angular.io/cli/build)
 command (or [ng serve](https://angular.io/cli/serve) if `devMode = true`).

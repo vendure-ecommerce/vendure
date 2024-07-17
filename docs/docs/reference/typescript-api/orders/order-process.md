@@ -93,61 +93,61 @@ interface DefaultOrderProcessOptions {
 
 ### checkModificationPayments
 
-<MemberInfo kind="property" type={`boolean`} default="true"   />
+<MemberInfo kind="property" type={`boolean`} default={`true`}   />
 
 Prevents an Order from transitioning out of the `Modifying` state if
 the Order price has changed and there is no Payment or Refund associated
 with the Modification.
 ### checkAdditionalPaymentsAmount
 
-<MemberInfo kind="property" type={`boolean`} default="true"   />
+<MemberInfo kind="property" type={`boolean`} default={`true`}   />
 
 Prevents an Order from transitioning out of the `ArrangingAdditionalPayment` state if
 the Order's Payments do not cover the full amount of `totalWithTax`.
 ### checkAllVariantsExist
 
-<MemberInfo kind="property" type={`boolean`} default="true"   />
+<MemberInfo kind="property" type={`boolean`} default={`true`}   />
 
 Prevents the transition from `AddingItems` to any other state (apart from `Cancelled`) if
 and of the ProductVariants no longer exists due to deletion.
 ### arrangingPaymentRequiresContents
 
-<MemberInfo kind="property" type={`boolean`} default="true"   />
+<MemberInfo kind="property" type={`boolean`} default={`true`}   />
 
 Prevents transition to the `ArrangingPayment` state if the active Order has no lines.
 ### arrangingPaymentRequiresCustomer
 
-<MemberInfo kind="property" type={`boolean`} default="true"   />
+<MemberInfo kind="property" type={`boolean`} default={`true`}   />
 
 Prevents transition to the `ArrangingPayment` state if the active Order has no customer
 associated with it.
 ### arrangingPaymentRequiresShipping
 
-<MemberInfo kind="property" type={`boolean`} default="true"   />
+<MemberInfo kind="property" type={`boolean`} default={`true`}   />
 
 Prevents transition to the `ArrangingPayment` state if the active Order has no shipping
 method set.
 ### arrangingPaymentRequiresStock
 
-<MemberInfo kind="property" type={`boolean`} default="true"   />
+<MemberInfo kind="property" type={`boolean`} default={`true`}   />
 
 Prevents transition to the `ArrangingPayment` state if there is insufficient saleable
 stock to cover the contents of the Order.
 ### checkPaymentsCoverTotal
 
-<MemberInfo kind="property" type={`boolean`} default="true"   />
+<MemberInfo kind="property" type={`boolean`} default={`true`}   />
 
 Prevents transition to the `PaymentAuthorized` or `PaymentSettled` states if the order
 `totalWithTax` amount is not covered by Payment(s) in the corresponding states.
 ### checkAllItemsBeforeCancel
 
-<MemberInfo kind="property" type={`boolean`} default="true"   />
+<MemberInfo kind="property" type={`boolean`} default={`true`}   />
 
 Prevents transition to the `Cancelled` state unless all OrderItems are already
 cancelled.
 ### checkFulfillmentStates
 
-<MemberInfo kind="property" type={`boolean`} default="true"   />
+<MemberInfo kind="property" type={`boolean`} default={`true`}   />
 
 Prevents transition to the `Shipped`, `PartiallyShipped`, `Delivered` & `PartiallyDelivered` states unless
 there are corresponding Fulfillments in the correct states to allow this. E.g. `Shipped` only if all items in

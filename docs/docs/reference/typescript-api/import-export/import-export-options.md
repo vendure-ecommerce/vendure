@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ImportExportOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="880" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="889" packageName="@vendure/core" />
 
 Options related to importing & exporting data.
 
@@ -26,7 +26,7 @@ interface ImportExportOptions {
 
 ### importAssetsDir
 
-<MemberInfo kind="property" type={`string`} default="__dirname"   />
+<MemberInfo kind="property" type={`string`} default={`__dirname`}   />
 
 The directory in which assets to be imported are located.
 ### assetImportStrategy

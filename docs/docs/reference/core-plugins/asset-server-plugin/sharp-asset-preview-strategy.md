@@ -84,12 +84,12 @@ interface SharpAssetPreviewConfig {
 
 ### maxHeight
 
-<MemberInfo kind="property" type={`number`} default="1600"   />
+<MemberInfo kind="property" type={`number`} default={`1600`}   />
 
 The max height in pixels of a generated preview image.
 ### maxWidth
 
-<MemberInfo kind="property" type={`number`} default="1600"   />
+<MemberInfo kind="property" type={`number`} default={`1600`}   />
 
 The max width in pixels of a generated preview image.
 ### jpegOptions

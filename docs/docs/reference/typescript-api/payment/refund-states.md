@@ -1,5 +1,5 @@
 ---
-title: "DefaultConfig"
+title: "RefundStates"
 isDefaultIndex: false
 generated: true
 ---
@@ -9,9 +9,14 @@ import GenerationInfo from '@site/src/components/GenerationInfo';
 import MemberDescription from '@site/src/components/MemberDescription';
 
 
-## defaultConfig
+## RefundStates
 
-<GenerationInfo sourceFile="packages/core/src/config/default-config.ts" sourceLine="61" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/refund-state-machine/refund-state.ts" sourceLine="19" packageName="@vendure/core" />
 
-The default configuration settings which are used if not explicitly overridden in the bootstrap() call.
+An interface to extend standard <a href='/reference/typescript-api/payment/refund-state#refundstate'>RefundState</a>.
 
+```ts title="Signature"
+interface RefundStates {
+
+}
+```

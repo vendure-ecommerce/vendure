@@ -47,19 +47,19 @@ An array of <a href='/reference/core-plugins/stellate-plugin/purge-rule#purgerul
 respond to Vendure events in order to trigger calls to the Stellate Purging API.
 ### defaultBufferTimeMs
 
-<MemberInfo kind="property" type={`number`} default="2000"   />
+<MemberInfo kind="property" type={`number`} default={`2000`}   />
 
 When events are published, the PurgeRules will buffer those events in order to efficiently
 batch requests to the Stellate Purging API. You may wish to change the default, e.g. if you are
 running in a serverless environment and cannot introduce pauses after the main request has completed.
 ### devMode
 
-<MemberInfo kind="property" type={`boolean`} default="false"   />
+<MemberInfo kind="property" type={`boolean`} default={`false`}   />
 
 When set to `true`, calls will not be made to the Stellate Purge API.
 ### debugLogging
 
-<MemberInfo kind="property" type={`boolean`} default="false"   />
+<MemberInfo kind="property" type={`boolean`} default={`false`}   />
 
 If set to true, the plugin will log the calls that would be made
 to the Stellate Purge API. Note, this generates a

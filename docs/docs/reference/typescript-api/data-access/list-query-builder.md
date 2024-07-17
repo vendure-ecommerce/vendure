@@ -233,7 +233,7 @@ query {
 ```
 ### ignoreQueryLimits
 
-<MemberInfo kind="property" type={`boolean`} default="false"  since="2.0.2"  />
+<MemberInfo kind="property" type={`boolean`} default={`false`}  since="2.0.2"  />
 
 When set to `true`, the configured `shopListQueryLimit` and `adminListQueryLimit` values will be ignored,
 allowing unlimited results to be returned. Use caution when exposing an unlimited list query to the public,

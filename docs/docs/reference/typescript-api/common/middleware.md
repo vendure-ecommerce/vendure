@@ -65,7 +65,7 @@ The `'ab*cd'` route path will match `abcd`, `ab_cd`, `abecd`, and so on. The cha
 and are subsets of their regular expression counterparts. The hyphen (`-`) and the dot (`.`) are interpreted literally.
 ### beforeListen
 
-<MemberInfo kind="property" type={`boolean`} default="false"  since="1.1.0"  />
+<MemberInfo kind="property" type={`boolean`} default={`false`}  since="1.1.0"  />
 
 When set to `true`, this will cause the middleware to be applied before the Vendure server (and underlying Express server) starts listening
 for connections. In practical terms this means that the middleware will be at the very start of the middleware stack, before even the

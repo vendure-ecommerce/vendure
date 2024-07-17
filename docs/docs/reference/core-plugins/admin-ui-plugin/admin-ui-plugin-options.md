@@ -44,7 +44,7 @@ The port on which the server will listen. This port will be proxied by the Admin
 the Vendure server is running on.
 ### hostname
 
-<MemberInfo kind="property" type={`string`} default="'localhost'"   />
+<MemberInfo kind="property" type={`string`} default={`'localhost'`}   />
 
 The hostname of the server serving the static admin ui files.
 ### app

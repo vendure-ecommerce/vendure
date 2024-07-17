@@ -73,7 +73,7 @@ setRetries: (queueName, job) => {
  ```
 ### setBackoff
 
-<MemberInfo kind="property" type={`(queueName: string, job: Job) =&#62; <a href='/reference/core-plugins/job-queue-plugin/bull-mqplugin-options#backoffoptions'>BackoffOptions</a> | undefined`} default="'exponential', 1000"  since="1.3.0"  />
+<MemberInfo kind="property" type={`(queueName: string, job: Job) =&#62; <a href='/reference/core-plugins/job-queue-plugin/bull-mqplugin-options#backoffoptions'>BackoffOptions</a> | undefined`} default={`'exponential', 1000`}  since="1.3.0"  />
 
 This allows you to specify the backoff settings when a failed job gets retried.
 In other words, this determines how much time should pass before attempting to

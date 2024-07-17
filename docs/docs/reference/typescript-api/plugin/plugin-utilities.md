@@ -87,7 +87,7 @@ The route of the Vendure server which will act as the proxy url.
 The port on which the service being proxied is running.
 ### hostname
 
-<MemberInfo kind="property" type={`string`} default="'localhost'"   />
+<MemberInfo kind="property" type={`string`} default={`'localhost'`}   />
 
 The hostname of the server on which the service being proxied is running.
 ### basePath

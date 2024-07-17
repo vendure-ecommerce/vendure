@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## useLazyQuery
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-hooks/use-query.ts" sourceLine="121" packageName="@vendure/admin-ui" since="2.2.0" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-hooks/use-query.ts" sourceLine="119" packageName="@vendure/admin-ui" since="2.2.0" />
 
 A React hook which allows you to execute a GraphQL query lazily.
 
@@ -64,7 +64,7 @@ export const MyComponent = () => {
 ```
 
 ```ts title="Signature"
-function useLazyQuery<T, V extends Record<string, any> = Record<string, any>>(query: DocumentNode | TypedDocumentNode<T, V>, options: {refetchOnChannelChange: boolean } = {refetchOnChannelChange: false}): void
+function useLazyQuery<T, V extends Record<string, any> = Record<string, any>>(query: DocumentNode | TypedDocumentNode<T, V>, options: { refetchOnChannelChange: boolean } = { refetchOnChannelChange: false }): void
 ```
 Parameters
 
@@ -74,5 +74,5 @@ Parameters
 
 ### options
 
-<MemberInfo kind="parameter" type={`{refetchOnChannelChange: boolean }`} />
+<MemberInfo kind="parameter" type={`{ refetchOnChannelChange: boolean }`} />
 
