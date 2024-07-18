@@ -13,6 +13,7 @@ import {
     IntermediateEmailDetails,
     LoadDataFn,
     SetAttachmentsFn,
+    SetMetadataFn,
     SetOptionalAddressFieldsFn,
     SetSubjectFn,
     SetTemplateVarsFn,
@@ -140,6 +141,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
     private setTemplateVarsFn: SetTemplateVarsFn<Event>;
     private setAttachmentsFn?: SetAttachmentsFn<Event>;
     private setOptionalAddressFieldsFn?: SetOptionalAddressFieldsFn<Event>;
+    private setMetadataFn?: SetMetadataFn<Event>;
     private filterFns: Array<(event: Event) => boolean> = [];
     private configurations: EmailTemplateConfig[] = [];
     private defaultSubject: string;
@@ -248,6 +250,17 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
 
     /**
      * @description
+     * A function which allows {@link EmailMetadata} to be specified for the email.
+     *
+     * @since 3.1.0
+     */
+    setMetadata(optionalSetMetadataFn: SetMetadataFn<Event>) {
+        this.setMetadataFn = optionalSetMetadataFn;
+        return this;
+    }
+
+    /**
+     * @description
      * Defines one or more files to be attached to the email. An attachment can be specified
      * as either a `path` (to a file or URL) or as `content` which can be a string, Buffer or Stream.
      *
@@ -322,6 +335,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         asyncHandler.setTemplateVarsFn = this.setTemplateVarsFn;
         asyncHandler.setAttachmentsFn = this.setAttachmentsFn;
         asyncHandler.setOptionalAddressFieldsFn = this.setOptionalAddressFieldsFn;
+        asyncHandler.setMetadataFn = this.setMetadataFn;
         asyncHandler.filterFns = this.filterFns;
         asyncHandler.configurations = this.configurations;
         asyncHandler.defaultSubject = this.defaultSubject;
@@ -397,6 +411,8 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         }
         const attachments = await serializeAttachments(attachmentsArray);
         const optionalAddressFields = (await this.setOptionalAddressFieldsFn?.(event)) ?? {};
+        const metadata = this.setMetadataFn ? await this.setMetadataFn(event) : {};
+
         return {
             ctx: event.ctx.serialize(),
             type: this.type,
@@ -406,6 +422,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
             subject,
             templateFile: configuration ? configuration.templateFile : 'body.hbs',
             attachments,
+            metadata,
             ...optionalAddressFields,
         };
     }

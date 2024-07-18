@@ -356,6 +356,7 @@ export type IntermediateEmailDetails = {
     cc?: string;
     bcc?: string;
     replyTo?: string;
+    metadata?: EmailMetadata;
 };
 
 /**
@@ -475,3 +476,16 @@ export interface OptionalAddressFields {
 export type SetOptionalAddressFieldsFn<Event> = (
     event: Event,
 ) => OptionalAddressFields | Promise<OptionalAddressFields>;
+
+/**
+ * @description
+ * A function used to set the {@link EmailMetadata}.
+ *
+ * @since 3.1.0
+ * @docsCategory core plugins/EmailPlugin
+ * @docsPage Email Plugin Types
+ *
+ */
+export type SetMetadataFn<Event> = (event: Event) => EmailMetadata | Promise<EmailMetadata>;
+
+export type EmailMetadata = Record<string, any>;
