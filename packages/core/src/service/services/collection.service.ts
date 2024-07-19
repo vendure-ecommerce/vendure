@@ -292,7 +292,7 @@ export class CollectionService implements OnModuleInit {
     async getBreadcrumbs(
         ctx: RequestContext,
         collection: Collection,
-    ): Promise<Array<{ name: string; id: ID }>> {
+    ): Promise<Array<{ name: string; id: ID, slug: string }>> {
         const rootCollection = await this.getRootCollection(ctx);
         if (idsAreEqual(collection.id, rootCollection.id)) {
             return [pick(rootCollection, ['id', 'name', 'slug'])];

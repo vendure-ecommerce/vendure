@@ -78,7 +78,7 @@ export class CollectionEntityResolver {
         @Ctx() ctx: RequestContext,
         @Parent() collection: Collection,
     ): Promise<CollectionBreadcrumb[]> {
-        return this.collectionService.getBreadcrumbs(ctx, collection) as any;
+        return this.collectionService.getBreadcrumbs(ctx, collection);
     }
 
     @ResolveField()
