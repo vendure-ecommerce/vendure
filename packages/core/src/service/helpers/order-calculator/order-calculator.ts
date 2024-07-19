@@ -199,7 +199,6 @@ export class OrderCalculator {
                     // for (const item of line.items) {
                     const adjustment = await promotion.apply(ctx, { orderLine: line }, state);
                     if (adjustment) {
-                        adjustment.amount = adjustment.amount * line.quantity;
                         line.addAdjustment(adjustment);
                         priceAdjusted = true;
                     }

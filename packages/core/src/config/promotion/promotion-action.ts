@@ -199,6 +199,14 @@ export interface PromotionItemActionConfig<T extends ConfigArgs, U extends Promo
      * the OrderLine, i.e. the number should be negative.
      */
     execute: ExecutePromotionItemActionFn<T, U>;
+
+    /**
+     * @description
+     * The maximum discount amount that can be applied to this action.
+     *
+     * @default 0
+     */
+    maxDiscountAmount?: ExecutePromotionItemActionFn<T, U>;
 }
 
 /**
@@ -321,10 +329,15 @@ export class PromotionItemAction<
     T extends ConfigArgs = ConfigArgs,
     U extends Array<PromotionCondition<any>> = [],
 > extends PromotionAction<T, U> {
+    /** @internal */
     private readonly executeFn: ExecutePromotionItemActionFn<T, U>;
+    /** @internal */
+    private readonly maxDiscountAmountFn: ExecutePromotionItemActionFn<T, U>;
+
     constructor(config: PromotionItemActionConfig<T, U>) {
         super(config);
         this.executeFn = config.execute;
+        this.maxDiscountAmountFn = config.maxDiscountAmount || (() => 0);
     }
 
     /** @internal */
@@ -342,6 +355,34 @@ export class PromotionItemAction<
               )
             : {};
         return this.executeFn(
+            ctx,
+            orderLine,
+            this.argsArrayToHash(args),
+            actionState as ConditionState<U>,
+            promotion,
+        );
+    }
+    
+    /**
+     * @description
+     * The maximum discount amount that can be applied to this action.
+     *
+     * @default 0
+     */
+    maxDiscountAmount(
+        ctx: RequestContext,
+        orderLine: OrderLine,
+        args: ConfigArg[],
+        state: PromotionState,
+        promotion: Promotion,
+    ) {
+        const actionState = this.conditions
+            ? pick(
+                  state,
+                  this.conditions.map(c => c.code),
+              )
+            : {};
+        return this.maxDiscountAmountFn(
             ctx,
             orderLine,
             this.argsArrayToHash(args),
