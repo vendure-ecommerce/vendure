@@ -250,7 +250,27 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
 
     /**
      * @description
-     * A function which allows {@link EmailMetadata} to be specified for the email.
+     * A function which allows {@link EmailMetadata} to be specified for the email. This can be used
+     * to store arbitrary data about the email which can be used for tracking or other purposes.
+     *
+     * It will be exposed in the {@link EmailSendEvent} as `event.metadata`. Here's an example of usage:
+     *
+     * - An {@link OrderStateTransitionEvent} occurs, and the EmailEventListener starts processing it.
+     * - The EmailEventHandler attaches metadata to the email:
+     *    ```ts
+     *    new EmailEventListener(EventType.ORDER_CONFIRMATION)
+     *      .on(OrderStateTransitionEvent)
+     *      .setMetadata(event => ({
+     *        type: EventType.ORDER_CONFIRMATION,
+     *        orderId: event.order.id,
+     *      }));
+     *   ```
+     * - Then, the EmailPlugin tries to send the email and publishes {@link EmailSendEvent},
+     *   passing ctx, emailDetails, error or success, and this metadata.
+     * - In another part of the server, we have an eventBus that subscribes to EmailSendEvent. We can use
+     *   `metadata.type` and `metadata.orderId` to identify the related order. For example, we can indicate on the
+     *    order that the email was successfully sent, or in case of an error, send a notification confirming
+     *    the order in another available way.
      *
      * @since 3.1.0
      */
