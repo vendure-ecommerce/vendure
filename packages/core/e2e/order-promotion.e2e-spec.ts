@@ -28,6 +28,7 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { freeShipping } from '../src/config/promotion/actions/free-shipping-action';
 import { orderFixedDiscount } from '../src/config/promotion/actions/order-fixed-discount-action';
+import { orderLineFixedDiscount } from '../src/config/promotion/actions/order-line-fixed-discount-action';
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import { CurrencyCode, HistoryEntryType, LanguageCode } from './graphql/generated-e2e-admin-types';
@@ -925,9 +926,8 @@ describe('Promotions applied to Orders', () => {
                 expect(removeCouponCode!.total).toBe(2200);
                 expect(removeCouponCode!.totalWithTax).toBe(2640);
 
-                const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
-                    GET_ACTIVE_ORDER,
-                );
+                const { activeOrder } =
+                    await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
                 expect(getItemSale1Line(activeOrder!.lines).discounts.length).toBe(0);
                 expect(activeOrder!.total).toBe(2200);
                 expect(activeOrder!.totalWithTax).toBe(2640);
@@ -986,9 +986,8 @@ describe('Promotions applied to Orders', () => {
                 expect(removeCouponCode!.total).toBe(2200);
                 expect(removeCouponCode!.totalWithTax).toBe(2640);
 
-                const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
-                    GET_ACTIVE_ORDER,
-                );
+                const { activeOrder } =
+                    await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
                 expect(getItemSale1Line(activeOrder!.lines).discounts.length).toBe(0);
                 expect(activeOrder!.total).toBe(2200);
                 expect(activeOrder!.totalWithTax).toBe(2640);
@@ -1534,9 +1533,8 @@ describe('Promotions applied to Orders', () => {
 
                 await addGuestCustomerToOrder();
 
-                const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
-                    GET_ACTIVE_ORDER,
-                );
+                const { activeOrder } =
+                    await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
                 expect(activeOrder!.couponCodes).toEqual([]);
                 expect(activeOrder!.totalWithTax).toBe(6000);
             });
@@ -1627,9 +1625,8 @@ describe('Promotions applied to Orders', () => {
 
                 await logInAsRegisteredCustomer();
 
-                const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
-                    GET_ACTIVE_ORDER,
-                );
+                const { activeOrder } =
+                    await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
                 expect(activeOrder!.totalWithTax).toBe(6000);
                 expect(activeOrder!.couponCodes).toEqual([]);
             });
@@ -1883,9 +1880,8 @@ describe('Promotions applied to Orders', () => {
         expect(addItemToOrder.discounts.length).toBe(1);
         expect(addItemToOrder.discounts[0].description).toBe('Test Promo');
 
-        const { activeOrder: check1 } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
-            GET_ACTIVE_ORDER,
-        );
+        const { activeOrder: check1 } =
+            await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
         expect(check1!.discounts.length).toBe(1);
         expect(check1!.discounts[0].description).toBe('Test Promo');
 
@@ -1899,9 +1895,8 @@ describe('Promotions applied to Orders', () => {
         orderResultGuard.assertSuccess(removeOrderLine);
         expect(removeOrderLine.discounts.length).toBe(0);
 
-        const { activeOrder: check2 } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
-            GET_ACTIVE_ORDER,
-        );
+        const { activeOrder: check2 } =
+            await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
         expect(check2!.discounts.length).toBe(0);
     });
 
@@ -2043,9 +2038,8 @@ describe('Promotions applied to Orders', () => {
                 quantity: 1,
             });
 
-            const { activeOrder: check1 } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
-                GET_ACTIVE_ORDER,
-            );
+            const { activeOrder: check1 } =
+                await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
 
             expect(check1!.lines[0].discountedUnitPriceWithTax).toBe(0);
             expect(check1!.totalWithTax).toBe(0);
@@ -2055,9 +2049,8 @@ describe('Promotions applied to Orders', () => {
                 CodegenShop.ApplyCouponCodeMutationVariables
             >(APPLY_COUPON_CODE, { couponCode: couponCode2 });
 
-            const { activeOrder: check2 } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
-                GET_ACTIVE_ORDER,
-            );
+            const { activeOrder: check2 } =
+                await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
             expect(check2!.lines[0].discountedUnitPriceWithTax).toBe(0);
             expect(check2!.totalWithTax).toBe(0);
         });
@@ -2080,9 +2073,8 @@ describe('Promotions applied to Orders', () => {
                 quantity: 1,
             });
 
-            const { activeOrder: check1 } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
-                GET_ACTIVE_ORDER,
-            );
+            const { activeOrder: check1 } =
+                await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
 
             expect(check1!.lines[0].discountedUnitPriceWithTax).toBe(0);
             expect(check1!.totalWithTax).toBe(0);
@@ -2092,11 +2084,112 @@ describe('Promotions applied to Orders', () => {
                 CodegenShop.ApplyCouponCodeMutationVariables
             >(APPLY_COUPON_CODE, { couponCode: couponCode2 });
 
-            const { activeOrder: check2 } = await shopClient.query<CodegenShop.GetActiveOrderQuery>(
-                GET_ACTIVE_ORDER,
-            );
+            const { activeOrder: check2 } =
+                await shopClient.query<CodegenShop.GetActiveOrderQuery>(GET_ACTIVE_ORDER);
             expect(check2!.lines[0].discountedUnitPriceWithTax).toBe(0);
             expect(check2!.totalWithTax).toBe(0);
+        });
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/2956
+    describe('Order promotion with ExecutePromotionActionResult', () => {
+        const lineDiscountCouponCode = 'LINE_DISCOUNT';
+        const unitDiscountCouponCode = 'UNIT_DISCOUNT';
+        let lineDiscountPromotion: Codegen.PromotionFragment;
+        let unitDiscountPromotion: Codegen.PromotionFragment;
+
+        beforeAll(async () => {
+            lineDiscountPromotion = await createPromotion({
+                enabled: true,
+                name: 'Line discount promotion',
+                couponCode: lineDiscountCouponCode,
+                conditions: [],
+                actions: [
+                    {
+                        code: orderLineFixedDiscount.code,
+                        arguments: [
+                            { name: 'discount', value: '800' },
+                            { name: 'discountMode', value: 'line' },
+                        ],
+                    },
+                ],
+            });
+            unitDiscountPromotion = await createPromotion({
+                enabled: true,
+                name: 'Unit discount promotion',
+                couponCode: unitDiscountCouponCode,
+                conditions: [],
+                actions: [
+                    {
+                        code: orderLineFixedDiscount.code,
+                        arguments: [
+                            { name: 'discount', value: '300' },
+                            { name: 'discountMode', value: 'unit' },
+                        ],
+                    },
+                ],
+            });
+        });
+
+        afterAll(async () => {
+            await deletePromotion(lineDiscountPromotion.id);
+            await deletePromotion(unitDiscountPromotion.id);
+        });
+
+        it('should apply line discount promotion correctly', async () => {
+            shopClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            await shopClient.asAnonymousUser();
+            const { addItemToOrder } = await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: getVariantBySlug('item-1000').id,
+                quantity: 2,
+            });
+            orderResultGuard.assertSuccess(addItemToOrder);
+            expect(addItemToOrder.total).toBe(2000);
+            expect(addItemToOrder.totalWithTax).toBe(2400);
+            expect(addItemToOrder.discounts.length).toBe(0);
+
+            const { applyCouponCode } = await shopClient.query<
+                CodegenShop.ApplyCouponCodeMutation,
+                CodegenShop.ApplyCouponCodeMutationVariables
+            >(APPLY_COUPON_CODE, {
+                couponCode: lineDiscountCouponCode,
+            });
+            orderResultGuard.assertSuccess(applyCouponCode);
+            expect(applyCouponCode.discounts.length).toBe(1);
+            expect(applyCouponCode.discounts[0].description).toBe('Line discount promotion');
+            expect(applyCouponCode.total).toBe(1200);
+            expect(applyCouponCode.totalWithTax).toBe(1440);
+        });
+
+        it('should apply unit discount promotion correctly', async () => {
+            shopClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            await shopClient.asAnonymousUser();
+            const { addItemToOrder } = await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: getVariantBySlug('item-1000').id,
+                quantity: 2,
+            });
+            orderResultGuard.assertSuccess(addItemToOrder);
+            expect(addItemToOrder.total).toBe(2000);
+            expect(addItemToOrder.totalWithTax).toBe(2400);
+            expect(addItemToOrder.discounts.length).toBe(0);
+
+            const { applyCouponCode } = await shopClient.query<
+                CodegenShop.ApplyCouponCodeMutation,
+                CodegenShop.ApplyCouponCodeMutationVariables
+            >(APPLY_COUPON_CODE, {
+                couponCode: unitDiscountCouponCode,
+            });
+            orderResultGuard.assertSuccess(applyCouponCode);
+            expect(applyCouponCode.discounts.length).toBe(1);
+            expect(applyCouponCode.discounts[0].description).toBe('Unit discount promotion');
+            expect(applyCouponCode.total).toBe(1400);
+            expect(applyCouponCode.totalWithTax).toBe(1680);
         });
     });
 

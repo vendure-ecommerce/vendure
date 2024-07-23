@@ -150,17 +150,15 @@ export class Promotion
             if (promotionAction instanceof PromotionItemAction) {
                 if (this.isOrderItemArg(args)) {
                     const { orderLine } = args;
-                    const discountAmount = roundMoney(
-                        await promotionAction.execute(ctx, orderLine, action.args, state, this),
-                        ) * orderLine.quantity;
-                    const maxDiscountAmount =
-                        roundMoney(
-                            await promotionAction.maxDiscountAmount(ctx, orderLine, action.args, state, this),
-                        );
-                    amount +=
-                        maxDiscountAmount && maxDiscountAmount > discountAmount
-                            ? maxDiscountAmount
-                            : discountAmount;
+                    const discount = await promotionAction.execute(ctx, orderLine, action.args, state, this);
+                    if (typeof discount === 'number') {
+                        amount += roundMoney(discount * orderLine.quantity);
+                    } else {
+                        amount +=
+                            discount.discountMode === 'line'
+                                ? roundMoney(discount.amount)
+                                : roundMoney(discount.amount * orderLine.quantity);
+                    }
                 }
             } else if (promotionAction instanceof PromotionOrderAction) {
                 if (this.isOrderArg(args)) {

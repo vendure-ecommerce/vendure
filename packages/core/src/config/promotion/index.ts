@@ -2,6 +2,7 @@ import { buyXGetYFreeAction } from './actions/buy-x-get-y-free-action';
 import { discountOnItemWithFacets } from './actions/facet-values-percentage-discount-action';
 import { freeShipping } from './actions/free-shipping-action';
 import { orderFixedDiscount } from './actions/order-fixed-discount-action';
+import { orderLineFixedDiscount } from './actions/order-line-fixed-discount-action';
 import { orderPercentageDiscount } from './actions/order-percentage-discount-action';
 import { productsPercentageDiscount } from './actions/product-percentage-discount-action';
 import { buyXGetYFreeCondition } from './conditions/buy-x-get-y-free-condition';
@@ -27,6 +28,7 @@ export * from './utils/facet-value-checker';
 
 export const defaultPromotionActions = [
     orderFixedDiscount,
+    orderLineFixedDiscount,
     orderPercentageDiscount,
     discountOnItemWithFacets,
     productsPercentageDiscount,

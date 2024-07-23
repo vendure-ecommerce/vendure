@@ -63,6 +63,18 @@ export type ConditionState<
 
 /**
  * @description
+ * The result of a PromotionItemAction's `execute` function.
+ *
+ * @docsCategory promotions
+ * @docsPage promotion-action
+ */
+type ExecutePromotionActionResult = {
+    amount: number;
+    discountMode: 'line' | 'unit';
+};
+
+/**
+ * @description
  * The function which is used by a PromotionItemAction to calculate the
  * discount on the OrderLine.
  *
@@ -75,7 +87,7 @@ export type ExecutePromotionItemActionFn<T extends ConfigArgs, U extends Array<P
     args: ConfigArgValues<T>,
     state: ConditionState<U>,
     promotion: Promotion,
-) => number | Promise<number>;
+) => number | Promise<number> | ExecutePromotionActionResult | Promise<ExecutePromotionActionResult>;
 
 /**
  * @description
@@ -281,7 +293,9 @@ export abstract class PromotionAction<
     }
 
     /** @internal */
-    abstract execute(...arg: any[]): number | Promise<number>;
+    abstract execute(
+        ...arg: any[]
+    ): number | Promise<number> | ExecutePromotionActionResult | Promise<ExecutePromotionActionResult>;
 
     /** @internal */
     onActivate(
@@ -362,7 +376,7 @@ export class PromotionItemAction<
             promotion,
         );
     }
-    
+
     /**
      * @description
      * The maximum discount amount that can be applied to this action.
