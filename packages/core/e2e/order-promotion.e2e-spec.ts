@@ -30,6 +30,7 @@ import { freeShipping } from '../src/config/promotion/actions/free-shipping-acti
 import { orderFixedDiscount } from '../src/config/promotion/actions/order-fixed-discount-action';
 import { orderLineFixedDiscount } from '../src/config/promotion/actions/order-line-fixed-discount-action';
 
+import { TestMoneyStrategy } from './fixtures/test-money-strategy';
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import { CurrencyCode, HistoryEntryType, LanguageCode } from './graphql/generated-e2e-admin-types';
 import * as Codegen from './graphql/generated-e2e-admin-types';
@@ -66,6 +67,9 @@ describe('Promotions applied to Orders', () => {
             dbConnectionOptions: { logging: true },
             paymentOptions: {
                 paymentMethodHandlers: [testSuccessfulPaymentMethod],
+            },
+            entityOptions: {
+                moneyStrategy: new TestMoneyStrategy(),
             },
         }),
     );
