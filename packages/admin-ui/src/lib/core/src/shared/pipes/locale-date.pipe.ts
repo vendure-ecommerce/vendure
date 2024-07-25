@@ -47,14 +47,12 @@ export class LocaleDatePipe extends LocaleBasePipe implements PipeTransform {
                     hour: 'numeric',
                     minute: 'numeric',
                     second: 'numeric',
-                    hour12: true,
                 };
             case 'mediumTime':
                 return {
                     hour: 'numeric',
                     minute: 'numeric',
                     second: 'numeric',
-                    hour12: true,
                 };
             case 'longDate':
                 return {
@@ -75,7 +73,6 @@ export class LocaleDatePipe extends LocaleBasePipe implements PipeTransform {
                     year: '2-digit',
                     hour: 'numeric',
                     minute: 'numeric',
-                    hour12: true,
                 };
             default:
                 return;
