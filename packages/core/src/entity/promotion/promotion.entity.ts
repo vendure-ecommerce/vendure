@@ -159,9 +159,10 @@ export class Promotion
             if (promotionAction instanceof PromotionItemAction) {
                 if (this.isOrderItemArg(args)) {
                     const { orderLine } = args;
-                    amount +=
-                        roundMoney(await promotionAction.execute(ctx, orderLine, action.args, state, this)) *
-                        orderLine.quantity;
+                    amount += roundMoney(
+                        await promotionAction.execute(ctx, orderLine, action.args, state, this),
+                        orderLine.quantity,
+                    );
                 }
             } else if (promotionAction instanceof PromotionLineAction) {
                 if (this.isOrderLineArg(args)) {
