@@ -167,6 +167,7 @@ export class OrderCalculator {
      */
     private async applyPromotions(ctx: RequestContext, order: Order, promotions: Promotion[]): Promise<void> {
         await this.applyOrderItemPromotions(ctx, order, promotions);
+        await this.applyOrderLinePromotions(ctx, order, promotions);
         await this.applyOrderPromotions(ctx, order, promotions);
         return;
     }
@@ -200,6 +201,48 @@ export class OrderCalculator {
                     const adjustment = await promotion.apply(ctx, { orderLine: line }, state);
                     if (adjustment) {
                         adjustment.amount = adjustment.amount * line.quantity;
+                        line.addAdjustment(adjustment);
+                        priceAdjusted = true;
+                    }
+                    if (priceAdjusted) {
+                        this.calculateOrderTotals(order);
+                        priceAdjusted = false;
+                    }
+                    this.addPromotion(order, promotion);
+                }
+            }
+            this.calculateOrderTotals(order);
+        }
+        return;
+    }
+
+    /**
+     * @description
+     * Applies a promotion to the OrderLine.
+     * Unlike applyOrderItemPromotions, which applies promotions to OrderItems based on Quantity,
+     * this was created to apply promotions to the OrderLine regardless of Quantity.
+     */
+    private async applyOrderLinePromotions(
+        ctx: RequestContext,
+        order: Order,
+        promotions: Promotion[],
+    ): Promise<void> {
+        for (const line of order.lines) {
+            // Must be re-calculated for each line, since the previous lines may have triggered promotions
+            // which affected the order price.
+            const applicablePromotions = await filterAsync(promotions, p => p.test(ctx, order).then(Boolean));
+            line.clearAdjustments();
+
+            for (const promotion of applicablePromotions) {
+                let priceAdjusted = false;
+                // We need to test the promotion *again*, even though we've tested them for the line.
+                // This is because the previous Promotions may have adjusted the Order in such a way
+                // as to render later promotions no longer applicable.
+                const applicableOrState = await promotion.test(ctx, order);
+                if (applicableOrState) {
+                    const state = typeof applicableOrState === 'object' ? applicableOrState : undefined;
+                    const adjustment = await promotion.apply(ctx, { orderLine: line }, state);
+                    if (adjustment) {
                         line.addAdjustment(adjustment);
                         priceAdjusted = true;
                     }
