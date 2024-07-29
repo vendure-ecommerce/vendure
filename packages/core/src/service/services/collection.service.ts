@@ -726,7 +726,7 @@ export class CollectionService implements OnModuleInit {
         }
 
         return [
-            existingVariantsQb.getRawMany().then(results => results.map(result => result.id)),
+            ...(await existingVariantsQb.getRawMany().then(results => results.map(result => result.id))),
             ...toRemoveIds,
         ];
     }
