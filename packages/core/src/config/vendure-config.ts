@@ -402,7 +402,7 @@ export interface AuthOptions {
      * Determines whether new User accounts require verification of their email address.
      *
      * If set to "true", the customer will be required to verify their email address using a verification token
-     * they receive in their email. See {@link registerCustomerAccount}.
+     * they receive in their email. See the `registerCustomerAccount` mutation for more details on the verification behavior.
      *
      * @default true
      */
