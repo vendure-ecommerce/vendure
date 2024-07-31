@@ -219,7 +219,7 @@ export interface SMTPTransportOptions extends SMTPTransport.Options {
  *   plugins: [
  *     EmailPlugin.init({
  *       handler: defaultEmailHandlers,
- *       templatePath: path.join(__dirname, 'static/email/templates'),
+ *       templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/email/templates')),
  *       transport: {
  *         type: 'ses',
  *         SES: { ses, aws: { SendRawEmailCommand } },
@@ -391,9 +391,30 @@ export interface EmailTemplateConfig {
     subject: string;
 }
 
+/**
+ * @description
+ * The object passed to the {@link TemplateLoader} `loadTemplate()` method.
+ *
+ * @docsCategory core plugins/EmailPlugin
+ * @docsPage Email Plugin Types
+ */
 export interface LoadTemplateInput {
+    /**
+     * @description
+     * The type corresponds to the string passed to the EmailEventListener constructor.
+     */
     type: string;
+    /**
+     * @description
+     * The template name is specified by the EmailEventHander's call to
+     * the `addTemplate()` method, and will default to `body.hbs`
+     */
     templateName: string;
+    /**
+     * @description
+     * The variables defined by the globalTemplateVars as well as any variables defined in the
+     * EmailEventHandler's `setTemplateVars()` method.
+     */
     templateVars: any;
 }
 
