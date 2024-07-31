@@ -23,7 +23,12 @@ import { In, IsNull } from 'typeorm';
 
 import { RequestContext, SerializedRequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
-import { ForbiddenError, IllegalOperationError, UserInputError } from '../../common/error/errors';
+import {
+    ForbiddenError,
+    IllegalOperationError,
+    InternalServerError,
+    UserInputError,
+} from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -101,11 +106,14 @@ export class CollectionService implements OnModuleInit {
                     .createQueryBuilder('collection')
                     .select('collection.id', 'id')
                     .getRawMany();
-                await this.applyFiltersQueue.add({
-                    ctx: event.ctx.serialize(),
-                    collectionIds: collections.map(c => c.id),
-                },
-                {   ctx: event.ctx   });
+                await this.applyFiltersQueue.add(
+                    {
+                        ctx: event.ctx.serialize(),
+                        collectionIds: collections.map(c => c.id),
+                        applyToChangedVariantsOnly: true,
+                    },
+                    { ctx: event.ctx },
+                );
             });
 
         this.applyFiltersQueue = await this.jobQueueService.createQueue({
@@ -129,7 +137,7 @@ export class CollectionService implements OnModuleInit {
                         Logger.warn(`Could not find Collection with id ${collectionId}, skipping`);
                     }
                     completed++;
-                    if (collection) {
+                    if (collection !== undefined) {
                         let affectedVariantIds: ID[] = [];
                         try {
                             affectedVariantIds = await this.applyCollectionFiltersInternal(
@@ -147,8 +155,11 @@ export class CollectionService implements OnModuleInit {
                         }
                         job.setProgress(Math.ceil((completed / job.data.collectionIds.length) * 100));
                         if (affectedVariantIds.length) {
-                            await this.eventBus.publish(
-                                new CollectionModificationEvent(ctx, collection, affectedVariantIds),
+                            // To avoid performance issues on huge collections we first split the affected variant ids into chunks
+                            this.chunkArray(affectedVariantIds, 50000).map(chunk =>
+                                this.eventBus.publish(
+                                    new CollectionModificationEvent(ctx, collection as Collection, chunk),
+                                ),
                             );
                         }
                     }
@@ -469,11 +480,13 @@ export class CollectionService implements OnModuleInit {
             input,
             collection,
         );
-        await this.applyFiltersQueue.add({
-            ctx: ctx.serialize(),
-            collectionIds: [collection.id],
-        },
-        {   ctx   });
+        await this.applyFiltersQueue.add(
+            {
+                ctx: ctx.serialize(),
+                collectionIds: [collection.id],
+            },
+            { ctx },
+        );
         await this.eventBus.publish(new CollectionEvent(ctx, collectionWithRelations, 'created', input));
         return assertFound(this.findOne(ctx, collection.id));
     }
@@ -495,12 +508,14 @@ export class CollectionService implements OnModuleInit {
         });
         await this.customFieldRelationService.updateRelations(ctx, Collection, input, collection);
         if (input.filters) {
-            await this.applyFiltersQueue.add({
-                ctx: ctx.serialize(),
-                collectionIds: [collection.id],
-                applyToChangedVariantsOnly: false,
-            },
-            {   ctx   });
+            await this.applyFiltersQueue.add(
+                {
+                    ctx: ctx.serialize(),
+                    collectionIds: [collection.id],
+                    applyToChangedVariantsOnly: false,
+                },
+                { ctx },
+            );
         } else {
             const affectedVariantIds = await this.getCollectionProductVariantIds(collection);
             await this.eventBus.publish(new CollectionModificationEvent(ctx, collection, affectedVariantIds));
@@ -571,11 +586,13 @@ export class CollectionService implements OnModuleInit {
         siblings = moveToIndex(input.index, target, siblings);
 
         await this.connection.getRepository(ctx, Collection).save(siblings);
-        await this.applyFiltersQueue.add({
-            ctx: ctx.serialize(),
-            collectionIds: [target.id],
-        },
-        {   ctx   });
+        await this.applyFiltersQueue.add(
+            {
+                ctx: ctx.serialize(),
+                collectionIds: [target.id],
+            },
+            { ctx },
+        );
         return assertFound(this.findOne(ctx, input.collectionId));
     }
 
@@ -601,61 +618,117 @@ export class CollectionService implements OnModuleInit {
     };
 
     /**
-     * Applies the CollectionFilters
-     *
-     * If applyToChangedVariantsOnly (default: true) is true, then apply collection job will process only changed variants
-     * If applyToChangedVariantsOnly (default: true) is false, then apply collection job will process all variants
-     * This param is used when we update collection and collection filters are changed to update all
-     * variants (because other attributes of collection can be changed https://github.com/vendure-ecommerce/vendure/issues/1015)
+     * Applies the CollectionFilters and returns the IDs of ProductVariants that need to be added or removed.
      */
     private async applyCollectionFiltersInternal(
         collection: Collection,
         applyToChangedVariantsOnly = true,
     ): Promise<ID[]> {
+        const masterConnection = this.connection.rawConnection.createQueryRunner('master').connection;
         const ancestorFilters = await this.getAncestorFilters(collection);
-        const preIds = await this.getCollectionProductVariantIds(collection);
-        const filteredVariantIds = await this.getFilteredProductVariantIds([
-            ...ancestorFilters,
-            ...(collection.filters || []),
-        ]);
-        const postIds = filteredVariantIds.map(v => v.id);
-        const preIdsSet = new Set(preIds);
-        const postIdsSet = new Set(postIds);
+        const filters = [...ancestorFilters, ...(collection.filters || [])];
 
-        const toDeleteIds = preIds.filter(id => !postIdsSet.has(id));
-        const toAddIds = postIds.filter(id => !preIdsSet.has(id));
+        const { collectionFilters } = this.configService.catalogOptions;
+
+        // Create a basic query to retrieve the IDs of product variants that match the collection filters
+        let filteredQb = masterConnection
+            .getRepository(ProductVariant)
+            .createQueryBuilder('productVariant')
+            .select('productVariant.id', 'id')
+            .setFindOptions({ loadEagerRelations: false });
+
+        // If there are no filters, we need to ensure that the query returns no results
+        if (filters.length === 0) {
+            filteredQb.andWhere('1 = 0');
+        }
+
+        //  Applies the CollectionFilters and returns an array of ProductVariant entities which match
+        for (const filterType of collectionFilters) {
+            const filtersOfType = filters.filter(f => f.code === filterType.code);
+            if (filtersOfType.length) {
+                for (const filter of filtersOfType) {
+                    filteredQb = filterType.apply(filteredQb, filter.args);
+                }
+            }
+        }
+
+        // Subquery for existing variants in the collection
+        const existingVariantsQb = masterConnection
+            .getRepository(ProductVariant)
+            .createQueryBuilder('variant')
+            .select('variant.id', 'id')
+            .setFindOptions({ loadEagerRelations: false })
+            .innerJoin('variant.collections', 'collection', 'collection.id = :id', { id: collection.id });
+
+        // Using CTE to find variants to add
+        const addQb = masterConnection
+            .createQueryBuilder()
+            .addCommonTableExpression(filteredQb, '_filtered_variants')
+            .addCommonTableExpression(existingVariantsQb, '_existing_variants')
+            .select('filtered_variants.id')
+            .from('_filtered_variants', 'filtered_variants')
+            .leftJoin(
+                '_existing_variants',
+                'existing_variants',
+                'filtered_variants.id = existing_variants.id',
+            )
+            .where('existing_variants.id IS NULL');
+
+        // Using CTE to find the variants to be deleted
+        const removeQb = masterConnection
+            .createQueryBuilder()
+            .addCommonTableExpression(filteredQb, '_filtered_variants')
+            .addCommonTableExpression(existingVariantsQb, '_existing_variants')
+            .select('existing_variants.id')
+            .from('_existing_variants', 'existing_variants')
+            .leftJoin(
+                '_filtered_variants',
+                'filtered_variants',
+                'existing_variants.id = filtered_variants.id',
+            )
+            .where('filtered_variants.id IS NULL')
+            .setParameters({ id: collection.id });
+
+        const [toAddIds, toRemoveIds] = await Promise.all([
+            addQb.getRawMany().then(results => results.map(result => result.id)),
+            removeQb.getRawMany().then(results => results.map(result => result.id)),
+        ]);
 
         try {
-            // First we remove variants that are no longer in the collection
-            const chunkedDeleteIds = this.chunkArray(toDeleteIds, 500);
-
-            for (const chunkedDeleteId of chunkedDeleteIds) {
-                await this.connection.rawConnection
-                    .createQueryBuilder()
-                    .relation(Collection, 'productVariants')
-                    .of(collection)
-                    .remove(chunkedDeleteId);
-            }
-
-            // Then we add variants have been added
-            const chunkedAddIds = this.chunkArray(toAddIds, 500);
-
-            for (const chunkedAddId of chunkedAddIds) {
-                await this.connection.rawConnection
-                    .createQueryBuilder()
-                    .relation(Collection, 'productVariants')
-                    .of(collection)
-                    .add(chunkedAddId);
-            }
+            await this.connection.rawConnection.transaction(async transactionalEntityManager => {
+                const chunkedDeleteIds = this.chunkArray(toRemoveIds, 5000);
+                const chunkedAddIds = this.chunkArray(toAddIds, 5000);
+                await Promise.all([
+                    // Delete variants that should no longer be in the collection
+                    ...chunkedDeleteIds.map(chunk =>
+                        transactionalEntityManager
+                            .createQueryBuilder()
+                            .relation(Collection, 'productVariants')
+                            .of(collection)
+                            .remove(chunk),
+                    ),
+                    // Adding options that should be in the collection
+                    ...chunkedAddIds.map(chunk =>
+                        transactionalEntityManager
+                            .createQueryBuilder()
+                            .relation(Collection, 'productVariants')
+                            .of(collection)
+                            .add(chunk),
+                    ),
+                ]);
+            });
         } catch (e: any) {
             Logger.error(e);
         }
 
         if (applyToChangedVariantsOnly) {
-            return [...preIds.filter(id => !postIdsSet.has(id)), ...postIds.filter(id => !preIdsSet.has(id))];
-        } else {
-            return [...preIds.filter(id => !postIdsSet.has(id)), ...postIds];
+            return [...toAddIds, ...toRemoveIds];
         }
+
+        return [
+            ...(await existingVariantsQb.getRawMany().then(results => results.map(result => result.id))),
+            ...toRemoveIds,
+        ];
     }
 
     /**
@@ -674,32 +747,6 @@ export class CollectionService implements OnModuleInit {
             }
         }
         return ancestorFilters;
-    }
-
-    /**
-     * Applies the CollectionFilters and returns an array of ProductVariant entities which match.
-     */
-    private async getFilteredProductVariantIds(filters: ConfigurableOperation[]): Promise<Array<{ id: ID }>> {
-        if (filters.length === 0) {
-            return [];
-        }
-        const { collectionFilters } = this.configService.catalogOptions;
-        let qb = this.connection.rawConnection
-            .getRepository(ProductVariant)
-            .createQueryBuilder('productVariant');
-
-        for (const filterType of collectionFilters) {
-            const filtersOfType = filters.filter(f => f.code === filterType.code);
-            if (filtersOfType.length) {
-                for (const filter of filtersOfType) {
-                    qb = filterType.apply(qb, filter.args);
-                }
-            }
-        }
-
-        // This is the most performant (time & memory) way to get
-        // just the variant IDs, which is all we need.
-        return qb.select('productVariant.id', 'id').getRawMany();
     }
 
     /**
@@ -830,11 +877,13 @@ export class CollectionService implements OnModuleInit {
         );
         await this.assetService.assignToChannel(ctx, { channelId: input.channelId, assetIds });
 
-        await this.applyFiltersQueue.add({
-            ctx: ctx.serialize(),
-            collectionIds: collectionsToAssign.map(collection => collection.id),
-        },
-        {   ctx   });
+        await this.applyFiltersQueue.add(
+            {
+                ctx: ctx.serialize(),
+                collectionIds: collectionsToAssign.map(collection => collection.id),
+            },
+            { ctx },
+        );
 
         return this.connection
             .findByIdsInChannel(
