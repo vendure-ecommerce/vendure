@@ -4,7 +4,7 @@ import {
     DefaultSearchPlugin,
     VendureConfig,
 } from '@vendure/core';
-import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
+import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import 'dotenv/config';
@@ -88,7 +88,7 @@ export const config: VendureConfig = {
             outputPath: path.join(__dirname, '../static/email/test-emails'),
             route: 'mailbox',
             handlers: defaultEmailHandlers,
-            templatePath: path.join(__dirname, '../static/email/templates'),
+            templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/email/templates')),
             globalTemplateVars: {
                 // The following variables will change depending on your storefront implementation.
                 // Here we are assuming a storefront running at http://localhost:8080.
