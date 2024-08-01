@@ -180,7 +180,7 @@ export class ExternalAuthenticationService {
             lastName?: string;
             roles: Role[];
         },
-    ) {
+    ): Promise<User> {
         const newUser = new User({
             identifier: config.identifier,
             roles: config.roles,
@@ -206,7 +206,32 @@ export class ExternalAuthenticationService {
             }),
         );
 
-        return newUser;
+        return savedUser;
+    }
+    /**
+     * @description
+     * Creates a new User with the given strategy and external identifier.
+       This method is used when a user is authenticated by an external provider without email.
+     */
+
+    async createUser(
+        ctx: RequestContext,
+        config: {
+            strategy: string;
+            externalIdentifier: string;
+        },
+    ): Promise<User> {
+        const newUser = new User();
+        const authMethod = await this.connection.getRepository(ctx, ExternalAuthenticationMethod).save(
+            new ExternalAuthenticationMethod({
+                externalIdentifier: config.externalIdentifier,
+                strategy: config.strategy,
+            }),
+        );
+        newUser.identifier = config.externalIdentifier;
+        newUser.authenticationMethods = [authMethod];
+        const savedUser = await this.connection.getRepository(ctx, User).save(newUser);
+        return savedUser;
     }
 
     async findUser(
