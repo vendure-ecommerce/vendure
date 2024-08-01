@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 import { intro, note, outro, select, spinner } from '@clack/prompts';
 import { program } from 'commander';
-import detectPort from 'detect-port';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
@@ -20,7 +19,7 @@ import {
     scaffoldAlreadyExists,
     yarnIsAvailable,
 } from './helpers';
-import { CliLogLevel, DbType, PackageManager } from './types';
+import { CliLogLevel, PackageManager } from './types';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
@@ -63,14 +62,29 @@ export async function createVendureApp(
     if (!runPreChecks(name, useNpm)) {
         return;
     }
-    if (await isServerPortInUse()) {
-        console.log(pc.red(`Port ${SERVER_PORT} is in use. Please make it available and then re-try.`));
-        process.exit(1);
-    }
 
     intro(
         `Let's create a ${pc.blue(pc.bold('Vendure App'))} ✨ ${pc.dim(`v${packageJson.version as string}`)}`,
     );
+
+    const portSpinner = spinner();
+    let port = SERVER_PORT;
+    const attemptedPortRange = 20;
+    portSpinner.start(`Establishing port...`);
+    while (await isServerPortInUse(port)) {
+        const nextPort = port + 1;
+        portSpinner.message(pc.yellow(`Port ${port} is in use. Attempting to use ${nextPort}`));
+        port = nextPort;
+        if (port > SERVER_PORT + attemptedPortRange) {
+            portSpinner.stop(pc.red('Could not find an available port'));
+            outro(
+                `Please ensure there is a port available between ${SERVER_PORT} and ${SERVER_PORT + attemptedPortRange}`,
+            );
+            process.exit(1);
+        }
+    }
+    portSpinner.stop(`Using port ${port}`);
+    process.env.PORT = port.toString();
 
     const root = path.resolve(name);
     const appName = path.basename(root);
@@ -211,7 +225,6 @@ export async function createVendureApp(
         const assetsDir = path.join(__dirname, '../assets');
 
         const initialDataPath = path.join(assetsDir, 'initial-data.json');
-        const port = await detectPort(3000);
         const vendureLogLevel =
             logLevel === 'silent'
                 ? LogLevel.Error
