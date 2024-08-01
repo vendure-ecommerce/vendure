@@ -50,13 +50,15 @@ export class AuthGuard implements CanActivate {
             return true;
         }
         const authDisabled = this.configService.authOptions.disableAuth;
+        const disableAnonymousSession = this.configService.authOptions.disableAnonymousSession;
+
         const isPublic = !!permissions && permissions.includes(Permission.Public);
         const hasOwnerPermission = !!permissions && permissions.includes(Permission.Owner);
         let requestContext: RequestContext;
         if (isFieldResolver) {
             requestContext = (req as any)[REQUEST_CONTEXT_KEY];
         } else {
-            const session = await this.getSession(req, res, hasOwnerPermission);
+            const session = await this.getSession(req, res, hasOwnerPermission, disableAnonymousSession);
             requestContext = await this.requestContextService.fromRequest(req, info, permissions, session);
 
             const requestContextShouldBeReinitialized = await this.setActiveChannel(requestContext, session);
@@ -134,6 +136,7 @@ export class AuthGuard implements CanActivate {
         req: Request,
         res: Response,
         hasOwnerPermission: boolean,
+        disableAnonymousSession: boolean,
     ): Promise<CachedSession | undefined> {
         const sessionToken = extractSessionToken(req, this.configService.authOptions.tokenMethod);
         let serializedSession: CachedSession | undefined;
@@ -153,7 +156,7 @@ export class AuthGuard implements CanActivate {
             });
         }
 
-        if (hasOwnerPermission && !serializedSession) {
+        if (hasOwnerPermission && !serializedSession && !disableAnonymousSession) {
             serializedSession = await this.sessionService.createAnonymousSession();
             setSessionToken({
                 sessionToken: serializedSession.token,

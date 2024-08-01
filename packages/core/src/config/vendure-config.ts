@@ -2,7 +2,7 @@ import { ApolloServerPlugin } from '@apollo/server';
 import { RenderPageOptions } from '@apollographql/graphql-playground-html';
 import { DynamicModule, Type } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
-import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { LanguageCode, Permission } from '@vendure/common/lib/generated-types';
 import { ValidationContext } from 'graphql';
 import { DataSourceOptions } from 'typeorm';
 
@@ -473,6 +473,17 @@ export interface AuthOptions {
      * @default DefaultPasswordValidationStrategy
      */
     passwordValidationStrategy?: PasswordValidationStrategy;
+
+    /**
+     * @description
+     * When set to `true`, the built-in mechanism for allowing unauthenticated users to create
+     * orders (so-called "anonymous" sessions) is disabled.
+     * This is useful when you want to ensure that all orders are associated with an authenticated user.
+     *
+     * @since 3.0.0
+     * @default false
+     */
+    disableAnonymousSession?: boolean;
 }
 
 /**
