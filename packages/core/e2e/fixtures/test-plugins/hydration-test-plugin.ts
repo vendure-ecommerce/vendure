@@ -19,7 +19,7 @@ import {
     VendurePlugin,
 } from '@vendure/core';
 import gql from 'graphql-tag';
-import { Entity, ManyToOne } from 'typeorm';
+import { Entity, ManyToOne, OneToMany } from 'typeorm';
 
 @Resolver()
 export class TestAdminPluginResolver {
@@ -141,6 +141,30 @@ export class TestAdminPluginResolver {
         });
         return channel;
     }
+
+    @Query()
+    async hydrateChannelWithVeryLongPropertyName(@Ctx() ctx: RequestContext, @Args() args: { id: ID }) {
+        const channel = await this.channelService.findOne(ctx, args.id);
+        await this.entityHydrator.hydrate(ctx, channel!, {
+            relations: ['customFields.additionalConfig.treeEntity'],
+        });
+
+        // Make sure we start on a tree entity to make use of tree-relations-qb-joiner.ts
+        await Promise.all(
+            ((channel!.customFields as any).additionalConfig.treeEntity as TreeEntity[]).map(treeEntity =>
+                this.entityHydrator.hydrate(ctx, treeEntity, {
+                    relations: [
+                        'childrenPropertyWithAVeryLongNameThatExceedsPostgresLimitsEasilyByItself',
+                        'childrenPropertyWithAVeryLongNameThatExceedsPostgresLimitsEasilyByItself',
+                        'childrenPropertyWithAVeryLongNameThatExceedsPostgresLimitsEasilyByItself.image1',
+                        'childrenPropertyWithAVeryLongNameThatExceedsPostgresLimitsEasilyByItself.image2',
+                    ],
+                }),
+            ),
+        );
+
+        return channel;
+    }
 }
 
 @Entity()
@@ -151,11 +175,42 @@ export class AdditionalConfig extends VendureEntity {
 
     @ManyToOne(() => Asset, { onDelete: 'SET NULL', nullable: true })
     backgroundImage: Asset;
+
+    @OneToMany(() => TreeEntity, entity => entity.additionalConfig)
+    treeEntity: TreeEntity[];
+}
+
+@Entity()
+export class TreeEntity extends VendureEntity {
+    constructor(input?: DeepPartial<TreeEntity>) {
+        super(input);
+    }
+
+    @ManyToOne(() => AdditionalConfig, e => e.treeEntity, { nullable: true })
+    additionalConfig: AdditionalConfig;
+
+    @OneToMany(() => TreeEntity, entity => entity.parent)
+    childrenPropertyWithAVeryLongNameThatExceedsPostgresLimitsEasilyByItself: TreeEntity[];
+
+    @ManyToOne(
+        () => TreeEntity,
+        entity => entity.childrenPropertyWithAVeryLongNameThatExceedsPostgresLimitsEasilyByItself,
+        {
+            nullable: true,
+        },
+    )
+    parent: TreeEntity;
+
+    @ManyToOne(() => Asset)
+    image1: Asset;
+
+    @ManyToOne(() => Asset)
+    image2: Asset;
 }
 
 @VendurePlugin({
     imports: [PluginCommonModule],
-    entities: [AdditionalConfig],
+    entities: [AdditionalConfig, TreeEntity],
     adminApiExtensions: {
         resolvers: [TestAdminPluginResolver],
         schema: gql`
@@ -168,6 +223,7 @@ export class AdditionalConfig extends VendureEntity {
                 hydrateOrderReturnQuantities(id: ID!): JSON
                 hydrateChannel(id: ID!): JSON
                 hydrateChannelWithNestedRelation(id: ID!): JSON
+                hydrateChannelWithVeryLongPropertyName(id: ID!): JSON
             }
         `,
     },
