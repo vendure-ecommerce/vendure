@@ -94,10 +94,10 @@ export class ExternalAuthenticationService {
         config: {
             strategy: string;
             externalIdentifier: string;
-            verified: boolean;
             emailAddress: string;
-            firstName?: string;
-            lastName?: string;
+            firstName: string;
+            lastName: string;
+            verified?: boolean;
         },
     ): Promise<User> {
         let user: User;
@@ -206,7 +206,7 @@ export class ExternalAuthenticationService {
             }),
         );
 
-        return newUser;
+        return savedUser;
     }
 
     async findUser(
