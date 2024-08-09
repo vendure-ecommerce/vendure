@@ -735,7 +735,7 @@
     "email-address-or-identifier": "Email ou identificador",
     "first-name": "Nome",
     "fulfillment-handler": "Manipulador para a execução de envio",
-    "global-available-languages-tooltip": "Linguagens globais disponíveis tooltip",
+    "global-available-languages-tooltip": "Linguagens globais disponíveis",
     "global-out-of-stock-threshold": "Limite globalpara fora de estoque",
     "global-out-of-stock-threshold-tooltip": "Define o limite para a variante ser considerada sem estoque. Usar um valor negativo activa o suporte a pedidos pendentes. Pode ser substituído pela variante do produto.",
     "last-name": "Apelido",
