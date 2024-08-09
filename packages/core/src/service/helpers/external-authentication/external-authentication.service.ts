@@ -239,4 +239,27 @@ export class ExternalAuthenticationService {
 
         return customer?.user;
     }
+    async createUser(
+        ctx: RequestContext,
+        config: {
+            strategy: string;
+            externalIdentifier: string;
+        },
+    ): Promise<User> {
+        const user = await this.findUser(ctx, config.strategy, config.externalIdentifier);
+        if (user) {
+            return user;
+        }
+        const newUser = new User();
+        const authMethod = await this.connection.getRepository(ctx, ExternalAuthenticationMethod).save(
+            new ExternalAuthenticationMethod({
+                externalIdentifier: config.externalIdentifier,
+                strategy: config.strategy,
+            }),
+        );
+        newUser.identifier = config.externalIdentifier;
+        newUser.authenticationMethods = [authMethod];
+        const savedUser = await this.connection.getRepository(ctx, User).save(newUser);
+        return savedUser;
+    }
 }
