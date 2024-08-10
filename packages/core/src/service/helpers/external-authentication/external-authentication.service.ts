@@ -239,6 +239,15 @@ export class ExternalAuthenticationService {
 
         return customer?.user;
     }
+
+    /**
+     * @description
+     * Looks up a User based on their identifier from an external authentication
+     * provider. Creates the user if does not exist. Unlike {@link findCustomerUser} and {@link findAdministratorUser},
+     * this method does not enforce that the User is associated with a Customer or
+     * Administrator account.
+     *
+     */
     async createUser(
         ctx: RequestContext,
         config: {
