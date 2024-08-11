@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, FormRecord, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormRecord, Validators } from '@angular/forms';
 import {
     CreateProductVariantInput,
     CurrencyCode,
@@ -7,7 +7,6 @@ import {
     GetProductVariantOptionsQuery,
 } from '@vendure/admin-ui/core';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { combineLatest } from 'rxjs';
 
 @Component({
     selector: 'vdr-create-product-variant-dialog',
@@ -20,7 +19,7 @@ export class CreateProductVariantDialogComponent implements Dialog<CreateProduct
     product: NonNullable<GetProductVariantOptionsQuery['product']>;
     form = this.formBuilder.group({
         name: ['', Validators.required],
-        sku: ['', Validators.required],
+        sku: [''],
         price: [''],
         options: this.formBuilder.record<string>({}),
     });
@@ -67,14 +66,14 @@ export class CreateProductVariantDialogComponent implements Dialog<CreateProduct
 
     confirm() {
         const { name, sku, options, price } = this.form.value;
-        if (!name || !sku || !options || price == null) {
+        if (!name || !options || price == null) {
             return;
         }
 
         const optionIds = Object.values(options).filter(notNullOrUndefined);
         this.resolveWith({
             productId: this.product.id,
-            sku,
+            sku: sku || '',
             price: Number(price),
             optionIds,
             translations: [
