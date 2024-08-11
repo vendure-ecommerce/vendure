@@ -42,14 +42,14 @@ interface AdminUiConfig {
 
 ### apiHost
 
-<MemberInfo kind="property" type={`string | 'auto'`} default={`'http://localhost'`}   />
+<MemberInfo kind="property" type={`string | 'auto'`} default={`'auto'`}   />
 
 The hostname of the Vendure server which the admin UI will be making API calls
 to. If set to "auto", the Admin UI app will determine the hostname from the
 current location (i.e. `window.location.hostname`).
 ### apiPort
 
-<MemberInfo kind="property" type={`number | 'auto'`} default={`3000`}   />
+<MemberInfo kind="property" type={`number | 'auto'`} default={`'auto'`}   />
 
 The port of the Vendure server which the admin UI will be making API calls
 to. If set to "auto", the Admin UI app will determine the port from the

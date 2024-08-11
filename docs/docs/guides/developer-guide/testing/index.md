@@ -26,18 +26,22 @@ For a working example of a Vendure plugin with e2e testing, see the [real-world-
   - `@swc/core`
   - `unplugin-swc`
 
+```sh
+npm install --save-dev @vendure/testing vitest graphql-tag @swc/core unplugin-swc
+```
+
 ### Configure Vitest
 
-Create a `vitest.config.js` file in the root of your project:
+Create a `vitest.config.mts` file in the root of your project:
 
-```ts
+```ts title="vitest.config.mts"
 import path from 'path';
 import swc from 'unplugin-swc';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
     test: {
-        include: '**/*.e2e-spec.ts',
+        include: ['**/*.e2e-spec.ts'],
         typecheck: {
             tsconfig: path.join(__dirname, 'tsconfig.e2e.json'),
         },
@@ -60,9 +64,9 @@ export default defineConfig({
 
 and a `tsconfig.e2e.json` tsconfig file for the tests:
 
-```json
+```json title="tsconfig.e2e.json"
 {
-  "extends": "../tsconfig.json",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
     "types": ["node"],
     "lib": ["es2015"],

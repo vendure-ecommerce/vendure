@@ -178,6 +178,7 @@ export class MollieService {
                 authorizedAsOwnerOnly: false,
                 channel: ctx.channel,
                 languageCode: ctx.languageCode,
+                req: ctx.req,
             });
             await this.addPayment(
                 adminCtx,

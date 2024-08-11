@@ -3,13 +3,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import {
-    DefaultLogger,
     EventBus,
     Injector,
     JobQueueService,
     LanguageCode,
     Logger,
-    LogLevel,
     Order,
     OrderStateTransitionEvent,
     PluginCommonModule,
@@ -23,15 +21,14 @@ import path from 'path';
 import { Readable } from 'stream';
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-import { orderConfirmationHandler } from './handler/default-email-handlers';
 import { EmailProcessor } from './email-processor';
-import { EmailSender } from './sender/email-sender';
-import { EmailEventHandler } from './handler/event-handler';
 import { EmailEventListener } from './event-listener';
+import { orderConfirmationHandler } from './handler/default-email-handlers';
+import { EmailEventHandler } from './handler/event-handler';
 import { EmailPlugin } from './plugin';
-import { EmailDetails, EmailPluginOptions, EmailTransportOptions, LoadTemplateInput } from './types';
-import { TemplateLoader } from './template-loader/template-loader';
-import fs from 'fs-extra';
+import { EmailSender } from './sender/email-sender';
+import { FileBasedTemplateLoader } from './template-loader/file-based-template-loader';
+import { EmailDetails, EmailPluginOptions, EmailTransportOptions } from './types';
 
 describe('EmailPlugin', () => {
     let eventBus: EventBus;
@@ -54,7 +51,7 @@ describe('EmailPlugin', () => {
                 }),
                 PluginCommonModule,
                 EmailPlugin.init({
-                    templatePath: path.join(__dirname, '../test-templates'),
+                    templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../test-templates')),
                     transport: {
                         type: 'testing',
                         onSend,
@@ -95,7 +92,7 @@ describe('EmailPlugin', () => {
 
         await initPluginWithHandlers([handler]);
 
-        eventBus.publish(new MockEvent(ctx, true));
+        await eventBus.publish(new MockEvent(ctx, true));
         await pause();
         expect(onSend.mock.calls[0][0].subject).toBe('Hello');
         expect(onSend.mock.calls[0][0].recipient).toBe('test@test.com');
@@ -118,11 +115,11 @@ describe('EmailPlugin', () => {
 
             await initPluginWithHandlers([handler]);
 
-            eventBus.publish(new MockEvent(ctx, false));
+            await eventBus.publish(new MockEvent(ctx, false));
             await pause();
             expect(onSend).not.toHaveBeenCalled();
 
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(onSend).toHaveBeenCalledTimes(1);
         });
@@ -138,13 +135,13 @@ describe('EmailPlugin', () => {
 
             await initPluginWithHandlers([handler]);
 
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(onSend).not.toHaveBeenCalled();
 
             const ctxWithUser = RequestContext.deserialize({ ...ctx, _session: { user: { id: 42 } } } as any);
 
-            eventBus.publish(new MockEvent(ctxWithUser, true));
+            await eventBus.publish(new MockEvent(ctxWithUser, true));
             await pause();
             expect(onSend).toHaveBeenCalledTimes(1);
         });
@@ -160,11 +157,11 @@ describe('EmailPlugin', () => {
 
             await initPluginWithHandlers([handler]);
 
-            eventBus.publish(new MockEvent(ctx, false));
+            await eventBus.publish(new MockEvent(ctx, false));
             await pause();
             expect(onSend).not.toHaveBeenCalled();
 
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(onSend).toHaveBeenCalledTimes(1);
         });
@@ -186,7 +183,7 @@ describe('EmailPlugin', () => {
 
             await initPluginWithHandlers([handler]);
 
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(onSend.mock.calls[0][0].subject).toBe('Hello foo');
         });
@@ -201,7 +198,7 @@ describe('EmailPlugin', () => {
 
             await initPluginWithHandlers([handler]);
 
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(onSend.mock.calls[0][0].body).toContain('this is the test var');
         });
@@ -221,7 +218,7 @@ describe('EmailPlugin', () => {
 
             await initPluginWithHandlers([handler]);
 
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(onSend.mock.calls[0][0].body).toContain('Total: 123');
         });
@@ -237,7 +234,7 @@ describe('EmailPlugin', () => {
                 globalTemplateVars: { globalVar: 'baz' },
             });
 
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(onSend.mock.calls[0][0].subject).toBe('Hello baz');
         });
@@ -268,7 +265,7 @@ describe('EmailPlugin', () => {
                 },
             });
 
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(onSend.mock.calls[0][0].subject).toBe(`Job hello-service, blue`);
         });
@@ -284,7 +281,7 @@ describe('EmailPlugin', () => {
                 globalTemplateVars: { globalVar: 'baz' },
             });
 
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(onSend.mock.calls[0][0].from).toBe('"test from baz" <noreply@test.com>');
         });
@@ -301,7 +298,7 @@ describe('EmailPlugin', () => {
                 globalTemplateVars: { globalFrom: 'Test <test@test.com>' },
             });
 
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(onSend.mock.calls[0][0].from).toBe('Test <test@test.com>');
         });
@@ -318,7 +315,7 @@ describe('EmailPlugin', () => {
                 globalTemplateVars: { globalVar: 'baz' },
             });
 
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(onSend.mock.calls[0][0].subject).toBe('Hello baz quux');
         });
@@ -333,7 +330,7 @@ describe('EmailPlugin', () => {
 
             await initPluginWithHandlers([handler], { globalTemplateVars: { name: 'baz' } });
 
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(onSend.mock.calls[0][0].subject).toBe('Hello quux');
         });
@@ -355,7 +352,7 @@ describe('EmailPlugin', () => {
 
             await initPluginWithHandlers([handler]);
 
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(onSend.mock.calls[0][0].body).toContain('Date: Wed Jan 01 2020 10:00:00');
         });
@@ -370,7 +367,7 @@ describe('EmailPlugin', () => {
 
             await initPluginWithHandlers([handler]);
 
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(onSend.mock.calls[0][0].body).toContain('Price: 1.23');
             expect(onSend.mock.calls[0][0].body).toContain('Price: €1.23');
@@ -401,13 +398,13 @@ describe('EmailPlugin', () => {
             await initPluginWithHandlers([handler]);
 
             const ctxTa = RequestContext.deserialize({ ...ctx, _languageCode: LanguageCode.ta } as any);
-            eventBus.publish(new MockEvent(ctxTa, true));
+            await eventBus.publish(new MockEvent(ctxTa, true));
             await pause();
             expect(onSend.mock.calls[0][0].subject).toBe('Hello, Test!');
             expect(onSend.mock.calls[0][0].body).toContain('Default body.');
 
             const ctxDe = RequestContext.deserialize({ ...ctx, _languageCode: LanguageCode.de } as any);
-            eventBus.publish(new MockEvent(ctxDe, true));
+            await eventBus.publish(new MockEvent(ctxDe, true));
             await pause();
             expect(onSend.mock.calls[1][0].subject).toBe('Servus, Test!');
             expect(onSend.mock.calls[1][0].body).toContain('German body.');
@@ -429,7 +426,7 @@ describe('EmailPlugin', () => {
                 });
 
             const ctxEn = RequestContext.deserialize({ ...ctx, _languageCode: LanguageCode.en } as any);
-            eventBus.publish(new MockEvent(ctxEn, true));
+            await eventBus.publish(new MockEvent(ctxEn, true));
             await pause();
             expect(onSend.mock.calls[1][0].subject).toBe('Servus, Test!');
             expect(onSend.mock.calls[1][0].body).toContain('German body.');
@@ -451,7 +448,7 @@ describe('EmailPlugin', () => {
 
             await initPluginWithHandlers([handler]);
 
-            eventBus.publish(
+            await eventBus.publish(
                 new MockEvent(
                     RequestContext.deserialize({
                         _channel: { code: DEFAULT_CHANNEL_CODE },
@@ -479,7 +476,7 @@ describe('EmailPlugin', () => {
 
             await initPluginWithHandlers([handler]);
 
-            eventBus.publish(
+            await eventBus.publish(
                 new MockEvent(
                     RequestContext.deserialize({
                         _channel: { code: DEFAULT_CHANNEL_CODE },
@@ -506,8 +503,8 @@ describe('EmailPlugin', () => {
 
             await initPluginWithHandlers([handler]);
 
-            eventBus.publish(new MockEvent(RequestContext.empty(), false));
-            eventBus.publish(new MockEvent(RequestContext.empty(), true));
+            await eventBus.publish(new MockEvent(RequestContext.empty(), false));
+            await eventBus.publish(new MockEvent(RequestContext.empty(), true));
             await pause();
 
             expect(callCount).toBe(1);
@@ -530,7 +527,7 @@ describe('EmailPlugin', () => {
 
             await initPluginWithHandlers([handler]);
 
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(onSend.mock.calls[0][0].attachments).toEqual([]);
         });
@@ -548,7 +545,7 @@ describe('EmailPlugin', () => {
                 ]);
 
             await initPluginWithHandlers([handler]);
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
 
             expect(onSend.mock.calls[0][0].attachments).toEqual([{ path: TEST_IMAGE_PATH }]);
@@ -567,7 +564,7 @@ describe('EmailPlugin', () => {
                 ]);
 
             await initPluginWithHandlers([handler]);
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
 
             expect(onSend.mock.calls[0][0].attachments).toEqual([{ path: TEST_IMAGE_PATH }]);
@@ -586,7 +583,7 @@ describe('EmailPlugin', () => {
                 ]);
 
             await initPluginWithHandlers([handler]);
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
 
             const attachment = onSend.mock.calls[0][0].attachments[0].content;
@@ -607,7 +604,7 @@ describe('EmailPlugin', () => {
                 ]);
 
             await initPluginWithHandlers([handler]);
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
 
             const attachment = onSend.mock.calls[0][0].attachments[0].content;
@@ -627,7 +624,7 @@ describe('EmailPlugin', () => {
                 ]);
 
             await initPluginWithHandlers([handler]);
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
 
             const attachment = onSend.mock.calls[0][0].attachments[0].content;
@@ -647,7 +644,7 @@ describe('EmailPlugin', () => {
                 ]);
 
             await initPluginWithHandlers([handler]);
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
 
             const attachment = onSend.mock.calls[0][0].attachments[0].content;
@@ -669,7 +666,7 @@ describe('EmailPlugin', () => {
                 ]);
 
             await initPluginWithHandlers([handler]);
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
 
             const attachment = onSend.mock.calls[0][0].attachments[0].content;
@@ -691,7 +688,7 @@ describe('EmailPlugin', () => {
                 ]);
 
             await initPluginWithHandlers([handler]);
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
 
             expect(testingLogger.warnSpy.mock.calls[0][0]).toContain(
@@ -703,7 +700,7 @@ describe('EmailPlugin', () => {
     describe('orderConfirmationHandler', () => {
         beforeEach(async () => {
             await initPluginWithHandlers([orderConfirmationHandler], {
-                templatePath: path.join(__dirname, '../templates'),
+                templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../templates')),
             });
         });
 
@@ -721,32 +718,42 @@ describe('EmailPlugin', () => {
         } as any;
 
         it('filters events with wrong order state', async () => {
-            eventBus.publish(new OrderStateTransitionEvent('AddingItems', 'ArrangingPayment', ctx, order));
+            await eventBus.publish(
+                new OrderStateTransitionEvent('AddingItems', 'ArrangingPayment', ctx, order),
+            );
             await pause();
             expect(onSend).not.toHaveBeenCalled();
 
-            eventBus.publish(new OrderStateTransitionEvent('AddingItems', 'Cancelled', ctx, order));
+            await eventBus.publish(new OrderStateTransitionEvent('AddingItems', 'Cancelled', ctx, order));
             await pause();
             expect(onSend).not.toHaveBeenCalled();
 
-            eventBus.publish(new OrderStateTransitionEvent('AddingItems', 'PaymentAuthorized', ctx, order));
+            await eventBus.publish(
+                new OrderStateTransitionEvent('AddingItems', 'PaymentAuthorized', ctx, order),
+            );
             await pause();
             expect(onSend).not.toHaveBeenCalled();
 
-            eventBus.publish(new OrderStateTransitionEvent('ArrangingPayment', 'PaymentSettled', ctx, order));
+            await eventBus.publish(
+                new OrderStateTransitionEvent('ArrangingPayment', 'PaymentSettled', ctx, order),
+            );
             await pause();
             expect(onSend).toHaveBeenCalledTimes(1);
         });
 
         it('sets the Order Customer emailAddress as recipient', async () => {
-            eventBus.publish(new OrderStateTransitionEvent('ArrangingPayment', 'PaymentSettled', ctx, order));
+            await eventBus.publish(
+                new OrderStateTransitionEvent('ArrangingPayment', 'PaymentSettled', ctx, order),
+            );
             await pause();
 
             expect(onSend.mock.calls[0][0].recipient).toBe(order.customer!.emailAddress);
         });
 
         it('sets the subject', async () => {
-            eventBus.publish(new OrderStateTransitionEvent('ArrangingPayment', 'PaymentSettled', ctx, order));
+            await eventBus.publish(
+                new OrderStateTransitionEvent('ArrangingPayment', 'PaymentSettled', ctx, order),
+            );
             await pause();
 
             expect(onSend.mock.calls[0][0].subject).toBe(`Order confirmation for #${order.code as string}`);
@@ -769,7 +776,7 @@ describe('EmailPlugin', () => {
 
             await initPluginWithHandlers([handler]);
 
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(testingLogger.errorSpy.mock.calls[0][0]).toContain('ENOENT: no such file or directory');
         });
@@ -789,7 +796,7 @@ describe('EmailPlugin', () => {
 
             await initPluginWithHandlers([handler]);
 
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(testingLogger.errorSpy.mock.calls[0][0]).toContain('Parse error on line 3:');
         });
@@ -812,7 +819,7 @@ describe('EmailPlugin', () => {
 
             await initPluginWithHandlers([handler]);
 
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(testingLogger.errorSpy.mock.calls[0][0]).toContain('something went horribly wrong!');
         });
@@ -839,7 +846,7 @@ describe('EmailPlugin', () => {
                 emailSender: fakeSender,
             });
 
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(send.mock.calls[0][0].subject).toBe('Hello');
             expect(send.mock.calls[0][0].recipient).toBe('test@test.com');
@@ -863,7 +870,7 @@ describe('EmailPlugin', () => {
                 .setOptionalAddressFields(() => ({ cc: 'foo@bar.com' }));
 
             await initPluginWithHandlers([handler]);
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
 
             expect(onSend.mock.calls[0][0].cc).toBe('foo@bar.com');
@@ -878,7 +885,7 @@ describe('EmailPlugin', () => {
                 .setOptionalAddressFields(() => ({ bcc: 'foo@bar.com' }));
 
             await initPluginWithHandlers([handler]);
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
 
             expect(onSend.mock.calls[0][0].bcc).toBe('foo@bar.com');
@@ -893,7 +900,7 @@ describe('EmailPlugin', () => {
                 .setOptionalAddressFields(() => ({ replyTo: 'foo@bar.com' }));
 
             await initPluginWithHandlers([handler]);
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
 
             expect(onSend.mock.calls[0][0].replyTo).toBe('foo@bar.com');
@@ -912,12 +919,14 @@ describe('EmailPlugin', () => {
                 .setSubject('Hello')
                 .setTemplateVars(event => ({ subjectVar: 'foo' }));
             module = await initPluginWithHandlers([handler], {
-                transport: async (injector, ctx) => {
+                transport: async (injector, _ctx) => {
                     injectorArg = injector;
-                    ctxArg = ctx;
+                    ctxArg = _ctx;
                     return {
                         type: 'testing',
-                        onSend: () => {},
+                        onSend: () => {
+                            /* */
+                        },
                     };
                 },
             });
@@ -925,7 +934,7 @@ describe('EmailPlugin', () => {
                 _channel: { code: DEFAULT_CHANNEL_CODE },
                 _languageCode: LanguageCode.en,
             } as any);
-            module!.get(EventBus).publish(new MockEvent(ctx, true));
+            await module!.get(EventBus).publish(new MockEvent(ctx, true));
             await pause();
             expect(module).toBeDefined();
             expect(typeof module.get(EmailPlugin).options.transport).toBe('function');
@@ -936,7 +945,7 @@ describe('EmailPlugin', () => {
                 _channel: { code: DEFAULT_CHANNEL_CODE },
                 _languageCode: LanguageCode.en,
             } as any);
-            module!.get(EventBus).publish(new MockEvent(ctx, true));
+            await module!.get(EventBus).publish(new MockEvent(ctx, true));
             await pause();
             expect(injectorArg?.constructor.name).toBe('Injector');
             expect(ctxArg?.constructor.name).toBe('RequestContext');
@@ -963,7 +972,7 @@ describe('EmailPlugin', () => {
 
             await initPluginWithHandlers([handler]);
 
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(onSend.mock.calls[0][0].subject).toBe('Hello');
             expect(onSend.mock.calls[0][0].recipient).toBe('test@test.com');
@@ -979,21 +988,21 @@ describe('EmailPlugin', () => {
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
                 .setSubject(async (_e, _ctx, _i) => {
-                    const service = _i.get(MockService)
-                    const mockData = await service.someAsyncMethod()
+                    const service = _i.get(MockService);
+                    const mockData = await service.someAsyncMethod();
                     return `Hello from ${mockData} and {{ subjectVar }}`;
                 })
                 .setTemplateVars(event => ({ subjectVar: 'foo' }));
 
             await initPluginWithHandlers([handler]);
 
-            eventBus.publish(new MockEvent(ctx, true));
+            await eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(onSend.mock.calls[0][0].subject).toBe('Hello from loaded data and foo');
             expect(onSend.mock.calls[0][0].recipient).toBe('test@test.com');
             expect(onSend.mock.calls[0][0].from).toBe('"test from" <noreply@test.com>');
         });
-    })
+    });
 });
 
 class FakeCustomSender implements EmailSender {

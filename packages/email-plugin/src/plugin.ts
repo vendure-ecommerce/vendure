@@ -60,14 +60,14 @@ import {
  *
  * @example
  * ```ts
- * import { defaultEmailHandlers, EmailPlugin } from '\@vendure/email-plugin';
+ * import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '\@vendure/email-plugin';
  *
  * const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array
  *   plugins: [
  *     EmailPlugin.init({
  *       handler: defaultEmailHandlers,
- *       templatePath: path.join(__dirname, 'static/email/templates'),
+ *       templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/email/templates')),
  *       transport: {
  *         type: 'smtp',
  *         host: 'smtp.example.com',
@@ -226,13 +226,13 @@ import {
  *
  * @example
  * ```ts
- * import { defaultEmailHandlers, EmailPlugin } from '\@vendure/email-plugin';
+ * import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '\@vendure/email-plugin';
  * import { MyTransportService } from './transport.services.ts';
  * const config: VendureConfig = {
  *   plugins: [
  *     EmailPlugin.init({
  *       handler: defaultEmailHandlers,
- *       templatePath: path.join(__dirname, 'static/email/templates'),
+ *       templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/email/templates')),
  *       transport: (injector, ctx) => {
  *         if (ctx) {
  *           return injector.get(MyTransportService).getSettings(ctx);
@@ -260,7 +260,7 @@ import {
  *   devMode: true,
  *   route: 'mailbox',
  *   handler: defaultEmailHandlers,
- *   templatePath: path.join(__dirname, 'vendure/email/templates'),
+ *   templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/email/templates')),
  *   outputPath: path.join(__dirname, 'test-emails'),
  * })
  * ```
