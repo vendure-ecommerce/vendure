@@ -482,6 +482,73 @@ describe('Order modification', () => {
             expect(modifyOrder.errorCode).toBe(ErrorCode.ORDER_LIMIT_ERROR);
             await assertOrderIsUnchanged(order!);
         });
+
+        it('adjustOrderLines empty quantity with discounts', async () => {
+            const PercentDiscount15Percent = '15PERCENT';
+            await adminClient.query<
+                Codegen.CreatePromotionMutation,
+                Codegen.CreatePromotionMutationVariables
+            >(CREATE_PROMOTION, {
+                input: {
+                    enabled: true,
+                    couponCode: PercentDiscount15Percent,
+                    conditions: [
+                        {
+                            code: 'minimum_order_amount',
+                            arguments: [
+                                {
+                                    name: 'amount',
+                                    value: '0',
+                                },
+                                {
+                                    name: 'taxInclusive',
+                                    value: 'false',
+                                },
+                            ],
+                        },
+                    ],
+                    actions: [
+                        {
+                            code: orderPercentageDiscount.code,
+                            arguments: [{ name: 'discount', value: '50' }],
+                        },
+                    ],
+                    translations: [{ languageCode: LanguageCode.en, name: 'half price' }],
+                },
+            });
+            await shopClient.asUserWithCredentials('trevor_donnelly96@hotmail.com', 'test');
+            await shopClient.query(gql(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS), {
+                productVariantId: 'T_1',
+                quantity: 1,
+            } as any);
+            await shopClient.query(gql(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS), {
+                productVariantId: 'T_2',
+                quantity: 1,
+            } as any);
+
+            await proceedToArrangingPayment(shopClient);
+            const order = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
+            orderGuard.assertSuccess(order);
+
+            const transitionOrderToState = await adminTransitionOrderToState(order.id, 'Modifying');
+            orderGuard.assertSuccess(transitionOrderToState);
+
+            expect(transitionOrderToState.state).toBe('Modifying');
+
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: true,
+                    orderId: order.id,
+                    couponCodes: [PercentDiscount15Percent],
+                    adjustOrderLines: [{ orderLineId: order.lines[0].id, quantity: 0 }],
+                },
+            });
+            orderGuard.assertSuccess(modifyOrder);
+            expect(modifyOrder.lines.map(line => line.discounts).flat().length).toBe(2);
+        });
     });
 
     describe('dry run', () => {
