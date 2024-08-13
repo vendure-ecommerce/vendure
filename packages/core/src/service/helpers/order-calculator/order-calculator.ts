@@ -253,7 +253,7 @@ export class OrderCalculator {
                             .map(l => l.proratedLinePriceWithTax);
                         const distribution = prorate(weights, amount);
                         order.lines.forEach((line, i) => {
-                            const shareOfAmount = distribution[i];
+                            const shareOfAmount = distribution[i] ?? 0;
                             const itemWeights = Array.from({
                                 length: line.quantity,
                             }).map(() => line.unitPrice);
