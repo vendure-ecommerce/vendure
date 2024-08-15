@@ -107,6 +107,11 @@ async function runMollieDevServer() {
     const result = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, { input: {} });
     // eslint-disable-next-line no-console
     console.log('Payment intent result', result);
+
+    // Create another Payment Intent to test duplicate paymnets
+    const result2 = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, { input: {} });
+    // eslint-disable-next-line no-console
+    console.log('Second payment intent result', result2);
 }
 
 (async () => {
