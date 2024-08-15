@@ -26,7 +26,6 @@ import {
 /**
  * This should only be used to locally test the Mollie payment plugin
  * Make sure you have `MOLLIE_APIKEY=test_xxxx` in your .env file
- * Make sure you have `MOLLIE_APIKEY=test_xxxx` in your .env file
  */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 async function runMollieDevServer() {

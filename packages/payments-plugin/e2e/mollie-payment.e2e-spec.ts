@@ -3,6 +3,7 @@ import {
     ChannelService,
     EventBus,
     LanguageCode,
+    Logger,
     mergeConfig,
     Order,
     OrderPlacedEvent,
@@ -23,7 +24,7 @@ import {
 import nock from 'nock';
 import fetch from 'node-fetch';
 import path from 'path';
-import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
@@ -525,6 +526,28 @@ describe('Mollie payments', () => {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             order = orderByCode!;
             expect(order.state).toBe('PaymentSettled');
+        });
+
+        it('Should log error when order is paid again with a different mollie order', async () => {
+            const errorLogSpy = vi.spyOn(Logger, 'error');
+            nock('https://api.mollie.com/')
+                .get('/v2/orders/ord_newMockId')
+                .reply(200, {
+                    ...mockData.mollieOrderResponse,
+                    id: 'ord_newMockId',
+                    amount: { value: '100', currency: 'EUR' }, // Try to pay another 100
+                    orderNumber: order.code,
+                    status: OrderStatus.paid,
+                });
+            await fetch(`http://localhost:${serverPort}/payments/mollie/${E2E_DEFAULT_CHANNEL_TOKEN}/1`, {
+                method: 'post',
+                body: JSON.stringify({ id: 'ord_newMockId' }),
+                headers: { 'Content-Type': 'application/json' },
+            });
+            const logMessage = errorLogSpy.mock.calls?.[0]?.[0];
+            expect(logMessage).toBe(
+                `Order '${order.code}' is already paid. Mollie order 'ord_newMockId' should be refunded.`,
+            );
         });
 
         it('Should have preserved original languageCode ', () => {

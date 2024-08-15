@@ -68,7 +68,6 @@ export class MollieService {
         private activeOrderService: ActiveOrderService,
         private orderService: OrderService,
         private entityHydrator: EntityHydrator,
-        private variantService: ProductVariantService,
         private moduleRef: ModuleRef,
     ) {
         this.injector = new Injector(this.moduleRef);
@@ -264,6 +263,19 @@ export class MollieService {
             throw Error(
                 `Unable to find order ${mollieOrder.orderNumber}, unable to process Mollie order ${mollieOrder.id}`,
             );
+        }
+        if (order.orderPlacedAt) {
+            const paymentWithSameTransactionId = order.payments.find(
+                p => p.transactionId === mollieOrder.id && p.state === 'Settled',
+            );
+            if (!paymentWithSameTransactionId) {
+                // The order is paid for again, with another transaction ID. This means the customer paid twice
+                Logger.error(
+                    `Order '${order.code}' is already paid. Mollie order '${mollieOrder.id}' should be refunded.`,
+                    loggerCtx,
+                );
+                return;
+            }
         }
         const statesThatRequireAction: OrderState[] = [
             'AddingItems',
