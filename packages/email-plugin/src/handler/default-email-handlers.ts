@@ -30,6 +30,15 @@ export const orderConfirmationHandler = new EmailEventListener('order-confirmati
         event =>
             event.toState === 'PaymentSettled' && event.fromState !== 'Modifying' && !!event.order.customer,
     )
+    .setUIOptions({
+        entityType: Order,
+        handler: (ctx, _injector, entity, _languageCode) => {
+            return new OrderStateTransitionEvent('PaymentAuthorized', 'PaymentSettled', ctx, entity);
+        },
+        filter: (ctx, injector, entity, languageCode) => {
+            return true;
+        },
+    })
     .loadData(async ({ event, injector }) => {
         transformOrderLineAssetUrls(event.ctx, event.order, injector);
         const shippingLines = await hydrateShippingLines(event.ctx, event.order, injector);

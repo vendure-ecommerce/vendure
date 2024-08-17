@@ -1,6 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Type } from '@vendure/common/lib/shared-types';
-import { Injector, Logger } from '@vendure/core';
+import { Customer, Injector, Logger, Order } from '@vendure/core';
 
 import { serializeAttachments } from '../attachment-utils';
 import { loggerCtx } from '../constants';
@@ -8,6 +8,7 @@ import { EmailEventListener } from '../event-listener';
 import {
     EmailAttachment,
     EmailTemplateConfig,
+    EventUIHandlerOptions,
     EventWithAsyncData,
     EventWithContext,
     IntermediateEmailDetails,
@@ -148,6 +149,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         bcc?: string;
     };
     private _mockEvent: Omit<Event, 'ctx' | 'data'> | undefined;
+    private _uiOptions?: EventUIHandlerOptions;
 
     constructor(
         public listener: EmailEventListener<T>,
@@ -407,6 +409,28 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
             attachments,
             ...optionalAddressFields,
         };
+    }
+
+    /**
+     * Sets the UI options for this EmailEventHandler, enabling the generation of a UI block for resending emails.
+     * This property should be defined before loadData method
+     *
+     * @param handlerOptions - The options that define how the UI block should behave.
+     */
+    setUIOptions<E extends typeof Order | typeof Customer>(
+        handlerOptions: EventUIHandlerOptions<Event, E>,
+    ): EmailEventHandler<T, Event> {
+        this._uiOptions = handlerOptions;
+        return this;
+    }
+
+    /**
+     * Retrieves the UI options for this EmailEventHandler.
+     *
+     * @returns The UI options if they have been set, otherwise undefined.
+     */
+    get uiOptions() {
+        return this._uiOptions;
     }
 
     /**
