@@ -1,6 +1,14 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
-import { Injector, RequestContext, SerializedRequestContext, VendureEvent } from '@vendure/core';
+import {
+    Customer,
+    Injector,
+    Order,
+    RequestContext,
+    SerializedRequestContext,
+    VendureEntity,
+    VendureEvent,
+} from '@vendure/core';
 import { Attachment } from 'nodemailer/lib/mailer';
 import SESTransport from 'nodemailer/lib/ses-transport';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
@@ -19,7 +27,7 @@ import { TemplateLoader } from './template-loader/template-loader';
  * @docsCategory core plugins/EmailPlugin
  * @docsPage Email Plugin Types
  */
-export type EventWithContext = VendureEvent & { ctx: RequestContext };
+export type EventWithContext<Event extends VendureEvent = VendureEvent> = Event & { ctx: RequestContext };
 
 /**
  * @description
@@ -496,3 +504,56 @@ export interface OptionalAddressFields {
 export type SetOptionalAddressFieldsFn<Event> = (
     event: Event,
 ) => OptionalAddressFields | Promise<OptionalAddressFields>;
+
+type UIEmailEventEntities = typeof Order | typeof Customer;
+
+/**
+ * @description
+ * A property used to set UI for manual event trigger of {@link EmailEventListener}
+ * Represents options for configuring the UI block that allows managers to manually resend emails.
+ *
+ * @since 3.0.0
+ * @docsCategory core plugins/EmailPlugin
+ * @docsPage Email Plugin Types
+ */
+export interface EventUIHandlerOptions<
+    InputEvent extends EventWithContext = EventWithContext,
+    E extends UIEmailEventEntities = UIEmailEventEntities,
+> {
+    /**
+     * The entity for which the UI block is being generated. This could be an Order, Customer, or any other entity.
+     */
+    entityType: E;
+
+    /**
+     * A function that handles the creation of an EmailEventHandler for the specified entity.
+     *
+     * @param ctx - The current RequestContext, providing access to the current state and settings.
+     * @param injector - The dependency injector that provides access to various services.
+     * @param entity - The entity for which the email event is being handled.
+     * @param languageCode - (Optional) The language code for localization purposes.
+     * @returns An instance of EmailEventHandler that handles the email event for the entity.
+     */
+    handler: (
+        ctx: RequestContext,
+        injector: Injector,
+        entity: InstanceType<E>,
+        languageCode?: LanguageCode,
+    ) => InputEvent;
+
+    /**
+     * A filter function that determines whether or not the UI block should be displayed for a particular entity.
+     *
+     * @param ctx - The current RequestContext, providing access to the current state and settings.
+     * @param injector - The dependency injector that provides access to various services.
+     * @param entity - The entity for which the UI block is being generated.
+     * @param languageCode - (Optional) The language code for localization purposes.
+     * @returns A boolean indicating whether the UI block should be displayed.
+     */
+    filter: (
+        ctx: RequestContext,
+        injector: Injector,
+        entity: InstanceType<E>,
+        languageCode?: LanguageCode,
+    ) => boolean;
+}
