@@ -19,11 +19,14 @@ import {
     VendurePlugin,
 } from '@vendure/core';
 
+import { adminSchema } from './api/email.graphql';
+import { EmailResolver } from './api/email.resolver';
 import { isDevModeOptions, resolveTransportSettings } from './common';
 import { EMAIL_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { DevMailbox } from './dev-mailbox';
 import { EmailProcessor } from './email-processor';
 import { EmailEventHandler, EmailEventHandlerWithAsyncData } from './handler/event-handler';
+import { ManualEmailEvent } from './manual-email-send-event';
 import { FileBasedTemplateLoader } from './template-loader/file-based-template-loader';
 import {
     EmailPluginDevModeOptions,
@@ -302,9 +305,13 @@ import {
  * @docsCategory core plugins/EmailPlugin
  */
 @VendurePlugin({
+    compatibility: '^3.0.0',
     imports: [PluginCommonModule],
     providers: [{ provide: EMAIL_PLUGIN_OPTIONS, useFactory: () => EmailPlugin.options }, EmailProcessor],
-    compatibility: '^3.0.0',
+    adminApiExtensions: {
+        schema: adminSchema,
+        resolvers: [EmailResolver],
+    },
 })
 export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdown, NestModule {
     private static options: InitializedEmailPluginOptions;
@@ -400,6 +407,9 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
                 return this.handleEvent(handler, event);
             });
         }
+        this.eventBus.ofType(ManualEmailEvent).subscribe(event => {
+            return this.handleEvent(event.handler, event.event);
+        });
     }
 
     private async handleEvent(
@@ -407,7 +417,6 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
         event: EventWithContext,
     ) {
         Logger.debug(`Handling event "${handler.type}"`, loggerCtx);
-        const { type } = handler;
         try {
             const injector = new Injector(this.moduleRef);
             let globalTemplateVars = this.options.globalTemplateVars;

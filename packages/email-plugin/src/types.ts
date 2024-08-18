@@ -539,7 +539,7 @@ export interface EventUIHandlerOptions<
         injector: Injector,
         entity: InstanceType<E>,
         languageCode?: LanguageCode,
-    ) => InputEvent;
+    ) => Promise<InputEvent> | InputEvent;
 
     /**
      * A filter function that determines whether or not the UI block should be displayed for a particular entity.
@@ -555,5 +555,5 @@ export interface EventUIHandlerOptions<
         injector: Injector,
         entity: InstanceType<E>,
         languageCode?: LanguageCode,
-    ) => boolean;
+    ) => Promise<boolean> | boolean;
 }
