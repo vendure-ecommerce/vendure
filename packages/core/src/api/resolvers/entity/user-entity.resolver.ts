@@ -36,10 +36,10 @@ export class UserEntityResolver {
 
     @ResolveField()
     async roles(@Ctx() ctx: RequestContext, @Parent() user: User): Promise<Role[]> {
-        let roles: Role[] = [];
         if (user.roles) {
-            roles = user.roles;
+            return user.roles;
         }
+        let roles: Role[] = [];
         roles = await this.userService.getUserById(ctx, user.id).then(u => u?.roles ?? []);
         return roles;
     }
