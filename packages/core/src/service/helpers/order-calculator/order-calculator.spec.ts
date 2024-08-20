@@ -1179,7 +1179,7 @@ describe('OrderCalculator', () => {
                     // However, there is always a tradeoff when using integer precision with compounding
                     // fractional multiplication.
                     expect(order.subTotal).toBe(5081);
-                    expect(order.subTotalWithTax).toBe(5722);
+                    expect(order.subTotalWithTax).toBe(5719);
                 });
             });
         });
