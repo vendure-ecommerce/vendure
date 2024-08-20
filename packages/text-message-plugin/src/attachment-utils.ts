@@ -3,9 +3,9 @@ import { Readable, Stream } from 'stream';
 import { format, Url } from 'url';
 
 import { loggerCtx } from './constants';
-import { EmailAttachment, SerializedAttachment } from './types';
+import { TextMessageAttachment, SerializedAttachment } from './types';
 
-export async function serializeAttachments(attachments: EmailAttachment[]): Promise<SerializedAttachment[]> {
+export async function serializeAttachments(attachments: TextMessageAttachment[]): Promise<SerializedAttachment[]> {
     const promises = attachments.map(async a => {
         const stringPath = (path: string | Url) => (typeof path === 'string' ? path : format(path));
         const content = a.content instanceof Stream ? await streamToBuffer(a.content) : a.content;
@@ -25,7 +25,7 @@ export async function serializeAttachments(attachments: EmailAttachment[]): Prom
     return Promise.all(promises);
 }
 
-export function deserializeAttachments(serializedAttachments: SerializedAttachment[]): EmailAttachment[] {
+export function deserializeAttachments(serializedAttachments: SerializedAttachment[]): TextMessageAttachment[] {
     return serializedAttachments.map(a => {
         const content = parseContent(a.content);
         if (content instanceof Buffer && 50 * 1024 <= content.length) {

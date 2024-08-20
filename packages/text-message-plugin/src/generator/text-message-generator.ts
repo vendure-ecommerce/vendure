@@ -1,22 +1,22 @@
 import { InjectableStrategy, VendureEvent } from '@vendure/core';
 
-import { EmailDetails, EmailPluginOptions } from '../types';
+import { TextMessageDetails, TextMessagePluginOptions } from '../types';
 
 /**
  * @description
- * An EmailGenerator generates the subject and body details of an email.
+ * A TextMessageGenerator generates the body details of a text message.
  *
- * @docsCategory core plugins/EmailPlugin
- * @docsPage EmailGenerator
+ * @docsCategory core plugins/TextMessagePlugin
+ * @docsPage TextMessageGenerator
  * @docsWeight 0
  */
-export interface EmailGenerator<T extends string = any, E extends VendureEvent = any>
+export interface TextMessageGenerator<T extends string = any, E extends VendureEvent = any>
     extends InjectableStrategy {
     /**
      * @description
      * Any necessary setup can be performed here.
      */
-    onInit?(options: EmailPluginOptions): void | Promise<void>;
+    onInit?(options: TextMessagePluginOptions): void | Promise<void>;
 
     /**
      * @description
@@ -25,8 +25,7 @@ export interface EmailGenerator<T extends string = any, E extends VendureEvent =
      */
     generate(
         from: string,
-        subject: string,
         body: string,
         templateVars: { [key: string]: any },
-    ): Pick<EmailDetails, 'from' | 'subject' | 'body'>;
+    ): Pick<TextMessageDetails, 'from' | 'body'>;
 }

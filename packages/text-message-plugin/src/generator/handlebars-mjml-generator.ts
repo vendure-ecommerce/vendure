@@ -2,20 +2,19 @@ import dateFormat from 'dateformat';
 import Handlebars from 'handlebars';
 import mjml2html from 'mjml';
 
-import { InitializedEmailPluginOptions } from '../types';
+import { InitializedTextMessagePluginOptions } from '../types';
 
-import { EmailGenerator } from './email-generator';
+import { TextMessageGenerator } from './text-message-generator';
 
 /**
  * @description
- * Uses Handlebars (https://handlebarsjs.com/) to output MJML (https://mjml.io) which is then
- * compiled down to responsive email HTML.
+ * Uses Handlebars (https://handlebarsjs.com/) which is then compiled down to text message content.
  *
  * @docsCategory core plugins/EmailPlugin
  * @docsPage EmailGenerator
  */
-export class HandlebarsMjmlGenerator implements EmailGenerator {
-    async onInit(options: InitializedEmailPluginOptions) {
+export class HandlebarsMjmlGenerator implements TextMessageGenerator {
+    async onInit(options: InitializedTextMessagePluginOptions) {
         if (options.templateLoader.loadPartials) {
             const partials = await options.templateLoader.loadPartials();
             partials.forEach(({ name, content }) => Handlebars.registerPartial(name, content));
@@ -23,9 +22,8 @@ export class HandlebarsMjmlGenerator implements EmailGenerator {
         this.registerHelpers();
     }
 
-    generate(from: string, subject: string, template: string, templateVars: any) {
+    generate(from: string, template: string, templateVars: any) {
         const compiledFrom = Handlebars.compile(from, { noEscape: true });
-        const compiledSubject = Handlebars.compile(subject);
         const compiledTemplate = Handlebars.compile(template);
         // We enable prototype properties here, aware of the security implications
         // described here: https://handlebarsjs.com/api-reference/runtime-options.html#options-to-control-prototype-access
@@ -33,10 +31,8 @@ export class HandlebarsMjmlGenerator implements EmailGenerator {
         // prototype (e.g. Order.total) which may need to be interpolated.
         const templateOptions: RuntimeOptions = { allowProtoPropertiesByDefault: true };
         const fromResult = compiledFrom(templateVars, { allowProtoPropertiesByDefault: true });
-        const subjectResult = compiledSubject(templateVars, { allowProtoPropertiesByDefault: true });
-        const mjml = compiledTemplate(templateVars, { allowProtoPropertiesByDefault: true });
-        const body = mjml2html(mjml).html;
-        return { from: fromResult, subject: subjectResult, body };
+        const body = compiledTemplate(templateVars, { allowProtoPropertiesByDefault: true });
+        return { from: fromResult, body };
     }
 
     private registerHelpers() {

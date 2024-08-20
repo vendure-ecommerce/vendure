@@ -7,7 +7,7 @@
     "files": [
         "lib/**/*",
         "templates/**/*",
-        "dev-mailbox.html"
+        "dev-text-message-inbox.html"
     ],
     "scripts": {
         "watch": "tsc -p ./tsconfig.build.json --watch",

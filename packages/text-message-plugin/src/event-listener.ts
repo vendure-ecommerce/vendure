@@ -1,11 +1,11 @@
 import { Type } from '@vendure/common/lib/shared-types';
 
-import { EmailEventHandler } from './handler/event-handler';
+import { TextMessageEventHandler } from './handler/event-handler';
 import { EventWithContext } from './types';
 
 /**
  * @description
- * An EmailEventListener is used to listen for events and set up a {@link EmailEventHandler} which
+ * An EmailEventListener is used to listen for events and set up a {@link TextMessageEventHandler} which
  * defines how an email will be generated from this event.
  *
  * @docsCategory core plugins/EmailPlugin
@@ -20,7 +20,7 @@ export class EmailEventListener<T extends string> {
      * @description
      * Defines the event to listen for.
      */
-    on<Event extends EventWithContext>(event: Type<Event>): EmailEventHandler<T, Event> {
-        return new EmailEventHandler<T, Event>(this, event);
+    on<Event extends EventWithContext>(event: Type<Event>): TextMessageEventHandler<T, Event> {
+        return new TextMessageEventHandler<T, Event>(this, event);
     }
 }

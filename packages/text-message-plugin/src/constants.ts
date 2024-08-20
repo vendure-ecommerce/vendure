@@ -1,2 +1,2 @@
-export const EMAIL_PLUGIN_OPTIONS = Symbol('EMAIL_PLUGIN_OPTIONS');
-export const loggerCtx = 'EmailPlugin';
+export const TEXT_MESSAGE_PLUGIN = Symbol('TEXT_MESSAGE_PLUGIN');
+export const loggerCtx = 'TextMessagePlugin';

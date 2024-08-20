@@ -5,9 +5,9 @@ import { Attachment } from 'nodemailer/lib/mailer';
 import SESTransport from 'nodemailer/lib/ses-transport';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
-import { EmailGenerator } from './generator/email-generator';
-import { EmailEventHandler } from './handler/event-handler';
-import { EmailSender } from './sender/email-sender';
+import { TextMessageGenerator } from './generator/text-message-generator';
+import { TextMessageEventHandler } from './handler/event-handler';
+import { TextMessageSender } from './sender/text-message-sender';
 import { TemplateLoader } from './template-loader/template-loader';
 
 /**
@@ -24,7 +24,7 @@ export type EventWithContext = VendureEvent & { ctx: RequestContext };
 /**
  * @description
  * A VendureEvent with a {@link RequestContext} and a `data` property which contains the
- * value resolved from the {@link EmailEventHandler}`.loadData()` callback.
+ * value resolved from the {@link TextMessageEventHandler}`.loadData()` callback.
  *
  * @docsCategory core plugins/EmailPlugin
  * @docsPage Email Plugin Types
@@ -74,7 +74,7 @@ export type GlobalTemplateVarsFn = (
  * @docsPage EmailPluginOptions
  * @docsWeight 0
  * */
-export interface EmailPluginOptions {
+export interface TextMessagePluginOptions {
     /**
      * @description
      * The path to the location of the email templates. In a default Vendure installation,
@@ -96,17 +96,17 @@ export interface EmailPluginOptions {
      * Configures how the emails are sent.
      */
     transport:
-        | EmailTransportOptions
+        | TextMessageTransportOptions
         | ((
               injector?: Injector,
               ctx?: RequestContext,
-          ) => EmailTransportOptions | Promise<EmailTransportOptions>);
+          ) => TextMessageTransportOptions | Promise<TextMessageTransportOptions>);
     /**
      * @description
-     * An array of {@link EmailEventHandler}s which define which Vendure events will trigger
+     * An array of {@link TextMessageEventHandler}s which define which Vendure events will trigger
      * emails, and how those emails are generated.
      */
-    handlers: Array<EmailEventHandler<string, any>>;
+    handlers: Array<TextMessageEventHandler<string, any>>;
     /**
      * @description
      * An object containing variables which are made available to all templates. For example,
@@ -122,7 +122,7 @@ export interface EmailPluginOptions {
      *
      * @default NodemailerEmailSender
      */
-    emailSender?: EmailSender;
+    textMessageSender?: TextMessageSender;
     /**
      * @description
      * An optional allowed EmailGenerator, used to allow custom email generation functionality to
@@ -130,13 +130,13 @@ export interface EmailPluginOptions {
      *
      * @default HandlebarsMjmlGenerator
      */
-    emailGenerator?: EmailGenerator;
+    textMessageGenerator?: TextMessageGenerator;
 }
 
 /**
  * EmailPLuginOptions type after initialization, where templateLoader and themeInjector are no longer optional
  */
-export type InitializedEmailPluginOptions = EmailPluginOptions & {
+export type InitializedTextMessagePluginOptions = TextMessagePluginOptions & {
     templateLoader: TemplateLoader;
 };
 
@@ -147,7 +147,7 @@ export type InitializedEmailPluginOptions = EmailPluginOptions & {
  * @docsCategory core plugins/EmailPlugin
  * @docsPage EmailPluginOptions
  */
-export interface EmailPluginDevModeOptions extends Omit<EmailPluginOptions, 'transport'> {
+export interface TextMessagePluginDevModeOptions extends Omit<TextMessagePluginOptions, 'transport'> {
     devMode: true;
     /**
      * @description
@@ -168,7 +168,7 @@ export interface EmailPluginDevModeOptions extends Omit<EmailPluginOptions, 'tra
  * @docsCategory core plugins/EmailPlugin
  * @docsPage Transport Options
  */
-export type EmailTransportOptions =
+export type TextMessageTransportOptions =
     | SMTPTransportOptions
     | SendmailTransportOptions
     | FileTransportOptions
@@ -269,7 +269,7 @@ export interface FileTransportOptions {
 /**
  * @description
  * Does nothing with the generated email. Intended for use in testing where we don't care about the email transport,
- * or when using a custom {@link EmailSender} which does not require transport options.
+ * or when using a custom {@link TextMessageSender} which does not require transport options.
  *
  * @docsCategory core plugins/EmailPlugin
  * @docsPage Transport Options
@@ -285,8 +285,9 @@ export interface NoopTransportOptions {
  * @docsCategory core plugins/EmailPlugin
  * @docsPage Email Plugin Types
  */
-export interface EmailDetails<Type extends 'serialized' | 'unserialized' = 'unserialized'> {
+export interface TextMessageDetails<Type extends 'serialized' | 'unserialized' = 'unserialized'> {
     from: string;
+    to: string;
     recipient: string;
     subject: string;
     body: string;
@@ -309,12 +310,12 @@ export interface TestingTransportOptions {
      * @description
      * Callback to be invoked when an email would be sent.
      */
-    onSend: (details: EmailDetails) => void;
+    onSend: (details: TextMessageDetails) => void;
 }
 
 /**
  * @description
- * A function used to load async data for use by an {@link EmailEventHandler}.
+ * A function used to load async data for use by an {@link TextMessageEventHandler}.
  *
  * @docsCategory core plugins/EmailPlugin
  * @docsPage Email Plugin Types
@@ -338,16 +339,17 @@ export type OptionalToNullable<O> = {
  * @docsCategory core plugins/EmailPlugin
  * @docsPage Email Plugin Types
  */
-export type EmailAttachment = Omit<Attachment, 'raw'> & { path?: string };
+export type TextMessageAttachment = Omit<Attachment, 'raw'> & { path?: string };
 
 export type SerializedAttachment = OptionalToNullable<
-    Omit<EmailAttachment, 'content'> & { content: string | null }
+    Omit<TextMessageAttachment, 'content'> & { content: string | null }
 >;
 
-export type IntermediateEmailDetails = {
+export type IntermediateTextMessageDetails = {
     ctx: SerializedRequestContext;
     type: string;
     from: string;
+    to: string;
     recipient: string;
     templateVars: any;
     subject: string;
@@ -360,7 +362,7 @@ export type IntermediateEmailDetails = {
 
 /**
  * @description
- * Configures the {@link EmailEventHandler} to handle a particular channel & languageCode
+ * Configures the {@link TextMessageEventHandler} to handle a particular channel & languageCode
  * combination.
  *
  * @deprecated Use a custom {@link TemplateLoader} instead.
@@ -426,7 +428,7 @@ export interface Partial {
 /**
  * @description
  * A function used to define template variables available to email templates.
- * See {@link EmailEventHandler}.setTemplateVars().
+ * See {@link TextMessageEventHandler}.setTemplateVars().
  *
  * @docsCategory core plugins/EmailPlugin
  * @docsPage Email Plugin Types
@@ -445,7 +447,7 @@ export type SetTemplateVarsFn<Event> = (
  * @docsCategory core plugins/EmailPlugin
  * @docsPage Email Plugin Types
  */
-export type SetAttachmentsFn<Event> = (event: Event) => EmailAttachment[] | Promise<EmailAttachment[]>;
+export type SetAttachmentsFn<Event> = (event: Event) => TextMessageAttachment[] | Promise<TextMessageAttachment[]>;
 
 /**
  * @description

@@ -1,18 +1,18 @@
 import { Injector, RequestContext } from '@vendure/core';
 
-import { EmailPluginDevModeOptions, EmailPluginOptions, EmailTransportOptions } from './types';
+import { TextMessagePluginDevModeOptions, TextMessagePluginOptions, TextMessageTransportOptions } from './types';
 
 export function isDevModeOptions(
-    input: EmailPluginOptions | EmailPluginDevModeOptions,
-): input is EmailPluginDevModeOptions {
-    return (input as EmailPluginDevModeOptions).devMode === true;
+    input: TextMessagePluginOptions | TextMessagePluginDevModeOptions,
+): input is TextMessagePluginDevModeOptions {
+    return (input as TextMessagePluginDevModeOptions).devMode === true;
 }
 
 export async function resolveTransportSettings(
-    options: EmailPluginOptions,
+    options: TextMessagePluginOptions,
     injector: Injector,
     ctx?: RequestContext
-): Promise<EmailTransportOptions> {
+): Promise<TextMessageTransportOptions> {
     if (typeof options.transport === 'function') {
         return options.transport(injector, ctx);
     } else {

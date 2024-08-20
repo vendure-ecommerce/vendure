@@ -20,17 +20,17 @@ import {
 } from '@vendure/core';
 
 import { isDevModeOptions, resolveTransportSettings } from './common';
-import { EMAIL_PLUGIN_OPTIONS, loggerCtx } from './constants';
-import { DevMailbox } from './dev-mailbox';
-import { EmailProcessor } from './email-processor';
-import { EmailEventHandler, EmailEventHandlerWithAsyncData } from './handler/event-handler';
+import { TEXT_MESSAGE_PLUGIN, loggerCtx } from './constants';
+import { DevTextMessageInbox } from './dev-text-message-inbox';
+import { TextMessageEventHandler, EmailEventHandlerWithAsyncData } from './handler/event-handler';
 import { FileBasedTemplateLoader } from './template-loader/file-based-template-loader';
+import { TextMessageProcessor } from './text-message-processor.service';
 import {
-    EmailPluginDevModeOptions,
-    EmailPluginOptions,
+    TextMessagePluginDevModeOptions,
+    TextMessagePluginOptions,
     EventWithContext,
-    InitializedEmailPluginOptions,
-    IntermediateEmailDetails,
+    InitializedTextMessagePluginOptions,
+    IntermediateTextMessageDetails,
 } from './types';
 
 /**
@@ -39,7 +39,7 @@ import {
  * email generator to generate the email body and [Nodemailer](https://nodemailer.com/about/) to send the emails.
  *
  * ## High-level description
- * Vendure has an internal events system (see {@link EventBus}) that allows plugins to subscribe to events. The EmailPlugin is configured with {@link EmailEventHandler}s
+ * Vendure has an internal events system (see {@link EventBus}) that allows plugins to subscribe to events. The EmailPlugin is configured with {@link TextMessageEventHandler}s
  * that listen for a specific event and when it is published, the handler defines which template to use to generate the resulting email.
  *
  * The plugin comes with a set of default handler for the following events:
@@ -48,7 +48,7 @@ import {
  * - Password reset request
  * - Email address change request
  *
- * You can also create your own handler and register them with the plugin - see the {@link EmailEventHandler} docs for more details.
+ * You can also create your own handler and register them with the plugin - see the {@link TextMessageEventHandler} docs for more details.
  *
  * ## Installation
  *
@@ -217,7 +217,7 @@ import {
  * }),
  * ```
  *
- * For all available methods of extending a handler, see the {@link EmailEventHandler} documentation.
+ * For all available methods of extending a handler, see the {@link TextMessageEventHandler} documentation.
  *
  * ## Dynamic SMTP settings
  *
@@ -303,29 +303,29 @@ import {
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
-    providers: [{ provide: EMAIL_PLUGIN_OPTIONS, useFactory: () => EmailPlugin.options }, EmailProcessor],
+    providers: [{ provide: TEXT_MESSAGE_PLUGIN, useFactory: () => EmailPlugin.options }, TextMessageProcessor],
     compatibility: '^3.0.0',
 })
 export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdown, NestModule {
-    private static options: InitializedEmailPluginOptions;
-    private devMailbox: DevMailbox | undefined;
-    private jobQueue: JobQueue<IntermediateEmailDetails> | undefined;
-    private testingProcessor: EmailProcessor | undefined;
+    private static options: InitializedTextMessagePluginOptions;
+    private devMailbox: DevTextMessageInbox | undefined;
+    private jobQueue: JobQueue<IntermediateTextMessageDetails> | undefined;
+    private testingProcessor: TextMessageProcessor | undefined;
 
     /** @internal */
     constructor(
         private eventBus: EventBus,
         private moduleRef: ModuleRef,
-        private emailProcessor: EmailProcessor,
+        private emailProcessor: TextMessageProcessor,
         private jobQueueService: JobQueueService,
         private processContext: ProcessContext,
-        @Inject(EMAIL_PLUGIN_OPTIONS) private options: InitializedEmailPluginOptions,
+        @Inject(TEXT_MESSAGE_PLUGIN) private options: InitializedTextMessagePluginOptions,
     ) {}
 
     /**
      * Set the plugin options.
      */
-    static init(options: EmailPluginOptions | EmailPluginDevModeOptions): Type<EmailPlugin> {
+    static init(options: TextMessagePluginOptions | TextMessagePluginDevModeOptions): Type<EmailPlugin> {
         if (options.templateLoader) {
             // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             Logger.info(`Using custom template loader '${options.templateLoader.constructor.name}'`);
@@ -336,7 +336,7 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
         } else {
             throw new Error('You must either supply a templatePath or provide a custom templateLoader');
         }
-        this.options = options as InitializedEmailPluginOptions;
+        this.options = options as InitializedTextMessagePluginOptions;
         return EmailPlugin;
     }
 
@@ -348,7 +348,7 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
         if (!isDevModeOptions(this.options) && transport.type === 'testing') {
             // When running tests, we don't want to go through the JobQueue system,
             // so we just call the email sending logic directly.
-            this.testingProcessor = new EmailProcessor(this.options, this.moduleRef, this.eventBus);
+            this.testingProcessor = new TextMessageProcessor(this.options, this.moduleRef, this.eventBus);
             await this.testingProcessor.init();
         } else {
             await this.emailProcessor.init();
@@ -368,7 +368,7 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
     configure(consumer: MiddlewareConsumer) {
         if (isDevModeOptions(this.options) && this.processContext.isServer) {
             Logger.info('Creating dev mailbox middleware', loggerCtx);
-            this.devMailbox = new DevMailbox();
+            this.devMailbox = new DevTextMessageInbox();
             consumer.apply(this.devMailbox.serve(this.options)).forRoutes(this.options.route);
             this.devMailbox.handleMockEvent((handler, event) => this.handleEvent(handler, event));
             registerPluginStartupMessage('Dev mailbox', this.options.route);
@@ -377,20 +377,20 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
 
     private async initInjectableStrategies() {
         const injector = new Injector(this.moduleRef);
-        if (typeof this.options.emailGenerator?.init === 'function') {
-            await this.options.emailGenerator.init(injector);
+        if (typeof this.options.textMessageGenerator?.init === 'function') {
+            await this.options.textMessageGenerator.init(injector);
         }
-        if (typeof this.options.emailSender?.init === 'function') {
-            await this.options.emailSender.init(injector);
+        if (typeof this.options.textMessageSender?.init === 'function') {
+            await this.options.textMessageSender.init(injector);
         }
     }
 
     private async destroyInjectableStrategies() {
-        if (typeof this.options.emailGenerator?.destroy === 'function') {
-            await this.options.emailGenerator.destroy();
+        if (typeof this.options.textMessageGenerator?.destroy === 'function') {
+            await this.options.textMessageGenerator.destroy();
         }
-        if (typeof this.options.emailSender?.destroy === 'function') {
-            await this.options.emailSender.destroy();
+        if (typeof this.options.textMessageSender?.destroy === 'function') {
+            await this.options.textMessageSender.destroy();
         }
     }
 
@@ -403,7 +403,7 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
     }
 
     private async handleEvent(
-        handler: EmailEventHandler | EmailEventHandlerWithAsyncData<any>,
+        handler: TextMessageEventHandler | EmailEventHandlerWithAsyncData<any>,
         event: EventWithContext,
     ) {
         Logger.debug(`Handling event "${handler.type}"`, loggerCtx);

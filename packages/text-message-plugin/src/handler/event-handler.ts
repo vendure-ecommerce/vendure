@@ -6,11 +6,11 @@ import { serializeAttachments } from '../attachment-utils';
 import { loggerCtx } from '../constants';
 import { EmailEventListener } from '../event-listener';
 import {
-    EmailAttachment,
+    TextMessageAttachment,
     EmailTemplateConfig,
     EventWithAsyncData,
     EventWithContext,
-    IntermediateEmailDetails,
+    IntermediateTextMessageDetails,
     LoadDataFn,
     SetAttachmentsFn,
     SetOptionalAddressFieldsFn,
@@ -132,7 +132,7 @@ import {
  *
  * @docsCategory core plugins/EmailPlugin
  */
-export class EmailEventHandler<T extends string = string, Event extends EventWithContext = EventWithContext> {
+export class TextMessageEventHandler<T extends string = string, Event extends EventWithContext = EventWithContext> {
     private setRecipientFn: (event: Event) => string;
     private setLanguageCodeFn: (event: Event) => LanguageCode | undefined;
     private setSubjectFn?: SetSubjectFn<Event>;
@@ -169,7 +169,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      * Defines a predicate function which is used to determine whether the event will trigger an email.
      * Multiple filter functions may be defined.
      */
-    filter(filterFn: (event: Event) => boolean): EmailEventHandler<T, Event> {
+    filter(filterFn: (event: Event) => boolean): TextMessageEventHandler<T, Event> {
         this.filterFns.push(filterFn);
         return this;
     }
@@ -182,7 +182,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      * Or with a formatted name (includes unicode support): `'Ноде Майлер <foobar@example.com>'`
      * Or a comma-separated list of addresses: `'foobar@example.com, "Ноде Майлер" <bar@example.com>'`
      */
-    setRecipient(setRecipientFn: (event: Event) => string): EmailEventHandler<T, Event> {
+    setRecipient(setRecipientFn: (event: Event) => string): TextMessageEventHandler<T, Event> {
         this.setRecipientFn = setRecipientFn;
         return this;
     }
@@ -195,7 +195,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      */
     setLanguageCode(
         setLanguageCodeFn: (event: Event) => LanguageCode | undefined,
-    ): EmailEventHandler<T, Event> {
+    ): TextMessageEventHandler<T, Event> {
         this.setLanguageCodeFn = setLanguageCodeFn;
         return this;
     }
@@ -205,7 +205,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      * A function which returns an object hash of variables which will be made available to the Handlebars template
      * and subject line for interpolation.
      */
-    setTemplateVars(templateVarsFn: SetTemplateVarsFn<Event>): EmailEventHandler<T, Event> {
+    setTemplateVars(templateVarsFn: SetTemplateVarsFn<Event>): TextMessageEventHandler<T, Event> {
         this.setTemplateVarsFn = templateVarsFn;
         return this;
     }
@@ -215,7 +215,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      * Sets the default subject of the email. The subject string may use Handlebars variables defined by the
      * setTemplateVars() method.
      */
-    setSubject(defaultSubject: string | SetSubjectFn<Event>): EmailEventHandler<T, Event> {
+    setSubject(defaultSubject: string | SetSubjectFn<Event>): TextMessageEventHandler<T, Event> {
         if (typeof defaultSubject === 'string') {
             this.defaultSubject = defaultSubject;
         } else {
@@ -229,7 +229,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      * Sets the default from field of the email. The from string may use Handlebars variables defined by the
      * setTemplateVars() method.
      */
-    setFrom(from: string): EmailEventHandler<T, Event> {
+    setFrom(from: string): TextMessageEventHandler<T, Event> {
         this.from = from;
         return this;
     }
@@ -284,7 +284,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      * @deprecated Define a custom TemplateLoader on plugin initalization to define templates based on the RequestContext.
      * E.g. `EmailPlugin.init({ templateLoader: new CustomTemplateLoader() })`
      */
-    addTemplate(config: EmailTemplateConfig): EmailEventHandler<T, Event> {
+    addTemplate(config: EmailTemplateConfig): TextMessageEventHandler<T, Event> {
         this.configurations.push(config);
         return this;
     }
@@ -339,7 +339,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         event: Event,
         globals: { [key: string]: any } = {},
         injector: Injector,
-    ): Promise<IntermediateEmailDetails | undefined> {
+    ): Promise<IntermediateTextMessageDetails | undefined> {
         for (const filterFn of this.filterFns) {
             if (!filterFn(event)) {
                 return;
@@ -388,7 +388,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         }
         const recipient = this.setRecipientFn(event);
         const templateVars = this.setTemplateVarsFn ? this.setTemplateVarsFn(event, globals) : {};
-        let attachmentsArray: EmailAttachment[] = [];
+        let attachmentsArray: TextMessageAttachment[] = [];
         try {
             attachmentsArray = (await this.setAttachmentsFn?.(event)) ?? [];
         } catch (e: any) {
@@ -414,7 +414,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      * Optionally define a mock Event which is used by the dev mode mailbox app for generating mock emails
      * from this handler, which is useful when developing the email templates.
      */
-    setMockEvent(event: Omit<Event, 'ctx' | 'data'>): EmailEventHandler<T, Event> {
+    setMockEvent(event: Omit<Event, 'ctx' | 'data'>): TextMessageEventHandler<T, Event> {
         this._mockEvent = event;
         return this;
     }
@@ -447,7 +447,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
 
 /**
  * @description
- * Identical to the {@link EmailEventHandler} but with a `data` property added to the `event` based on the result
+ * Identical to the {@link TextMessageEventHandler} but with a `data` property added to the `event` based on the result
  * of the `.loadData()` function.
  *
  * @docsCategory core plugins/EmailPlugin
@@ -457,7 +457,7 @@ export class EmailEventHandlerWithAsyncData<
     T extends string = string,
     InputEvent extends EventWithContext = EventWithContext,
     Event extends EventWithAsyncData<InputEvent, Data> = EventWithAsyncData<InputEvent, Data>,
-> extends EmailEventHandler<T, Event> {
+> extends TextMessageEventHandler<T, Event> {
     constructor(
         public _loadDataFn: LoadDataFn<InputEvent, Data>,
         listener: EmailEventListener<T>,

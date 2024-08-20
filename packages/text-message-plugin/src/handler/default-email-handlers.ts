@@ -16,7 +16,7 @@ import { Request } from 'express';
 
 import { EmailEventListener } from '../event-listener';
 
-import { EmailEventHandler } from './event-handler';
+import { TextMessageEventHandler } from './event-handler';
 import {
     mockAccountRegistrationEvent,
     mockEmailAddressChangeEvent,
@@ -78,7 +78,7 @@ export const emailAddressChangeHandler = new EmailEventListener('email-address-c
     }))
     .setMockEvent(mockEmailAddressChangeEvent);
 
-export const defaultEmailHandlers: Array<EmailEventHandler<any, any>> = [
+export const defaultEmailHandlers: Array<TextMessageEventHandler<any, any>> = [
     orderConfirmationHandler,
     emailVerificationHandler,
     passwordResetHandler,

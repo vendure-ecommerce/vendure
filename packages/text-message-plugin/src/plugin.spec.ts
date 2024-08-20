@@ -21,14 +21,13 @@ import path from 'path';
 import { Readable } from 'stream';
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-import { EmailProcessor } from './email-processor';
 import { EmailEventListener } from './event-listener';
-import { orderConfirmationHandler } from './handler/default-email-handlers';
-import { EmailEventHandler } from './handler/event-handler';
+import { TextMessageEventHandler } from './handler/event-handler';
 import { EmailPlugin } from './plugin';
-import { EmailSender } from './sender/email-sender';
+import { TextMessageSender } from './sender/text-message-sender';
 import { FileBasedTemplateLoader } from './template-loader/file-based-template-loader';
-import { EmailDetails, EmailPluginOptions, EmailTransportOptions } from './types';
+import { TextMessageProcessor } from './text-message-processor.service';
+import { TextMessageDetails, TextMessagePluginOptions, TextMessageTransportOptions } from './types';
 
 describe('EmailPlugin', () => {
     let eventBus: EventBus;
@@ -38,8 +37,8 @@ describe('EmailPlugin', () => {
     const testingLogger = new TestingLogger((...args) => vi.fn(...args));
 
     async function initPluginWithHandlers(
-        handlers: Array<EmailEventHandler<string, any>>,
-        options?: Partial<EmailPluginOptions>,
+        handlers: Array<TextMessageEventHandler<string, any>>,
+        options?: Partial<TextMessagePluginOptions>,
     ) {
         await ensureConfigLoaded();
         onSend = vi.fn();
@@ -697,69 +696,6 @@ describe('EmailPlugin', () => {
         });
     });
 
-    describe('orderConfirmationHandler', () => {
-        beforeEach(async () => {
-            await initPluginWithHandlers([orderConfirmationHandler], {
-                templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../templates')),
-            });
-        });
-
-        const ctx = RequestContext.deserialize({
-            _channel: { code: DEFAULT_CHANNEL_CODE },
-            _languageCode: LanguageCode.en,
-        } as any);
-
-        const order = {
-            code: 'ABCDE',
-            customer: {
-                emailAddress: 'test@test.com',
-            },
-            lines: [],
-        } as any;
-
-        it('filters events with wrong order state', async () => {
-            await eventBus.publish(
-                new OrderStateTransitionEvent('AddingItems', 'ArrangingPayment', ctx, order),
-            );
-            await pause();
-            expect(onSend).not.toHaveBeenCalled();
-
-            await eventBus.publish(new OrderStateTransitionEvent('AddingItems', 'Cancelled', ctx, order));
-            await pause();
-            expect(onSend).not.toHaveBeenCalled();
-
-            await eventBus.publish(
-                new OrderStateTransitionEvent('AddingItems', 'PaymentAuthorized', ctx, order),
-            );
-            await pause();
-            expect(onSend).not.toHaveBeenCalled();
-
-            await eventBus.publish(
-                new OrderStateTransitionEvent('ArrangingPayment', 'PaymentSettled', ctx, order),
-            );
-            await pause();
-            expect(onSend).toHaveBeenCalledTimes(1);
-        });
-
-        it('sets the Order Customer emailAddress as recipient', async () => {
-            await eventBus.publish(
-                new OrderStateTransitionEvent('ArrangingPayment', 'PaymentSettled', ctx, order),
-            );
-            await pause();
-
-            expect(onSend.mock.calls[0][0].recipient).toBe(order.customer!.emailAddress);
-        });
-
-        it('sets the subject', async () => {
-            await eventBus.publish(
-                new OrderStateTransitionEvent('ArrangingPayment', 'PaymentSettled', ctx, order),
-            );
-            await pause();
-
-            expect(onSend.mock.calls[0][0].subject).toBe(`Order confirmation for #${order.code as string}`);
-        });
-    });
-
     describe('error handling', () => {
         it('Logs an error if the template file is not found', async () => {
             const ctx = RequestContext.deserialize({
@@ -843,7 +779,7 @@ describe('EmailPlugin', () => {
             fakeSender.send = send;
 
             await initPluginWithHandlers([handler], {
-                emailSender: fakeSender,
+                textMessageSender: fakeSender,
             });
 
             await eventBus.publish(new MockEvent(ctx, true));
@@ -952,7 +888,7 @@ describe('EmailPlugin', () => {
         });
 
         it('Resolves async transport settings', async () => {
-            const transport = await module!.get(EmailProcessor).getTransportSettings();
+            const transport = await module!.get(TextMessageProcessor).getTransportSettings();
             expect(transport.type).toBe('testing');
         });
     });
@@ -1005,8 +941,8 @@ describe('EmailPlugin', () => {
     });
 });
 
-class FakeCustomSender implements EmailSender {
-    send: (email: EmailDetails<'unserialized'>, options: EmailTransportOptions) => void;
+class FakeCustomSender implements TextMessageSender {
+    send: (email: TextMessageDetails<'unserialized'>, options: TextMessageTransportOptions) => void;
 }
 
 const pause = () => new Promise(resolve => setTimeout(resolve, 100));

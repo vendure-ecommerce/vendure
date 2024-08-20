@@ -5,18 +5,13 @@ import fs from 'fs-extra';
 
 import { deserializeAttachments } from './attachment-utils';
 import { isDevModeOptions, resolveTransportSettings } from './common';
-import { EMAIL_PLUGIN_OPTIONS, loggerCtx } from './constants';
-import { EmailSendEvent } from './email-send-event';
-import { EmailGenerator } from './generator/email-generator';
+import { TEXT_MESSAGE_PLUGIN, loggerCtx } from './constants';
 import { HandlebarsMjmlGenerator } from './generator/handlebars-mjml-generator';
-import { EmailSender } from './sender/email-sender';
-import { NodemailerEmailSender } from './sender/nodemailer-email-sender';
-import {
-    EmailDetails,
-    EmailTransportOptions,
-    InitializedEmailPluginOptions,
-    IntermediateEmailDetails,
-} from './types';
+import { TextMessageGenerator } from './generator/text-message-generator';
+import { TestingTextMessageSender } from "./sender/testing-text-message-sender";
+import { TextMessageSender } from './sender/text-message-sender';
+import { TextMessageSendEvent } from './text-message-send-event';
+import { TextMessageDetails, TextMessageTransportOptions, InitializedTextMessagePluginOptions, IntermediateTextMessageDetails } from './types';
 
 /**
  * This class combines the template loading, generation, and email sending - the actual "work" of
@@ -24,20 +19,20 @@ import {
  * tests can be run without needing all the JobQueue stuff which would require a full e2e test.
  */
 @Injectable()
-export class EmailProcessor {
-    protected emailSender: EmailSender;
-    protected generator: EmailGenerator;
+export class TextMessageProcessor {
+    protected textMessageSender: TextMessageSender;
+    protected generator: TextMessageGenerator;
 
     constructor(
-        @Inject(EMAIL_PLUGIN_OPTIONS) protected options: InitializedEmailPluginOptions,
+        @Inject(TEXT_MESSAGE_PLUGIN) protected options: InitializedTextMessagePluginOptions,
         private moduleRef: ModuleRef,
         private eventBus: EventBus,
     ) {}
 
     async init() {
-        this.emailSender = this.options.emailSender ? this.options.emailSender : new NodemailerEmailSender();
-        this.generator = this.options.emailGenerator
-            ? this.options.emailGenerator
+        this.textMessageSender = this.options.textMessageSender ? this.options.textMessageSender : new TestingTextMessageSender();
+        this.generator = this.options.textMessageGenerator
+            ? this.options.textMessageGenerator
             : new HandlebarsMjmlGenerator();
         if (this.generator.onInit) {
             await this.generator.onInit.call(this.generator, this.options);
@@ -46,14 +41,14 @@ export class EmailProcessor {
         if (transport.type === 'file') {
             // ensure the configured directory exists before
             // we attempt to write files to it
-            const emailPath = transport.outputPath;
-            await fs.ensureDir(emailPath);
+            const textMessagePath = transport.outputPath;
+            await fs.ensureDir(textMessagePath);
         }
     }
 
-    async process(data: IntermediateEmailDetails) {
+    async process(data: IntermediateTextMessageDetails) {
         const ctx = RequestContext.deserialize(data.ctx);
-        let emailDetails: EmailDetails = {} as any;
+        let textMessageDetails: TextMessageDetails = {} as any;
         try {
             const bodySource = await this.options.templateLoader.loadTemplate(
                 new Injector(this.moduleRef),
@@ -64,18 +59,19 @@ export class EmailProcessor {
                     templateVars: data.templateVars,
                 },
             );
-            const generated = this.generator.generate(data.from, data.subject, bodySource, data.templateVars);
-            emailDetails = {
+            const generated = this.generator.generate(data.from, bodySource, data.templateVars);
+            textMessageDetails = {
                 ...generated,
                 recipient: data.recipient,
+                to: data.to,
                 attachments: deserializeAttachments(data.attachments),
                 cc: data.cc,
                 bcc: data.bcc,
                 replyTo: data.replyTo,
             };
             const transportSettings = await this.getTransportSettings(ctx);
-            await this.emailSender.send(emailDetails, transportSettings);
-            await this.eventBus.publish(new EmailSendEvent(ctx, emailDetails, true));
+            await this.textMessageSender.send(textMessageDetails, transportSettings);
+            await this.eventBus.publish(new TextMessageSendEvent(ctx, textMessageDetails, true));
             return true;
         } catch (err: unknown) {
             if (err instanceof Error) {
@@ -84,17 +80,17 @@ export class EmailProcessor {
                 Logger.error(String(err), loggerCtx);
             }
 
-            await this.eventBus.publish(new EmailSendEvent(ctx, emailDetails, false, err as Error));
+            await this.eventBus.publish(new TextMessageSendEvent(ctx, textMessageDetails, false, err as Error));
             throw err;
         }
     }
 
-    async getTransportSettings(ctx?: RequestContext): Promise<EmailTransportOptions> {
+    async getTransportSettings(ctx?: RequestContext): Promise<TextMessageTransportOptions> {
         const transport = await resolveTransportSettings(this.options, new Injector(this.moduleRef), ctx);
         if (isDevModeOptions(this.options)) {
             if (transport && transport.type !== 'file') {
                 Logger.warn(
-                    `The EmailPlugin is running in dev mode. The configured '${transport.type}' transport will be replaced by the 'file' transport.`,
+                    `The TextMessagePlugin is running in dev mode. The configured '${transport.type}' transport will be replaced by the 'file' transport.`,
                     loggerCtx,
                 );
             }

@@ -8,10 +8,10 @@ import { TemplateLoader } from './template-loader';
 
 /**
  * @description
- * Loads email templates from the local file system. This is the default
- * loader used by the EmailPlugin.
+ * Loads text message templates from the local file system. This is the default
+ * loader used by the TextMessagePlugin.
  *
- * @docsCategory core plugins/EmailPlugin
+ * @docsCategory core plugins/TextMessagePlugin
  * @docsPage TemplateLoader
  */
 export class FileBasedTemplateLoader implements TemplateLoader {

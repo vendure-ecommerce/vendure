@@ -4,23 +4,23 @@ import { Request, Router } from 'express';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { EmailEventHandler } from './handler/event-handler';
-import { EmailPluginDevModeOptions, EventWithContext } from './types';
+import { TextMessageEventHandler } from './handler/event-handler';
+import { TextMessagePluginDevModeOptions, EventWithContext } from './types';
 
 /**
  * An email inbox application that serves the contents of the dev mode `outputPath` directory.
  */
-export class DevMailbox {
+export class DevTextMessageInbox {
     private handleMockEventFn: (
-        handler: EmailEventHandler<string, any>,
+        handler: TextMessageEventHandler<string, any>,
         event: EventWithContext,
     ) => void | undefined;
 
-    serve(options: EmailPluginDevModeOptions): Router {
+    serve(options: TextMessagePluginDevModeOptions): Router {
         const { outputPath, handlers } = options;
         const server = Router();
         server.get('/', (req, res) => {
-            res.sendFile(path.join(__dirname, '../../dev-mailbox.html'));
+            res.sendFile(path.join(__dirname, '../../dev-text-message-inbox.html'));
         });
         server.get('/list', async (req, res) => {
             const list = await fs.readdir(outputPath);
@@ -30,8 +30,8 @@ export class DevMailbox {
         server.get('/types', async (req, res) => {
             res.send(handlers.map(h => h.type));
         });
-        server.get('/generate/:type/:languageCode', async (req, res) => {
-            const { type, languageCode } = req.params;
+        server.get('/generate/:type/:languageCode/:channelCode', async (req, res) => {
+            const { type, languageCode, channelCode } = req.params;
             if (this.handleMockEventFn) {
                 const handler = handlers.find(h => h.type === type);
                 if (!handler || !handler.mockEvent) {
@@ -42,7 +42,7 @@ export class DevMailbox {
                 try {
                     this.handleMockEventFn(handler, {
                         ...handler.mockEvent,
-                        ctx: this.createRequestContext(languageCode as LanguageCode, req),
+                        ctx: this.createRequestContext(languageCode as LanguageCode, channelCode, req),
                     } as EventWithContext);
                     res.send({ success: true });
                 } catch (e: any) {
@@ -76,7 +76,7 @@ export class DevMailbox {
         return server;
     }
 
-    handleMockEvent(handler: (handler: EmailEventHandler<string, any>, event: EventWithContext) => void) {
+    handleMockEvent(handler: (handler: TextMessageEventHandler<string, any>, event: EventWithContext) => void) {
         this.handleMockEventFn = handler;
     }
 
@@ -112,15 +112,16 @@ export class DevMailbox {
         return content;
     }
 
-    private createRequestContext(languageCode: LanguageCode, req: Request): RequestContext {
+    private createRequestContext(languageCode: LanguageCode, channelCode: string, req: Request): RequestContext {
         return new RequestContext({
             languageCode,
             req,
             apiType: 'admin',
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             session: {} as any,
             isAuthorized: false,
             authorizedAsOwnerOnly: true,
-            channel: new Channel(),
-        });
+            channel: new Channel({ code: channelCode }),
+        })
     }
 }

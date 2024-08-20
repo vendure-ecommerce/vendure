@@ -1,20 +1,20 @@
 import { RequestContext, VendureEvent } from '@vendure/core';
 
-import { EmailDetails } from './types';
+import { TextMessageDetails } from './types';
 
 /**
  * @description
- * This event is fired when an email sending attempt has been made. If the sending was successful,
+ * This event is fired when a text message sending attempt has been made. If the sending was successful,
  * the `success` property will be `true`, and if not, the `error` property will contain the error
  * which occurred.
  *
- * @docsCategory core plugins/EmailPlugin
+ * @docsCategory core plugins/TextMessagePlugin
  * @since 2.2.0
  */
-export class EmailSendEvent extends VendureEvent {
+export class TextMessageSendEvent extends VendureEvent {
     constructor(
         public readonly ctx: RequestContext,
-        public readonly details: EmailDetails,
+        public readonly details: TextMessageDetails,
         public readonly success: boolean,
         public readonly error?: Error,
     ) {
