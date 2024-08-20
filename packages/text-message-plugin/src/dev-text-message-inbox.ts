@@ -24,7 +24,7 @@ export class DevTextMessageInbox {
         });
         server.get('/list', async (req, res) => {
             const list = await fs.readdir(outputPath);
-            const contents = await this.getEmailList(outputPath);
+            const contents = await this.getTextMessageList(outputPath);
             res.send(contents);
         });
         server.get('/types', async (req, res) => {
@@ -51,12 +51,12 @@ export class DevTextMessageInbox {
                 }
                 return;
             } else {
-                res.send({ success: false, error: 'Mock email generation not set up.' });
+                res.send({ success: false, error: 'Mock text message generation not set up.' });
             }
         });
         server.get('/item/:id', async (req, res) => {
             const fileName = req.params.id;
-            const content = await this.getEmail(outputPath, fileName);
+            const content = await this.getTextMessage(outputPath, fileName);
             res.send(content);
         });
         server.get('/placeholder-image', async (req, res) => {
@@ -80,13 +80,13 @@ export class DevTextMessageInbox {
         this.handleMockEventFn = handler;
     }
 
-    private async getEmailList(outputPath: string) {
+    private async getTextMessageList(outputPath: string) {
         const list = await fs.readdir(outputPath);
         const contents: Array<{
             fileName: string;
             date: string;
-            subject: string;
-            recipient: string;
+            from: string;
+            to: string;
         }> = [];
         for (const fileName of list.filter(name => name.endsWith('.json'))) {
             const json = await fs.readFile(path.join(outputPath, fileName), 'utf-8');
@@ -94,8 +94,8 @@ export class DevTextMessageInbox {
             contents.push({
                 fileName,
                 date: content.date,
-                subject: content.subject,
-                recipient: content.recipient,
+                from: content.from,
+                to: content.to,
             });
         }
         contents.sort((a, b) => {
@@ -104,7 +104,7 @@ export class DevTextMessageInbox {
         return contents;
     }
 
-    private async getEmail(outputPath: string, fileName: string) {
+    private async getTextMessage(outputPath: string, fileName: string) {
         const safeSuffix = path.normalize(fileName).replace(/^(\.\.(\/|\\|$))+/, '');
         const safeFilePath = path.join(outputPath, safeSuffix);
         const json = await fs.readFile(safeFilePath, 'utf-8');

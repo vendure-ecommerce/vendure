@@ -14,8 +14,8 @@ import { TextMessageSendEvent } from './text-message-send-event';
 import { TextMessageDetails, TextMessageTransportOptions, InitializedTextMessagePluginOptions, IntermediateTextMessageDetails } from './types';
 
 /**
- * This class combines the template loading, generation, and email sending - the actual "work" of
- * the EmailPlugin. It is arranged this way primarily to accommodate easier testing, so that the
+ * This class combines the template loading, generation, and text message sending - the actual "work" of
+ * the TextMessagePlugin. It is arranged this way primarily to accommodate easier testing, so that the
  * tests can be run without needing all the JobQueue stuff which would require a full e2e test.
  */
 @Injectable()
@@ -63,7 +63,7 @@ export class TextMessageProcessor {
             textMessageDetails = {
                 ...generated,
                 recipient: data.recipient,
-                to: data.to,
+                to: data.recipient,
                 attachments: deserializeAttachments(data.attachments),
                 cc: data.cc,
                 bcc: data.bcc,

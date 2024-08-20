@@ -4,50 +4,49 @@ import { Injector, Logger } from '@vendure/core';
 
 import { serializeAttachments } from '../attachment-utils';
 import { loggerCtx } from '../constants';
-import { EmailEventListener } from '../event-listener';
+import { TextMessageEventListener } from '../event-listener';
 import {
     TextMessageAttachment,
-    EmailTemplateConfig,
+    TextMessageTemplateConfig,
     EventWithAsyncData,
     EventWithContext,
     IntermediateTextMessageDetails,
     LoadDataFn,
     SetAttachmentsFn,
-    SetOptionalAddressFieldsFn,
+    SetOptionalRecipientsFieldsFn,
     SetSubjectFn,
     SetTemplateVarsFn,
 } from '../types';
 
 /**
  * @description
- * The EmailEventHandler defines how the EmailPlugin will respond to a given event.
+ * The TextMessageEventHandler defines how the TextMessagePlugin will respond to a given event.
  *
- * A handler is created by creating a new {@link EmailEventListener} and calling the `.on()` method
+ * A handler is created by creating a new {@link TextMessageEventListener} and calling the `.on()` method
  * to specify which event to respond to.
  *
  * @example
  * ```ts
- * const confirmationHandler = new EmailEventListener('order-confirmation')
+ * const confirmationHandler = new TextMessageEventListener('order-confirmation')
  *   .on(OrderStateTransitionEvent)
  *   .filter(event => event.toState === 'PaymentSettled')
- *   .setRecipient(event => event.order.customer.emailAddress)
- *   .setFrom('{{ fromAddress }}')
- *   .setSubject(`Order confirmation for #{{ order.code }}`)
+ *   .setRecipient(event => event.order.customer.phoneNumber)
+ *   .setFrom('{{ fromNumber }}')
  *   .setTemplateVars(event => ({ order: event.order }));
  * ```
  *
  * This example creates a handler which listens for the `OrderStateTransitionEvent` and if the Order has
- * transitioned to the `'PaymentSettled'` state, it will generate and send an email.
+ * transitioned to the `'PaymentSettled'` state, it will generate and send a text message.
  *
- * The string argument passed into the `EmailEventListener` constructor is used to identify the handler, and
+ * The string argument passed into the `TextMessageEventListener` constructor is used to identify the handler, and
  * also to locate the directory of the email template files. So in the example above, there should be a directory
- * `<app root>/static/email/templates/order-confirmation` which contains a Handlebars template named `body.hbs`.
+ * `<app root>/static/text-message/templates/order-confirmation` which contains a Handlebars template named `body.hbs`.
  *
  * ## Handling other languages
  *
  * By default, the handler will respond to all events on all channels and use the same subject ("Order confirmation for #12345" above)
  * and body template. Where the server is intended to support multiple languages, the `.addTemplate()` method may be used
- * to define the subject and body template for specific language and channel combinations.
+ * to define the body template for specific language and channel combinations.
  *
  * The language is determined by looking at the `languageCode` property of the event's `ctx` ({@link RequestContext}) object.
  *
@@ -68,89 +67,68 @@ import {
  * which is executed when the customer requests a quote in your storefront, and in your resolver, you use the {@link EventBus} to publish a
  * new `QuoteRequestedEvent`.
  *
- * You now want to email the customer with their quote. Here are the steps you would take to set this up:
+ * You now want to send a text message to the customer with their quote. Here are the steps you would take to set this up:
  *
  * ### 1. Create a new handler
  *
  * ```ts
- * import { EmailEventListener } from `\@vendure/email-plugin`;
+ * import { TextMessageEventListener } from `\@vendure/text-message--plugin`;
  * import { QuoteRequestedEvent } from `./events`;
  *
- * const quoteRequestedHandler = new EmailEventListener('quote-requested')
+ * const quoteRequestedHandler = new TextMessageEventListener('quote-requested')
  *   .on(QuoteRequestedEvent)
- *   .setRecipient(event => event.customer.emailAddress)
- *   .setSubject(`Here's the quote you requested`)
- *   .setFrom('{{ fromAddress }}')
+ *   .setRecipient(event => event.customer.phoneNumber)
+ *   .setFrom('{{ fromNumber }}')
  *   .setTemplateVars(event => ({ details: event.details }));
  * ```
  *
- * ### 2. Create the email template
+ * ### 2. Create the text message template
  *
- * Next you need to make sure there is a template defined at `<app root>/static/email/templates/quote-requested/body.hbs`. The path
- * segment `quote-requested` must match the string passed to the `EmailEventListener` constructor.
+ * Next you need to make sure there is a template defined at `<app root>/static/text-message/templates/quote-requested/body.hbs`. The path
+ * segment `quote-requested` must match the string passed to the `TextMessageEventListener` constructor.
  *
  * The template would look something like this:
  *
  * ```handlebars
- * {{> header title="Here's the quote you requested" }}
- *
- * <mj-section background-color="#fafafa">
- *     <mj-column>
- *         <mj-text color="#525252">
- *             Thank you for your interest in our products! Here's the details
- *             of the quote you recently requested:
- *         </mj-text>
- *
- *         <--! your custom email layout goes here -->
- *     </mj-column>
- * </mj-section>
- *
- *
- * {{> footer }}
+ * Thank you for your interest in our products! Here's the details
+ * of the quote you recently requested:
  * ```
- *
- * You can find pre-made templates on the [MJML website](https://mjml.io/templates/).
  *
  * ### 3. Register the handler
  *
- * Finally, you need to register the handler with the EmailPlugin:
+ * Finally, you need to register the handler with the TextMessagePlugin:
  *
  * ```ts {hl_lines=[8]}
- * import { defaultEmailHandlers, EmailPlugin } from '\@vendure/email-plugin';
+ * import { TextMessagePlugin } from '\@vendure/text-message-plugin';
  * import { quoteRequestedHandler } from './plugins/quote-plugin';
  *
  * const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array
  *   plugins: [
- *     EmailPlugin.init({
- *       handler: [...defaultEmailHandlers, quoteRequestedHandler],
+ *     TextMessagePlugin.init({
+ *       handler: [quoteRequestedHandler],
  *       // ... etc
  *     }),
  *   ],
  * };
  * ```
  *
- * @docsCategory core plugins/EmailPlugin
+ * @docsCategory core plugins/TextMessagePlugin
  */
 export class TextMessageEventHandler<T extends string = string, Event extends EventWithContext = EventWithContext> {
     private setRecipientFn: (event: Event) => string;
     private setLanguageCodeFn: (event: Event) => LanguageCode | undefined;
-    private setSubjectFn?: SetSubjectFn<Event>;
     private setTemplateVarsFn: SetTemplateVarsFn<Event>;
     private setAttachmentsFn?: SetAttachmentsFn<Event>;
-    private setOptionalAddressFieldsFn?: SetOptionalAddressFieldsFn<Event>;
+    private setOptionalRecipientsFieldsFn?: SetOptionalRecipientsFieldsFn<Event>;
     private filterFns: Array<(event: Event) => boolean> = [];
-    private configurations: EmailTemplateConfig[] = [];
-    private defaultSubject: string;
+    private configurations: TextMessageTemplateConfig[] = [];
+    private defaultSubject = 'EMPTY'
     private from: string;
-    private optionalAddressFields: {
-        cc?: string;
-        bcc?: string;
-    };
     private _mockEvent: Omit<Event, 'ctx' | 'data'> | undefined;
 
     constructor(
-        public listener: EmailEventListener<T>,
+        public listener: TextMessageEventListener<T>,
         public event: Type<Event>,
     ) {}
 
@@ -166,7 +144,7 @@ export class TextMessageEventHandler<T extends string = string, Event extends Ev
 
     /**
      * @description
-     * Defines a predicate function which is used to determine whether the event will trigger an email.
+     * Defines a predicate function which is used to determine whether the event will trigger a text message.
      * Multiple filter functions may be defined.
      */
     filter(filterFn: (event: Event) => boolean): TextMessageEventHandler<T, Event> {
@@ -176,11 +154,9 @@ export class TextMessageEventHandler<T extends string = string, Event extends Ev
 
     /**
      * @description
-     * A function which defines how the recipient email address should be extracted from the incoming event.
+     * A function which defines how the recipient should be extracted from the incoming event.
      *
-     * The recipient can be a plain email address: `'foobar@example.com'`
-     * Or with a formatted name (includes unicode support): `'Ноде Майлер <foobar@example.com>'`
-     * Or a comma-separated list of addresses: `'foobar@example.com, "Ноде Майлер" <bar@example.com>'`
+     * The recipient has to be a E.164 formatted phone number: +14155552671
      */
     setRecipient(setRecipientFn: (event: Event) => string): TextMessageEventHandler<T, Event> {
         this.setRecipientFn = setRecipientFn;
@@ -189,21 +165,18 @@ export class TextMessageEventHandler<T extends string = string, Event extends Ev
 
     /**
      * @description
-     * A function which allows to override the language of the email. If not defined, the language from the context will be used.
+     * A function which allows to override the language of the text message. If not defined, the language from the context will be used.
      *
      * @since 1.8.0
      */
-    setLanguageCode(
-        setLanguageCodeFn: (event: Event) => LanguageCode | undefined,
-    ): TextMessageEventHandler<T, Event> {
+    setLanguageCode(setLanguageCodeFn: (event: Event) => LanguageCode | undefined): TextMessageEventHandler<T, Event> {
         this.setLanguageCodeFn = setLanguageCodeFn;
         return this;
     }
 
     /**
      * @description
-     * A function which returns an object hash of variables which will be made available to the Handlebars template
-     * and subject line for interpolation.
+     * A function which returns an object hash of variables which will be made available to the Handlebars template for interpolation.
      */
     setTemplateVars(templateVarsFn: SetTemplateVarsFn<Event>): TextMessageEventHandler<T, Event> {
         this.setTemplateVarsFn = templateVarsFn;
@@ -212,21 +185,7 @@ export class TextMessageEventHandler<T extends string = string, Event extends Ev
 
     /**
      * @description
-     * Sets the default subject of the email. The subject string may use Handlebars variables defined by the
-     * setTemplateVars() method.
-     */
-    setSubject(defaultSubject: string | SetSubjectFn<Event>): TextMessageEventHandler<T, Event> {
-        if (typeof defaultSubject === 'string') {
-            this.defaultSubject = defaultSubject;
-        } else {
-            this.setSubjectFn = defaultSubject;
-        }
-        return this;
-    }
-
-    /**
-     * @description
-     * Sets the default from field of the email. The from string may use Handlebars variables defined by the
+     * Sets the default from field of the text message. The from string may use Handlebars variables defined by the
      * setTemplateVars() method.
      */
     setFrom(from: string): TextMessageEventHandler<T, Event> {
@@ -236,12 +195,12 @@ export class TextMessageEventHandler<T extends string = string, Event extends Ev
 
     /**
      * @description
-     * A function which allows {@link OptionalAddressFields} to be specified such as "cc" and "bcc".
+     * A function which allows {@link OptionalRecipientsFields} to be specified.
      *
      * @since 1.1.0
      */
-    setOptionalAddressFields(optionalAddressFieldsFn: SetOptionalAddressFieldsFn<Event>) {
-        this.setOptionalAddressFieldsFn = optionalAddressFieldsFn;
+    setOptionalRecipientsFields(setOptionalRecipientsFieldsFn: SetOptionalRecipientsFieldsFn<Event>) {
+        this.setOptionalRecipientsFieldsFn = setOptionalRecipientsFieldsFn;
         return this;
     }
 
@@ -257,7 +216,7 @@ export class TextMessageEventHandler<T extends string = string, Event extends Ev
      *
      * @example
      * ```ts
-     * const testAttachmentHandler = new EmailEventListener('activate-voucher')
+     * const testAttachmentHandler = new TextMessageEventListener('activate-voucher')
      *   .on(ActivateVoucherEvent)
      *   // ... omitted some steps for brevity
      *   .setAttachments(async (event) => {
@@ -281,10 +240,10 @@ export class TextMessageEventHandler<T extends string = string, Event extends Ev
      * Add configuration for another template other than the default `"body.hbs"`. Use this method to define specific
      * templates for channels or languageCodes other than the default.
      *
-     * @deprecated Define a custom TemplateLoader on plugin initalization to define templates based on the RequestContext.
-     * E.g. `EmailPlugin.init({ templateLoader: new CustomTemplateLoader() })`
+     * @deprecated Define a custom TemplateLoader on plugin initialization to define templates based on the RequestContext.
+     * E.g. `TextMessagePlugin.init({ templateLoader: new CustomTemplateLoader() })`
      */
-    addTemplate(config: EmailTemplateConfig): TextMessageEventHandler<T, Event> {
+    addTemplate(config: TextMessageTemplateConfig): TextMessageEventHandler<T, Event> {
         this.configurations.push(config);
         return this;
     }
@@ -299,7 +258,7 @@ export class TextMessageEventHandler<T extends string = string, Event extends Ev
      *
      * @example
      * ```ts
-     * new EmailEventListener('order-confirmation')
+     * new TextMessageEventListener('order-confirmation')
      *   .on(OrderStateTransitionEvent)
      *   .filter(event => event.toState === 'PaymentSettled' && !!event.order.customer)
      *   .loadData(({ event, injector }) => {
@@ -315,12 +274,12 @@ export class TextMessageEventHandler<T extends string = string, Event extends Ev
      */
     loadData<R>(
         loadDataFn: LoadDataFn<Event, R>,
-    ): EmailEventHandlerWithAsyncData<R, T, Event, EventWithAsyncData<Event, R>> {
-        const asyncHandler = new EmailEventHandlerWithAsyncData(loadDataFn, this.listener, this.event);
+    ): TextMessageEventHandlerWithAsyncData<R, T, Event, EventWithAsyncData<Event, R>> {
+        const asyncHandler = new TextMessageEventHandlerWithAsyncData(loadDataFn, this.listener, this.event);
         asyncHandler.setRecipientFn = this.setRecipientFn;
         asyncHandler.setTemplateVarsFn = this.setTemplateVarsFn;
         asyncHandler.setAttachmentsFn = this.setAttachmentsFn;
-        asyncHandler.setOptionalAddressFieldsFn = this.setOptionalAddressFieldsFn;
+        asyncHandler.setOptionalRecipientsFieldsFn = this.setOptionalRecipientsFieldsFn;
         asyncHandler.filterFns = this.filterFns;
         asyncHandler.configurations = this.configurations;
         asyncHandler.defaultSubject = this.defaultSubject;
@@ -345,7 +304,7 @@ export class TextMessageEventHandler<T extends string = string, Event extends Ev
                 return;
             }
         }
-        if (this instanceof EmailEventHandlerWithAsyncData) {
+        if (this instanceof TextMessageEventHandlerWithAsyncData) {
             try {
                 (event as EventWithAsyncData<Event, any>).data = await this._loadDataFn({
                     event,
@@ -363,29 +322,18 @@ export class TextMessageEventHandler<T extends string = string, Event extends Ev
         if (!this.setRecipientFn) {
             throw new Error(
                 `No setRecipientFn has been defined. ` +
-                    `Remember to call ".setRecipient()" when setting up the EmailEventHandler for ${this.type}`,
+                    `Remember to call ".setRecipient()" when setting up the TextMessageEventHandler for ${this.type}`,
             );
         }
         if (this.from === undefined) {
             throw new Error(
                 `No from field has been defined. ` +
-                    `Remember to call ".setFrom()" when setting up the EmailEventHandler for ${this.type}`,
+                    `Remember to call ".setFrom()" when setting up the TextMessageEventHandler for ${this.type}`,
             );
         }
         const { ctx } = event;
         const languageCode = this.setLanguageCodeFn?.(event) || ctx.languageCode;
         const configuration = this.getBestConfiguration(ctx.channel.code, languageCode);
-        const subject = configuration
-            ? configuration.subject
-            : this.setSubjectFn
-              ? await this.setSubjectFn(event, ctx, injector)
-              : this.defaultSubject;
-        if (subject == null) {
-            throw new Error(
-                `No subject field has been defined. ` +
-                    `Remember to call ".setSubject()" when setting up the EmailEventHandler for ${this.type}`,
-            );
-        }
         const recipient = this.setRecipientFn(event);
         const templateVars = this.setTemplateVarsFn ? this.setTemplateVarsFn(event, globals) : {};
         let attachmentsArray: TextMessageAttachment[] = [];
@@ -395,14 +343,14 @@ export class TextMessageEventHandler<T extends string = string, Event extends Ev
             Logger.error(e, loggerCtx, e.stack);
         }
         const attachments = await serializeAttachments(attachmentsArray);
-        const optionalAddressFields = (await this.setOptionalAddressFieldsFn?.(event)) ?? {};
+        const optionalAddressFields = (await this.setOptionalRecipientsFieldsFn?.(event)) ?? {};
         return {
             ctx: event.ctx.serialize(),
             type: this.type,
             recipient,
+            to: recipient,
             from: this.from,
             templateVars: { ...globals, ...templateVars },
-            subject,
             templateFile: configuration ? configuration.templateFile : 'body.hbs',
             attachments,
             ...optionalAddressFields,
@@ -422,7 +370,7 @@ export class TextMessageEventHandler<T extends string = string, Event extends Ev
     private getBestConfiguration(
         channelCode: string,
         languageCode: LanguageCode,
-    ): EmailTemplateConfig | undefined {
+    ): TextMessageTemplateConfig | undefined {
         if (this.configurations.length === 0) {
             return;
         }
@@ -452,7 +400,7 @@ export class TextMessageEventHandler<T extends string = string, Event extends Ev
  *
  * @docsCategory core plugins/EmailPlugin
  */
-export class EmailEventHandlerWithAsyncData<
+export class TextMessageEventHandlerWithAsyncData<
     Data,
     T extends string = string,
     InputEvent extends EventWithContext = EventWithContext,
@@ -460,7 +408,7 @@ export class EmailEventHandlerWithAsyncData<
 > extends TextMessageEventHandler<T, Event> {
     constructor(
         public _loadDataFn: LoadDataFn<InputEvent, Data>,
-        listener: EmailEventListener<T>,
+        listener: TextMessageEventListener<T>,
         event: Type<InputEvent>,
     ) {
         super(listener, event as any);

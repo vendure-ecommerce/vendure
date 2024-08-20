@@ -287,9 +287,7 @@ export interface NoopTransportOptions {
  */
 export interface TextMessageDetails<Type extends 'serialized' | 'unserialized' = 'unserialized'> {
     from: string;
-    to: string;
     recipient: string;
-    subject: string;
     body: string;
     attachments: Array<Type extends 'serialized' ? SerializedAttachment : Attachment>;
     cc?: string;
@@ -349,10 +347,8 @@ export type IntermediateTextMessageDetails = {
     ctx: SerializedRequestContext;
     type: string;
     from: string;
-    to: string;
     recipient: string;
     templateVars: any;
-    subject: string;
     templateFile: string;
     attachments: SerializedAttachment[];
     cc?: string;
@@ -367,7 +363,7 @@ export type IntermediateTextMessageDetails = {
  *
  * @deprecated Use a custom {@link TemplateLoader} instead.
  */
-export interface EmailTemplateConfig {
+export interface TextMessageTemplateConfig {
     /**
      * @description
      * Specifies the channel to which this configuration will apply. If set to `'default'`, it will be applied to all
@@ -469,32 +465,22 @@ export type SetSubjectFn<Event> = (
  * @docsCategory core plugins/EmailPlugin
  * @docsPage Email Plugin Types
  */
-export interface OptionalAddressFields {
+export interface OptionalRecipientsFields {
     /**
      * @description
-     * Comma separated list of recipients email addresses that will appear on the _Cc:_ field
+     * Comma separated list of recipients E.164 phone numbers: +14155552671,+442071838750,+551155256325
      */
-    cc?: string;
-    /**
-     * @description
-     * Comma separated list of recipients email addresses that will appear on the _Bcc:_ field
-     */
-    bcc?: string;
-    /**
-     * @description
-     * An email address that will appear on the _Reply-To:_ field
-     */
-    replyTo?: string;
+    recipients?: string;
 }
 
 /**
  * @description
- * A function used to set the {@link OptionalAddressFields}.
+ * A function used to set the {@link OptionalRecipientsFields}.
  *
  * @since 1.1.0
  * @docsCategory core plugins/EmailPlugin
  * @docsPage Email Plugin Types
  */
-export type SetOptionalAddressFieldsFn<Event> = (
+export type SetOptionalRecipientsFieldsFn<Event> = (
     event: Event,
-) => OptionalAddressFields | Promise<OptionalAddressFields>;
+) => OptionalRecipientsFields | Promise<OptionalRecipientsFields>;

@@ -10,7 +10,7 @@ import { EventWithContext } from './types';
  *
  * @docsCategory core plugins/EmailPlugin
  */
-export class EmailEventListener<T extends string> {
+export class TextMessageEventListener<T extends string> {
     public type: T;
     constructor(type: T) {
         this.type = type;

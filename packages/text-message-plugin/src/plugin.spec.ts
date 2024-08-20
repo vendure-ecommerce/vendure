@@ -21,7 +21,7 @@ import path from 'path';
 import { Readable } from 'stream';
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-import { EmailEventListener } from './event-listener';
+import { TextMessageEventListener } from './event-listener';
 import { TextMessageEventHandler } from './handler/event-handler';
 import { EmailPlugin } from './plugin';
 import { TextMessageSender } from './sender/text-message-sender';
@@ -82,7 +82,7 @@ describe('EmailPlugin', () => {
             _channel: { code: DEFAULT_CHANNEL_CODE },
             _languageCode: LanguageCode.en,
         } as any);
-        const handler = new EmailEventListener('test')
+        const handler = new TextMessageEventListener('test')
             .on(MockEvent)
             .setFrom('"test from" <noreply@test.com>')
             .setRecipient(() => 'test@test.com')
@@ -105,7 +105,7 @@ describe('EmailPlugin', () => {
         } as any);
 
         it('single filter', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .filter(event => event.shouldSend === true)
                 .setRecipient(() => 'test@test.com')
@@ -124,7 +124,7 @@ describe('EmailPlugin', () => {
         });
 
         it('multiple filters', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .filter(event => event.shouldSend === true)
                 .filter(event => !!event.ctx.activeUserId)
@@ -146,7 +146,7 @@ describe('EmailPlugin', () => {
         });
 
         it('with .loadData() after .filter()', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .filter(event => event.shouldSend === true)
                 .loadData(context => Promise.resolve('loaded data'))
@@ -173,7 +173,7 @@ describe('EmailPlugin', () => {
         } as any);
 
         it('interpolates subject', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -188,7 +188,7 @@ describe('EmailPlugin', () => {
         });
 
         it('interpolates body', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -208,7 +208,7 @@ describe('EmailPlugin', () => {
          * See https://github.com/vendure-ecommerce/vendure/issues/259
          */
         it('interpolates body with property from entity', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -223,7 +223,7 @@ describe('EmailPlugin', () => {
         });
 
         it('interpolates globalTemplateVars', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -239,7 +239,7 @@ describe('EmailPlugin', () => {
         });
 
         it('loads globalTemplateVars async', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -270,7 +270,7 @@ describe('EmailPlugin', () => {
         });
 
         it('interpolates from', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from {{ globalVar }}" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -287,7 +287,7 @@ describe('EmailPlugin', () => {
 
         // Test fix for https://github.com/vendure-ecommerce/vendure/issues/363
         it('does not escape HTML chars when interpolating "from"', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('{{ globalFrom }}')
                 .setRecipient(() => 'Test <test@test.com>')
@@ -303,7 +303,7 @@ describe('EmailPlugin', () => {
         });
 
         it('globalTemplateVars available in setTemplateVars method', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -320,7 +320,7 @@ describe('EmailPlugin', () => {
         });
 
         it('setTemplateVars overrides globals', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -342,7 +342,7 @@ describe('EmailPlugin', () => {
         } as any);
 
         it('formateDate', async () => {
-            const handler = new EmailEventListener('test-helpers')
+            const handler = new TextMessageEventListener('test-helpers')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -357,7 +357,7 @@ describe('EmailPlugin', () => {
         });
 
         it('formatMoney', async () => {
-            const handler = new EmailEventListener('test-helpers')
+            const handler = new TextMessageEventListener('test-helpers')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -381,7 +381,7 @@ describe('EmailPlugin', () => {
         } as any);
 
         it('additional LanguageCode', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setSubject('Hello, {{ name }}!')
@@ -410,7 +410,7 @@ describe('EmailPlugin', () => {
         });
 
         it('set LanguageCode', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setSubject('Hello, {{ name }}!')
@@ -434,7 +434,7 @@ describe('EmailPlugin', () => {
 
     describe('loadData', () => {
         it('loads async data', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .loadData(async ({ injector }) => {
                     const service = injector.get(MockService);
@@ -462,7 +462,7 @@ describe('EmailPlugin', () => {
         });
 
         it('works when loadData is called after other setup', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setSubject('Hello, {{ testData }}!')
@@ -493,7 +493,7 @@ describe('EmailPlugin', () => {
 
         it('only executes for filtered events', async () => {
             let callCount = 0;
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .filter(event => event.shouldSend === true)
                 .loadData(async ({ injector }) => {
@@ -518,7 +518,7 @@ describe('EmailPlugin', () => {
         const TEST_IMAGE_PATH = path.join(__dirname, '../test-fixtures/test.jpg');
 
         it('attachments are empty by default', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -532,7 +532,7 @@ describe('EmailPlugin', () => {
         });
 
         it('sync attachment', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -551,7 +551,7 @@ describe('EmailPlugin', () => {
         });
 
         it('async attachment', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -570,7 +570,7 @@ describe('EmailPlugin', () => {
         });
 
         it('attachment content as a string buffer', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -591,7 +591,7 @@ describe('EmailPlugin', () => {
 
         it('attachment content as an image buffer', async () => {
             const imageFileBuffer = readFileSync(TEST_IMAGE_PATH);
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -611,7 +611,7 @@ describe('EmailPlugin', () => {
         });
 
         it('attachment content as a string', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -631,7 +631,7 @@ describe('EmailPlugin', () => {
         });
 
         it('attachment content as a string stream', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -653,7 +653,7 @@ describe('EmailPlugin', () => {
         it('attachment content as an image stream', async () => {
             const imageFileBuffer = readFileSync(TEST_IMAGE_PATH);
             const imageFileStream = createReadStream(TEST_IMAGE_PATH);
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -675,7 +675,7 @@ describe('EmailPlugin', () => {
         it('raises a warning for large content attachments', async () => {
             testingLogger.warnSpy.mockClear();
             const largeBuffer = Buffer.from(Array.from({ length: 65535, 0: 0 }));
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -704,7 +704,7 @@ describe('EmailPlugin', () => {
             } as any);
             testingLogger.errorSpy.mockClear();
 
-            const handler = new EmailEventListener('no-template')
+            const handler = new TextMessageEventListener('no-template')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -724,7 +724,7 @@ describe('EmailPlugin', () => {
             } as any);
             testingLogger.errorSpy.mockClear();
 
-            const handler = new EmailEventListener('bad-template')
+            const handler = new TextMessageEventListener('bad-template')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -744,7 +744,7 @@ describe('EmailPlugin', () => {
             } as any);
             testingLogger.errorSpy.mockClear();
 
-            const handler = new EmailEventListener('bad-template')
+            const handler = new TextMessageEventListener('bad-template')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -767,7 +767,7 @@ describe('EmailPlugin', () => {
                 _channel: { code: DEFAULT_CHANNEL_CODE },
                 _languageCode: LanguageCode.en,
             } as any);
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -798,7 +798,7 @@ describe('EmailPlugin', () => {
         } as any);
 
         it('cc', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -813,7 +813,7 @@ describe('EmailPlugin', () => {
         });
 
         it('bcc', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -828,7 +828,7 @@ describe('EmailPlugin', () => {
         });
 
         it('replyTo', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -848,7 +848,7 @@ describe('EmailPlugin', () => {
         let ctxArg: RequestContext | undefined;
 
         it('Initializes with async transport settings', async () => {
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -899,7 +899,7 @@ describe('EmailPlugin', () => {
                 _channel: { code: DEFAULT_CHANNEL_CODE },
                 _languageCode: LanguageCode.en,
             } as any);
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
@@ -919,7 +919,7 @@ describe('EmailPlugin', () => {
                 _channel: { code: DEFAULT_CHANNEL_CODE },
                 _languageCode: LanguageCode.en,
             } as any);
-            const handler = new EmailEventListener('test')
+            const handler = new TextMessageEventListener('test')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')

@@ -30,7 +30,7 @@ export function deserializeAttachments(serializedAttachments: SerializedAttachme
         const content = parseContent(a.content);
         if (content instanceof Buffer && 50 * 1024 <= content.length) {
             Logger.warn(
-                `Email has a large 'content' attachment (${Math.round(
+                `Text message has a large 'content' attachment (${Math.round(
                     content.length / 1024,
                 )}k). Consider using the 'path' instead for improved performance.`,
                 loggerCtx,

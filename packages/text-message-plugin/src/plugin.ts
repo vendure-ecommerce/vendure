@@ -22,7 +22,7 @@ import {
 import { isDevModeOptions, resolveTransportSettings } from './common';
 import { TEXT_MESSAGE_PLUGIN, loggerCtx } from './constants';
 import { DevTextMessageInbox } from './dev-text-message-inbox';
-import { TextMessageEventHandler, EmailEventHandlerWithAsyncData } from './handler/event-handler';
+import { TextMessageEventHandler, TextMessageEventHandlerWithAsyncData } from './handler/event-handler';
 import { FileBasedTemplateLoader } from './template-loader/file-based-template-loader';
 import { TextMessageProcessor } from './text-message-processor.service';
 import {
@@ -39,8 +39,9 @@ import {
  * email generator to generate the email body and [Nodemailer](https://nodemailer.com/about/) to send the emails.
  *
  * ## High-level description
- * Vendure has an internal events system (see {@link EventBus}) that allows plugins to subscribe to events. The EmailPlugin is configured with {@link TextMessageEventHandler}s
- * that listen for a specific event and when it is published, the handler defines which template to use to generate the resulting email.
+ * Vendure has an internal events system (see {@link EventBus}) that allows plugins to subscribe to events.
+ * The TextMessagePlugin is configured with {@link TextMessageEventHandler}s that listen for a specific event
+ * and when it is published, the handler defines which template to use to generate the resulting email.
  *
  * The plugin comes with a set of default handler for the following events:
  * - Order confirmation
@@ -60,14 +61,14 @@ import {
  *
  * @example
  * ```ts
- * import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '\@vendure/email-plugin';
+ * import { defaultEmailHandlers, TextMessagePlugin, FileBasedTemplateLoader } from '\@vendure/text-message-plugin';
  *
  * const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array
  *   plugins: [
- *     EmailPlugin.init({
+ *     TextMessagePlugin.init({
  *       handler: defaultEmailHandlers,
- *       templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/email/templates')),
+ *       templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/text-message/templates')),
  *       transport: {
  *         type: 'smtp',
  *         host: 'smtp.example.com',
@@ -82,7 +83,7 @@ import {
  * };
  * ```
  *
- * ## Email templates
+ * ## Text message templates
  *
  * In the example above, the plugin has been configured to look in `<app-root>/static/email/templates`
  * for the email template files. If you used `\@vendure/create` to create your application, the templates will have
@@ -403,7 +404,7 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
     }
 
     private async handleEvent(
-        handler: TextMessageEventHandler | EmailEventHandlerWithAsyncData<any>,
+        handler: TextMessageEventHandler | TextMessageEventHandlerWithAsyncData<any>,
         event: EventWithContext,
     ) {
         Logger.debug(`Handling event "${handler.type}"`, loggerCtx);

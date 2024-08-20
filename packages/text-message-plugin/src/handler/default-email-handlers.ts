@@ -14,7 +14,7 @@ import {
 } from '@vendure/core';
 import { Request } from 'express';
 
-import { EmailEventListener } from '../event-listener';
+import { TextMessageEventListener } from '../event-listener';
 
 import { TextMessageEventHandler } from './event-handler';
 import {
@@ -24,7 +24,7 @@ import {
     mockPasswordResetEvent,
 } from './mock-events';
 
-export const orderConfirmationHandler = new EmailEventListener('order-confirmation')
+export const orderConfirmationHandler = new TextMessageEventListener('order-confirmation')
     .on(OrderStateTransitionEvent)
     .filter(
         event =>
@@ -41,7 +41,7 @@ export const orderConfirmationHandler = new EmailEventListener('order-confirmati
     .setTemplateVars(event => ({ order: event.order, shippingLines: event.data.shippingLines }))
     .setMockEvent(mockOrderStateTransitionEvent);
 
-export const emailVerificationHandler = new EmailEventListener('email-verification')
+export const emailVerificationHandler = new TextMessageEventListener('email-verification')
     .on(AccountRegistrationEvent)
     .filter(event => !!event.user.getNativeAuthenticationMethod().identifier)
     .filter(event => {
@@ -58,7 +58,7 @@ export const emailVerificationHandler = new EmailEventListener('email-verificati
     }))
     .setMockEvent(mockAccountRegistrationEvent);
 
-export const passwordResetHandler = new EmailEventListener('password-reset')
+export const passwordResetHandler = new TextMessageEventListener('password-reset')
     .on(PasswordResetEvent)
     .setRecipient(event => event.user.identifier)
     .setFrom('{{ fromAddress }}')
@@ -68,7 +68,7 @@ export const passwordResetHandler = new EmailEventListener('password-reset')
     }))
     .setMockEvent(mockPasswordResetEvent);
 
-export const emailAddressChangeHandler = new EmailEventListener('email-address-change')
+export const emailAddressChangeHandler = new TextMessageEventListener('email-address-change')
     .on(IdentifierChangeRequestEvent)
     .setRecipient(event => event.user.getNativeAuthenticationMethod().pendingIdentifier!)
     .setFrom('{{ fromAddress }}')
