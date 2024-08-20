@@ -357,12 +357,13 @@ export const config: VendureConfig = {
 ```
 
 :::info
-To compile the angular app ahead of time (for production) and copy the dist folder to Vendure's output dist folder, include the following commands in your packages.json scripts:
+To compile the angular app ahead of time (for production) and copy the dist folder to
+Vendure's output dist folder, include the following commands in your package.json scripts:
 
 ```json
 {
     "scripts": {
-        "copy": "npx copyfiles -u 1 'src/__admin-ui/dist/**/*' dist",
+        "copy": "npx copyfiles -u 1 'admin-ui/dist/**/*' dist",
         "build": "tsc && yarn copy",
         "build:admin": "rimraf admin-ui && npx ts-node src/compile-admin-ui.ts"
     }
@@ -370,7 +371,7 @@ To compile the angular app ahead of time (for production) and copy the dist fold
 ```
 
 "build:admin" will remove the admin-ui folder and run the compileUiExtensions function to generate the admin-ui Angular app.
-Make sure to install copyfiles before running the "copy" command:
+Make sure to install `copyfiles` before running the "copy" command:
 
 <Tabs>
 <TabItem value="npm" label="npm" default>

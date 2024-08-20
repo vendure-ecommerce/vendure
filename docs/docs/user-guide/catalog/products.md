@@ -1,6 +1,5 @@
 ---
 title: "Products"
-weight: 0
 ---
 
 # Products
@@ -21,7 +20,7 @@ In the diagram above you'll notice that it is the ProductVariants which have an 
 
 ## Tracking Inventory
 
-Vendure can track the stock levels of each of your ProductVariants. This is done by setting the "track inventory" option to "track" (or "inherit from global settings" if the [global setting]({{< relref "/user-guide/settings/global-settings" >}}) is set to track).
+Vendure can track the stock levels of each of your ProductVariants. This is done by setting the "track inventory" option to "track" (or "inherit from global settings" if the [global setting](/user-guide/settings/global-settings) is set to track).
 
 ![./screen-inventory.webp](./screen-inventory.webp)
 
@@ -33,4 +32,4 @@ When tracking inventory:
 
 ### Back orders
 
-Back orders can be enabled by setting a **negative value** as the "Out-of-stock threshold". This can be done via [global settings]({{< relref "/user-guide/settings/global-settings" >}}) or on a per-variant basis.
+Back orders can be enabled by setting a **negative value** as the "Out-of-stock threshold". This can be done via [global settings](/user-guide/settings/global-settings) or on a per-variant basis.
