@@ -8,7 +8,7 @@ import { EmailEventListener } from '../event-listener';
 import {
     EmailAttachment,
     EmailTemplateConfig,
-    EventUIHandlerOptions,
+    EventHandlerResendOptions,
     EventWithAsyncData,
     EventWithContext,
     IntermediateEmailDetails,
@@ -17,6 +17,7 @@ import {
     SetOptionalAddressFieldsFn,
     SetSubjectFn,
     SetTemplateVarsFn,
+    UIEmailEventEntities,
 } from '../types';
 
 /**
@@ -149,7 +150,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         bcc?: string;
     };
     private _mockEvent: Omit<Event, 'ctx' | 'data'> | undefined;
-    private _uiOptions?: EventUIHandlerOptions;
+    private _resendOptions?: EventHandlerResendOptions<Event>;
 
     constructor(
         public listener: EmailEventListener<T>,
@@ -417,10 +418,10 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      *
      * @param handlerOptions - The options that define how the UI block should behave.
      */
-    setUIOptions<E extends typeof Order | typeof Customer>(
-        handlerOptions: EventUIHandlerOptions<Event, E>,
+    setResendOptions<E extends UIEmailEventEntities>(
+        handlerOptions: EventHandlerResendOptions<Event, E>,
     ): EmailEventHandler<T, Event> {
-        this._uiOptions = handlerOptions;
+        this._resendOptions = handlerOptions;
         return this;
     }
 
@@ -429,8 +430,8 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      *
      * @returns The UI options if they have been set, otherwise undefined.
      */
-    get uiOptions() {
-        return this._uiOptions;
+    get resendOptions() {
+        return this._resendOptions;
     }
 
     /**

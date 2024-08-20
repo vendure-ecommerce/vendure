@@ -313,6 +313,11 @@ export type AuthenticationMethod = Node & {
 
 export type AuthenticationResult = CurrentUser | InvalidCredentialsError;
 
+export type AvailableEmailEvents = {
+    entityId: Scalars['ID']['input'];
+    entityType: EmailEventEntities;
+};
+
 export type BooleanCustomFieldConfig = CustomField & {
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
@@ -1572,6 +1577,16 @@ export type EmailAddressConflictError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String']['output'];
 };
+
+export type EmailEvent = {
+    entityType: EmailEventEntities;
+    type: Scalars['String']['output'];
+};
+
+export enum EmailEventEntities {
+    Customer = 'Customer',
+    Order = 'Order',
+}
 
 /** Returned if no OrderLines have been specified for the operation */
 export type EmptyOrderLineSelectionError = ErrorResult & {
@@ -2855,6 +2870,7 @@ export type Mutation = {
     removeShippingMethodsFromChannel: Array<ShippingMethod>;
     /** Removes StockLocations from the specified Channel */
     removeStockLocationsFromChannel: Array<StockLocation>;
+    resendEmailEvent: Scalars['Boolean']['output'];
     runPendingSearchIndexUpdates: Success;
     setCustomerForDraftOrder: SetCustomerForDraftOrderResult;
     /** Sets the billing address for a draft Order */
@@ -3416,6 +3432,10 @@ export type MutationRemoveShippingMethodsFromChannelArgs = {
 
 export type MutationRemoveStockLocationsFromChannelArgs = {
     input: RemoveStockLocationsFromChannelInput;
+};
+
+export type MutationResendEmailEventArgs = {
+    input: ResendEmailInput;
 };
 
 export type MutationSetCustomerForDraftOrderArgs = {
@@ -4745,6 +4765,7 @@ export type Query = {
     asset?: Maybe<Asset>;
     /** Get a list of Assets */
     assets: AssetList;
+    availableEmailEventsForResend: Array<EmailEvent>;
     channel?: Maybe<Channel>;
     channels: ChannelList;
     /** Get a Collection either by id or slug. If neither id nor slug is specified, an error will result. */
@@ -4836,6 +4857,10 @@ export type QueryAssetArgs = {
 
 export type QueryAssetsArgs = {
     options?: InputMaybe<AssetListOptions>;
+};
+
+export type QueryAvailableEmailEventsForResendArgs = {
+    input: AvailableEmailEvents;
 };
 
 export type QueryChannelArgs = {
@@ -5230,6 +5255,13 @@ export type RemoveShippingMethodsFromChannelInput = {
 export type RemoveStockLocationsFromChannelInput = {
     channelId: Scalars['ID']['input'];
     stockLocationIds: Array<Scalars['ID']['input']>;
+};
+
+export type ResendEmailInput = {
+    entityId: Scalars['ID']['input'];
+    entityType: EmailEventEntities;
+    languageCode?: InputMaybe<Scalars['String']['input']>;
+    type: Scalars['String']['input'];
 };
 
 export type Return = Node &

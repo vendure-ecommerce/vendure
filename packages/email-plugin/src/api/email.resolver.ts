@@ -2,13 +2,16 @@ import { Inject } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { Args, Query, Mutation, Resolver } from '@nestjs/graphql';
 import {
+    EmailEvent,
+    MutationResendEmailEventArgs,
+    QueryAvailableEmailEventsForResendArgs,
+} from '@vendure/common/lib/generated-types';
+import {
     Ctx,
     Customer,
     CustomerService,
     EventBus,
-    ID,
     Injector,
-    LanguageCode,
     Order,
     OrderService,
     RequestContext,
@@ -31,60 +34,54 @@ export class EmailResolver {
     @Query()
     async availableEmailEventsForResend(
         @Ctx() ctx: RequestContext,
-        @Args()
-        input: {
-            entityType: string;
-            entityId: ID;
-            languageCode?: LanguageCode;
-        }, // TODO change input types
-    ) {
+        @Args() args: QueryAvailableEmailEventsForResendArgs,
+    ): Promise<EmailEvent[]> {
         let entity: Customer | Order;
+        const { input } = args;
 
         if (input.entityType === 'Customer') {
             const customer = await this.customerService.findOne(ctx, input.entityId);
-            if (!customer) return false; // TODO add error
+            if (!customer) return [];
             entity = customer;
         } else if (input.entityType === 'Order') {
             const order = await this.orderService.findOne(ctx, input.entityId);
-            if (!order) {
-                return false; // TODO add error
-            }
+            if (!order) return [];
             entity = order;
         }
 
         const handlers = this.options.handlers.filter(async handler => {
-            if (!handler.uiOptions) {
-                return false; // TODO add error
+            if (!handler.resendOptions) {
+                return false;
             }
 
-            const isCustomerType =
-                input.entityType === 'Customer' && handler.uiOptions.entityType instanceof Customer;
-            const isOrderType = input.entityType === 'Order' && handler.uiOptions.entityType instanceof Order;
+            const isCustomerType = handler.resendOptions.entityType instanceof Customer;
 
-            if (!isCustomerType && !isOrderType) {
-                return false; // TODO add error
+            if (input.entityType === 'Customer' && !isCustomerType) return false;
+
+            const isOrderType = handler.resendOptions.entityType instanceof Order;
+            if (input.entityType === 'Order' && !isOrderType) {
+                return false;
             }
 
-            // Note: Since `filter` is async, ensure the final implementation handles async properly
-            return handler.uiOptions.filter(ctx, new Injector(this.moduleRef), entity, input.languageCode);
+            return handler.resendOptions.canResend(ctx, new Injector(this.moduleRef), entity);
         });
-        return handlers; // TODO change to right response type, right now this is done only for PR review
+        return handlers.map(handler => ({
+            type: handler.type,
+            entityType: input.entityType,
+            // label: handler.resendOptions!.label,
+            // description: handler.resendOptions?.description,
+        }));
     }
 
     @Mutation()
     async resendEmailEvent(
         @Ctx() ctx: RequestContext,
-        @Args()
-        input: {
-            type: string;
-            entityType: string;
-            entityId: ID;
-            languageCode?: LanguageCode;
-        }, // TODO change input types
-    ) {
+        @Args() args: MutationResendEmailEventArgs,
+    ): Promise<boolean> {
+        const { input } = args;
         const handler = this.options.handlers.find(h => h.type === input.type);
         if (!handler) return false; // TODO add error
-        if (!handler.uiOptions) return false; // TODO add error
+        if (!handler.resendOptions) return false; // TODO add error
 
         let entity: Customer | Order | undefined;
         if (input.entityType === 'Customer') entity = await this.customerService.findOne(ctx, input.entityId);
@@ -92,14 +89,10 @@ export class EmailResolver {
 
         if (!entity) return false; // TODO add error
 
-        if (!handler.uiOptions.filter(ctx, new Injector(this.moduleRef), entity, input.languageCode))
-            return false; // TODO add error
-        const event = await handler.uiOptions?.handler(
-            ctx,
-            new Injector(this.moduleRef),
-            entity,
-            input.languageCode,
-        );
+        const canResend = await handler.resendOptions.canResend(ctx, new Injector(this.moduleRef), entity);
+        if (!canResend) return false; // TODO add error
+
+        const event = await handler.resendOptions?.createEvent(ctx, new Injector(this.moduleRef), entity);
 
         await this.eventBus.publish(new ManualEmailEvent(handler, event));
 

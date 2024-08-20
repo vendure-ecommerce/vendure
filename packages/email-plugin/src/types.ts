@@ -1,4 +1,4 @@
-import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { LanguageCode, LocalizedString } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
 import {
     Customer,
@@ -9,6 +9,7 @@ import {
     VendureEntity,
     VendureEvent,
 } from '@vendure/core';
+import { LocalizedStringArray } from '@vendure/core/src/common/configurable-operation';
 import { Attachment } from 'nodemailer/lib/mailer';
 import SESTransport from 'nodemailer/lib/ses-transport';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
@@ -505,7 +506,7 @@ export type SetOptionalAddressFieldsFn<Event> = (
     event: Event,
 ) => OptionalAddressFields | Promise<OptionalAddressFields>;
 
-type UIEmailEventEntities = typeof Order | typeof Customer;
+export type UIEmailEventEntities = typeof Order | typeof Customer;
 
 /**
  * @description
@@ -516,14 +517,18 @@ type UIEmailEventEntities = typeof Order | typeof Customer;
  * @docsCategory core plugins/EmailPlugin
  * @docsPage Email Plugin Types
  */
-export interface EventUIHandlerOptions<
+export interface EventHandlerResendOptions<
     InputEvent extends EventWithContext = EventWithContext,
-    E extends UIEmailEventEntities = UIEmailEventEntities,
+    T extends UIEmailEventEntities = UIEmailEventEntities,
 > {
     /**
      * The entity for which the UI block is being generated. This could be an Order, Customer, or any other entity.
      */
-    entityType: E;
+    entityType: T;
+
+    label: Array<Omit<LocalizedString, '__typename'>>;
+
+    description: Array<Omit<LocalizedString, '__typename'>>;
 
     /**
      * A function that handles the creation of an EmailEventHandler for the specified entity.
@@ -531,14 +536,12 @@ export interface EventUIHandlerOptions<
      * @param ctx - The current RequestContext, providing access to the current state and settings.
      * @param injector - The dependency injector that provides access to various services.
      * @param entity - The entity for which the email event is being handled.
-     * @param languageCode - (Optional) The language code for localization purposes.
      * @returns An instance of EmailEventHandler that handles the email event for the entity.
      */
-    handler: (
+    createEvent: (
         ctx: RequestContext,
         injector: Injector,
-        entity: InstanceType<E>,
-        languageCode?: LanguageCode,
+        entity: InstanceType<T>,
     ) => Promise<InputEvent> | InputEvent;
 
     /**
@@ -547,13 +550,11 @@ export interface EventUIHandlerOptions<
      * @param ctx - The current RequestContext, providing access to the current state and settings.
      * @param injector - The dependency injector that provides access to various services.
      * @param entity - The entity for which the UI block is being generated.
-     * @param languageCode - (Optional) The language code for localization purposes.
      * @returns A boolean indicating whether the UI block should be displayed.
      */
-    filter: (
+    canResend: (
         ctx: RequestContext,
         injector: Injector,
-        entity: InstanceType<E>,
-        languageCode?: LanguageCode,
+        entity: InstanceType<T>,
     ) => Promise<boolean> | boolean;
 }

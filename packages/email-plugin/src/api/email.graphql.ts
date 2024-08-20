@@ -1,26 +1,32 @@
-import { gql } from 'apollo-angular';
+import gql from 'graphql-tag';
 export const adminSchema = gql`
-    extend type Query {
-        availableEmailEventsForResend(input: AvailableEmailEventsForResendInput): [EmailEvent!]!
-    }
-
-    input AvailableEmailEventsForResendInput {
-        entityType: String!
+    enum EmailEventEntities {
+        Customer
+        Order
     }
 
     type EmailEvent {
         type: String!
-        entityType: String!
+        entityType: EmailEventEntities!
     }
 
-    extend type Mutation {
-        resendEmailEvent(input: ResendEmailInput!): Boolean!
+    input AvailableEmailEvents {
+        entityType: EmailEventEntities!
+        entityId: ID!
+    }
+
+    extend type Query {
+        availableEmailEventsForResend(input: AvailableEmailEvents!): [EmailEvent!]!
     }
 
     input ResendEmailInput {
         type: String!
-        entityType: String!
+        entityType: EmailEventEntities!
         entityId: ID!
         languageCode: String
+    }
+
+    extend type Mutation {
+        resendEmailEvent(input: ResendEmailInput!): Boolean!
     }
 `;

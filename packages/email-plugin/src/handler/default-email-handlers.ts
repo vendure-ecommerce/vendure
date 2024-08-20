@@ -5,6 +5,7 @@ import {
     EntityHydrator,
     IdentifierChangeRequestEvent,
     Injector,
+    LanguageCode,
     NativeAuthenticationMethod,
     Order,
     OrderStateTransitionEvent,
@@ -30,13 +31,25 @@ export const orderConfirmationHandler = new EmailEventListener('order-confirmati
         event =>
             event.toState === 'PaymentSettled' && event.fromState !== 'Modifying' && !!event.order.customer,
     )
-    .setUIOptions({
+    .setResendOptions({
         entityType: Order,
-        handler: (ctx, _injector, entity, _languageCode) => {
-            return new OrderStateTransitionEvent('PaymentAuthorized', 'PaymentSettled', ctx, entity);
-        },
-        filter: (ctx, injector, entity, languageCode) => {
+        label: [
+            {
+                value: 'Order confirmation.',
+                languageCode: LanguageCode.en,
+            },
+        ],
+        description: [
+            {
+                value: 'Order confirmation can be send only for specific reasons.',
+                languageCode: LanguageCode.en,
+            },
+        ],
+        canResend: (_ctx, _injector, _entity) => {
             return true;
+        },
+        createEvent: (ctx, _injector, entity) => {
+            return new OrderStateTransitionEvent('ArrangingPayment', 'PaymentSettled', ctx, entity);
         },
     })
     .loadData(async ({ event, injector }) => {
