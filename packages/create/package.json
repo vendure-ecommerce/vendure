@@ -1,6 +1,6 @@
 {
     "name": "@vendure/create",
-    "version": "3.0.0",
+    "version": "3.0.1",
     "license": "GPL-3.0-or-later",
     "bin": {
         "create": "./index.js"
@@ -27,14 +27,14 @@
         "@types/fs-extra": "^11.0.4",
         "@types/handlebars": "^4.1.0",
         "@types/semver": "^7.5.8",
-        "@vendure/core": "^3.0.0",
+        "@vendure/core": "^3.0.1",
         "rimraf": "^5.0.5",
         "ts-node": "^10.9.2",
         "typescript": "5.3.3"
     },
     "dependencies": {
         "@clack/prompts": "^0.7.0",
-        "@vendure/common": "^3.0.0",
+        "@vendure/common": "^3.0.1",
         "commander": "^11.0.0",
         "cross-spawn": "^7.0.3",
         "fs-extra": "^11.2.0",
