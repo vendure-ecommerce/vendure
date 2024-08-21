@@ -19,11 +19,11 @@ import {
     VendurePlugin,
 } from '@vendure/core';
 
-import { adminSchema } from './api/email.graphql';
-import { EmailResolver } from './api/email.resolver';
+import { adminSchema } from './api-extension';
 import { isDevModeOptions, resolveTransportSettings } from './common';
 import { EMAIL_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { DevMailbox } from './dev-mailbox';
+import { EmailEventResolver } from './email-event.resolver';
 import { EmailProcessor } from './email-processor';
 import { EmailEventHandler, EmailEventHandlerWithAsyncData } from './handler/event-handler';
 import { ManualEmailEvent } from './manual-email-send-event';
@@ -310,7 +310,7 @@ import {
     providers: [{ provide: EMAIL_PLUGIN_OPTIONS, useFactory: () => EmailPlugin.options }, EmailProcessor],
     adminApiExtensions: {
         schema: adminSchema,
-        resolvers: [EmailResolver],
+        resolvers: [EmailEventResolver],
     },
 })
 export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdown, NestModule {
@@ -318,6 +318,13 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
     private devMailbox: DevMailbox | undefined;
     private jobQueue: JobQueue<IntermediateEmailDetails> | undefined;
     private testingProcessor: EmailProcessor | undefined;
+
+    // static uiExtensions: AdminUiExtension = {
+    //     extensionPath: path.join(__dirname, 'ui'),
+    //
+    //     routes: [{ route: 'email-event-list', filePath: 'routes.ts' }],
+    //     providers: ['providers.ts'],
+    // };
 
     /** @internal */
     constructor(

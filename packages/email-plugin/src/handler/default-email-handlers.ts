@@ -45,10 +45,20 @@ export const orderConfirmationHandler = new EmailEventListener('order-confirmati
                 languageCode: LanguageCode.en,
             },
         ],
+        operationDefinitions: {
+            description: [],
+            args: {
+                emailEventTemplateId: {
+                    type: 'ID',
+                    ui: { component: 'email-event-template-list' },
+                    label: [{ languageCode: LanguageCode.en, value: 'Select specific event email' }],
+                },
+            },
+        },
         canResend: (_ctx, _injector, _entity) => {
             return true;
         },
-        createEvent: (ctx, _injector, entity) => {
+        createEvent: (ctx, _injector, entity, _args) => {
             return new OrderStateTransitionEvent('ArrangingPayment', 'PaymentSettled', ctx, entity);
         },
     })

@@ -6,15 +6,19 @@ import {
     Order,
     RequestContext,
     SerializedRequestContext,
-    VendureEntity,
     VendureEvent,
 } from '@vendure/core';
-import { LocalizedStringArray } from '@vendure/core/src/common/configurable-operation';
+import {
+    ConfigArgs,
+    ConfigArgValues,
+    LocalizedStringArray,
+} from '@vendure/core/src/common/configurable-operation';
 import { Attachment } from 'nodemailer/lib/mailer';
 import SESTransport from 'nodemailer/lib/ses-transport';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
 import { EmailGenerator } from './generator/email-generator';
+import { ConfigArg } from './graphql/generated-admin-types';
 import { EmailEventHandler } from './handler/event-handler';
 import { EmailSender } from './sender/email-sender';
 import { TemplateLoader } from './template-loader/template-loader';
@@ -506,6 +510,29 @@ export type SetOptionalAddressFieldsFn<Event> = (
     event: Event,
 ) => OptionalAddressFields | Promise<OptionalAddressFields>;
 
+export interface EmailEventConfigurableOperationDefOptions<T extends ConfigArgs> {
+    /**
+     * @description
+     * Optional provider-specific arguments which, when specified, are
+     * editable in the admin-ui. For example, args could be used to send specific data for create an event.
+     *
+     * @example
+     * ```ts
+     * args: {
+     *   orderId: { type: 'ID' },
+     * }
+     * ```
+     *
+     * See {@link ConfigArgs} for available configuration options.
+     */
+    args: T;
+    /**
+     * @description
+     * A human-readable description for the operation method.
+     */
+    description: LocalizedStringArray;
+}
+
 export type UIEmailEventEntities = typeof Order | typeof Customer;
 
 /**
@@ -517,44 +544,32 @@ export type UIEmailEventEntities = typeof Order | typeof Customer;
  * @docsCategory core plugins/EmailPlugin
  * @docsPage Email Plugin Types
  */
-export interface EventHandlerResendOptions<
+export interface EventEventResendOptions<
     InputEvent extends EventWithContext = EventWithContext,
-    T extends UIEmailEventEntities = UIEmailEventEntities,
+    Entity extends UIEmailEventEntities = UIEmailEventEntities,
+    ConfArgs extends ConfigArgs = ConfigArgs,
 > {
     /**
      * The entity for which the UI block is being generated. This could be an Order, Customer, or any other entity.
      */
-    entityType: T;
+    entityType: Entity;
 
     label: Array<Omit<LocalizedString, '__typename'>>;
 
-    description: Array<Omit<LocalizedString, '__typename'>>;
+    description?: Array<Omit<LocalizedString, '__typename'>>;
 
-    /**
-     * A function that handles the creation of an EmailEventHandler for the specified entity.
-     *
-     * @param ctx - The current RequestContext, providing access to the current state and settings.
-     * @param injector - The dependency injector that provides access to various services.
-     * @param entity - The entity for which the email event is being handled.
-     * @returns An instance of EmailEventHandler that handles the email event for the entity.
-     */
-    createEvent: (
-        ctx: RequestContext,
-        injector: Injector,
-        entity: InstanceType<T>,
-    ) => Promise<InputEvent> | InputEvent;
+    operationDefinitions?: EmailEventConfigurableOperationDefOptions<ConfArgs>;
 
-    /**
-     * A filter function that determines whether or not the UI block should be displayed for a particular entity.
-     *
-     * @param ctx - The current RequestContext, providing access to the current state and settings.
-     * @param injector - The dependency injector that provides access to various services.
-     * @param entity - The entity for which the UI block is being generated.
-     * @returns A boolean indicating whether the UI block should be displayed.
-     */
     canResend: (
         ctx: RequestContext,
         injector: Injector,
-        entity: InstanceType<T>,
+        entity: InstanceType<Entity>,
     ) => Promise<boolean> | boolean;
+
+    createEvent: (
+        ctx: RequestContext,
+        injector: Injector,
+        entity: InstanceType<Entity>,
+        args: ConfigArg[],
+    ) => Promise<InputEvent> | InputEvent;
 }
