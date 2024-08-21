@@ -2523,6 +2523,15 @@ describe('Order modification', () => {
 
             orderGuard.assertSuccess(modifyOrder);
             expect(modifyOrder.id).toBeDefined();
+
+            // ensure correct adjustments applied
+            // The first line should have a linePrice of 0 because it has zero quantity
+            expect(modifyOrder.lines[0].linePriceWithTax).toBe(0);
+            expect(modifyOrder.lines[0].proratedLinePriceWithTax).toBe(0);
+            // The second line should have the proratedLinePriceWithTax discounted per the promotion
+            expect(modifyOrder.lines[1].proratedLinePriceWithTax).toBe(
+                modifyOrder.lines[1].discountedLinePriceWithTax / 2,
+            );
         });
     });
 
