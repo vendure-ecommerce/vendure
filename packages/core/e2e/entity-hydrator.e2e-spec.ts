@@ -22,7 +22,11 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
-import { AdditionalConfig, HydrationTestPlugin } from './fixtures/test-plugins/hydration-test-plugin';
+import {
+    AdditionalConfig,
+    HydrationTestPlugin,
+    TreeEntity,
+} from './fixtures/test-plugins/hydration-test-plugin';
 import { UpdateChannelMutation, UpdateChannelMutationVariables } from './graphql/generated-e2e-admin-types';
 import {
     AddItemToOrderDocument,
@@ -54,11 +58,17 @@ describe('Entity hydration', () => {
 
         const connection = server.app.get(TransactionalConnection).rawConnection;
         const asset = await connection.getRepository(Asset).findOne({ where: {} });
-        await connection.getRepository(AdditionalConfig).save(
+        const additionalConfig = await connection.getRepository(AdditionalConfig).save(
             new AdditionalConfig({
                 backgroundImage: asset,
             }),
         );
+        const parent = await connection
+            .getRepository(TreeEntity)
+            .save(new TreeEntity({ additionalConfig, image1: asset, image2: asset }));
+        await connection
+            .getRepository(TreeEntity)
+            .save(new TreeEntity({ parent, image1: asset, image2: asset }));
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -382,6 +392,35 @@ describe('Entity hydration', () => {
             expect(line.productVariantId).toBe(line.productVariant.id);
         }
     });
+
+    /*
+     * Postgres has a character limit for alias names which can cause issues when joining
+     * multiple aliases with the same prefix
+     * https://github.com/vendure-ecommerce/vendure/issues/2899
+     */
+    it('Hydrates properties with very long names', async () => {
+        await adminClient.query<UpdateChannelMutation, UpdateChannelMutationVariables>(UPDATE_CHANNEL, {
+            input: {
+                id: 'T_1',
+                customFields: {
+                    additionalConfigId: 'T_1',
+                },
+            },
+        });
+
+        const { hydrateChannelWithVeryLongPropertyName } = await adminClient.query<{
+            hydrateChannelWithVeryLongPropertyName: any;
+        }>(GET_HYDRATED_CHANNEL_LONG_ALIAS, {
+            id: 'T_1',
+        });
+
+        const entity = (
+            hydrateChannelWithVeryLongPropertyName.customFields.additionalConfig as AdditionalConfig
+        ).treeEntity[0];
+        const child = entity.childrenPropertyWithAVeryLongNameThatExceedsPostgresLimitsEasilyByItself[0];
+        expect(child.image1).toBeDefined();
+        expect(child.image2).toBeDefined();
+    });
 });
 
 function getVariantWithName(product: Product, name: string) {
@@ -430,5 +469,11 @@ const GET_HYDRATED_CHANNEL = gql`
 const GET_HYDRATED_CHANNEL_NESTED = gql`
     query GetHydratedChannelNested($id: ID!) {
         hydrateChannelWithNestedRelation(id: $id)
+    }
+`;
+
+const GET_HYDRATED_CHANNEL_LONG_ALIAS = gql`
+    query GetHydratedChannelNested($id: ID!) {
+        hydrateChannelWithVeryLongPropertyName(id: $id)
     }
 `;
