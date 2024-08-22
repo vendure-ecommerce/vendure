@@ -234,7 +234,7 @@ query GetShippingMethods {
 The results can then be displayed to the customer so they can choose the desired shipping method. If there is only a single
 result, then it can be automatically selected.
 
-The desired shipping method's id is the passed to the [`setOrderShippingMethod`](/reference/graphql-api/shop/mutations/#setordershippingmethod) mutation.
+The desired shipping method's id is then passed to the [`setOrderShippingMethod`](/reference/graphql-api/shop/mutations/#setordershippingmethod) mutation.
 
 ```graphql
 mutation SetShippingMethod($id: [ID!]!) {
