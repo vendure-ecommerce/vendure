@@ -182,6 +182,7 @@ export * from './shared/components/dropdown/dropdown.component';
 export * from './shared/components/duplicate-entity-dialog/duplicate-entity-dialog.component';
 export * from './shared/components/duplicate-entity-dialog/duplicate-entity-dialog.graphql';
 export * from './shared/components/edit-note-dialog/edit-note-dialog.component';
+export * from './shared/components/email-event-list/email-event-list.component';
 export * from './shared/components/empty-placeholder/empty-placeholder.component';
 export * from './shared/components/entity-info/entity-info.component';
 export * from './shared/components/extension-host/extension-host-config';

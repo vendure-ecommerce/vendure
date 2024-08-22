@@ -313,11 +313,6 @@ export type AuthenticationMethod = Node & {
 
 export type AuthenticationResult = CurrentUser | InvalidCredentialsError;
 
-export type AvailableEmailEvents = {
-    entityId: Scalars['ID']['input'];
-    entityType: EmailEventEntities;
-};
-
 export type BooleanCustomFieldConfig = CustomField & {
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
@@ -1579,14 +1574,40 @@ export type EmailAddressConflictError = ErrorResult & {
 };
 
 export type EmailEvent = {
-    entityType: EmailEventEntities;
+    description?: Maybe<Array<LocalizedString>>;
+    entityType: Scalars['String']['output'];
+    label: Array<LocalizedString>;
+    operationDefinitions?: Maybe<EmailEventConfigurableOperationDefinition>;
     type: Scalars['String']['output'];
 };
 
-export enum EmailEventEntities {
-    Customer = 'Customer',
-    Order = 'Order',
-}
+export type EmailEventConfigArg = {
+    name: Scalars['String']['output'];
+    /** A JSON stringified representation of the actual value */
+    value: Scalars['String']['output'];
+};
+
+export type EmailEventConfigArgDefinition = {
+    defaultValue?: Maybe<Scalars['JSON']['output']>;
+    description?: Maybe<Scalars['String']['output']>;
+    label?: Maybe<Scalars['String']['output']>;
+    list: Scalars['Boolean']['output'];
+    name: Scalars['String']['output'];
+    required: Scalars['Boolean']['output'];
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type EmailEventConfigArgInput = {
+    name: Scalars['String']['input'];
+    /** A JSON stringified representation of the actual value */
+    value: Scalars['String']['input'];
+};
+
+export type EmailEventConfigurableOperationDefinition = {
+    args: Array<EmailEventConfigArgDefinition>;
+    description: Scalars['String']['output'];
+};
 
 /** Returned if no OrderLines have been specified for the operation */
 export type EmptyOrderLineSelectionError = ErrorResult & {
@@ -4765,7 +4786,6 @@ export type Query = {
     asset?: Maybe<Asset>;
     /** Get a list of Assets */
     assets: AssetList;
-    availableEmailEventsForResend: Array<EmailEvent>;
     channel?: Maybe<Channel>;
     channels: ChannelList;
     /** Get a Collection either by id or slug. If neither id nor slug is specified, an error will result. */
@@ -4780,6 +4800,7 @@ export type Query = {
     customers: CustomerList;
     /** Returns a list of eligible shipping methods for the draft Order */
     eligibleShippingMethodsForDraftOrder: Array<ShippingMethodQuote>;
+    emailEventsForResend: Array<EmailEvent>;
     /** Returns all configured EntityDuplicators. */
     entityDuplicators: Array<EntityDuplicatorDefinition>;
     facet?: Maybe<Facet>;
@@ -4859,10 +4880,6 @@ export type QueryAssetsArgs = {
     options?: InputMaybe<AssetListOptions>;
 };
 
-export type QueryAvailableEmailEventsForResendArgs = {
-    input: AvailableEmailEvents;
-};
-
 export type QueryChannelArgs = {
     id: Scalars['ID']['input'];
 };
@@ -4906,6 +4923,11 @@ export type QueryCustomersArgs = {
 
 export type QueryEligibleShippingMethodsForDraftOrderArgs = {
     orderId: Scalars['ID']['input'];
+};
+
+export type QueryEmailEventsForResendArgs = {
+    entityId: Scalars['ID']['input'];
+    entityType: Scalars['String']['input'];
 };
 
 export type QueryFacetArgs = {
@@ -5258,9 +5280,9 @@ export type RemoveStockLocationsFromChannelInput = {
 };
 
 export type ResendEmailInput = {
+    arguments: Array<EmailEventConfigArgInput>;
     entityId: Scalars['ID']['input'];
-    entityType: EmailEventEntities;
-    languageCode?: InputMaybe<Scalars['String']['input']>;
+    entityType: Scalars['String']['input'];
     type: Scalars['String']['input'];
 };
 

@@ -313,11 +313,6 @@ export type AuthenticationMethod = Node & {
 
 export type AuthenticationResult = CurrentUser | InvalidCredentialsError;
 
-export type AvailableEmailEvents = {
-    entityId: Scalars['ID']['input'];
-    entityType: EmailEventEntities;
-};
-
 export type BooleanCustomFieldConfig = CustomField & {
     description?: Maybe<Array<LocalizedString>>;
     internal?: Maybe<Scalars['Boolean']['output']>;
@@ -1578,16 +1573,6 @@ export type EmailAddressConflictError = ErrorResult & {
     message: Scalars['String']['output'];
 };
 
-export type EmailEvent = {
-    entityType: EmailEventEntities;
-    type: Scalars['String']['output'];
-};
-
-export enum EmailEventEntities {
-    Customer = 'Customer',
-    Order = 'Order',
-}
-
 /** Returned if no OrderLines have been specified for the operation */
 export type EmptyOrderLineSelectionError = ErrorResult & {
     errorCode: ErrorCode;
@@ -1632,6 +1617,7 @@ export enum ErrorCode {
     MANUAL_PAYMENT_STATE_ERROR = 'MANUAL_PAYMENT_STATE_ERROR',
     MIME_TYPE_ERROR = 'MIME_TYPE_ERROR',
     MISSING_CONDITIONS_ERROR = 'MISSING_CONDITIONS_ERROR',
+    MOLLIE_PAYMENT_INTENT_ERROR = 'MOLLIE_PAYMENT_INTENT_ERROR',
     MULTIPLE_ORDER_ERROR = 'MULTIPLE_ORDER_ERROR',
     NATIVE_AUTH_STRATEGY_ERROR = 'NATIVE_AUTH_STRATEGY_ERROR',
     NEGATIVE_QUANTITY_ERROR = 'NEGATIVE_QUANTITY_ERROR',
@@ -1641,6 +1627,7 @@ export enum ErrorCode {
     ORDER_LIMIT_ERROR = 'ORDER_LIMIT_ERROR',
     ORDER_MODIFICATION_ERROR = 'ORDER_MODIFICATION_ERROR',
     ORDER_MODIFICATION_STATE_ERROR = 'ORDER_MODIFICATION_STATE_ERROR',
+    ORDER_PAYMENT_STATE_ERROR = 'ORDER_PAYMENT_STATE_ERROR',
     ORDER_STATE_TRANSITION_ERROR = 'ORDER_STATE_TRANSITION_ERROR',
     PAYMENT_METHOD_MISSING_ERROR = 'PAYMENT_METHOD_MISSING_ERROR',
     PAYMENT_ORDER_MISMATCH_ERROR = 'PAYMENT_ORDER_MISMATCH_ERROR',
@@ -2614,6 +2601,41 @@ export type ModifyOrderResult =
     | PaymentMethodMissingError
     | RefundPaymentIdMissingError;
 
+export type MolliePaymentIntent = {
+    url: Scalars['String']['output'];
+};
+
+export type MolliePaymentIntentError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String']['output'];
+};
+
+export type MolliePaymentIntentInput = {
+    /**
+     * Optional preselected Mollie payment method. When this is passed
+     * the payment selection step will be skipped.
+     */
+    molliePaymentMethodCode?: InputMaybe<Scalars['String']['input']>;
+    /**
+     * Use this to create a payment intent for a specific order. This allows you to create intents for
+     * orders that are not active orders.
+     */
+    orderId?: InputMaybe<Scalars['String']['input']>;
+    /**
+     * The code of the Vendure payment method to use for the payment.
+     * Must have Mollie as payment method handler.
+     * Without this, the first method with Mollie as handler will be used.
+     */
+    paymentMethodCode?: InputMaybe<Scalars['String']['input']>;
+    /**
+     * The redirect url to which the customer will be redirected after the payment is completed.
+     * The configured fallback redirect will be used if this is not provided.
+     */
+    redirectUrl?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type MolliePaymentIntentResult = MolliePaymentIntent | MolliePaymentIntentError;
+
 export type MoveCollectionInput = {
     collectionId: Scalars['ID']['input'];
     index: Scalars['Int']['input'];
@@ -2699,6 +2721,7 @@ export type Mutation = {
     createFacet: Facet;
     /** Create one or more FacetValues */
     createFacetValues: Array<FacetValue>;
+    createMolliePaymentIntent: MolliePaymentIntentResult;
     /** Create existing PaymentMethod */
     createPaymentMethod: PaymentMethod;
     /** Create a new Product */
@@ -2820,12 +2843,7 @@ export type Mutation = {
     duplicateEntity: DuplicateEntityResult;
     flushBufferedJobs: Success;
     importProducts?: Maybe<ImportInfo>;
-    /**
-     * Authenticates the user using the native authentication strategy. This mutation is an alias for authenticate({ native: { ... }})
-     *
-     * The `rememberMe` option applies when using cookie-based sessions, and if `true` it will set the maxAge of the session cookie
-     * to 1 year.
-     */
+    /** Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})` */
     login: NativeAuthenticationResult;
     logout: Success;
     /**
@@ -2870,7 +2888,6 @@ export type Mutation = {
     removeShippingMethodsFromChannel: Array<ShippingMethod>;
     /** Removes StockLocations from the specified Channel */
     removeStockLocationsFromChannel: Array<StockLocation>;
-    resendEmailEvent: Scalars['Boolean']['output'];
     runPendingSearchIndexUpdates: Success;
     setCustomerForDraftOrder: SetCustomerForDraftOrderResult;
     /** Sets the billing address for a draft Order */
@@ -3090,6 +3107,10 @@ export type MutationCreateFacetArgs = {
 
 export type MutationCreateFacetValuesArgs = {
     input: Array<CreateFacetValueInput>;
+};
+
+export type MutationCreateMolliePaymentIntentArgs = {
+    input: MolliePaymentIntentInput;
 };
 
 export type MutationCreatePaymentMethodArgs = {
@@ -3432,10 +3453,6 @@ export type MutationRemoveShippingMethodsFromChannelArgs = {
 
 export type MutationRemoveStockLocationsFromChannelArgs = {
     input: RemoveStockLocationsFromChannelInput;
-};
-
-export type MutationResendEmailEventArgs = {
-    input: ResendEmailInput;
 };
 
 export type MutationSetCustomerForDraftOrderArgs = {
@@ -4765,7 +4782,6 @@ export type Query = {
     asset?: Maybe<Asset>;
     /** Get a list of Assets */
     assets: AssetList;
-    availableEmailEventsForResend: Array<EmailEvent>;
     channel?: Maybe<Channel>;
     channels: ChannelList;
     /** Get a Collection either by id or slug. If neither id nor slug is specified, an error will result. */
@@ -4857,10 +4873,6 @@ export type QueryAssetArgs = {
 
 export type QueryAssetsArgs = {
     options?: InputMaybe<AssetListOptions>;
-};
-
-export type QueryAvailableEmailEventsForResendArgs = {
-    input: AvailableEmailEvents;
 };
 
 export type QueryChannelArgs = {
@@ -5255,13 +5267,6 @@ export type RemoveShippingMethodsFromChannelInput = {
 export type RemoveStockLocationsFromChannelInput = {
     channelId: Scalars['ID']['input'];
     stockLocationIds: Array<Scalars['ID']['input']>;
-};
-
-export type ResendEmailInput = {
-    entityId: Scalars['ID']['input'];
-    entityType: EmailEventEntities;
-    languageCode?: InputMaybe<Scalars['String']['input']>;
-    type: Scalars['String']['input'];
 };
 
 export type Return = Node &

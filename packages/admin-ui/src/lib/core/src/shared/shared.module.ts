@@ -176,6 +176,7 @@ import { AddFilterPresetButtonComponent } from './components/data-table-filter-p
 import { RenameFilterPresetDialogComponent } from './components/data-table-filter-presets/rename-filter-preset-dialog.component';
 import { ActionBarDropdownMenuComponent } from './components/action-bar-dropdown-menu/action-bar-dropdown-menu.component';
 import { DuplicateEntityDialogComponent } from './components/duplicate-entity-dialog/duplicate-entity-dialog.component';
+import { EmailEventListComponent } from './components/email-event-list/email-event-list.component';
 
 const IMPORTS = [
     ClarityModule,
@@ -324,6 +325,7 @@ const DECLARATIONS = [
     AddFilterPresetButtonComponent,
     RenameFilterPresetDialogComponent,
     DuplicateEntityDialogComponent,
+    EmailEventListComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [

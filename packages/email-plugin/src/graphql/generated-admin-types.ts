@@ -1574,7 +1574,7 @@ export type EmailAddressConflictError = ErrorResult & {
 
 export type EmailEvent = {
     description?: Maybe<Array<LocalizedString>>;
-    entityType: EmailEventEntities;
+    entityType: Scalars['String']['output'];
     label: Array<LocalizedString>;
     operationDefinitions?: Maybe<EmailEventConfigurableOperationDefinition>;
     type: Scalars['String']['output'];
@@ -1607,11 +1607,6 @@ export type EmailEventConfigurableOperationDefinition = {
     args: Array<EmailEventConfigArgDefinition>;
     description: Scalars['String']['output'];
 };
-
-export enum EmailEventEntities {
-    Customer = 'Customer',
-    Order = 'Order',
-}
 
 /** Returned if no OrderLines have been specified for the operation */
 export type EmptyOrderLineSelectionError = ErrorResult & {
@@ -4931,7 +4926,7 @@ export type QueryEligibleShippingMethodsForDraftOrderArgs = {
 
 export type QueryEmailEventsForResendArgs = {
     entityId: Scalars['ID']['input'];
-    entityType: EmailEventEntities;
+    entityType: Scalars['String']['input'];
 };
 
 export type QueryFacetArgs = {
@@ -5286,7 +5281,7 @@ export type RemoveStockLocationsFromChannelInput = {
 export type ResendEmailInput = {
     arguments: Array<EmailEventConfigArgInput>;
     entityId: Scalars['ID']['input'];
-    entityType: EmailEventEntities;
+    entityType: Scalars['String']['input'];
     type: Scalars['String']['input'];
 };
 

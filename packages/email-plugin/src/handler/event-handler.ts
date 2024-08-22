@@ -1,6 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Type } from '@vendure/common/lib/shared-types';
-import { Injector, Logger } from '@vendure/core';
+import { Injector, Logger, VendureEntity } from '@vendure/core';
 
 import { serializeAttachments } from '../attachment-utils';
 import { loggerCtx } from '../constants';
@@ -17,7 +17,6 @@ import {
     SetOptionalAddressFieldsFn,
     SetSubjectFn,
     SetTemplateVarsFn,
-    UIEmailEventEntities,
 } from '../types';
 
 /**
@@ -329,6 +328,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         asyncHandler.defaultSubject = this.defaultSubject;
         asyncHandler.from = this.from;
         asyncHandler._mockEvent = this._mockEvent as any;
+        asyncHandler._resendOptions = this._resendOptions as any;
         return asyncHandler;
     }
 
@@ -418,7 +418,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      *
      * @param handlerOptions - The options that define how the UI block should behave.
      */
-    setResendOptions<E extends UIEmailEventEntities>(
+    setResendOptions<E extends abstract new (...args: any) => VendureEntity>(
         handlerOptions: EventEventResendOptions<Event, E>,
     ): EmailEventHandler<T, Event> {
         this._resendOptions = handlerOptions;

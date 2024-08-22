@@ -6,6 +6,7 @@ import {
     Order,
     RequestContext,
     SerializedRequestContext,
+    VendureEntity,
     VendureEvent,
 } from '@vendure/core';
 import {
@@ -17,6 +18,7 @@ import { Attachment } from 'nodemailer/lib/mailer';
 import SESTransport from 'nodemailer/lib/ses-transport';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
+import { EmailEventConfigurableOperationDefOptions } from './configurable-operation';
 import { EmailGenerator } from './generator/email-generator';
 import { ConfigArg } from './graphql/generated-admin-types';
 import { EmailEventHandler } from './handler/event-handler';
@@ -510,31 +512,6 @@ export type SetOptionalAddressFieldsFn<Event> = (
     event: Event,
 ) => OptionalAddressFields | Promise<OptionalAddressFields>;
 
-export interface EmailEventConfigurableOperationDefOptions<T extends ConfigArgs> {
-    /**
-     * @description
-     * Optional provider-specific arguments which, when specified, are
-     * editable in the admin-ui. For example, args could be used to send specific data for create an event.
-     *
-     * @example
-     * ```ts
-     * args: {
-     *   orderId: { type: 'ID' },
-     * }
-     * ```
-     *
-     * See {@link ConfigArgs} for available configuration options.
-     */
-    args: T;
-    /**
-     * @description
-     * A human-readable description for the operation method.
-     */
-    description: LocalizedStringArray;
-}
-
-export type UIEmailEventEntities = typeof Order | typeof Customer;
-
 /**
  * @description
  * A property used to set UI for manual event trigger of {@link EmailEventListener}
@@ -546,7 +523,9 @@ export type UIEmailEventEntities = typeof Order | typeof Customer;
  */
 export interface EventEventResendOptions<
     InputEvent extends EventWithContext = EventWithContext,
-    Entity extends UIEmailEventEntities = UIEmailEventEntities,
+    Entity extends abstract new (...args: any) => VendureEntity = abstract new (
+        ...args: any
+    ) => VendureEntity,
     ConfArgs extends ConfigArgs = ConfigArgs,
 > {
     /**

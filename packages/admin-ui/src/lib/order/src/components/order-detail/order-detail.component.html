@@ -203,6 +203,9 @@
             [detailForm]="detailForm"
         ></vdr-custom-detail-component-host>
 
+        <!-- TODO: change this. This is temp code, just for demo. -->
+        <vdr-email-event-list [entityType]="'Order'" [entityId]="order.id"/>
+
         <vdr-card [title]="'order.order-history' | translate">
             <vdr-order-history
                 [order]="order"

@@ -46,7 +46,12 @@ export const orderConfirmationHandler = new EmailEventListener('order-confirmati
             },
         ],
         operationDefinitions: {
-            description: [],
+            description: [
+                {
+                    languageCode: LanguageCode.en,
+                    value: 'Resend order confirmation',
+                },
+            ],
             args: {
                 emailEventTemplateId: {
                     type: 'ID',

@@ -207,6 +207,19 @@ Promise.all([
                     plugins: clientPlugins,
                     config,
                 },
+                [path.join(
+                    __dirname,
+                    '../../packages/email-plugin/src/graphql/generated-admin-types.ts',
+                )]: {
+                    schema: [ADMIN_SCHEMA_OUTPUT_FILE],
+                    // documents: path.join(
+                    //     __dirname,
+                    //     '../../packages/email-plugin/e2e/graphql/admin-queries.ts',
+                    // ),
+                    documents: [],
+                    plugins: clientPlugins,
+                    config: e2eConfig,
+                },
             },
         };
         return generate(codegenConfig);

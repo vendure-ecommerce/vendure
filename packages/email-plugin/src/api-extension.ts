@@ -1,10 +1,5 @@
 import gql from 'graphql-tag';
 export const adminSchema = gql`
-    enum EmailEventEntities {
-        Customer
-        Order
-    }
-
     type EmailEventConfigArgDefinition {
         name: String!
         type: String!
@@ -23,14 +18,14 @@ export const adminSchema = gql`
 
     type EmailEvent {
         type: String!
-        entityType: EmailEventEntities!
+        entityType: String!
         label: [LocalizedString!]!
         description: [LocalizedString!]
         operationDefinitions: EmailEventConfigurableOperationDefinition
     }
 
     extend type Query {
-        emailEventsForResend(entityType: EmailEventEntities!, entityId: ID!): [EmailEvent!]!
+        emailEventsForResend(entityType: String!, entityId: ID!): [EmailEvent!]!
     }
 
     input EmailEventConfigArgInput {
@@ -47,7 +42,7 @@ export const adminSchema = gql`
 
     input ResendEmailInput {
         type: String!
-        entityType: EmailEventEntities!
+        entityType: String!
         entityId: ID!
         arguments: [EmailEventConfigArgInput!]!
     }
