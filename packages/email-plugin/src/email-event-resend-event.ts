@@ -12,7 +12,7 @@ import { EmailDetails, EventWithContext } from './types';
  * @docsCategory core plugins/EmailPlugin
  * @since 2.2.0
  */
-export class ManualEmailEvent extends VendureEvent {
+export class EmailEventResend extends VendureEvent {
     constructor(
         public readonly handler: EmailEventHandler,
         public readonly event: EventWithContext,

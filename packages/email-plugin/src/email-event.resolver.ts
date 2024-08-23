@@ -3,40 +3,47 @@ import { ModuleRef } from '@nestjs/core';
 import { Args, Query, Mutation, Resolver } from '@nestjs/graphql';
 import {
     Ctx,
-    Customer,
-    CustomerService,
     EventBus,
+    ID,
     Injector,
-    Order,
-    OrderService,
     Permission,
     RequestContext,
     TransactionalConnection,
+    VendureEntity,
 } from '@vendure/core';
 import { Allow } from '@vendure/core/src';
 
-import { EmailEventConfigurableOperationDef } from './configurable-operation';
 import { EMAIL_PLUGIN_OPTIONS } from './constants';
+import { EmailEventConfigurableOperationDef } from './email-event-configurable-operation';
+import { EmailEventResend } from './email-event-resend-event';
 import {
+    ConfigurableOperationDefinition,
     EmailEvent,
-    EmailEventConfigurableOperationDefinition,
     MutationResendEmailEventArgs,
     QueryEmailEventsForResendArgs,
 } from './graphql/generated-admin-types';
 import { EmailEventHandler } from './handler/event-handler';
-import { ManualEmailEvent } from './manual-email-send-event';
 import { InitializedEmailPluginOptions } from './types';
 
 @Resolver()
 export class EmailEventResolver {
     constructor(
         @Inject(EMAIL_PLUGIN_OPTIONS) protected options: InitializedEmailPluginOptions,
-        private customerService: CustomerService,
-        private orderService: OrderService,
         private moduleRef: ModuleRef,
         private eventBus: EventBus,
         private connection: TransactionalConnection,
     ) {}
+
+    private async findEntity(ctx: RequestContext, entityType: string, entityId: ID) {
+        const entityMetadata = this.connection.rawConnection.entityMetadatas;
+
+        const entityClass = entityMetadata.find(
+            meta => meta.name.toLowerCase() === entityType.toLowerCase(),
+        )?.target;
+        if (!entityClass) throw new Error(`Invalid entity type: ${entityType}`);
+
+        return this.connection.getRepository(ctx, entityClass).findOne({ where: { id: entityId } });
+    }
 
     @Query()
     @Allow(Permission.ReadOrder)
@@ -46,35 +53,20 @@ export class EmailEventResolver {
     ): Promise<EmailEvent[]> {
         const { entityType, entityId } = args;
 
-        const entityMetadata = this.connection.rawConnection.entityMetadatas;
-        const entityClass = entityMetadata.find(
-            meta => meta.name.toLowerCase() === entityType.toLowerCase(),
-        )?.target;
-        if (!entityClass) {
-            throw new Error(`Invalid entity type: ${entityType}`);
-        }
-
-        const entity = await this.connection
-            .getRepository(ctx, entityClass)
-            .findOne({ where: { id: entityId } });
-
+        const entity = await this.findEntity(ctx, entityType, entityId);
         if (!entity) return [];
 
         const handlers = await Promise.all(
             this.options.handlers.map(async handler => {
-                if (!handler.resendOptions) {
-                    return null;
-                }
+                if (!handler.resendOptions) return null;
 
                 const isRequestedType = entity instanceof handler.resendOptions.entityType;
-                if (!isRequestedType) {
-                    return null;
-                }
+                if (!isRequestedType) return null;
 
                 const canResend = await handler.resendOptions.canResend(
                     ctx,
                     new Injector(this.moduleRef),
-                    entity as any,
+                    entity,
                 );
                 return canResend ? handler : null;
             }),
@@ -85,11 +77,13 @@ export class EmailEventResolver {
         const response: EmailEvent[] = [];
         for (const handler of validHandlers) {
             if (!handler.resendOptions) continue;
-            let operationDefinitions: EmailEventConfigurableOperationDefinition | undefined;
+            let operationDefinitions: ConfigurableOperationDefinition | undefined;
+
             if (handler.resendOptions?.operationDefinitions)
                 operationDefinitions = new EmailEventConfigurableOperationDef(
-                    handler.resendOptions?.operationDefinitions,
-                ).toGraphQlType(ctx);
+                    handler.resendOptions.operationDefinitions,
+                ).toGraphQlType(ctx as any);
+
             response.push({
                 type: handler.type,
                 entityType,
@@ -112,11 +106,11 @@ export class EmailEventResolver {
         if (!handler) return false; // TODO add error
         if (!handler.resendOptions) return false; // TODO add error
 
-        let entity: Customer | Order | undefined;
-        if (input.entityType === 'Customer') entity = await this.customerService.findOne(ctx, input.entityId);
-        else if (input.entityType === 'Order') entity = await this.orderService.findOne(ctx, input.entityId);
-
+        const entity = await this.findEntity(ctx, input.entityType, input.entityId);
         if (!entity) return false; // TODO add error
+
+        const isRequestedType = entity instanceof handler.resendOptions.entityType;
+        if (!isRequestedType) return false; // TODO add error
 
         const canResend = await handler.resendOptions.canResend(ctx, new Injector(this.moduleRef), entity);
         if (!canResend) return false; // TODO add error
@@ -128,7 +122,7 @@ export class EmailEventResolver {
             args.input.arguments,
         );
 
-        await this.eventBus.publish(new ManualEmailEvent(handler, event));
+        await this.eventBus.publish(new EmailEventResend(handler, event));
 
         return true;
     }

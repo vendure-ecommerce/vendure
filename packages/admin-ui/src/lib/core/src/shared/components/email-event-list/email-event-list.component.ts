@@ -1,56 +1,20 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 
-import gql from 'graphql-tag';
-import { Observable } from 'rxjs';
+import { lastValueFrom, Observable } from 'rxjs';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { map } from 'rxjs/operators';
 import {
+    ConfigurableOperation,
     EmailEventFragment,
     GetEmailEventsForResendDocument,
+    ResendEmailEventDocument,
     Scalars,
 } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
-
-const EMAIL_EVENT_FRAGMENT = gql`
-    fragment EmailEvent on EmailEvent {
-        type
-        entityType
-        label {
-            languageCode
-            value
-        }
-        description {
-            languageCode
-            value
-        }
-        operationDefinitions {
-            args {
-                name
-                type
-                list
-                required
-                defaultValue
-                label
-                description
-                ui
-            }
-            description
-        }
-    }
-`;
-
-const GET_EMAIL_EVENTS_FOR_RESEND = gql`
-    query GetEmailEventsForResend($entityType: String!, $entityId: ID!) {
-        emailEventsForResend(entityType: $entityType, entityId: $entityId) {
-            ...EmailEvent
-        }
-    }
-    ${EMAIL_EVENT_FRAGMENT}
-`;
-
-const RESEND_EMAIL_EVENT = gql`
-    mutation ResendEmailEvent($input: ResendEmailInput!) {
-        resendEmailEvent(input: $input)
-    }
-`;
+import {
+    configurableDefinitionToInstance,
+    configurableOperationValueIsValid,
+} from '../../../common/utilities/configurable-operation-utils';
 
 @Component({
     selector: 'vdr-email-event-list',
@@ -59,31 +23,74 @@ const RESEND_EMAIL_EVENT = gql`
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmailEventListComponent implements OnInit {
-    emailHandlers$: Observable<EmailEventFragment[]>;
+    emailEvents$: Observable<EmailEventFragment[]>;
     @Input() entityId: Scalars['ID']['input'];
     @Input() entityType: string;
+    emailEventFormGroup: FormGroup; // Define the FormGroup to hold dynamic controls
 
-    constructor(private dataService: DataService) {}
+    constructor(
+        private dataService: DataService,
+        private fb: FormBuilder,
+    ) {
+        this.emailEventFormGroup = this.fb.group<{
+            [key in string]: FormControl<ConfigurableOperation | undefined>;
+        }>({}); // Initialize an empty form group
+    }
 
     ngOnInit() {
-        console.log(this.entityType, this.entityId);
-        this.emailHandlers$ = this.dataService
+        this.emailEvents$ = this.dataService
             .query(GetEmailEventsForResendDocument, {
                 entityType: this.entityType as any,
                 entityId: this.entityId,
             })
             .mapSingle(data => data.emailEventsForResend);
 
-        this.emailHandlers$.subscribe(data => {
-            console.log(data);
+        this.emailEvents$.subscribe(data => {
+            this.initFormControls(data); // Initialize form controls based on email events
         });
     }
 
-    resendEmail(input: { arguments: Array<{ name: string; value: any }> }) {
-        this.dataService.mutate(GetEmailEventsForResendDocument, {
-            entityType: this.entityType as any,
-            entityId: this.entityId,
-            ...input,
+    private initFormControls(emailEvents: EmailEventFragment[]) {
+        emailEvents.forEach(event => {
+            if (this.emailEventFormGroup.contains(event.type)) {
+                this.emailEventFormGroup
+                    .get(event.type)
+                    ?.patchValue(
+                        event.operationDefinitions
+                            ? configurableDefinitionToInstance(event.operationDefinitions)
+                            : undefined,
+                    );
+            } else {
+                const formControl = new FormControl(
+                    event.operationDefinitions
+                        ? configurableDefinitionToInstance(event.operationDefinitions)
+                        : undefined,
+                );
+                this.emailEventFormGroup.addControl(event.type, formControl);
+            }
         });
     }
+
+    onResend(emailEventType: string) {
+        // TODO: my form control value not getting updated, idk why
+        const formControlValue = this.emailEventFormGroup.get(emailEventType)?.value;
+        console.log(formControlValue);
+        this.dataService
+            .mutate(ResendEmailEventDocument, {
+                input: {
+                    type: emailEventType,
+                    arguments: formControlValue.args.map(arg => ({
+                        name: arg.name,
+                        value: JSON.stringify(arg.value),
+                    })),
+                    entityId: this.entityId,
+                    entityType: this.entityType,
+                },
+            })
+            .subscribe(data => {
+                console.log(data);
+            });
+    }
+
+    protected readonly configurableDefinitionToInstance = configurableDefinitionToInstance;
 }

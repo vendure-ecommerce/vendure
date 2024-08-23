@@ -926,7 +926,6 @@ export enum ErrorCode {
     INSUFFICIENT_STOCK_ERROR = 'INSUFFICIENT_STOCK_ERROR',
     INVALID_CREDENTIALS_ERROR = 'INVALID_CREDENTIALS_ERROR',
     MISSING_PASSWORD_ERROR = 'MISSING_PASSWORD_ERROR',
-    MOLLIE_PAYMENT_INTENT_ERROR = 'MOLLIE_PAYMENT_INTENT_ERROR',
     NATIVE_AUTH_STRATEGY_ERROR = 'NATIVE_AUTH_STRATEGY_ERROR',
     NEGATIVE_QUANTITY_ERROR = 'NEGATIVE_QUANTITY_ERROR',
     NOT_VERIFIED_ERROR = 'NOT_VERIFIED_ERROR',
@@ -1685,71 +1684,6 @@ export type MissingPasswordError = ErrorResult & {
     message: Scalars['String']['output'];
 };
 
-export type MollieAmount = {
-    __typename?: 'MollieAmount';
-    currency?: Maybe<Scalars['String']['output']>;
-    value?: Maybe<Scalars['String']['output']>;
-};
-
-export type MolliePaymentIntent = {
-    __typename?: 'MolliePaymentIntent';
-    url: Scalars['String']['output'];
-};
-
-export type MolliePaymentIntentError = ErrorResult & {
-    __typename?: 'MolliePaymentIntentError';
-    errorCode: ErrorCode;
-    message: Scalars['String']['output'];
-};
-
-export type MolliePaymentIntentInput = {
-    /**
-     * Optional preselected Mollie payment method. When this is passed
-     * the payment selection step will be skipped.
-     */
-    molliePaymentMethodCode?: InputMaybe<Scalars['String']['input']>;
-    /**
-     * Use this to create a payment intent for a specific order. This allows you to create intents for
-     * orders that are not active orders.
-     */
-    orderId?: InputMaybe<Scalars['String']['input']>;
-    /**
-     * The code of the Vendure payment method to use for the payment.
-     * Must have Mollie as payment method handler.
-     * Without this, the first method with Mollie as handler will be used.
-     */
-    paymentMethodCode?: InputMaybe<Scalars['String']['input']>;
-    /**
-     * The redirect url to which the customer will be redirected after the payment is completed.
-     * The configured fallback redirect will be used if this is not provided.
-     */
-    redirectUrl?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type MolliePaymentIntentResult = MolliePaymentIntent | MolliePaymentIntentError;
-
-export type MolliePaymentMethod = {
-    __typename?: 'MolliePaymentMethod';
-    code: Scalars['String']['output'];
-    description?: Maybe<Scalars['String']['output']>;
-    id: Scalars['ID']['output'];
-    image?: Maybe<MolliePaymentMethodImages>;
-    maximumAmount?: Maybe<MollieAmount>;
-    minimumAmount?: Maybe<MollieAmount>;
-    status?: Maybe<Scalars['String']['output']>;
-};
-
-export type MolliePaymentMethodImages = {
-    __typename?: 'MolliePaymentMethodImages';
-    size1x?: Maybe<Scalars['String']['output']>;
-    size2x?: Maybe<Scalars['String']['output']>;
-    svg?: Maybe<Scalars['String']['output']>;
-};
-
-export type MolliePaymentMethodsInput = {
-    paymentMethodCode: Scalars['String']['input'];
-};
-
 export type Mutation = {
     __typename?: 'Mutation';
     /** Adds an item to the order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available. */
@@ -1764,10 +1698,14 @@ export type Mutation = {
     authenticate: AuthenticationResult;
     /** Create a new Customer Address */
     createCustomerAddress: Address;
-    createMolliePaymentIntent: MolliePaymentIntentResult;
     /** Delete an existing Address */
     deleteCustomerAddress: Success;
-    /** Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})` */
+    /**
+     * Authenticates the user using the native authentication strategy. This mutation is an alias for authenticate({ native: { ... }})
+     *
+     * The `rememberMe` option applies when using cookie-based sessions, and if `true` it will set the maxAge of the session cookie
+     * to 1 year.
+     */
     login: NativeAuthenticationResult;
     /** End the current authenticated session */
     logout: Success;
@@ -1869,10 +1807,6 @@ export type MutationAuthenticateArgs = {
 
 export type MutationCreateCustomerAddressArgs = {
     input: CreateAddressInput;
-};
-
-export type MutationCreateMolliePaymentIntentArgs = {
-    input: MolliePaymentIntentInput;
 };
 
 export type MutationDeleteCustomerAddressArgs = {
@@ -2918,7 +2852,6 @@ export type Query = {
     facets: FacetList;
     /** Returns information about the current authenticated User */
     me?: Maybe<CurrentUser>;
-    molliePaymentMethods: Array<MolliePaymentMethod>;
     /** Returns the possible next states that the activeOrder can transition to */
     nextOrderStates: Array<Scalars['String']['output']>;
     /**
@@ -2956,10 +2889,6 @@ export type QueryFacetArgs = {
 
 export type QueryFacetsArgs = {
     options?: InputMaybe<FacetListOptions>;
-};
-
-export type QueryMolliePaymentMethodsArgs = {
-    input: MolliePaymentMethodsInput;
 };
 
 export type QueryOrderArgs = {

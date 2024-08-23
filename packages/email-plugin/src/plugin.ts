@@ -23,10 +23,10 @@ import { adminSchema } from './api-extension';
 import { isDevModeOptions, resolveTransportSettings } from './common';
 import { EMAIL_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { DevMailbox } from './dev-mailbox';
+import { EmailEventResend } from './email-event-resend-event';
 import { EmailEventResolver } from './email-event.resolver';
 import { EmailProcessor } from './email-processor';
 import { EmailEventHandler, EmailEventHandlerWithAsyncData } from './handler/event-handler';
-import { ManualEmailEvent } from './manual-email-send-event';
 import { FileBasedTemplateLoader } from './template-loader/file-based-template-loader';
 import {
     EmailPluginDevModeOptions,
@@ -414,7 +414,7 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
                 return this.handleEvent(handler, event);
             });
         }
-        this.eventBus.ofType(ManualEmailEvent).subscribe(event => {
+        this.eventBus.ofType(EmailEventResend).subscribe(event => {
             return this.handleEvent(event.handler, event.event);
         });
     }

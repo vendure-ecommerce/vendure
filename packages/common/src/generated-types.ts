@@ -1595,39 +1595,8 @@ export type EmailEvent = {
   description?: Maybe<Array<LocalizedString>>;
   entityType: Scalars['String']['output'];
   label: Array<LocalizedString>;
-  operationDefinitions?: Maybe<EmailEventConfigurableOperationDefinition>;
+  operationDefinitions?: Maybe<ConfigurableOperationDefinition>;
   type: Scalars['String']['output'];
-};
-
-export type EmailEventConfigArg = {
-  __typename?: 'EmailEventConfigArg';
-  name: Scalars['String']['output'];
-  /** A JSON stringified representation of the actual value */
-  value: Scalars['String']['output'];
-};
-
-export type EmailEventConfigArgDefinition = {
-  __typename?: 'EmailEventConfigArgDefinition';
-  defaultValue?: Maybe<Scalars['JSON']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  label?: Maybe<Scalars['String']['output']>;
-  list: Scalars['Boolean']['output'];
-  name: Scalars['String']['output'];
-  required: Scalars['Boolean']['output'];
-  type: Scalars['String']['output'];
-  ui?: Maybe<Scalars['JSON']['output']>;
-};
-
-export type EmailEventConfigArgInput = {
-  name: Scalars['String']['input'];
-  /** A JSON stringified representation of the actual value */
-  value: Scalars['String']['input'];
-};
-
-export type EmailEventConfigurableOperationDefinition = {
-  __typename?: 'EmailEventConfigurableOperationDefinition';
-  args: Array<EmailEventConfigArgDefinition>;
-  description: Scalars['String']['output'];
 };
 
 /** Returned if no OrderLines have been specified for the operation */
@@ -3625,7 +3594,7 @@ export type MutationRemoveStockLocationsFromChannelArgs = {
 
 
 export type MutationResendEmailEventArgs = {
-  input: ResendEmailInput;
+  input: ResendEmailEventInput;
 };
 
 
@@ -5594,8 +5563,8 @@ export type RemoveStockLocationsFromChannelInput = {
   stockLocationIds: Array<Scalars['ID']['input']>;
 };
 
-export type ResendEmailInput = {
-  arguments: Array<EmailEventConfigArgInput>;
+export type ResendEmailEventInput = {
+  arguments: Array<ConfigArgInput>;
   entityId: Scalars['ID']['input'];
   entityType: Scalars['String']['input'];
   type: Scalars['String']['input'];

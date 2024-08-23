@@ -46,6 +46,7 @@ export const orderConfirmationHandler = new EmailEventListener('order-confirmati
             },
         ],
         operationDefinitions: {
+            code: 'order-confirmation',
             description: [
                 {
                     languageCode: LanguageCode.en,
@@ -54,8 +55,8 @@ export const orderConfirmationHandler = new EmailEventListener('order-confirmati
             ],
             args: {
                 emailEventTemplateId: {
-                    type: 'ID',
-                    ui: { component: 'email-event-template-list' },
+                    type: 'boolean',
+                    ui: { component: 'boolean-form-input' },
                     label: [{ languageCode: LanguageCode.en, value: 'Select specific event email' }],
                 },
             },

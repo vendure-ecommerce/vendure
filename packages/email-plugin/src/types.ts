@@ -1,24 +1,17 @@
 import { LanguageCode, LocalizedString } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
 import {
-    Customer,
     Injector,
-    Order,
     RequestContext,
     SerializedRequestContext,
     VendureEntity,
     VendureEvent,
 } from '@vendure/core';
-import {
-    ConfigArgs,
-    ConfigArgValues,
-    LocalizedStringArray,
-} from '@vendure/core/src/common/configurable-operation';
+import { ConfigArgs, ConfigurableOperationDefOptions } from '@vendure/core/src/common/configurable-operation';
 import { Attachment } from 'nodemailer/lib/mailer';
 import SESTransport from 'nodemailer/lib/ses-transport';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
-import { EmailEventConfigurableOperationDefOptions } from './configurable-operation';
 import { EmailGenerator } from './generator/email-generator';
 import { ConfigArg } from './graphql/generated-admin-types';
 import { EmailEventHandler } from './handler/event-handler';
@@ -537,7 +530,7 @@ export interface EventEventResendOptions<
 
     description?: Array<Omit<LocalizedString, '__typename'>>;
 
-    operationDefinitions?: EmailEventConfigurableOperationDefOptions<ConfArgs>;
+    operationDefinitions?: ConfigurableOperationDefOptions<ConfArgs>;
 
     canResend: (
         ctx: RequestContext,

@@ -177,6 +177,7 @@ import { RenameFilterPresetDialogComponent } from './components/data-table-filte
 import { ActionBarDropdownMenuComponent } from './components/action-bar-dropdown-menu/action-bar-dropdown-menu.component';
 import { DuplicateEntityDialogComponent } from './components/duplicate-entity-dialog/duplicate-entity-dialog.component';
 import { EmailEventListComponent } from './components/email-event-list/email-event-list.component';
+import { EmailEventConfigurableInputComponent } from './components/email-configurable-input/email-event-configurable-input.component';
 
 const IMPORTS = [
     ClarityModule,
@@ -202,6 +203,7 @@ const DECLARATIONS = [
     AssetPreviewDialogComponent,
     AssetSearchInputComponent,
     ConfigurableInputComponent,
+    EmailEventConfigurableInputComponent,
     AffixedInputComponent,
     ChipComponent,
     CurrencyInputComponent,
