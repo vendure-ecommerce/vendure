@@ -3,8 +3,18 @@ title: "Deploying the Admin UI"
 showtoc: true
 ---
 
+## Compiling the Admin UI
 
-If you have customized the Admin UI with extensions, you should [compile your extensions ahead of time as part of the deployment process](/guides/extending-the-admin-ui/getting-started/#compiling-as-a-deployment-step).
+If you have customized the Admin UI with extensions, you should compile your custom Admin UI app ahead of time
+before deploying it. This will bundle the app into a set of static files which are then served by the AdminUiPlugin.
+
+- [Guide: Compiling the Admin UI as a deployment step](/guides/extending-the-admin-ui/getting-started/#compiling-as-a-deployment-step).
+
+:::warning
+
+It is not recommended to compile the Admin UI on the server at runtime, as this can be slow and resource-intensive.
+Instead, compile the Admin UI ahead of time and deploy the compiled assets, as covered in the guide linked above.
+:::
 
 ## Setting the API host & port
 
