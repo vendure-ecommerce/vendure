@@ -1,19 +1,12 @@
-<vdr-card class="mb-3" [formGroup]="emailEventFormGroup" *ngIf="(emailEvents$ | async) as emailEvents; else noEmailEvents">
+<vdr-card class="mb-3" [formGroup]="emailEventFormGroup" *ngIf="(emailEvents$ | async) as emailEvents">
     <div *ngFor="let emailEvent of emailEvents">
         <vdr-email-event-configurable-input
             class="card-span"
-            *ngIf="emailEvent.operationDefinitions"
             [hideDescription]="false"
-            [operation]="configurableDefinitionToInstance(emailEvent.operationDefinitions)"
+            [operation]="emailEventsOperations.get(emailEvent.type)"
             [operationDefinition]="emailEvent.operationDefinitions"
             [formControlName]="emailEvent.type"
             (resend)="onResend(emailEvent.type)"
         ></vdr-email-event-configurable-input>
     </div>
 </vdr-card>
-
-<!-- Define a template to display when there are no email events -->
-<ng-template #noEmailEvents>
-    <p>No email events available to display.</p>
-</ng-template>
-

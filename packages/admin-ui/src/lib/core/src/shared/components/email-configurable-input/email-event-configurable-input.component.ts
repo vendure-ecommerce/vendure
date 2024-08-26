@@ -13,7 +13,6 @@ import {
 import {
     AbstractControl,
     ControlValueAccessor,
-    FormControl,
     NG_VALIDATORS,
     NG_VALUE_ACCESSOR,
     UntypedFormControl,
@@ -22,15 +21,13 @@ import {
     Validator,
     Validators,
 } from '@angular/forms';
-import { BehaviorSubject, lastValueFrom, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { configurableOperationValueIsValid, getDefaultConfigArgValue } from '@vendure/admin-ui/core';
-import { map } from 'rxjs/operators';
 import {
     ConfigArg,
     ConfigArgDefinition,
     ConfigurableOperation,
     ConfigurableOperationDefinition,
-    EmailEventFragment,
 } from '../../../common/generated-types';
 import { CurrencyService } from '../../../providers/currency/currency.service';
 import { interpolateDescription } from '../../../common/utilities/interpolate-description';
@@ -94,9 +91,11 @@ export class EmailEventConfigurableInputComponent
 
     ngOnChanges(changes: SimpleChanges) {
         if ('operation' in changes || 'operationDefinition' in changes) {
+            console.log('operation/operationDefinition changes', changes);
             this.createForm();
         }
         if ('position' in changes) {
+            console.log('position changes', changes);
             this.positionChangeSubject.next(this.position);
         }
     }
@@ -125,6 +124,7 @@ export class EmailEventConfigurableInputComponent
 
     writeValue(value: any): void {
         if (value) {
+            console.log('writeValue', value);
             this.form.patchValue(value);
         }
     }

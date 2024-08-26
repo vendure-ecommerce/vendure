@@ -295,6 +295,8 @@
     "notify-update-error": "Wystąpił błąd, nie można zaktualizować { entity }",
     "notify-update-success": "Zaktualizowano { entity }",
     "notify-updated-tags-success": "",
+    "notify-send-success": "Wysłano { entity }",
+    "notify-send-error": "Wystąpił błąd, nie można wysłać { entity }",
     "okay": "",
     "operator-contains": "",
     "operator-eq": "",

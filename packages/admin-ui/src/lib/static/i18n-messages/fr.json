@@ -295,6 +295,8 @@
     "notify-update-error": "Une erreur est survenue, mise à jour de { entity } échouée",
     "notify-update-success": "{ entity } mis à jour",
     "notify-updated-tags-success": "Mots-clés mis à jour avec succès",
+    "notify-send-success": "{ entity } envoyé",
+    "notify-send-error": "Une erreur est survenue, envoi de { entity } échoué",
     "okay": "OK",
     "operator-contains": "contient",
     "operator-eq": "égale à",

@@ -293,6 +293,8 @@
     "notify-update-error": "En feil oppstod, kunne ikke oppdatere { entity }",
     "notify-update-success": "Oppdatert { entity }",
     "notify-updated-tags-success": "Merkene ble oppdatert",
+    "notify-send-success": "Sendt { entity }",
+    "notify-send-error": "En feil oppstod, kunne ikke sende { entity }",
     "okay": "OK",
     "operator-contains": "inneholder",
     "operator-eq": "er lik",

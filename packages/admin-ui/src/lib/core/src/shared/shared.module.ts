@@ -203,7 +203,6 @@ const DECLARATIONS = [
     AssetPreviewDialogComponent,
     AssetSearchInputComponent,
     ConfigurableInputComponent,
-    EmailEventConfigurableInputComponent,
     AffixedInputComponent,
     ChipComponent,
     CurrencyInputComponent,
@@ -327,6 +326,7 @@ const DECLARATIONS = [
     AddFilterPresetButtonComponent,
     RenameFilterPresetDialogComponent,
     DuplicateEntityDialogComponent,
+    EmailEventConfigurableInputComponent,
     EmailEventListComponent,
 ];
 

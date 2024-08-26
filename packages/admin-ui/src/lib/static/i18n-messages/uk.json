@@ -295,6 +295,8 @@
     "notify-update-error": "Сталася помилка, не вдалося оновити { entity }",
     "notify-update-success": "Оновлено { entity }",
     "notify-updated-tags-success": "Успішно оновлені теги",
+    "notify-send-success": "Відправлено { entity }",
+    "notify-send-error": "Помилка, не вдалося відправити { entity }",
     "okay": "Гаразд",
     "operator-contains": "містить",
     "operator-eq": "дорівнює",

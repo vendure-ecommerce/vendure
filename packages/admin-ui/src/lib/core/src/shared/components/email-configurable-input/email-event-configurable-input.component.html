@@ -21,9 +21,9 @@
         </form>
     </div>
     <div class="card-footer">
-        <button class="button-small" *ngIf="canSubmit()" (click)="resend.emit()">
+        <button class="button-small" *ngIf="canSubmit()" (click)="resend.emit(operation)">
             <clr-icon shape="email"></clr-icon>
-            {{ 'email-event.resend' | translate }}
+            {{ 'common.resend' | translate }}
         </button>
     </div>
 </div>

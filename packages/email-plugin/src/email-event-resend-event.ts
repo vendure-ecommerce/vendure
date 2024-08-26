@@ -5,12 +5,12 @@ import { EmailDetails, EventWithContext } from './types';
 
 /**
  * @description
- * This event is fired when an email sending attempt has been made. If the sending was successful,
+ * This event is fired when an email resending attempt has been made. If the sending was successful,
  * the `success` property will be `true`, and if not, the `error` property will contain the error
  * which occurred.
  *
  * @docsCategory core plugins/EmailPlugin
- * @since 2.2.0
+ * @since 3.0.2
  */
 export class EmailEventResend extends VendureEvent {
     constructor(

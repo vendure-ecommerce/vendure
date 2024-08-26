@@ -295,6 +295,8 @@
     "notify-update-error": "An error occurred, could not update { entity }",
     "notify-update-success": "Updated { entity }",
     "notify-updated-tags-success": "Successfully updated tags",
+    "notify-send-success": "{ entity } sent",
+    "notify-send-error": "An error occurred, could not send { entity }",
     "okay": "Okay",
     "operator-contains": "contains",
     "operator-eq": "equals",
@@ -348,7 +350,9 @@
     "view-next-month": "View next month",
     "view-previous-month": "View previous month",
     "visibility": "Visibility",
-    "with-selected": "With {count} selected..."
+    "with-selected": "With {count} selected...",
+    "send": "Send",
+    "resend": "Resend"
   },
   "customer": {
     "add-customer-to-group": "Add customer to group",

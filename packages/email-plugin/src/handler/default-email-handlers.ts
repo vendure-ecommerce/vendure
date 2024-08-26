@@ -8,6 +8,7 @@ import {
     LanguageCode,
     NativeAuthenticationMethod,
     Order,
+    OrderService,
     OrderStateTransitionEvent,
     PasswordResetEvent,
     RequestContext,
@@ -57,15 +58,29 @@ export const orderConfirmationHandler = new EmailEventListener('order-confirmati
                 emailEventTemplateId: {
                     type: 'boolean',
                     ui: { component: 'boolean-form-input' },
-                    label: [{ languageCode: LanguageCode.en, value: 'Select specific event email' }],
+                    label: [{ languageCode: LanguageCode.en, value: 'Test boolean' }],
+                },
+                testNumber: {
+                    type: 'int',
+                    ui: { component: 'number-form-input' },
+                    label: [{ languageCode: LanguageCode.en, value: 'Test number' }],
                 },
             },
         },
         canResend: (_ctx, _injector, _entity) => {
             return true;
         },
-        createEvent: (ctx, _injector, entity, _args) => {
-            return new OrderStateTransitionEvent('ArrangingPayment', 'PaymentSettled', ctx, entity);
+        createEvent: async (ctx, injector, entity, _args) => {
+            const completeOrderEntity = await injector.get(OrderService).findOne(ctx, entity.id);
+            if (!completeOrderEntity) {
+                throw new Error('Order not found');
+            }
+            return new OrderStateTransitionEvent(
+                'ArrangingPayment',
+                'PaymentSettled',
+                ctx,
+                completeOrderEntity,
+            );
         },
     })
     .loadData(async ({ event, injector }) => {

@@ -296,6 +296,8 @@
     "notify-update-error": "Ett fel uppstod, kunde inte uppdatera { entity }",
     "notify-update-success": "Uppdaterade { entity }",
     "notify-updated-tags-success": "Uppdaterade taggar framgångsrikt",
+    "notify-send-success": "Skickade { entity }",
+    "notify-send-error": "Kunde inte skicka { entity }",
     "okay": "Okej",
     "operator-contains": "innehåller",
     "operator-eq": "är lika med",
