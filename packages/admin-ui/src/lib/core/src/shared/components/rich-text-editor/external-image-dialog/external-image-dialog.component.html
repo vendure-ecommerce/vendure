@@ -1,28 +1,52 @@
-<div class="flex">
-    <form [formGroup]="form" class="flex-spacer" clrForm clrLayout="vertical">
-        <clr-input-container class="expand">
-            <label>{{ 'editor.image-src' | translate }}</label>
-            <input clrInput type="text" formControlName="src" />
-        </clr-input-container>
-        <clr-input-container class="expand">
-            <label>{{ 'editor.image-title' | translate }}</label>
-            <input clrInput type="text" formControlName="title" />
-        </clr-input-container>
-        <clr-input-container class="expand">
-            <label>{{ 'editor.image-alt' | translate }}</label>
-            <input clrInput type="text" formControlName="alt" />
-        </clr-input-container>
-    </form>
-    <div class="preview">
-        <img
-            [src]="form.get('src')?.value"
-            [class.visible]="previewLoaded"
-            (load)="onImageLoad($event)"
-            (error)="onImageError($event)"
-        />
-        <div class="placeholder" *ngIf="!previewLoaded">
-            <clr-icon shape="image" size="128"></clr-icon>
+<div class="clr-row">
+    <div class="clr-col-md-5 clr-row clr-justify-content-center">
+        <div class="preview text-center clr-col-12">
+            <img [src]="form.get('src')?.value" [class.visible]="previewLoaded" (load)="onImageLoad($event)"
+                (error)="onImageError($event)" class="img-responsive" />
+            <div class="placeholder" *ngIf="!previewLoaded">
+                <clr-icon shape="image" size="128"></clr-icon>
+            </div>
         </div>
+        <div class="text-center clr-col-12">
+            <div *ngIf="previewLoaded">
+              
+                <select name="options" (change)="onSizeSelect($event.target.value)" [(ngModel)]="preset">
+                    <option value="" selected>{{ 'asset.size' | translate }}</option>
+                    <option *ngFor="let size of sizes" [value]="size">{{ size }}</option>
+                </select>
+          
+            </div>
+
+            <button class="btn btn-icon btn-sm btn-block mt-2" [title]="'asset.add-asset' | translate"
+                (click)="selectAssets()">
+                <clr-icon shape="attachment"></clr-icon>
+                {{ 'asset.add-asset' | translate }}
+            </button>
+        </div>
+    </div>
+    <div class="clr-col">
+        <form [formGroup]="form" class="flex-spacer" clrForm clrLayout="vertical">
+            <clr-input-container class="expand">
+                <label>{{ 'editor.image-src' | translate }}</label>
+                <input clrInput type="text" formControlName="src" />
+            </clr-input-container>
+            <clr-input-container class="expand mt-2">
+                <label>{{ 'editor.image-title' | translate }}</label>
+                <input clrInput type="text" formControlName="title" />
+            </clr-input-container>
+            <clr-input-container class="expand mt-2">
+                <label>{{ 'editor.image-alt' | translate }}</label>
+                <input clrInput type="text" formControlName="alt" />
+            </clr-input-container>
+            <clr-input-container class="expand mt-2">
+                <label>{{ 'editor.width' | translate }}</label>
+                <input clrInput type="text" formControlName="width" />
+            </clr-input-container>
+            <clr-input-container class="expand mt-2">
+                <label>{{ 'editor.height' | translate }}</label>
+                <input clrInput type="text" formControlName="height" />
+            </clr-input-container>
+        </form>
     </div>
 </div>
 

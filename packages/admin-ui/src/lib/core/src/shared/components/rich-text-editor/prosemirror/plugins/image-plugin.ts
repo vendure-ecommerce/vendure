@@ -1,19 +1,6 @@
 import { MenuItem } from 'prosemirror-menu';
-import { Node, NodeType } from 'prosemirror-model';
-import { EditorState, NodeSelection, Plugin, Transaction } from 'prosemirror-state';
-import {
-    addColumnAfter,
-    addColumnBefore,
-    addRowAfter,
-    addRowBefore,
-    deleteColumn,
-    deleteRow,
-    deleteTable,
-    mergeCells,
-    splitCell,
-    toggleHeaderColumn,
-    toggleHeaderRow,
-} from 'prosemirror-tables';
+import { Node, NodeSpec, NodeType } from 'prosemirror-model';
+import { EditorState, NodeSelection, Plugin } from 'prosemirror-state';
 import { EditorView } from 'prosemirror-view';
 
 import { ModalService } from '../../../../../providers/modal/modal.service';
@@ -21,9 +8,39 @@ import {
     ExternalImageAttrs,
     ExternalImageDialogComponent,
 } from '../../external-image-dialog/external-image-dialog.component';
-import { RawHtmlDialogComponent } from '../../raw-html-dialog/raw-html-dialog.component';
-import { ContextMenuItem, ContextMenuService } from '../context-menu/context-menu.service';
+import { ContextMenuService } from '../context-menu/context-menu.service';
 import { canInsert, renderClarityIcon } from '../menu/menu-common';
+
+export const imageNode: NodeSpec = {
+    inline: true,
+    attrs: {
+        src: {},
+        alt: { default: null },
+        title: { default: null },
+        width: { default: null },
+        height: { default: null },
+    },
+    group: 'inline',
+    draggable: true,
+    parseDOM: [
+        {
+            tag: 'img[src]',
+            getAttrs(dom) {
+                return {
+                    src: (dom as HTMLImageElement).getAttribute('src'),
+                    title: (dom as HTMLImageElement).getAttribute('title'),
+                    alt: (dom as HTMLImageElement).getAttribute('alt'),
+                    width: (dom as HTMLImageElement).getAttribute('width'),
+                    height: (dom as HTMLImageElement).getAttribute('height'),
+                };
+            },
+        },
+    ],
+    toDOM(node) {
+        const { src, alt, title, width, height } = node.attrs;
+        return ['img', { src, alt, title, width, height }];
+    },
+};
 
 export function insertImageItem(nodeType: NodeType, modalService: ModalService) {
     return new MenuItem({
@@ -32,6 +49,7 @@ export function insertImageItem(nodeType: NodeType, modalService: ModalService) 
         render: renderClarityIcon({ shape: 'image', label: 'Image' }),
         class: '',
         css: '',
+
         enable(state: EditorState) {
             return canInsert(state, nodeType);
         },
@@ -49,6 +67,7 @@ export function insertImageItem(nodeType: NodeType, modalService: ModalService) 
                 })
                 .subscribe(result => {
                     if (result) {
+                        console.log(result);
                         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         view.dispatch(view.state.tr.replaceSelectionWith(nodeType.createAndFill(result)!));
                     }

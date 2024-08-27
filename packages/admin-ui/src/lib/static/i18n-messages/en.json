@@ -22,7 +22,8 @@
     "update-focal-point-error": "Could not update focal point",
     "update-focal-point-success": "Updated focal point",
     "upload-assets": "Upload assets",
-    "uploading": "Uploading..."
+    "uploading": "Uploading...",
+    "size": "Size"
   },
   "breadcrumb": {
     "administrators": "Administrators",
@@ -483,7 +484,9 @@
     "link-target": "Link target",
     "link-title": "Link title",
     "remove-link": "Remove",
-    "set-link": "Set link"
+    "set-link": "Set link",
+    "width": "Width",
+    "height": "Height"
   },
   "error": {
     "403-forbidden": "You are not currently authorized to access \"{ path }\". Either you lack permissions, or your session has expired.",
