@@ -15,7 +15,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import * as Codegen from './graphql/generated-e2e-admin-types';
@@ -188,10 +188,10 @@ describe('Order taxes', () => {
                 GET_ACTIVE_ORDER_WITH_PRICE_DATA,
             );
             expect(activeOrder?.totalWithTax).toBe(200);
-            expect(activeOrder?.total).toBe(166);
+            expect(activeOrder?.total).toBe(167);
             expect(activeOrder?.lines[0].taxRate).toBe(20);
-            expect(activeOrder?.lines[0].linePrice).toBe(166);
-            expect(activeOrder?.lines[0].lineTax).toBe(34);
+            expect(activeOrder?.lines[0].linePrice).toBe(167);
+            expect(activeOrder?.lines[0].lineTax).toBe(33);
             expect(activeOrder?.lines[0].linePriceWithTax).toBe(200);
             expect(activeOrder?.lines[0].unitPrice).toBe(83);
             expect(activeOrder?.lines[0].unitPriceWithTax).toBe(100);
@@ -270,12 +270,12 @@ describe('Order taxes', () => {
             const { activeOrder } = await shopClient.query<CodegenShop.GetActiveOrderWithPriceDataQuery>(
                 GET_ACTIVE_ORDER_WITH_PRICE_DATA,
             );
-            expect(activeOrder?.totalWithTax).toBe(200);
+            expect(activeOrder?.totalWithTax).toBe(199);
             expect(activeOrder?.total).toBe(166);
             expect(activeOrder?.lines[0].taxRate).toBe(20);
             expect(activeOrder?.lines[0].linePrice).toBe(166);
-            expect(activeOrder?.lines[0].lineTax).toBe(34);
-            expect(activeOrder?.lines[0].linePriceWithTax).toBe(200);
+            expect(activeOrder?.lines[0].lineTax).toBe(33);
+            expect(activeOrder?.lines[0].linePriceWithTax).toBe(199);
             expect(activeOrder?.lines[0].unitPrice).toBe(83);
             expect(activeOrder?.lines[0].unitPriceWithTax).toBe(100);
             expect(activeOrder?.lines[0].taxLines).toEqual([

@@ -1,6 +1,6 @@
 import { RequestContext, VendureEvent } from '@vendure/core';
 
-import { EmailDetails } from './types';
+import { EmailDetails, EmailMetadata } from './types';
 
 /**
  * @description
@@ -17,6 +17,7 @@ export class EmailSendEvent extends VendureEvent {
         public readonly details: EmailDetails,
         public readonly success: boolean,
         public readonly error?: Error,
+        public readonly metadata?: EmailMetadata,
     ) {
         super();
     }

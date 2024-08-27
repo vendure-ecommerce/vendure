@@ -3,6 +3,7 @@ import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
 import { isObject } from '@vendure/common/lib/shared-utils';
 import { Request } from 'express';
 import { TFunction } from 'i18next';
+import { ReplicationMode } from 'typeorm';
 
 import { idsAreEqual } from '../../common/utils';
 import { CachedSession } from '../../config/session-cache/session-cache-strategy';
@@ -32,10 +33,24 @@ export type SerializedRequestContext = {
  * the active Channel, and so on. In addition, the {@link TransactionalConnection} relies on the
  * presence of the RequestContext object in order to correctly handle per-request database transactions.
  *
+ * The RequestContext also provides mechanisms for managing the database replication mode via the
+ * {@link setReplicationMode} method and the {@link replicationMode} getter. This allows for finer control
+ * over whether database queries within the context should be executed against the master or a replica
+ * database, which can be particularly useful in distributed database environments.
+ *
  * @example
  * ```ts
  * \@Query()
  * myQuery(\@Ctx() ctx: RequestContext) {
+ *   return this.myService.getData(ctx);
+ * }
+ * ```
+ *
+ * @example
+ * ```ts
+ * \@Query()
+ * myMutation(\@Ctx() ctx: RequestContext) {
+ *   ctx.setReplicationMode('master');
  *   return this.myService.getData(ctx);
  * }
  * ```
@@ -51,6 +66,7 @@ export class RequestContext {
     private readonly _translationFn: TFunction;
     private readonly _apiType: ApiType;
     private readonly _req?: Request;
+    private _replicationMode?: ReplicationMode;
 
     /**
      * @internal
@@ -283,5 +299,29 @@ export class RequestContext {
             return result;
         }
         return copySimpleFieldsToDepth(req, 1);
+    }
+
+    /**
+     * @description
+     * Sets the replication mode for the current RequestContext. This mode determines whether the operations
+     * within this context should interact with the master database or a replica. Use this method to explicitly
+     * define the replication mode for the context.
+     *
+     * @param mode - The replication mode to be set (e.g., 'master' or 'replica').
+     */
+    setReplicationMode(mode: ReplicationMode): void {
+        this._replicationMode = mode;
+    }
+
+    /**
+     * @description
+     * Gets the current replication mode of the RequestContext. If no replication mode has been set,
+     * it returns `undefined`. This property indicates whether the context is configured to interact with
+     * the master database or a replica.
+     *
+     * @returns The current replication mode, or `undefined` if none is set.
+     */
+    get replicationMode(): ReplicationMode | undefined {
+        return this._replicationMode;
     }
 }
