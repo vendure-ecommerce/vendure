@@ -36,13 +36,13 @@ export const orderConfirmationHandler = new EmailEventListener('order-confirmati
         entityType: Order,
         label: [
             {
-                value: 'Order confirmation.',
+                value: 'Order confirmation email resend example',
                 languageCode: LanguageCode.en,
             },
         ],
         description: [
             {
-                value: 'Order confirmation can be send only for specific reasons.',
+                value: 'Order confirmation can be sent only for specific reasons',
                 languageCode: LanguageCode.en,
             },
         ],
