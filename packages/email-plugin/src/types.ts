@@ -7,13 +7,16 @@ import {
     VendureEntity,
     VendureEvent,
 } from '@vendure/core';
-import { ConfigArgs, ConfigurableOperationDefOptions } from '@vendure/core/src/common/configurable-operation';
+import {
+    ConfigArgs,
+    ConfigArgValues,
+    ConfigurableOperationDefOptions,
+} from '@vendure/core/src/common/configurable-operation';
 import { Attachment } from 'nodemailer/lib/mailer';
 import SESTransport from 'nodemailer/lib/ses-transport';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
 import { EmailGenerator } from './generator/email-generator';
-import { ConfigArg } from './graphql/generated-admin-types';
 import { EmailEventHandler } from './handler/event-handler';
 import { EmailSender } from './sender/email-sender';
 import { TemplateLoader } from './template-loader/template-loader';
@@ -542,6 +545,6 @@ export interface EventEventResendOptions<
         ctx: RequestContext,
         injector: Injector,
         entity: InstanceType<Entity>,
-        args: ConfigArg[],
+        args: ConfigArgValues<ConfArgs>,
     ) => Promise<InputEvent> | InputEvent;
 }

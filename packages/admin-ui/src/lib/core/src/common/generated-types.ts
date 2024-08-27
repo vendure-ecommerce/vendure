@@ -5642,9 +5642,9 @@ export type RemoveStockLocationsFromChannelInput = {
 };
 
 export type ResendEmailEventInput = {
-  arguments: Array<ConfigArgInput>;
   entityId: Scalars['ID']['input'];
   entityType: Scalars['String']['input'];
+  operation?: InputMaybe<ConfigurableOperationInput>;
   type: Scalars['String']['input'];
 };
 

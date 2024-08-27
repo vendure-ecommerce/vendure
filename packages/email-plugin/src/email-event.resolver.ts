@@ -2,26 +2,15 @@ import { Inject } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { Args, Query, Mutation, Resolver } from '@nestjs/graphql';
 import {
-    Ctx,
-    EventBus,
-    ID,
-    Injector,
-    Permission,
-    RequestContext,
-    TransactionalConnection,
-    VendureEntity,
-} from '@vendure/core';
-import { Allow } from '@vendure/core/src';
-
-import { EMAIL_PLUGIN_OPTIONS } from './constants';
-import { EmailEventConfigurableOperationDef } from './email-event-configurable-operation';
-import { EmailEventResend } from './email-event-resend-event';
-import {
-    ConfigurableOperationDefinition,
     EmailEvent,
     MutationResendEmailEventArgs,
     QueryEmailEventsForResendArgs,
-} from './graphql/generated-admin-types';
+} from '@vendure/common/lib/generated-types';
+import { Ctx, EventBus, ID, Injector, RequestContext, TransactionalConnection } from '@vendure/core';
+
+import { EMAIL_PLUGIN_OPTIONS } from './constants';
+import { ConfigurableEmailEventHandler } from './email-event-configurable-operation';
+import { EmailEventResend } from './email-event-resend-event';
 import { EmailEventHandler } from './handler/event-handler';
 import { InitializedEmailPluginOptions } from './types';
 
@@ -46,7 +35,6 @@ export class EmailEventResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadOrder)
     async emailEventsForResend(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryEmailEventsForResendArgs,
@@ -77,26 +65,23 @@ export class EmailEventResolver {
         const response: EmailEvent[] = [];
         for (const handler of validHandlers) {
             if (!handler.resendOptions) continue;
-            let operationDefinitions: ConfigurableOperationDefinition | undefined;
 
-            if (handler.resendOptions?.operationDefinitions)
-                operationDefinitions = new EmailEventConfigurableOperationDef(
-                    handler.resendOptions.operationDefinitions,
-                ).toGraphQlType(ctx as any);
+            const configurableEmailEventHandler = new ConfigurableEmailEventHandler(handler);
 
             response.push({
                 type: handler.type,
                 entityType,
                 label: handler.resendOptions.label,
                 description: handler.resendOptions?.description,
-                operationDefinitions,
+                operationDefinitions: configurableEmailEventHandler.configurableOperationDef?.toGraphQlType(
+                    ctx as any,
+                ),
             });
         }
         return response;
     }
 
     @Mutation()
-    @Allow(Permission.UpdateOrder, Permission.CreateOrder, Permission.DeleteOrder)
     async resendEmailEvent(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationResendEmailEventArgs,
@@ -115,11 +100,12 @@ export class EmailEventResolver {
         const canResend = await handler.resendOptions.canResend(ctx, new Injector(this.moduleRef), entity);
         if (!canResend) return false; // TODO add error
 
-        const event = await handler.resendOptions?.createEvent(
+        const configurableEmailEventHandler = new ConfigurableEmailEventHandler(handler);
+        const event = await handler.resendOptions.createEvent(
             ctx,
             new Injector(this.moduleRef),
             entity,
-            args.input.arguments,
+            configurableEmailEventHandler.argsArrayToHash(input.operation?.arguments || []),
         );
 
         await this.eventBus.publish(new EmailEventResend(handler, event));

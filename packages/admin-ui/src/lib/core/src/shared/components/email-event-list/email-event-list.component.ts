@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 
-import { lastValueFrom, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { map } from 'rxjs/operators';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     ConfigurableOperation,
     EmailEventFragment,
     GetEmailEventsForResendDocument,
     ResendEmailEventDocument,
+    ResendEmailEventInput,
     Scalars,
 } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
@@ -70,17 +70,23 @@ export class EmailEventListComponent implements OnInit {
     }
 
     onResend(emailEventType: string) {
-        // TODO: my form control value not getting updated, idk why
         const formControlValue = this.emailEventFormGroup.get(emailEventType)?.value;
         console.log(formControlValue);
+        let operation: ResendEmailEventInput['operation'] = undefined;
+        if (formControlValue.args) {
+            operation = {
+                code: formControlValue.code,
+                arguments: Object.entries(formControlValue.args).map(([name, value]) => ({
+                    name: name,
+                    value: JSON.stringify(value),
+                })),
+            };
+        }
         this.dataService
             .mutate(ResendEmailEventDocument, {
                 input: {
                     type: emailEventType,
-                    arguments: Object.entries(formControlValue.args).map(([name, value]) => ({
-                        name: name,
-                        value: JSON.stringify(value),
-                    })),
+                    operation,
                     entityId: this.entityId,
                     entityType: this.entityType,
                 },

@@ -21,14 +21,14 @@ import path from 'path';
 import { Readable } from 'stream';
 import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-import { EmailProcessor } from './email-processor';
-import { EmailEventListener } from './event-listener';
-import { orderConfirmationHandler } from './handler/default-email-handlers';
-import { EmailEventHandler } from './handler/event-handler';
-import { EmailPlugin } from './plugin';
-import { EmailSender } from './sender/email-sender';
-import { FileBasedTemplateLoader } from './template-loader/file-based-template-loader';
-import { EmailDetails, EmailPluginOptions, EmailTransportOptions } from './types';
+import { EmailProcessor } from '../src/email-processor';
+import { EmailEventListener } from '../src/event-listener';
+import { orderConfirmationHandler } from '../src/handler/default-email-handlers';
+import { EmailEventHandler } from '../src/handler/event-handler';
+import { EmailPlugin } from '../src/plugin';
+import { EmailSender } from '../src/sender/email-sender';
+import { FileBasedTemplateLoader } from '../src/template-loader/file-based-template-loader';
+import { EmailDetails, EmailPluginOptions, EmailTransportOptions } from '../src/types';
 
 describe('EmailPlugin', () => {
     let eventBus: EventBus;
@@ -57,7 +57,6 @@ describe('EmailPlugin', () => {
                         onSend,
                     },
                     handlers,
-                    ...options,
                 }),
             ],
             providers: [MockService],

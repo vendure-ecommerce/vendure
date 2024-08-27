@@ -55,7 +55,7 @@ export const orderConfirmationHandler = new EmailEventListener('order-confirmati
                 },
             ],
             args: {
-                emailEventTemplateId: {
+                testBoolean: {
                     type: 'boolean',
                     ui: { component: 'boolean-form-input' },
                     label: [{ languageCode: LanguageCode.en, value: 'Test boolean' }],

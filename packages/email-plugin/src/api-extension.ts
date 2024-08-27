@@ -1,3 +1,4 @@
+import { ConfigurableOperationInput } from 'dev-server/test-plugins/reviews/ui/generated-types';
 import gql from 'graphql-tag';
 
 export const adminSchema = gql`
@@ -17,7 +18,7 @@ export const adminSchema = gql`
         type: String!
         entityType: String!
         entityId: ID!
-        arguments: [ConfigArgInput!]!
+        operation: ConfigurableOperationInput
     }
 
     extend type Mutation {

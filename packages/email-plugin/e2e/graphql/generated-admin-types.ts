@@ -1,4 +1,5 @@
 /* eslint-disable */
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -5251,9 +5252,9 @@ export type RemoveStockLocationsFromChannelInput = {
 };
 
 export type ResendEmailEventInput = {
-    arguments: Array<ConfigArgInput>;
     entityId: Scalars['ID']['input'];
     entityType: Scalars['String']['input'];
+    operation?: InputMaybe<ConfigurableOperationInput>;
     type: Scalars['String']['input'];
 };
 
@@ -6303,3 +6304,279 @@ export type ZoneSortParameter = {
     name?: InputMaybe<SortOrder>;
     updatedAt?: InputMaybe<SortOrder>;
 };
+
+export type EmailEventFragment = {
+    type: string;
+    entityType: string;
+    label: Array<{ languageCode: LanguageCode; value: string }>;
+    description?: Array<{ languageCode: LanguageCode; value: string }> | null;
+    operationDefinitions?: {
+        code: string;
+        description: string;
+        args: Array<{
+            name: string;
+            type: string;
+            list: boolean;
+            required: boolean;
+            defaultValue?: any | null;
+            label?: string | null;
+            description?: string | null;
+            ui?: any | null;
+        }>;
+    } | null;
+};
+
+export type GetEmailEventsForResendQueryVariables = Exact<{
+    entityType: Scalars['String']['input'];
+    entityId: Scalars['ID']['input'];
+}>;
+
+export type GetEmailEventsForResendQuery = {
+    emailEventsForResend: Array<{
+        type: string;
+        entityType: string;
+        label: Array<{ languageCode: LanguageCode; value: string }>;
+        description?: Array<{ languageCode: LanguageCode; value: string }> | null;
+        operationDefinitions?: {
+            code: string;
+            description: string;
+            args: Array<{
+                name: string;
+                type: string;
+                list: boolean;
+                required: boolean;
+                defaultValue?: any | null;
+                label?: string | null;
+                description?: string | null;
+                ui?: any | null;
+            }>;
+        } | null;
+    }>;
+};
+
+export type ResendEmailEventMutationVariables = Exact<{
+    input: ResendEmailEventInput;
+}>;
+
+export type ResendEmailEventMutation = { resendEmailEvent: boolean };
+
+export const EmailEventFragmentDoc = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'EmailEvent' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'EmailEvent' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'entityType' } },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'label' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'value' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'description' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'value' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'operationDefinitions' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'args' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'list' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'required' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'defaultValue' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'label' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'ui' } },
+                                        ],
+                                    },
+                                },
+                                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<EmailEventFragment, unknown>;
+export const GetEmailEventsForResendDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'query',
+            name: { kind: 'Name', value: 'GetEmailEventsForResend' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'entityType' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+                    },
+                },
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'entityId' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'emailEventsForResend' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'entityType' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'entityType' } },
+                            },
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'entityId' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'entityId' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'EmailEvent' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'EmailEvent' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'EmailEvent' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'entityType' } },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'label' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'value' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'description' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'languageCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'value' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'operationDefinitions' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'args' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'list' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'required' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'defaultValue' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'label' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'ui' } },
+                                        ],
+                                    },
+                                },
+                                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<GetEmailEventsForResendQuery, GetEmailEventsForResendQueryVariables>;
+export const ResendEmailEventDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'ResendEmailEvent' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'ResendEmailEventInput' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'resendEmailEvent' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'input' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                            },
+                        ],
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<ResendEmailEventMutation, ResendEmailEventMutationVariables>;
