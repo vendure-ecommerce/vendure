@@ -550,6 +550,7 @@ export interface EventEventResendOptions<
     ) => Promise<InputEvent> | InputEvent;
 }
 
+/**
  * A function used to set the {@link EmailMetadata}.
  *
  * @since 3.1.0

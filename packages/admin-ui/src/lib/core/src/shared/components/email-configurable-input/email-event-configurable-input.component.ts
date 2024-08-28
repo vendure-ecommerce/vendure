@@ -22,7 +22,11 @@ import {
     Validators,
 } from '@angular/forms';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { configurableOperationValueIsValid, getDefaultConfigArgValue } from '@vendure/admin-ui/core';
+import {
+    configurableOperationValueIsValid,
+    getDefaultConfigArgValue,
+} from '../../../common/utilities/configurable-operation-utils';
+import { interpolateDescription } from '../../../common/utilities/interpolate-description';
 import {
     ConfigArg,
     ConfigArgDefinition,
@@ -30,7 +34,6 @@ import {
     ConfigurableOperationDefinition,
 } from '../../../common/generated-types';
 import { CurrencyService } from '../../../providers/currency/currency.service';
-import { interpolateDescription } from '../../../common/utilities/interpolate-description';
 
 /**
  * A form input which renders a card with the internal form fields of the given ConfigurableOperation.
