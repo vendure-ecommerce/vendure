@@ -295,6 +295,8 @@
     "notify-update-error": "Произошла ошибка, не удалось обновить { entity }",
     "notify-update-success": "Обновлено { entity }",
     "notify-updated-tags-success": "Успешно обновлены теги",
+    "notify-send-success": "{ entity } отправлено",
+    "notify-send-error": "Ошибка, не удалось отправить { entity }",
     "okay": "Хорошо",
     "operator-contains": "содержит",
     "operator-eq": "равен",

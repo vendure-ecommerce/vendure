@@ -295,6 +295,8 @@
     "notify-update-error": "Došlo je do pogreške, nije moguće ažurirati { entity }",
     "notify-update-success": "Ažurirano { entity }",
     "notify-updated-tags-success": "Uspješno ažurirane oznake",
+    "notify-send-success": "Uspješno poslano { entity }",
+    "notify-send-error": "Došlo je do pogreške, nije moguće poslati { entity }",
     "okay": "U redu",
     "operator-contains": "sadrži",
     "operator-eq": "jednako",

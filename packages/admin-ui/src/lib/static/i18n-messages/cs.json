@@ -295,6 +295,8 @@
     "notify-update-error": "Vyskytla se chyba, nebylo aktualizováno: { entity }",
     "notify-update-success": "Aktualizováno: { entity }",
     "notify-updated-tags-success": "",
+    "notify-send-success": "{ entity } bylo odesláno",
+    "notify-send-error": "Vyskytla se chyba, { entity } nebylo odesláno",
     "okay": "",
     "operator-contains": "",
     "operator-eq": "",

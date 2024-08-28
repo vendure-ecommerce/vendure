@@ -1,9 +1,21 @@
-import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { Omit } from '@vendure/common/lib/omit';
-import { Injector, RequestContext, SerializedRequestContext, VendureEvent } from '@vendure/core';
+import {
+    Injector,
+    LanguageCode,
+    RequestContext,
+    SerializedRequestContext,
+    VendureEntity,
+    VendureEvent,
+} from '@vendure/core';
+import {
+    ConfigArgs,
+    ConfigArgValues,
+    ConfigurableOperationDefOptions,
+} from '@vendure/core/dist/common/configurable-operation';
 import { Attachment } from 'nodemailer/lib/mailer';
 import SESTransport from 'nodemailer/lib/ses-transport';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
+
+import { LocalizedString } from '../e2e/graphql/generated-admin-types';
 
 import { EmailGenerator } from './generator/email-generator';
 import { EmailEventHandler } from './handler/event-handler';
@@ -19,7 +31,7 @@ import { TemplateLoader } from './template-loader/template-loader';
  * @docsCategory core plugins/EmailPlugin
  * @docsPage Email Plugin Types
  */
-export type EventWithContext = VendureEvent & { ctx: RequestContext };
+export type EventWithContext<Event extends VendureEvent = VendureEvent> = Event & { ctx: RequestContext };
 
 /**
  * @description
@@ -500,6 +512,46 @@ export type SetOptionalAddressFieldsFn<Event> = (
 
 /**
  * @description
+ * A property used to set UI for manual event trigger of {@link EmailEventListener}
+ * Represents options for configuring the UI block that allows managers to manually resend emails.
+ *
+ * @since 3.0.0
+ * @docsCategory core plugins/EmailPlugin
+ * @docsPage Email Plugin Types
+ */
+export interface EventEventResendOptions<
+    InputEvent extends EventWithContext = EventWithContext,
+    Entity extends abstract new (...args: any) => VendureEntity = abstract new (
+        ...args: any
+    ) => VendureEntity,
+    ConfArgs extends ConfigArgs = ConfigArgs,
+> {
+    /**
+     * The entity for which the UI block is being generated. This could be an Order, Customer, or any other entity.
+     */
+    entityType: Entity;
+
+    label: Array<Omit<LocalizedString, '__typename'>>;
+
+    description?: Array<Omit<LocalizedString, '__typename'>>;
+
+    operationDefinitions?: ConfigurableOperationDefOptions<ConfArgs>;
+
+    canResend: (
+        ctx: RequestContext,
+        injector: Injector,
+        entity: InstanceType<Entity>,
+    ) => Promise<boolean> | boolean;
+
+    createEvent: (
+        ctx: RequestContext,
+        injector: Injector,
+        entity: InstanceType<Entity>,
+        args: ConfigArgValues<ConfArgs>,
+    ) => Promise<InputEvent> | InputEvent;
+}
+
+/**
  * A function used to set the {@link EmailMetadata}.
  *
  * @since 3.1.0

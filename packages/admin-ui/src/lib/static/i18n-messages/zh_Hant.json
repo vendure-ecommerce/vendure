@@ -295,6 +295,8 @@
     "notify-update-error": "更新{ entity }失敗",
     "notify-update-success": "{ entity }已更新",
     "notify-updated-tags-success": "",
+    "notify-send-success": "已發送{ entity }",
+    "notify-send-error": "發送{ entity }失敗",
     "okay": "",
     "operator-contains": "",
     "operator-eq": "",

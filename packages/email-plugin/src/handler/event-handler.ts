@@ -1,6 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Type } from '@vendure/common/lib/shared-types';
-import { Injector, Logger } from '@vendure/core';
+import { Injector, Logger, VendureEntity } from '@vendure/core';
 
 import { serializeAttachments } from '../attachment-utils';
 import { loggerCtx } from '../constants';
@@ -8,6 +8,7 @@ import { EmailEventListener } from '../event-listener';
 import {
     EmailAttachment,
     EmailTemplateConfig,
+    EventEventResendOptions,
     EventWithAsyncData,
     EventWithContext,
     IntermediateEmailDetails,
@@ -150,6 +151,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         bcc?: string;
     };
     private _mockEvent: Omit<Event, 'ctx' | 'data'> | undefined;
+    private _resendOptions?: EventEventResendOptions<Event>;
 
     constructor(
         public listener: EmailEventListener<T>,
@@ -360,6 +362,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         asyncHandler.defaultSubject = this.defaultSubject;
         asyncHandler.from = this.from;
         asyncHandler._mockEvent = this._mockEvent as any;
+        asyncHandler._resendOptions = this._resendOptions as any;
         return asyncHandler;
     }
 
@@ -444,6 +447,28 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
             metadata,
             ...optionalAddressFields,
         };
+    }
+
+    /**
+     * Sets the UI options for this EmailEventHandler, enabling the generation of a UI block for resending emails.
+     * This property should be defined before loadData method
+     *
+     * @param handlerOptions - The options that define how the UI block should behave.
+     */
+    setResendOptions<E extends abstract new (...args: any) => VendureEntity>(
+        handlerOptions: EventEventResendOptions<Event, E>,
+    ): EmailEventHandler<T, Event> {
+        this._resendOptions = handlerOptions;
+        return this;
+    }
+
+    /**
+     * Retrieves the UI options for this EmailEventHandler.
+     *
+     * @returns The UI options if they have been set, otherwise undefined.
+     */
+    get resendOptions() {
+        return this._resendOptions;
     }
 
     /**

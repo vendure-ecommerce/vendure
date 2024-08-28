@@ -295,6 +295,8 @@
     "notify-update-error": "Ocorreu um erro. Não foi possível actualizar a entidade { entity }",
     "notify-update-success": "Entidade ({ entity }) actualizada com sucesso",
     "notify-updated-tags-success": "Tags actualizadas com sucesso",
+    "notify-send-success": "Notificação enviada com sucesso",
+    "notify-send-error": "Erro ao enviar notificação",
     "okay": "Ok",
     "operator-contains": "Contém",
     "operator-eq": "Igual",

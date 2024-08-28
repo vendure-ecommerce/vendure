@@ -1573,6 +1573,14 @@ export type EmailAddressConflictError = ErrorResult & {
     message: Scalars['String']['output'];
 };
 
+export type EmailEvent = {
+    description?: Maybe<Array<LocalizedString>>;
+    entityType: Scalars['String']['output'];
+    label: Array<LocalizedString>;
+    operationDefinitions?: Maybe<ConfigurableOperationDefinition>;
+    type: Scalars['String']['output'];
+};
+
 /** Returned if no OrderLines have been specified for the operation */
 export type EmptyOrderLineSelectionError = ErrorResult & {
     errorCode: ErrorCode;
@@ -2855,6 +2863,7 @@ export type Mutation = {
     removeShippingMethodsFromChannel: Array<ShippingMethod>;
     /** Removes StockLocations from the specified Channel */
     removeStockLocationsFromChannel: Array<StockLocation>;
+    resendEmailEvent: Scalars['Boolean']['output'];
     runPendingSearchIndexUpdates: Success;
     setCustomerForDraftOrder: SetCustomerForDraftOrderResult;
     /** Sets the billing address for a draft Order */
@@ -3416,6 +3425,10 @@ export type MutationRemoveShippingMethodsFromChannelArgs = {
 
 export type MutationRemoveStockLocationsFromChannelArgs = {
     input: RemoveStockLocationsFromChannelInput;
+};
+
+export type MutationResendEmailEventArgs = {
+    input: ResendEmailEventInput;
 };
 
 export type MutationSetCustomerForDraftOrderArgs = {
@@ -4759,6 +4772,7 @@ export type Query = {
     customers: CustomerList;
     /** Returns a list of eligible shipping methods for the draft Order */
     eligibleShippingMethodsForDraftOrder: Array<ShippingMethodQuote>;
+    emailEventsForResend: Array<EmailEvent>;
     /** Returns all configured EntityDuplicators. */
     entityDuplicators: Array<EntityDuplicatorDefinition>;
     facet?: Maybe<Facet>;
@@ -4881,6 +4895,11 @@ export type QueryCustomersArgs = {
 
 export type QueryEligibleShippingMethodsForDraftOrderArgs = {
     orderId: Scalars['ID']['input'];
+};
+
+export type QueryEmailEventsForResendArgs = {
+    entityId: Scalars['ID']['input'];
+    entityType: Scalars['String']['input'];
 };
 
 export type QueryFacetArgs = {
@@ -5230,6 +5249,13 @@ export type RemoveShippingMethodsFromChannelInput = {
 export type RemoveStockLocationsFromChannelInput = {
     channelId: Scalars['ID']['input'];
     stockLocationIds: Array<Scalars['ID']['input']>;
+};
+
+export type ResendEmailEventInput = {
+    entityId: Scalars['ID']['input'];
+    entityType: Scalars['String']['input'];
+    operation?: InputMaybe<ConfigurableOperationInput>;
+    type: Scalars['String']['input'];
 };
 
 export type Return = Node &

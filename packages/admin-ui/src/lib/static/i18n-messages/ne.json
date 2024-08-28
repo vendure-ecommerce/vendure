@@ -295,6 +295,8 @@
     "notify-update-error": "त्रुटि देखा पर्‍यो, { entity } अपडेट गर्न असमर्थ",
     "notify-update-success": "{ entity } अपडेट गरियो",
     "notify-updated-tags-success": "ट्यागहरू सफलतापूर्वक अपडेट गरियो",
+    "notify-send-success": "{ entity } सफलतापूर्वक पठाइयो",
+    "notify-send-error": "त्रुटि देखा पर्‍यो, { entity } पठाउन असमर्थ",
     "okay": "ठिक छ",
     "operator-contains": "समावेश गर्दछ",
     "operator-eq": "समान छ",

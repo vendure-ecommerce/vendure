@@ -5,8 +5,10 @@ import {
     EntityHydrator,
     IdentifierChangeRequestEvent,
     Injector,
+    LanguageCode,
     NativeAuthenticationMethod,
     Order,
+    OrderService,
     OrderStateTransitionEvent,
     PasswordResetEvent,
     RequestContext,
@@ -30,6 +32,57 @@ export const orderConfirmationHandler = new EmailEventListener('order-confirmati
         event =>
             event.toState === 'PaymentSettled' && event.fromState !== 'Modifying' && !!event.order.customer,
     )
+    .setResendOptions({
+        entityType: Order,
+        label: [
+            {
+                value: 'Order confirmation email resend example',
+                languageCode: LanguageCode.en,
+            },
+        ],
+        description: [
+            {
+                value: 'Order confirmation can be sent only for specific reasons',
+                languageCode: LanguageCode.en,
+            },
+        ],
+        operationDefinitions: {
+            code: 'order-confirmation',
+            description: [
+                {
+                    languageCode: LanguageCode.en,
+                    value: 'Resend order confirmation',
+                },
+            ],
+            args: {
+                testBoolean: {
+                    type: 'boolean',
+                    ui: { component: 'boolean-form-input' },
+                    label: [{ languageCode: LanguageCode.en, value: 'Test boolean' }],
+                },
+                testNumber: {
+                    type: 'int',
+                    ui: { component: 'number-form-input' },
+                    label: [{ languageCode: LanguageCode.en, value: 'Test number' }],
+                },
+            },
+        },
+        canResend: (_ctx, _injector, _entity) => {
+            return true;
+        },
+        createEvent: async (ctx, injector, entity, _args) => {
+            const completeOrderEntity = await injector.get(OrderService).findOne(ctx, entity.id);
+            if (!completeOrderEntity) {
+                throw new Error('Order not found');
+            }
+            return new OrderStateTransitionEvent(
+                'ArrangingPayment',
+                'PaymentSettled',
+                ctx,
+                completeOrderEntity,
+            );
+        },
+    })
     .loadData(async ({ event, injector }) => {
         transformOrderLineAssetUrls(event.ctx, event.order, injector);
         const shippingLines = await hydrateShippingLines(event.ctx, event.order, injector);

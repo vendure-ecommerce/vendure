@@ -295,6 +295,8 @@
     "notify-update-error": "حدث خطأ , لا يمكن تحديث { entity }",
     "notify-update-success": "تم تحديث { entity }",
     "notify-updated-tags-success": "العلامات التي تم تحديثها بنجاح",
+    "notify-send-success": "تم إرسال { entity }",
+    "notify-send-error": "حدث خطأ , لم يستطع إرسال { entity }",
     "okay": "حفظ",
     "operator-contains": "يتضمن",
     "operator-eq": "يساوي",

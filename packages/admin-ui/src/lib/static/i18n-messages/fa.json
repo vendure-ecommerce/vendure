@@ -295,6 +295,8 @@
     "notify-update-error": "خطایی روی داد، { entity } بروزرسانی نشد.",
     "notify-update-success": "{ entity } بروزرسانی شد.",
     "notify-updated-tags-success": "برچسب ها با موفقیت بروزرسانی شد",
+    "notify-send-success": "{ entity } ارسال شد",
+    "notify-send-error": "خطایی روی داد، { entity } ارسال نشد.",
     "okay": "اوکی",
     "operator-contains": "شامل",
     "operator-eq": "برابر با",
