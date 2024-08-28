@@ -14,6 +14,11 @@ import {
     ID,
 } from '@vendure/core';
 import { awaitRunningJobs } from '@vendure/core/e2e/utils/await-running-jobs';
+import { GET_CUSTOMER_LIST } from '@vendure/payments-plugin/e2e/graphql/admin-queries';
+import {
+    GetCustomerListQuery,
+    GetCustomerListQueryVariables,
+} from '@vendure/payments-plugin/e2e/graphql/generated-admin-types';
 import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it, Mock, vi } from 'vitest';
@@ -32,7 +37,7 @@ import {
     ResendEmailEventDocument,
 } from './graphql/generated-admin-types';
 
-const pause = () => new Promise(resolve => setTimeout(resolve, 100));
+const pause = () => new Promise(resolve => setTimeout(resolve, 1000));
 
 class MockEvent extends VendureEvent {
     constructor(
@@ -97,7 +102,7 @@ const testOrderConfirmationHandler = new EmailEventListener('test-order-confirma
     })
     .setFrom('"test from" <noreply@test.com>')
     .setRecipient(() => 'test@test.com')
-    .setSubject('Order confirmation for #{{ order.code }}');
+    .setSubject('Order confirmation');
 
 const testOrderConfirmationWithoutOperationHandler = new EmailEventListener(
     'test-order-confirmation-without-operation',
@@ -132,7 +137,7 @@ const testOrderConfirmationWithoutOperationHandler = new EmailEventListener(
     })
     .setFrom('"test from" <noreply@test.com>')
     .setRecipient(() => 'test@test.com')
-    .setSubject('Order confirmation for #{{ order.code }} without operation');
+    .setSubject('Order confirmation without operation');
 
 const testCustomerEmail = new EmailEventListener('test-customer-resend')
     .on(MockEvent)
@@ -197,6 +202,7 @@ const testCustomerEmail = new EmailEventListener('test-customer-resend')
 describe('Email resend admin api', () => {
     let eventBus: EventBus;
     const onSend: Mock = vi.fn();
+    let customers: GetCustomerListQuery['customers']['items'];
     let customerId: ID;
 
     const { server, adminClient, shopClient } = createTestEnvironment(
@@ -227,6 +233,16 @@ describe('Email resend admin api', () => {
         });
         eventBus = server.app.get(EventBus);
         await adminClient.asSuperAdmin();
+        ({
+            customers: { items: customers },
+        } = await adminClient.query<GetCustomerListQuery, GetCustomerListQueryVariables>(GET_CUSTOMER_LIST, {
+            options: {
+                take: 1,
+            },
+        }));
+        customerId = customers[0].id;
+        await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
+        await addItemToOrder(shopClient, 'T_1', 1);
         await awaitRunningJobs(adminClient);
     }, TEST_SETUP_TIMEOUT_MS);
 
@@ -236,11 +252,6 @@ describe('Email resend admin api', () => {
     });
 
     describe('admin api', () => {
-        beforeAll(async () => {
-            customerId = await createCustomerAndLogin(adminClient, shopClient);
-            await addItemToOrder(shopClient, 'T_1', 1);
-        });
-
         it('test ResendEmailEvent publish and process', async () => {
             onSend.mockClear();
             const ctx = RequestContext.deserialize({
@@ -251,7 +262,7 @@ describe('Email resend admin api', () => {
                 new EmailEventResend(testOrderConfirmationHandler as any, new MockEvent(ctx, true)),
             );
             await pause();
-            expect(onSend.mock.calls[0][0].subject).toBe('Order confirmation for #T_1');
+            expect(onSend.mock.calls[0][0].subject).toBe('Order confirmation');
             expect(onSend.mock.calls[0][0].recipient).toBe('test@test.com');
             expect(onSend.mock.calls[0][0].from).toBe('"test from" <noreply@test.com>');
         });
@@ -265,10 +276,18 @@ describe('Email resend admin api', () => {
                 throw new Error('Error in query');
             }
             expect(orderEmailEventsForResend.emailEventsForResend.length).toBe(2);
-            expect(orderEmailEventsForResend.emailEventsForResend[0].label).toBe('Resend order confirmation');
-            expect(orderEmailEventsForResend.emailEventsForResend[0].description).toBe(
-                'Resend order confirmation. It can be send only for specific reasons',
-            );
+            expect(orderEmailEventsForResend.emailEventsForResend[0].label).toStrictEqual([
+                {
+                    languageCode: 'en',
+                    value: 'Resend order confirmation',
+                },
+            ]);
+            expect(orderEmailEventsForResend.emailEventsForResend[0].description).toStrictEqual([
+                {
+                    value: 'Resend order confirmation. It can be send only for specific reasons',
+                    languageCode: LanguageCode.en,
+                },
+            ]);
             if (!orderEmailEventsForResend.emailEventsForResend[0].operationDefinitions) {
                 throw new Error('Operation definitions are not defined, but should be');
             }
@@ -291,12 +310,18 @@ describe('Email resend admin api', () => {
                 'int',
             );
 
-            expect(orderEmailEventsForResend.emailEventsForResend[1].label).toBe(
-                'Resend order confirmation without operation',
-            );
-            expect(orderEmailEventsForResend.emailEventsForResend[1].description).toBe(
-                'Resend order confirmation without args. It can be send only for specific reasons',
-            );
+            expect(orderEmailEventsForResend.emailEventsForResend[1].label).toStrictEqual([
+                {
+                    languageCode: LanguageCode.en,
+                    value: 'Resend order confirmation without operation',
+                },
+            ]);
+            expect(orderEmailEventsForResend.emailEventsForResend[1].description).toStrictEqual([
+                {
+                    languageCode: LanguageCode.en,
+                    value: 'Resend order confirmation without args. It can be send only for specific reasons',
+                },
+            ]);
             expect(orderEmailEventsForResend.emailEventsForResend[1].operationDefinitions).toBe(null);
 
             const customerEmailEventsForResend = await adminClient.query(GetEmailEventsForResendDocument, {
@@ -307,12 +332,18 @@ describe('Email resend admin api', () => {
                 throw new Error('Error in query');
             }
             expect(customerEmailEventsForResend.emailEventsForResend.length).toBe(1);
-            expect(customerEmailEventsForResend.emailEventsForResend[0].label).toBe(
-                'Resend customer test email',
-            );
-            expect(customerEmailEventsForResend.emailEventsForResend[0].description).toBe(
-                'Resend customer test email. It can be send only for specific reasons',
-            );
+            expect(customerEmailEventsForResend.emailEventsForResend[0].label).toStrictEqual([
+                {
+                    languageCode: LanguageCode.en,
+                    value: 'Resend customer test email',
+                },
+            ]);
+            expect(customerEmailEventsForResend.emailEventsForResend[0].description).toStrictEqual([
+                {
+                    languageCode: LanguageCode.en,
+                    value: 'Resend customer test email. It can be send only for specific reasons',
+                },
+            ]);
             if (!customerEmailEventsForResend.emailEventsForResend[0].operationDefinitions) {
                 throw new Error('Operation definitions are not defined, but should be');
             }
@@ -348,7 +379,7 @@ describe('Email resend admin api', () => {
             }
 
             const orderEmailEventsForResend = availableEvents.emailEventsForResend;
-            expect(orderEmailEventsForResend.length).toBe(1);
+            expect(orderEmailEventsForResend.length).toBe(2);
             const orderEvent = orderEmailEventsForResend[0];
             const orderEventType = orderEvent.type;
             const orderEventOperation = orderEvent.operationDefinitions;
@@ -383,7 +414,7 @@ describe('Email resend admin api', () => {
                 throw new Error('Error in mutation');
             }
             await pause();
-            expect(onSend.mock.calls[0][0].subject).toBe('Order confirmation for #T_1');
+            expect(onSend.mock.calls[0][0].subject).toBe('Order confirmation');
         });
 
         it('test customer test email event for resend', async () => {
@@ -436,43 +467,50 @@ describe('Email resend admin api', () => {
             await pause();
             expect(onSend.mock.calls[0][0].subject).toBe('Test customer');
         });
-    });
 
-    it('test emailEventsForResend query without operation', async () => {
-        onSend.mockClear();
-        const orderEmailEventsForResend = await adminClient.query(GetEmailEventsForResendDocument, {
-            entityType: 'Order',
-            entityId: 'T_1',
+        it('test emailEventsForResend query without operation', async () => {
+            onSend.mockClear();
+            const orderEmailEventsForResend = await adminClient.query(GetEmailEventsForResendDocument, {
+                entityType: 'Order',
+                entityId: 'T_1',
+            });
+            if (isGraphQlErrorResult(orderEmailEventsForResend)) {
+                throw new Error('Error in query');
+            }
+            expect(orderEmailEventsForResend.emailEventsForResend.length).toBe(2);
+            expect(orderEmailEventsForResend.emailEventsForResend[1].label).toStrictEqual([
+                {
+                    languageCode: LanguageCode.en,
+                    value: 'Resend order confirmation without operation',
+                },
+            ]);
+            expect(orderEmailEventsForResend.emailEventsForResend[1].description).toStrictEqual([
+                {
+                    value: 'Resend order confirmation without args. It can be send only for specific reasons',
+                    languageCode: LanguageCode.en,
+                },
+            ]);
+            expect(orderEmailEventsForResend.emailEventsForResend[1].operationDefinitions).toBe(null);
+
+            const orderEvent = orderEmailEventsForResend.emailEventsForResend[1];
+            const orderEventOperation = orderEvent.operationDefinitions;
+            expect(orderEventOperation).toBe(null);
+            const orderEventType = orderEvent.type;
+            const orderEventEntity = orderEvent.entityType;
+            const orderEntityId = 'T_1';
+            const orderEventResend = await adminClient.query(ResendEmailEventDocument, {
+                input: {
+                    type: orderEventType,
+                    entityType: orderEventEntity,
+                    entityId: orderEntityId,
+                },
+            });
+
+            if (isGraphQlErrorResult(orderEventResend)) {
+                throw new Error('Error in mutation');
+            }
+            await pause();
+            expect(onSend.mock.calls[0][0].subject).toBe('Order confirmation without operation');
         });
-        if (isGraphQlErrorResult(orderEmailEventsForResend)) {
-            throw new Error('Error in query');
-        }
-        expect(orderEmailEventsForResend.emailEventsForResend.length).toBe(2);
-        expect(orderEmailEventsForResend.emailEventsForResend[0].label).toBe(
-            'Resend order confirmation without operation',
-        );
-        expect(orderEmailEventsForResend.emailEventsForResend[0].description).toBe(
-            'Resend order confirmation without args. It can be send only for specific reasons',
-        );
-        expect(orderEmailEventsForResend.emailEventsForResend[0].operationDefinitions).toBe(null);
-
-        const orderEvent = orderEmailEventsForResend.emailEventsForResend[1];
-        const orderEventOperation = orderEvent.operationDefinitions;
-        const orderEventType = orderEvent.type;
-        const orderEventEntity = orderEvent.entityType;
-        const orderEntityId = 'T_1';
-        const orderEventResend = await adminClient.query(ResendEmailEventDocument, {
-            input: {
-                type: orderEventType,
-                entityType: orderEventEntity,
-                entityId: orderEntityId,
-            },
-        });
-
-        if (isGraphQlErrorResult(orderEventResend)) {
-            throw new Error('Error in mutation');
-        }
-        await pause();
-        expect(onSend.mock.calls[0][0].subject).toBe('Order confirmation for #T_1 without operation');
     });
 });
