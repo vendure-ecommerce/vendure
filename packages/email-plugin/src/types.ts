@@ -1,7 +1,6 @@
-import { LanguageCode, LocalizedString } from '@vendure/common/lib/generated-types';
-import { Omit } from '@vendure/common/lib/omit';
 import {
     Injector,
+    LanguageCode,
     RequestContext,
     SerializedRequestContext,
     VendureEntity,
@@ -15,6 +14,8 @@ import {
 import { Attachment } from 'nodemailer/lib/mailer';
 import SESTransport from 'nodemailer/lib/ses-transport';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
+
+import { LocalizedString } from '../e2e/graphql/generated-admin-types';
 
 import { EmailGenerator } from './generator/email-generator';
 import { EmailEventHandler } from './handler/event-handler';
