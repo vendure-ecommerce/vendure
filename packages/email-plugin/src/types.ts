@@ -10,7 +10,7 @@ import {
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDefOptions,
-} from '@vendure/core/src/common/configurable-operation';
+} from '@vendure/core/dist/common/configurable-operation';
 import { Attachment } from 'nodemailer/lib/mailer';
 import SESTransport from 'nodemailer/lib/ses-transport';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';

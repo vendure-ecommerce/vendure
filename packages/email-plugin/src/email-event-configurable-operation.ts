@@ -2,7 +2,7 @@ import {
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
-} from '@vendure/core/src/common/configurable-operation';
+} from '@vendure/core/dist/common/configurable-operation';
 import { ConfigArg } from 'dev-server/test-plugins/reviews/ui/generated-types';
 
 import { EmailEventHandler } from './handler/event-handler';
