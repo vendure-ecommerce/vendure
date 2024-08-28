@@ -7,10 +7,12 @@ import {
     Output,
 } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-
-import { Asset, ASSET_SIZES, AssetPickerDialogComponent, ModalService } from '@vendure/admin-ui/core';
 import { unique } from '@vendure/common/lib/unique';
+import { Asset } from '../../../../common/generated-types';
+import { ModalService } from '../../../../providers/modal/modal.service';
 import { Dialog } from '../../../../providers/modal/modal.types';
+import { AssetPickerDialogComponent } from '../../asset-picker-dialog/asset-picker-dialog.component';
+import { ASSET_SIZES } from '../../asset-preview-links/asset-preview-links.component';
 
 export interface ExternalImageAttrs {
     src: string;
