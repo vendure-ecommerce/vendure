@@ -57,6 +57,7 @@ describe('EmailPlugin', () => {
                         onSend,
                     },
                     handlers,
+                    ...options,
                 }),
             ],
             providers: [MockService],
