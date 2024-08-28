@@ -20,7 +20,7 @@ import { afterAll, beforeAll, describe, expect, it, Mock, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
-import { ResendEmailEvent } from '../lib/src/manual-email-send-event';
+import { EmailEventResend } from '../src/email-event-resend-event';
 import { EmailEventListener } from '../src/event-listener';
 import { EmailPlugin } from '../src/plugin';
 import { FileBasedTemplateLoader } from '../src/template-loader/file-based-template-loader';
@@ -248,7 +248,7 @@ describe('Email resend admin api', () => {
                 _languageCode: LanguageCode.en,
             } as any);
             await eventBus.publish(
-                new ResendEmailEvent(testOrderConfirmationHandler as any, new MockEvent(ctx, true)),
+                new EmailEventResend(testOrderConfirmationHandler as any, new MockEvent(ctx, true)),
             );
             await pause();
             expect(onSend.mock.calls[0][0].subject).toBe('Order confirmation for #T_1');
