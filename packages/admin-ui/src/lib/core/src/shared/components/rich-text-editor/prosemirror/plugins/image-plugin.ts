@@ -67,7 +67,6 @@ export function insertImageItem(nodeType: NodeType, modalService: ModalService) 
                 })
                 .subscribe(result => {
                     if (result) {
-                        console.log(result);
                         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         view.dispatch(view.state.tr.replaceSelectionWith(nodeType.createAndFill(result)!));
                     }
