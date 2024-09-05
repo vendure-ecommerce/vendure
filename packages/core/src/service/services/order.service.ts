@@ -53,7 +53,6 @@ import {
     CancelPaymentError,
     EmptyOrderLineSelectionError,
     FulfillmentStateTransitionError,
-    RefundStateTransitionError,
     InsufficientStockOnHandError,
     ItemsAlreadyFulfilledError,
     ManualPaymentStateError,
@@ -61,6 +60,7 @@ import {
     NothingToRefundError,
     PaymentOrderMismatchError,
     RefundOrderStateError,
+    RefundStateTransitionError,
     SettlePaymentError,
 } from '../../common/error/generated-graphql-admin-errors';
 import {
@@ -561,6 +561,7 @@ export class OrderService {
                 enabled: true,
                 deletedAt: IsNull(),
             },
+            loadEagerRelations: false,
         });
         if (variant.product.enabled === false) {
             throw new EntityNotFoundError('ProductVariant', productVariantId);
@@ -1776,22 +1777,77 @@ export class OrderService {
             }
         }
 
+        // Get the shipping line IDs before doing the order calculation
+        // step, which can in some cases change the applied shipping lines.
+        const shippingLineIdsPre = order.shippingLines.map(l => l.id);
+
         const updatedOrder = await this.orderCalculator.applyPriceAdjustments(
             ctx,
             order,
             promotions,
             updatedOrderLines ?? [],
         );
+
+        const shippingLineIdsPost = updatedOrder.shippingLines.map(l => l.id);
+        await this.applyChangesToShippingLines(ctx, updatedOrder, shippingLineIdsPre, shippingLineIdsPost);
+
+        // Explicitly omit the shippingAddress and billingAddress properties to avoid
+        // a race condition where changing one or the other in parallel can
+        // overwrite the other's changes. The other omissions prevent the save
+        // function from doing more work than necessary.
         await this.connection
             .getRepository(ctx, Order)
-            // Explicitly omit the shippingAddress and billingAddress properties to avoid
-            // a race condition where changing one or the other in parallel can
-            // overwrite the other's changes.
-            .save(omit(updatedOrder, ['shippingAddress', 'billingAddress']), { reload: false });
+            .save(
+                omit(updatedOrder, [
+                    'shippingAddress',
+                    'billingAddress',
+                    'lines',
+                    'shippingLines',
+                    'aggregateOrder',
+                    'sellerOrders',
+                    'customer',
+                    'modifications',
+                ]),
+                {
+                    reload: false,
+                },
+            );
         await this.connection.getRepository(ctx, OrderLine).save(updatedOrder.lines, { reload: false });
         await this.connection.getRepository(ctx, ShippingLine).save(order.shippingLines, { reload: false });
         await this.promotionService.runPromotionSideEffects(ctx, order, activePromotionsPre);
 
         return assertFound(this.findOne(ctx, order.id));
+    }
+
+    /**
+     * Applies changes to the shipping lines of an order, adding or removing the relations
+     * in the database.
+     */
+    private async applyChangesToShippingLines(
+        ctx: RequestContext,
+        order: Order,
+        shippingLineIdsPre: ID[],
+        shippingLineIdsPost: ID[],
+    ) {
+        const removedShippingLineIds = shippingLineIdsPre.filter(id => !shippingLineIdsPost.includes(id));
+        const newlyAddedShippingLineIds = shippingLineIdsPost.filter(id => !shippingLineIdsPre.includes(id));
+
+        for (const idToRemove of removedShippingLineIds) {
+            await this.connection
+                .getRepository(ctx, Order)
+                .createQueryBuilder()
+                .relation('shippingLines')
+                .of(order)
+                .remove(idToRemove);
+        }
+
+        for (const idToAdd of newlyAddedShippingLineIds) {
+            await this.connection
+                .getRepository(ctx, Order)
+                .createQueryBuilder()
+                .relation('shippingLines')
+                .of(order)
+                .add(idToAdd);
+        }
     }
 }
