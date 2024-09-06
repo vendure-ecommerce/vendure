@@ -20,6 +20,7 @@ export interface ExternalImageAttrs {
     alt: string;
     width: string;
     height: string;
+    dataExternal: boolean;
 }
 
 export interface ExternalAssetChange {
@@ -63,6 +64,7 @@ export class ExternalImageDialogComponent implements OnInit, Dialog<ExternalImag
             alt: new UntypedFormControl(this.existing ? this.existing.alt : ''),
             width: new UntypedFormControl(this.existing ? this.existing.width : ''),
             height: new UntypedFormControl(this.existing ? this.existing.height : ''),
+            dataExternal: new UntypedFormControl(this.existing ? this.existing.dataExternal : true),
         });
     }
 
@@ -92,7 +94,10 @@ export class ExternalImageDialogComponent implements OnInit, Dialog<ExternalImag
 
                     this.form.patchValue({
                         src: result[0].source,
+                        dataExternal: false,
                     });
+
+                    this.form.get('src')?.disable();
 
                     this.emitChangeEvent(this.assets);
                     this.changeDetector.markForCheck();
@@ -115,5 +120,11 @@ export class ExternalImageDialogComponent implements OnInit, Dialog<ExternalImag
             width: this.form.get('width')?.value,
             height: this.form.get('height')?.value,
         });
+    }
+
+    removeImage() {
+        this.form.get('src')?.setValue('');
+        this.form.get('src')?.enable();
+        this.form.get('dataExternal')?.setValue(true);
     }
 }

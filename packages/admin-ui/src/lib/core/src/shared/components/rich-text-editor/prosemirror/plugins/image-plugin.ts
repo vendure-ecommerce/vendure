@@ -19,6 +19,7 @@ export const imageNode: NodeSpec = {
         title: { default: null },
         width: { default: null },
         height: { default: null },
+        dataExternal: { default: true },
     },
     group: 'inline',
     draggable: true,
@@ -32,13 +33,14 @@ export const imageNode: NodeSpec = {
                     alt: (dom as HTMLImageElement).getAttribute('alt'),
                     width: (dom as HTMLImageElement).getAttribute('width'),
                     height: (dom as HTMLImageElement).getAttribute('height'),
+                    dataExternal: (dom as HTMLImageElement).hasAttribute('data-external'),
                 };
             },
         },
     ],
     toDOM(node) {
-        const { src, alt, title, width, height } = node.attrs;
-        return ['img', { src, alt, title, width, height }];
+        const { src, alt, title, width, height, dataExternal } = node.attrs;
+        return ['img', { src, alt, title, width, height, 'data-external': dataExternal }];
     },
 };
 
