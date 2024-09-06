@@ -53,6 +53,7 @@ import { SessionCacheStrategy } from './session-cache/session-cache-strategy';
 import { ShippingCalculator } from './shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from './shipping-method/shipping-eligibility-checker';
 import { ShippingLineAssignmentStrategy } from './shipping-method/shipping-line-assignment-strategy';
+import { CacheStrategy } from './system/cache-strategy';
 import { ErrorHandlerStrategy } from './system/error-handler-strategy';
 import { HealthCheckStrategy } from './system/health-check-strategy';
 import { TaxLineCalculationStrategy } from './tax/tax-line-calculation-strategy';
@@ -1058,6 +1059,15 @@ export interface SystemOptions {
      * @since 2.2.0
      */
     errorHandlers?: ErrorHandlerStrategy[];
+    /**
+     * @description
+     * Defines the underlying method used to store cache key-value pairs which powers the
+     * {@link CacheService}.
+     *
+     * @since 3.1.0
+     * @default InMemoryCacheStrategy
+     */
+    cacheStrategy?: CacheStrategy;
 }
 
 /**
