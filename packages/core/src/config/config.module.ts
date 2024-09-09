@@ -106,10 +106,11 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
         } = this.configService.shippingOptions;
         const { customPaymentProcess, process: paymentProcess } = this.configService.paymentOptions;
         const { entityIdStrategy: entityIdStrategyDeprecated } = this.configService;
-        const { entityIdStrategy } = this.configService.entityOptions;
+        const { entityIdStrategy: entityIdStrategyCurrent } = this.configService.entityOptions;
         const { healthChecks, errorHandlers } = this.configService.systemOptions;
         const { assetImportStrategy } = this.configService.importExportOptions;
         const { refundProcess: refundProcess } = this.configService.paymentOptions;
+        const entityIdStrategy = entityIdStrategyCurrent ?? entityIdStrategyDeprecated;
         return [
             ...adminAuthenticationStrategy,
             ...shopAuthenticationStrategy,
@@ -127,8 +128,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             checkoutMergeStrategy,
             orderCodeStrategy,
             orderByCodeAccessStrategy,
-            entityIdStrategyDeprecated,
-            ...[entityIdStrategy].filter(notNullOrUndefined),
+            entityIdStrategy,
             productVariantPriceCalculationStrategy,
             productVariantPriceUpdateStrategy,
             orderItemPriceCalculationStrategy,
