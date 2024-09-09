@@ -141,7 +141,7 @@ export class OrderModifier {
     ): Promise<OrderLine | undefined> {
         for (const line of order.lines) {
             const match =
-                idsAreEqual(line.productVariant.id, productVariantId) &&
+                idsAreEqual(line.productVariantId, productVariantId) &&
                 (await this.customFieldsAreEqual(ctx, line, customFields, line.customFields));
             if (match) {
                 return line;

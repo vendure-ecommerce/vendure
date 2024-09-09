@@ -90,7 +90,9 @@ export class OrderSplitter {
                 ...pick(line, [
                     'quantity',
                     'productVariant',
+                    'productVariantId',
                     'taxCategory',
+                    'taxCategoryId',
                     'featuredAsset',
                     'shippingLine',
                     'shippingLineId',

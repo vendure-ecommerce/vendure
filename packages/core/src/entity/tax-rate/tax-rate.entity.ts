@@ -1,5 +1,5 @@
 import { TaxLine } from '@vendure/common/lib/generated-types';
-import { DeepPartial } from '@vendure/common/lib/shared-types';
+import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, Index, ManyToOne } from 'typeorm';
 
 import { grossPriceOf, netPriceOf, taxComponentOf, taxPayableOn } from '../../common/tax-utils';
@@ -8,6 +8,7 @@ import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
 import { CustomTaxRateFields } from '../custom-entity-fields';
 import { CustomerGroup } from '../customer-group/customer-group.entity';
+import { EntityId } from '../entity-id.decorator';
 import { TaxCategory } from '../tax-category/tax-category.entity';
 import { DecimalTransformer } from '../value-transformers';
 import { Zone } from '../zone/zone.entity';
@@ -38,9 +39,15 @@ export class TaxRate extends VendureEntity implements HasCustomFields {
     @ManyToOne(type => TaxCategory, taxCategory => taxCategory.taxRates)
     category: TaxCategory;
 
+    @EntityId({ nullable: true })
+    categoryId: ID;
+
     @Index()
     @ManyToOne(type => Zone, zone => zone.taxRates)
     zone: Zone;
+
+    @EntityId({ nullable: true })
+    zoneId: ID;
 
     @Index()
     @ManyToOne(type => CustomerGroup, customerGroup => customerGroup.taxRates, { nullable: true })
@@ -84,7 +91,13 @@ export class TaxRate extends VendureEntity implements HasCustomFields {
         };
     }
 
-    test(zone: Zone, taxCategory: TaxCategory): boolean {
-        return idsAreEqual(taxCategory.id, this.category.id) && idsAreEqual(zone.id, this.zone.id);
+    test(zone: Zone | ID, taxCategory: TaxCategory | ID): boolean {
+        const taxCategoryId = this.isId(taxCategory) ? taxCategory : taxCategory.id;
+        const zoneId = this.isId(zone) ? zone : zone.id;
+        return idsAreEqual(taxCategoryId, this.categoryId) && idsAreEqual(zoneId, this.zoneId);
+    }
+
+    private isId<T>(entityOrId: T | ID): entityOrId is ID {
+        return typeof entityOrId === 'string' || typeof entityOrId === 'number';
     }
 }

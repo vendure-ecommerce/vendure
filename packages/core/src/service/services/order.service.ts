@@ -489,7 +489,7 @@ export class OrderService {
      * @since 2.2.0
      */
     async updateOrderCustomer(ctx: RequestContext, { customerId, orderId, note }: SetOrderCustomerInput) {
-        const order = await this.getOrderOrThrow(ctx, orderId);
+        const order = await this.getOrderOrThrow(ctx, orderId, ['channels', 'customer']);
         const currentCustomer = order.customer;
         if (currentCustomer?.id === customerId) {
             // No change in customer, so just return the order as-is
@@ -539,6 +539,7 @@ export class OrderService {
         productVariantId: ID,
         quantity: number,
         customFields?: { [key: string]: any },
+        relations?: RelationPaths<Order>,
     ): Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const existingOrderLine = await this.orderModifier.getExistingOrderLine(
@@ -597,7 +598,7 @@ export class OrderService {
             await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, correctedQuantity, order);
         }
         const quantityWasAdjustedDown = correctedQuantity < quantity;
-        const updatedOrder = await this.applyPriceAdjustments(ctx, order, [orderLine]);
+        const updatedOrder = await this.applyPriceAdjustments(ctx, order, [orderLine], relations);
         if (quantityWasAdjustedDown) {
             return new InsufficientStockError({ quantityAvailable: correctedQuantity, order: updatedOrder });
         } else {
@@ -615,6 +616,7 @@ export class OrderService {
         orderLineId: ID,
         quantity: number,
         customFields?: { [key: string]: any },
+        relations?: RelationPaths<Order>,
     ): Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const orderLine = this.getOrderLineOrThrow(order, orderLineId);
@@ -661,7 +663,7 @@ export class OrderService {
             await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, correctedQuantity, order);
         }
         const quantityWasAdjustedDown = correctedQuantity < quantity;
-        const updatedOrder = await this.applyPriceAdjustments(ctx, order, updatedOrderLines);
+        const updatedOrder = await this.applyPriceAdjustments(ctx, order, updatedOrderLines, relations);
         if (quantityWasAdjustedDown) {
             return new InsufficientStockError({ quantityAvailable: correctedQuantity, order: updatedOrder });
         } else {
@@ -1664,8 +1666,23 @@ export class OrderService {
         return order;
     }
 
-    private async getOrderOrThrow(ctx: RequestContext, orderId: ID): Promise<Order> {
-        const order = await this.findOne(ctx, orderId);
+    private async getOrderOrThrow(
+        ctx: RequestContext,
+        orderId: ID,
+        relations?: RelationPaths<Order>,
+    ): Promise<Order> {
+        const order = await this.findOne(
+            ctx,
+            orderId,
+            relations ?? [
+                'lines',
+                'lines.productVariant',
+                'lines.productVariant.productVariantPrices',
+                'shippingLines',
+                'surcharges',
+                'customer',
+            ],
+        );
         if (!order) {
             throw new EntityNotFoundError('Order', orderId);
         }
@@ -1731,6 +1748,7 @@ export class OrderService {
         ctx: RequestContext,
         order: Order,
         updatedOrderLines?: OrderLine[],
+        relations?: RelationPaths<Order>,
     ): Promise<Order> {
         const promotions = await this.promotionService.getActivePromotionsInChannel(ctx);
         const activePromotionsPre = await this.promotionService.getActivePromotionsOnOrder(ctx, order.id);
@@ -1816,7 +1834,7 @@ export class OrderService {
         await this.connection.getRepository(ctx, ShippingLine).save(order.shippingLines, { reload: false });
         await this.promotionService.runPromotionSideEffects(ctx, order, activePromotionsPre);
 
-        return assertFound(this.findOne(ctx, order.id));
+        return assertFound(this.findOne(ctx, order.id, relations));
     }
 
     /**
