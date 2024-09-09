@@ -24,7 +24,6 @@ export * from './conditions/min-order-amount-condition';
 export * from './conditions/contains-products-condition';
 export * from './conditions/customer-group-condition';
 export * from './conditions/buy-x-get-y-free-condition';
-export * from './utils/facet-value-checker';
 
 export const defaultPromotionActions = [
     orderFixedDiscount,

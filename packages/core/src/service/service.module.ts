@@ -12,6 +12,7 @@ import { CustomFieldRelationService } from './helpers/custom-field-relation/cust
 import { EntityDuplicatorService } from './helpers/entity-duplicator/entity-duplicator.service';
 import { EntityHydrator } from './helpers/entity-hydrator/entity-hydrator.service';
 import { ExternalAuthenticationService } from './helpers/external-authentication/external-authentication.service';
+import { FacetValueChecker } from './helpers/facet-value-checker/facet-value-checker';
 import { FulfillmentStateMachine } from './helpers/fulfillment-state-machine/fulfillment-state-machine';
 import { ListQueryBuilder } from './helpers/list-query-builder/list-query-builder';
 import { LocaleStringHydrator } from './helpers/locale-string-hydrator/locale-string-hydrator';
@@ -130,6 +131,7 @@ const helpers = [
     RequestContextService,
     TranslatorService,
     EntityDuplicatorService,
+    FacetValueChecker,
 ];
 
 /**
