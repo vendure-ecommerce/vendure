@@ -84,6 +84,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         introspection: true,
         apolloServerPlugins: [],
     },
+    entityIdStrategy: new AutoIncrementIdStrategy(),
     authOptions: {
         disableAuth: false,
         tokenMethod: 'cookie',
