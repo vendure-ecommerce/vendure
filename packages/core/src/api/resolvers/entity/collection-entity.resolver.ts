@@ -116,7 +116,7 @@ export class CollectionEntityResolver {
         @Ctx() ctx: RequestContext,
         @Parent() collection: Collection,
     ): Promise<Asset | undefined> {
-        if (collection.featuredAsset) {
+        if (collection.featuredAsset !== undefined) {
             return collection.featuredAsset;
         }
         return this.assetService.getFeaturedAsset(ctx, collection);
