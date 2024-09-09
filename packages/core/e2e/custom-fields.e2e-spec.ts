@@ -183,6 +183,10 @@ const customConfig = mergeConfig(testConfig(), {
                 readonly: true,
             },
         ],
+        Collection: [
+            { name: 'secretKey1', type: 'string', defaultValue: '', public: false, internal: true },
+            { name: 'secretKey2', type: 'string', defaultValue: '', public: false, internal: false },
+        ],
         OrderLine: [{ name: 'validateInt', type: 'int', min: 0, max: 10 }],
     } as CustomFields,
 });
@@ -942,6 +946,20 @@ describe('Custom fields', () => {
                 `);
             }, 'Cannot query field "internalString" on type "ProductCustomFields"'),
         );
+
+        // https://github.com/vendure-ecommerce/vendure/issues/3049
+        it('does not leak private fields via JSON type', async () => {
+            const { collection } = await shopClient.query(gql`
+                query {
+                    collection(id: "T_1") {
+                        id
+                        customFields
+                    }
+                }
+            `);
+
+            expect(collection.customFields).toBe(null);
+        });
     });
 
     describe('sort & filter', () => {
@@ -1087,18 +1105,16 @@ describe('Custom fields', () => {
 
     describe('unique constraint', () => {
         it('setting unique value works', async () => {
-            const result = await adminClient.query(
-                gql`
-                    mutation {
-                        updateProduct(input: { id: "T_1", customFields: { uniqueString: "foo" } }) {
-                            id
-                            customFields {
-                                uniqueString
-                            }
+            const result = await adminClient.query(gql`
+                mutation {
+                    updateProduct(input: { id: "T_1", customFields: { uniqueString: "foo" } }) {
+                        id
+                        customFields {
+                            uniqueString
                         }
                     }
-                `,
-            );
+                }
+            `);
 
             expect(result.updateProduct.customFields.uniqueString).toBe('foo');
         });
