@@ -1,3 +1,29 @@
+## 3.1.0-next.1 (2024-09-10)
+
+
+#### Features
+
+* **core** Implement CacheStrategy and CacheService ([489c9c0](https://github.com/vendure-ecommerce/vendure/commit/489c9c0)), closes [#3043](https://github.com/vendure-ecommerce/vendure/issues/3043)
+* **core** Implement caching for FacetValueChecker ([3603b11](https://github.com/vendure-ecommerce/vendure/commit/3603b11)), closes [#3043](https://github.com/vendure-ecommerce/vendure/issues/3043)
+* **core** Initial DefaultCachePlugin implementation ([9c2433f](https://github.com/vendure-ecommerce/vendure/commit/9c2433f)), closes [#3043](https://github.com/vendure-ecommerce/vendure/issues/3043)
+
+#### Fixes
+
+* **admin-ui** Only update facetValueIds if changed ([8f22ef8](https://github.com/vendure-ecommerce/vendure/commit/8f22ef8))
+
+
+### BREAKING CHANGE
+* If you are using the `FacetValueChecker` utility class, you should
+  update your code to get it via the `Injector` rather than directly instantiating it.
+
+Existing code _will_ still work without changes, but by updating you will see improved
+performance due to new caching techniques.
+
+```diff
+- facetValueChecker = new FacetValueChecker(injector.get(TransactionalConnection));
++ facetValueChecker = injector.get(FacetValueChecker);
+```
+
 ## 3.1.0-next.0 (2024-08-21)
 
 
