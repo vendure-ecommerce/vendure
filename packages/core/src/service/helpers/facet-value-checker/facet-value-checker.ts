@@ -72,7 +72,7 @@ export class FacetValueChecker implements OnModuleInit {
             ?.ofType(ProductEvent)
             .pipe(filter(event => event.type === 'updated'))
             .subscribe(async event => {
-                if ((event.input as UpdateProductInput).facetValueIds) {
+                if ((event.input as UpdateProductInput)?.facetValueIds) {
                     const variantIds = await this.connection.rawConnection
                         .getRepository(ProductVariant)
                         .createQueryBuilder('variant')
@@ -94,7 +94,7 @@ export class FacetValueChecker implements OnModuleInit {
                 const updatedVariantIds: ID[] = [];
                 if (Array.isArray(event.input)) {
                     for (const input of event.input) {
-                        if ((input as UpdateProductVariantInput).facetValueIds) {
+                        if ((input as UpdateProductVariantInput)?.facetValueIds) {
                             updatedVariantIds.push((input as UpdateProductVariantInput).id);
                         }
                     }
