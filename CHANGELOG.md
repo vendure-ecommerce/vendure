@@ -1,3 +1,10 @@
+## <small>2.3.1 (2024-09-10)</small>
+
+
+#### Fixes
+
+* **core** Prevent exposure of private custom fields via JSON type ([29b83d9](https://github.com/vendure-ecommerce/vendure/commit/29b83d9)), closes [#3049](https://github.com/vendure-ecommerce/vendure/issues/3049)
+
 ## 2.3.0 (2024-07-17)
 
 
