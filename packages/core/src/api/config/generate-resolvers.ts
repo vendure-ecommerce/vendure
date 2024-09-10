@@ -255,9 +255,8 @@ function generateCustomFieldRelationResolvers(
                 } as any;
             }
         }
-        const allCustomFieldsAreNonPublic = customFields.every(
-            f => f.public === false || f.internal === true,
-        );
+        const allCustomFieldsAreNonPublic =
+            customFields.length && customFields.every(f => f.public === false || f.internal === true);
         if (allCustomFieldsAreNonPublic) {
             // When an entity has only non-public custom fields, the GraphQL type used for the
             // customFields field is `JSON`. This type will simply return the full object, which
