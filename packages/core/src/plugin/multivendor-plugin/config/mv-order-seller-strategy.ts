@@ -50,7 +50,6 @@ export class MultivendorSellerStrategy implements OrderSellerStrategy {
     async setOrderLineSellerChannel(ctx: RequestContext, orderLine: OrderLine) {
         await this.entityHydrator.hydrate(ctx, orderLine.productVariant, { relations: ['channels'] });
         const defaultChannel = await this.channelService.getDefaultChannel();
-        console.log('Jay - ', orderLine)
 
         // If a ProductVariant is assigned to exactly 2 Channels, then one is the default Channel
         // and the other is the seller's Channel.
@@ -64,7 +63,7 @@ export class MultivendorSellerStrategy implements OrderSellerStrategy {
         }
     }
 
-    async splitOrder(ctx: RequestContext, order: Order): Promise<SplitOrderContents[]> {
+    splitOrder(ctx: RequestContext, order: Order): Promise<SplitOrderContents[]> {
         const partialOrders = new Map<ID, SplitOrderContents>();
         for (const line of order.lines) {
             const sellerChannelId = line.sellerChannelId;

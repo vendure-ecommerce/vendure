@@ -28,19 +28,19 @@ export function setBranding(options: BrandingOptions): StaticAssetExtension {
     if (options.smallLogoPath) {
         staticAssets.push({
             path: options.smallLogoPath,
-            rename: 'logo-top.webp',
+            rename: 'logo-top.png',
         });
     }
     if (options.largeLogoPath) {
         staticAssets.push({
             path: options.largeLogoPath,
-            rename: 'logo-login.webp',
+            rename: 'login-logo.png',
         });
     }
     if (options.faviconPath) {
         staticAssets.push({
             path: options.faviconPath,
-            rename: 'favicon.ico',
+            rename: 'login-logo.png',
         });
     }
     return { staticAssets };

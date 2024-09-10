@@ -17,7 +17,7 @@ import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@ven
 import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
 import 'dotenv/config';
 import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
-import path from 'path';
+import path, { join } from 'path';
 import { DataSourceOptions } from 'typeorm';
 
 import { MultivendorPlugin } from './example-plugins/multivendor-plugin/multivendor.plugin';
@@ -26,6 +26,7 @@ import { MultivendorPlugin } from './example-plugins/multivendor-plugin/multiven
  * Config settings used during development
  */
 export const devConfig: VendureConfig = {
+    logger: new DefaultLogger({ level: LogLevel.Debug }),
     apiOptions: {
         port: API_PORT,
         adminApiPath: ADMIN_API_PATH,
@@ -63,7 +64,6 @@ export const devConfig: VendureConfig = {
     },
 
     customFields: {},
-    logger: new DefaultLogger({ level: LogLevel.Verbose }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
@@ -87,9 +87,10 @@ export const devConfig: VendureConfig = {
         //     bufferUpdates: true,
         // }),
         EmailPlugin.init({
-            devMode: true,
+            // devMode: true,
             route: 'mailbox',
             handlers: defaultEmailHandlers,
+            // templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/email/templates')),
             templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../email-plugin/templates')),
             outputPath: path.join(__dirname, 'test-emails'),
             globalTemplateVars: {
@@ -97,6 +98,20 @@ export const devConfig: VendureConfig = {
                 passwordResetUrl: 'http://localhost:4201/reset-password',
                 changeEmailAddressUrl: 'http://localhost:4201/change-email-address',
             },
+            transport: {
+                type: 'smtp', // Add the type property
+                host: 'smtp.gmail.com',
+                port: 587, // Common ports are 587 (TLS) or 465 (SSL)
+                secure: false, // Set to true if using SSL
+                auth: {
+                    user: 'sureshapp7994@gmail.com',
+                    pass: 'lbsd wfte ehrh qjqj',
+                },
+            },
+
+
+
+
         }),
         AdminUiPlugin.init({
             route: 'admin',

@@ -39,6 +39,7 @@ export class DefaultActiveOrderStrategy implements ActiveOrderStrategy {
         if (!ctx.session) {
             throw new InternalServerError('error.no-active-session');
         }
+
         let order = ctx.session.activeOrderId
             ? await this.connection
                   .getRepository(ctx, Order)

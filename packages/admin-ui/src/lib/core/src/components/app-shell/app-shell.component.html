@@ -1,9 +1,9 @@
 <div class="app-container" [dir]="direction$ | async">
     <div class="left-nav" [class.expanded]="mainNavExpanded$ | async">
         <div class="branding">
-            <a [routerLink]="['/']" *ngIf="!hideVendureBranding"
-                ><img src="assets/logo-top.webp" class="logo" style="max-width: 100px"
-            /></a>
+            <a [routerLink]="['/']" *ngIf="!hideVendureBranding"><img
+                    src="https://coozmoo.com/wp-content/uploads/2024/07/LogoA.png" class="logo"
+                    style="max-width: 200px" /></a>
             <div class="collapse-menu">
                 <button class="" (click)="collapseNav()">
                     <clr-icon shape="window-close" size="24"></clr-icon>
@@ -43,19 +43,10 @@
             <div class="top-bar">
                 <div class="expand-menu mr-1">
                     <button class="" (click)="expandNav()">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke-width="1.5"
-                            stroke="currentColor"
-                            class="bars"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-                            />
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="bars">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                         </svg>
                     </button>
                 </div>
@@ -67,13 +58,9 @@
                     <vdr-alerts></vdr-alerts>
                 </div>
                 <div>
-                    <vdr-user-menu
-                        [userName]="userName$ | async"
-                        [uiLanguageAndLocale]="uiLanguageAndLocale$ | async"
-                        [availableLanguages]="availableLanguages"
-                        (selectUiLanguage)="selectUiLanguage()"
-                        (logOut)="logOut()"
-                    ></vdr-user-menu>
+                    <vdr-user-menu [userName]="userName$ | async" [uiLanguageAndLocale]="uiLanguageAndLocale$ | async"
+                        [availableLanguages]="availableLanguages" (selectUiLanguage)="selectUiLanguage()"
+                        (logOut)="logOut()"></vdr-user-menu>
                 </div>
             </div>
             <div class="content-area"><router-outlet></router-outlet></div>

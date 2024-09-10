@@ -1,14 +1,18 @@
-
 @keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 0.95; }
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 0.95;
+    }
 }
 
 :host {
     position: relative;
     z-index: 1050;
 
-    > .notification-wrapper {
+    >.notification-wrapper {
         display: block;
         position: fixed;
         z-index: 1001;
@@ -26,12 +30,15 @@
         &.success {
             background-color: var(--color-success-800);
         }
+
         &.error {
             background-color: var(--color-error-800);
         }
+
         &.warning {
             background-color: var(--color-warning-800);
         }
+
         &.info {
             background-color: var(--color-weight-500);
         }
@@ -40,6 +47,7 @@
             opacity: 0.95;
             animation: fadeIn 0.3s 0.3s backwards;
         }
+
         white-space: pre-line;
     }
 }

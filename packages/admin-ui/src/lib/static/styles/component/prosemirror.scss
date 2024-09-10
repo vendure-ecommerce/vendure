@@ -64,6 +64,7 @@ label.rich-text-label {
         text-align: center;
         padding: 6px;
         transition: background-color 0.3s;
+
         &:hover {
             background-color: var(--color-primary-100);
         }
@@ -266,7 +267,8 @@ li.ProseMirror-selectednode:after {
 .ProseMirror-icon {
     display: inline-block;
     line-height: 0.8;
-    vertical-align: -2px; /* Compensate for padding */
+    vertical-align: -2px;
+    /* Compensate for padding */
     padding: 2px 8px;
     cursor: pointer;
 }
@@ -413,6 +415,7 @@ li.ProseMirror-selectednode:after {
 }
 
 .ProseMirror .tableWrapper {
+
     td,
     th {
         border: 1px solid var(--color-grey-300);

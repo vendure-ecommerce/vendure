@@ -487,7 +487,7 @@
   },
   "error": {
     "403-forbidden": "You are not currently authorized to access \"{ path }\". Either you lack permissions, or your session has expired.",
-    "could-not-connect-to-server": "Could not connect to the Vendure server at { url }",
+    "could-not-connect-to-server": "Could not connect to the Vastranzo server at { url }",
     "health-check-failed": "System health check failed",
     "no-default-shipping-zone-set": "This channel has no default shipping zone. This may cause errors when calculating order shipping charges.",
     "no-default-tax-zone-set": "This channel has no default tax zone, which will cause errors when calculating prices. Please create or select a zone."
