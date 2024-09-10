@@ -8,7 +8,7 @@ import { CacheKey } from '../../../common/constants';
 import { InternalServerError } from '../../../common/error/errors';
 import { idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
-import { OrderLine, TaxCategory, TaxRate } from '../../../entity';
+import { OrderLine, TaxRate } from '../../../entity';
 import { Order } from '../../../entity/order/order.entity';
 import { Promotion } from '../../../entity/promotion/promotion.entity';
 import { Zone } from '../../../entity/zone/zone.entity';
