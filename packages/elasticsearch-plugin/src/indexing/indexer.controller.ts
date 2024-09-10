@@ -511,7 +511,6 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         if (!product) {
             return;
         }
-
         let updatedProductVariants: ProductVariant[] = [];
         try {
             updatedProductVariants = await this.connection.rawConnection.getRepository(ProductVariant).find({
@@ -541,6 +540,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             languageVariants.push(...variant.translations.map(t => t.languageCode));
 
         const uniqueLanguageVariants = unique(languageVariants);
+        const originalChannel = ctx.channel;
         for (const channel of product.channels) {
             ctx.setChannel(channel);
             const variantsInChannel = updatedProductVariants.filter(v =>
@@ -623,6 +623,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 }
             }
         }
+        ctx.setChannel(originalChannel);
 
         // Because we can have a huge amount of variant for 1 product, we also chunk update operations
         await this.executeBulkOperationsByChunks(
@@ -944,7 +945,13 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
 
             const productCustomMappings = Object.entries(this.options.customProductMappings);
             for (const [name, def] of productCustomMappings) {
-                item[`product-${name}`] = await def.valueFn(v.product, variants, languageCode, this.injector, ctx);
+                item[`product-${name}`] = await def.valueFn(
+                    v.product,
+                    variants,
+                    languageCode,
+                    this.injector,
+                    ctx,
+                );
             }
             return item;
         } catch (err: any) {

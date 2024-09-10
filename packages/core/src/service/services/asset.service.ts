@@ -168,6 +168,7 @@ export class AssetService {
                 ctx.channelId,
                 {
                     relations: ['featuredAsset'],
+                    loadEagerRelations: false,
                 },
             );
         } else {
@@ -178,6 +179,7 @@ export class AssetService {
                     relations: {
                         featuredAsset: true,
                     },
+                    loadEagerRelations: false,
                     // TODO: satisfies
                 } as FindOneOptions<T>)
                 .then(result => result ?? undefined);

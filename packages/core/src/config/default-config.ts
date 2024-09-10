@@ -84,6 +84,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         introspection: true,
         apolloServerPlugins: [],
     },
+    entityIdStrategy: new AutoIncrementIdStrategy(),
     authOptions: {
         disableAuth: false,
         tokenMethod: 'cookie',
@@ -118,7 +119,6 @@ export const defaultConfig: RuntimeVendureConfig = {
         stockDisplayStrategy: new DefaultStockDisplayStrategy(),
         stockLocationStrategy: new DefaultStockLocationStrategy(),
     },
-    entityIdStrategy: new AutoIncrementIdStrategy(),
     assetOptions: {
         assetNamingStrategy: new DefaultAssetNamingStrategy(),
         assetStorageStrategy: new NoAssetStorageStrategy(),
@@ -131,6 +131,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         type: 'mysql',
     },
     entityOptions: {
+        entityIdStrategy: new AutoIncrementIdStrategy(),
         moneyStrategy: new DefaultMoneyStrategy(),
         entityDuplicators: defaultEntityDuplicators,
         channelCacheTtl: 30000,

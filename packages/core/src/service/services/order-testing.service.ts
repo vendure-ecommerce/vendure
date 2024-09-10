@@ -130,6 +130,7 @@ export class OrderTestingService {
                 taxLines: [],
                 quantity: line.quantity,
                 taxCategory: productVariant.taxCategory,
+                taxCategoryId: productVariant.taxCategoryId,
             });
             mockOrder.lines.push(orderLine);
 

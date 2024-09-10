@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { filterAsync } from '@vendure/common/lib/filter-async';
 import { AdjustmentType } from '@vendure/common/lib/generated-types';
+import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
@@ -8,7 +9,7 @@ import { CacheKey } from '../../../common/constants';
 import { InternalServerError } from '../../../common/error/errors';
 import { idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
-import { OrderLine, TaxCategory, TaxRate } from '../../../entity';
+import { OrderLine, TaxRate } from '../../../entity';
 import { Order } from '../../../entity/order/order.entity';
 import { Promotion } from '../../../entity/promotion/promotion.entity';
 import { Zone } from '../../../entity/zone/zone.entity';
@@ -76,7 +77,6 @@ export class OrderCalculator {
                 ctx,
                 order,
                 updatedOrderLine,
-                activeTaxZone,
                 this.createTaxRateGetter(ctx, activeTaxZone),
             );
         }
@@ -113,7 +113,7 @@ export class OrderCalculator {
     private async applyTaxes(ctx: RequestContext, order: Order, activeZone: Zone) {
         const getTaxRate = this.createTaxRateGetter(ctx, activeZone);
         for (const line of order.lines) {
-            await this.applyTaxesToOrderLine(ctx, order, line, activeZone, getTaxRate);
+            await this.applyTaxesToOrderLine(ctx, order, line, getTaxRate);
         }
         this.calculateOrderTotals(order);
     }
@@ -126,10 +126,9 @@ export class OrderCalculator {
         ctx: RequestContext,
         order: Order,
         line: OrderLine,
-        activeZone: Zone,
-        getTaxRate: (taxCategory: TaxCategory) => Promise<TaxRate>,
+        getTaxRate: (taxCategoryId: ID) => Promise<TaxRate>,
     ) {
-        const applicableTaxRate = await getTaxRate(line.taxCategory);
+        const applicableTaxRate = await getTaxRate(line.taxCategoryId);
         const { taxLineCalculationStrategy } = this.configService.taxOptions;
         line.taxLines = await taxLineCalculationStrategy.calculate({
             ctx,
@@ -147,16 +146,16 @@ export class OrderCalculator {
     private createTaxRateGetter(
         ctx: RequestContext,
         activeZone: Zone,
-    ): (taxCategory: TaxCategory) => Promise<TaxRate> {
-        const taxRateCache = new Map<TaxCategory, TaxRate>();
+    ): (taxCategoryId: ID) => Promise<TaxRate> {
+        const taxRateCache = new Map<ID, TaxRate>();
 
-        return async (taxCategory: TaxCategory): Promise<TaxRate> => {
-            const cached = taxRateCache.get(taxCategory);
+        return async (taxCategoryId: ID): Promise<TaxRate> => {
+            const cached = taxRateCache.get(taxCategoryId);
             if (cached) {
                 return cached;
             }
-            const rate = await this.taxRateService.getApplicableTaxRate(ctx, activeZone, taxCategory);
-            taxRateCache.set(taxCategory, rate);
+            const rate = await this.taxRateService.getApplicableTaxRate(ctx, activeZone, taxCategoryId);
+            taxRateCache.set(taxCategoryId, rate);
             return rate;
         };
     }

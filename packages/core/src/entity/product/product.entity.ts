@@ -1,4 +1,4 @@
-import { DeepPartial } from '@vendure/common/lib/shared-types';
+import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
@@ -8,6 +8,7 @@ import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
 import { Channel } from '../channel/channel.entity';
 import { CustomProductFields } from '../custom-entity-fields';
+import { EntityId } from '../entity-id.decorator';
 import { FacetValue } from '../facet-value/facet-value.entity';
 import { ProductOptionGroup } from '../product-option-group/product-option-group.entity';
 import { ProductVariant } from '../product-variant/product-variant.entity';
@@ -46,6 +47,9 @@ export class Product
     @Index()
     @ManyToOne(type => Asset, asset => asset.featuredInProducts, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
+
+    @EntityId({ nullable: true })
+    featuredAssetId: ID;
 
     @OneToMany(type => ProductAsset, productAsset => productAsset.product)
     assets: ProductAsset[];

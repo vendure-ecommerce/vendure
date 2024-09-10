@@ -76,6 +76,9 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     @ManyToOne(type => TaxCategory)
     taxCategory: TaxCategory;
 
+    @EntityId({ nullable: true })
+    taxCategoryId: ID;
+
     @Index()
     @ManyToOne(type => Asset, asset => asset.featuredInVariants, { onDelete: 'SET NULL' })
     featuredAsset: Asset;

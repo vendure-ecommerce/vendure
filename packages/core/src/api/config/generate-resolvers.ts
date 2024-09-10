@@ -255,6 +255,16 @@ function generateCustomFieldRelationResolvers(
                 } as any;
             }
         }
+        const allCustomFieldsAreNonPublic =
+            customFields.length && customFields.every(f => f.public === false || f.internal === true);
+        if (allCustomFieldsAreNonPublic) {
+            // When an entity has only non-public custom fields, the GraphQL type used for the
+            // customFields field is `JSON`. This type will simply return the full object, which
+            // will cause a leak of private data unless we force a `null` return value in the case
+            // that there are no public fields.
+            // See https://github.com/vendure-ecommerce/vendure/issues/3049
+            shopResolvers[entityName] = { customFields: () => null };
+        }
     }
     return { adminResolvers, shopResolvers };
 }

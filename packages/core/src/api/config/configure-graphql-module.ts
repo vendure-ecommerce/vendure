@@ -7,6 +7,7 @@ import path from 'path';
 
 import { ConfigModule } from '../../config/config.module';
 import { ConfigService } from '../../config/config.service';
+import { AutoIncrementIdStrategy, EntityIdStrategy, UuidIdStrategy } from '../../config/index';
 import { I18nModule } from '../../i18n/i18n.module';
 import { I18nService } from '../../i18n/i18n.service';
 import { getPluginAPIExtensions } from '../../plugin/plugin-metadata';
@@ -96,6 +97,24 @@ async function createGraphQLOptions(
         options.apiType,
         builtSchema,
     );
+
+    const apolloServerPlugins = [
+        new TranslateErrorsPlugin(i18nService),
+        new AssetInterceptorPlugin(configService),
+        ...configService.apiOptions.apolloServerPlugins,
+    ];
+    // We only need to add the IdCodecPlugin if the user has configured
+    // a non-default EntityIdStrategy. This is a performance optimization
+    // that prevents unnecessary traversal of each response when no
+    // actual encoding/decoding is taking place.
+    if (
+        !isUsingDefaultEntityIdStrategy(
+            configService.entityOptions.entityIdStrategy ?? configService.entityIdStrategy,
+        )
+    ) {
+        apolloServerPlugins.unshift(new IdCodecPlugin(idCodecService));
+    }
+
     return {
         path: '/' + options.apiPath,
         typeDefs: printSchema(builtSchema),
@@ -112,12 +131,7 @@ async function createGraphQLOptions(
         context: (req: any) => req,
         // This is handled by the Express cors plugin
         cors: false,
-        plugins: [
-            new IdCodecPlugin(idCodecService),
-            new TranslateErrorsPlugin(i18nService),
-            new AssetInterceptorPlugin(configService),
-            ...configService.apiOptions.apolloServerPlugins,
-        ],
+        plugins: apolloServerPlugins,
         validationRules: options.validationRules,
         introspection: configService.apiOptions.introspection ?? true,
     } as ApolloDriverConfig;
@@ -164,4 +178,11 @@ async function createGraphQLOptions(
 
         return schema;
     }
+}
+
+function isUsingDefaultEntityIdStrategy(entityIdStrategy: EntityIdStrategy<any>): boolean {
+    return (
+        entityIdStrategy.constructor === AutoIncrementIdStrategy ||
+        entityIdStrategy.constructor === UuidIdStrategy
+    );
 }

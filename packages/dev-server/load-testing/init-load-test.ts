@@ -3,7 +3,7 @@
 import { bootstrap, JobQueueService, Logger } from '@vendure/core';
 import { populate } from '@vendure/core/cli/populate';
 import { clearAllTables, populateCustomers, SimpleGraphQLClient } from '@vendure/testing';
-import stringify from 'csv-stringify';
+import { stringify } from 'csv-stringify';
 import fs from 'fs';
 import path from 'path';
 
@@ -100,6 +100,9 @@ async function isDatabasePopulated(databaseName: string): Promise<boolean> {
         await client.connect();
         try {
             const res = await client.query('SELECT COUNT(id) as prodCount FROM product');
+            if (res.rows[0]?.prodcount < 1) {
+                return false;
+            }
             return true;
         } catch (e: any) {
             if (e.message === 'relation "product" does not exist') {

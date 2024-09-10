@@ -18,24 +18,21 @@ There are a couple of ways you can structure your plugin project:
 
 ### Repo structure
 
-#### Stand-alone repo
+We recommend that you use a "monorepo" structure to develop your plugins. This means that you have a single repository
+which contains all your plugins, each in its own subdirectory. This makes it easy to manage dependencies between plugins,
+and to share common code such as utility functions & dev tooling.
 
-You can have a single repository for your plugin. For this scenario you can use
-the [Vendure Plugin Template](https://github.com/vendure-ecommerce/plugin-template) as a starting point.
+Even if you only have a single plugin at the moment, it's a good idea to set up your project in this way from the start.
 
-**Pros**: simple to set up.
+To that end, we provide a [monorepo plugin starter template](https://github.com/vendure-ecommerce/plugin-template)
+which you can use as a starting point for your plugin development.
 
-**Cons**: if you have multiple plugins, you'll have multiple repositories to manage with duplicated setup and configuration.
+This starter template includes support for:
 
-#### Monorepo
-
-If you have multiple plugins, you can use a monorepo setup. Tools such as [Lerna](https://lerna.js.org/) or
-[Nx](https://nx.dev/) can help you manage multiple packages in a single repository. A good example of this approach
-can be found in the [Pinelab plugins repo](https://github.com/Pinelab-studio/pinelab-vendure-plugins).
-
-**Pros**: single repository to manage; can scale to any number of plugins; can share configuration and tooling.
-
-**Cons**: Initial setup is more complex.
+- Development & build scripts already set up
+- Admin UI extensions already configured
+- End-to-end testing infrastructure fully configured
+- Code generation for your schema extensions
 
 ### Plugin naming
 

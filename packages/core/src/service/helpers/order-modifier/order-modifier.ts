@@ -10,6 +10,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { getGraphQlInputName, summate } from '@vendure/common/lib/shared-utils';
+import { IsNull } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { isGraphQlErrorResult, JustErrorResults } from '../../../common/error/error-result';
@@ -140,7 +141,7 @@ export class OrderModifier {
     ): Promise<OrderLine | undefined> {
         for (const line of order.lines) {
             const match =
-                idsAreEqual(line.productVariant.id, productVariantId) &&
+                idsAreEqual(line.productVariantId, productVariantId) &&
                 (await this.customFieldsAreEqual(ctx, line, customFields, line.customFields));
             if (match) {
                 return line;
@@ -164,12 +165,13 @@ export class OrderModifier {
             return existingOrderLine;
         }
 
-        const productVariant = await this.getProductVariantOrThrow(ctx, productVariantId);
+        const productVariant = await this.getProductVariantOrThrow(ctx, productVariantId, order);
+        const featuredAssetId = productVariant.featuredAssetId ?? productVariant.featuredAssetId;
         const orderLine = await this.connection.getRepository(ctx, OrderLine).save(
             new OrderLine({
                 productVariant,
                 taxCategory: productVariant.taxCategory,
-                featuredAsset: productVariant.featuredAsset ?? productVariant.product.featuredAsset,
+                featuredAsset: featuredAssetId ? { id: featuredAssetId } : undefined,
                 listPrice: productVariant.listPrice,
                 listPriceIncludesTax: productVariant.listPriceIncludesTax,
                 adjustments: [],
@@ -189,26 +191,15 @@ export class OrderModifier {
                 .set(orderLine.sellerChannel);
         }
         await this.customFieldRelationService.updateRelations(ctx, OrderLine, { customFields }, orderLine);
-        const lineWithRelations = await this.connection.getEntityOrThrow(ctx, OrderLine, orderLine.id, {
-            relations: [
-                'taxCategory',
-                'productVariant',
-                'productVariant.productVariantPrices',
-                'productVariant.taxCategory',
-            ],
-        });
-        lineWithRelations.productVariant = this.translator.translate(
-            await this.productVariantService.applyChannelPriceAndTax(
-                lineWithRelations.productVariant,
-                ctx,
-                order,
-            ),
-            ctx,
-        );
-        order.lines.push(lineWithRelations);
-        await this.connection.getRepository(ctx, Order).save(order, { reload: false });
-        await this.eventBus.publish(new OrderLineEvent(ctx, order, lineWithRelations, 'created'));
-        return lineWithRelations;
+        order.lines.push(orderLine);
+        await this.connection
+            .getRepository(ctx, Order)
+            .createQueryBuilder()
+            .relation('lines')
+            .of(order)
+            .add(orderLine);
+        await this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'created'));
+        return orderLine;
     }
 
     /**
@@ -896,11 +887,24 @@ export class OrderModifier {
     private async getProductVariantOrThrow(
         ctx: RequestContext,
         productVariantId: ID,
+        order: Order,
     ): Promise<ProductVariant> {
-        const productVariant = await this.productVariantService.findOne(ctx, productVariantId);
-        if (!productVariant) {
+        const variant = await this.connection.findOneInChannel(
+            ctx,
+            ProductVariant,
+            productVariantId,
+            ctx.channelId,
+            {
+                relations: ['product', 'productVariantPrices', 'taxCategory'],
+                loadEagerRelations: false,
+                where: { deletedAt: IsNull() },
+            },
+        );
+
+        if (variant) {
+            return await this.productVariantService.applyChannelPriceAndTax(variant, ctx, order);
+        } else {
             throw new EntityNotFoundError('ProductVariant', productVariantId);
         }
-        return productVariant;
     }
 }

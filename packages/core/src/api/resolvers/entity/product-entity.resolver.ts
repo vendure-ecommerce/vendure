@@ -129,7 +129,7 @@ export class ProductEntityResolver {
 
     @ResolveField()
     async featuredAsset(@Ctx() ctx: RequestContext, @Parent() product: Product): Promise<Asset | undefined> {
-        if (product.featuredAsset) {
+        if (product.featuredAsset !== undefined) {
             return product.featuredAsset;
         }
         return this.assetService.getFeaturedAsset(ctx, product);
