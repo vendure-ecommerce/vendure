@@ -166,7 +166,7 @@ export class OrderModifier {
         }
 
         const productVariant = await this.getProductVariantOrThrow(ctx, productVariantId, order);
-        const featuredAssetId = productVariant.featuredAssetId ?? productVariant.featuredAssetId;
+        const featuredAssetId = productVariant.featuredAssetId ?? productVariant.product.featuredAssetId;
         const orderLine = await this.connection.getRepository(ctx, OrderLine).save(
             new OrderLine({
                 productVariant,

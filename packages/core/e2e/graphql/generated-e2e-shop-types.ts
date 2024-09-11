@@ -3351,6 +3351,7 @@ export type UpdatedOrderFragment = {
         linePrice: number;
         linePriceWithTax: number;
         productVariant: { id: string };
+        featuredAsset?: { id: string } | null;
         discounts: Array<{
             adjustmentSource: string;
             amount: number;
@@ -3395,6 +3396,7 @@ export type AddItemToOrderMutation = {
                       linePrice: number;
                       linePriceWithTax: number;
                       productVariant: { id: string };
+                      featuredAsset?: { id: string } | null;
                       discounts: Array<{
                           adjustmentSource: string;
                           amount: number;
@@ -3429,6 +3431,7 @@ export type AddItemToOrderMutation = {
                   linePrice: number;
                   linePriceWithTax: number;
                   productVariant: { id: string };
+                  featuredAsset?: { id: string } | null;
                   discounts: Array<{
                       adjustmentSource: string;
                       amount: number;
@@ -4733,6 +4736,14 @@ export const UpdatedOrderFragmentDoc = {
                                 { kind: 'Field', name: { kind: 'Name', value: 'linePriceWithTax' } },
                                 {
                                     kind: 'Field',
+                                    name: { kind: 'Name', value: 'featuredAsset' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                                    },
+                                },
+                                {
+                                    kind: 'Field',
                                     name: { kind: 'Name', value: 'discounts' },
                                     selectionSet: {
                                         kind: 'SelectionSet',
@@ -5305,6 +5316,14 @@ export const AddItemToOrderDocument = {
                                 { kind: 'Field', name: { kind: 'Name', value: 'unitPriceWithTax' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'linePrice' } },
                                 { kind: 'Field', name: { kind: 'Name', value: 'linePriceWithTax' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'featuredAsset' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                                    },
+                                },
                                 {
                                     kind: 'Field',
                                     name: { kind: 'Name', value: 'discounts' },
