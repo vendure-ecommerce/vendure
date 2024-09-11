@@ -1,3 +1,11 @@
+## <small>3.0.3 (2024-09-11)</small>
+
+
+#### Fixes
+
+* **admin-ui** Display up to 3 decimal places in OrderSummary tax rate ([13a1b21](https://github.com/vendure-ecommerce/vendure/commit/13a1b21)), closes [#3051](https://github.com/vendure-ecommerce/vendure/issues/3051)
+* **core** Fix regression in correctly setting OrderLine.featuredAsset ([7d070f2](https://github.com/vendure-ecommerce/vendure/commit/7d070f2))
+
 ## <small>3.0.2 (2024-09-10)</small>
 
 
