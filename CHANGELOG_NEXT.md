@@ -1,3 +1,11 @@
+## 3.1.0-next.2 (2024-09-11)
+
+#### Fixes
+
+* **core** Fix regression in correctly setting OrderLine.featuredAsset ([7d070f2](https://github.com/vendure-ecommerce/vendure/commit/7d070f2))
+* **core** Fix error in FacetValueChecker on nullish input ([44aad49](https://github.com/vendure-ecommerce/vendure/commit/44aad49))
+
+
 ## 3.1.0-next.1 (2024-09-10)
 
 
