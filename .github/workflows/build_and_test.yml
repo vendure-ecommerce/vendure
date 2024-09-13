@@ -113,10 +113,6 @@ jobs:
           npm install --os=linux --cpu=x64 sharp
       - name: Build
         run: npx lerna run ci
-      - name: df
-        run: |
-          df -h
-          docker system df
       - name: e2e tests
         env:
           E2E_MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
