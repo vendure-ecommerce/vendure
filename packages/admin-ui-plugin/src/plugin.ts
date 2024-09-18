@@ -19,6 +19,7 @@ import {
     VendurePlugin,
 } from '@vendure/core';
 import express from 'express';
+import { rateLimit } from 'express-rate-limit';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -220,7 +221,7 @@ export class AdminUiPlugin implements NestModule {
             await overwriteConfig();
         } else {
             Logger.info('Creating admin ui middleware (prod mode)', loggerCtx);
-            consumer.apply(await this.createStaticServer(app)).forRoutes(route);
+            consumer.apply(this.createStaticServer(app)).forRoutes(route);
 
             if (app && typeof app.compile === 'function') {
                 Logger.info('Compiling Admin UI app in production mode...', loggerCtx);
@@ -241,10 +242,18 @@ export class AdminUiPlugin implements NestModule {
         registerPluginStartupMessage('Admin UI', route);
     }
 
-    private async createStaticServer(app?: AdminUiAppConfig) {
+    private createStaticServer(app?: AdminUiAppConfig) {
         const adminUiAppPath = (app && app.path) || DEFAULT_APP_PATH;
 
+        const limiter = rateLimit({
+            windowMs: 60 * 1000,
+            limit: process.env.NODE_ENV === 'production' ? 500 : 2000,
+            standardHeaders: true,
+            legacyHeaders: false,
+        });
+
         const adminUiServer = express.Router();
+        adminUiServer.use(limiter);
         adminUiServer.use(express.static(adminUiAppPath));
         adminUiServer.use((req, res) => {
             res.sendFile(path.join(adminUiAppPath, 'index.html'));
