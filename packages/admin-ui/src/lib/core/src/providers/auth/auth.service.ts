@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { Observable, of } from 'rxjs';
-import { catchError, map, mapTo, mergeMap, switchMap } from 'rxjs/operators';
+import { catchError, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 
 import { AttemptLoginMutation, CurrentUserFragment } from '../../common/generated-types';
 import { DataService } from '../../data/providers/data.service';
 import { ServerConfigService } from '../../data/server-config';
 import { LocalStorageService } from '../local-storage/local-storage.service';
 import { PermissionsService } from '../permissions/permissions.service';
+import { AlertsService } from '../alerts/alerts.service';
 
 /**
  * This service handles logic relating to authentication of the current user.
@@ -21,6 +22,7 @@ export class AuthService {
         private dataService: DataService,
         private serverConfigService: ServerConfigService,
         private permissionsService: PermissionsService,
+        private alertService: AlertsService,
     ) {}
 
     /**
@@ -79,7 +81,10 @@ export class AuthService {
                     return [];
                 }
             }),
-            mapTo(true),
+            tap(() => {
+                this.alertService.clearAlerts();
+            }),
+            map(() => true),
         );
     }
 
@@ -129,7 +134,7 @@ export class AuthService {
                     }),
                 );
             }),
-            mapTo(true),
+            map(() => true),
             catchError(err => of(false)),
         );
     }
