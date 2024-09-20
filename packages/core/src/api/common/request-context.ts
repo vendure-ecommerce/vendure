@@ -1,9 +1,11 @@
+import { ExecutionContext } from '@nestjs/common';
 import { CurrencyCode, LanguageCode, Permission } from '@vendure/common/lib/generated-types';
 import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
 import { isObject } from '@vendure/common/lib/shared-utils';
 import { Request } from 'express';
 import { TFunction } from 'i18next';
 
+import { REQUEST_CONTEXT_KEY, REQUEST_CONTEXT_MAP_KEY } from '../../common/constants';
 import { idsAreEqual } from '../../common/utils';
 import { CachedSession } from '../../config/session-cache/session-cache-strategy';
 import { Channel } from '../../entity/channel/channel.entity';
@@ -19,6 +21,67 @@ export type SerializedRequestContext = {
     _isAuthorized: boolean;
     _authorizedAsOwnerOnly: boolean;
 };
+
+/**
+ * @description
+ * This function is used to set the {@link RequestContext} on the `req` object. This is the underlying
+ * mechanism by which we are able to access the `RequestContext` from different places.
+ *
+ * For example, here is a diagram to show how, in an incoming API request, we are able to store
+ * and retrieve the `RequestContext` in a resolver:
+ * ```
+ * - query { product }
+ * |
+ * - AuthGuard.canActivate()
+ * |  | creates a `RequestContext`, stores it on `req`
+ * |
+ * - product() resolver
+ *    | @Ctx() decorator fetching `RequestContext` from `req`
+ * ```
+ *
+ * We named it this way to discourage usage outside the framework internals.
+ */
+export function internal_setRequestContext(
+    req: Request,
+    ctx: RequestContext,
+    executionContext?: ExecutionContext,
+) {
+    // If we have access to the `ExecutionContext`, it means we are able to bind
+    // the `ctx` object to the specific "handler", i.e. the resolver function (for GraphQL)
+    // or controller (for REST).
+    if (executionContext && typeof executionContext.getHandler === 'function') {
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        const map: Map<Function, RequestContext> = (req as any)[REQUEST_CONTEXT_MAP_KEY] || new Map();
+        map.set(executionContext.getHandler(), ctx);
+
+        (req as any)[REQUEST_CONTEXT_MAP_KEY] = map;
+    }
+    // We also bind to a shared key so that we can access the `ctx` object
+    // later even if we don't have a reference to the `ExecutionContext`
+    (req as any)[REQUEST_CONTEXT_KEY] = ctx;
+}
+
+/**
+ * @description
+ * Gets the {@link RequestContext} from the `req` object. See {@link internal_setRequestContext}
+ * for more details on this mechanism.
+ */
+export function internal_getRequestContext(
+    req: Request,
+    executionContext?: ExecutionContext,
+): RequestContext {
+    if (executionContext && typeof executionContext.getHandler === 'function') {
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        const map: Map<Function, RequestContext> | undefined = (req as any)[REQUEST_CONTEXT_MAP_KEY];
+        const ctx = map?.get(executionContext.getHandler());
+        // If we have a ctx associated with the current handler (resolver function), we
+        // return it. Otherwise, we fall back to the shared key which will be there.
+        if (ctx) {
+            return ctx;
+        }
+    }
+    return (req as any)[REQUEST_CONTEXT_KEY];
+}
 
 /**
  * @description

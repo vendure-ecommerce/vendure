@@ -4,7 +4,6 @@ import { Permission } from '@vendure/common/lib/generated-types';
 import { Request, Response } from 'express';
 import { GraphQLResolveInfo } from 'graphql';
 
-import { REQUEST_CONTEXT_KEY } from '../../common/constants';
 import { ForbiddenError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
 import { LogLevel } from '../../config/logger/vendure-logger';
@@ -16,7 +15,11 @@ import { CustomerService } from '../../service/services/customer.service';
 import { SessionService } from '../../service/services/session.service';
 import { extractSessionToken } from '../common/extract-session-token';
 import { parseContext } from '../common/parse-context';
-import { RequestContext } from '../common/request-context';
+import {
+    internal_getRequestContext,
+    internal_setRequestContext,
+    RequestContext,
+} from '../common/request-context';
 import { setSessionToken } from '../common/set-session-token';
 import { PERMISSIONS_METADATA_KEY } from '../decorators/allow.decorator';
 
@@ -54,7 +57,7 @@ export class AuthGuard implements CanActivate {
         const hasOwnerPermission = !!permissions && permissions.includes(Permission.Owner);
         let requestContext: RequestContext;
         if (isFieldResolver) {
-            requestContext = (req as any)[REQUEST_CONTEXT_KEY];
+            requestContext = internal_getRequestContext(req);
         } else {
             const session = await this.getSession(req, res, hasOwnerPermission);
             requestContext = await this.requestContextService.fromRequest(req, info, permissions, session);
@@ -68,7 +71,7 @@ export class AuthGuard implements CanActivate {
                     session,
                 );
             }
-            (req as any)[REQUEST_CONTEXT_KEY] = requestContext;
+            internal_setRequestContext(req, requestContext, context);
         }
 
         if (authDisabled || !permissions || isPublic) {

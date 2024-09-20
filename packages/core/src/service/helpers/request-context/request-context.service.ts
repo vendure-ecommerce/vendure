@@ -25,7 +25,10 @@ import { getUserChannelsPermissions } from '../utils/get-user-channels-permissio
 @Injectable()
 export class RequestContextService {
     /** @internal */
-    constructor(private channelService: ChannelService, private configService: ConfigService) {}
+    constructor(
+        private channelService: ChannelService,
+        private configService: ConfigService,
+    ) {}
 
     /**
      * @description
