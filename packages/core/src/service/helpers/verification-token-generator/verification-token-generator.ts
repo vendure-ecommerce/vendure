@@ -28,7 +28,11 @@ export class VerificationTokenGenerator {
      * as specified in the VendureConfig.
      */
     verifyVerificationToken(token: string): boolean {
-        const duration = ms(this.configService.authOptions.verificationTokenDuration as string);
+        const duration =
+            typeof this.configService.authOptions.verificationTokenDuration === 'string'
+                ? ms(this.configService.authOptions.verificationTokenDuration)
+                : this.configService.authOptions.verificationTokenDuration;
+
         const [generatedOn] = token.split('_');
         const dateString = Buffer.from(generatedOn, 'base64').toString();
         const date = new Date(dateString);
