@@ -7,11 +7,12 @@ import path from 'path';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
+import { Issue2097Plugin } from './fixtures/test-plugins/issue-2097-plugin';
 import { ProtectedFieldsPlugin, transactions } from './fixtures/test-plugins/with-protected-field-resolver';
-import { ErrorCode, Permission } from './graphql/generated-e2e-admin-types';
 import * as Codegen from './graphql/generated-e2e-admin-types';
+import { ErrorCode, Permission } from './graphql/generated-e2e-admin-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import {
     ATTEMPT_LOGIN,
@@ -32,7 +33,7 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 describe('Authorization & permissions', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({
         ...testConfig(),
-        plugins: [ProtectedFieldsPlugin],
+        plugins: [ProtectedFieldsPlugin, Issue2097Plugin],
     });
 
     beforeAll(async () => {
@@ -74,9 +75,8 @@ describe('Authorization & permissions', () => {
             let customerEmailAddress: string;
             beforeAll(async () => {
                 await adminClient.asSuperAdmin();
-                const { customers } = await adminClient.query<Codegen.GetCustomerListQuery>(
-                    GET_CUSTOMER_LIST,
-                );
+                const { customers } =
+                    await adminClient.query<Codegen.GetCustomerListQuery>(GET_CUSTOMER_LIST);
                 customerEmailAddress = customers.items[0].emailAddress;
             });
 
@@ -388,6 +388,24 @@ describe('Authorization & permissions', () => {
                 expect(getErrorCode(e)).toBe('FORBIDDEN');
             }
         });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/2097
+        it('does not overwrite ctx.authorizedAsOwnerOnly with multiple parallel top-level queries', async () => {
+            // We run this multiple times since the error is based on a race condition that does not
+            // show up consistently.
+            for (let i = 0; i < 10; i++) {
+                const result = await shopClient.query(
+                    gql(`
+                        query Issue2097 {
+                            ownerProtectedThing
+                            publicThing
+                        }
+                    `),
+                );
+                expect(result.ownerProtectedThing).toBe(true);
+                expect(result.publicThing).toBe(true);
+            }
+        });
     });
 
     async function assertRequestAllowed<V>(operation: DocumentNode, variables?: V) {
@@ -437,7 +455,7 @@ describe('Authorization & permissions', () => {
         const identifier = `${code}@${Math.random().toString(16).substr(2, 8)}`;
         const password = 'test';
 
-        const adminResult = await adminClient.query<
+        await adminClient.query<
             Codegen.CreateAdministratorMutation,
             Codegen.CreateAdministratorMutationVariables
         >(CREATE_ADMINISTRATOR, {
@@ -449,8 +467,6 @@ describe('Authorization & permissions', () => {
                 roleIds: [role.id],
             },
         });
-        const admin = adminResult.createAdministrator;
-
         return {
             identifier,
             password,

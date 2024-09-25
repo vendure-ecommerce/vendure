@@ -385,7 +385,6 @@ export class ShopOrderResolver {
             true,
         );
         return this.orderService.applyCouponCode(ctx, order.id, args.couponCode);
-        return this.orderService.applyCouponCode(ctx, order.id, args.couponCode);
     }
 
     @Transaction()

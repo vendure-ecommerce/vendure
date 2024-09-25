@@ -175,11 +175,7 @@ export class ProductVariantAdminEntityResolver {
     }
 
     @ResolveField()
-    async stockOnHand(
-        @Ctx() ctx: RequestContext,
-        @Parent() productVariant: ProductVariant,
-        @Args() args: { options: StockMovementListOptions },
-    ): Promise<number> {
+    async stockOnHand(@Ctx() ctx: RequestContext, @Parent() productVariant: ProductVariant): Promise<number> {
         const { stockOnHand } = await this.stockLevelService.getAvailableStock(ctx, productVariant.id);
         return stockOnHand;
     }
