@@ -2,7 +2,6 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Permission } from '@vendure/common/lib/generated-types';
 import { Request, Response } from 'express';
-import { GraphQLResolveInfo } from 'graphql';
 
 import { ForbiddenError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
@@ -14,6 +13,7 @@ import { ChannelService } from '../../service/services/channel.service';
 import { CustomerService } from '../../service/services/customer.service';
 import { SessionService } from '../../service/services/session.service';
 import { extractSessionToken } from '../common/extract-session-token';
+import { isFieldResolver } from '../common/is-field-resolver';
 import { parseContext } from '../common/parse-context';
 import {
     internal_getRequestContext,
@@ -47,16 +47,16 @@ export class AuthGuard implements CanActivate {
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const { req, res, info } = parseContext(context);
-        const isFieldResolver = this.isFieldResolver(info);
+        const targetIsFieldResolver = isFieldResolver(info);
         const permissions = this.reflector.get<Permission[]>(PERMISSIONS_METADATA_KEY, context.getHandler());
-        if (isFieldResolver && !permissions) {
+        if (targetIsFieldResolver && !permissions) {
             return true;
         }
         const authDisabled = this.configService.authOptions.disableAuth;
         const isPublic = !!permissions && permissions.includes(Permission.Public);
         const hasOwnerPermission = !!permissions && permissions.includes(Permission.Owner);
         let requestContext: RequestContext;
-        if (isFieldResolver) {
+        if (targetIsFieldResolver) {
             requestContext = internal_getRequestContext(req);
         } else {
             const session = await this.getSession(req, res, hasOwnerPermission);
@@ -167,17 +167,5 @@ export class AuthGuard implements CanActivate {
             });
         }
         return serializedSession;
-    }
-
-    /**
-     * Returns true is this guard is being called on a FieldResolver, i.e. not a top-level
-     * Query or Mutation resolver.
-     */
-    private isFieldResolver(info?: GraphQLResolveInfo): boolean {
-        if (!info) {
-            return false;
-        }
-        const parentType = info?.parentType?.name;
-        return parentType !== 'Query' && parentType !== 'Mutation' && parentType !== 'Subscription';
     }
 }

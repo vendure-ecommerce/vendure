@@ -1,5 +1,7 @@
-import { ContextType, createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
+import { isFieldResolver } from '../common/is-field-resolver';
+import { parseContext } from '../common/parse-context';
 import { internal_getRequestContext } from '../common/request-context';
 
 /**
@@ -18,12 +20,8 @@ import { internal_getRequestContext } from '../common/request-context';
  * @docsCategory request
  * @docsPage Ctx Decorator
  */
-export const Ctx = createParamDecorator((data, ctx: ExecutionContext) => {
-    if (ctx.getType<ContextType | 'graphql'>() === 'graphql') {
-        // GraphQL request
-        return internal_getRequestContext(ctx.getArgByIndex(2).req, ctx);
-    } else {
-        // REST request
-        return internal_getRequestContext(ctx.switchToHttp().getRequest(), ctx);
-    }
+export const Ctx = createParamDecorator((data, executionContext: ExecutionContext) => {
+    const context = parseContext(executionContext);
+    const handlerIsFieldResolver = context.isGraphQL && isFieldResolver(context.info);
+    return internal_getRequestContext(context.req, handlerIsFieldResolver ? undefined : executionContext);
 });
