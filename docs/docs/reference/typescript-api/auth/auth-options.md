@@ -89,11 +89,13 @@ in-memory caching strategy which is suitable for development and low-traffic, si
 deployments.
 ### sessionCacheTTL
 
-<MemberInfo kind="property" type={`number`} default={`300`}   />
+<MemberInfo kind="property" type={`string | number`} default={`300`} />
 
-The "time to live" of a given item in the session cache. This determines the length of time (in seconds)
-that a cache entry is kept before being considered "stale" and being replaced with fresh data
-taken from the database.
+The "time to live" of a given item in the session cache. This determines the length of time that a cache entry 
+is kept before being considered "stale" and being replaced with fresh data taken from the database.
+
+If passed as a number should represent seconds and if passed as a string describes a time span per
+[zeit/ms](https://github.com/zeit/ms.js). Eg: `60`, `'2 days'`, `'10h'`, `'7d'`
 ### requireVerification
 
 <MemberInfo kind="property" type={`boolean`} default={`true`}   />
