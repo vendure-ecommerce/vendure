@@ -37,10 +37,10 @@ export class SessionService implements EntitySubscriberInterface {
         private orderService: OrderService,
     ) {
         this.sessionCacheStrategy = this.configService.authOptions.sessionCacheStrategy;
+
+        const { sessionDuration } = this.configService.authOptions;
         this.sessionDurationInMs =
-            typeof this.configService.authOptions.sessionDuration === 'string'
-                ? ms(this.configService.authOptions.sessionDuration)
-                : this.configService.authOptions.sessionDuration;
+            typeof sessionDuration === 'string' ? ms(sessionDuration) : sessionDuration;
 
         // This allows us to register this class as a TypeORM Subscriber while also allowing
         // the injection on dependencies. See https://docs.nestjs.com/techniques/database#subscribers
