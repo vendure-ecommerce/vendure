@@ -1,5 +1,6 @@
 import { Controller, Headers, HttpStatus, Post, Req, Res } from '@nestjs/common';
-import type { PaymentMethod, RequestContext, ChannelService } from '@vendure/core';
+import type { PaymentMethod, RequestContext } from '@vendure/core';
+import { ChannelService } from '@vendure/core';
 import {
     InternalServerError,
     LanguageCode,
