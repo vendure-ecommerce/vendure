@@ -231,3 +231,28 @@ export const GET_MOLLIE_PAYMENT_METHODS = gql`
         }
     }
 `;
+
+export const ADD_PAYMENT_TO_ORDER = gql`
+    mutation AddPaymentToOrder($input: PaymentInput!) {
+        addPaymentToOrder(input: $input) {
+            ... on Order {
+                id
+                code
+                state
+            }
+        }
+    }
+`;
+
+export const CREATE_PAYPAL_ORDER = gql`
+    mutation CreatePayPalOrder {
+        createPayPalOrder {
+            id
+            links {
+                href
+                rel
+                method
+            }
+        }
+    }
+`;
