@@ -8,7 +8,7 @@ const commonSchemaExtensions = gql`
     }
 
     type PayPalOrder {
-        id: ID!
+        id: String!
         links: [PayPalOrderLink!]!
     }
 `;
