@@ -191,7 +191,7 @@ export class DynamicFormInputComponent
                     const { type } = item.componentRef.instance.config || {};
                     // fix a bug where the list item of string turns into number which lead to unexpected behavior
                     if (typeof value === 'number' && type === 'string') {
-                        item.control.setValue(item.control.value?.toString(), { emitEvent: false });
+                        item.control.setValue(item.control.value.toString(), { emitEvent: false });
                     }
                     this.updateBindings(changes, item.componentRef);
                 }
