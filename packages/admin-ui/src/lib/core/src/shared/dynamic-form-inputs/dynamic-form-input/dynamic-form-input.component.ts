@@ -286,7 +286,7 @@ export class DynamicFormInputComponent
                         ({
                             id: this.listId++,
                             control: new UntypedFormControl(getConfigArgValue(value)),
-                        }) as InputListItem,
+                        } as InputListItem),
                 );
                 this.renderList$.next();
             }
