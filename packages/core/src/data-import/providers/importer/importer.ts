@@ -297,7 +297,7 @@ export class Importer {
         return errors;
     }
 
-    private async getFacetValueIds(
+    protected async getFacetValueIds(
         ctx: RequestContext,
         facets: ParsedFacet[],
         languageCode: LanguageCode,
@@ -363,7 +363,7 @@ export class Importer {
         return facetValueIds;
     }
 
-    private processCustomFieldValues(customFields: { [field: string]: string }, config: CustomFieldConfig[]) {
+    protected processCustomFieldValues(customFields: { [field: string]: string }, config: CustomFieldConfig[]) {
         const processed: { [field: string]: string | string[] | boolean | undefined } = {};
         for (const fieldDef of config) {
             const value = customFields[fieldDef.name];
