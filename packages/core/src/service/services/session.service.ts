@@ -150,7 +150,7 @@ export class SessionService implements EntitySubscriberInterface {
         const sessionCacheTTLSeconds =
             typeof sessionCacheTTL === 'string' ? ms(sessionCacheTTL) / 1000 : sessionCacheTTL;
 
-        const expiry = Math.floor(new Date().getTime() / 1000) + sessionCacheTTLSeconds;
+        const expiry = new Date().getTime() / 1000 + sessionCacheTTLSeconds;
         const serializedSession: CachedSession = {
             cacheExpiry: expiry,
             id: session.id,
