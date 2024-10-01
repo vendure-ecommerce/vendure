@@ -2,8 +2,9 @@ import { PluginCommonModule, Type, VendurePlugin } from '@vendure/core';
 
 import { adminSchemaExtensions, shopSchemaExtensions } from './api-extensions';
 import { PAYPAL_PAYMENT_PLUGIN_OPTIONS } from './constants';
+import { PayPalAuthorizationService } from './paypal-authorization.service';
+import { PayPalOrderService } from './paypal-order.service';
 import { paypalPaymentMethodHandler } from './paypal.handler';
-import { PayPalService } from './paypal.service';
 import { PayPalShopResolver } from './paypal.shop-resolver';
 import { PayPalPluginOptions } from './types';
 
@@ -11,7 +12,8 @@ import { PayPalPluginOptions } from './types';
     imports: [PluginCommonModule],
     providers: [
         { provide: PAYPAL_PAYMENT_PLUGIN_OPTIONS, useFactory: () => PayPalPlugin.options },
-        PayPalService,
+        PayPalOrderService,
+        PayPalAuthorizationService,
     ],
     configuration: config => {
         config.paymentOptions.paymentMethodHandlers.push(paypalPaymentMethodHandler);

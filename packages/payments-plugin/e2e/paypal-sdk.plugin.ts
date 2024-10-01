@@ -3,10 +3,13 @@ import { Ctx, RequestContext } from '@vendure/core';
 import { PluginCommonModule, VendurePlugin } from '@vendure/core';
 import { DocumentNode, print } from 'graphql';
 
-import { PAYPAL_PAYMENT_PLUGIN_OPTIONS } from '../src/paypal/constants';
-import { PayPalPluginOptions } from '../src/paypal/types';
-
 import { ADD_PAYMENT_TO_ORDER, CREATE_PAYPAL_ORDER } from './payment-helpers';
+
+const PAYPAL_SDK_PAYMENT_PLUGIN_OPTIONS = Symbol('PAYPAL_SDK_PAYMENT_PLUGIN_OPTIONS');
+export interface PayPalSdkPluginOptions {
+    apiUrl: string;
+    clientId: string;
+}
 
 // @ts-ignore
 function html(strings, ...values) {
@@ -21,7 +24,9 @@ function formatQuery(gql: DocumentNode): string {
 
 @Controller('paypal-sdk')
 export class PayPalSdkController {
-    constructor(@Inject(PAYPAL_PAYMENT_PLUGIN_OPTIONS) private readonly options: PayPalPluginOptions) {}
+    constructor(
+        @Inject(PAYPAL_SDK_PAYMENT_PLUGIN_OPTIONS) private readonly options: PayPalSdkPluginOptions,
+    ) {}
 
     @Get()
     @Header('Access-Control-Allow-Origin', 'https://www.sandbox.paypal.com')
@@ -117,14 +122,14 @@ export class PayPalSdkController {
 }
 
 @VendurePlugin({
-    providers: [{ provide: PAYPAL_PAYMENT_PLUGIN_OPTIONS, useFactory: () => PayPalSdkPlugin.options }],
+    providers: [{ provide: PAYPAL_SDK_PAYMENT_PLUGIN_OPTIONS, useFactory: () => PayPalSdkPlugin.options }],
     imports: [PluginCommonModule],
     controllers: [PayPalSdkController],
 })
 export class PayPalSdkPlugin {
-    static options: PayPalPluginOptions;
+    static options: PayPalSdkPluginOptions;
 
-    static init(options: PayPalPluginOptions): Type<PayPalSdkPlugin> {
+    static init(options: PayPalSdkPluginOptions): Type<PayPalSdkPlugin> {
         this.options = options;
         return PayPalSdkPlugin;
     }

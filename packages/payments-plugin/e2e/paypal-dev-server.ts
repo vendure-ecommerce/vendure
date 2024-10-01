@@ -13,7 +13,7 @@ import {
     CreatePaymentMethodMutationVariables,
 } from './graphql/generated-admin-types';
 import { ADD_ITEM_TO_ORDER, APPLY_COUPON_CODE, TRANSITION_TO_STATE } from './graphql/shop-queries';
-import { CREATE_PAYPAL_ORDER, setShipping } from './payment-helpers';
+import { setShipping } from './payment-helpers';
 import { PayPalSdkPlugin } from './paypal-sdk.plugin';
 
 /**
@@ -31,12 +31,7 @@ async function runPayPalDevServer() {
         throw new Error('Please provide PayPal credentials in the .env file');
     }
 
-    const pluginOptions = {
-        clientId: PAYPAL_CLIENT_ID,
-        clientSecret: PAYPAL_CLIENT_SECRET,
-        merchantId: PAYPAL_MERCHANT_ID,
-        apiUrl: 'https://api-m.sandbox.paypal.com',
-    };
+    const apiUrl = 'https://api-m.sandbox.paypal.com';
 
     registerInitializer('sqljs', new SqljsInitializer(path.join(__dirname, '__data__')));
     const config = mergeConfig(testConfig, {
@@ -47,8 +42,13 @@ async function runPayPalDevServer() {
                 route: 'admin',
                 port: 5001,
             }),
-            PayPalPlugin.init(pluginOptions),
-            PayPalSdkPlugin.init(pluginOptions),
+            PayPalPlugin.init({
+                apiUrl,
+            }),
+            PayPalSdkPlugin.init({
+                apiUrl,
+                clientId: PAYPAL_CLIENT_ID,
+            }),
         ],
         logger: new DefaultLogger({ level: LogLevel.Debug }),
         apiOptions: {
@@ -87,7 +87,11 @@ async function runPayPalDevServer() {
                 enabled: true,
                 handler: {
                     code: 'paypal',
-                    arguments: [],
+                    arguments: [
+                        { name: 'clientId', value: PAYPAL_CLIENT_ID },
+                        { name: 'clientSecret', value: PAYPAL_CLIENT_SECRET },
+                        { name: 'merchantId', value: PAYPAL_MERCHANT_ID },
+                    ],
                 },
             },
         },

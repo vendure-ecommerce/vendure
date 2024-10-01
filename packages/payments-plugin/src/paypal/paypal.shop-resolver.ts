@@ -4,31 +4,25 @@ import {
     Allow,
     Ctx,
     IllegalOperationError,
-    Order,
     Permission,
-    RelationPaths,
-    Relations,
     RequestContext,
     Transaction,
 } from '@vendure/core';
 
 import { PayPalOrder } from './graphql/generated-shop-types';
-import { PayPalService } from './paypal.service';
+import { PayPalOrderService } from './paypal-order.service';
 
 @Resolver()
 export class PayPalShopResolver {
     constructor(
         private readonly activeOrderService: ActiveOrderService,
-        private readonly paypalService: PayPalService,
+        private readonly paypalService: PayPalOrderService,
     ) {}
 
     @Mutation()
     @Transaction()
     @Allow(Permission.Owner)
-    async createPayPalOrder(
-        @Ctx() ctx: RequestContext,
-        @Relations(Order) relations: RelationPaths<Order>,
-    ): Promise<PayPalOrder | undefined> {
+    async createPayPalOrder(@Ctx() ctx: RequestContext): Promise<PayPalOrder | undefined> {
         const sessionOrder = await this.activeOrderService.getActiveOrder(ctx, {});
 
         if (!sessionOrder) {
