@@ -240,6 +240,13 @@ export const ADD_PAYMENT_TO_ORDER = gql`
                 code
                 state
             }
+            ... on ErrorResult {
+                message
+                errorCode
+            }
+            ... on PaymentFailedError {
+                paymentErrorMessage
+            }
         }
     }
 `;

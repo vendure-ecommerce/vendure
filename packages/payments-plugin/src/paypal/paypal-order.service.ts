@@ -114,7 +114,7 @@ export class PayPalOrderService extends PayPalBaseService {
             return {
                 state: 'Error' as const,
                 amount: 0,
-                errorMessage: "PayPal order must be in 'APPROVED' state.",
+                errorMessage: 'PayPal order must be in "APPROVED" state.',
             };
         }
 

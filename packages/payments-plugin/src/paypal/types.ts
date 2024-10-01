@@ -54,8 +54,8 @@ export interface PayPalPaymentCapture {
 }
 
 export interface PayPalPaymentInformation {
-    authorizations: PayPalPaymentAuthorization[];
-    captures: PayPalPaymentCapture[];
+    authorizations?: PayPalPaymentAuthorization[];
+    captures?: PayPalPaymentCapture[];
 }
 
 export interface PayPalPayer {
