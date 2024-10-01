@@ -20,15 +20,18 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
         clientId: {
             type: 'string',
             label: [{ languageCode: LanguageCode.en, value: 'Client ID' }],
+            required: true,
         },
         clientSecret: {
             type: 'string',
             label: [{ languageCode: LanguageCode.en, value: 'Client Secret' }],
             ui: { component: 'password-form-input' },
+            required: true,
         },
         merchantId: {
             type: 'string',
             label: [{ languageCode: LanguageCode.en, value: 'Merchant Id' }],
+            required: true,
         },
     },
     init(injector: Injector) {
@@ -122,7 +125,7 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
         }
 
         try {
-            const result = await paypalAuthorizationService.captureAuthorization(ctx, authorization.id);
+            await paypalAuthorizationService.captureAuthorization(ctx, authorization.id);
             return {
                 success: true,
             };
