@@ -3,10 +3,12 @@ import { Injector, PaymentMethodHandler } from '@vendure/core';
 
 import { handlerCode } from './constants';
 import { PayPalAuthorizationService } from './paypal-authorization.service';
+import { PayPalCaptureService } from './paypal-capture.service';
 import { PayPalOrderService } from './paypal-order.service';
 
 let paypalOrderService: PayPalOrderService;
 let paypalAuthorizationService: PayPalAuthorizationService;
+let paypalCaptureService: PayPalCaptureService;
 
 /**
  * The handler for PayPal payments.
@@ -32,6 +34,7 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
     init(injector: Injector) {
         paypalOrderService = injector.get(PayPalOrderService);
         paypalAuthorizationService = injector.get(PayPalAuthorizationService);
+        paypalCaptureService = injector.get(PayPalCaptureService);
     },
 
     async createPayment(ctx, order, amount, args, metadata) {
@@ -119,7 +122,7 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
         }
 
         try {
-            await paypalAuthorizationService.captureAuthorization(ctx, authorization.id);
+            const result = await paypalAuthorizationService.captureAuthorization(ctx, authorization.id);
             return {
                 success: true,
             };
@@ -131,10 +134,33 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
         }
     },
 
-    createRefund(ctx, input, total, order, payment, args) {
+    async createRefund(ctx, input, total, order, payment, args) {
+        const orderDetails = await paypalOrderService.orderDetails(ctx, payment.transactionId);
+
+        const payments = orderDetails.purchase_units[0].payments;
+        const captures = payments?.captures;
+
+        if (!captures || !captures.length) {
+            throw new Error('No captures found in order details. Nothing to refund.');
+        }
+
+        if (captures.length !== 1) {
+            throw new Error('Multiple captures found in order details.');
+        }
+
+        const capture = captures[0];
+
+        if (capture.status !== 'COMPLETED' && capture.status !== 'PARTIALLY_REFUNDED') {
+            throw new Error('Capture is not completed. Nothing to refund.');
+        }
+
+        const response = await paypalCaptureService.refundCapture(ctx, captures[0].id, total, order);
+
         return {
-            state: 'Failed' as const,
-            metadata: {},
+            state: 'Settled' as const,
+            metadata: {
+                reference: response.id,
+            },
         };
     },
 });
