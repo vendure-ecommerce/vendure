@@ -45,7 +45,7 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
             return {
                 state: 'Error' as const,
                 amount: order.totalWithTax,
-                errorMessage: "'orderId' must be set in metadata. Call 'createPayPalOrder' to get order id.",
+                errorMessage: '"orderId" must be set in metadata. Call "createPayPalOrder" to get order id',
             };
         }
 
@@ -56,10 +56,17 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
             return validationResult;
         }
 
-        const authorizedOrderResponse = await paypalAuthorizationService.authorizeOrder(
-            ctx,
-            metadata.orderId,
-        );
+        let authorizedOrderResponse;
+
+        try {
+            authorizedOrderResponse = await paypalAuthorizationService.authorizeOrder(ctx, metadata.orderId);
+        } catch (error) {
+            return {
+                state: 'Error' as const,
+                amount: 0,
+                errorMessage: 'Payment authorization failed. Error while accessing PayPal.',
+            };
+        }
 
         if (!authorizedOrderResponse.purchase_units[0].payments) {
             return {
