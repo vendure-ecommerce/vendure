@@ -1,23 +1,37 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { EntityHydrator, Injector, PaymentMethodHandler, TransactionalConnection } from '@vendure/core';
+import { Injector, PaymentMethodHandler } from '@vendure/core';
 
-import { PayPalService } from './paypal.service';
+import { handlerCode } from './constants';
+import { PayPalAuthorizationService } from './paypal-authorization.service';
+import { PayPalOrderService } from './paypal-order.service';
 
-let paypalService: PayPalService;
-let connection: TransactionalConnection;
-let entityHydrator: EntityHydrator;
+let paypalOrderService: PayPalOrderService;
+let paypalAuthorizationService: PayPalAuthorizationService;
 
 /**
  * The handler for PayPal payments.
  */
 export const paypalPaymentMethodHandler = new PaymentMethodHandler({
-    code: 'paypal',
+    code: handlerCode,
     description: [{ languageCode: LanguageCode.en, value: 'PayPal' }],
-    args: {},
+    args: {
+        clientId: {
+            type: 'string',
+            label: [{ languageCode: LanguageCode.en, value: 'Client ID' }],
+        },
+        clientSecret: {
+            type: 'string',
+            label: [{ languageCode: LanguageCode.en, value: 'Client Secret' }],
+            ui: { component: 'password-form-input' },
+        },
+        merchantId: {
+            type: 'string',
+            label: [{ languageCode: LanguageCode.en, value: 'Merchant Id' }],
+        },
+    },
     init(injector: Injector) {
-        connection = injector.get(TransactionalConnection);
-        entityHydrator = injector.get(EntityHydrator);
-        paypalService = injector.get(PayPalService);
+        paypalOrderService = injector.get(PayPalOrderService);
+        paypalAuthorizationService = injector.get(PayPalAuthorizationService);
     },
 
     async createPayment(ctx, order, amount, args, metadata) {
@@ -29,14 +43,17 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
             };
         }
 
-        const orderDetails = await paypalService.orderDetails(metadata.orderId);
+        const orderDetails = await paypalOrderService.orderDetails(ctx, metadata.orderId);
 
-        const validationResult = paypalService.validatePayPalOrder(order, orderDetails);
+        const validationResult = await paypalOrderService.validateOrderMatch(ctx, order, orderDetails);
         if (validationResult) {
             return validationResult;
         }
 
-        const authorizedOrderResponse = await paypalService.authorizeOrder(metadata.orderId);
+        const authorizedOrderResponse = await paypalAuthorizationService.authorizeOrder(
+            ctx,
+            metadata.orderId,
+        );
 
         if (!authorizedOrderResponse.purchase_units[0].payments) {
             return {
@@ -85,7 +102,7 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
         const now = new Date();
         now.setTime(now.getTime() + 30000); // Add 30 seconds buffer to account for the time it takes to capture the payment
 
-        const orderDetails = await paypalService.orderDetails(payment.transactionId);
+        const orderDetails = await paypalOrderService.orderDetails(ctx, payment.transactionId);
         const authorization = orderDetails.purchase_units[0].payments?.authorizations[0];
 
         if (!authorization) {
@@ -98,11 +115,11 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
 
         // check if authorizationExpirationTime is earlier than now
         if (now > new Date(authorization.expiration_time)) {
-            await paypalService.reauthorizeOrder(authorization.id);
+            await paypalAuthorizationService.reauthorizeOrder(ctx, authorization.id);
         }
 
         try {
-            await paypalService.capturePayment(authorization.id);
+            await paypalAuthorizationService.captureAuthorization(ctx, authorization.id);
             return {
                 success: true,
             };
@@ -114,7 +131,7 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
         }
     },
 
-    async createRefund(ctx, input, total, order, payment, args) {
+    createRefund(ctx, input, total, order, payment, args) {
         return {
             state: 'Failed' as const,
             metadata: {},
