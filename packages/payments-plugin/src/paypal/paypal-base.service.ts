@@ -1,7 +1,7 @@
 import { InternalServerError, PaymentMethod, PaymentMethodService, RequestContext } from '@vendure/core';
 
+import { handlerCode } from './constants';
 import { ConfigArg } from './graphql/generated-shop-types';
-import { paypalPaymentMethodHandler } from './paypal.handler';
 import { PayPalAuthorizationResponse, PayPalPluginOptions } from './types';
 
 export abstract class PayPalBaseService {
@@ -24,9 +24,7 @@ export abstract class PayPalBaseService {
 
     protected async getPaymentMethod(ctx: RequestContext): Promise<PaymentMethod | undefined> {
         const allPaymentMethods = await this.paymentMethodService.findAll(ctx);
-        const paymentMethod = allPaymentMethods.items.find(
-            item => item.handler?.code === paypalPaymentMethodHandler.code,
-        );
+        const paymentMethod = allPaymentMethods.items.find(item => item.handler?.code === handlerCode);
 
         return paymentMethod;
     }
