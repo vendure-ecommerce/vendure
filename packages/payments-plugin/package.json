@@ -30,7 +30,8 @@
         "stripe": "13.x"
     },
     "dependencies": {
-        "currency.js": "2.0.4"
+        "currency.js": "2.0.4",
+        "msw": "^2.4.4"
     },
     "peerDependenciesMeta": {
         "@mollie/api-client": {
