@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug e2e",
+            "type": "node",
+            "request": "launch",
+            "autoAttachChildProcesses": true,
+            "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+            "program": "${workspaceRoot}/node_modules/vitest/vitest.mjs",
+            "env": {
+                "TEST_FILE": "${relativeFile}"
+            },
+            "args": ["--config", "${workspaceRoot}/e2e-common/vitest.config.mts", "watch", "${relativeFile}"],
+            "smartStep": true,
+            "console": "integratedTerminal"
+        }
+    ]
+}
