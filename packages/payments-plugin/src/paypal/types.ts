@@ -1,3 +1,5 @@
+import { PayPalOrderLink } from './graphql/generated-shop-types';
+
 export interface PayPalAuthorizationResponse {
     access_token: string;
     app_id: string;
@@ -33,8 +35,27 @@ export interface PayPalPaymentAuthorization {
     status: string;
 }
 
+export interface PayPalRefundRequest {
+    amount: Amount;
+    invoice_id?: string;
+}
+
+export interface PayPalRefundResponse {
+    id: string;
+    status: string;
+    amount: Amount;
+    links: PayPalOrderLink[];
+}
+
+export interface PayPalPaymentCapture {
+    id: string;
+    status: string;
+    amount: Amount;
+}
+
 export interface PayPalPaymentInformation {
     authorizations: PayPalPaymentAuthorization[];
+    captures: PayPalPaymentCapture[];
 }
 
 export interface PayPalPayer {
