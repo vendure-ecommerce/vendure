@@ -20,21 +20,6 @@ export interface PayPalPluginOptions {
      * @example https://api-m.paypal.com
      */
     apiUrl: string;
-
-    /**
-     * The client ID for the PayPal API.
-     */
-    clientId: string;
-
-    /**
-     * The client secret for the PayPal API.
-     */
-    clientSecret: string;
-
-    /**
-     * The merchant id ofthe PayPal API. Used for validation of orders.
-     */
-    merchantId: string;
 }
 
 // Packages like @types/paypal-rest-sdk are not deprecated, but still do not work correctly, so we
