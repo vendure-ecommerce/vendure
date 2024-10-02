@@ -9,6 +9,7 @@ import createUploadLink from 'apollo-upload-client/createUploadLink.mjs';
 import { getAppConfig } from '../app.config';
 import { introspectionResult } from '../common/introspection-result-wrapper';
 import { LocalStorageService } from '../providers/local-storage/local-storage.service';
+import { AddCustomFieldsLink } from './add-custom-fields-link';
 
 import { CheckJobsLink } from './check-jobs-link';
 import { getClientDefaults } from './client-state/client-defaults';
@@ -46,6 +47,13 @@ export function createApollo(
                     },
                 },
             },
+            Query: {
+                fields: {
+                    products: {
+                        merge: (existing, incoming) => incoming,
+                    },
+                },
+            },
         },
     });
     apolloCache.writeQuery({
@@ -61,6 +69,7 @@ export function createApollo(
     return {
         link: ApolloLink.from([
             new OmitTypenameLink(),
+            // new AddCustomFieldsLink(injector.get(ServerConfigService)),
             new CheckJobsLink(injector),
             setContext(() => {
                 const headers: Record<string, string> = {};

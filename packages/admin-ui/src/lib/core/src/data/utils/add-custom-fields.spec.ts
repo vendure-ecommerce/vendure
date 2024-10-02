@@ -186,6 +186,19 @@ describe('addCustomFields()', () => {
         expect((customFieldsDef.selectionSet!.selections[0] as FieldNode).name.value).toBe('custom');
     }
 
+    it('Does not duplicate customFields selection set', () => {
+        const customFieldsConfig = new Map<string, CustomFieldConfig[]>();
+        customFieldsConfig.set('Product', [{ name: 'custom', type: 'boolean', list: false }]);
+        const result1 = addCustomFields(documentNode, customFieldsConfig);
+        const result2 = addCustomFields(result1, customFieldsConfig);
+
+        const fragmentDef = result2.definitions[1] as FragmentDefinitionNode;
+        const customFieldSelections = fragmentDef.selectionSet.selections.filter(
+            s => s.kind === Kind.FIELD && s.name.value === 'customFields',
+        );
+        expect(customFieldSelections.length).toBe(1);
+    });
+
     it('Adds customFields to ProductVariant fragment', () => {
         addsCustomFieldsToType('ProductVariant', 2);
     });
