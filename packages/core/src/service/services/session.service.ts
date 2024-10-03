@@ -146,8 +146,11 @@ export class SessionService implements EntitySubscriberInterface {
      * Serializes a {@link Session} instance into a simplified plain object suitable for caching.
      */
     serializeSession(session: AuthenticatedSession | AnonymousSession): CachedSession {
-        const expiry =
-            Math.floor(new Date().getTime() / 1000) + this.configService.authOptions.sessionCacheTTL;
+        const { sessionCacheTTL } = this.configService.authOptions;
+        const sessionCacheTTLSeconds =
+            typeof sessionCacheTTL === 'string' ? ms(sessionCacheTTL) / 1000 : sessionCacheTTL;
+
+        const expiry = new Date().getTime() / 1000 + sessionCacheTTLSeconds;
         const serializedSession: CachedSession = {
             cacheExpiry: expiry,
             id: session.id,

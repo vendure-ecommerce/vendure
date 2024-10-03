@@ -374,7 +374,7 @@ export interface AuthOptions {
      * Session duration, i.e. the time which must elapse from the last authenticated request
      * after which the user must re-authenticate.
      *
-     * Expressed as a string describing a time span per
+     * If passed as a number should represent milliseconds and if passed as a string describes a time span per
      * [zeit/ms](https://github.com/zeit/ms.js).  Eg: `60`, `'2 days'`, `'10h'`, `'7d'`
      *
      * @default '1y'
@@ -391,13 +391,15 @@ export interface AuthOptions {
     sessionCacheStrategy?: SessionCacheStrategy;
     /**
      * @description
-     * The "time to live" of a given item in the session cache. This determines the length of time (in seconds)
-     * that a cache entry is kept before being considered "stale" and being replaced with fresh data
-     * taken from the database.
+     * The "time to live" of a given item in the session cache. This determines the length of time that a cache entry
+     * is kept before being considered "stale" and being replaced with fresh data taken from the database.
+     *
+     * If passed as a number should represent seconds and if passed as a string describes a time span per
+     * [zeit/ms](https://github.com/zeit/ms.js). Eg: `60`, `'2 days'`, `'10h'`, `'7d'`
      *
      * @default 300
      */
-    sessionCacheTTL?: number;
+    sessionCacheTTL?: string | number;
     /**
      * @description
      * Determines whether new User accounts require verification of their email address.
@@ -412,7 +414,7 @@ export interface AuthOptions {
      * @description
      * Sets the length of time that a verification token is valid for, after which the verification token must be refreshed.
      *
-     * Expressed as a string describing a time span per
+     * If passed as a number should represent milliseconds and if passed as a string describes a time span per
      * [zeit/ms](https://github.com/zeit/ms.js).  Eg: `60`, `'2 days'`, `'10h'`, `'7d'`
      *
      * @default '7d'
