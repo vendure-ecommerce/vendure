@@ -9,7 +9,7 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { paypalPaymentMethodHandler } from '../src/paypal/paypal.handler';
 import { PayPalPlugin } from '../src/paypal/paypal.plugin';
-import { PayPalOrderInformation } from '../src/paypal/types';
+import { PayPalOrderInformation, PayPalPaymentInformation } from '../src/paypal/types';
 
 import { CREATE_PAYMENT_METHOD, GET_CUSTOMER_LIST } from './graphql/admin-queries';
 import {
@@ -23,12 +23,13 @@ import {
     AddItemToOrderMutationVariables,
     TestOrderFragmentFragment,
 } from './graphql/generated-shop-types';
-import { ADD_ITEM_TO_ORDER } from './graphql/shop-queries';
+import { ADD_ITEM_TO_ORDER, GET_ACTIVE_ORDER, GET_ORDER_BY_CODE } from './graphql/shop-queries';
 import {
     ADD_PAYMENT_TO_ORDER,
     CREATE_PAYPAL_ORDER,
     proceedToArrangingPayment,
     setShipping,
+    SETTLE_PAYMENT,
 } from './payment-helpers';
 
 const mockData = {
@@ -71,6 +72,20 @@ const mockData = {
         },
         status: 'APPROVED',
     } as PayPalOrderInformation,
+    payments: {
+        authorizations: [
+            {
+                amount: {
+                    currency_code: 'USD',
+                    value: '1209.90',
+                },
+                create_time: '',
+                expiration_time: '',
+                id: '1231231',
+                status: 'AUTHORIZED',
+            },
+        ],
+    } as PayPalPaymentInformation,
 };
 
 const mockAuthentication = http.post(`${mockData.apiUrl}/v1/oauth2/token`, ({ request }) => {
@@ -81,6 +96,35 @@ const mockAuthentication = http.post(`${mockData.apiUrl}/v1/oauth2/token`, ({ re
         { status: 201 },
     );
 });
+
+const mockAuthorization = http.post(
+    `${mockData.apiUrl}/v2/checkout/orders/${mockData.order.id}/authorize`,
+    () => {
+        return HttpResponse.json<PayPalOrderInformation>({
+            ...mockData.order,
+            purchase_units: [
+                {
+                    ...mockData.order.purchase_units[0],
+                    reference_id: order.code,
+                    payments: {
+                        authorizations: [
+                            {
+                                id: '1231231',
+                                status: 'CREATED',
+                                amount: {
+                                    currency_code: 'USD',
+                                    value: '1209.90',
+                                },
+                                create_time: '2021-09-01T12:00:00Z',
+                                expiration_time: '2021-09-01T12:30:00Z',
+                            },
+                        ],
+                    },
+                },
+            ],
+        });
+    },
+);
 
 let shopClient: SimpleGraphQLClient;
 let adminClient: SimpleGraphQLClient;
@@ -359,6 +403,7 @@ describe('PayPal payments', () => {
                     },
                 },
             });
+
             expect(addPaymentToOrderResult).toEqual({
                 addPaymentToOrder: {
                     message: 'The payment failed',
@@ -372,6 +417,7 @@ describe('PayPal payments', () => {
 
             mswServer.use(
                 mockAuthentication,
+                mockAuthorization,
                 http.get(`${mockData.apiUrl}/v2/checkout/orders/${mockData.order.id}`, () => {
                     return HttpResponse.json<PayPalOrderInformation>({
                         ...mockData.order,
@@ -383,34 +429,9 @@ describe('PayPal payments', () => {
                         ],
                     });
                 }),
-                http.post(`${mockData.apiUrl}/v2/checkout/orders/${mockData.order.id}/authorize`, () => {
-                    return HttpResponse.json<PayPalOrderInformation>({
-                        ...mockData.order,
-                        purchase_units: [
-                            {
-                                ...mockData.order.purchase_units[0],
-                                reference_id: order.code,
-                                payments: {
-                                    authorizations: [
-                                        {
-                                            id: '1231231',
-                                            status: 'CREATED',
-                                            amount: {
-                                                currency_code: 'USD',
-                                                value: '1209.90',
-                                            },
-                                            create_time: '2021-09-01T12:00:00Z',
-                                            expiration_time: '2021-09-01T12:30:00Z',
-                                        },
-                                    ],
-                                },
-                            },
-                        ],
-                    });
-                }),
             );
 
-            const addPaymentToOrderResult = await shopClient.query(ADD_PAYMENT_TO_ORDER, {
+            const { addPaymentToOrder } = await shopClient.query(ADD_PAYMENT_TO_ORDER, {
                 input: {
                     method: mockData.methodCode,
                     metadata: {
@@ -418,24 +439,182 @@ describe('PayPal payments', () => {
                     },
                 },
             });
-            expect(addPaymentToOrderResult).toEqual({
-                addPaymentToOrder: {
-                    id: order.id,
-                    code: order.code,
-                    state: 'PaymentAuthorized',
-                },
+
+            expect(addPaymentToOrder).toEqual({
+                id: order.id,
+                code: order.code,
+                state: 'PaymentAuthorized',
+                payments: [
+                    {
+                        id: 'T_1',
+                        state: 'Error',
+                        transactionId: null,
+                        method: 'paypal',
+                    },
+                    {
+                        id: 'T_2',
+                        state: 'Error',
+                        transactionId: null,
+                        method: 'paypal',
+                    },
+                    {
+                        id: 'T_3',
+                        state: 'Error',
+                        transactionId: null,
+                        method: 'paypal',
+                    },
+                    {
+                        id: 'T_4',
+                        state: 'Authorized',
+                        transactionId: '123123123',
+                        method: 'paypal',
+                    },
+                ],
             });
         });
     });
 
-    /*
     describe('Payment settle', () => {
-        it('Should capture order and return success', () => {});
-        it('Should reauthorize if authorization is expired', () => {});
-        it('Should fail when not in Authorized state', () => {});
-        it('Should fail when no authorizations are available', () => {});
+        it('Should fail when not in Authorized state', async ({ expect }) => {
+            await adminClient.asSuperAdmin();
+
+            // We use a payment of the previous describe block that failed.
+            const { settlePayment } = await adminClient.query(SETTLE_PAYMENT, {
+                id: 'T_1',
+            });
+
+            expect(settlePayment).toEqual({
+                errorCode: 'SETTLE_PAYMENT_ERROR',
+                message: 'Settling the payment failed',
+                __typename: 'SettlePaymentError',
+                paymentErrorMessage: 'Payment is not authorized. Call "createPayment" to authorize payment',
+            });
+        });
+        it('Should fail when no authorizations are available', async ({ expect }) => {
+            mswServer.use(
+                mockAuthentication,
+                mockAuthorization,
+                http.get(`${mockData.apiUrl}/v2/checkout/orders/${mockData.order.id}`, () => {
+                    return HttpResponse.json<PayPalOrderInformation>({
+                        ...mockData.order,
+                        purchase_units: [
+                            {
+                                ...mockData.order.purchase_units[0],
+                                reference_id: order.code,
+                            },
+                        ],
+                    });
+                }),
+                http.post(`${mockData.apiUrl}/v2/checkout/orders`, ({ request }) => {
+                    return HttpResponse.json(
+                        {
+                            id: mockData.order.id,
+                            links: [],
+                        },
+                        { status: 201 },
+                    );
+                }),
+            );
+
+            await adminClient.asSuperAdmin();
+
+            // We use the last payment of the previous describe block that was successful.
+            const { settlePayment } = await adminClient.query(SETTLE_PAYMENT, {
+                id: 'T_4',
+            });
+
+            expect(settlePayment).toEqual({
+                errorCode: 'SETTLE_PAYMENT_ERROR',
+                message: 'Settling the payment failed',
+                __typename: 'SettlePaymentError',
+                paymentErrorMessage: 'No authorizations found in order details.',
+            });
+        });
+        it('Should capture order and return success', async ({ expect }) => {
+            const authorization = mockData.payments?.authorizations?.[0];
+
+            if (!authorization) {
+                throw new Error('Authorization is not set in mock data.');
+            }
+
+            mswServer.use(
+                mockAuthentication,
+                mockAuthorization,
+                http.get(`${mockData.apiUrl}/v2/checkout/orders/${mockData.order.id}`, () => {
+                    return HttpResponse.json<PayPalOrderInformation>({
+                        ...mockData.order,
+                        purchase_units: [
+                            {
+                                ...mockData.order.purchase_units[0],
+                                reference_id: order.code,
+                                payments: mockData.payments,
+                            },
+                        ],
+                    });
+                }),
+                http.post(`${mockData.apiUrl}/v2/checkout/orders`, ({ request }) => {
+                    return HttpResponse.json(
+                        {
+                            id: mockData.order.id,
+                            links: [],
+                        },
+                        { status: 201 },
+                    );
+                }),
+                http.post(
+                    `${mockData.apiUrl}/v2/payments/authorizations/${authorization.id}/capture`,
+                    ({ request }) => {
+                        return HttpResponse.json({}, { status: 201 });
+                    },
+                ),
+            );
+
+            await shopClient.asUserWithCredentials(customers[1].emailAddress, 'test');
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrderMutation,
+                AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_5',
+                quantity: 10,
+            });
+            order = addItemToOrder as TestOrderFragmentFragment;
+
+            await proceedToArrangingPayment(shopClient);
+
+            await adminClient.asSuperAdmin();
+
+            const or = await shopClient.query(GET_ACTIVE_ORDER);
+
+            const { addPaymentToOrder } = await shopClient.query(ADD_PAYMENT_TO_ORDER, {
+                input: {
+                    method: mockData.methodCode,
+                    metadata: {
+                        orderId: mockData.order.id,
+                    },
+                },
+            });
+
+            // We use the last payment of the previous describe block that was successful.
+            const { settlePayment } = await adminClient.query(SETTLE_PAYMENT, {
+                id: addPaymentToOrder.payments[0].id,
+            });
+
+            expect(settlePayment).toEqual({
+                id: 'T_5',
+                transactionId: '123123123',
+                amount: 120990,
+                method: 'paypal',
+                state: 'Settled',
+                metadata: {
+                    payerId: '123123123',
+                },
+                __typename: 'Payment',
+            });
+        });
+        // it.skip('Should reauthorize if authorization is expired', () => {});
     });
 
+    /*
     describe('Payment refund', () => {
         it('Should refund payment fully and settle payment', () => {});
         it('Should refund payment partially and settle payment', () => {});
