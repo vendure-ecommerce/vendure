@@ -76,7 +76,7 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
             };
         }
 
-        if (!authorizedOrderResponse.purchase_units[0].payments.authorizations.length) {
+        if (!authorizedOrderResponse.purchase_units[0].payments.authorizations?.length) {
             return {
                 state: 'Error' as const,
                 amount: 0,
@@ -108,7 +108,8 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
         if (payment.state !== 'Authorized') {
             return {
                 success: false,
-                errorMessage: "Payment is not authorized. Call 'createPayment' to authorize payment.",
+                errorMessage: 'Payment is not authorized. Call "createPayment" to authorize payment',
+                state: 'Error' as const,
             };
         }
 
@@ -116,15 +117,17 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
         now.setTime(now.getTime() + 30000); // Add 30 seconds buffer to account for the time it takes to capture the payment
 
         const orderDetails = await paypalOrderService.orderDetails(ctx, payment.transactionId);
-        const authorization = orderDetails.purchase_units[0].payments?.authorizations[0];
 
-        if (!authorization) {
+        const authorizations = orderDetails.purchase_units[0].payments?.authorizations;
+        if (!authorizations?.length) {
             return {
                 success: false,
-                errorMessage: 'No authorization found in order details.',
+                errorMessage: 'No authorizations found in order details.',
                 state: 'Error' as const,
             };
         }
+
+        const authorization = authorizations[0];
 
         // check if authorizationExpirationTime is earlier than now
         if (now > new Date(authorization.expiration_time)) {
