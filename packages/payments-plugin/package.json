@@ -16,6 +16,7 @@
         "lint": "eslint --fix .",
         "ci": "npm run build",
         "dev-server:mollie": "npm run build && DB=sqlite node -r ts-node/register e2e/mollie-dev-server.ts",
+        "dev-server:paypal": "npm run build && DB=sqlite node -r ts-node/register e2e/paypal-dev-server.ts",
         "dev-server:stripe": "npm run build && DB=sqlite node -r ts-node/register e2e/stripe-dev-server.ts"
     },
     "homepage": "https://www.vendure.io/",
@@ -29,7 +30,8 @@
         "stripe": "13.x"
     },
     "dependencies": {
-        "currency.js": "2.0.4"
+        "currency.js": "2.0.4",
+        "msw": "^2.4.4"
     },
     "peerDependenciesMeta": {
         "@mollie/api-client": {
