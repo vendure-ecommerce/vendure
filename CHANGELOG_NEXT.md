@@ -1,3 +1,11 @@
+## 3.1.0-next.3 (2024-10-04)
+
+This release includes all fixes from v3.0.4, as well as the following new features:
+
+#### Features
+
+* **core** Enhance AuthOptions.sessionCacheTTL by allowing string expressions (zeit/ms) (#3088)
+
 ## 3.1.0-next.2 (2024-09-11)
 
 #### Fixes
