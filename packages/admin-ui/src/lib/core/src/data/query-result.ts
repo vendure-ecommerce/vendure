@@ -1,7 +1,7 @@
 import { ApolloQueryResult, NetworkStatus } from '@apollo/client/core';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { Apollo, QueryRef } from 'apollo-angular';
-import { DocumentNode } from 'graphql/index';
+import { DocumentNode } from 'graphql';
 import { merge, Observable, Subject, Subscription } from 'rxjs';
 import { distinctUntilChanged, filter, finalize, map, skip, take, takeUntil } from 'rxjs/operators';
 

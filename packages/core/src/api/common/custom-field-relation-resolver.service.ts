@@ -3,7 +3,6 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { Translatable } from '../../common/types/locale-types';
-import { ConfigService } from '../../config/config.service';
 import { RelationCustomFieldConfig } from '../../config/custom-field/custom-field-types';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { VendureEntity } from '../../entity/base/base.entity';
@@ -24,7 +23,6 @@ export interface ResolveRelationConfig {
 export class CustomFieldRelationResolverService {
     constructor(
         private connection: TransactionalConnection,
-        private configService: ConfigService,
         private productPriceApplicator: ProductPriceApplicator,
         private translator: TranslatorService,
     ) {}
