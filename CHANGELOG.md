@@ -1,3 +1,10 @@
+## <small>2.3.2 (2024-10-04)</small>
+
+
+#### Fixes
+
+* **admin-ui** Unsubscribe from alerts when logging out (#3071) ([ead1caa](https://github.com/vendure-ecommerce/vendure/commit/ead1caa)), closes [#3071](https://github.com/vendure-ecommerce/vendure/issues/3071) [#2188](https://github.com/vendure-ecommerce/vendure/issues/2188)
+
 ## <small>2.3.1 (2024-09-10)</small>
 
 
