@@ -69,6 +69,7 @@
                     </a>
                 </ng-template>
             </vdr-dt2-column>
+            <vdr-dt2-custom-field-column *ngFor="let field of customFields" [customField]="field" [sorts]="sorts" />
             <vdr-dt2-column
                 [heading]="'common.view-contents' | translate" id="view-contents"
                 [optional]="false"
