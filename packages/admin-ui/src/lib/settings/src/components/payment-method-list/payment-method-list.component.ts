@@ -33,6 +33,7 @@ export class PaymentMethodListComponent extends TypedBaseListComponent<
     typeof GetPaymentMethodListDocument,
     'paymentMethods'
 > {
+    dataTableListId = 'payment-method-list';
     readonly customFields = this.getCustomFieldConfig('PaymentMethod');
     readonly filters = this.createFilterCollection()
         .addIdFilter()

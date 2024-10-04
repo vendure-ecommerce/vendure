@@ -24,6 +24,8 @@ export class ProductListComponent
     implements OnInit
 {
     pendingSearchIndexUpdates = 0;
+    dataTableListId = 'product-list';
+    pageLocationId = 'product-list';
     readonly customFields = this.getCustomFieldConfig('Product');
     readonly filters = this.createFilterCollection()
         .addIdFilter()

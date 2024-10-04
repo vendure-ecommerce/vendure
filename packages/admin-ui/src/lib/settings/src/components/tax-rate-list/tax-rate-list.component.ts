@@ -22,6 +22,7 @@ export const GET_TAX_RATE_LIST = gql`
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaxRateListComponent extends TypedBaseListComponent<typeof GetTaxRateListDocument, 'taxRates'> {
+    dataTableListId = 'tax-rate-list';
     readonly customFields = this.getCustomFieldConfig('TaxRate');
     readonly filters = this.createFilterCollection()
         .addIdFilter()

@@ -41,6 +41,7 @@ export class CustomerGroupListComponent
     extends TypedBaseListComponent<typeof GetCustomerGroupListDocument, 'customerGroups'>
     implements OnInit
 {
+    dataTableListId = 'customer-group-list';
     readonly customFields = this.getCustomFieldConfig('CustomerGroup');
     activeGroup$: Observable<ItemOf<GetCustomerGroupsQuery, 'customerGroups'> | undefined>;
     activeIndex$: Observable<number>;

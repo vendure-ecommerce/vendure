@@ -31,6 +31,7 @@ export class StockLocationListComponent
     extends TypedBaseListComponent<typeof GetStockLocationListDocument, 'stockLocations'>
     implements OnInit
 {
+    dataTableListId = 'stock-location-list';
     readonly customFields = this.getCustomFieldConfig('StockLocation');
     readonly filters = this.createFilterCollection()
         .addIdFilter()

@@ -35,6 +35,7 @@ export class FacetListComponent
     readonly initialLimit = 3;
     displayLimit: { [id: string]: number } = {};
 
+    dataTableListId = 'facet-list';
     readonly customFields = this.getCustomFieldConfig('Facet');
     readonly filters = this.createFilterCollection()
         .addIdFilter()

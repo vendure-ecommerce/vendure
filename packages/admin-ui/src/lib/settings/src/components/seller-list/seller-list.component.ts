@@ -30,6 +30,7 @@ export class SellerListComponent
     extends TypedBaseListComponent<typeof GetSellerListDocument, 'sellers'>
     implements OnInit
 {
+    dataTableListId = 'seller-list';
     readonly customFields = this.getCustomFieldConfig('Seller');
     readonly filters = this.createFilterCollection()
         .addIdFilter()
