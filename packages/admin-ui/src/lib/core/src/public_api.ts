@@ -106,6 +106,7 @@ export * from './providers/custom-history-entry-component/history-entry-componen
 export * from './providers/custom-history-entry-component/history-entry-component.service';
 export * from './providers/dashboard-widget/dashboard-widget-types';
 export * from './providers/dashboard-widget/dashboard-widget.service';
+export * from './providers/data-table/data-table-config.service';
 export * from './providers/data-table/data-table-filter-collection';
 export * from './providers/data-table/data-table-filter';
 export * from './providers/data-table/data-table-sort-collection';

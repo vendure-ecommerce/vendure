@@ -16,9 +16,13 @@ export type Scalars = {
     Boolean: { input: boolean; output: boolean };
     Int: { input: number; output: number };
     Float: { input: number; output: number };
+    /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
     DateTime: { input: any; output: any };
+    /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
     JSON: { input: any; output: any };
+    /** The `Money` scalar type represents monetary values and supports signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point). */
     Money: { input: number; output: number };
+    /** The `Upload` scalar type represents a file upload. */
     Upload: { input: any; output: any };
 };
 
@@ -1617,7 +1621,6 @@ export enum ErrorCode {
     MANUAL_PAYMENT_STATE_ERROR = 'MANUAL_PAYMENT_STATE_ERROR',
     MIME_TYPE_ERROR = 'MIME_TYPE_ERROR',
     MISSING_CONDITIONS_ERROR = 'MISSING_CONDITIONS_ERROR',
-    MOLLIE_PAYMENT_INTENT_ERROR = 'MOLLIE_PAYMENT_INTENT_ERROR',
     MULTIPLE_ORDER_ERROR = 'MULTIPLE_ORDER_ERROR',
     NATIVE_AUTH_STRATEGY_ERROR = 'NATIVE_AUTH_STRATEGY_ERROR',
     NEGATIVE_QUANTITY_ERROR = 'NEGATIVE_QUANTITY_ERROR',
@@ -2601,6 +2604,11 @@ export type ModifyOrderResult =
     | PaymentMethodMissingError
     | RefundPaymentIdMissingError;
 
+export type MollieAmount = {
+    currency?: Maybe<Scalars['String']['output']>;
+    value?: Maybe<Scalars['String']['output']>;
+};
+
 export type MolliePaymentIntent = {
     url: Scalars['String']['output'];
 };
@@ -2635,6 +2643,26 @@ export type MolliePaymentIntentInput = {
 };
 
 export type MolliePaymentIntentResult = MolliePaymentIntent | MolliePaymentIntentError;
+
+export type MolliePaymentMethod = {
+    code: Scalars['String']['output'];
+    description?: Maybe<Scalars['String']['output']>;
+    id: Scalars['ID']['output'];
+    image?: Maybe<MolliePaymentMethodImages>;
+    maximumAmount?: Maybe<MollieAmount>;
+    minimumAmount?: Maybe<MollieAmount>;
+    status?: Maybe<Scalars['String']['output']>;
+};
+
+export type MolliePaymentMethodImages = {
+    size1x?: Maybe<Scalars['String']['output']>;
+    size2x?: Maybe<Scalars['String']['output']>;
+    svg?: Maybe<Scalars['String']['output']>;
+};
+
+export type MolliePaymentMethodsInput = {
+    paymentMethodCode: Scalars['String']['input'];
+};
 
 export type MoveCollectionInput = {
     collectionId: Scalars['ID']['input'];
@@ -2843,7 +2871,12 @@ export type Mutation = {
     duplicateEntity: DuplicateEntityResult;
     flushBufferedJobs: Success;
     importProducts?: Maybe<ImportInfo>;
-    /** Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})` */
+    /**
+     * Authenticates the user using the native authentication strategy. This mutation is an alias for authenticate({ native: { ... }})
+     *
+     * The `rememberMe` option applies when using cookie-based sessions, and if `true` it will set the maxAge of the session cookie
+     * to 1 year.
+     */
     login: NativeAuthenticationResult;
     logout: Success;
     /**
@@ -4811,6 +4844,7 @@ export type Query = {
     me?: Maybe<CurrentUser>;
     /** Get metrics for the given interval and metric types. */
     metricSummary: Array<MetricSummary>;
+    molliePaymentMethods: Array<MolliePaymentMethod>;
     order?: Maybe<Order>;
     orders: OrderList;
     paymentMethod?: Maybe<PaymentMethod>;
@@ -4950,6 +4984,10 @@ export type QueryJobsByIdArgs = {
 
 export type QueryMetricSummaryArgs = {
     input?: InputMaybe<MetricSummaryInput>;
+};
+
+export type QueryMolliePaymentMethodsArgs = {
+    input: MolliePaymentMethodsInput;
 };
 
 export type QueryOrderArgs = {

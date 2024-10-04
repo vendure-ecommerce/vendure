@@ -355,6 +355,9 @@ export class ProductDataService {
                     },
                 },
             },
+            undefined,
+            // By default do not load custom fields in the list view
+            { includeCustomFields: [] },
         );
     }
 

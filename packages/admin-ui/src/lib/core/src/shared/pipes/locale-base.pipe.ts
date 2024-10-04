@@ -46,7 +46,7 @@ export abstract class LocaleBasePipe implements OnDestroy, PipeTransform {
         // and the first region discarded. This would only ever be an issue for
         // those languages where the translation file itself encodes the region,
         // as in pt_BR & pt_PT.
-        const matches = hyphenated?.match(/^([a-zA-Z_-]+)(-[A-Z][A-Z])(-[A-Z][A-z])$/);
+        const matches = hyphenated?.match(/^([a-zA-Z_-]+)(-[A-Z][A-Z])(-[A-Z][A-Z])$/);
         if (matches?.length) {
             const overriddenLocale = matches[1] + matches[3];
             return overriddenLocale;

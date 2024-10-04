@@ -310,8 +310,8 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                         res.send(imageBuffer);
                         return;
                     } catch (e: any) {
-                        Logger.error(e, loggerCtx, e.stack);
-                        res.status(500).send(e.message);
+                        Logger.error(e.message, loggerCtx, e.stack);
+                        res.status(500).send('An error occurred when generating the image');
                         return;
                     }
                 }

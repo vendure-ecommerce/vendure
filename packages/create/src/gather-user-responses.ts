@@ -1,5 +1,6 @@
-import { cancel, intro, isCancel, outro, select, text } from '@clack/prompts';
+import { cancel, isCancel, select, text } from '@clack/prompts';
 import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/lib/shared-constants';
+import { randomBytes } from 'crypto';
 import fs from 'fs-extra';
 import Handlebars from 'handlebars';
 import path from 'path';
@@ -205,7 +206,7 @@ async function generateSources(
         isSQLite: answers.dbType === 'sqlite',
         isSQLjs: answers.dbType === 'sqljs',
         requiresConnection: answers.dbType !== 'sqlite' && answers.dbType !== 'sqljs',
-        cookieSecret: Math.random().toString(36).substr(2),
+        cookieSecret: randomBytes(16).toString('base64url'),
     };
 
     async function createSourceFile(filename: string, noEscape = false): Promise<string> {

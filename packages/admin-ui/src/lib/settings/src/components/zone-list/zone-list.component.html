@@ -24,7 +24,7 @@
 <vdr-split-view [rightPanelOpen]="activeZone$ | async" (closeClicked)="closeMembers()">
     <ng-template vdrSplitViewLeft>
         <vdr-data-table-2
-            id="zone-list"
+            [id]="dataTableListId"
             [items]="items$ | async"
             [itemsPerPage]="itemsPerPage$ | async"
             [totalItems]="totalItems$ | async"
@@ -33,6 +33,7 @@
             [activeIndex]="activeIndex$ | async"
             (pageChange)="setPageNumber($event)"
             (itemsPerPageChange)="setItemsPerPage($event)"
+            (visibleColumnsChange)="setVisibleColumns($event)"
         >
             <vdr-bulk-action-menu
                 locationId="zone-list"

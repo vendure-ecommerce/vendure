@@ -45,6 +45,7 @@ export class ZoneListComponent
     extends TypedBaseListComponent<typeof GetZoneListDocument, 'zones'>
     implements OnInit
 {
+    dataTableListId = 'zone-list';
     activeZone$: Observable<ItemOf<GetZoneListQuery, 'zones'> | undefined>;
     activeIndex$: Observable<number>;
     selectedMemberIds: string[] = [];

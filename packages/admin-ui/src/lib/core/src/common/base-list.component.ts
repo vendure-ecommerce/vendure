@@ -2,15 +2,18 @@ import { DestroyRef, Directive, inject, OnDestroy, OnInit } from '@angular/core'
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, QueryParamsHandling, Router } from '@angular/router';
 import { ResultOf, TypedDocumentNode, VariablesOf } from '@graphql-typed-document-node/core';
-import { BehaviorSubject, combineLatest, merge, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, merge, Observable, Subject, switchMap } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map, shareReplay, takeUntil, tap } from 'rxjs/operators';
 import { DataService } from '../data/providers/data.service';
 
 import { QueryResult } from '../data/query-result';
 import { ServerConfigService } from '../data/server-config';
+import { DataTableConfigService } from '../providers/data-table/data-table-config.service';
 import { DataTableFilterCollection } from '../providers/data-table/data-table-filter-collection';
 import { DataTableSortCollection } from '../providers/data-table/data-table-sort-collection';
 import { PermissionsService } from '../providers/permissions/permissions.service';
+import { DataTable2ColumnComponent } from '../shared/components/data-table-2/data-table-column.component';
+import { DataTableCustomFieldColumnComponent } from '../shared/components/data-table-2/data-table-custom-field-column.component';
 import { CustomFieldConfig, CustomFields, LanguageCode } from './generated-types';
 import { SelectionManager } from './utilities/selection-manager';
 
@@ -58,11 +61,17 @@ export class BaseListComponent<ResultType, ItemType, VariableType extends Record
     private listQueryFn: ListQueryFn<ResultType>;
     private mappingFn: MappingFn<ItemType, ResultType>;
     private onPageChangeFn: OnPageChangeFn<VariableType> = (skip, take) =>
-        ({ options: { skip, take } } as any);
+        ({ options: { skip, take } }) as any;
     protected refresh$ = new BehaviorSubject<undefined>(undefined);
     private defaults: { take: number; skip: number } = { take: 10, skip: 0 };
+    protected visibleCustomFieldColumnChange$ = new Subject<
+        Array<DataTableCustomFieldColumnComponent<any>>
+    >();
 
-    constructor(protected router: Router, protected route: ActivatedRoute) {}
+    constructor(
+        protected router: Router,
+        protected route: ActivatedRoute,
+    ) {}
 
     /**
      * @description
@@ -96,7 +105,7 @@ export class BaseListComponent<ResultType, ItemType, VariableType extends Record
         const fetchPage = ([currentPage, itemsPerPage, _]: [number, number, undefined]) => {
             const take = itemsPerPage;
             const skip = (currentPage - 1) * itemsPerPage;
-            this.listQuery.ref.refetch(this.onPageChangeFn(skip, take));
+            this.listQuery.ref?.refetch(this.onPageChangeFn(skip, take));
         };
 
         this.result$ = this.listQuery.stream$.pipe(shareReplay(1));
@@ -138,7 +147,7 @@ export class BaseListComponent<ResultType, ItemType, VariableType extends Record
     ngOnDestroy() {
         this.destroy$.next();
         this.destroy$.complete();
-        this.listQuery.completed$.next();
+        this.listQuery.destroy();
     }
 
     /**
@@ -155,6 +164,15 @@ export class BaseListComponent<ResultType, ItemType, VariableType extends Record
      */
     setItemsPerPage(perPage: number) {
         this.setQueryParam('perPage', perPage, { replaceUrl: true });
+    }
+
+    setVisibleColumns(columns: Array<DataTable2ColumnComponent<any>>) {
+        this.visibleCustomFieldColumnChange$.next(
+            columns.filter(
+                (c): c is DataTableCustomFieldColumnComponent<any> =>
+                    c instanceof DataTableCustomFieldColumnComponent,
+            ),
+        );
     }
 
     /**
@@ -212,8 +230,17 @@ export class TypedBaseListComponent<
     protected router = inject(Router);
     protected serverConfigService = inject(ServerConfigService);
     protected permissionsService = inject(PermissionsService);
+    protected dataTableConfigService = inject(DataTableConfigService);
+    /**
+     * This was introduced to allow us to more easily manage the relation between the
+     * DataTableComponent and the BaseListComponent. It allows the base class to
+     * correctly look up the currently-visible custom field columns, which can then
+     * be passed to the `dataService.query()` method.
+     */
+    protected dataTableListId: string | undefined;
     private refreshStreams: Array<Observable<any>> = [];
     private collections: Array<DataTableFilterCollection | DataTableSortCollection<any>> = [];
+
     constructor() {
         super(inject(Router), inject(ActivatedRoute));
 
@@ -229,8 +256,21 @@ export class TypedBaseListComponent<
         setVariables?: (skip: number, take: number) => VariablesOf<T>;
         refreshListOnChanges?: Array<Observable<any>>;
     }) {
+        const customFieldsChange$ = this.visibleCustomFieldColumnChange$.pipe(
+            map(columns => columns.map(c => c.customField.name)),
+            distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+        );
+        const includeCustomFields = this.dataTableListId
+            ? this.dataTableConfigService.getConfig(this.dataTableListId).visibility
+            : undefined;
         super.setQueryFn(
-            (args: any) => this.dataService.query(config.document).refetchOnChannelChange(),
+            (args: any) =>
+                this.dataService
+                    .query(config.document, {} as any, 'cache-and-network', {
+                        includeCustomFields,
+                    })
+                    .refetchOnChannelChange()
+                    .refetchOnCustomFieldsChange(customFieldsChange$),
             data => config.getItems(data),
             (skip, take) => config.setVariables?.(skip, take) ?? ({} as any),
         );

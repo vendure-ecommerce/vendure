@@ -33,6 +33,7 @@ export class RoleListComponent
     extends TypedBaseListComponent<typeof GetRoleListDocument, 'roles'>
     implements OnInit
 {
+    dataTableListId = 'role-list';
     readonly initialLimit = 3;
     displayLimit: { [id: string]: number } = {};
     readonly filters = this.createFilterCollection()
