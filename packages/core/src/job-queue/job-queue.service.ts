@@ -54,7 +54,10 @@ export class JobQueueService implements OnModuleDestroy {
         return this.configService.jobQueueOptions.jobQueueStrategy;
     }
 
-    constructor(private configService: ConfigService, private jobBufferService: JobBufferService) {}
+    constructor(
+        private configService: ConfigService,
+        private jobBufferService: JobBufferService,
+    ) {}
 
     /** @internal */
     onModuleDestroy() {
@@ -152,6 +155,13 @@ export class JobQueueService implements OnModuleDestroy {
      */
     flush(...forBuffers: Array<JobBuffer<any> | string>): Promise<Job[]> {
         return this.jobBufferService.flush(forBuffers);
+    }
+
+    /**
+     * @description Returns the raw objects representing the JobQueues.
+     */
+    getRawJobQueues() {
+        return this.queues;
     }
 
     /**
