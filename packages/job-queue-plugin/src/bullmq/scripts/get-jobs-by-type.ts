@@ -4,14 +4,15 @@ import { CustomScriptDefinition } from '../types';
 const script = `--[[
   Get job ids per provided states and filter by name
     Input:
-      KEYS[1]    'prefix'
+      KEYS[1]    'prefix' (optional)
       ARGV[1]    start
       ARGV[2]    end
       ARGV[3]    filterName
       ARGV[4...] types
 ]]
 local rcall = redis.call
-local prefix = KEYS[1]
+ -- Use prefix if provided, otherwise an empty string
+local prefix = KEYS[1] ~= '' and KEYS[1] or ''
 local rangeStart = tonumber(ARGV[1])
 local rangeEnd = tonumber(ARGV[2])
 local filterName = ARGV[3]
@@ -27,7 +28,6 @@ local typesInUnion = {}
 -- Initialize an empty array to hold lists to include. The "active" and "wait" lists are
 -- regular lists
 local listsToInclude = {}
-
 
 -- Iterate through ARGV starting from the first element (ARGV[1]) up to the end
 for i = 4, #ARGV do
@@ -65,7 +65,6 @@ end
 
 local originalResults = rcall("ZREVRANGE", tempSortedSetUnionKey, 0, -1)
 
-
 if #listsToInclude > 0 then
     for _, listKey in ipairs(listsToInclude) do
         local list = rcall("LRANGE", listKey, 0, -1)
@@ -74,7 +73,6 @@ if #listsToInclude > 0 then
         end
     end
 end
-
 
 -- Define a custom comparison function for sorting in descending order
 local function compareDescending(a, b)

@@ -252,8 +252,6 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         let items: Bull.Job[] = [];
         let totalItems = 0;
 
-        // TODO: pagination with separated queues is not possible, because there is no getter for jobs of all queues
-
         try {
             const [total, jobIds] = await this.callCustomScript(getJobsByType, [
                 skip,
@@ -264,7 +262,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             items = (
                 await Promise.all(
                     jobIds.map(id => {
-                        return BullJob.fromId(this.queue, id);
+                        return this.findOneBullJob(id);
                     }),
                 )
             ).filter(notNullOrUndefined);
@@ -525,20 +523,16 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     }
 
     private callCustomScript<T, Args extends any[]>(
-        queueName: string,
         scriptDef: CustomScriptDefinition<T, Args>,
         args: Args,
+        queueName?: string,
     ): Promise<T> {
-        const bullQueueName = this.getBullQueueName(queueName);
-        const bullQueue = this.queues.get(bullQueueName);
-
-        if (!bullQueue) {
-            throw new InternalServerError(`Queue ${bullQueueName} not found. Could not call custom script`);
-        }
+        const bullQueueName = queueName ? this.getBullQueueName(queueName) : undefined;
+        const bullQueue = bullQueueName ? this.queues.get(bullQueueName) : undefined;
 
         return new Promise<T>((resolve, reject) => {
             (this.redisConnection as any)[scriptDef.name](
-                `bull:${bullQueue.name}:`,
+                bullQueue ? `bull:${bullQueue.name}:` : undefined,
                 ...args,
                 (err: any, result: any) => {
                     if (err) {
