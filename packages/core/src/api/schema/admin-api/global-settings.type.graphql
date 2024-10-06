@@ -19,10 +19,15 @@ type PermissionDefinition {
     assignable: Boolean!
 }
 
+type JobQueueConfig {
+    supportsListAllQueues: Boolean!
+}
+
 # Programatically extended by the addGraphQLCustomFields function
 type ServerConfig {
     orderProcess: [OrderProcessState!]!
     permittedAssetTypes: [String!]!
     permissions: [PermissionDefinition!]!
     moneyStrategyPrecision: Int!
+    jobQueue: JobQueueConfig!
 }

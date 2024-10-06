@@ -1,115 +1,91 @@
 // language=Lua
-import { CustomScriptDefinition } from '../types';
-
-const script = `--[[
-  Get job ids per provided states and filter by name
-    Input:
-      KEYS[1]    'prefix' (optional)
-      ARGV[1]    start
-      ARGV[2]    end
-      ARGV[3]    filterName
-      ARGV[4...] types
+export const getJobsByTypeScript = `
+--[[
+  Get paginated job ids across all queues for provided states, including queue name, and return total job count
+  Input:
+    ARGV[1]    start
+    ARGV[2]    end
+    ARGV[3...] states (e.g., "completed", "failed", "active", etc.)
+    KEYS[...]  List of queues
 ]]
-local rcall = redis.call
- -- Use prefix if provided, otherwise an empty string
-local prefix = KEYS[1] ~= '' and KEYS[1] or ''
-local rangeStart = tonumber(ARGV[1])
-local rangeEnd = tonumber(ARGV[2])
-local filterName = ARGV[3]
-local results = {}
 
-local targetSets = {}
+local start = tonumber(ARGV[1])
+local stop = tonumber(ARGV[2])
+local combinedKey = 'temp:union:all_states'
 
--- Initialize an empty array to hold the sets to unionize. The "completed" and "failed" lists
--- are sorted sets
+-- Initialize arrays to handle sorted sets and lists
 local setsToUnionize = {}
-local typesInUnion = {}
+local jobIdsWithQueueNames = {}
 
--- Initialize an empty array to hold lists to include. The "active" and "wait" lists are
--- regular lists
-local listsToInclude = {}
+-- Iterate over all queue names (KEYS) and states (ARGV[3..n])
+for i = 1, #KEYS do
+  local queueName = KEYS[i] -- Queue name
+  for j = 3, #ARGV do
+    local state = ARGV[j]
+    local setKey = queueName .. ':' .. state
+    local keyType = redis.call('TYPE', setKey).ok
 
--- Iterate through ARGV starting from the first element (ARGV[1]) up to the end
-for i = 4, #ARGV do
-    local setKey = prefix .. ARGV[i]
-
-    -- Check if the setKey is valid (e.g., it exists and is a sorted set)
-    local targetExists = redis.call('EXISTS', setKey)
-    local listType = redis.call('TYPE', setKey).ok
-
-    if targetExists == 1 and listType == 'zset' then
-        -- Add the valid set to the array
-        table.insert(setsToUnionize, setKey)
-        table.insert(typesInUnion, ARGV[i])
+    -- Handle sorted sets (e.g., completed, failed)
+    if keyType == 'zset' and redis.call('EXISTS', setKey) == 1 then
+      table.insert(setsToUnionize, setKey)
     end
-    if targetExists == 1 and listType == 'list' then
-        -- Add the valid set to the array
-        table.insert(listsToInclude, setKey)
-        table.insert(typesInUnion, ARGV[i])
+
+    -- Handle lists (e.g., wait, active)
+    if keyType == 'list' and redis.call('EXISTS', setKey) == 1 then
+      local listItems = redis.call('LRANGE', setKey, 0, -1)
+      for _, jobId in ipairs(listItems) do
+        -- Append queue name to jobId from lists
+        table.insert(jobIdsWithQueueNames, queueName .. ':' .. jobId)
+      end
     end
-end
-
--- Define the destination key for the concatenated sorted set
-local tempSortedSetUnionKey = prefix .. 'union:' .. table.concat(typesInUnion, ':');
-
-if #listsToInclude  == 0 and #setsToUnionize == 0 then
-    return {0, {}}
-end
-
--- Check if there are valid sets to unionize
-if #setsToUnionize > 0 then
-    -- Use ZUNIONSTORE to concatenate the valid sorted sets into the destination key
-    local numSets = #setsToUnionize
-    redis.call('ZUNIONSTORE', tempSortedSetUnionKey, numSets, unpack(setsToUnionize))
-end
-
-local originalResults = rcall("ZREVRANGE", tempSortedSetUnionKey, 0, -1)
-
-if #listsToInclude > 0 then
-    for _, listKey in ipairs(listsToInclude) do
-        local list = rcall("LRANGE", listKey, 0, -1)
-        for _, jobId in ipairs(list) do
-            table.insert(originalResults, jobId)
-        end
-    end
-end
-
--- Define a custom comparison function for sorting in descending order
-local function compareDescending(a, b)
-    return tonumber(a) > tonumber(b)
-end
-
--- Sort the table in descending order
-table.sort(originalResults, compareDescending)
-
-local filteredResults = {}
-local totalResults = 0
-
-for _, job in ipairs(originalResults) do
-  local jobName = rcall("HGET", prefix .. job, "name");
-  if filterName ~= "" and jobName == filterName then
-    if rangeStart <= totalResults and #filteredResults < rangeEnd then
-      table.insert(filteredResults, job)
-    end
-    totalResults = totalResults + 1
-  elseif filterName == "" then
-    if rangeStart <= totalResults and #filteredResults < rangeEnd then
-      table.insert(filteredResults, job)
-    end
-    totalResults = totalResults + 1
   end
 end
 
-rcall("DEL", tempSortedSetUnionKey)
+-- If no valid sets or lists were found, return an empty result with total count 0
+if #setsToUnionize == 0 and #jobIdsWithQueueNames == 0 then
+  return {0, {}}
+end
 
-return {totalResults, filteredResults}
+-- Union all sorted sets into a temporary sorted set (if there are any sorted sets)
+if #setsToUnionize > 0 then
+  redis.call('ZUNIONSTORE', combinedKey, #setsToUnionize, unpack(setsToUnionize))
+end
+
+-- Get job ids from the sorted set (if any) and append the queue name for each job
+if #setsToUnionize > 0 then
+  local jobIdsFromSets = redis.call('ZREVRANGE', combinedKey, 0, -1)
+  for _, jobId in ipairs(jobIdsFromSets) do
+    -- Append queue name to jobId from sorted sets
+    for i = 1, #KEYS do
+      local queueName = KEYS[i]
+      local setKey = queueName .. ':' .. ARGV[3] -- Assuming the same state across all queues
+      if redis.call('ZSCORE', setKey, jobId) then
+        table.insert(jobIdsWithQueueNames, queueName .. ':' .. jobId)
+        break
+      end
+    end
+  end
+end
+
+-- Sort all job ids in descending order (to mimic ZREVRANGE behavior)
+table.sort(jobIdsWithQueueNames, function(a, b)
+  local jobIdA = tonumber(a:match(':(%d+)$')) or 0 -- Safely extract and convert job ID to number, fallback to 0
+  local jobIdB = tonumber(b:match(':(%d+)$')) or 0 -- Safely extract and convert job ID to number, fallback to 0
+  return jobIdA > jobIdB
+end)
+
+-- Get the total number of jobs
+local totalJobs = #jobIdsWithQueueNames
+
+-- Paginate the results
+local paginatedJobIds = {}
+for i = start + 1, math.min(stop + 1, totalJobs) do
+  table.insert(paginatedJobIds, jobIdsWithQueueNames[i])
+end
+
+-- Cleanup the temporary sorted set
+redis.call('DEL', combinedKey)
+
+-- Return the total job count and the paginated job ids
+return {totalJobs, paginatedJobIds}
 `;
-
-export const getJobsByType: CustomScriptDefinition<
-    [totalItems: number, jobIds: string[]],
-    [rangeStart: number, rangeEnd: number, queueName: string | undefined, ...states: string[]]
-> = {
-    script,
-    numberOfKeys: 1,
-    name: 'getJobsByType',
-};

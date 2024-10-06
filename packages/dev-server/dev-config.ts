@@ -78,8 +78,8 @@ export const devConfig: VendureConfig = {
         }),
         DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: false }),
         // Enable if you need to debug the job queue
-        // BullMQJobQueuePlugin.init({}),
-        DefaultJobQueuePlugin.init({}),
+        BullMQJobQueuePlugin.init({}),
+        //DefaultJobQueuePlugin.init({}),
         // JobQueueTestPlugin.init({ queueCount: 10 }),
         // ElasticsearchPlugin.init({
         //     host: 'http://localhost',
@@ -130,7 +130,7 @@ function getDbConfig(): DataSourceOptions {
         case 'postgres':
             console.log('Using postgres connection');
             return {
-                synchronize: false,
+                synchronize: process.env.DB_SYNC === 'true',
                 type: 'postgres',
                 host: process.env.DB_HOST || 'localhost',
                 port: Number(process.env.DB_PORT) || 5432,
@@ -142,7 +142,7 @@ function getDbConfig(): DataSourceOptions {
         case 'sqlite':
             console.log('Using sqlite connection');
             return {
-                synchronize: false,
+                synchronize: process.env.DB_SYNC === 'true',
                 type: 'better-sqlite3',
                 database: path.join(__dirname, 'vendure.sqlite'),
             };
@@ -158,7 +158,7 @@ function getDbConfig(): DataSourceOptions {
         default:
             console.log('Using mysql connection');
             return {
-                synchronize: true,
+                synchronize: process.env.DB_SYNC === 'true',
                 type: 'mariadb',
                 host: '127.0.0.1',
                 port: 3306,

@@ -136,6 +136,7 @@ import { BullMQPluginOptions } from './types';
     configuration: config => {
         config.jobQueueOptions.jobQueueStrategy = new BullMQJobQueueStrategy();
         config.jobQueueOptions.jobBufferStorageStrategy = new RedisJobBufferStorageStrategy();
+        config.jobQueueOptions.supportsListAllQueues = false;
         config.systemOptions.healthChecks.push(new RedisHealthCheckStrategy());
         return config;
     },

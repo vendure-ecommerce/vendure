@@ -96,6 +96,11 @@ services:
       - --import-realm
     volumes:
       - keycloak_data:/opt/keycloak/data
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
 volumes:
   postgres_data:
     driver: local

@@ -8,6 +8,7 @@ import {
     GetJobQueueListQuery,
     ItemOf,
     JobState,
+    ServerConfigService,
     SortOrder,
 } from '@vendure/admin-ui/core';
 import { Observable, timer } from 'rxjs';
@@ -28,8 +29,14 @@ export class JobListComponent
     queueFilter = new FormControl('all');
     stateFilter = new FormControl<JobState | string>('');
 
-    constructor(private dataService: DataService, router: Router, route: ActivatedRoute) {
+    constructor(
+        private dataService: DataService,
+        router: Router,
+        route: ActivatedRoute,
+        private serverConfigService: ServerConfigService,
+    ) {
         super(router, route);
+
         super.setQueryFn(
             (...args: any[]) => this.dataService.settings.getAllJobs(...args),
             data => data.jobs,
@@ -64,10 +71,21 @@ export class JobListComponent
             .subscribe(() => {
                 this.refresh();
             });
+
+        const supportsListAllQueues = this.serverConfigService.serverConfig.jobQueue.supportsListAllQueues;
+        const defaultQueues = supportsListAllQueues ? [{ name: 'all', running: true }] : [];
+
         this.queues$ = this.dataService.settings
             .getJobQueues()
             .mapStream(res => res.jobQueues)
-            .pipe(map(queues => [{ name: 'all', running: true }, ...queues]));
+            .pipe(map(queues => [...defaultQueues, ...queues]));
+
+        this.queues$.subscribe(queues => {
+            if (!supportsListAllQueues) {
+                this.queueFilter.setValue(queues.at(0).name);
+                this.refresh();
+            }
+        });
     }
 
     hasResult(job: ItemOf<GetAllJobsQuery, 'jobs'>): boolean {
