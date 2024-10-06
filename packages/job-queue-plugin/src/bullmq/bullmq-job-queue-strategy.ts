@@ -28,7 +28,6 @@ import { filter, takeUntil } from 'rxjs/operators';
 
 import { ALL_JOB_TYPES, BULLMQ_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { RedisHealthIndicator } from './redis-health-indicator';
-import { getJobsByTypeScript } from './scripts/get-jobs-by-type';
 import { BullMQPluginOptions } from './types';
 
 const DEFAULT_CONCURRENCY = 3;
@@ -288,37 +287,6 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
 
                 const jobCounts = (await bullQueue?.getJobCounts(...jobTypes)) ?? 0;
                 totalItems = Object.values(jobCounts).reduce((sum, num) => sum + num, 0);
-            } else {
-                const queueNames = Array.from(this.queues.keys()).map(queueName => `bull:${queueName}`);
-
-                const [total, queueNameAndJobIds] = (await this.redisConnection.eval(
-                    getJobsByTypeScript,
-                    queueNames.length,
-                    ...queueNames,
-                    skip,
-                    take,
-                    ...jobTypes,
-                )) as [number, string[]];
-
-                // jobIds are in the format of `bull:vendure-queue-<queue-name>:<job-id>`
-
-                items = (
-                    await Promise.all(
-                        queueNameAndJobIds.map(fqJobId => {
-                            const resolved = this.resolveQueueNameAndJobIdFromRedisKey(fqJobId);
-
-                            if (!resolved) {
-                                return null;
-                            }
-
-                            const bullJobId = this.buildUniqueJobId(resolved.queueName, resolved.jobId);
-
-                            return this.findOneBullJob(bullJobId);
-                        }),
-                    )
-                ).filter(notNullOrUndefined);
-
-                totalItems = total;
             }
         } catch (e: any) {
             throw new InternalServerError(e.message);
