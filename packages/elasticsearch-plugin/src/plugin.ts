@@ -15,6 +15,7 @@ import {
     ProductVariantChannelEvent,
     ProductVariantEvent,
     SearchJobBufferService,
+    StockMovementEvent,
     TaxRateModificationEvent,
     Type,
     VendurePlugin,
@@ -347,6 +348,13 @@ export class ElasticsearchPlugin implements OnApplicationBootstrap {
                     event.channelId,
                 );
             }
+        });
+
+        this.eventBus.ofType(StockMovementEvent).subscribe(event => {
+            return this.elasticsearchIndexService.updateVariants(
+                event.ctx,
+                event.stockMovements.map(m => m.productVariant),
+            );
         });
 
         // TODO: Remove this buffering logic because because we have dedicated buffering based on #1137
