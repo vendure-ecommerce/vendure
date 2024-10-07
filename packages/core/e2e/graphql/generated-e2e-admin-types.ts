@@ -2104,6 +2104,10 @@ export type JobQueue = {
     running: Scalars['Boolean']['output'];
 };
 
+export type JobQueueConfig = {
+    supportsListAllQueues: Scalars['Boolean']['output'];
+};
+
 export type JobSortParameter = {
     attempts?: InputMaybe<SortOrder>;
     createdAt?: InputMaybe<SortOrder>;
@@ -5411,6 +5415,7 @@ export type ServerConfig = {
      */
     customFieldConfig: CustomFields;
     entityCustomFields: Array<EntityCustomFields>;
+    jobQueue: JobQueueConfig;
     moneyStrategyPrecision: Scalars['Int']['output'];
     orderProcess: Array<OrderProcessState>;
     permissions: Array<PermissionDefinition>;

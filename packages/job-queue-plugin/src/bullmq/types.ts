@@ -92,13 +92,3 @@ export interface BackoffOptions {
     type: 'exponential' | 'fixed';
     delay: number;
 }
-
-/**
- * @description
- * A definition for a Lua script used to define custom behavior in Redis
- */
-export interface CustomScriptDefinition<T, Args extends any[]> {
-    name: string;
-    script: string;
-    numberOfKeys: number;
-}

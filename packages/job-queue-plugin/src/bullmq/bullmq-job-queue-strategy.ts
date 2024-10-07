@@ -7,6 +7,8 @@ import {
     InternalServerError,
     Job,
     JobData,
+    JobQueue,
+    JobQueueService,
     Logger,
     PaginatedList,
 } from '@vendure/core';
@@ -26,10 +28,8 @@ import { filter, takeUntil } from 'rxjs/operators';
 
 import { ALL_JOB_TYPES, BULLMQ_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { RedisHealthIndicator } from './redis-health-indicator';
-import { getJobsByType } from './scripts/get-jobs-by-type';
-import { BullMQPluginOptions, CustomScriptDefinition } from './types';
+import { BullMQPluginOptions } from './types';
 
-const QUEUE_NAME = 'vendure-job-queue';
 const DEFAULT_CONCURRENCY = 3;
 
 /**
@@ -42,8 +42,8 @@ const DEFAULT_CONCURRENCY = 3;
 export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     private redisConnection: Redis | Cluster;
     private connectionOptions: ConnectionOptions;
-    private queue: Queue;
-    private worker: Worker;
+    private queues: Map<string, Queue> = new Map();
+    private workers: Map<string, Worker> = new Map();
     private workerProcessor: Processor;
     private options: BullMQPluginOptions;
     private queueNameProcessFnMap = new Map<string, (job: Job) => Promise<any>>();
@@ -51,9 +51,11 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     private cancelRunningJob$ = new Subject<string>();
     private readonly CANCEL_JOB_CHANNEL = 'cancel-job';
     private readonly CANCELLED_JOB_LIST_NAME = 'vendure:cancelled-jobs';
+    private jobQueueService: JobQueueService;
 
     async init(injector: Injector): Promise<void> {
         const options = injector.get<BullMQPluginOptions>(BULLMQ_PLUGIN_OPTIONS);
+        this.jobQueueService = injector.get(JobQueueService);
         this.options = {
             ...options,
             workerOptions: {
@@ -80,8 +82,6 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
                 ? this.connectionOptions
                 : new Redis(this.connectionOptions);
 
-        this.defineCustomLuaScripts();
-
         const redisHealthIndicator = injector.get(RedisHealthIndicator);
         Logger.info('Checking Redis connection...', loggerCtx);
         const health = await redisHealthIndicator.isHealthy('redis');
@@ -91,19 +91,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             Logger.info('Connected to Redis ✔', loggerCtx);
         }
 
-        this.queue = new Queue(QUEUE_NAME, {
-            ...options.queueOptions,
-            connection: this.redisConnection,
-        })
-            .on('error', (e: any) =>
-                Logger.error(`BullMQ Queue error: ${JSON.stringify(e.message)}`, loggerCtx, e.stack),
-            )
-            .on('resumed', () => Logger.verbose('BullMQ Queue resumed', loggerCtx))
-            .on('paused', () => Logger.verbose('BullMQ Queue paused', loggerCtx));
-
-        if (await this.queue.isPaused()) {
-            await this.queue.resume();
-        }
+        await this.setupQueues();
 
         this.workerProcessor = async bullJob => {
             const queueName = bullJob.name;
@@ -145,12 +133,59 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             }
             throw new InternalServerError(`No processor defined for the queue "${queueName}"`);
         };
+
         // Subscription-mode Redis connection for the cancellation messages
         this.cancellationSub = new Redis(this.connectionOptions as RedisOptions);
     }
 
+    getBullQueueName(queue: JobQueue | string) {
+        return `vendure-queue-${typeof queue === 'string' ? queue : queue.name}`;
+    }
+
+    getOrCreateBullQueue(queueName: string) {
+        const bullQueueName = this.getBullQueueName(queueName);
+        const bullQueue = this.queues.get(bullQueueName);
+
+        if (bullQueue) {
+            return bullQueue;
+        }
+
+        return this.setupQueue(queueName);
+    }
+
+    private async setupQueues() {
+        const queues = this.jobQueueService.getRawJobQueues();
+
+        for (const queue of queues) {
+            await this.setupQueue(queue);
+        }
+    }
+
+    private async setupQueue(queue: JobQueue | string) {
+        const bullQueueName = this.getBullQueueName(queue);
+        const bullQueue = new Queue(bullQueueName, {
+            ...this.options.queueOptions,
+            connection: this.redisConnection,
+        })
+            .on('error', (e: any) =>
+                Logger.error(`BullMQ Queue error: ${JSON.stringify(e.message)}`, loggerCtx, e.stack),
+            )
+            .on('resumed', () => Logger.verbose('BullMQ Queue resumed', loggerCtx))
+            .on('paused', () => Logger.verbose('BullMQ Queue paused', loggerCtx));
+
+        if (await bullQueue.isPaused()) {
+            await bullQueue.resume();
+        }
+
+        Logger.info(`Queue "${bullQueueName}" created.`, loggerCtx);
+
+        this.queues.set(bullQueueName, bullQueue);
+
+        return bullQueue;
+    }
+
     async destroy() {
-        await Promise.all([this.queue.close(), this.worker?.close()]);
+        await Promise.all([this.closeAllQueues(), this.closeAllWorkers()]);
     }
 
     async add<Data extends JobData<Data> = object>(job: Job<Data>): Promise<Job<Data>> {
@@ -159,15 +194,19 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             delay: 1000,
             type: 'exponential',
         };
-        const bullJob = await this.queue.add(job.queueName, job.data, {
+
+        const bullQueue = await this.getOrCreateBullQueue(job.queueName);
+
+        const bullJob = await bullQueue.add(job.queueName, job.data, {
             attempts: retries + 1,
             backoff,
         });
+
         return this.createVendureJob(bullJob);
     }
 
     async cancelJob(jobId: string): Promise<Job | undefined> {
-        const bullJob = await this.queue.getJob(jobId);
+        const bullJob = await this.findOneBullJob(jobId);
         if (bullJob) {
             if (await bullJob.isActive()) {
                 await this.setActiveJobAsCancelled(jobId);
@@ -184,6 +223,10 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
                 }
             }
         }
+    }
+
+    buildUniqueJobId(queueName: string, jobId: ID | undefined) {
+        return `${queueName}_${jobId ?? 0}`;
     }
 
     async findMany(options?: JobListOptions): Promise<PaginatedList<Job>> {
@@ -223,22 +266,28 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
 
         let items: Bull.Job[] = [];
         let totalItems = 0;
+        const queueNameIsEqualFilter = options?.filter?.queueName?.eq;
 
         try {
-            const [total, jobIds] = await this.callCustomScript(getJobsByType, [
-                skip,
-                take,
-                options?.filter?.queueName?.eq ?? '',
-                ...jobTypes,
-            ]);
-            items = (
-                await Promise.all(
-                    jobIds.map(id => {
-                        return BullJob.fromId(this.queue, id);
-                    }),
-                )
-            ).filter(notNullOrUndefined);
-            totalItems = total;
+            if (queueNameIsEqualFilter) {
+                const bullQueue = await this.getOrCreateBullQueue(queueNameIsEqualFilter);
+                items = (await bullQueue?.getJobs(jobTypes, skip, take)) ?? [];
+
+                items = (
+                    await Promise.all(
+                        items
+                            .filter(job => notNullOrUndefined(job.id))
+                            .map(job => {
+                                return this.findOneBullJob(
+                                    this.buildUniqueJobId(queueNameIsEqualFilter, job.id),
+                                );
+                            }),
+                    )
+                ).filter(notNullOrUndefined);
+
+                const jobCounts = (await bullQueue?.getJobCounts(...jobTypes)) ?? 0;
+                totalItems = Object.values(jobCounts).reduce((sum, num) => sum + num, 0);
+            }
         } catch (e: any) {
             throw new InternalServerError(e.message);
         }
@@ -249,29 +298,107 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         };
     }
 
+    resolveQueueNameAndJobIdFromRedisKey(bullString: string) {
+        const regex = /^bull:vendure-queue-(.+):(\d+)$/;
+        const match = bullString.match(regex);
+
+        if (match) {
+            const queueName = match[1]; // Captured <queue-name>
+            const jobId = match[2]; // Captured <job-id>
+
+            return { queueName, jobId };
+        }
+
+        // If the string doesn't match the pattern
+        return undefined;
+    }
+
     async findManyById(ids: ID[]): Promise<Job[]> {
-        const bullJobs = await Promise.all(ids.map(id => this.queue.getJob(id.toString())));
-        return Promise.all(bullJobs.filter(notNullOrUndefined).map(j => this.createVendureJob(j)));
+        let bullJobs: Bull.Job[] = [];
+
+        for (const queue of this.queues.values()) {
+            const jobs = await Promise.all(ids.map(id => queue.getJob(id.toString())));
+            bullJobs = bullJobs.concat(jobs.filter(notNullOrUndefined));
+        }
+
+        // TODO: fix this type assertion
+        return bullJobs as unknown as Job[];
     }
 
     async findOne(id: ID): Promise<Job | undefined> {
-        const bullJob = await this.queue.getJob(id.toString());
+        const bullJob = await this.findOneBullJob(id);
+
         if (bullJob) {
             return this.createVendureJob(bullJob);
         }
+
+        Logger.info(`Job with id ${id} not found`, loggerCtx);
     }
 
-    // TODO V2: actually make it use the olderThan parameter
+    private async findOneBullJob(id: ID) {
+        const [queueName, jobId] = typeof id == 'string' ? id.split('_') : [undefined, id];
+
+        if (!queueName) {
+            return undefined;
+        }
+
+        const bullQueue = await this.getOrCreateBullQueue(queueName);
+
+        return bullQueue?.getJob(jobId.toString());
+    }
+
     async removeSettledJobs(queueNames?: string[], olderThan?: Date): Promise<number> {
+        const queuesToProcess = this.getAllQueues(queueNames);
+
+        const defaultGracePeriod = 100;
+        const gracePeriod = olderThan
+            ? this.calculateGracePeriod(olderThan, defaultGracePeriod)
+            : defaultGracePeriod;
+
         try {
-            const jobCounts = await this.queue.getJobCounts('completed', 'failed');
-            await this.queue.clean(100, 0, 'completed');
-            await this.queue.clean(100, 0, 'failed');
-            return Object.values(jobCounts).reduce((sum, num) => sum + num, 0);
+            let totalRemoved = 0;
+            for (const [bullQueueName, queue] of queuesToProcess) {
+                const jobCounts = await queue.getJobCounts('completed', 'failed');
+
+                await queue.clean(gracePeriod, 0, 'completed');
+                await queue.clean(gracePeriod, 0, 'failed');
+
+                totalRemoved += Object.values(jobCounts).reduce((sum, num) => sum + num, 0);
+            }
+
+            return totalRemoved;
         } catch (e: any) {
             Logger.error(e.message, loggerCtx, e.stack);
             return 0;
         }
+    }
+
+    private calculateGracePeriod(olderThan: Date, fallback: number) {
+        const currentTime = new Date().getTime(); // Get the current date and time
+        const gracePeriod = currentTime - olderThan.getTime(); // Calculate the difference in milliseconds
+
+        if (gracePeriod < 0) {
+            return fallback;
+        }
+
+        return gracePeriod;
+    }
+
+    private getAllQueues(queueNames?: string[]) {
+        // TODO: check if there is a better way to do that
+        if (queueNames && queueNames.length > 0) {
+            const queues: Map<string, Queue> = new Map();
+            for (const queueName of queueNames) {
+                const queue = this.queues.get(this.getBullQueueName(queueName));
+                if (queue) {
+                    queues.set(queueName, queue);
+                }
+            }
+
+            return queues;
+        }
+
+        return this.queues;
     }
 
     // eslint-disable-next-line @typescript-eslint/require-await
@@ -279,14 +406,20 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         queueName: string,
         process: (job: Job<Data>) => Promise<any>,
     ): Promise<void> {
+        const bullQueueName = this.getBullQueueName(queueName);
+
         this.queueNameProcessFnMap.set(queueName, process);
-        if (!this.worker) {
+
+        const worker = this.workers.get(bullQueueName);
+
+        if (!worker) {
             const options: WorkerOptions = {
                 concurrency: DEFAULT_CONCURRENCY,
                 ...this.options.workerOptions,
                 connection: this.redisConnection,
             };
-            this.worker = new Worker(QUEUE_NAME, this.workerProcessor, options)
+
+            const newWorker = new Worker(bullQueueName, this.workerProcessor, options)
                 .on('error', e => Logger.error(`BullMQ Worker error: ${e.message}`, loggerCtx, e.stack))
                 .on('closing', e => Logger.verbose(`BullMQ Worker closing: ${e}`, loggerCtx))
                 .on('closed', () => Logger.verbose('BullMQ Worker closed', loggerCtx))
@@ -306,6 +439,8 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
                 });
             await this.cancellationSub.subscribe(this.CANCEL_JOB_CHANNEL);
             this.cancellationSub.on('message', this.subscribeToCancellationEvents);
+
+            this.workers.set(bullQueueName, newWorker);
         }
     }
 
@@ -328,29 +463,43 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
 
                 let timer: NodeJS.Timeout;
                 const checkActive = async () => {
-                    const activeCount = await this.queue.getActiveCount();
-                    if (0 < activeCount) {
-                        const activeJobs = await this.queue.getActive();
-                        Logger.info(
-                            `Waiting on ${activeCount} active ${
-                                activeCount > 1 ? 'jobs' : 'job'
-                            } (${activeJobs.map(j => j.id).join(', ')})...`,
-                            loggerCtx,
-                        );
-                        timer = setTimeout(checkActive, 2000);
+                    for (const queue of this.queues.values()) {
+                        const activeCount = await queue.getActiveCount();
+                        if (0 < activeCount) {
+                            const activeJobs = await queue.getActive();
+                            Logger.info(
+                                `Waiting on ${activeCount} active ${
+                                    activeCount > 1 ? 'jobs' : 'job'
+                                } (${activeJobs.map(j => j.id).join(', ')})...`,
+                                loggerCtx,
+                            );
+                            timer = setTimeout(checkActive, 2000);
+                        }
                     }
                 };
                 timer = setTimeout(checkActive, 2000);
 
-                await this.worker.close();
+                await this.closeAllWorkers();
                 Logger.info(`Worker closed`, loggerCtx);
-                await this.queue.close();
+                await this.closeAllQueues();
                 clearTimeout(timer);
                 Logger.info(`Queue closed`, loggerCtx);
                 this.cancellationSub.off('message', this.subscribeToCancellationEvents);
             } catch (e: any) {
                 Logger.error(e, loggerCtx, e.stack);
             }
+        }
+    }
+
+    private async closeAllWorkers() {
+        for (const worker of this.workers.values()) {
+            await worker.close();
+        }
+    }
+
+    private async closeAllQueues() {
+        for (const queue of this.queues.values()) {
+            await queue.close();
         }
     }
 
@@ -366,7 +515,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         const jobJson = bullJob.toJSON();
         return new Job({
             queueName: bullJob.name,
-            id: bullJob.id,
+            id: this.buildUniqueJobId(bullJob.queueName, bullJob.id),
             state: await this.getState(bullJob),
             data: bullJob.data,
             attempts: bullJob.attemptsMade,
@@ -406,32 +555,5 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         }
         throw new InternalServerError('Could not determine job state');
         // TODO: how to handle "cancelled" state? Currently when we cancel a job, we simply remove all record of it.
-    }
-
-    private callCustomScript<T, Args extends any[]>(
-        scriptDef: CustomScriptDefinition<T, Args>,
-        args: Args,
-    ): Promise<T> {
-        return new Promise<T>((resolve, reject) => {
-            (this.redisConnection as any)[scriptDef.name](
-                `bull:${this.queue.name}:`,
-                ...args,
-                (err: any, result: any) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve(result);
-                    }
-                },
-            );
-        });
-    }
-
-    private defineCustomLuaScripts() {
-        const redis = this.redisConnection;
-        redis.defineCommand(getJobsByType.name, {
-            numberOfKeys: getJobsByType.numberOfKeys,
-            lua: getJobsByType.script,
-        });
     }
 }

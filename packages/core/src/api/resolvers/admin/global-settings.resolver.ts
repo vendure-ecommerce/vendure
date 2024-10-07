@@ -69,6 +69,9 @@ export class GlobalSettingsResolver {
             permittedAssetTypes: this.configService.assetOptions.permittedFileTypes,
             permissions,
             moneyStrategyPrecision: this.configService.entityOptions.moneyStrategy.precision ?? 2,
+            jobQueue: {
+                supportsListAllQueues: this.configService.jobQueueOptions.supportsListAllQueues ?? true,
+            },
         };
     }
 
@@ -134,8 +137,8 @@ export class GlobalSettingsResolver {
                         c.requiresPermission = Array.isArray(requiresPermission)
                             ? requiresPermission
                             : !!requiresPermission
-                            ? [requiresPermission]
-                            : [];
+                              ? [requiresPermission]
+                              : [];
                         return c;
                     })
                     .map(c => {

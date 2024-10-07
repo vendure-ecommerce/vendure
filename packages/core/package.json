@@ -93,7 +93,7 @@
         "@types/progress": "^2.0.7",
         "@types/prompts": "^2.4.9",
         "@types/semver": "^7.5.8",
-        "better-sqlite3": "^9.4.3",
+        "better-sqlite3": "^11.3.0",
         "chokidar": "^3.6.0",
         "fs-extra": "^11.2.0",
         "glob": "^10.3.10",
