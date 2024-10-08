@@ -1,6 +1,12 @@
-import { InternalServerError, PaymentMethod, PaymentMethodService, RequestContext } from '@vendure/core';
+import {
+    InternalServerError,
+    Logger,
+    PaymentMethod,
+    PaymentMethodService,
+    RequestContext,
+} from '@vendure/core';
 
-import { handlerCode } from './constants';
+import { handlerCode, loggerCtx } from './constants';
 import { ConfigArg } from './graphql/generated-shop-types';
 import { PayPalAuthorizationResponse, PayPalPluginOptions } from './types';
 
@@ -60,12 +66,20 @@ export abstract class PayPalBaseService {
             });
 
             if (!response.ok) {
-                throw new Error();
+                throw response;
             }
 
             return (await response.json()) as PayPalAuthorizationResponse;
-        } catch (error) {
-            throw new InternalServerError('PayPal authentication failed.');
+        } catch (error: any) {
+            const message = 'PayPal authentication failed';
+            if (error instanceof Response) {
+                const responseClone = error.clone();
+                Logger.error(message, loggerCtx, await responseClone.text());
+            }
+
+            Logger.error(message, loggerCtx, error?.stack);
+            // Throw a generic error to avoid leaking sensitive information
+            throw new InternalServerError(message);
         }
     }
 }
