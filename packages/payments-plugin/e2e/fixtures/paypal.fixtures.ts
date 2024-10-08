@@ -5,6 +5,7 @@ export const paypalOrderId = 'mocked_paypal_order_id';
 export const orderCode = 'mocked_order_code';
 export const merchantId = 'mocked_merchant_id';
 export const methodCode = 'mocked_paypal_method';
+export const captureId = 'mocked_capture_id';
 
 export const clientId = 'mocked_client_id';
 export const clientSecret = 'mocked_client_secret';
@@ -18,6 +19,7 @@ export const capturePath = `/v2/payments/authorizations/${authorizationId}/captu
 export const authorizePath = `/v2/checkout/orders/${paypalOrderId}/authorize`;
 export const getOrderPath = `/v2/checkout/orders/${paypalOrderId}`;
 export const postOrderPath = `/v2/checkout/orders`;
+export const postRefundPath = `/v2/payments/captures/${captureId}/refund`;
 
 export const payments: Required<PayPalPaymentInformation> = {
     authorizations: [
