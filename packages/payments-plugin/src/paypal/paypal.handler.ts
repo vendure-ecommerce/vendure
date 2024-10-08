@@ -154,11 +154,11 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
         const captures = payments?.captures;
 
         if (!captures || !captures.length) {
-            throw new Error('No captures found in order details. Nothing to refund.');
+            throw new Error('No payments were captured in this order');
         }
 
         if (captures.length !== 1) {
-            throw new Error('Multiple captures found in order details.');
+            throw new Error('Multiple captures assigned to this order');
         }
 
         const capture = captures[0];

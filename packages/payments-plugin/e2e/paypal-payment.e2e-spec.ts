@@ -1,4 +1,4 @@
-import { LanguageCode, mergeConfig } from '@vendure/core';
+import { ChannelService, LanguageCode, mergeConfig, OrderService, RequestContext } from '@vendure/core';
 import { createTestEnvironment, SimpleGraphQLClient, TestServer } from '@vendure/testing';
 import nock from 'nock';
 import path from 'path';
@@ -16,6 +16,7 @@ import {
     authenticatePath,
     authenticationToken,
     authorizePath,
+    captureId,
     capturePath,
     clientId,
     clientSecret,
@@ -25,9 +26,10 @@ import {
     paypalOrder,
     paypalOrderId,
     postOrderPath,
+    postRefundPath,
     reauthorizePath,
 } from './fixtures/paypal.fixtures';
-import { CREATE_PAYMENT_METHOD, GET_CUSTOMER_LIST } from './graphql/admin-queries';
+import { CREATE_PAYMENT_METHOD, GET_CUSTOMER_LIST, REFUND_ORDER } from './graphql/admin-queries';
 import {
     CreatePaymentMethodMutation,
     CreatePaymentMethodMutationVariables,
@@ -43,6 +45,7 @@ import { ADD_ITEM_TO_ORDER } from './graphql/shop-queries';
 import {
     ADD_PAYMENT_TO_ORDER,
     CREATE_PAYPAL_ORDER,
+    getAllOrders,
     proceedToArrangingPayment,
     setShipping,
     SETTLE_PAYMENT,
@@ -623,12 +626,107 @@ describe('PayPal payments', () => {
         });
     });
 
-    /*
     describe('Payment refund', () => {
-        it('Should refund payment fully and settle payment', () => {});
-        it('Should refund payment partially and settle payment', () => {});
-        it('Should fail when no captures were found in order details', () => {});
-        it('Should fail when multiple captures were found in order details', () => {});
+        it.skip('Should fail when no captures were found in order details', async ({ expect }) => {
+            nock(apiUrl).get(getOrderPath).reply(200, paypalOrder);
+
+            await expect(
+                adminClient.query(REFUND_ORDER, {
+                    input: {
+                        lines: [
+                            {
+                                orderLineId: 'T_2',
+                                quantity: 1,
+                            },
+                        ],
+                        shipping: 1000,
+                        adjustment: 119900,
+                        paymentId: 'T_5',
+                        reason: 'Test refund',
+                    },
+                }),
+            ).rejects.toThrowError('No payments were captured in this order');
+        });
+        it.skip('Should fail when multiple captures were found in order details', async ({ expect }) => {
+            nock(apiUrl)
+                .get(getOrderPath)
+                .reply(200, {
+                    ...paypalOrder,
+                    purchase_units: [
+                        {
+                            ...paypalOrder.purchase_units[0],
+                            payments: {
+                                captures: [
+                                    {
+                                        status: 'COMPLETED',
+                                    },
+                                    {
+                                        status: 'COMPLETED',
+                                    },
+                                ],
+                            },
+                        },
+                    ],
+                });
+
+            await expect(
+                adminClient.query(REFUND_ORDER, {
+                    input: {
+                        lines: [
+                            {
+                                orderLineId: 'T_2',
+                                quantity: 1,
+                            },
+                        ],
+                        shipping: 1000,
+                        adjustment: 119900,
+                        paymentId: 'T_5',
+                        reason: 'Test refund',
+                    },
+                }),
+            ).rejects.toThrowError('Multiple captures assigned to this order');
+        });
+        it('Should refund payment fully and settle payment', async ({ expect }) => {
+            // T_2 und T_3 sind settled
+
+            // Payment 5, 6
+
+            nock(apiUrl)
+                .get(getOrderPath)
+                .reply(200, {
+                    ...paypalOrder,
+                    purchase_units: [
+                        {
+                            ...paypalOrder.purchase_units[0],
+                            payments: {
+                                captures: [
+                                    {
+                                        status: 'COMPLETED',
+                                        id: captureId,
+                                    },
+                                ],
+                            },
+                        },
+                    ],
+                })
+                .post(postRefundPath)
+                .reply(201, {});
+
+            const { refundOrder } = await adminClient.query(REFUND_ORDER, {
+                input: {
+                    lines: [
+                        {
+                            orderLineId: 'T_2',
+                            quantity: 1,
+                        },
+                    ],
+                    shipping: 10000,
+                    adjustment: 0,
+                    paymentId: 'T_5',
+                    reason: 'Test refund',
+                },
+            });
+        });
+        // it('Should refund payment partially and settle payment', () => {});
     });
-    */
 });
