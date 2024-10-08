@@ -92,12 +92,20 @@ export class PayPalOrderService extends PayPalBaseService {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to get PayPal order details.');
+                throw response;
             }
 
             return (await response.json()) as PayPalOrderInformation;
-        } catch (error) {
-            throw new InternalServerError('PayPal integration failed');
+        } catch (error: any) {
+            const message = 'Failed to get PayPal order details';
+            if (error instanceof Response) {
+                const responseClone = error.clone();
+                Logger.error(message, loggerCtx, await responseClone.text());
+            }
+
+            Logger.error(message, loggerCtx, error?.stack);
+            // Throw a generic error to avoid leaking sensitive information
+            throw new InternalServerError(message);
         }
     }
 
