@@ -1,16 +1,32 @@
 import { LanguageCode, mergeConfig } from '@vendure/core';
 import { createTestEnvironment, SimpleGraphQLClient, TestServer } from '@vendure/testing';
-import { http, HttpResponse, passthrough } from 'msw';
-import { setupServer, SetupServerApi } from 'msw/node';
+import nock from 'nock';
 import path from 'path';
-import { afterAll, afterEach, beforeAll, describe, it, vi } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { paypalPaymentMethodHandler } from '../src/paypal/paypal.handler';
 import { PayPalPlugin } from '../src/paypal/paypal.plugin';
-import { PayPalOrderInformation, PayPalPaymentInformation } from '../src/paypal/types';
+import { CreatePayPalOrderRequest } from '../src/paypal/types';
 
+import {
+    accessToken,
+    apiUrl,
+    authenticatePath,
+    authenticationToken,
+    authorizePath,
+    capturePath,
+    clientId,
+    clientSecret,
+    getOrderPath,
+    merchantId,
+    methodCode,
+    paypalOrder,
+    paypalOrderId,
+    postOrderPath,
+    reauthorizePath,
+} from './fixtures/paypal.fixtures';
 import { CREATE_PAYMENT_METHOD, GET_CUSTOMER_LIST } from './graphql/admin-queries';
 import {
     CreatePaymentMethodMutation,
@@ -23,7 +39,7 @@ import {
     AddItemToOrderMutationVariables,
     TestOrderFragmentFragment,
 } from './graphql/generated-shop-types';
-import { ADD_ITEM_TO_ORDER, GET_ACTIVE_ORDER, GET_ORDER_BY_CODE } from './graphql/shop-queries';
+import { ADD_ITEM_TO_ORDER } from './graphql/shop-queries';
 import {
     ADD_PAYMENT_TO_ORDER,
     CREATE_PAYPAL_ORDER,
@@ -32,120 +48,23 @@ import {
     SETTLE_PAYMENT,
 } from './payment-helpers';
 
-const mockData = {
-    methodCode: 'paypal',
-    clientId: '123871',
-    clientSecret: '189237129347',
-    merchantId: '1209347812ß498713',
-    apiUrl: 'https://api.sandbox.paypal.com',
-    accessToken: 'KJAWNDKJ123jknweawdfkljanwd',
-    /**
-     * The PayPal order id.
-     */
-    order: {
-        id: '123123123',
-        purchase_units: [
-            {
-                reference_id: '4BV1V5SP6AKTYXKL',
-                amount: {
-                    currency_code: 'USD',
-                    value: '1209.90',
-                    breakdown: {
-                        item_total: { currency_code: 'USD', value: '1199.90' },
-                        shipping: { currency_code: 'USD', value: '10.00' },
-                    },
-                },
-                payee: {
-                    merchant_id: '1209347812ß498713',
-                },
-            },
-        ],
-        create_time: '2021-09-01T12:00:00Z',
-        intent: 'AUTHORIZE',
-        payer: {
-            name: {
-                given_name: 'John',
-                surname: 'Doe',
-            },
-            email_address: 'john.doe@example.com',
-            payer_id: '123123123',
-        },
-        status: 'APPROVED',
-    } as PayPalOrderInformation,
-    payments: {
-        authorizations: [
-            {
-                amount: {
-                    currency_code: 'USD',
-                    value: '1209.90',
-                },
-                create_time: '',
-                expiration_time: '',
-                id: '1231231',
-                status: 'AUTHORIZED',
-            },
-        ],
-    } as PayPalPaymentInformation,
-};
-
-const mockAuthentication = http.post(`${mockData.apiUrl}/v1/oauth2/token`, ({ request }) => {
-    return HttpResponse.json(
-        {
-            access_token: mockData.accessToken,
-        },
-        { status: 201 },
-    );
-});
-
-const mockAuthorization = http.post(
-    `${mockData.apiUrl}/v2/checkout/orders/${mockData.order.id}/authorize`,
-    () => {
-        return HttpResponse.json<PayPalOrderInformation>({
-            ...mockData.order,
-            purchase_units: [
-                {
-                    ...mockData.order.purchase_units[0],
-                    reference_id: order.code,
-                    payments: {
-                        authorizations: [
-                            {
-                                id: '1231231',
-                                status: 'CREATED',
-                                amount: {
-                                    currency_code: 'USD',
-                                    value: '1209.90',
-                                },
-                                create_time: '2021-09-01T12:00:00Z',
-                                expiration_time: '2021-09-01T12:30:00Z',
-                            },
-                        ],
-                    },
-                },
-            ],
-        });
-    },
-);
-
 let shopClient: SimpleGraphQLClient;
 let adminClient: SimpleGraphQLClient;
 let server: TestServer;
 let started = false;
 let customers: GetCustomerListQuery['customers']['items'];
 let order: TestOrderFragmentFragment;
-let serverPort: number;
-let mswServer: SetupServerApi;
 
 describe('PayPal payments', () => {
     beforeAll(async () => {
         const devConfig = mergeConfig(testConfig(), {
             plugins: [
                 PayPalPlugin.init({
-                    apiUrl: mockData.apiUrl,
+                    apiUrl,
                 }),
             ],
         });
         const env = createTestEnvironment(devConfig);
-        serverPort = devConfig.apiOptions.port;
         shopClient = env.shopClient;
         adminClient = env.adminClient;
         server = env.server;
@@ -163,26 +82,19 @@ describe('PayPal payments', () => {
                 take: 2,
             },
         }));
-
-        mswServer = setupServer();
-        mswServer.listen({
-            onUnhandledRequest: ({ method, url }) => {
-                if (!url.includes('/shop-api') && !url.includes('/admin-api')) {
-                    throw new Error(`Unhandled ${method} request to ${url}`);
-                }
-                return passthrough();
-            },
-        });
     }, TEST_SETUP_TIMEOUT_MS);
+
+    beforeEach(() => {
+        nock.cleanAll();
+        nock(apiUrl)
+            .post(authenticatePath)
+            .matchHeader('Authorization', `Basic ${authenticationToken}`)
+            .reply(201, { access_token: accessToken })
+            .persist();
+    });
 
     afterAll(async () => {
         await server.destroy();
-        mswServer.close();
-        mswServer.dispose();
-    });
-
-    afterEach(() => {
-        mswServer.resetHandlers();
     });
 
     it('Should start successfully', ({ expect }) => {
@@ -196,14 +108,14 @@ describe('PayPal payments', () => {
             CreatePaymentMethodMutationVariables
         >(CREATE_PAYMENT_METHOD, {
             input: {
-                code: mockData.methodCode,
+                code: methodCode,
                 enabled: true,
                 handler: {
                     code: paypalPaymentMethodHandler.code,
                     arguments: [
-                        { name: 'clientId', value: mockData.clientId },
-                        { name: 'clientSecret', value: mockData.clientSecret },
-                        { name: 'merchantId', value: mockData.merchantId },
+                        { name: 'clientId', value: clientId },
+                        { name: 'clientSecret', value: clientSecret },
+                        { name: 'merchantId', value: merchantId },
                     ],
                 },
                 translations: [
@@ -215,7 +127,16 @@ describe('PayPal payments', () => {
                 ],
             },
         });
-        expect(createPaymentMethod.code).toBe(mockData.methodCode);
+        const args = createPaymentMethod.handler.args;
+
+        expect(createPaymentMethod.code).toBe(methodCode);
+        expect(args).toHaveLength(3);
+        expect(args[0].name).toBe('clientId');
+        expect(args[0].value).toBe(clientId);
+        expect(args[1].name).toBe('clientSecret');
+        expect(args[1].value).toBe(clientSecret);
+        expect(args[2].name).toBe('merchantId');
+        expect(args[2].value).toBe(merchantId);
     });
 
     it('Should not create a PayPal payment method without args', async ({ expect }) => {
@@ -224,13 +145,13 @@ describe('PayPal payments', () => {
             CreatePaymentMethodMutationVariables
         >(CREATE_PAYMENT_METHOD, {
             input: {
-                code: mockData.methodCode,
+                code: methodCode,
                 enabled: true,
                 handler: {
                     code: paypalPaymentMethodHandler.code,
                     arguments: [
-                        { name: 'clientId', value: mockData.clientId },
-                        { name: 'clientSecret', value: mockData.clientSecret },
+                        { name: 'clientId', value: clientId },
+                        { name: 'clientSecret', value: clientSecret },
                     ],
                 },
                 translations: [
@@ -268,20 +189,17 @@ describe('PayPal payments', () => {
             await expect(createOrderPromise).rejects.toThrowError('Order must be in arranging payment state');
         });
         it('Should create an order with correct content', async ({ expect }) => {
-            let createOrderRequest: Request | undefined;
-            mswServer.use(
-                mockAuthentication,
-                http.post(`${mockData.apiUrl}/v2/checkout/orders`, ({ request }) => {
-                    createOrderRequest = request.clone();
-                    return HttpResponse.json(
-                        {
-                            id: mockData.order.id,
-                            links: [],
-                        },
-                        { status: 201 },
-                    );
-                }),
-            );
+            let createOrderRequest: CreatePayPalOrderRequest | undefined;
+
+            nock(apiUrl)
+                .post(postOrderPath, body => {
+                    createOrderRequest = body;
+                    return body;
+                })
+                .reply(201, {
+                    id: paypalOrderId,
+                    links: [],
+                });
 
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
 
@@ -289,13 +207,10 @@ describe('PayPal payments', () => {
             const { createPayPalOrder } = await shopClient.query(CREATE_PAYPAL_ORDER);
 
             expect(createOrderRequest).toBeDefined();
+            expect(createOrderRequest?.intent).toBe('AUTHORIZE');
+            expect(createOrderRequest?.purchase_units.length).toBe(1);
 
-            const requestBody = (await createOrderRequest?.json()) as any;
-            expect(requestBody).toBeDefined();
-            expect(requestBody.intent).toBe('AUTHORIZE');
-            expect(requestBody.purchase_units.length).toBe(1);
-
-            const purchaseUnit = requestBody.purchase_units[0];
+            const purchaseUnit = createOrderRequest?.purchase_units[0];
             expect(purchaseUnit).toEqual({
                 reference_id: order.code,
                 amount: {
@@ -317,7 +232,7 @@ describe('PayPal payments', () => {
 
             // The initial paypal order is pretty shallow as no payment has been approved yet, so we
             // just check if the correct order is returned.
-            expect(createPayPalOrder.id).toBe(mockData.order.id);
+            expect(createPayPalOrder.id).toBe(paypalOrderId);
             expect(createPayPalOrder.links.length).toBe(0);
         });
         /*
@@ -332,7 +247,7 @@ describe('PayPal payments', () => {
 
             const addPaymentToOrderResult = await shopClient.query(ADD_PAYMENT_TO_ORDER, {
                 input: {
-                    method: mockData.methodCode,
+                    method: methodCode,
                     metadata: {},
                 },
             });
@@ -348,21 +263,18 @@ describe('PayPal payments', () => {
         it('Should return validation result if validation fails', async ({ expect }) => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
 
-            mswServer.use(
-                mockAuthentication,
-                http.get(`${mockData.apiUrl}/v2/checkout/orders/${mockData.order.id}`, () => {
-                    return HttpResponse.json<PayPalOrderInformation>({
-                        ...mockData.order,
-                        status: 'NOT_APPROVED',
-                    });
-                }),
-            );
+            nock(apiUrl)
+                .get(getOrderPath)
+                .reply(200, {
+                    ...paypalOrder,
+                    status: 'NOT_APPROVED',
+                });
 
             const addPaymentToOrderResult = await shopClient.query(ADD_PAYMENT_TO_ORDER, {
                 input: {
-                    method: mockData.methodCode,
+                    method: methodCode,
                     metadata: {
-                        orderId: mockData.order.id,
+                        orderId: paypalOrderId,
                     },
                 },
             });
@@ -377,29 +289,25 @@ describe('PayPal payments', () => {
         it('Should not create payment when authorization fails', async ({ expect }) => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
 
-            mswServer.use(
-                mockAuthentication,
-                http.get(`${mockData.apiUrl}/v2/checkout/orders/${mockData.order.id}`, () => {
-                    return HttpResponse.json<PayPalOrderInformation>({
-                        ...mockData.order,
-                        purchase_units: [
-                            {
-                                ...mockData.order.purchase_units[0],
-                                reference_id: order.code,
-                            },
-                        ],
-                    });
-                }),
-                http.post(`${mockData.apiUrl}/v2/checkout/orders/${mockData.order.id}/authorize`, () => {
-                    return HttpResponse.json({}, { status: 400 });
-                }),
-            );
+            nock(apiUrl)
+                .get(getOrderPath)
+                .reply(200, {
+                    ...paypalOrder,
+                    purchase_units: [
+                        {
+                            ...paypalOrder.purchase_units[0],
+                            reference_id: order.code,
+                        },
+                    ],
+                })
+                .post(authorizePath)
+                .reply(400, {});
 
             const addPaymentToOrderResult = await shopClient.query(ADD_PAYMENT_TO_ORDER, {
                 input: {
-                    method: mockData.methodCode,
+                    method: methodCode,
                     metadata: {
-                        orderId: mockData.order.id,
+                        orderId: paypalOrderId,
                     },
                 },
             });
@@ -415,27 +323,41 @@ describe('PayPal payments', () => {
         it('Should authorize and set transactionId and payerId', async ({ expect }) => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
 
-            mswServer.use(
-                mockAuthentication,
-                mockAuthorization,
-                http.get(`${mockData.apiUrl}/v2/checkout/orders/${mockData.order.id}`, () => {
-                    return HttpResponse.json<PayPalOrderInformation>({
-                        ...mockData.order,
-                        purchase_units: [
-                            {
-                                ...mockData.order.purchase_units[0],
-                                reference_id: order.code,
+            nock(apiUrl)
+                .get(getOrderPath)
+                .reply(200, {
+                    ...paypalOrder,
+                    purchase_units: [
+                        {
+                            ...paypalOrder.purchase_units[0],
+                            reference_id: order.code,
+                        },
+                    ],
+                })
+                .post(authorizePath)
+                .reply(201, {
+                    ...paypalOrder,
+                    purchase_units: [
+                        {
+                            ...paypalOrder.purchase_units[0],
+                            reference_id: order.code,
+                            payments: {
+                                authorizations: [
+                                    {
+                                        ...paypalOrder.purchase_units[0].payments?.authorizations?.[0],
+                                        status: 'CREATED',
+                                    },
+                                ],
                             },
-                        ],
-                    });
-                }),
-            );
+                        },
+                    ],
+                });
 
             const { addPaymentToOrder } = await shopClient.query(ADD_PAYMENT_TO_ORDER, {
                 input: {
-                    method: mockData.methodCode,
+                    method: methodCode,
                     metadata: {
-                        orderId: mockData.order.id,
+                        orderId: paypalOrderId,
                     },
                 },
             });
@@ -449,25 +371,25 @@ describe('PayPal payments', () => {
                         id: 'T_1',
                         state: 'Error',
                         transactionId: null,
-                        method: 'paypal',
+                        method: methodCode,
                     },
                     {
                         id: 'T_2',
                         state: 'Error',
                         transactionId: null,
-                        method: 'paypal',
+                        method: methodCode,
                     },
                     {
                         id: 'T_3',
                         state: 'Error',
                         transactionId: null,
-                        method: 'paypal',
+                        method: methodCode,
                     },
                     {
                         id: 'T_4',
                         state: 'Authorized',
-                        transactionId: '123123123',
-                        method: 'paypal',
+                        transactionId: paypalOrderId,
+                        method: methodCode,
                     },
                 ],
             });
@@ -491,30 +413,36 @@ describe('PayPal payments', () => {
             });
         });
         it('Should fail when no authorizations are available', async ({ expect }) => {
-            mswServer.use(
-                mockAuthentication,
-                mockAuthorization,
-                http.get(`${mockData.apiUrl}/v2/checkout/orders/${mockData.order.id}`, () => {
-                    return HttpResponse.json<PayPalOrderInformation>({
-                        ...mockData.order,
-                        purchase_units: [
-                            {
-                                ...mockData.order.purchase_units[0],
-                                reference_id: order.code,
-                            },
-                        ],
-                    });
-                }),
-                http.post(`${mockData.apiUrl}/v2/checkout/orders`, ({ request }) => {
-                    return HttpResponse.json(
+            nock(apiUrl)
+                .get(getOrderPath)
+                .reply(200, {
+                    ...paypalOrder,
+                    purchase_units: [
                         {
-                            id: mockData.order.id,
-                            links: [],
+                            ...paypalOrder.purchase_units[0],
+                            payments: undefined,
+                            reference_id: order.code,
                         },
-                        { status: 201 },
-                    );
-                }),
-            );
+                    ],
+                })
+                .post(authorizePath)
+                .reply(201, {
+                    ...paypalOrder,
+                    purchase_units: [
+                        {
+                            ...paypalOrder.purchase_units[0],
+                            reference_id: order.code,
+                            payments: {
+                                authorizations: [
+                                    {
+                                        ...paypalOrder.purchase_units[0].payments?.authorizations?.[0],
+                                        status: 'CREATED',
+                                    },
+                                ],
+                            },
+                        },
+                    ],
+                });
 
             await adminClient.asSuperAdmin();
 
@@ -531,44 +459,6 @@ describe('PayPal payments', () => {
             });
         });
         it('Should capture order and return success', async ({ expect }) => {
-            const authorization = mockData.payments?.authorizations?.[0];
-
-            if (!authorization) {
-                throw new Error('Authorization is not set in mock data.');
-            }
-
-            mswServer.use(
-                mockAuthentication,
-                mockAuthorization,
-                http.get(`${mockData.apiUrl}/v2/checkout/orders/${mockData.order.id}`, () => {
-                    return HttpResponse.json<PayPalOrderInformation>({
-                        ...mockData.order,
-                        purchase_units: [
-                            {
-                                ...mockData.order.purchase_units[0],
-                                reference_id: order.code,
-                                payments: mockData.payments,
-                            },
-                        ],
-                    });
-                }),
-                http.post(`${mockData.apiUrl}/v2/checkout/orders`, ({ request }) => {
-                    return HttpResponse.json(
-                        {
-                            id: mockData.order.id,
-                            links: [],
-                        },
-                        { status: 201 },
-                    );
-                }),
-                http.post(
-                    `${mockData.apiUrl}/v2/payments/authorizations/${authorization.id}/capture`,
-                    ({ request }) => {
-                        return HttpResponse.json({}, { status: 201 });
-                    },
-                ),
-            );
-
             await shopClient.asUserWithCredentials(customers[1].emailAddress, 'test');
             const { addItemToOrder } = await shopClient.query<
                 AddItemToOrderMutation,
@@ -579,17 +469,47 @@ describe('PayPal payments', () => {
             });
             order = addItemToOrder as TestOrderFragmentFragment;
 
+            nock(apiUrl)
+                .get(getOrderPath)
+                .times(2)
+                .reply(200, {
+                    ...paypalOrder,
+                    purchase_units: [
+                        {
+                            ...paypalOrder.purchase_units[0],
+                            reference_id: order.code,
+                        },
+                    ],
+                })
+                .post(authorizePath)
+                .reply(201, {
+                    ...paypalOrder,
+                    purchase_units: [
+                        {
+                            ...paypalOrder.purchase_units[0],
+                            reference_id: order.code,
+                            payments: {
+                                authorizations: [
+                                    {
+                                        ...paypalOrder.purchase_units[0].payments?.authorizations?.[0],
+                                        status: 'CREATED',
+                                    },
+                                ],
+                            },
+                        },
+                    ],
+                })
+                .post(capturePath)
+                .reply(201, {});
+
             await proceedToArrangingPayment(shopClient);
-
             await adminClient.asSuperAdmin();
-
-            const or = await shopClient.query(GET_ACTIVE_ORDER);
 
             const { addPaymentToOrder } = await shopClient.query(ADD_PAYMENT_TO_ORDER, {
                 input: {
-                    method: mockData.methodCode,
+                    method: methodCode,
                     metadata: {
-                        orderId: mockData.order.id,
+                        orderId: paypalOrderId,
                     },
                 },
             });
@@ -601,9 +521,9 @@ describe('PayPal payments', () => {
 
             expect(settlePayment).toEqual({
                 id: 'T_5',
-                transactionId: '123123123',
+                transactionId: paypalOrderId,
                 amount: 120990,
-                method: 'paypal',
+                method: methodCode,
                 state: 'Settled',
                 metadata: {
                     payerId: '123123123',
@@ -611,7 +531,96 @@ describe('PayPal payments', () => {
                 __typename: 'Payment',
             });
         });
-        // it.skip('Should reauthorize if authorization is expired', () => {});
+        it('Should reauthorize if authorization is expired', async ({ expect }) => {
+            await shopClient.asUserWithCredentials(customers[1].emailAddress, 'test');
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrderMutation,
+                AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_5',
+                quantity: 10,
+            });
+            order = addItemToOrder as TestOrderFragmentFragment;
+
+            let reauthorizeRequestCount = 0;
+
+            nock(apiUrl)
+                .get(getOrderPath)
+                .times(2)
+                .reply(200, {
+                    ...paypalOrder,
+                    purchase_units: [
+                        {
+                            ...paypalOrder.purchase_units[0],
+                            reference_id: order.code,
+                            payments: {
+                                authorizations: [
+                                    {
+                                        ...paypalOrder.purchase_units[0].payments?.authorizations?.[0],
+                                        expiration_time: '2000-01-01T00:00:00Z',
+                                        status: 'CREATED',
+                                    },
+                                ],
+                            },
+                        },
+                    ],
+                })
+                .post(authorizePath)
+                .reply(201, {
+                    ...paypalOrder,
+                    purchase_units: [
+                        {
+                            ...paypalOrder.purchase_units[0],
+                            reference_id: order.code,
+                            payments: {
+                                authorizations: [
+                                    {
+                                        ...paypalOrder.purchase_units[0].payments?.authorizations?.[0],
+                                        status: 'CREATED',
+                                    },
+                                ],
+                            },
+                        },
+                    ],
+                })
+                .post(reauthorizePath)
+                .reply(201, body => {
+                    reauthorizeRequestCount++;
+                    return {};
+                })
+                .post(capturePath)
+                .reply(201, {});
+
+            await proceedToArrangingPayment(shopClient);
+            await adminClient.asSuperAdmin();
+
+            const { addPaymentToOrder } = await shopClient.query(ADD_PAYMENT_TO_ORDER, {
+                input: {
+                    method: methodCode,
+                    metadata: {
+                        orderId: paypalOrderId,
+                    },
+                },
+            });
+
+            // We use the last payment of the previous describe block that was successful.
+            const { settlePayment } = await adminClient.query(SETTLE_PAYMENT, {
+                id: addPaymentToOrder.payments[0].id,
+            });
+
+            expect(reauthorizeRequestCount).toBe(1);
+            expect(settlePayment).toEqual({
+                id: 'T_6',
+                transactionId: paypalOrderId,
+                amount: 120990,
+                method: methodCode,
+                state: 'Settled',
+                metadata: {
+                    payerId: '123123123',
+                },
+                __typename: 'Payment',
+            });
+        });
     });
 
     /*

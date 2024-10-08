@@ -67,17 +67,17 @@ export interface PayPalPayer {
     };
 }
 
+interface PayPalOrderLink {
+    href: string;
+    method: string;
+    rel: string;
+}
+
 export interface PayPalOrderInformation {
     create_time: string;
     id: string;
     intent: 'CAPTURE' | 'AUTHORIZE';
-    links: [
-        {
-            href: string;
-            method: string;
-            rel: string;
-        },
-    ];
+    links: PayPalOrderLink[];
     payer: PayPalPayer;
     status: string;
     purchase_units: PayPalOrderPurchaseUnit[];

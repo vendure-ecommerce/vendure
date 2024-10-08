@@ -7,9 +7,10 @@ import {
     Order,
     PaymentMethodService,
     RequestContext,
+    Logger,
 } from '@vendure/core';
 
-import { PAYPAL_PAYMENT_PLUGIN_OPTIONS } from './constants';
+import { loggerCtx, PAYPAL_PAYMENT_PLUGIN_OPTIONS } from './constants';
 import { PayPalBaseService } from './paypal-base.service';
 import { convertAmount, createAmount, createItem } from './paypal-order.helpers';
 import { CreatePayPalOrderRequest, PayPalOrderInformation, PayPalPluginOptions } from './types';
@@ -63,12 +64,20 @@ export class PayPalOrderService extends PayPalBaseService {
             });
 
             if (!response.ok) {
-                throw new Error();
+                throw response;
             }
 
             return (await response.json()) as PayPalOrderInformation;
-        } catch (error) {
-            throw new InternalServerError('PayPal integration failed');
+        } catch (error: any) {
+            const message = 'Failed to create PayPal order';
+            if (error instanceof Response) {
+                const responseClone = error.clone();
+                Logger.error(message, loggerCtx, await responseClone.text());
+            }
+
+            Logger.error(message, loggerCtx, error?.stack);
+            // Throw a generic error to avoid leaking sensitive information
+            throw new InternalServerError(message);
         }
     }
 
