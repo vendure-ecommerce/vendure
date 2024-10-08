@@ -130,7 +130,7 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
         const authorization = authorizations[0];
 
         // check if authorizationExpirationTime is earlier than now
-        if (now > new Date(authorization.expiration_time)) {
+        if (!authorization.expiration_time?.trim() || now > new Date(authorization.expiration_time)) {
             await paypalAuthorizationService.reauthorizeOrder(ctx, authorization.id);
         }
 
