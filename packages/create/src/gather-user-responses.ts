@@ -38,13 +38,12 @@ export async function gatherUserResponses(
             { label: 'MariaDB', value: 'mariadb' },
             { label: 'Postgres', value: 'postgres' },
             { label: 'SQLite', value: 'sqlite' },
-            { label: 'SQL.js', value: 'sqljs' },
         ],
         initialValue: 'sqlite' as DbType,
     })) as DbType;
     checkCancel(dbType);
 
-    const hasConnection = dbType !== 'sqlite' && dbType !== 'sqljs';
+    const hasConnection = dbType !== 'sqlite';
     const dbHost = hasConnection
         ? await text({
               message: "What's the database host address?",
@@ -204,8 +203,7 @@ async function generateSources(
         dbType: answers.dbType === 'sqlite' ? 'better-sqlite3' : answers.dbType,
         name: path.basename(root),
         isSQLite: answers.dbType === 'sqlite',
-        isSQLjs: answers.dbType === 'sqljs',
-        requiresConnection: answers.dbType !== 'sqlite' && answers.dbType !== 'sqljs',
+        requiresConnection: answers.dbType !== 'sqlite',
         cookieSecret: randomBytes(16).toString('base64url'),
     };
 
@@ -233,10 +231,6 @@ function defaultDBPort(dbType: DbType): number {
             return 3306;
         case 'postgres':
             return 5432;
-        case 'mssql':
-            return 1433;
-        case 'oracle':
-            return 1521;
         default:
             return 3306;
     }

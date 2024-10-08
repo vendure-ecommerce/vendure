@@ -285,12 +285,6 @@ function dbDriverPackage(dbType: DbType): string {
             return 'pg';
         case 'sqlite':
             return 'better-sqlite3';
-        case 'sqljs':
-            return 'sql.js';
-        case 'mssql':
-            return 'mssql';
-        case 'oracle':
-            return 'oracledb';
         default:
             const n: never = dbType;
             console.error(pc.red(`No driver package configured for type "${dbType as string}"`));
