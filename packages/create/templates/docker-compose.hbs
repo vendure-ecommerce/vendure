@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - 3000:3000
-    command: [{{#if useYarn}}"yarn"{{else}}"npm", "run"{{/if}}, "start:server"]
+    command: ["npm", "run", "start:server"]
     volumes:
       - /usr/src/app
     environment:
@@ -19,7 +19,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: [{{#if useYarn}}"yarn"{{else}}"npm", "run"{{/if}}, "start:worker"]
+    command: ["npm", "run", "start:worker"]
     volumes:
       - /usr/src/app
     environment:
