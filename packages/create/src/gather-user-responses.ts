@@ -23,10 +23,17 @@ interface PromptAnswers {
 
 /* eslint-disable no-console */
 
+export async function getQuickStartConfiguration(
+    root: string,
+    packageManager: PackageManager,
+): Promise<UserResponses> {
+    return getCiConfiguration(root, packageManager);
+}
+
 /**
  * Prompts the user to determine how the new Vendure app should be configured.
  */
-export async function gatherUserResponses(
+export async function getManualConfiguration(
     root: string,
     alreadyRanScaffold: boolean,
     packageManager: PackageManager,
@@ -145,7 +152,7 @@ export async function gatherUserResponses(
 /**
  * Returns mock "user response" without prompting, for use in CI
  */
-export async function gatherCiUserResponses(
+export async function getCiConfiguration(
     root: string,
     packageManager: PackageManager,
 ): Promise<UserResponses> {

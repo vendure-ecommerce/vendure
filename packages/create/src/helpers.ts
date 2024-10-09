@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { execSync } from 'child_process';
 import spawn from 'cross-spawn';
 import fs from 'fs-extra';
@@ -7,6 +6,7 @@ import pc from 'picocolors';
 import semver from 'semver';
 
 import { SERVER_PORT, TYPESCRIPT_VERSION } from './constants';
+import { log } from './logger';
 import { CliLogLevel, DbType } from './types';
 
 /**
@@ -46,7 +46,6 @@ export function isSafeToCreateProjectIn(root: string, name: string) {
         'tsconfig.json',
         'yarn.lock',
     ];
-    console.log();
 
     const conflicts = fs
         .readdirSync(root)
@@ -57,13 +56,13 @@ export function isSafeToCreateProjectIn(root: string, name: string) {
         .filter(file => !errorLogFilePatterns.some(pattern => file.indexOf(pattern) === 0));
 
     if (conflicts.length > 0) {
-        console.log(`The directory ${pc.green(name)} contains files that could conflict:`);
-        console.log();
+        log(`The directory ${pc.green(name)} contains files that could conflict:`, { newline: 'after' });
         for (const file of conflicts) {
-            console.log(`  ${file}`);
+            log(`  ${file}`);
         }
-        console.log();
-        console.log('Either try using a new directory name, or remove the files listed above.');
+        log('Either try using a new directory name, or remove the files listed above.', {
+            newline: 'before',
+        });
 
         return false;
     }
@@ -89,14 +88,12 @@ export function scaffoldAlreadyExists(root: string, name: string): boolean {
 
 export function checkNodeVersion(requiredVersion: string) {
     if (!semver.satisfies(process.version, requiredVersion)) {
-        console.error(
+        log(
             pc.red(
-                'You are running Node %s.\n' +
-                    'Vendure requires Node %s or higher. \n' +
+                `You are running Node ${process.version}.` +
+                    `Vendure requires Node ${requiredVersion} or higher.` +
                     'Please update your version of Node.',
             ),
-            process.version,
-            requiredVersion,
         );
         process.exit(1);
     }
@@ -160,7 +157,7 @@ export function checkThatNpmCanReadCwd() {
     if (npmCWD === cwd) {
         return true;
     }
-    console.error(
+    log(
         pc.red(
             'Could not start an npm process in the right directory.\n\n' +
                 `The current directory is: ${pc.bold(cwd)}\n` +
@@ -169,7 +166,7 @@ export function checkThatNpmCanReadCwd() {
         ),
     );
     if (process.platform === 'win32') {
-        console.error(
+        log(
             pc.red('On Windows, this can usually be fixed by running:\n\n') +
                 `  ${pc.cyan('reg')} delete "HKCU\\Software\\Microsoft\\Command Processor" /v AutoRun /f\n` +
                 `  ${pc.cyan(
@@ -287,7 +284,7 @@ function dbDriverPackage(dbType: DbType): string {
             return 'better-sqlite3';
         default:
             const n: never = dbType;
-            console.error(pc.red(`No driver package configured for type "${dbType as string}"`));
+            log(pc.red(`No driver package configured for type "${dbType as string}"`));
             return '';
     }
 }
@@ -414,7 +411,7 @@ export function isServerPortInUse(port: number): Promise<boolean> {
     try {
         return tcpPortUsed.check(port);
     } catch (e: any) {
-        console.log(pc.yellow(`Warning: could not determine whether port ${port} is available`));
+        log(pc.yellow(`Warning: could not determine whether port ${port} is available`));
         return Promise.resolve(false);
     }
 }

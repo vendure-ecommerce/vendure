@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { intro, note, outro, select, spinner } from '@clack/prompts';
 import { program } from 'commander';
 import fs from 'fs-extra';
@@ -7,7 +6,7 @@ import path from 'path';
 import pc from 'picocolors';
 
 import { REQUIRED_NODE_VERSION, SERVER_PORT } from './constants';
-import { checkCancel, gatherCiUserResponses, gatherUserResponses } from './gather-user-responses';
+import { checkCancel, getCiConfiguration, getManualConfiguration } from './gather-user-responses';
 import {
     checkDbConnection,
     checkNodeVersion,
@@ -19,6 +18,7 @@ import {
     scaffoldAlreadyExists,
     yarnIsAvailable,
 } from './helpers';
+import { log, setLogLevel } from './logger';
 import { CliLogLevel, PackageManager } from './types';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -59,6 +59,7 @@ export async function createVendureApp(
     logLevel: CliLogLevel,
     isCi: boolean = false,
 ) {
+    setLogLevel(logLevel);
     if (!runPreChecks(name, useNpm)) {
         return;
     }
@@ -105,12 +106,12 @@ export async function createVendureApp(
     }
 
     if (scaffoldExists) {
-        console.log(
+        log(
             pc.yellow(
                 'It appears that a new Vendure project scaffold already exists. Re-using the existing files...',
             ),
+            { newline: 'after' },
         );
-        console.log();
     }
     const {
         dbType,
@@ -124,8 +125,8 @@ export async function createVendureApp(
         dockerComposeSource,
         populateProducts,
     } = isCi
-        ? await gatherCiUserResponses(root, packageManager)
-        : await gatherUserResponses(root, scaffoldExists, packageManager);
+        ? await getCiConfiguration(root, packageManager)
+        : await getManualConfiguration(root, scaffoldExists, packageManager);
     const originalDirectory = process.cwd();
     process.chdir(root);
     if (packageManager !== 'npm' && !checkThatNpmCanReadCwd()) {
@@ -262,16 +263,16 @@ export async function createVendureApp(
 
         // Pause to ensure the worker jobs have time to complete.
         if (isCi) {
-            console.log('[CI] Pausing before close...');
+            log('[CI] Pausing before close...');
         }
         await new Promise(resolve => setTimeout(resolve, isCi ? 30000 : 2000));
         await app.close();
         if (isCi) {
-            console.log('[CI] Pausing after close...');
+            log('[CI] Pausing after close...');
             await new Promise(resolve => setTimeout(resolve, 10000));
         }
-    } catch (e) {
-        console.log(e);
+    } catch (e: any) {
+        log(e.toString());
         outro(pc.red(`Failed to initialize server. Please try again.`));
         process.exit(1);
     }
@@ -299,17 +300,21 @@ export async function createVendureApp(
  */
 function runPreChecks(name: string | undefined, useNpm: boolean): name is string {
     if (typeof name === 'undefined') {
-        console.error('Please specify the project directory:');
-        console.log(`  ${pc.cyan(program.name())} ${pc.green('<project-directory>')}`);
-        console.log();
-        console.log('For example:');
-        console.log(`  ${pc.cyan(program.name())} ${pc.green('my-vendure-app')}`);
+        log(pc.red(`Please specify the project directory:`));
+        log(`  ${pc.cyan(program.name())} ${pc.green('<project-directory>')}`, { newline: 'after' });
+        log('For example:');
+        log(`  ${pc.cyan(program.name())} ${pc.green('my-vendure-app')}`);
         process.exit(1);
         return false;
     }
 
     const root = path.resolve(name);
-    fs.ensureDirSync(name);
+    try {
+        fs.ensureDirSync(name);
+    } catch (e: any) {
+        log(pc.red(`Could not create project directory ${name}: ${e.message as string}`));
+        return false;
+    }
     if (!isSafeToCreateProjectIn(root, name)) {
         process.exit(1);
     }
@@ -332,6 +337,6 @@ async function copyEmailTemplates(root: string) {
     try {
         await fs.copy(templateDir, path.join(root, 'static', 'email', 'templates'));
     } catch (err: any) {
-        console.error(pc.red('Failed to copy email templates.'));
+        log(pc.red('Failed to copy email templates.'));
     }
 }
