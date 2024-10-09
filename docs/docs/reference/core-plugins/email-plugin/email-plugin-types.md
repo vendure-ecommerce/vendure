@@ -128,9 +128,47 @@ type EmailAttachment = Omit<Attachment, 'raw'> & { path?: string }
 ```
 
 
+## LoadTemplateInput
+
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="401" packageName="@vendure/email-plugin" />
+
+The object passed to the <a href='/reference/core-plugins/email-plugin/template-loader#templateloader'>TemplateLoader</a> `loadTemplate()` method.
+
+```ts title="Signature"
+interface LoadTemplateInput {
+    type: string;
+    templateName: string;
+    templateVars: any;
+}
+```
+
+<div className="members-wrapper">
+
+### type
+
+<MemberInfo kind="property" type={`string`}   />
+
+The type corresponds to the string passed to the EmailEventListener constructor.
+### templateName
+
+<MemberInfo kind="property" type={`string`}   />
+
+The template name is specified by the EmailEventHander's call to
+the `addTemplate()` method, and will default to `body.hbs`
+### templateVars
+
+<MemberInfo kind="property" type={`any`}   />
+
+The variables defined by the globalTemplateVars as well as any variables defined in the
+EmailEventHandler's `setTemplateVars()` method.
+
+
+</div>
+
+
 ## SetTemplateVarsFn
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="413" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="434" packageName="@vendure/email-plugin" />
 
 A function used to define template variables available to email templates.
 See <a href='/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>.setTemplateVars().
@@ -145,7 +183,7 @@ type SetTemplateVarsFn<Event> = (
 
 ## SetAttachmentsFn
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="427" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="448" packageName="@vendure/email-plugin" />
 
 A function used to define attachments to be sent with the email.
 See https://nodemailer.com/message/attachments/ for more information about
@@ -158,7 +196,7 @@ type SetAttachmentsFn<Event> = (event: Event) => EmailAttachment[] | Promise<Ema
 
 ## SetSubjectFn
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="435" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="456" packageName="@vendure/email-plugin" />
 
 A function used to define the subject to be sent with the email.
 
@@ -173,7 +211,7 @@ type SetSubjectFn<Event> = (
 
 ## OptionalAddressFields
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="449" packageName="@vendure/email-plugin" since="1.1.0" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="470" packageName="@vendure/email-plugin" since="1.1.0" />
 
 Optional address-related fields for sending the email.
 
@@ -209,7 +247,7 @@ An email address that will appear on the _Reply-To:_ field
 
 ## SetOptionalAddressFieldsFn
 
-<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="475" packageName="@vendure/email-plugin" since="1.1.0" />
+<GenerationInfo sourceFile="packages/email-plugin/src/types.ts" sourceLine="496" packageName="@vendure/email-plugin" since="1.1.0" />
 
 A function used to set the <a href='/reference/core-plugins/email-plugin/email-plugin-types#optionaladdressfields'>OptionalAddressFields</a>.
 

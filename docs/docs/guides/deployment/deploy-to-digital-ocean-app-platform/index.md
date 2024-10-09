@@ -187,6 +187,10 @@ The values starting with `${db...}` are automatically populated by App Platform 
 to name your database something other than `db`.
 :::
 
+:::note
+When using the App Platform with a Dev Database, DigitalOcean only provides a self-signed SSL certificate. This may prevent the Vendure app from starting. As a workaround, you can add the environment variable `NODE_TLS_REJECT_UNAUTHORIZED` and set it to `0`.
+:::
+
 After saving your environment variables you can click through the confirmation screens to create the app.
 
 ## Create the worker resource
@@ -205,11 +209,37 @@ Again you can edit the plan, and the smallest Basic plan is fine for testing pur
 
 No new environment variables are needed since we'll be sharing the Global variables with the worker.
 
+## Enable access to the required routes
+
+To be able to access the UI and other routes, we need to declare them first.
+
+1. In the app dashboard, click on the **Settings** tab.
+2. Click on the **vendure-server** component.
+
+   ![Open server settings](./05-open-server-settings.webp)
+
+3. Scroll down to **HTTP Request Routes**.
+4. Click on **Edit**.
+5. Click on **+ Add new route** and fill in the form like this:
+
+   ![Admin app route](./06-admin-app-route.webp)
+
+6. Make sure to check the **Preserve Path Prefix** option.
+
+You need to do this for the following routes:
+- `/admin`
+- `/assets`
+- `/health`
+- `/admin-api`
+- `/shop-api`
+
+7. Click on **Save**.
+
 ## Test your Vendure server
 
 Once everything has finished deploying, you can click the app URL to open your Vendure server in a new tab. 
 
-![Open app](./05-open-app.webp)
+![Open app](./07-open-app.webp)
 
 :::info
 Append `/admin` to the URL to access the admin UI, and log in with the superadmin credentials you set in the environment variables.

@@ -87,6 +87,9 @@ export const UPDATED_ORDER_FRAGMENT = gql`
             unitPriceWithTax
             linePrice
             linePriceWithTax
+            featuredAsset {
+                id
+            }
             discounts {
                 adjustmentSource
                 amount

@@ -13,7 +13,38 @@ Routes can be defined natively using either **Angular** or **React**. It is also
 
 ## Example: Creating a "Greeter" route
 
-### 1. Create the route component
+### 1. Create a plugin
+
+We will first quickly scaffold a new plugin to house our UI extensions:
+
+- Run `npx vendure add` from your project root
+- Select `Create a new Vendure plugin` and when prompted for a name, name it **"greeter"**
+- After the plugin is created, you will be prompted to add features to the plugin. Select `[Plugin: UI] Set up Admin UI extensions`
+
+You should now have a new plugin scaffolded at `./src/plugins/greeter`, with some empty UI extension files in the `ui` 
+directory. If you check your `vendure-config.ts` file you should also see that your `AdminUiPlugin.init()` call has been modified
+to compile the UI extensions:
+
+```ts
+AdminUiPlugin.init({
+    route: 'admin',
+    port: serverPort + 2,
+    adminUiConfig: {
+        apiPort: serverPort,
+    },
+    // highlight-start
+    app: compileUiExtensions({
+        outputPath: path.join(__dirname, '../admin-ui'),
+        extensions: [
+            GreeterPlugin.ui,
+        ],
+        devMode: true,
+    }),
+    // highlight-end
+}),
+```
+
+### 2. Create the route component
 
 First we need to create the component which will be mounted at the route. This component can be either an Angular component or a React component.
 
@@ -42,7 +73,7 @@ export class GreeterComponent {
 </TabItem>
 <TabItem value="React" label="React">
 
-```ts title="src/plugins/greeter/ui/components/Greeter.tsx"
+```ts title="src/plugins/greeter/ui/components/greeter/Greeter.tsx"
 import React from 'react';
 
 export function Greeter() {
@@ -63,7 +94,7 @@ The `<vdr-page-block>` (Angular) and `<div className="page-block">` (React) is a
 :::
 
 
-### 2. Define the route
+### 3. Define the route
 
 Next we need to define a route in our `routes.ts` file. Note that this file can have any name, but "routes.ts" is a convention.
 
@@ -110,39 +141,34 @@ export default [
 
 The `path: ''` is actually optional, since `''` is the default value. But this is included here to show that you can mount different components at different paths. See the section on route parameters below.
 
-### 3. Add the route to the extension config
+### 4. Add the route to the extension config
 
-Now we need to add this routes file to our extension definition:
+Since you have used the CLI to scaffold your plugin, this part has already been done for you. But for the sake of completeness
+this is the part of your plugin which is configured to point to your routes file:
 
-```ts title="src/vendure-config.ts"
-import { VendureConfig } from '@vendure/core';
-import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
-import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
-import * as path from 'path';
+```ts title="src/plugins/greeter/greeter.plugin.ts"
+// ...
+export class GreeterPlugin {
+    static options: PluginInitOptions;
 
-export const config: VendureConfig = {
-    // ...
-    plugins: [
-        AdminUiPlugin.init({
-            port: 3002,
-            app: compileUiExtensions({
-                outputPath: path.join(__dirname, '../admin-ui'),
-                extensions: [
-                    {
-                        id: 'greeter',
-                        extensionPath: path.join(__dirname, 'plugins/greeter/ui'),
-                        // highlight-start
-                        routes: [{ route: 'greet', filePath: 'routes.ts' }],
-                        // highlight-end
-                    },
-                ],
-            }),
-        }),
-    ],
-};
+    static init(options: PluginInitOptions): Type<GreeterPlugin> {
+        this.options = options;
+        return GreeterPlugin;
+    }
+
+    // highlight-start
+    static ui: AdminUiExtension = {
+        id: 'greeter-ui',
+        extensionPath: path.join(__dirname, 'ui'),
+        routes: [{ route: 'greeter', filePath: 'routes.ts' }],
+        providers: ['providers.ts'],
+    };
+    // highlight-end
+}
+
 ```
 
-Note that by specifying `route: 'greet'`, we are "mounting" the routes at the `/extensions/greet` path.
+Note that by specifying `route: 'greeter'`, we are "mounting" the routes at the `/extensions/greeter` path.
 
 :::info
 
@@ -154,7 +180,11 @@ more information.
 
 The `filePath` property is relative to the directory specified in the `extensionPath` property. In this case, the `routes.ts` file is located at `src/plugins/greeter/ui/routes.ts`.
 
-Now go to the Admin UI app in your browser and log in. You should now be able to manually enter the URL `http://localhost:3000/admin/extensions/greet` and you should see the component with the "Hello!" header:
+### 5. Test it out
+
+Now run your app with `npm run dev`. Wait for it to compile the Admin UI extensions.
+
+Now go to the Admin UI app in your browser and log in. You should now be able to manually enter the URL `http://localhost:3000/admin/extensions/greeter` and you should see the component with the "Hello!" header:
 
 ![./ui-extensions-greeter.webp](./ui-extensions-greeter.webp)
 

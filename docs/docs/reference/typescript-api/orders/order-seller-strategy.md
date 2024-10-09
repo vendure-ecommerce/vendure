@@ -50,7 +50,7 @@ interface OrderSellerStrategy extends InjectableStrategy {
 This method is called whenever a new OrderLine is added to the Order via the `addItemToOrder` mutation or the
 underlying `addItemToOrder()` method of the <a href='/reference/typescript-api/services/order-service#orderservice'>OrderService</a>.
 
-It should return the ID of the Channel to which this OrderLine will be assigned, which will be used to set the
+It should return the Channel to which this OrderLine will be assigned, which will be used to set the
 <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a> `sellerChannel` property.
 ### splitOrder
 

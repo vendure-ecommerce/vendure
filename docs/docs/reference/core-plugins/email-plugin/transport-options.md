@@ -86,7 +86,7 @@ See [Nodemailers's SES docs](https://nodemailer.com/transports/ses/) for more de
   plugins: [
     EmailPlugin.init({
       handler: defaultEmailHandlers,
-      templatePath: path.join(__dirname, 'static/email/templates'),
+      templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/email/templates')),
       transport: {
         type: 'ses',
         SES: { ses, aws: { SendRawEmailCommand } },

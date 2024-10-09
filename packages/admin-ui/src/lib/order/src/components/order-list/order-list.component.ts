@@ -23,6 +23,7 @@ export class OrderListComponent
     extends TypedBaseListComponent<typeof GetOrderListDocument, 'orders'>
     implements OnInit
 {
+    dataTableListId = 'order-list';
     orderStates = this.serverConfigService.getOrderProcessStates().map(item => item.name);
     readonly OrderType = OrderType;
     readonly customFields = this.getCustomFieldConfig('Order');
@@ -99,7 +100,10 @@ export class OrderListComponent
     canCreateDraftOrder = false;
     private activeChannelIsDefaultChannel = false;
 
-    constructor(protected serverConfigService: ServerConfigService, private channelService: ChannelService) {
+    constructor(
+        protected serverConfigService: ServerConfigService,
+        private channelService: ChannelService,
+    ) {
         super();
         super.configure({
             document: GetOrderListDocument,

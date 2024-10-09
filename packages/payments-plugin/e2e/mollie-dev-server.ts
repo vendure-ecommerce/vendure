@@ -26,7 +26,6 @@ import {
 /**
  * This should only be used to locally test the Mollie payment plugin
  * Make sure you have `MOLLIE_APIKEY=test_xxxx` in your .env file
- * Make sure you have `MOLLIE_APIKEY=test_xxxx` in your .env file
  */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 async function runMollieDevServer() {
@@ -109,13 +108,10 @@ async function runMollieDevServer() {
     // eslint-disable-next-line no-console
     console.log('Payment intent result', result);
 
-    // Change order amount and create new intent
-    await createFixedDiscountCoupon(adminClient, 20000, 'DISCOUNT_ORDER');
-    await shopClient.query(APPLY_COUPON_CODE, { couponCode: 'DISCOUNT_ORDER' });
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    // Create another Payment Intent to test duplicate paymnets
     const result2 = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, { input: {} });
     // eslint-disable-next-line no-console
-    console.log('Payment intent result', result2);
+    console.log('Second payment intent result', result2);
 }
 
 (async () => {

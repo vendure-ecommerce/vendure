@@ -414,13 +414,13 @@ function throwDatabaseSchemaDoesNotExist(dbName: string, schemaName: string) {
     );
 }
 
-export function isServerPortInUse(): Promise<boolean> {
+export function isServerPortInUse(port: number): Promise<boolean> {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const tcpPortUsed = require('tcp-port-used');
     try {
-        return tcpPortUsed.check(SERVER_PORT);
+        return tcpPortUsed.check(port);
     } catch (e: any) {
-        console.log(pc.yellow(`Warning: could not determine whether port ${SERVER_PORT} is available`));
+        console.log(pc.yellow(`Warning: could not determine whether port ${port} is available`));
         return Promise.resolve(false);
     }
 }

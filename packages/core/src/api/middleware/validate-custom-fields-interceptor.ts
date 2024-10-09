@@ -1,7 +1,6 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { getGraphQlInputName } from '@vendure/common/lib/shared-utils';
 import {
     GraphQLInputType,
@@ -12,12 +11,11 @@ import {
     TypeNode,
 } from 'graphql';
 
-import { REQUEST_CONTEXT_KEY } from '../../common/constants';
 import { Injector } from '../../common/injector';
 import { ConfigService } from '../../config/config.service';
 import { CustomFieldConfig, CustomFields } from '../../config/custom-field/custom-field-types';
 import { parseContext } from '../common/parse-context';
-import { RequestContext } from '../common/request-context';
+import { internal_getRequestContext, RequestContext } from '../common/request-context';
 import { validateCustomFieldValue } from '../common/validate-custom-field-value';
 
 /**
@@ -29,7 +27,10 @@ import { validateCustomFieldValue } from '../common/validate-custom-field-value'
 export class ValidateCustomFieldsInterceptor implements NestInterceptor {
     private readonly inputsWithCustomFields: Set<string>;
 
-    constructor(private configService: ConfigService, private moduleRef: ModuleRef) {
+    constructor(
+        private configService: ConfigService,
+        private moduleRef: ModuleRef,
+    ) {
         this.inputsWithCustomFields = Object.keys(configService.customFields).reduce((inputs, entityName) => {
             inputs.add(`Create${entityName}Input`);
             inputs.add(`Update${entityName}Input`);
@@ -45,7 +46,7 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
             const gqlExecutionContext = GqlExecutionContext.create(context);
             const { operation, schema } = parsedContext.info;
             const variables = gqlExecutionContext.getArgs();
-            const ctx: RequestContext = (parsedContext.req as any)[REQUEST_CONTEXT_KEY];
+            const ctx = internal_getRequestContext(parsedContext.req);
 
             if (operation.operation === 'mutation') {
                 const inputTypeNames = this.getArgumentMap(operation, schema);

@@ -1,6 +1,6 @@
-import { from, lastValueFrom, Observable, of } from 'rxjs';
+import { from, lastValueFrom, Observable } from 'rxjs';
 import { retryWhen, take, tap } from 'rxjs/operators';
-import { Connection, EntityManager, QueryRunner } from 'typeorm';
+import { DataSource, EntityManager, QueryRunner } from 'typeorm';
 import { TransactionAlreadyStartedError } from 'typeorm/error/TransactionAlreadyStartedError';
 
 import { RequestContext } from '../api/common/request-context';
@@ -28,13 +28,13 @@ export class TransactionWrapper {
         work: (ctx: RequestContext) => Observable<T> | Promise<T>,
         mode: TransactionMode,
         isolationLevel: TransactionIsolationLevel | undefined,
-        connection: Connection,
+        connection: DataSource,
     ): Promise<T> {
         // Copy to make sure original context will remain valid after transaction completes
         const ctx = originalCtx.copy();
 
         const entityManager: EntityManager | undefined = (ctx as any)[TRANSACTION_MANAGER_KEY];
-        const queryRunner = entityManager ?.queryRunner || connection.createQueryRunner();
+        const queryRunner = entityManager?.queryRunner || connection.createQueryRunner();
 
         if (mode === 'auto') {
             await this.startTransaction(queryRunner, isolationLevel);
@@ -67,8 +67,7 @@ export class TransactionWrapper {
             }
             throw error;
         } finally {
-            if (!queryRunner.isTransactionActive
-                && queryRunner.isReleased === false) {
+            if (!queryRunner.isTransactionActive && queryRunner.isReleased === false) {
                 // There is a check for an active transaction
                 // because this could be a nested transaction (savepoint).
 
@@ -81,7 +80,10 @@ export class TransactionWrapper {
      * Attempts to start a DB transaction, with retry logic in the case that a transaction
      * is already started for the connection (which is mainly a problem with SQLite/Sql.js)
      */
-    private async startTransaction(queryRunner: QueryRunner, isolationLevel: TransactionIsolationLevel | undefined) {
+    private async startTransaction(
+        queryRunner: QueryRunner,
+        isolationLevel: TransactionIsolationLevel | undefined,
+    ) {
         const maxRetries = 25;
         let attempts = 0;
         let lastError: any;

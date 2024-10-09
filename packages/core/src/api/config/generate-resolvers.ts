@@ -3,7 +3,6 @@ import { StockMovementType } from '@vendure/common/lib/generated-types';
 import { GraphQLSchema } from 'graphql';
 import { GraphQLDateTime, GraphQLJSON } from 'graphql-scalars';
 
-import { REQUEST_CONTEXT_KEY } from '../../common/constants';
 import { InternalServerError } from '../../common/error/errors';
 import {
     adminErrorOperationTypeResolvers,
@@ -18,7 +17,7 @@ import { Region } from '../../entity/region/region.entity';
 import { getPluginAPIExtensions } from '../../plugin/plugin-metadata';
 import { CustomFieldRelationResolverService } from '../common/custom-field-relation-resolver.service';
 import { ApiType } from '../common/get-api-type';
-import { RequestContext } from '../common/request-context';
+import { internal_getRequestContext } from '../common/request-context';
 import { userHasPermissionsOnCustomField } from '../common/user-has-permissions-on-custom-field';
 
 import { getCustomFieldsConfigWithoutInterfaces } from './get-custom-fields-config-without-interfaces';
@@ -206,7 +205,7 @@ function generateCustomFieldRelationResolvers(
             let resolver: IFieldResolver<any, any>;
             if (isRelationalType(fieldDef)) {
                 resolver = async (source: any, args: any, context: any) => {
-                    const ctx: RequestContext = context.req[REQUEST_CONTEXT_KEY];
+                    const ctx = internal_getRequestContext(context.req);
                     if (!userHasPermissionsOnCustomField(ctx, fieldDef)) {
                         return null;
                     }
@@ -235,7 +234,7 @@ function generateCustomFieldRelationResolvers(
                 };
             } else {
                 resolver = async (source: any, args: any, context: any) => {
-                    const ctx: RequestContext = context.req[REQUEST_CONTEXT_KEY];
+                    const ctx = internal_getRequestContext(context.req);
                     if (!userHasPermissionsOnCustomField(ctx, fieldDef)) {
                         return null;
                     }
@@ -255,13 +254,23 @@ function generateCustomFieldRelationResolvers(
                 } as any;
             }
         }
+        const allCustomFieldsAreNonPublic =
+            customFields.length && customFields.every(f => f.public === false || f.internal === true);
+        if (allCustomFieldsAreNonPublic) {
+            // When an entity has only non-public custom fields, the GraphQL type used for the
+            // customFields field is `JSON`. This type will simply return the full object, which
+            // will cause a leak of private data unless we force a `null` return value in the case
+            // that there are no public fields.
+            // See https://github.com/vendure-ecommerce/vendure/issues/3049
+            shopResolvers[entityName] = { customFields: () => null };
+        }
     }
     return { adminResolvers, shopResolvers };
 }
 
 function getCustomScalars(configService: ConfigService, apiType: 'admin' | 'shop') {
     return getPluginAPIExtensions(configService.plugins, apiType)
-        .map(e => (typeof e.scalars === 'function' ? e.scalars() : e.scalars ?? {}))
+        .map(e => (typeof e.scalars === 'function' ? e.scalars() : (e.scalars ?? {})))
         .reduce(
             (all, scalarMap) => ({
                 ...all,

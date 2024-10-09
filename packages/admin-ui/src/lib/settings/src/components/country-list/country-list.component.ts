@@ -30,6 +30,7 @@ export const GET_COUNTRY_LIST = gql`
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CountryListComponent extends TypedBaseListComponent<typeof GetCountryListDocument, 'countries'> {
+    dataTableListId = 'country-list';
     readonly customFields = this.getCustomFieldConfig('Region');
     readonly filters = this.createFilterCollection()
         .addIdFilter()

@@ -2461,6 +2461,78 @@ describe('Order modification', () => {
             expect(modifyOrder.totalWithTax).toBe(getOrderPaymentsTotalWithRefunds(modifyOrder));
             expect(modifyOrder.payments![0].refunds[0].total).toBe(shippingWithTax);
         });
+
+        it('adjustOrderLines empty quantity with discounts', async () => {
+            const PercentDiscount50Percent = '50PERCENT';
+            await adminClient.query<
+                Codegen.CreatePromotionMutation,
+                Codegen.CreatePromotionMutationVariables
+            >(CREATE_PROMOTION, {
+                input: {
+                    enabled: true,
+                    couponCode: PercentDiscount50Percent,
+                    conditions: [
+                        {
+                            code: 'minimum_order_amount',
+                            arguments: [
+                                { name: 'amount', value: '0' },
+                                { name: 'taxInclusive', value: 'false' },
+                            ],
+                        },
+                    ],
+                    actions: [
+                        {
+                            code: orderPercentageDiscount.code,
+                            arguments: [{ name: 'discount', value: '50' }],
+                        },
+                    ],
+                    translations: [{ languageCode: LanguageCode.en, name: 'half price' }],
+                },
+            });
+            await shopClient.asUserWithCredentials('trevor_donnelly96@hotmail.com', 'test');
+            await shopClient.query(gql(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS), {
+                productVariantId: 'T_1',
+                quantity: 1,
+            } as any);
+            await shopClient.query(gql(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS), {
+                productVariantId: 'T_2',
+                quantity: 1,
+            } as any);
+
+            await proceedToArrangingPayment(shopClient);
+            const paidOrder = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
+            orderGuard.assertSuccess(paidOrder);
+
+            const transitionOrderToState = await adminTransitionOrderToState(paidOrder.id, 'Modifying');
+            orderGuard.assertSuccess(transitionOrderToState);
+
+            expect(transitionOrderToState.state).toBe('Modifying');
+
+            // modify order should not throw an error when setting quantity to 0 for a order line
+            const { modifyOrder } = await adminClient.query<
+                Codegen.ModifyOrderMutation,
+                Codegen.ModifyOrderMutationVariables
+            >(MODIFY_ORDER, {
+                input: {
+                    dryRun: true,
+                    orderId: order.id,
+                    couponCodes: [PercentDiscount50Percent],
+                    adjustOrderLines: [{ orderLineId: order.lines[0].id, quantity: 0 }],
+                },
+            });
+
+            orderGuard.assertSuccess(modifyOrder);
+            expect(modifyOrder.id).toBeDefined();
+
+            // ensure correct adjustments applied
+            // The first line should have a linePrice of 0 because it has zero quantity
+            expect(modifyOrder.lines[0].linePriceWithTax).toBe(0);
+            expect(modifyOrder.lines[0].proratedLinePriceWithTax).toBe(0);
+            // The second line should have the proratedLinePriceWithTax discounted per the promotion
+            expect(modifyOrder.lines[1].proratedLinePriceWithTax).toBe(
+                modifyOrder.lines[1].discountedLinePriceWithTax / 2,
+            );
+        });
     });
 
     async function adminTransitionOrderToState(id: string, state: string) {

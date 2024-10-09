@@ -33,6 +33,7 @@ export class ShippingMethodListComponent
     extends TypedBaseListComponent<typeof GetShippingMethodListDocument, 'shippingMethods'>
     implements OnInit
 {
+    dataTableListId = 'shipping-method-list';
     readonly customFields = this.getCustomFieldConfig('ShippingMethod');
     readonly filters = this.createFilterCollection()
         .addIdFilter()

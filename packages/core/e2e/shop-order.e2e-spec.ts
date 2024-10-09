@@ -8,6 +8,7 @@ import {
     mergeConfig,
 } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
+import { fail } from 'assert';
 import gql from 'graphql-tag';
 import path from 'path';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
@@ -44,6 +45,7 @@ import {
     GET_COUNTRY_LIST,
     GET_CUSTOMER,
     GET_CUSTOMER_LIST,
+    GET_PRODUCT_WITH_VARIANTS,
     GET_SHIPPING_METHOD_LIST,
     UPDATE_COUNTRY,
     UPDATE_PRODUCT,
@@ -1282,6 +1284,58 @@ describe('Shop orders', () => {
             expect(billingAddress.postalCode).toBe('123456');
             expect(billingAddress.defaultBillingAddress).toBe(true);
             expect(billingAddress.defaultShippingAddress).toBe(false);
+        });
+
+        it('sets OrderLine.featuredAsset to that of ProductVariant if defined', async () => {
+            const { product } = await adminClient.query<
+                Codegen.GetProductWithVariantsQuery,
+                Codegen.GetProductWithVariantsQueryVariables
+            >(GET_PRODUCT_WITH_VARIANTS, {
+                id: 'T_4',
+            });
+            const variantWithFeaturedAsset = product?.variants.find(v => !!v.featuredAsset);
+            if (!variantWithFeaturedAsset) {
+                fail(`Could not find expected variant with a featuredAsset`);
+                return;
+            }
+            const { addItemToOrder } = await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: variantWithFeaturedAsset.id,
+                quantity: 1,
+            });
+            orderResultGuard.assertSuccess(addItemToOrder);
+            expect(addItemToOrder.lines.length).toBe(1);
+            expect(addItemToOrder.lines[0].productVariant.id).toBe(variantWithFeaturedAsset?.id);
+            expect(addItemToOrder.lines[0].featuredAsset?.id).toBe(
+                variantWithFeaturedAsset.featuredAsset?.id,
+            );
+        });
+
+        it('sets OrderLine.featuredAsset to that of Product if ProductVariant has no featuredAsset', async () => {
+            const { product } = await adminClient.query<
+                Codegen.GetProductWithVariantsQuery,
+                Codegen.GetProductWithVariantsQueryVariables
+            >(GET_PRODUCT_WITH_VARIANTS, {
+                id: 'T_4',
+            });
+            const variantWithoutFeaturedAsset = product?.variants.find(v => !v.featuredAsset);
+            if (!variantWithoutFeaturedAsset) {
+                fail(`Could not find expected variant without a featuredAsset`);
+                return;
+            }
+            const { addItemToOrder } = await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: variantWithoutFeaturedAsset.id,
+                quantity: 1,
+            });
+            orderResultGuard.assertSuccess(addItemToOrder);
+            expect(addItemToOrder.lines.length).toBe(2);
+            expect(addItemToOrder.lines[1].productVariant.id).toBe(variantWithoutFeaturedAsset?.id);
+            expect(addItemToOrder.lines[1].featuredAsset?.id).toBe(product?.featuredAsset?.id);
         });
     });
 

@@ -76,7 +76,9 @@ export const taxRateDefaultStandard = new TaxRate({
     value: 20,
     enabled: true,
     zone: zoneDefault,
+    zoneId: zoneDefault.id,
     category: taxCategoryStandard,
+    categoryId: taxCategoryStandard.id,
 });
 export const taxRateDefaultReduced = new TaxRate({
     id: 'taxRateDefaultReduced',
@@ -84,7 +86,9 @@ export const taxRateDefaultReduced = new TaxRate({
     value: 10,
     enabled: true,
     zone: zoneDefault,
+    zoneId: zoneDefault.id,
     category: taxCategoryReduced,
+    categoryId: taxCategoryReduced.id,
 });
 export const taxRateDefaultZero = new TaxRate({
     id: 'taxRateDefaultZero',
@@ -92,7 +96,9 @@ export const taxRateDefaultZero = new TaxRate({
     value: 0,
     enabled: true,
     zone: zoneDefault,
+    zoneId: zoneDefault.id,
     category: taxCategoryZero,
+    categoryId: taxCategoryZero.id,
 });
 export const taxRateOtherStandard = new TaxRate({
     id: 'taxRateOtherStandard',
@@ -100,7 +106,9 @@ export const taxRateOtherStandard = new TaxRate({
     value: 15,
     enabled: true,
     zone: zoneOther,
+    zoneId: zoneOther.id,
     category: taxCategoryStandard,
+    categoryId: taxCategoryStandard.id,
 });
 export const taxRateOtherReduced = new TaxRate({
     id: 'taxRateOtherReduced',
@@ -108,7 +116,9 @@ export const taxRateOtherReduced = new TaxRate({
     value: 5,
     enabled: true,
     zone: zoneOther,
+    zoneId: zoneOther.id,
     category: taxCategoryReduced,
+    categoryId: taxCategoryReduced.id,
 });
 
 export class MockTaxRateService {
@@ -124,14 +134,18 @@ export class MockTaxRateService {
         /* noop */
     }
 
-    async getApplicableTaxRate(ctx: RequestContext, zone: Zone, taxCategory: TaxCategory): Promise<TaxRate> {
+    async getApplicableTaxRate(
+        ctx: RequestContext,
+        zone: Zone | ID,
+        taxCategory: TaxCategory | ID,
+    ): Promise<TaxRate> {
         const rate = this.activeTaxRates.find(r => r.test(zone, taxCategory));
         return rate || taxRateDefaultStandard;
     }
 }
 
 export function createOrder(
-    orderConfig: Partial<Omit<Order, 'lines', 'surcharges'>> & {
+    orderConfig: Partial<Omit<Order, 'lines' | 'surcharges'>> & {
         ctx: RequestContext;
         lines: Array<{
             listPrice: number;
@@ -145,6 +159,7 @@ export function createOrder(
         ({ listPrice, taxCategory, quantity }) =>
             new OrderLine({
                 taxCategory,
+                taxCategoryId: taxCategory.id,
                 quantity,
                 orderPlacedQuantity: 0,
                 listPrice,

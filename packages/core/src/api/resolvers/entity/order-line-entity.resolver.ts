@@ -31,7 +31,7 @@ export class OrderLineEntityResolver {
         @Ctx() ctx: RequestContext,
         @Parent() orderLine: OrderLine,
     ): Promise<Asset | undefined> {
-        if (orderLine.featuredAsset) {
+        if (orderLine.featuredAsset !== undefined) {
             return orderLine.featuredAsset;
         } else {
             return this.assetService.getFeaturedAsset(ctx, orderLine);

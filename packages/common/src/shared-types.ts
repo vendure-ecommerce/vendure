@@ -12,8 +12,8 @@ export type DeepPartial<T> = {
         | (T[P] extends Array<infer U>
               ? Array<DeepPartial<U>>
               : T[P] extends ReadonlyArray<infer U>
-              ? ReadonlyArray<DeepPartial<U>>
-              : DeepPartial<T[P]>);
+                ? ReadonlyArray<DeepPartial<U>>
+                : DeepPartial<T[P]>);
 };
 /* eslint-enable no-shadow, @typescript-eslint/no-shadow */
 
@@ -53,8 +53,8 @@ export type JsonCompatible<T> = {
     [P in keyof T]: T[P] extends Json
         ? T[P]
         : Pick<T, P> extends Required<Pick<T, P>>
-        ? never
-        : JsonCompatible<T[P]>;
+          ? never
+          : JsonCompatible<T[P]>;
 };
 
 /**
@@ -95,7 +95,7 @@ export type ID = string | number;
  * datetime     | datetime (m,s), timestamp (p)         | DateTime
  * relation     | many-to-one / many-to-many relation   | As specified in config
  *
- * Additionally, the CustomFieldType also dictates which [configuration options](/reference/typescript-api/custom-fields/#configuration-options)
+ * Additionally, the CustomFieldType also dictates which [configuration options](/reference/typescript-api/custom-fields/#custom-field-config-properties)
  * are available for that custom field.
  *
  * @docsCategory custom-fields
@@ -219,7 +219,7 @@ export interface AdminUiConfig {
      * to. If set to "auto", the Admin UI app will determine the hostname from the
      * current location (i.e. `window.location.hostname`).
      *
-     * @default 'http://localhost'
+     * @default 'auto'
      */
     apiHost: string | 'auto';
     /**
@@ -228,7 +228,7 @@ export interface AdminUiConfig {
      * to. If set to "auto", the Admin UI app will determine the port from the
      * current location (i.e. `window.location.port`).
      *
-     * @default 3000
+     * @default 'auto'
      */
     apiPort: number | 'auto';
     /**

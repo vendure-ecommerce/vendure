@@ -4,10 +4,6 @@ title: "Draft Orders"
 
 # Draft Orders
 
-{{% alert "warning" %}}
-Note: Draft Orders are available from Vendure v1.8+
-{{% /alert %}}
-
 Draft Orders are used when an Administrator would like to manually create an order via the Admin UI. For example, this can be useful when:
 
 - A customer phones up to place an order
@@ -26,7 +22,7 @@ From there you can:
 
 Once ready, click the **"Complete draft"** button to convert this Order from a Draft into a regular Order. At this stage the order can be paid for, and you can manually record the payment details.
 
-{{% alert "primary" %}}
+:::note
 Note: Draft Orders do not appear in a Customer's order history in the storefront (Shop API) while still
 in the "Draft" state.
-{{% /alert %}}
+:::

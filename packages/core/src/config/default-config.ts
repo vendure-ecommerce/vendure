@@ -5,6 +5,7 @@ import {
     SUPER_ADMIN_USER_PASSWORD,
     DEFAULT_CHANNEL_TOKEN_KEY,
 } from '@vendure/common/lib/shared-constants';
+import { randomBytes } from 'crypto';
 
 import { TypeORMHealthCheckStrategy } from '../health-check/typeorm-health-check-strategy';
 import { InMemoryJobQueueStrategy } from '../job-queue/in-memory-job-queue-strategy';
@@ -84,11 +85,12 @@ export const defaultConfig: RuntimeVendureConfig = {
         introspection: true,
         apolloServerPlugins: [],
     },
+    entityIdStrategy: new AutoIncrementIdStrategy(),
     authOptions: {
         disableAuth: false,
         tokenMethod: 'cookie',
         cookieOptions: {
-            secret: Math.random().toString(36).substr(3),
+            secret: randomBytes(16).toString('base64url'),
             httpOnly: true,
             sameSite: 'lax',
         },
@@ -118,7 +120,6 @@ export const defaultConfig: RuntimeVendureConfig = {
         stockDisplayStrategy: new DefaultStockDisplayStrategy(),
         stockLocationStrategy: new DefaultStockLocationStrategy(),
     },
-    entityIdStrategy: new AutoIncrementIdStrategy(),
     assetOptions: {
         assetNamingStrategy: new DefaultAssetNamingStrategy(),
         assetStorageStrategy: new NoAssetStorageStrategy(),
@@ -131,6 +132,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         type: 'mysql',
     },
     entityOptions: {
+        entityIdStrategy: new AutoIncrementIdStrategy(),
         moneyStrategy: new DefaultMoneyStrategy(),
         entityDuplicators: defaultEntityDuplicators,
         channelCacheTtl: 30000,

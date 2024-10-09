@@ -16,8 +16,8 @@ A condition defines the criteria that must be met for the Promotion to be activa
 
 * If the order total is at least $X
 * Buy at least X of a certain product
-* But at least X of any product with the specified [FacetValues]({{< relref "/user-guide/catalog/facets" >}})
-* If the customer is a member of the specified [Customer Group]({{< relref "/user-guide/customers" >}}#customer-groups)
+* But at least X of any product with the specified [FacetValues](/user-guide/catalog/facets)
+* If the customer is a member of the specified [Customer Group](/user-guide/customers#customer-groups)
 
 Vendure allows completely custom conditions to be defined by your developers, implementing the specific logic needed by your business.
 
@@ -26,9 +26,9 @@ Vendure allows completely custom conditions to be defined by your developers, im
 A coupon code can be any text which will activate a Promotion. A coupon code can be used in conjunction with conditions if desired.
 
 
-{{< alert "primary" >}}
+:::note
 Note: Promotions **must** have either a **coupon code** _or_ **at least 1 condition** defined.
-{{< /alert >}}
+:::
 
 ## Promotion Actions
 

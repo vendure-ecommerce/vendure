@@ -157,6 +157,28 @@ function generateDownloadUrl(orderLine: OrderLine) {
 }
 ```
 
+This fulfillment handler should then be added to the `fulfillmentHandlers` array the config ShippingOptions:
+
+```ts title="src/plugins/digital-products/digital-products-plugin.ts"
+
+import { LanguageCode, PluginCommonModule, VendurePlugin } from '@vendure/core';
+import { digitalFulfillmentHandler } from './config/digital-fulfillment-handler';
+
+@VendurePlugin({
+    imports: [PluginCommonModule],
+    configuration: config => {
+        // config.customFields.ProductVariant.push({ ... omitted
+        // config.customFields.ShippingMethod.push({ ... omitted
+        // config.customFields.Fulfillment.push({ ... omitted
+        // highlight-start
+        config.shippingOptions.fulfillmentHandlers.push(digitalFulfillmentHandler);
+        // highlight-end
+        return config;
+    },
+})
+export class DigitalProductsPlugin {}
+```
+
 ### Create a custom ShippingEligibilityChecker
 
 We want to ensure that the digital shipping method is only applicable to orders containing at least one digital product.

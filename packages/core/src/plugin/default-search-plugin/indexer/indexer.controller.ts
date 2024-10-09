@@ -405,7 +405,9 @@ export class IndexerController {
         await this.removeSyntheticVariants(ctx, variants);
         const productMap = new Map<ID, Product>();
 
+        const originalChannel = ctx.channel;
         for (const variant of variants) {
+            ctx.setChannel(originalChannel);
             let product = productMap.get(variant.productId);
             if (!product) {
                 product = await this.getProductInChannelQueryBuilder(ctx, variant.productId, ctx.channel);
@@ -496,6 +498,7 @@ export class IndexerController {
                 }
             }
         }
+        ctx.setChannel(originalChannel);
 
         await this.queue.push(() =>
             this.connection.getRepository(ctx, SearchIndexItem).save(items, { chunk: 2500 }),

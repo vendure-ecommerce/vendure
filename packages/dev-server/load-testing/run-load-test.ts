@@ -2,7 +2,7 @@
 import { INestApplication } from '@nestjs/common';
 import { bootstrap, JobQueueService } from '@vendure/core';
 import { spawn } from 'child_process';
-import stringify from 'csv-stringify';
+import { stringify } from 'csv-stringify';
 import fs from 'fs';
 import path from 'path';
 

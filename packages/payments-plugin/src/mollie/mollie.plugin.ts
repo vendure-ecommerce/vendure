@@ -10,7 +10,6 @@ import {
 
 import { shopApiExtensions, adminApiExtensions } from './api-extensions';
 import { PLUGIN_INIT_OPTIONS } from './constants';
-import { orderCustomFields } from './custom-fields';
 import { MollieCommonResolver } from './mollie.common-resolver';
 import { MollieController } from './mollie.controller';
 import { molliePaymentHandler } from './mollie.handler';
@@ -195,7 +194,6 @@ export interface MolliePluginOptions {
     providers: [MollieService, { provide: PLUGIN_INIT_OPTIONS, useFactory: () => MolliePlugin.options }],
     configuration: (config: RuntimeVendureConfig) => {
         config.paymentOptions.paymentMethodHandlers.push(molliePaymentHandler);
-        config.customFields.Order.push(...orderCustomFields);
         return config;
     },
     shopApiExtensions: {

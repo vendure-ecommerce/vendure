@@ -45,9 +45,7 @@ const config = {
                         keywords: ['cli'],
                         extendDefaults: true,
                     },
-                    exclude: [
-                        'user-guide/**/*'
-                    ]
+                    // exclude: ['user-guide/**/*'],
                 },
                 blog: false,
                 theme: {
@@ -91,6 +89,12 @@ const config = {
                         sidebarId: 'referenceSidebar',
                         position: 'left',
                         label: 'Reference',
+                    },
+                    {
+                        type: 'docSidebar',
+                        sidebarId: 'userGuideSidebar',
+                        position: 'left',
+                        label: 'User Guide',
                     },
                     {
                         href: 'https://vendure.io',

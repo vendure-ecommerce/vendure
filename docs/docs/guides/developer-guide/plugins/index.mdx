@@ -168,8 +168,6 @@ For any unit of functionality that you need to add to your project, you'll be cr
 For a complete working example of a Vendure plugin, see the [real-world-vendure Reviews plugin](https://github.com/vendure-ecommerce/real-world-vendure/tree/master/src/plugins/reviews)
 
 You can also use the [Vendure CLI](/guides/developer-guide/cli) to quickly scaffold a new plugin.
-
-If you intend to write a shared plugin to be distributed as an npm package, see the [vendure plugin-template repo](https://github.com/vendure-ecommerce/plugin-template)
 :::
 
 In this guide, we will implement a simple but fully-functional **wishlist plugin** step-by-step. The goal of this plugin is to allow signed-in customers to add products to a wishlist, and to view and manage their wishlist.
@@ -782,3 +780,9 @@ mutation RemoveFromWishlist {
   </TabItem>
 </Tabs>
 
+## Publishing plugins
+
+If you have created a plugin that you would like to share with the community, you can publish it to npm, and even
+have it listed on the [Vendure Hub](https://vendure.io/hub).
+
+For a full guide to publishing plugins, see the [Publishing a Plugin how-to guide](/guides/how-to/publish-plugin/).

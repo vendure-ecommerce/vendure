@@ -107,6 +107,9 @@ export class ProductVariant
     @ManyToOne(type => Asset, asset => asset.featuredInVariants, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
 
+    @EntityId({ nullable: true })
+    featuredAssetId: ID;
+
     @OneToMany(type => ProductVariantAsset, productVariantAsset => productVariantAsset.productVariant, {
         onDelete: 'SET NULL',
     })
@@ -115,6 +118,9 @@ export class ProductVariant
     @Index()
     @ManyToOne(type => TaxCategory, taxCategory => taxCategory.productVariants)
     taxCategory: TaxCategory;
+
+    @EntityId({ nullable: true })
+    taxCategoryId: ID;
 
     @OneToMany(type => ProductVariantPrice, price => price.variant, { eager: true })
     productVariantPrices: ProductVariantPrice[];

@@ -19,7 +19,7 @@
 </vdr-page-block>
 
 <vdr-data-table-2
-    id="promotion-list"
+    [id]="dataTableListId"
     [items]="items$ | async"
     [itemsPerPage]="itemsPerPage$ | async"
     [totalItems]="totalItems$ | async"
@@ -27,6 +27,7 @@
     [filters]="filters"
     (pageChange)="setPageNumber($event)"
     (itemsPerPageChange)="setItemsPerPage($event)"
+    (visibleColumnsChange)="setVisibleColumns($event)"
 >
     <vdr-bulk-action-menu
         locationId="promotion-list"

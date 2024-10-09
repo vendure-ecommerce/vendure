@@ -11,7 +11,7 @@
     [typeahead]="couponCodeInput$"
     [formControl]="control"
     (add)="addCouponCode.emit($event.code)"
-    (remove)="removeCouponCode.emit($event.value?.code)"
+    (remove)="remove($event.code)"
 >
     <ng-template ng-option-tmp let-item="item">
         <div class="flex items-center">

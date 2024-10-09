@@ -46,7 +46,7 @@ interface TemplateLoader {
 
 ### loadTemplate
 
-<MemberInfo kind="method" type={`(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>, ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: LoadTemplateInput) => Promise&#60;string&#62;`}   />
+<MemberInfo kind="method" type={`(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>, ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: <a href='/reference/core-plugins/email-plugin/email-plugin-types#loadtemplateinput'>LoadTemplateInput</a>) => Promise&#60;string&#62;`}   />
 
 Load template and return it's content as a string
 ### loadPartials
@@ -87,7 +87,7 @@ class FileBasedTemplateLoader implements TemplateLoader {
 
 ### loadTemplate
 
-<MemberInfo kind="method" type={`(_injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>, _ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, { type, templateName }: LoadTemplateInput) => Promise&#60;string&#62;`}   />
+<MemberInfo kind="method" type={`(_injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>, _ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, { type, templateName }: <a href='/reference/core-plugins/email-plugin/email-plugin-types#loadtemplateinput'>LoadTemplateInput</a>) => Promise&#60;string&#62;`}   />
 
 
 ### loadPartials

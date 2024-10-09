@@ -1,4 +1,4 @@
-import { CdkDrag, CdkDragDrop, CdkDropList, DragDrop, DragRef } from '@angular/cdk/drag-drop';
+import { CdkDrag, CdkDragDrop, CdkDropList, DragRef } from '@angular/cdk/drag-drop';
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
@@ -7,20 +7,13 @@ import {
     EventEmitter,
     Input,
     OnChanges,
-    OnInit,
     Output,
     QueryList,
     SimpleChanges,
     ViewChild,
     ViewChildren,
 } from '@angular/core';
-import {
-    DataService,
-    DataTable2Component,
-    GetCollectionListQuery,
-    ItemOf,
-    LocalStorageService,
-} from '@vendure/admin-ui/core';
+import { DataService, DataTable2Component, GetCollectionListQuery, ItemOf } from '@vendure/admin-ui/core';
 
 export type CollectionTableItem = ItemOf<GetCollectionListQuery, 'collections'>;
 export type CollectionOrderEvent = {
@@ -52,11 +45,9 @@ export class CollectionDataTableComponent
     absoluteIndex: { [id: string]: number } = {};
     constructor(
         protected changeDetectorRef: ChangeDetectorRef,
-        protected localStorageService: LocalStorageService,
         protected dataService: DataService,
-        private dragDrop: DragDrop,
     ) {
-        super(changeDetectorRef, localStorageService, dataService);
+        super(changeDetectorRef, dataService);
     }
 
     ngOnChanges(changes: SimpleChanges) {

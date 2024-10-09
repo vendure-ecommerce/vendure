@@ -214,6 +214,7 @@ export class StockMovementService {
                 ctx,
                 ProductVariant,
                 orderLine.productVariantId,
+                { includeSoftDeleted: true },
             );
             const saleLocations = await this.stockLocationService.getSaleLocations(
                 ctx,

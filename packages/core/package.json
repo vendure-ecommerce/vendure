@@ -1,6 +1,6 @@
 {
     "name": "@vendure/core",
-    "version": "3.0.0",
+    "version": "3.0.4",
     "description": "A modern, headless ecommerce framework",
     "repository": {
         "type": "git",
@@ -51,7 +51,7 @@
         "@nestjs/testing": "~10.3.10",
         "@nestjs/typeorm": "~10.0.2",
         "@types/fs-extra": "^9.0.1",
-        "@vendure/common": "^3.0.0",
+        "@vendure/common": "^3.0.4",
         "bcrypt": "^5.1.1",
         "body-parser": "^1.20.2",
         "cookie-session": "^2.1.0",
@@ -93,7 +93,7 @@
         "@types/progress": "^2.0.7",
         "@types/prompts": "^2.4.9",
         "@types/semver": "^7.5.8",
-        "better-sqlite3": "^9.4.3",
+        "better-sqlite3": "^11.3.0",
         "chokidar": "^3.6.0",
         "fs-extra": "^11.2.0",
         "glob": "^10.3.10",

@@ -4,8 +4,10 @@ import {
     SharedModule,
     FormInputComponent,
     registerFormInputComponent,
-    StringCustomFieldConfig, DataService,
+    StringCustomFieldConfig,
+    DataService,
 } from '@vendure/admin-ui/core';
+import gql from 'graphql-tag';
 
 @Component({
     template: `
@@ -34,8 +36,7 @@ export class LoginOptionCheckboxes implements FormInputComponent<StringCustomFie
     defaultLoginOptions: string[] = ['sso', 'password', 'magicLink'];
     checkedOptions: string[] = [];
 
-    constructor(private dataService: DataService) {
-    }
+    constructor(private dataService: DataService) {}
 
     ngOnInit() {
         // this.data = JSON.parse(this.formControl.value);
@@ -45,21 +46,22 @@ export class LoginOptionCheckboxes implements FormInputComponent<StringCustomFie
     }
 
     onCheckboxChange(event: any, option: string) {
-
-        this.dataService.query(`
-            query GetCustomerAuthOptions {
-                customer {
-                  id
-                  customFields {
-                    org{
-                      authOptions
+        this.dataService
+            .query(gql`
+                query GetCustomerAuthOptions {
+                    customer {
+                        id
+                        customFields {
+                            org {
+                                authOptions
+                            }
+                        }
                     }
-                  }
                 }
-            }
-        `).single$.subscribe(data => {
-            console.log('data', data);
-        }
+            `)
+            .single$.subscribe(data => {
+                console.log('data', data);
+            });
 
         if (this.checkedOptions.includes(option)) {
             this.checkedOptions = this.checkedOptions.filter(item => item !== option);
@@ -71,10 +73,3 @@ export class LoginOptionCheckboxes implements FormInputComponent<StringCustomFie
         this.formControl.markAsDirty();
     }
 }
-
-// @NgModule({
-//     imports: [SharedModule],
-//     declarations: [LoginOptionCheckboxes],
-//     providers: [registerFormInputComponent('checkboxes-form-inputs', LoginOptionCheckboxes)],
-// })
-// export class LoginOptionsCheckboxesModule {}

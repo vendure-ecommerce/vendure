@@ -25,7 +25,7 @@
     <ng-template vdrSplitViewLeft>
         <vdr-collection-data-table
             class="mt-2"
-            id="collection-list"
+            [id]="dataTableListId"
             [items]="items$ | async"
             [subCollections]="subCollections$ | async"
             [itemsPerPage]="itemsPerPage$ | async"
@@ -36,6 +36,7 @@
             (pageChange)="setPageNumber($event)"
             (itemsPerPageChange)="setItemsPerPage($event)"
             (changeOrder)="onRearrange($event)"
+            (visibleColumnsChange)="setVisibleColumns($event)"
         >
             <vdr-bulk-action-menu
                 locationId="collection-list"

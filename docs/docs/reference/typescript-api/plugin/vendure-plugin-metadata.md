@@ -71,7 +71,7 @@ To effectively disable this check for a plugin, you can use an overly-permissive
 *Example*
 
 ```ts
-compatibility: '^2.0.0'
+compatibility: '^3.0.0'
 ```
 
 

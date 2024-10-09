@@ -1,4 +1,4 @@
-import { REQUEST_CONTEXT_KEY } from '@vendure/core/dist/common/constants';
+import { internal_getRequestContext } from '@vendure/core';
 import { Request } from 'express';
 
 import { AssetServerOptions, ImageTransformFormat } from './types';
@@ -18,7 +18,7 @@ export function getAssetUrlPrefixFn(options: AssetServerOptions) {
     }
     if (typeof assetUrlPrefix === 'function') {
         return (request: Request, identifier: string) => {
-            const ctx = (request as any)[REQUEST_CONTEXT_KEY];
+            const ctx = internal_getRequestContext(request);
             return assetUrlPrefix(ctx, identifier);
         };
     }

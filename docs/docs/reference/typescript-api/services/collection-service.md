@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CollectionService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/collection.service.ts" sourceLine="67" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/collection.service.ts" sourceLine="72" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/collection#collection'>Collection</a> entities.
 
@@ -25,7 +25,7 @@ class CollectionService implements OnModuleInit {
     getAvailableFilters(ctx: RequestContext) => ConfigurableOperationDefinition[];
     getParent(ctx: RequestContext, collectionId: ID) => Promise<Collection | undefined>;
     getChildren(ctx: RequestContext, collectionId: ID) => Promise<Collection[]>;
-    getBreadcrumbs(ctx: RequestContext, collection: Collection) => Promise<Array<{ name: string; id: ID }>>;
+    getBreadcrumbs(ctx: RequestContext, collection: Collection) => Promise<Array<{ name: string; id: ID, slug: string }>>;
     getCollectionsByProductId(ctx: RequestContext, productId: ID, publicOnly: boolean) => Promise<Array<Translated<Collection>>>;
     getDescendants(ctx: RequestContext, rootId: ID, maxDepth: number = Number.MAX_SAFE_INTEGER) => Promise<Array<Translated<Collection>>>;
     getAncestors(collectionId: ID) => Promise<Collection[]>;
@@ -89,7 +89,7 @@ Returns all configured CollectionFilters, as specified by the <a href='/referenc
 Returns all child Collections of the Collection with the given id.
 ### getBreadcrumbs
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, collection: <a href='/reference/typescript-api/entities/collection#collection'>Collection</a>) => Promise&#60;Array&#60;{ name: string; id: <a href='/reference/typescript-api/common/id#id'>ID</a> }&#62;&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, collection: <a href='/reference/typescript-api/entities/collection#collection'>Collection</a>) => Promise&#60;Array&#60;{ name: string; id: <a href='/reference/typescript-api/common/id#id'>ID</a>, slug: string }&#62;&#62;`}   />
 
 Returns an array of name/id pairs representing all ancestor Collections up
 to the Root Collection.

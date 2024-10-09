@@ -200,11 +200,16 @@ export class EntityHydrator {
         const missingRelations: string[] = [];
         for (const relation of options.relations.slice().sort()) {
             if (typeof relation === 'string') {
-                const parts = !relation.startsWith('customFields') ? relation.split('.') : [relation];
+                const parts = relation.split('.');
                 let entity: Record<string, any> | undefined = target;
                 const path = [];
                 for (const part of parts) {
                     path.push(part);
+                    // null = the relation has been fetched but was null in the database.
+                    // undefined = the relation has not been fetched.
+                    if (entity && entity[part] === null) {
+                        break;
+                    }
                     if (entity && entity[part]) {
                         entity = Array.isArray(entity[part]) ? entity[part][0] : entity[part];
                     } else {

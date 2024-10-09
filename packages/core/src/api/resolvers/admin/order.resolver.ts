@@ -46,7 +46,10 @@ import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver()
 export class OrderResolver {
-    constructor(private orderService: OrderService, private connection: TransactionalConnection) {}
+    constructor(
+        private orderService: OrderService,
+        private connection: TransactionalConnection,
+    ) {}
 
     @Query()
     @Allow(Permission.ReadOrder)
@@ -63,7 +66,8 @@ export class OrderResolver {
     async order(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryOrderArgs,
-        @Relations(Order) relations: RelationPaths<Order>,
+        @Relations({ entity: Order, omit: ['aggregateOrder', 'sellerOrders'] })
+        relations: RelationPaths<Order>,
     ): Promise<Order | undefined> {
         return this.orderService.findOne(ctx, args.id, relations);
     }

@@ -8,7 +8,7 @@ import { QueryResult } from '../query-result';
 
 import { AdministratorDataService } from './administrator-data.service';
 import { AuthDataService } from './auth-data.service';
-import { BaseDataService } from './base-data.service';
+import { BaseDataService, ExtendedQueryOptions } from './base-data.service';
 import { ClientDataService } from './client-data.service';
 import { CollectionDataService } from './collection-data.service';
 import { CustomerDataService } from './customer-data.service';
@@ -82,8 +82,9 @@ export class DataService {
         query: DocumentNode | TypedDocumentNode<T, V>,
         variables?: V,
         fetchPolicy: WatchQueryFetchPolicy = 'cache-and-network',
+        options: ExtendedQueryOptions = {},
     ): QueryResult<T, V> {
-        return this.baseDataService.query(query, variables, fetchPolicy);
+        return this.baseDataService.query(query, variables, fetchPolicy, options);
     }
 
     /**
@@ -107,7 +108,8 @@ export class DataService {
         mutation: DocumentNode | TypedDocumentNode<T, V>,
         variables?: V,
         update?: MutationUpdaterFn<T>,
+        options: ExtendedQueryOptions = {},
     ): Observable<T> {
-        return this.baseDataService.mutate(mutation, variables, update);
+        return this.baseDataService.mutate(mutation, variables, update, options);
     }
 }

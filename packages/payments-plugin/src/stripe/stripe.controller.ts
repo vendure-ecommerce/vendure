@@ -1,5 +1,6 @@
 import { Controller, Headers, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import type { PaymentMethod, RequestContext } from '@vendure/core';
+import { ChannelService } from '@vendure/core';
 import {
     InternalServerError,
     LanguageCode,
@@ -31,6 +32,7 @@ export class StripeController {
         private stripeService: StripeService,
         private requestContextService: RequestContextService,
         private connection: TransactionalConnection,
+        private channelService: ChannelService,
     ) {}
 
     @Post('stripe')
@@ -57,7 +59,7 @@ export class StripeController {
         const { metadata: { channelToken, orderCode, orderId } = {} } = paymentIntent;
         const outerCtx = await this.createContext(channelToken, request);
 
-        await this.connection.withTransaction(outerCtx, async ctx => {
+        await this.connection.withTransaction(outerCtx, async (ctx: RequestContext) => {
             const order = await this.orderService.findOneByCode(ctx, orderCode);
 
             if (!order) {
@@ -90,8 +92,13 @@ export class StripeController {
             }
 
             if (order.state !== 'ArrangingPayment') {
+                // Orders can switch channels (e.g., global to UK store), causing lookups by the original
+                // channel to fail. Using a default channel avoids "entity-with-id-not-found" errors.
+                // See https://github.com/vendure-ecommerce/vendure/issues/3072
+                const defaultChannel = await this.channelService.getDefaultChannel(ctx);
+                const ctxWithDefaultChannel = await this.createContext(defaultChannel.token, request);
                 const transitionToStateResult = await this.orderService.transitionToState(
-                    ctx,
+                    ctxWithDefaultChannel,
                     orderId,
                     'ArrangingPayment',
                 );

@@ -8,7 +8,7 @@ import { devConfig } from './dev-config';
 bootstrap(devConfig)
     .then(app => {
         if (process.env.RUN_JOB_QUEUE === '1') {
-            app.get(JobQueueService).start();
+            return app.get(JobQueueService).start();
         }
     })
     .catch(err => {

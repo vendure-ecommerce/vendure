@@ -65,4 +65,8 @@ export class CouponCodeSelectorComponent implements OnInit {
             this.control = new UntypedFormControl(this.couponCodes ?? []);
         }
     }
+
+    remove(code: string) {
+        this.removeCouponCode.emit(code);
+    }
 }

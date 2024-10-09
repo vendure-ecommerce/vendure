@@ -17,7 +17,7 @@ import {
     UPDATE_COLLECTION,
 } from '../definitions/collection-definitions';
 
-import { BaseDataService } from './base-data.service';
+import { BaseDataService, ExtendedQueryOptions } from './base-data.service';
 
 export class CollectionDataService {
     constructor(private baseDataService: BaseDataService) {}
@@ -110,21 +110,32 @@ export class CollectionDataService {
         >(PREVIEW_COLLECTION_CONTENTS, { input, options });
     }
 
-    getCollectionContents(id: string, take = 10, skip = 0, filterTerm?: string) {
+    getCollectionContents(
+        id: string,
+        take = 10,
+        skip = 0,
+        filterTerm?: string,
+        options: ExtendedQueryOptions = {},
+    ) {
         const filter = filterTerm
             ? ({ name: { contains: filterTerm } } as Codegen.CollectionFilterParameter)
             : undefined;
         return this.baseDataService.query<
             Codegen.GetCollectionContentsQuery,
             Codegen.GetCollectionContentsQueryVariables
-        >(GET_COLLECTION_CONTENTS, {
-            id,
-            options: {
-                skip,
-                take,
-                filter,
+        >(
+            GET_COLLECTION_CONTENTS,
+            {
+                id,
+                options: {
+                    skip,
+                    take,
+                    filter,
+                },
             },
-        });
+            'cache-and-network',
+            options,
+        );
     }
 
     assignCollectionsToChannel(input: Codegen.AssignCollectionsToChannelInput) {

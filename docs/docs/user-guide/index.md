@@ -1,9 +1,4 @@
----
-title: "Administrator Guide"
-weight: 1
----
- 
-# Administrator Guide
+# Vendure User Guide
 
 This section is for store owners and staff who are charged with running a Vendure-based store.
 

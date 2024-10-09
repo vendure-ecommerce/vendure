@@ -11,9 +11,27 @@ import { CustomFieldConfig } from '../../common/generated-types';
 import { QueryResult } from '../query-result';
 import { ServerConfigService } from '../server-config';
 import { addCustomFields } from '../utils/add-custom-fields';
+import { isEntityCreateOrUpdateMutation } from '../utils/is-entity-create-or-update-mutation';
 import { removeReadonlyCustomFields } from '../utils/remove-readonly-custom-fields';
 import { transformRelationCustomFieldInputs } from '../utils/transform-relation-custom-field-inputs';
-import { isEntityCreateOrUpdateMutation } from '../utils/is-entity-create-or-update-mutation';
+
+/**
+ * @description
+ * Additional options that can be passed to the `query` and `mutate` methods.
+ *
+ * @since 3.0.4
+ */
+export interface ExtendedQueryOptions {
+    /**
+     * @description
+     * An array of custom field names which should be included in the query or mutation
+     * return data. The automatic inclusion of custom fields is only supported for
+     * entities which are defined as Fragments in the DocumentNode.
+     *
+     * @since 3.0.4
+     */
+    includeCustomFields?: string[];
+}
 
 @Injectable()
 export class BaseDataService {
@@ -33,14 +51,15 @@ export class BaseDataService {
         query: DocumentNode | TypedDocumentNode<T, V>,
         variables?: V,
         fetchPolicy: WatchQueryFetchPolicy = 'cache-and-network',
+        options: ExtendedQueryOptions = {},
     ): QueryResult<T, V> {
-        const withCustomFields = addCustomFields(query, this.customFields);
         const queryRef = this.apollo.watchQuery<T, V>({
-            query: withCustomFields,
+            query: addCustomFields(query, this.customFields, options.includeCustomFields),
             variables,
             fetchPolicy,
         });
-        const queryResult = new QueryResult<T, any>(queryRef, this.apollo);
+
+        const queryResult = new QueryResult<T, V>(queryRef, this.apollo, this.customFields);
         return queryResult;
     }
 
@@ -51,8 +70,9 @@ export class BaseDataService {
         mutation: DocumentNode | TypedDocumentNode<T, V>,
         variables?: V,
         update?: MutationUpdaterFn<T>,
+        options: ExtendedQueryOptions = {},
     ): Observable<T> {
-        const withCustomFields = addCustomFields(mutation, this.customFields);
+        const withCustomFields = addCustomFields(mutation, this.customFields, options.includeCustomFields);
         const withoutReadonlyFields = this.prepareCustomFields(mutation, variables);
 
         return this.apollo

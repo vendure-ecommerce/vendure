@@ -37,6 +37,7 @@ export class CustomerListComponent
     extends TypedBaseListComponent<typeof CustomerListQueryDocument, 'customers'>
     implements OnInit
 {
+    dataTableListId = 'customer-list';
     readonly customFields = this.getCustomFieldConfig('Customer');
     readonly filters = this.createFilterCollection()
         .addIdFilter()

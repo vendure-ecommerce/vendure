@@ -124,7 +124,6 @@ import {
  *   plugins: [
  *     EmailPlugin.init({
  *       handler: [...defaultEmailHandlers, quoteRequestedHandler],
- *       templatePath: path.join(__dirname, 'vendure/email/templates'),
  *       // ... etc
  *     }),
  *   ],
