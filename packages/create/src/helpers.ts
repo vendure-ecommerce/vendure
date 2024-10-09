@@ -99,19 +99,6 @@ export function checkNodeVersion(requiredVersion: string) {
     }
 }
 
-export function yarnIsAvailable() {
-    try {
-        const yarnVersion = execSync('yarnpkg --version');
-        if (semver.major(yarnVersion.toString()) > 1) {
-            return true;
-        } else {
-            return false;
-        }
-    } catch (e: any) {
-        return false;
-    }
-}
-
 // Bun support should not be exposed yet, see
 // https://github.com/oven-sh/bun/issues/4947
 // https://github.com/lovell/sharp/issues/3511
@@ -182,49 +169,20 @@ export function checkThatNpmCanReadCwd() {
 }
 
 /**
- * Install packages via npm or yarn.
+ * Install packages via npm.
  * Based on the install function from https://github.com/facebook/create-react-app
  */
-export function installPackages(
-    root: string,
-    useYarn: boolean,
-    dependencies: string[],
-    isDev: boolean,
-    logLevel: CliLogLevel,
-    isCi: boolean = false,
-): Promise<void> {
+export function installPackages(options: {
+    dependencies: string[];
+    isDevDependencies?: boolean;
+    logLevel: CliLogLevel;
+}): Promise<void> {
+    const { dependencies, isDevDependencies = false, logLevel } = options;
     return new Promise((resolve, reject) => {
-        let command: string;
-        let args: string[];
-        if (useYarn) {
-            command = 'yarnpkg';
-            args = ['add', '--exact', '--ignore-engines'];
-            if (isDev) {
-                args.push('--dev');
-            }
-            if (isCi) {
-                // In CI, publish to Verdaccio
-                // See https://github.com/yarnpkg/yarn/issues/6029
-                args.push('--registry http://localhost:4873/');
-                // Increase network timeout
-                // See https://github.com/yarnpkg/yarn/issues/4890#issuecomment-358179301
-                args.push('--network-timeout 300000');
-            }
-            args = args.concat(dependencies);
-
-            // Explicitly set cwd() to work around issues like
-            // https://github.com/facebook/create-react-app/issues/3326.
-            // Unfortunately we can only do this for Yarn because npm support for
-            // equivalent --prefix flag doesn't help with this issue.
-            // This is why for npm, we run checkThatNpmCanReadCwd() early instead.
-            args.push('--cwd');
-            args.push(root);
-        } else {
-            command = 'npm';
-            args = ['install', '--save', '--save-exact', '--loglevel', 'error'].concat(dependencies);
-            if (isDev) {
-                args.push('--save-dev');
-            }
+        const command = 'npm';
+        const args = ['install', '--save', '--save-exact', '--loglevel', 'error'].concat(dependencies);
+        if (isDevDependencies) {
+            args.push('--save-dev');
         }
 
         if (logLevel === 'verbose') {
@@ -236,7 +194,7 @@ export function installPackages(
             if (code !== 0) {
                 let message = 'An error occurred when installing dependencies.';
                 if (logLevel === 'silent') {
-                    message += ' Try running with `--log-level info` or `--log-level verbose` to diagnose.';
+                    message += ' Try running with `--log-level verbose` to diagnose.';
                 }
                 reject({
                     message,

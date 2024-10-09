@@ -16,7 +16,6 @@ import {
     isSafeToCreateProjectIn,
     isServerPortInUse,
     scaffoldAlreadyExists,
-    yarnIsAvailable,
 } from './helpers';
 import { log, setLogLevel } from './logger';
 import { CliLogLevel, PackageManager } from './types';
@@ -46,7 +45,10 @@ program
         /^(silent|info|verbose)$/i,
         'silent',
     )
-    .option('--use-npm', 'Uses npm rather than Yarn as the default package manager')
+    .option(
+        '--use-npm',
+        'Uses npm rather than as the default package manager. DEPRECATED: Npm is now the default',
+    )
     .option('--ci', 'Runs without prompts for use in CI scenarios')
     .parse(process.argv);
 
@@ -91,19 +93,7 @@ export async function createVendureApp(
     const appName = path.basename(root);
     const scaffoldExists = scaffoldAlreadyExists(root, name);
 
-    const yarnAvailable = yarnIsAvailable();
-    let packageManager: PackageManager = 'npm';
-    if (yarnAvailable && !useNpm) {
-        packageManager = (await select({
-            message: 'Which package manager should be used?',
-            options: [
-                { label: 'npm', value: 'npm' },
-                { label: 'yarn', value: 'yarn' },
-            ],
-            initialValue: 'yarn' as PackageManager,
-        })) as PackageManager;
-        checkCancel(packageManager);
-    }
+    const packageManager: PackageManager = 'npm';
 
     if (scaffoldExists) {
         log(
@@ -140,11 +130,11 @@ export async function createVendureApp(
         scripts: {
             'dev:server': 'ts-node ./src/index.ts',
             'dev:worker': 'ts-node ./src/index-worker.ts',
-            dev: packageManager === 'yarn' ? 'concurrently yarn:dev:*' : 'concurrently npm:dev:*',
+            dev: 'concurrently npm:dev:*',
             build: 'tsc',
             'start:server': 'node ./dist/index.js',
             'start:worker': 'node ./dist/index-worker.js',
-            start: packageManager === 'yarn' ? 'concurrently yarn:start:*' : 'concurrently npm:start:*',
+            start: 'concurrently npm:start:*',
         },
     };
 
@@ -163,7 +153,7 @@ export async function createVendureApp(
     const installSpinner = spinner();
     installSpinner.start(`Installing ${dependencies[0]} + ${dependencies.length - 1} more dependencies`);
     try {
-        await installPackages(root, packageManager === 'yarn', dependencies, false, logLevel, isCi);
+        await installPackages({ dependencies, logLevel });
     } catch (e) {
         outro(pc.red(`Failed to install dependencies. Please try again.`));
         process.exit(1);
@@ -176,7 +166,7 @@ export async function createVendureApp(
             `Installing ${devDependencies[0]} + ${devDependencies.length - 1} more dev dependencies`,
         );
         try {
-            await installPackages(root, packageManager === 'yarn', devDependencies, true, logLevel, isCi);
+            await installPackages({ dependencies: devDependencies, isDevDependencies: true, logLevel });
         } catch (e) {
             outro(pc.red(`Failed to install dev dependencies. Please try again.`));
             process.exit(1);
@@ -278,7 +268,7 @@ export async function createVendureApp(
     }
     populateSpinner.stop(`Server successfully initialized${populateProducts ? ' and populated' : ''}`);
 
-    const startCommand = packageManager === 'yarn' ? 'yarn dev' : 'npm run dev';
+    const startCommand = 'npm run dev';
     const nextSteps = [
         `${pc.green('Success!')} Created a new Vendure server at:`,
         `\n`,

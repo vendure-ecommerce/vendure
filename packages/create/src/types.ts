@@ -18,6 +18,6 @@ export interface UserResponses extends FileSources {
     superadminPassword: string;
 }
 
-export type PackageManager = 'npm' | 'yarn';
+export type PackageManager = 'npm';
 
 export type CliLogLevel = 'silent' | 'info' | 'verbose';

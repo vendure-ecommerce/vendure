@@ -206,7 +206,6 @@ async function generateSources(
 
     const templateContext = {
         ...answers,
-        useYarn: packageManager === 'yarn',
         dbType: answers.dbType === 'sqlite' ? 'better-sqlite3' : answers.dbType,
         name: path.basename(root),
         isSQLite: answers.dbType === 'sqlite',
