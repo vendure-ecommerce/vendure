@@ -53,7 +53,7 @@ program
     .parse(process.argv);
 
 const options = program.opts();
-void createVendureApp(projectName, options.useNpm, options.logLevel || 'silent', options.ci);
+void createVendureApp(projectName, options.useNpm, options.logLevel || 'info', options.ci);
 
 export async function createVendureApp(
     name: string | undefined,

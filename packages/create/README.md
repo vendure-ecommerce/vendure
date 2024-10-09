@@ -14,7 +14,7 @@ npx @vendure/create my-app
 
 ### `--log-level`
 
-You can control how much output is generated during the installation and setup with this flag. Valid options are `silent`, `info` and `verbose`. The default is `silent`
+You can control how much output is generated during the installation and setup with this flag. Valid options are `silent`, `info` and `verbose`. The default is `info`
 
 Example:
 
