@@ -66,8 +66,6 @@ Follow the instructions to move into the new directory created for your project,
 ```bash
 cd my-shop
 
-yarn dev
-# or
 npm run dev
 ```
 

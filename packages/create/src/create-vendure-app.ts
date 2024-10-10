@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { intro, note, outro, select, spinner } from '@clack/prompts';
 import { program } from 'commander';
 import fs from 'fs-extra';
@@ -7,8 +6,13 @@ import path from 'path';
 import pc from 'picocolors';
 
 import { REQUIRED_NODE_VERSION, SERVER_PORT } from './constants';
-import { checkCancel, gatherCiUserResponses, gatherUserResponses } from './gather-user-responses';
 import {
+    getCiConfiguration,
+    getManualConfiguration,
+    getQuickStartConfiguration,
+} from './gather-user-responses';
+import {
+    checkCancel,
     checkDbConnection,
     checkNodeVersion,
     checkThatNpmCanReadCwd,
@@ -17,9 +21,10 @@ import {
     isSafeToCreateProjectIn,
     isServerPortInUse,
     scaffoldAlreadyExists,
-    yarnIsAvailable,
+    startPostgresDatabase,
 } from './helpers';
-import { CliLogLevel, PackageManager } from './types';
+import { log, setLogLevel } from './logger';
+import { CliLogLevel, DbType, PackageManager } from './types';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
@@ -44,14 +49,17 @@ program
         '--log-level <logLevel>',
         "Log level, either 'silent', 'info', or 'verbose'",
         /^(silent|info|verbose)$/i,
-        'silent',
+        'info',
     )
-    .option('--use-npm', 'Uses npm rather than Yarn as the default package manager')
+    .option(
+        '--use-npm',
+        'Uses npm rather than as the default package manager. DEPRECATED: Npm is now the default',
+    )
     .option('--ci', 'Runs without prompts for use in CI scenarios')
     .parse(process.argv);
 
 const options = program.opts();
-void createVendureApp(projectName, options.useNpm, options.logLevel || 'silent', options.ci);
+void createVendureApp(projectName, options.useNpm, options.logLevel || 'info', options.ci);
 
 export async function createVendureApp(
     name: string | undefined,
@@ -59,6 +67,7 @@ export async function createVendureApp(
     logLevel: CliLogLevel,
     isCi: boolean = false,
 ) {
+    setLogLevel(logLevel);
     if (!runPreChecks(name, useNpm)) {
         return;
     }
@@ -66,6 +75,20 @@ export async function createVendureApp(
     intro(
         `Let's create a ${pc.blue(pc.bold('Vendure App'))} ✨ ${pc.dim(`v${packageJson.version as string}`)}`,
     );
+
+    const mode = (await select({
+        message: 'How should we proceed?',
+        options: [
+            { label: 'Quick Start', value: 'quick', hint: 'Get up an running in a single step' },
+            {
+                label: 'Manual Configuration',
+                value: 'manual',
+                hint: 'Customize your Vendure project with more advanced settings',
+            },
+        ],
+        initialValue: 'quick' as 'quick' | 'manual',
+    })) as 'quick' | 'manual';
+    checkCancel(mode);
 
     const portSpinner = spinner();
     let port = SERVER_PORT;
@@ -90,27 +113,15 @@ export async function createVendureApp(
     const appName = path.basename(root);
     const scaffoldExists = scaffoldAlreadyExists(root, name);
 
-    const yarnAvailable = yarnIsAvailable();
-    let packageManager: PackageManager = 'npm';
-    if (yarnAvailable && !useNpm) {
-        packageManager = (await select({
-            message: 'Which package manager should be used?',
-            options: [
-                { label: 'npm', value: 'npm' },
-                { label: 'yarn', value: 'yarn' },
-            ],
-            initialValue: 'yarn' as PackageManager,
-        })) as PackageManager;
-        checkCancel(packageManager);
-    }
+    const packageManager: PackageManager = 'npm';
 
     if (scaffoldExists) {
-        console.log(
+        log(
             pc.yellow(
                 'It appears that a new Vendure project scaffold already exists. Re-using the existing files...',
             ),
+            { newline: 'after' },
         );
-        console.log();
     }
     const {
         dbType,
@@ -124,9 +135,10 @@ export async function createVendureApp(
         dockerComposeSource,
         populateProducts,
     } = isCi
-        ? await gatherCiUserResponses(root, packageManager)
-        : await gatherUserResponses(root, scaffoldExists, packageManager);
-    const originalDirectory = process.cwd();
+        ? await getCiConfiguration(root, packageManager)
+        : mode === 'manual'
+          ? await getManualConfiguration(root, packageManager)
+          : await getQuickStartConfiguration(root, packageManager);
     process.chdir(root);
     if (packageManager !== 'npm' && !checkThatNpmCanReadCwd()) {
         process.exit(1);
@@ -139,11 +151,11 @@ export async function createVendureApp(
         scripts: {
             'dev:server': 'ts-node ./src/index.ts',
             'dev:worker': 'ts-node ./src/index-worker.ts',
-            dev: packageManager === 'yarn' ? 'concurrently yarn:dev:*' : 'concurrently npm:dev:*',
+            dev: 'concurrently npm:dev:*',
             build: 'tsc',
             'start:server': 'node ./dist/index.js',
             'start:worker': 'node ./dist/index-worker.js',
-            start: packageManager === 'yarn' ? 'concurrently yarn:start:*' : 'concurrently npm:start:*',
+            start: 'concurrently npm:start:*',
         },
     };
 
@@ -152,7 +164,6 @@ export async function createVendureApp(
         `Setting up your new Vendure project in ${pc.green(root)}\nThis may take a few minutes...`,
     );
 
-    const rootPathScript = (fileName: string): string => path.join(root, `${fileName}.ts`);
     const srcPathScript = (fileName: string): string => path.join(root, 'src', `${fileName}.ts`);
 
     fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify(packageJsonContents, null, 2) + os.EOL);
@@ -162,7 +173,7 @@ export async function createVendureApp(
     const installSpinner = spinner();
     installSpinner.start(`Installing ${dependencies[0]} + ${dependencies.length - 1} more dependencies`);
     try {
-        await installPackages(root, packageManager === 'yarn', dependencies, false, logLevel, isCi);
+        await installPackages({ dependencies, logLevel });
     } catch (e) {
         outro(pc.red(`Failed to install dependencies. Please try again.`));
         process.exit(1);
@@ -175,7 +186,7 @@ export async function createVendureApp(
             `Installing ${devDependencies[0]} + ${devDependencies.length - 1} more dev dependencies`,
         );
         try {
-            await installPackages(root, packageManager === 'yarn', devDependencies, true, logLevel, isCi);
+            await installPackages({ dependencies: devDependencies, isDevDependencies: true, logLevel });
         } catch (e) {
             outro(pc.red(`Failed to install dev dependencies. Please try again.`));
             process.exit(1);
@@ -199,19 +210,67 @@ export async function createVendureApp(
             .then(() => fs.writeFile(path.join(root, 'README.md'), readmeSource))
             .then(() => fs.writeFile(path.join(root, 'Dockerfile'), dockerfileSource))
             .then(() => fs.writeFile(path.join(root, 'docker-compose.yml'), dockerComposeSource))
-            .then(() => fs.mkdir(path.join(root, 'src/plugins')))
+            .then(() => fs.ensureDir(path.join(root, 'src/plugins')))
             .then(() => fs.copyFile(assetPath('gitignore.template'), path.join(root, '.gitignore')))
             .then(() => fs.copyFile(assetPath('tsconfig.template.json'), path.join(root, 'tsconfig.json')))
             .then(() => createDirectoryStructure(root))
             .then(() => copyEmailTemplates(root));
-    } catch (e) {
-        outro(pc.red(`Failed to create app scaffold. Please try again.`));
+    } catch (e: any) {
+        outro(pc.red(`Failed to create app scaffold: ${e.message as string}`));
         process.exit(1);
     }
     scaffoldSpinner.stop(`Generated app scaffold`);
 
+    if (mode === 'quick' && dbType === 'postgres') {
+        await startPostgresDatabase(root);
+    }
+
     const populateSpinner = spinner();
     populateSpinner.start(`Initializing your new Vendure server`);
+
+    // We want to display a set of tips and instructions to the user
+    // as the initialization process is running because it can take
+    // a few minutes to complete.
+    const tips = [
+        populateProducts
+            ? 'We are populating sample data so that you can start testing right away'
+            : 'We are setting up your Vendure server',
+        'This can take a minute or two, so grab a coffee ☕️',
+        `We'd love it if you drop us a star on GitHub: https://github.com/vendure-ecommerce/vendure`,
+        'In the mean time, here are some tips to get you started',
+        `Vendure provides dedicated GraphQL APIs for both the Admin and Shop`,
+        `Almost every aspect of Vendure is customizable via plugins`,
+        `You can run 'vendure add' from the command line to add new plugins & features`,
+        `Use the EventBus in your plugins to react to events in the system`,
+        `Check out the Vendure documentation at https://docs.vendure.io`,
+        `Join our Discord community to chat with other Vendure developers: https://vendure.io/community`,
+        `Vendure supports multiple languages & currencies out of the box`,
+        `Did we mention this can take a while? ☕️`,
+        `Our custom fields feature allows you to add any kind of data to your entities`,
+        `Vendure is built with TypeScript, so you get full type safety`,
+        `Combined with GraphQL's static schema, your type safety is end-to-end`,
+        `Almost there now... thanks for your patience!`,
+        `Collections allow you to group products together`,
+        `Our AssetServerPlugin allows you to dynamically resize & optimize images`,
+        `You can find integrations in the Vendure Hub: https://vendure.io/hub`,
+    ];
+
+    let tipIndex = 0;
+    let timer: any;
+    const tipInterval = 10_000;
+
+    function displayTip() {
+        populateSpinner.message(tips[tipIndex]);
+        tipIndex++;
+        if (tipIndex >= tips.length) {
+            // skip the intro tips if looping
+            tipIndex = 3;
+        }
+        timer = setTimeout(displayTip, tipInterval);
+    }
+
+    timer = setTimeout(displayTip, tipInterval);
+
     // register ts-node so that the config file can be loaded
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     require(path.join(root, 'node_modules/ts-node')).register();
@@ -226,7 +285,7 @@ export async function createVendureApp(
 
         const initialDataPath = path.join(assetsDir, 'initial-data.json');
         const vendureLogLevel =
-            logLevel === 'silent'
+            logLevel === 'info' || logLevel === 'silent'
                 ? LogLevel.Error
                 : logLevel === 'verbose'
                   ? LogLevel.Verbose
@@ -240,7 +299,6 @@ export async function createVendureApp(
                     ...(config.apiOptions ?? {}),
                     port,
                 },
-                silent: logLevel === 'silent',
                 dbConnectionOptions: {
                     ...config.dbConnectionOptions,
                     synchronize: true,
@@ -262,22 +320,48 @@ export async function createVendureApp(
 
         // Pause to ensure the worker jobs have time to complete.
         if (isCi) {
-            console.log('[CI] Pausing before close...');
+            log('[CI] Pausing before close...');
         }
         await new Promise(resolve => setTimeout(resolve, isCi ? 30000 : 2000));
         await app.close();
         if (isCi) {
-            console.log('[CI] Pausing after close...');
+            log('[CI] Pausing after close...');
             await new Promise(resolve => setTimeout(resolve, 10000));
         }
-    } catch (e) {
-        console.log(e);
+        populateSpinner.stop(`Server successfully initialized${populateProducts ? ' and populated' : ''}`);
+
+        if (mode === 'quick') {
+            // In quick-start mode, we want to now run the server and open up
+            // a browser window to the Admin UI.
+            const quickStartApp = await bootstrap({
+                ...config,
+                apiOptions: {
+                    ...(config.apiOptions ?? {}),
+                    port,
+                },
+            });
+            await quickStartApp.get(JobQueueService).start();
+            note(
+                [
+                    'Use the following credentials to log in to the Admin UI:',
+                    `Username: ${pc.green(config.authOptions.superadminCredentials?.identifier)}`,
+                    `Password: ${pc.green(config.authOptions.superadminCredentials?.password)}`,
+                ].join('\n'),
+            );
+            const adminUiUrl = `http://localhost:${port}/admin`;
+
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            const open = require('open');
+            await open(adminUiUrl);
+        }
+    } catch (e: any) {
+        log(e.toString());
         outro(pc.red(`Failed to initialize server. Please try again.`));
         process.exit(1);
     }
-    populateSpinner.stop(`Server successfully initialized${populateProducts ? ' and populated' : ''}`);
+    clearTimeout(timer);
 
-    const startCommand = packageManager === 'yarn' ? 'yarn dev' : 'npm run dev';
+    const startCommand = 'npm run dev';
     const nextSteps = [
         `${pc.green('Success!')} Created a new Vendure server at:`,
         `\n`,
@@ -299,17 +383,21 @@ export async function createVendureApp(
  */
 function runPreChecks(name: string | undefined, useNpm: boolean): name is string {
     if (typeof name === 'undefined') {
-        console.error('Please specify the project directory:');
-        console.log(`  ${pc.cyan(program.name())} ${pc.green('<project-directory>')}`);
-        console.log();
-        console.log('For example:');
-        console.log(`  ${pc.cyan(program.name())} ${pc.green('my-vendure-app')}`);
+        log(pc.red(`Please specify the project directory:`));
+        log(`  ${pc.cyan(program.name())} ${pc.green('<project-directory>')}`, { newline: 'after' });
+        log('For example:');
+        log(`  ${pc.cyan(program.name())} ${pc.green('my-vendure-app')}`);
         process.exit(1);
         return false;
     }
 
     const root = path.resolve(name);
-    fs.ensureDirSync(name);
+    try {
+        fs.ensureDirSync(name);
+    } catch (e: any) {
+        log(pc.red(`Could not create project directory ${name}: ${e.message as string}`));
+        return false;
+    }
     if (!isSafeToCreateProjectIn(root, name)) {
         process.exit(1);
     }
@@ -332,6 +420,6 @@ async function copyEmailTemplates(root: string) {
     try {
         await fs.copy(templateDir, path.join(root, 'static', 'email', 'templates'));
     } catch (err: any) {
-        console.error(pc.red('Failed to copy email templates.'));
+        log(pc.red('Failed to copy email templates.'));
     }
 }
