@@ -116,15 +116,9 @@ export class PayPalOrderService extends PayPalBaseService {
     ): Promise<CreatePaymentErrorResult | undefined> {
         const args = await this.getPaymentHandlerArgs(ctx);
 
-        if (args.length <= 0) {
-            throw new InternalServerError('PayPal payment method is not configured correctly.');
-        }
-
         const merchantId = args.find(arg => arg.name === 'merchantId')?.value;
         if (!merchantId) {
-            throw new InternalServerError(
-                'PayPal payment method is not configured correctly. Please set merchantId.',
-            );
+            throw new InternalServerError('PayPal payment method is not configured correctly');
         }
 
         if (paypalOrder.status !== 'APPROVED') {

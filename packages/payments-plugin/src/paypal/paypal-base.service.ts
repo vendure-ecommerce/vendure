@@ -38,16 +38,10 @@ export abstract class PayPalBaseService {
     protected async authenticate(ctx: RequestContext): Promise<PayPalAuthorizationResponse> {
         const args = await this.getPaymentHandlerArgs(ctx);
 
-        if (args.length <= 0) {
-            throw new InternalServerError('PayPal payment method is not configured correctly.');
-        }
-
         const clientId = args.find(arg => arg.name === 'clientId')?.value;
         const clientSecret = args.find(arg => arg.name === 'clientSecret')?.value;
         if (!clientId || !clientSecret) {
-            throw new InternalServerError(
-                'PayPal payment method is not configured correctly. Please set clientId and clientSecret.',
-            );
+            throw new InternalServerError('PayPal payment method is not configured correctly');
         }
 
         const authenticationToken = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');

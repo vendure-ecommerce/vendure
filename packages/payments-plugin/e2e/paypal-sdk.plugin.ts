@@ -12,12 +12,22 @@ export interface PayPalSdkPluginOptions {
 }
 
 // @ts-ignore
+/**
+ * This tagged template literal has no special functionality. It is used for syntax highlighting and formatting
+ * purposes in the IDE.
+ */
 function html(strings, ...values) {
     // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
     return strings.reduce((acc, str, i) => acc + str + (values[i] || ''), '');
 }
 
+/**
+ * Format GraphQL strings to they can be used directly within a http request send
+ * from the Client.
+ *
+ * All queries will be formatted within a single line.
+ */
 function formatQuery(gql: DocumentNode): string {
     return print(gql).replace(/\n|\r/g, '');
 }

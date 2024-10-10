@@ -108,26 +108,6 @@ export async function addManualPayment(server: TestServer, orderId: ID, amount: 
     });
 }
 
-export async function getAllOrders(server: TestServer) {
-    const orderService = server.app.get(OrderService);
-    const channel = await server.app.get(ChannelService).getDefaultChannel();
-    const ctx = new RequestContext({
-        channel,
-        authorizedAsOwnerOnly: true,
-        apiType: 'shop',
-        isAuthorized: true,
-        session: {
-            activeOrderId: undefined,
-            activeChannelId: 1,
-            user: {
-                id: 1,
-            },
-        } as any,
-    });
-
-    return await orderService.findAll(ctx);
-}
-
 /**
  * Create a coupon with the given code and discount amount.
  */
