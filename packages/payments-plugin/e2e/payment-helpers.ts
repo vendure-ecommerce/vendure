@@ -327,3 +327,12 @@ export const SETTLE_PAYMENT = gql`
         __typename
     }
 `;
+
+export const ASSIGN_SHIPPING_METHODS_TO_CHANNEL = gql`
+    mutation AssignShippingMethodsToChannel($input: AssignShippingMethodsToChannelInput!) {
+        assignShippingMethodsToChannel(input: $input) {
+            id
+            code
+        }
+    }
+`;

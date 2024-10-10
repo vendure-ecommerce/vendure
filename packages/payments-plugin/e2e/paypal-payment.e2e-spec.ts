@@ -1,5 +1,11 @@
-import { ChannelService, LanguageCode, mergeConfig, OrderService, RequestContext } from '@vendure/core';
-import { createTestEnvironment, SimpleGraphQLClient, TestServer } from '@vendure/testing';
+import { CurrencyCode, LanguageCode, mergeConfig } from '@vendure/core';
+import { AssignProductsToChannelDocument } from '@vendure/core/e2e/graphql/generated-e2e-admin-types';
+import {
+    createTestEnvironment,
+    E2E_DEFAULT_CHANNEL_TOKEN,
+    SimpleGraphQLClient,
+    TestServer,
+} from '@vendure/testing';
 import nock from 'nock';
 import path from 'path';
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
@@ -12,6 +18,11 @@ import { CreatePayPalOrderRequest } from '../src/paypal/types';
 
 import {
     accessToken,
+    alternativeAccessToken,
+    alternativeAuthenticationToken,
+    alternativeChannelToken,
+    alternativeClientId,
+    alternativeClientSecret,
     apiUrl,
     authenticatePath,
     authenticationToken,
@@ -30,8 +41,16 @@ import {
     reauthorizePath,
     refundId,
 } from './fixtures/paypal.fixtures';
-import { CREATE_PAYMENT_METHOD, GET_CUSTOMER_LIST, REFUND_ORDER } from './graphql/admin-queries';
 import {
+    CREATE_CHANNEL,
+    CREATE_PAYMENT_METHOD,
+    GET_CUSTOMER_LIST,
+    REFUND_ORDER,
+} from './graphql/admin-queries';
+import {
+    Channel,
+    CreateChannelMutation,
+    CreateChannelMutationVariables,
     CreatePaymentMethodMutation,
     CreatePaymentMethodMutationVariables,
     GetCustomerListQuery,
@@ -45,8 +64,8 @@ import {
 import { ADD_ITEM_TO_ORDER } from './graphql/shop-queries';
 import {
     ADD_PAYMENT_TO_ORDER,
+    ASSIGN_SHIPPING_METHODS_TO_CHANNEL,
     CREATE_PAYPAL_ORDER,
-    getAllOrders,
     proceedToArrangingPayment,
     setShipping,
     SETTLE_PAYMENT,
@@ -58,6 +77,7 @@ let server: TestServer;
 let started = false;
 let customers: GetCustomerListQuery['customers']['items'];
 let order: TestOrderFragmentFragment;
+const customerCount = 3;
 
 describe('PayPal payments', () => {
     beforeAll(async () => {
@@ -75,20 +95,18 @@ describe('PayPal payments', () => {
         await server.init({
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
-            customerCount: 2,
+            customerCount,
         });
         started = true;
         await adminClient.asSuperAdmin();
         ({
             customers: { items: customers },
-        } = await adminClient.query<GetCustomerListQuery, GetCustomerListQueryVariables>(GET_CUSTOMER_LIST, {
-            options: {
-                take: 2,
-            },
-        }));
+        } = await adminClient.query<GetCustomerListQuery, GetCustomerListQueryVariables>(GET_CUSTOMER_LIST));
     }, TEST_SETUP_TIMEOUT_MS);
 
     beforeEach(() => {
+        shopClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+        adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
         nock.cleanAll();
         nock(apiUrl)
             .post(authenticatePath)
@@ -103,7 +121,7 @@ describe('PayPal payments', () => {
 
     it('Should start successfully', ({ expect }) => {
         expect(started).toEqual(true);
-        expect(customers).toHaveLength(2);
+        expect(customers).toHaveLength(customerCount);
     });
 
     it('Should create a PayPal payment method', async ({ expect }) => {
@@ -239,10 +257,99 @@ describe('PayPal payments', () => {
             expect(createPayPalOrder.id).toBe(paypalOrderId);
             expect(createPayPalOrder.links.length).toBe(0);
         });
-        /*
-        it('Should use payment method that is assigned to the active channel', () => {});
-        it('Should fail when no payment ', () => {});
-        */
+        it('Should use payment method that is assigned to the active channel', async ({ expect }) => {
+            let createOrderRequest: CreatePayPalOrderRequest | undefined;
+
+            nock(apiUrl)
+                .post(authenticatePath)
+                .matchHeader('Authorization', `Basic ${alternativeAuthenticationToken}`)
+                .reply(201, { access_token: alternativeAccessToken })
+                .post(postOrderPath, body => {
+                    createOrderRequest = body;
+                    return body;
+                })
+                .matchHeader('Authorization', `Bearer ${alternativeAccessToken}`)
+                .reply(201, {
+                    id: paypalOrderId,
+                    links: [],
+                });
+
+            const { createChannel } = await adminClient.query<
+                CreateChannelMutation,
+                CreateChannelMutationVariables
+            >(CREATE_CHANNEL, {
+                input: {
+                    code: 'second-channel',
+                    token: alternativeChannelToken,
+                    defaultLanguageCode: LanguageCode.en,
+                    currencyCode: CurrencyCode.GBP,
+                    pricesIncludeTax: true,
+                    defaultShippingZoneId: 'T_1',
+                    defaultTaxZoneId: 'T_1',
+                },
+            });
+
+            await adminClient.query(AssignProductsToChannelDocument, {
+                input: {
+                    channelId: 'T_2',
+                    productIds: ['T_1'],
+                },
+            });
+
+            await adminClient.query(ASSIGN_SHIPPING_METHODS_TO_CHANNEL, {
+                input: {
+                    channelId: (createChannel as Channel).id,
+                    shippingMethodIds: ['T_1', 'T_2'],
+                },
+            });
+
+            adminClient.setChannelToken(alternativeChannelToken);
+
+            await adminClient.query(CREATE_PAYMENT_METHOD, {
+                input: {
+                    code: methodCode,
+                    enabled: true,
+                    handler: {
+                        code: paypalPaymentMethodHandler.code,
+                        arguments: [
+                            { name: 'clientId', value: alternativeClientId },
+                            { name: 'clientSecret', value: alternativeClientSecret },
+                            { name: 'merchantId', value: merchantId },
+                        ],
+                    },
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'PayPal payment test',
+                            description: 'This is a PayPal test payment method',
+                        },
+                    ],
+                },
+            });
+
+            shopClient.setChannelToken(alternativeChannelToken);
+            await shopClient.asUserWithCredentials(customers[2].emailAddress, 'test');
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrderMutation,
+                AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_1',
+                quantity: 10,
+            });
+            const alternativeOrder = addItemToOrder as TestOrderFragmentFragment;
+            await proceedToArrangingPayment(shopClient);
+            const { createPayPalOrder } = await shopClient.query(CREATE_PAYPAL_ORDER);
+
+            expect(createOrderRequest).toBeDefined();
+            expect(createOrderRequest?.purchase_units.length).toBe(1);
+            expect(createOrderRequest?.purchase_units[0].reference_id).toBe(alternativeOrder.code);
+
+            expect(createPayPalOrder).toBeDefined();
+            expect(createPayPalOrder).toEqual({
+                id: 'mocked_paypal_order_id',
+                links: [],
+            });
+        });
     });
 
     describe('Payment creation', () => {
@@ -636,7 +743,7 @@ describe('PayPal payments', () => {
                     input: {
                         lines: [
                             {
-                                orderLineId: 'T_2',
+                                orderLineId: 'T_3',
                                 quantity: 1,
                             },
                         ],
@@ -675,7 +782,7 @@ describe('PayPal payments', () => {
                     input: {
                         lines: [
                             {
-                                orderLineId: 'T_2',
+                                orderLineId: 'T_3',
                                 quantity: 1,
                             },
                         ],
@@ -688,10 +795,6 @@ describe('PayPal payments', () => {
             ).rejects.toThrowError('Multiple captures assigned to this order');
         });
         it('Should refund payment fully and settle payment', async ({ expect }) => {
-            // T_2 und T_3 sind settled
-
-            // Payment 5, 6
-
             nock(apiUrl)
                 .get(getOrderPath)
                 .reply(200, {
@@ -738,10 +841,6 @@ describe('PayPal payments', () => {
             });
         });
         it('Should refund payment partially and settle payment', async ({ expect }) => {
-            // T_2 und T_3 sind settled
-
-            // Payment 5, 6
-
             nock(apiUrl)
                 .get(getOrderPath)
                 .times(2)

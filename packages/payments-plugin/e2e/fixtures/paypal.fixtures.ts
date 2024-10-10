@@ -3,7 +3,6 @@ import { PayPalOrderInformation, PayPalPaymentInformation } from '../../src/payp
 export const authorizationId = 'mocked_authorization_id';
 export const paypalOrderId = 'mocked_paypal_order_id';
 export const orderCode = 'mocked_order_code';
-export const merchantId = 'mocked_merchant_id';
 export const methodCode = 'mocked_paypal_method';
 export const captureId = 'mocked_capture_id';
 export const refundId = 'mocked_refund_id';
@@ -12,6 +11,15 @@ export const clientId = 'mocked_client_id';
 export const clientSecret = 'mocked_client_secret';
 export const authenticationToken = 'bW9ja2VkX2NsaWVudF9pZDptb2NrZWRfY2xpZW50X3NlY3JldA==';
 export const accessToken = 'mocked_access_token';
+export const merchantId = 'mocked_merchant_id';
+
+export const alternativeChannelToken = 'alternative_channel_token';
+export const alternativeClientId = 'alternative_mocked_client_id';
+export const alternativeClientSecret = 'alternative_mocked_client_secret';
+export const alternativeAuthenticationToken =
+    'YWx0ZXJuYXRpdmVfbW9ja2VkX2NsaWVudF9pZDphbHRlcm5hdGl2ZV9tb2NrZWRfY2xpZW50X3NlY3JldA==';
+export const alternativeAccessToken = 'alternative_mocked_access_token';
+export const alternativeMerchantId = 'alternative_mocked_merchant_id';
 
 export const apiUrl = 'https://api.sandbox.paypal.com';
 export const authenticatePath = '/v1/oauth2/token';
