@@ -16,7 +16,7 @@ export function log(
         if (options?.newline === 'before' || options?.newline === 'both') {
             console.log();
         }
-        console.log(message ?? '');
+        console.log('   ' + (message ?? ''));
         if (options?.newline === 'after' || options?.newline === 'both') {
             console.log();
         }

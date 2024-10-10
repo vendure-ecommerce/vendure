@@ -1,11 +1,15 @@
+import { cancel, isCancel, spinner } from '@clack/prompts';
 import { execSync } from 'child_process';
 import spawn from 'cross-spawn';
 import fs from 'fs-extra';
+import { exec } from 'node:child_process';
+import { platform } from 'node:os';
+import { promisify } from 'node:util';
 import path from 'path';
 import pc from 'picocolors';
 import semver from 'semver';
 
-import { SERVER_PORT, TYPESCRIPT_VERSION } from './constants';
+import { TYPESCRIPT_VERSION } from './constants';
 import { log } from './logger';
 import { CliLogLevel, DbType } from './types';
 
@@ -189,7 +193,7 @@ export function installPackages(options: {
             args.push('--verbose');
         }
 
-        const child = spawn(command, args, { stdio: logLevel === 'silent' ? 'ignore' : 'inherit' });
+        const child = spawn(command, args, { stdio: logLevel === 'verbose' ? 'inherit' : 'ignore' });
         child.on('close', code => {
             if (code !== 0) {
                 let message = 'An error occurred when installing dependencies.';
@@ -332,6 +336,123 @@ async function checkPostgresDbExists(options: any, root: string): Promise<true> 
     return true;
 }
 
+/**
+ * Check to see if Docker is installed and running.
+ * If not, attempt to start it.
+ * If that is not possible, return false.
+ *
+ * Refs:
+ * - https://stackoverflow.com/a/48843074/772859
+ */
+export async function isDockerAvailable(): Promise<{ result: 'not-found' | 'not-running' | 'running' }> {
+    const dockerSpinner = spinner();
+    function isDaemonRunning(): boolean {
+        try {
+            execSync('docker stats --no-stream', { stdio: 'ignore' });
+            return true;
+        } catch (e: any) {
+            return false;
+        }
+    }
+    dockerSpinner.start('Checking for Docker');
+    try {
+        execSync('docker -v', { stdio: 'ignore' });
+        dockerSpinner.message('Docker was found!');
+    } catch (e: any) {
+        dockerSpinner.stop('Docker was not found on this machine. We will use SQLite for the database.');
+        return { result: 'not-found' };
+    }
+    // Now we need to check if the docker daemon is running
+    const isRunning = isDaemonRunning();
+    if (isRunning) {
+        dockerSpinner.stop('Docker is running');
+        return { result: 'running' };
+    }
+    dockerSpinner.message('Docker daemon is not running. Attempting to start');
+    // detect the current OS
+    const currentPlatform = platform();
+    try {
+        if (currentPlatform === 'win32') {
+            // https://stackoverflow.com/a/44182489/772859
+            execSync('"C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe"');
+        } else if (currentPlatform === 'darwin') {
+            execSync('open -a Docker');
+        } else {
+            execSync('systemctl start docker');
+        }
+    } catch (e: any) {
+        dockerSpinner.message('Could not start Docker.');
+        log(e.message, { level: 'verbose' });
+        return { result: 'not-running' };
+    }
+    // Verify that the daemon is now running
+    let attempts = 1;
+    do {
+        log(`Checking for Docker daemon... (attempt ${attempts})`, { level: 'verbose' });
+        if (isDaemonRunning()) {
+            log(`Docker daemon is now running (after ${attempts} attempts).`, { level: 'verbose' });
+            dockerSpinner.stop('Docker is running');
+            return { result: 'running' };
+        }
+        await new Promise(resolve => setTimeout(resolve, 50));
+        attempts++;
+    } while (attempts < 100);
+    dockerSpinner.stop('Docker daemon could not be started');
+    return { result: 'not-running' };
+}
+
+export async function startPostgresDatabase(root: string): Promise<boolean> {
+    // Now we need to run the postgres database via Docker
+    let containerName: string | undefined;
+    const postgresContainerSpinner = spinner();
+    postgresContainerSpinner.start('Starting PostgreSQL database');
+    try {
+        const result = await promisify(exec)(
+            `docker compose -f ${path.join(root, 'docker-compose.yml')} up -d database`,
+        );
+        containerName = result.stderr.match(/Container\s+(.+-database[^ ]*)/)?.[1];
+        if (!containerName) {
+            // guess the container name based on the directory name
+            containerName = path.basename(root).replace(/[^a-z0-9]/gi, '') + '-database-1';
+            log(pc.red('Could not find container name. Guessing it is: ' + containerName), {
+                newline: 'before',
+                level: 'verbose',
+            });
+        } else {
+            log(pc.green(`Started PostgreSQL database in container "${containerName}"`), {
+                newline: 'before',
+                level: 'verbose',
+            });
+        }
+    } catch (e: any) {
+        log(pc.red(`Failed to start PostgreSQL database: ${e.message as string}`));
+        postgresContainerSpinner.stop('Failed to start PostgreSQL database');
+        return false;
+    }
+    postgresContainerSpinner.message(`Waiting for PostgreSQL database to be ready...`);
+    let attempts = 1;
+    let isReady = false;
+    do {
+        // We now need to ensure that the database is ready to accept connections
+        try {
+            const result = execSync(`docker exec -i ${containerName} pg_isready`);
+            isReady = result?.toString().includes('accepting connections');
+            if (!isReady) {
+                log(pc.yellow(`PostgreSQL database not yet ready. Attempt ${attempts}...`), {
+                    level: 'verbose',
+                });
+            }
+        } catch (e: any) {
+            // ignore
+            log('is_ready error:' + (e.message as any), { level: 'verbose', newline: 'before' });
+        }
+        await new Promise(resolve => setTimeout(resolve, 50));
+        attempts++;
+    } while (!isReady && attempts < 100);
+    postgresContainerSpinner.stop('PostgreSQL database is ready');
+    return true;
+}
+
 function throwConnectionError(err: any) {
     throw new Error(
         'Could not connect to the database. ' +
@@ -372,4 +493,16 @@ export function isServerPortInUse(port: number): Promise<boolean> {
         log(pc.yellow(`Warning: could not determine whether port ${port} is available`));
         return Promise.resolve(false);
     }
+}
+
+/**
+ * Checks if the response from a Clack prompt was a cancellation symbol, and if so,
+ * ends the interactive process.
+ */
+export function checkCancel<T>(value: T | symbol): value is T {
+    if (isCancel(value)) {
+        cancel('Setup cancelled.');
+        process.exit(0);
+    }
+    return true;
 }

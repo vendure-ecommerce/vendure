@@ -12,9 +12,9 @@ services:
     environment:
       DB_HOST: database
       DB_PORT: 5432
-      DB_NAME: vendure
-      DB_USERNAME: postgres
-      DB_PASSWORD: password
+      DB_NAME: {{{ escapeSingle dbName }}}
+      DB_USERNAME: {{{ escapeSingle dbUserName }}}
+      DB_PASSWORD: {{{ escapeSingle dbPassword }}}
   worker:
     build:
       context: .
@@ -25,9 +25,9 @@ services:
     environment:
       DB_HOST: database
       DB_PORT: 5432
-      DB_NAME: vendure
-      DB_USERNAME: postgres
-      DB_PASSWORD: password
+      DB_NAME: {{{ escapeSingle dbName }}}
+      DB_USERNAME: {{{ escapeSingle dbUserName }}}
+      DB_PASSWORD: {{{ escapeSingle dbPassword }}}
   database:
     image: postgres
     volumes:
@@ -35,5 +35,6 @@ services:
     ports:
       - 5432:5432
     environment:
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: vendure
+      POSTGRES_DB: {{{ escapeSingle dbName }}}
+      POSTGRES_USER: {{{ escapeSingle dbUserName }}}
+      POSTGRES_PASSWORD: {{{ escapeSingle dbPassword }}}

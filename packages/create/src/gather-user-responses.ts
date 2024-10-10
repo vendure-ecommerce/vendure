@@ -1,10 +1,11 @@
-import { cancel, isCancel, select, text } from '@clack/prompts';
+import { select, text } from '@clack/prompts';
 import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/lib/shared-constants';
 import { randomBytes } from 'crypto';
 import fs from 'fs-extra';
 import Handlebars from 'handlebars';
 import path from 'path';
 
+import { checkCancel, isDockerAvailable } from './helpers';
 import { DbType, FileSources, PackageManager, UserResponses } from './types';
 
 interface PromptAnswers {
@@ -27,7 +28,61 @@ export async function getQuickStartConfiguration(
     root: string,
     packageManager: PackageManager,
 ): Promise<UserResponses> {
-    return getCiConfiguration(root, packageManager);
+    // First we want to detect whether Docker is running
+    const { result: dockerStatus } = await isDockerAvailable();
+    let usePostgres: boolean;
+    switch (dockerStatus) {
+        case 'running':
+            usePostgres = true;
+            break;
+        case 'not-found':
+            usePostgres = false;
+            break;
+        case 'not-running': {
+            let useSqlite = false;
+            let dockerIsNowRunning = false;
+            do {
+                const useSqliteResponse = await select({
+                    message: 'We could not automatically start Docker. How should we proceed?',
+                    options: [
+                        { label: `Let's use SQLite as the database`, value: true },
+                        { label: 'I have manually started Docker', value: false },
+                    ],
+                    initialValue: true,
+                });
+                checkCancel(useSqlite);
+                useSqlite = useSqliteResponse as boolean;
+                if (useSqlite === false) {
+                    const { result: dockerStatusManual } = await isDockerAvailable();
+                    dockerIsNowRunning = dockerStatusManual === 'running';
+                }
+            } while (dockerIsNowRunning !== true && useSqlite === false);
+            usePostgres = !useSqlite;
+            break;
+        }
+    }
+    const quickStartAnswers: PromptAnswers = {
+        dbType: usePostgres ? 'postgres' : 'sqlite',
+        dbHost: usePostgres ? 'localhost' : '',
+        dbPort: usePostgres ? '5432' : '',
+        dbName: usePostgres ? 'vendure' : '',
+        dbUserName: usePostgres ? 'vendure' : '',
+        dbPassword: usePostgres ? randomBytes(16).toString('base64url') : '',
+        dbSchema: usePostgres ? 'public' : '',
+        populateProducts: true,
+        superadminIdentifier: SUPER_ADMIN_USER_IDENTIFIER,
+        superadminPassword: SUPER_ADMIN_USER_PASSWORD,
+    };
+
+    const responses = {
+        ...(await generateSources(root, quickStartAnswers, packageManager)),
+        dbType: quickStartAnswers.dbType,
+        populateProducts: quickStartAnswers.populateProducts as boolean,
+        superadminIdentifier: quickStartAnswers.superadminIdentifier as string,
+        superadminPassword: quickStartAnswers.superadminPassword as string,
+    };
+
+    return responses;
 }
 
 /**
@@ -35,7 +90,6 @@ export async function getQuickStartConfiguration(
  */
 export async function getManualConfiguration(
     root: string,
-    alreadyRanScaffold: boolean,
     packageManager: PackageManager,
 ): Promise<UserResponses> {
     const dbType = (await select({
@@ -175,14 +229,6 @@ export async function getCiConfiguration(
         superadminIdentifier: ciAnswers.superadminIdentifier,
         superadminPassword: ciAnswers.superadminPassword,
     };
-}
-
-export function checkCancel<T>(value: T | symbol): value is T {
-    if (isCancel(value)) {
-        cancel('Setup cancelled.');
-        process.exit(0);
-    }
-    return true;
 }
 
 /**
