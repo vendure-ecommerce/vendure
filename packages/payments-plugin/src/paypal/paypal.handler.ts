@@ -167,13 +167,11 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
             throw new Error('Capture is not completed. Nothing to refund.');
         }
 
-        const response = await paypalCaptureService.refundCapture(ctx, captures[0].id, total, order);
+        const refundResponse = await paypalCaptureService.refundCapture(ctx, captures[0].id, total, order);
 
         return {
             state: 'Settled' as const,
-            metadata: {
-                reference: response.id,
-            },
+            transactionId: refundResponse.id,
         };
     },
 });

@@ -28,6 +28,7 @@ import {
     postOrderPath,
     postRefundPath,
     reauthorizePath,
+    refundId,
 } from './fixtures/paypal.fixtures';
 import { CREATE_PAYMENT_METHOD, GET_CUSTOMER_LIST, REFUND_ORDER } from './graphql/admin-queries';
 import {
@@ -627,7 +628,7 @@ describe('PayPal payments', () => {
     });
 
     describe('Payment refund', () => {
-        it.skip('Should fail when no captures were found in order details', async ({ expect }) => {
+        it('Should fail when no captures were found in order details', async ({ expect }) => {
             nock(apiUrl).get(getOrderPath).reply(200, paypalOrder);
 
             await expect(
@@ -647,7 +648,7 @@ describe('PayPal payments', () => {
                 }),
             ).rejects.toThrowError('No payments were captured in this order');
         });
-        it.skip('Should fail when multiple captures were found in order details', async ({ expect }) => {
+        it('Should fail when multiple captures were found in order details', async ({ expect }) => {
             nock(apiUrl)
                 .get(getOrderPath)
                 .reply(200, {
@@ -710,23 +711,105 @@ describe('PayPal payments', () => {
                     ],
                 })
                 .post(postRefundPath)
-                .reply(201, {});
+                .reply(201, {
+                    id: refundId,
+                });
 
             const { refundOrder } = await adminClient.query(REFUND_ORDER, {
                 input: {
-                    lines: [
-                        {
-                            orderLineId: 'T_2',
-                            quantity: 1,
-                        },
-                    ],
-                    shipping: 10000,
+                    lines: [],
+                    amount: 120990,
+                    shipping: 0,
                     adjustment: 0,
                     paymentId: 'T_5',
                     reason: 'Test refund',
                 },
             });
+
+            expect(refundOrder).toBeDefined();
+            expect(refundOrder).toEqual({
+                id: 'T_1',
+                state: 'Settled',
+                items: 0,
+                transactionId: refundId,
+                shipping: 0,
+                total: 120990,
+                metadata: {},
+            });
         });
-        // it('Should refund payment partially and settle payment', () => {});
+        it('Should refund payment partially and settle payment', async ({ expect }) => {
+            // T_2 und T_3 sind settled
+
+            // Payment 5, 6
+
+            nock(apiUrl)
+                .get(getOrderPath)
+                .times(2)
+                .reply(200, {
+                    ...paypalOrder,
+                    purchase_units: [
+                        {
+                            ...paypalOrder.purchase_units[0],
+                            payments: {
+                                captures: [
+                                    {
+                                        status: 'COMPLETED',
+                                        id: captureId,
+                                    },
+                                ],
+                            },
+                        },
+                    ],
+                })
+                .post(postRefundPath)
+                .times(2)
+                .reply(201, {
+                    id: refundId,
+                });
+
+            const { refundOrder: firstRefund } = await adminClient.query(REFUND_ORDER, {
+                input: {
+                    lines: [],
+                    amount: 120000,
+                    shipping: 0,
+                    adjustment: 0,
+                    paymentId: 'T_6',
+                    reason: 'Test refund',
+                },
+            });
+
+            const { refundOrder: secondRefund } = await adminClient.query(REFUND_ORDER, {
+                input: {
+                    lines: [],
+                    amount: 990,
+                    shipping: 0,
+                    adjustment: 0,
+                    paymentId: 'T_6',
+                    reason: 'Test refund',
+                },
+            });
+
+            expect(firstRefund).toBeDefined();
+            expect(firstRefund).toEqual({
+                id: 'T_2',
+                state: 'Settled',
+                items: 0,
+                transactionId: refundId,
+                shipping: 0,
+                total: 120000,
+                metadata: {},
+            });
+
+            expect(secondRefund).toBeDefined();
+            expect(secondRefund).toEqual({
+                id: 'T_3',
+                state: 'Settled',
+                items: 0,
+                transactionId: refundId,
+                shipping: 0,
+                total: 990,
+                metadata: {},
+            });
+        });
     });
 });

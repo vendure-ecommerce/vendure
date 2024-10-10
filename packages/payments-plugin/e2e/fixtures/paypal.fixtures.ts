@@ -6,6 +6,7 @@ export const orderCode = 'mocked_order_code';
 export const merchantId = 'mocked_merchant_id';
 export const methodCode = 'mocked_paypal_method';
 export const captureId = 'mocked_capture_id';
+export const refundId = 'mocked_refund_id';
 
 export const clientId = 'mocked_client_id';
 export const clientSecret = 'mocked_client_secret';
