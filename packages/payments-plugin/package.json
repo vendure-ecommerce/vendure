@@ -14,6 +14,7 @@
         "e2e": "cross-env PACKAGE=payments-plugin vitest --config ../../e2e-common/vitest.config.mts --run",
         "e2e:watch": "cross-env PACKAGE=payments-plugin vitest --config ../../e2e-common/vitest.config.mts",
         "lint": "eslint --fix .",
+        "test": "vitest --config vitest.config.mts --run",
         "ci": "npm run build",
         "dev-server:mollie": "npm run build && DB=sqlite node -r ts-node/register e2e/mollie-dev-server.ts",
         "dev-server:paypal": "npm run build && DB=sqlite node -r ts-node/register e2e/paypal-dev-server.ts",
@@ -30,8 +31,7 @@
         "stripe": "13.x"
     },
     "dependencies": {
-        "currency.js": "2.0.4",
-        "msw": "^2.4.4"
+        "currency.js": "2.0.4"
     },
     "peerDependenciesMeta": {
         "@mollie/api-client": {
