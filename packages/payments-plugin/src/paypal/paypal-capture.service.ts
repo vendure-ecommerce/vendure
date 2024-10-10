@@ -3,20 +3,16 @@ import {
     ConfigService,
     CreatePaymentErrorResult,
     InternalServerError,
+    Logger,
     Order,
     PaymentMethodService,
     RequestContext,
 } from '@vendure/core';
 
-import { PAYPAL_PAYMENT_PLUGIN_OPTIONS } from './constants';
+import { loggerCtx, PAYPAL_PAYMENT_PLUGIN_OPTIONS } from './constants';
 import { PayPalBaseService } from './paypal-base.service';
 import { convertAmount } from './paypal-order.helpers';
-import {
-    PayPalOrderInformation,
-    PayPalPluginOptions,
-    PayPalRefundRequest,
-    PayPalRefundResponse,
-} from './types';
+import { PayPalPluginOptions, PayPalRefundRequest, PayPalRefundResponse } from './types';
 
 export class PayPalCaptureService extends PayPalBaseService {
     private readonly precision: number;
@@ -64,12 +60,20 @@ export class PayPalCaptureService extends PayPalBaseService {
             });
 
             if (!response.ok) {
-                throw new Error();
+                throw response;
             }
 
             return (await response.json()) as PayPalRefundResponse;
-        } catch (error) {
-            throw new InternalServerError('PayPal refund failed.');
+        } catch (error: any) {
+            const message = 'PayPal refund failed';
+            if (error instanceof Response) {
+                const responseClone = error.clone();
+                Logger.error(message, loggerCtx, await responseClone.text());
+            }
+
+            Logger.error(message, loggerCtx, error?.stack);
+            // Throw a generic error to avoid leaking sensitive information
+            throw new InternalServerError(message);
         }
     }
 }
