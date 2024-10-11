@@ -60,7 +60,7 @@ program
         '--use-npm',
         'Uses npm rather than as the default package manager. DEPRECATED: Npm is now the default',
     )
-    .option('--ci', 'Runs without prompts for use in CI scenarios')
+    .option('--ci', 'Runs without prompts for use in CI scenarios', false)
     .parse(process.argv);
 
 const options = program.opts();
@@ -86,18 +86,20 @@ export async function createVendureApp(
         `Let's create a ${pc.blue(pc.bold('Vendure App'))} ✨ ${pc.dim(`v${packageJson.version as string}`)}`,
     );
 
-    const mode = (await select({
-        message: 'How should we proceed?',
-        options: [
-            { label: 'Quick Start', value: 'quick', hint: 'Get up an running in a single step' },
-            {
-                label: 'Manual Configuration',
-                value: 'manual',
-                hint: 'Customize your Vendure project with more advanced settings',
-            },
-        ],
-        initialValue: 'quick' as 'quick' | 'manual',
-    })) as 'quick' | 'manual';
+    const mode = isCi
+        ? 'ci'
+        : ((await select({
+              message: 'How should we proceed?',
+              options: [
+                  { label: 'Quick Start', value: 'quick', hint: 'Get up an running in a single step' },
+                  {
+                      label: 'Manual Configuration',
+                      value: 'manual',
+                      hint: 'Customize your Vendure project with more advanced settings',
+                  },
+              ],
+              initialValue: 'quick' as 'quick' | 'manual',
+          })) as 'quick' | 'manual');
     checkCancel(mode);
 
     const portSpinner = spinner();
@@ -144,11 +146,12 @@ export async function createVendureApp(
         dockerfileSource,
         dockerComposeSource,
         populateProducts,
-    } = isCi
-        ? await getCiConfiguration(root, packageManager)
-        : mode === 'manual'
-          ? await getManualConfiguration(root, packageManager)
-          : await getQuickStartConfiguration(root, packageManager);
+    } =
+        mode === 'ci'
+            ? await getCiConfiguration(root, packageManager)
+            : mode === 'manual'
+              ? await getManualConfiguration(root, packageManager)
+              : await getQuickStartConfiguration(root, packageManager);
     process.chdir(root);
     if (packageManager !== 'npm' && !checkThatNpmCanReadCwd()) {
         process.exit(1);
