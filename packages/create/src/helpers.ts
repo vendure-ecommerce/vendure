@@ -345,6 +345,7 @@ async function checkPostgresDbExists(options: any, root: string): Promise<true> 
  */
 export async function isDockerAvailable(): Promise<{ result: 'not-found' | 'not-running' | 'running' }> {
     const dockerSpinner = spinner();
+
     function isDaemonRunning(): boolean {
         try {
             execFileSync('docker', ['stats', '--no-stream'], { stdio: 'ignore' });
@@ -353,6 +354,7 @@ export async function isDockerAvailable(): Promise<{ result: 'not-found' | 'not-
             return false;
         }
     }
+
     dockerSpinner.start('Checking for Docker');
     try {
         execFileSync('docker', ['-v'], { stdio: 'ignore' });
@@ -507,4 +509,14 @@ export function checkCancel<T>(value: T | symbol): value is T {
         process.exit(0);
     }
     return true;
+}
+
+export function cleanUpDockerResources(name: string) {
+    try {
+        execSync(`docker stop $(docker ps -a -q --filter "label=io.vendure.create.name=${name}")`);
+        execSync(`docker rm $(docker ps -a -q --filter "label=io.vendure.create.name=${name}")`);
+        execSync(`docker volume rm $(docker volume ls --filter "label=io.vendure.create.name=${name}" -q)`);
+    } catch (e) {
+        log(pc.yellow(`Could not clean up Docker resources`), { level: 'verbose' });
+    }
 }

@@ -64,7 +64,7 @@ export async function getQuickStartConfiguration(
     const quickStartAnswers: PromptAnswers = {
         dbType: usePostgres ? 'postgres' : 'sqlite',
         dbHost: usePostgres ? 'localhost' : '',
-        dbPort: usePostgres ? '5432' : '',
+        dbPort: usePostgres ? '6543' : '',
         dbName: usePostgres ? 'vendure' : '',
         dbUserName: usePostgres ? 'vendure' : '',
         dbPassword: usePostgres ? randomBytes(16).toString('base64url') : '',

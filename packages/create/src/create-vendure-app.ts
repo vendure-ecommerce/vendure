@@ -19,6 +19,7 @@ import {
     checkDbConnection,
     checkNodeVersion,
     checkThatNpmCanReadCwd,
+    cleanUpDockerResources,
     getDependencies,
     installPackages,
     isSafeToCreateProjectIn,
@@ -54,6 +55,7 @@ program
         /^(silent|info|verbose)$/i,
         'info',
     )
+    .option('--verbose', 'Alias for --log-level verbose', false)
     .option(
         '--use-npm',
         'Uses npm rather than as the default package manager. DEPRECATED: Npm is now the default',
@@ -62,7 +64,12 @@ program
     .parse(process.argv);
 
 const options = program.opts();
-void createVendureApp(projectName, options.useNpm, options.logLevel || 'info', options.ci);
+void createVendureApp(
+    projectName,
+    options.useNpm,
+    options.verbose ? 'verbose' : options.logLevel || 'info',
+    options.ci,
+);
 
 export async function createVendureApp(
     name: string | undefined,
@@ -178,7 +185,7 @@ export async function createVendureApp(
     try {
         await installPackages({ dependencies, logLevel });
     } catch (e) {
-        outro(pc.red(`Failed to install dependencies. Please try again.`));
+        outro(pc.red(`Failed to inst all dependencies. Please try again.`));
         process.exit(1);
     }
     installSpinner.stop(`Successfully installed ${dependencies.length} dependencies`);
@@ -227,6 +234,8 @@ export async function createVendureApp(
         process.exit(1);
     }
     scaffoldSpinner.stop(`Generated app scaffold`);
+
+    cleanUpDockerResources(name);
 
     if (mode === 'quick' && dbType === 'postgres') {
         await startPostgresDatabase(root);
@@ -371,7 +380,9 @@ export async function createVendureApp(
                         cwd: root,
                         stdio: 'inherit',
                     });
-                } catch (e: any) {}
+                } catch (e: any) {
+                    /* empty */
+                }
 
                 // process.stdin.resume();
                 process.on('SIGINT', function () {
@@ -387,7 +398,9 @@ export async function createVendureApp(
                     await open(adminUiUrl, {
                         newInstance: true,
                     });
-                } catch (e: any) {}
+                } catch (e: any) {
+                    /* empty */
+                }
             } catch (e: any) {
                 log(pc.red(`Failed to start the server: ${e.message as string}`), {
                     newline: 'after',

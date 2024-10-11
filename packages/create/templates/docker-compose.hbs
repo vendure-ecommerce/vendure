@@ -15,30 +15,36 @@ services:
             POSTGRES_DB: {{{ escapeSingle dbName }}}
             POSTGRES_USER: {{{ escapeSingle dbUserName }}}
             POSTGRES_PASSWORD: {{{ escapeSingle dbPassword }}}
+        labels:
+            - "io.vendure.create.name={{{ escapeSingle name }}}"
 
     mysql_db:
         image: mysql:8
         volumes:
             - mysql_db_data:/var/lib/mysql
         environment:
-            MYSQL_ROOT_PASSWORD: {{{ escapeSingle dbRootPassword }}}
+            MYSQL_ROOT_PASSWORD: 'ROOT'
             MYSQL_DATABASE: {{{ escapeSingle dbName }}}
             MYSQL_USER: {{{ escapeSingle dbUserName }}}
             MYSQL_PASSWORD: {{{ escapeSingle dbPassword }}}
         ports:
             - "4306:3306"
+        labels:
+            - "io.vendure.create.name={{{ escapeSingle name }}}"
 
     mariadb_db:
         image: mariadb:10
         volumes:
             - mariadb_db_data:/var/lib/mysql
         environment:
-            MARIADB_ROOT_PASSWORD: {{{ escapeSingle dbRootPassword }}}
+            MARIADB_ROOT_PASSWORD: 'ROOT'
             MARIADB_DATABASE: {{{ escapeSingle dbName }}}
             MARIADB_USER: {{{ escapeSingle dbUserName }}}
             MARIADB_PASSWORD: {{{ escapeSingle dbPassword }}}
         ports:
             - "3306:3306"
+        labels:
+            - "io.vendure.create.name={{{ escapeSingle name }}}"
 
     # RECOMMENDED (especially for production)
     # Want to use our BullMQ with Redis instead of our default database job queue?
@@ -49,6 +55,8 @@ services:
             - "6479:6379"
         volumes:
             - redis_data:/data
+        labels:
+            - "io.vendure.create.name={{{ escapeSingle name }}}"
 
     # RECOMMENDED
     # Want to use Typesense instead of our default search engine?
@@ -61,13 +69,15 @@ services:
             - "8208:8108"
         volumes:
             - typesense_data:/data
+        labels:
+            - "io.vendure.create.name={{{ escapeSingle name }}}"
 
     # Want to use Elasticsearch instead of our default database engine?
     # Checkout our Elasticsearch plugin: https://docs.vendure.io/reference/core-plugins/elasticsearch-plugin/
     # To run the elasticsearch container run "docker compose up -d elasticsearch"
     elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.1.1
-        env:
+        environment:
             discovery.type: single-node
             bootstrap.memory_lock: true
             ES_JAVA_OPTS: -Xms512m -Xmx512m
@@ -75,15 +85,31 @@ services:
             - elasticsearch_data:/usr/share/elasticsearch/data
         ports:
             - "9300:9200"
+        labels:
+            - "io.vendure.create.name={{{ escapeSingle name }}}"
 
 volumes:
     postgres_db_data:
         driver: local
+        labels:
+            - "io.vendure.create.name={{{ escapeSingle name }}}"
     mysql_db_data:
         driver: local
+        labels:
+            - "io.vendure.create.name={{{ escapeSingle name }}}"
+    mariadb_db_data:
+        driver: local
+        labels:
+            - "io.vendure.create.name={{{ escapeSingle name }}}"
     typesense_data:
         driver: local
+        labels:
+            - "io.vendure.create.name={{{ escapeSingle name }}}"
     elasticsearch_data:
         driver: local
+        labels:
+            - "io.vendure.create.name={{{ escapeSingle name }}}"
     redis_data:
         driver: local
+        labels:
+            - "io.vendure.create.name={{{ escapeSingle name }}}"
