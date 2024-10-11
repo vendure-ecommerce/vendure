@@ -408,12 +408,15 @@ export async function startPostgresDatabase(root: string): Promise<boolean> {
     postgresContainerSpinner.start('Starting PostgreSQL database');
     try {
         const result = await promisify(exec)(
-            `docker compose -f ${path.join(root, 'docker-compose.yml')} up -d database`,
+            `docker compose -f ${path.join(root, 'docker-compose.yml')} up -d postgres_db`,
         );
-        containerName = result.stderr.match(/Container\s+(.+-database[^ ]*)/)?.[1];
+        containerName = result.stderr.match(/Container\s+(.+-postgres_db[^ ]*)/)?.[1];
         if (!containerName) {
             // guess the container name based on the directory name
-            containerName = path.basename(root).replace(/[^a-z0-9]/gi, '') + '-database-1';
+            containerName = path.basename(root).replace(/[^a-z0-9]/gi, '') + '-postgres_db-1';
+            postgresContainerSpinner.message(
+                'Could not find container name. Guessing it is: ' + containerName,
+            );
             log(pc.red('Could not find container name. Guessing it is: ' + containerName), {
                 newline: 'before',
                 level: 'verbose',
