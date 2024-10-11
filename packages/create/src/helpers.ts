@@ -1,8 +1,7 @@
 import { cancel, isCancel, spinner } from '@clack/prompts';
-import { execSync } from 'child_process';
 import spawn from 'cross-spawn';
 import fs from 'fs-extra';
-import { exec } from 'node:child_process';
+import { exec, execSync, execFileSync } from 'node:child_process';
 import { platform } from 'node:os';
 import { promisify } from 'node:util';
 import path from 'path';
@@ -108,7 +107,7 @@ export function checkNodeVersion(requiredVersion: string) {
 // https://github.com/lovell/sharp/issues/3511
 export function bunIsAvailable() {
     try {
-        execSync('bun --version', { stdio: 'ignore' });
+        execFileSync('bun', ['--version'], { stdio: 'ignore' });
         return true;
     } catch (e: any) {
         return false;
@@ -348,7 +347,7 @@ export async function isDockerAvailable(): Promise<{ result: 'not-found' | 'not-
     const dockerSpinner = spinner();
     function isDaemonRunning(): boolean {
         try {
-            execSync('docker stats --no-stream', { stdio: 'ignore' });
+            execFileSync('docker', ['stats', '--no-stream'], { stdio: 'ignore' });
             return true;
         } catch (e: any) {
             return false;
@@ -356,7 +355,7 @@ export async function isDockerAvailable(): Promise<{ result: 'not-found' | 'not-
     }
     dockerSpinner.start('Checking for Docker');
     try {
-        execSync('docker -v', { stdio: 'ignore' });
+        execFileSync('docker', ['-v'], { stdio: 'ignore' });
         dockerSpinner.message('Docker was found!');
     } catch (e: any) {
         dockerSpinner.stop('Docker was not found on this machine. We will use SQLite for the database.');
@@ -438,7 +437,7 @@ export async function startPostgresDatabase(root: string): Promise<boolean> {
     do {
         // We now need to ensure that the database is ready to accept connections
         try {
-            const result = execSync(`docker exec -i ${containerName} pg_isready`);
+            const result = execFileSync(`docker`, [`exec`, `-i`, containerName, `pg_isready`]);
             isReady = result?.toString().includes('accepting connections');
             if (!isReady) {
                 log(pc.yellow(`PostgreSQL database not yet ready. Attempt ${attempts}...`), {
@@ -447,7 +446,7 @@ export async function startPostgresDatabase(root: string): Promise<boolean> {
             }
         } catch (e: any) {
             // ignore
-            log('is_ready error:' + (e.message as any), { level: 'verbose', newline: 'before' });
+            log('is_ready error:' + (e.message as string), { level: 'verbose', newline: 'before' });
         }
         await new Promise(resolve => setTimeout(resolve, 50));
         attempts++;

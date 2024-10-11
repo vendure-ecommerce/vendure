@@ -1,6 +1,9 @@
 import { intro, note, outro, select, spinner } from '@clack/prompts';
 import { program } from 'commander';
 import fs from 'fs-extra';
+import { ChildProcess, spawn } from 'node:child_process';
+import { setTimeout as sleep } from 'node:timers/promises';
+import open from 'open';
 import os from 'os';
 import path from 'path';
 import pc from 'picocolors';
@@ -24,7 +27,7 @@ import {
     startPostgresDatabase,
 } from './helpers';
 import { log, setLogLevel } from './logger';
-import { CliLogLevel, DbType, PackageManager } from './types';
+import { CliLogLevel, PackageManager } from './types';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
@@ -196,6 +199,10 @@ export async function createVendureApp(
 
     const scaffoldSpinner = spinner();
     scaffoldSpinner.start(`Generating app scaffold`);
+    // We add this pause so that the above output is displayed before the
+    // potentially lengthy file operations begin, which can prevent that
+    // from displaying and thus make the user think that the process has hung.
+    await sleep(500);
     fs.ensureDirSync(path.join(root, 'src'));
     const assetPath = (fileName: string) => path.join(__dirname, '../assets', fileName);
     const configFile = srcPathScript('vendure-config');
@@ -235,23 +242,26 @@ export async function createVendureApp(
         populateProducts
             ? 'We are populating sample data so that you can start testing right away'
             : 'We are setting up your Vendure server',
-        'This can take a minute or two, so grab a coffee ☕️',
-        `We'd love it if you drop us a star on GitHub: https://github.com/vendure-ecommerce/vendure`,
-        'In the mean time, here are some tips to get you started',
+        '☕ This can take a minute or two, so grab a coffee',
+        `✨ We'd love it if you drop us a star on GitHub: https://github.com/vendure-ecommerce/vendure`,
+        `📖 Check out the Vendure documentation at https://docs.vendure.io`,
+        `💬 Join our Discord community to chat with other Vendure developers: https://vendure.io/community`,
+        '💡 In the mean time, here are some tips to get you started',
         `Vendure provides dedicated GraphQL APIs for both the Admin and Shop`,
         `Almost every aspect of Vendure is customizable via plugins`,
         `You can run 'vendure add' from the command line to add new plugins & features`,
         `Use the EventBus in your plugins to react to events in the system`,
-        `Check out the Vendure documentation at https://docs.vendure.io`,
-        `Join our Discord community to chat with other Vendure developers: https://vendure.io/community`,
         `Vendure supports multiple languages & currencies out of the box`,
-        `Did we mention this can take a while? ☕️`,
+        `☕ Did we mention this can take a while?`,
         `Our custom fields feature allows you to add any kind of data to your entities`,
         `Vendure is built with TypeScript, so you get full type safety`,
         `Combined with GraphQL's static schema, your type safety is end-to-end`,
-        `Almost there now... thanks for your patience!`,
+        `☕ Almost there now... thanks for your patience!`,
         `Collections allow you to group products together`,
         `Our AssetServerPlugin allows you to dynamically resize & optimize images`,
+        `Order flows are fully customizable to suit your business requirements`,
+        `Role-based permissions allow you to control access to every part of the system`,
+        `Customers can be grouped for targeted promotions & custom pricing`,
         `You can find integrations in the Vendure Hub: https://vendure.io/hub`,
     ];
 
@@ -277,7 +287,7 @@ export async function createVendureApp(
 
     try {
         const { populate } = await import(path.join(root, 'node_modules/@vendure/core/cli/populate'));
-        const { bootstrap, DefaultLogger, LogLevel, JobQueueService } = await import(
+        const { bootstrap, DefaultLogger, LogLevel, JobQueueService, ConfigModule } = await import(
             path.join(root, 'node_modules/@vendure/core/dist/index')
         );
         const { config } = await import(configFile);
@@ -322,59 +332,94 @@ export async function createVendureApp(
         if (isCi) {
             log('[CI] Pausing before close...');
         }
-        await new Promise(resolve => setTimeout(resolve, isCi ? 30000 : 2000));
+        await sleep(isCi ? 30000 : 2000);
         await app.close();
         if (isCi) {
             log('[CI] Pausing after close...');
-            await new Promise(resolve => setTimeout(resolve, 10000));
+            await sleep(10000);
         }
         populateSpinner.stop(`Server successfully initialized${populateProducts ? ' and populated' : ''}`);
-
-        if (mode === 'quick') {
+        clearTimeout(timer);
+        /**
+         * This is currently disabled because I am running into issues actually getting the server
+         * to quite properly in response to a SIGINT.
+         * This means that the server runs, but cannot be ended, without forcefully
+         * killing the process.
+         *
+         * Once this has been resolved, the following code can be re-enabled by
+         * setting `autoRunServer` to `true`.
+         */
+        const autoRunServer = false;
+        if (mode === 'quick' && autoRunServer) {
             // In quick-start mode, we want to now run the server and open up
             // a browser window to the Admin UI.
-            const quickStartApp = await bootstrap({
-                ...config,
-                apiOptions: {
-                    ...(config.apiOptions ?? {}),
-                    port,
-                },
-            });
-            await quickStartApp.get(JobQueueService).start();
-            note(
-                [
+            try {
+                const adminUiUrl = `http://localhost:${port}/admin`;
+                const quickStartInstructions = [
                     'Use the following credentials to log in to the Admin UI:',
                     `Username: ${pc.green(config.authOptions.superadminCredentials?.identifier)}`,
                     `Password: ${pc.green(config.authOptions.superadminCredentials?.password)}`,
-                ].join('\n'),
-            );
-            const adminUiUrl = `http://localhost:${port}/admin`;
+                    `Open your browser and navigate to: ${pc.green(adminUiUrl)}`,
+                    '',
+                ];
+                note(quickStartInstructions.join('\n'));
 
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
-            const open = require('open');
-            await open(adminUiUrl);
+                const npmCommand = os.platform() === 'win32' ? 'npm.cmd' : 'npm';
+                let quickStartProcess: ChildProcess | undefined;
+                try {
+                    quickStartProcess = spawn(npmCommand, ['run', 'dev'], {
+                        cwd: root,
+                        stdio: 'inherit',
+                    });
+                } catch (e: any) {}
+
+                // process.stdin.resume();
+                process.on('SIGINT', function () {
+                    displayOutro(root, name);
+                    quickStartProcess?.kill('SIGINT');
+                    process.exit(0);
+                });
+
+                // Give enough time for the server to get up and running
+                // before opening the window.
+                await sleep(10_000);
+                try {
+                    await open(adminUiUrl, {
+                        newInstance: true,
+                    });
+                } catch (e: any) {}
+            } catch (e: any) {
+                log(pc.red(`Failed to start the server: ${e.message as string}`), {
+                    newline: 'after',
+                    level: 'verbose',
+                });
+            }
+        } else {
+            clearTimeout(timer);
+            displayOutro(root, name);
+            process.exit(0);
         }
     } catch (e: any) {
         log(e.toString());
         outro(pc.red(`Failed to initialize server. Please try again.`));
         process.exit(1);
     }
-    clearTimeout(timer);
+}
 
+function displayOutro(root: string, name: string) {
     const startCommand = 'npm run dev';
     const nextSteps = [
-        `${pc.green('Success!')} Created a new Vendure server at:`,
+        `${pc.green('Success!')} Your new Vendure server was created!`,
         `\n`,
         pc.italic(root),
         `\n`,
-        `We suggest that you start by typing:`,
+        `You can run it again with:`,
         `\n`,
         pc.gray('$ ') + pc.blue(pc.bold(`cd ${name}`)),
         pc.gray('$ ') + pc.blue(pc.bold(`${startCommand}`)),
     ];
     note(nextSteps.join('\n'));
     outro(`Happy hacking!`);
-    process.exit(0);
 }
 
 /**
