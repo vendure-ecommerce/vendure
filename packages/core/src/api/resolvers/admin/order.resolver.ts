@@ -69,7 +69,15 @@ export class OrderResolver {
         @Relations({ entity: Order, omit: ['aggregateOrder', 'sellerOrders'] })
         relations: RelationPaths<Order>,
     ): Promise<Order | undefined> {
-        return this.orderService.findOne(ctx, args.id, relations);
+        return this.orderService.findOne(ctx, args.id, relations ?? [
+            'lines',
+            'lines.productVariant',
+            'lines.productVariant.productVariantPrices',
+            'lines.featuredAsset', // Add this line
+            'shippingLines',
+            'surcharges',
+            'customer',
+        ]);
     }
 
     @Transaction()
