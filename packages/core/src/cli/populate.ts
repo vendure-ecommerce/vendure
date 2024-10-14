@@ -150,5 +150,9 @@ export async function importProductsFromCsv(
         languageCode,
         channelOrToken: channel,
     });
-    return lastValueFrom(importer.parseAndImport(productData, ctx, true));
+    const createEnvVar: import('@vendure/common/lib/shared-constants').CREATING_VENDURE_APP =
+        'CREATING_VENDURE_APP';
+    // Turn off progress bar when running in the context of the @vendure/create script
+    const reportProgress = process.env[createEnvVar] === 'true' ? false : true;
+    return lastValueFrom(importer.parseAndImport(productData, ctx, reportProgress));
 }
