@@ -1,7 +1,7 @@
 import { cancel, isCancel, spinner } from '@clack/prompts';
 import spawn from 'cross-spawn';
 import fs from 'fs-extra';
-import { exec, execSync, execFileSync } from 'node:child_process';
+import { execFile, execSync, execFileSync } from 'node:child_process';
 import { platform } from 'node:os';
 import { promisify } from 'node:util';
 import path from 'path';
@@ -408,9 +408,14 @@ export async function startPostgresDatabase(root: string): Promise<boolean> {
     const postgresContainerSpinner = spinner();
     postgresContainerSpinner.start('Starting PostgreSQL database');
     try {
-        const result = await promisify(exec)(
-            `docker compose -f ${path.join(root, 'docker-compose.yml')} up -d postgres_db`,
-        );
+        const result = await promisify(execFile)(`docker`, [
+            `compose`,
+            `-f`,
+            path.join(root, 'docker-compose.yml'),
+            `up`,
+            `-d`,
+            `postgres_db`,
+        ]);
         containerName = result.stderr.match(/Container\s+(.+-postgres_db[^ ]*)/)?.[1];
         if (!containerName) {
             // guess the container name based on the directory name
