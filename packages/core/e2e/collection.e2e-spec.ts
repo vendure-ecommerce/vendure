@@ -735,6 +735,21 @@ describe('Collection resolver', () => {
                 139900, 219900, 229900,
             ]);
         });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/3107
+        it('collection list with translations, filtered by name', async () => {
+            const { collections } = await adminClient.query(GET_COLLECTION_LIST_WITH_TRANSLATIONS, {
+                options: {
+                    filter: {
+                        name: {
+                            eq: 'Electronics',
+                        },
+                    },
+                },
+            });
+
+            expect(collections.items.length).toBeDefined();
+        });
     });
 
     describe('moveCollection', () => {
@@ -2411,6 +2426,21 @@ export const GET_COLLECTION_LIST = gql`
         }
     }
     ${COLLECTION_FRAGMENT}
+`;
+
+export const GET_COLLECTION_LIST_WITH_TRANSLATIONS = gql`
+    query GetCollectionListWithTranslations($options: CollectionListOptions) {
+        collections(options: $options) {
+            items {
+                id
+                name
+                translations {
+                    id
+                    name
+                }
+            }
+        }
+    }
 `;
 
 export const MOVE_COLLECTION = gql`
