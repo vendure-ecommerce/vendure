@@ -12,6 +12,7 @@ import {
 import { loggerCtx, PAYPAL_PAYMENT_PLUGIN_OPTIONS } from './constants';
 import { PayPalBaseService } from './paypal-base.service';
 import { convertAmount } from './paypal-order.helpers';
+import { PayPalError } from './paypal.error';
 import { PayPalPluginOptions, PayPalRefundRequest, PayPalRefundResponse } from './types';
 
 export class PayPalCaptureService extends PayPalBaseService {
@@ -24,11 +25,8 @@ export class PayPalCaptureService extends PayPalBaseService {
     ) {
         super(paymentMethodService, options);
 
-        if (!this.configService.entityOptions.moneyStrategy) {
-            throw new Error('No MoneyStrategy configured. Please check your Vendure configuration.');
-        }
-        if (!this.configService.entityOptions.moneyStrategy.precision) {
-            throw new Error('MoneyStrategy precision is not provided.');
+        if (!this.configService.entityOptions.moneyStrategy?.precision) {
+            throw new InternalServerError('error.money-strategy-not-configured');
         }
 
         this.precision = this.configService.entityOptions.moneyStrategy.precision;
@@ -65,7 +63,7 @@ export class PayPalCaptureService extends PayPalBaseService {
 
             return (await response.json()) as PayPalRefundResponse;
         } catch (error: any) {
-            const message = 'PayPal refund failed';
+            const message = 'error.paypal-refund-failed';
             if (error instanceof Response) {
                 const responseClone = error.clone();
                 Logger.error(message, loggerCtx, await responseClone.text());
@@ -73,7 +71,7 @@ export class PayPalCaptureService extends PayPalBaseService {
 
             Logger.error(message, loggerCtx, error?.stack);
             // Throw a generic error to avoid leaking sensitive information
-            throw new InternalServerError(message);
+            throw new PayPalError(message);
         }
     }
 }

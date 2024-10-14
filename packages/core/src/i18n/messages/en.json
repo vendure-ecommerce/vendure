@@ -1,5 +1,16 @@
 {
   "error": {
+    "paypal-order-details-failed": "Failed to get PayPal order details",
+    "paypal-create-order-failed": "Failed to create PayPal order",
+    "paypal-refund-failed": "PayPal refund failed",
+    "money-strategy-not-configured": "No MoneyStrategy configured",
+    "error-in-paypal-payment-configuration": "No PayPal payment method configured",
+    "paypal-authentication-failed": "PayPal authentication failed",
+    "paypal-payment-": "No args defined for PayPal payment method",
+    "paypal-authorization-details-failed": "Failed to get PayPal authorization details",
+    "paypal-reauthorization-failed": "PayPal reauthorization failed",
+    "paypal-authorization-failed": "PayPal authorization failed",
+    "paypal-capture-failed": "PayPal capture failed",
     "active-user-does-not-have-sufficient-permissions": "Active user does not have sufficient permissions",
     "available-currency-codes-must-include-default": "availableCurrencyCodes must include the defaultCurrencyCode ({ defaultCurrencyCode })",
     "cannot-delete-role": "The role \"{ roleCode }\" cannot be deleted",
@@ -55,6 +66,12 @@
     "unauthorized": "The credentials did not match. Please check and try again"
   },
   "errorResult": {
+    "PAYPAL_ORDER_WITHOUT_PAYMENTS": "The PayPal order does not have any payments",
+    "MULTIPLE_CAPTURES": "Multiple captures assigned to this order",
+    "PAYPAL_PAYMENT_NOT_CAPTURED": "Capture is not completed",
+    "PAYPAL_ORDER_STATUS_NOT_CREATED": "Payment authorization failed. Payment status must be 'CREATED'",
+    "PAYPAL_ORDER_WITHOUT_AUTHORIZATIONS": "The PayPal order does not have any authorizations",
+    "PAYPAL_ORDER_MATCH_INVALID": "The PayPal order does not match the internal order",
     "ALREADY_LOGGED_IN_ERROR": "Cannot set a Customer for the Order when already logged in",
     "ALREADY_REFUNDED_ERROR": "Cannot refund an OrderItem which has already been refunded",
     "CANCEL_ACTIVE_ORDER_ERROR": "Cannot cancel OrderLines from an Order in the \"{ orderState }\" state",

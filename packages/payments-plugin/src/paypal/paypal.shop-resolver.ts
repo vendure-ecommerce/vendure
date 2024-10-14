@@ -26,10 +26,10 @@ export class PayPalShopResolver {
         const sessionOrder = await this.activeOrderService.getActiveOrder(ctx, {});
 
         if (!sessionOrder) {
-            throw new IllegalOperationError('Session has no active order');
+            throw new IllegalOperationError('error.order-could-not-be-determined-or-created');
         }
         if (sessionOrder.state !== 'ArrangingPayment') {
-            throw new IllegalOperationError('Order must be in arranging payment state');
+            throw new IllegalOperationError('errorResult.ORDER_PAYMENT_STATE_ERROR');
         }
 
         return await this.paypalService.createOrder(ctx, sessionOrder);

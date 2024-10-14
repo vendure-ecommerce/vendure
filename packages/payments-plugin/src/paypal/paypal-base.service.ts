@@ -8,6 +8,7 @@ import {
 
 import { handlerCode, loggerCtx } from './constants';
 import { ConfigArg } from './graphql/generated-shop-types';
+import { PayPalError } from './paypal.error';
 import { PayPalAuthorizationResponse, PayPalPluginOptions } from './types';
 
 export abstract class PayPalBaseService {
@@ -19,10 +20,10 @@ export abstract class PayPalBaseService {
     protected async getPaymentHandlerArgs(ctx: RequestContext): Promise<ConfigArg[]> {
         const paymentMethod = await this.getPaymentMethod(ctx);
         if (!paymentMethod) {
-            throw new InternalServerError('No PayPal payment method configured');
+            throw new InternalServerError('error.paypal-payment-method-not-configured');
         }
         if (!paymentMethod.handler.args) {
-            throw new InternalServerError('No args defined for PayPal payment method');
+            throw new InternalServerError('error.error-in-paypal-payment-configuration');
         }
 
         return paymentMethod.handler.args;
@@ -39,7 +40,7 @@ export abstract class PayPalBaseService {
         const clientId = args.find(arg => arg.name === 'clientId')?.value;
         const clientSecret = args.find(arg => arg.name === 'clientSecret')?.value;
         if (!clientId || !clientSecret) {
-            throw new InternalServerError('PayPal payment method is not configured correctly');
+            throw new PayPalError('error.error-in-paypal-payment-configuration');
         }
 
         const authenticationToken = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
@@ -63,7 +64,7 @@ export abstract class PayPalBaseService {
 
             return (await response.json()) as PayPalAuthorizationResponse;
         } catch (error: any) {
-            const message = 'PayPal authentication failed';
+            const message = 'error.paypal-authentication-failed';
             if (error instanceof Response) {
                 const responseClone = error.clone();
                 Logger.error(message, loggerCtx, await responseClone.text());
@@ -71,7 +72,7 @@ export abstract class PayPalBaseService {
 
             Logger.error(message, loggerCtx, error?.stack);
             // Throw a generic error to avoid leaking sensitive information
-            throw new InternalServerError(message);
+            throw new PayPalError(message);
         }
     }
 }

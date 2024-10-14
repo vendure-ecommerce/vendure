@@ -13,6 +13,7 @@ import {
 import { loggerCtx, PAYPAL_PAYMENT_PLUGIN_OPTIONS } from './constants';
 import { PayPalBaseService } from './paypal-base.service';
 import { convertAmount, createAmount, createItem } from './paypal-order.helpers';
+import { PayPalError } from './paypal.error';
 import { CreatePayPalOrderRequest, PayPalOrderInformation, PayPalPluginOptions } from './types';
 
 export class PayPalOrderService extends PayPalBaseService {
@@ -26,11 +27,8 @@ export class PayPalOrderService extends PayPalBaseService {
     ) {
         super(paymentMethodService, options);
 
-        if (!this.configService.entityOptions.moneyStrategy) {
-            throw new Error('No MoneyStrategy configured. Please check your Vendure configuration.');
-        }
-        if (!this.configService.entityOptions.moneyStrategy.precision) {
-            throw new Error('MoneyStrategy precision is not provided.');
+        if (!this.configService.entityOptions.moneyStrategy?.precision) {
+            throw new InternalServerError('error.money-strategy-not-configured');
         }
 
         this.precision = this.configService.entityOptions.moneyStrategy.precision;
@@ -69,7 +67,7 @@ export class PayPalOrderService extends PayPalBaseService {
 
             return (await response.json()) as PayPalOrderInformation;
         } catch (error: any) {
-            const message = 'Failed to create PayPal order';
+            const message = 'error.paypal-create-order-failed';
             if (error instanceof Response) {
                 const responseClone = error.clone();
                 Logger.error(message, loggerCtx, await responseClone.text());
@@ -77,7 +75,7 @@ export class PayPalOrderService extends PayPalBaseService {
 
             Logger.error(message, loggerCtx, error?.stack);
             // Throw a generic error to avoid leaking sensitive information
-            throw new InternalServerError(message);
+            throw new PayPalError(message);
         }
     }
 
@@ -97,7 +95,7 @@ export class PayPalOrderService extends PayPalBaseService {
 
             return (await response.json()) as PayPalOrderInformation;
         } catch (error: any) {
-            const message = 'Failed to get PayPal order details';
+            const message = 'error.paypal-order-details-failed';
             if (error instanceof Response) {
                 const responseClone = error.clone();
                 Logger.error(message, loggerCtx, await responseClone.text());
@@ -105,7 +103,7 @@ export class PayPalOrderService extends PayPalBaseService {
 
             Logger.error(message, loggerCtx, error?.stack);
             // Throw a generic error to avoid leaking sensitive information
-            throw new InternalServerError(message);
+            throw new PayPalError(message);
         }
     }
 
@@ -118,7 +116,7 @@ export class PayPalOrderService extends PayPalBaseService {
 
         const merchantId = args.find(arg => arg.name === 'merchantId')?.value;
         if (!merchantId) {
-            throw new InternalServerError('PayPal payment method is not configured correctly');
+            throw new InternalServerError('error.error-in-paypal-payment-configuration');
         }
 
         if (paypalOrder.status !== 'APPROVED') {
@@ -133,8 +131,7 @@ export class PayPalOrderService extends PayPalBaseService {
             return {
                 state: 'Error' as const,
                 amount: 0,
-                errorMessage:
-                    "PayPal order must have exactly one purchase_unit assigned. Please use 'createPayPalOrder' to create a new order.",
+                errorMessage: 'errorResult.PAYPAL_ORDER_MATCH_INVALID',
             };
         }
 
@@ -143,7 +140,7 @@ export class PayPalOrderService extends PayPalBaseService {
             return {
                 state: 'Error' as const,
                 amount: 0,
-                errorMessage: `Currency mismatch. Expected ${internalOrder.currencyCode}, got ${purchaseUnit.amount.currency_code}`,
+                errorMessage: 'errorResult.PAYPAL_ORDER_MATCH_INVALID',
             };
         }
 
@@ -151,7 +148,7 @@ export class PayPalOrderService extends PayPalBaseService {
             return {
                 state: 'Error' as const,
                 amount: 0,
-                errorMessage: `Reference ID mismatch. Expected ${internalOrder.code}, got ${purchaseUnit.reference_id ?? 'no reference id.'}`,
+                errorMessage: 'errorResult.PAYPAL_ORDER_MATCH_INVALID',
             };
         }
 
@@ -160,7 +157,7 @@ export class PayPalOrderService extends PayPalBaseService {
             return {
                 state: 'Error' as const,
                 amount: 0,
-                errorMessage: `Amount mismatch. Expected ${orderTotal}, got ${purchaseUnit.amount.value}`,
+                errorMessage: 'errorResult.PAYPAL_ORDER_MATCH_INVALID',
             };
         }
 
@@ -168,7 +165,7 @@ export class PayPalOrderService extends PayPalBaseService {
             return {
                 state: 'Error' as const,
                 amount: 0,
-                errorMessage: `Payee mismatch.`,
+                errorMessage: 'errorResult.PAYPAL_ORDER_MATCH_INVALID',
             };
         }
     }
