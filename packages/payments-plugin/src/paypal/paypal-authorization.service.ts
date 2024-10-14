@@ -1,8 +1,9 @@
 import { Inject } from '@nestjs/common';
-import { InternalServerError, Logger, PaymentMethodService, RequestContext } from '@vendure/core';
+import { Logger, PaymentMethodService, RequestContext } from '@vendure/core';
 
 import { loggerCtx, PAYPAL_PAYMENT_PLUGIN_OPTIONS } from './constants';
 import { PayPalBaseService } from './paypal-base.service';
+import { PayPalError } from './paypal.error';
 import { PayPalOrderInformation, PayPalPluginOptions } from './types';
 
 export class PayPalAuthorizationService extends PayPalBaseService {
@@ -32,7 +33,7 @@ export class PayPalAuthorizationService extends PayPalBaseService {
 
             return (await response.json()) as PayPalOrderInformation;
         } catch (error: any) {
-            const message = 'Failed to get PayPal authorization details';
+            const message = 'error.paypal-authorization-details-failed';
             if (error instanceof Response) {
                 const responseClone = error.clone();
                 Logger.error(message, loggerCtx, await responseClone.text());
@@ -40,7 +41,7 @@ export class PayPalAuthorizationService extends PayPalBaseService {
 
             Logger.error(message, loggerCtx, error?.stack);
             // Throw a generic error to avoid leaking sensitive information
-            throw new InternalServerError(message);
+            throw new PayPalError(message);
         }
     }
 
@@ -65,7 +66,7 @@ export class PayPalAuthorizationService extends PayPalBaseService {
 
             return (await response.json()) as PayPalOrderInformation;
         } catch (error: any) {
-            const message = 'PayPal reauthorization failed';
+            const message = 'error.paypal-reauthorization-failed';
             if (error instanceof Response) {
                 const responseClone = error.clone();
                 Logger.error(message, loggerCtx, await responseClone.text());
@@ -73,7 +74,7 @@ export class PayPalAuthorizationService extends PayPalBaseService {
 
             Logger.error(message, loggerCtx, error?.stack);
             // Throw a generic error to avoid leaking sensitive information
-            throw new InternalServerError(message);
+            throw new PayPalError(message);
         }
     }
 
@@ -98,7 +99,7 @@ export class PayPalAuthorizationService extends PayPalBaseService {
 
             return (await response.json()) as PayPalOrderInformation;
         } catch (error: any) {
-            const message = 'PayPal authorization failed';
+            const message = 'error.paypal-authorization-failed';
             if (error instanceof Response) {
                 const responseClone = error.clone();
                 Logger.error(message, loggerCtx, await responseClone.text());
@@ -106,7 +107,7 @@ export class PayPalAuthorizationService extends PayPalBaseService {
 
             Logger.error(message, loggerCtx, error?.stack);
             // Throw a generic error to avoid leaking sensitive information
-            throw new InternalServerError(message);
+            throw new PayPalError(message);
         }
     }
 
@@ -134,7 +135,7 @@ export class PayPalAuthorizationService extends PayPalBaseService {
 
             return (await response.json()) as PayPalOrderInformation;
         } catch (error: any) {
-            const message = 'PayPal capture failed';
+            const message = 'error.paypal-capture-failed';
             if (error instanceof Response) {
                 const responseClone = error.clone();
                 Logger.error(message, loggerCtx, await responseClone.text());
@@ -142,7 +143,7 @@ export class PayPalAuthorizationService extends PayPalBaseService {
 
             Logger.error(message, loggerCtx, error?.stack);
             // Throw a generic error to avoid leaking sensitive information
-            throw new InternalServerError(message);
+            throw new PayPalError(message);
         }
     }
 }

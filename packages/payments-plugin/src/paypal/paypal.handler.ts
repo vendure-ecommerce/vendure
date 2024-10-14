@@ -1,10 +1,11 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { Injector, PaymentMethodHandler } from '@vendure/core';
+import { Injector, PaymentMethodHandler, UserInputError } from '@vendure/core';
 
 import { handlerCode } from './constants';
 import { PayPalAuthorizationService } from './paypal-authorization.service';
 import { PayPalCaptureService } from './paypal-capture.service';
 import { PayPalOrderService } from './paypal-order.service';
+import { PayPalError } from './paypal.error';
 
 let paypalOrderService: PayPalOrderService;
 let paypalAuthorizationService: PayPalAuthorizationService;
@@ -42,11 +43,9 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
 
     async createPayment(ctx, order, amount, args, metadata) {
         if (!metadata.orderId) {
-            return {
-                state: 'Error' as const,
-                amount: order.totalWithTax,
-                errorMessage: '"orderId" must be set in metadata. Call "createPayPalOrder" to get order id',
-            };
+            throw new UserInputError('error.configurable-argument-is-required', {
+                name: 'orderId',
+            });
         }
 
         const orderDetails = await paypalOrderService.orderDetails(ctx, metadata.orderId);
@@ -60,11 +59,11 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
 
         try {
             authorizedOrderResponse = await paypalAuthorizationService.authorizeOrder(ctx, metadata.orderId);
-        } catch (error) {
+        } catch (error: any) {
             return {
                 state: 'Error' as const,
                 amount: 0,
-                errorMessage: 'Payment authorization failed. Error while accessing PayPal.',
+                errorMessage: error.message,
             };
         }
 
@@ -72,7 +71,7 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
             return {
                 state: 'Error' as const,
                 amount: 0,
-                errorMessage: 'Payment authorization failed. No payments found.',
+                errorMessage: 'errorResult.PAYPAL_ORDER_WITHOUT_PAYMENTS',
             };
         }
 
@@ -80,7 +79,7 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
             return {
                 state: 'Error' as const,
                 amount: 0,
-                errorMessage: 'Payment authorization failed. No authorizations found.',
+                errorMessage: 'errorResult.PAYPAL_ORDER_WITHOUT_AUTHORIZATIONS',
             };
         }
 
@@ -90,7 +89,7 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
             return {
                 state: 'Error' as const,
                 amount: 0,
-                errorMessage: "Payment authorization failed. Payment status must be 'CREATED'.",
+                errorMessage: 'errorResult.PAYPAL_ORDER_STATUS_NOT_CREATED',
             };
         }
 
@@ -108,7 +107,7 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
         if (payment.state !== 'Authorized') {
             return {
                 success: false,
-                errorMessage: 'Payment is not authorized. Call "createPayment" to authorize payment',
+                errorMessage: 'errorResult.PAYPAL_ORDER_WITHOUT_AUTHORIZATIONS',
                 state: 'Error' as const,
             };
         }
@@ -122,7 +121,7 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
         if (!authorizations?.length) {
             return {
                 success: false,
-                errorMessage: 'No authorizations found in order details.',
+                errorMessage: 'errorResult.PAYPAL_ORDER_WITHOUT_AUTHORIZATIONS',
                 state: 'Error' as const,
             };
         }
@@ -154,17 +153,17 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
         const captures = payments?.captures;
 
         if (!captures || !captures.length) {
-            throw new Error('No payments were captured in this order');
+            throw new PayPalError('errorResult.PAYPAL_ORDER_WITHOUT_PAYMENTS');
         }
 
         if (captures.length !== 1) {
-            throw new Error('Multiple captures assigned to this order');
+            throw new PayPalError('errorResult.MULTIPLE_CAPTURES');
         }
 
         const capture = captures[0];
 
         if (capture.status !== 'COMPLETED' && capture.status !== 'PARTIALLY_REFUNDED') {
-            throw new Error('Capture is not completed. Nothing to refund.');
+            throw new PayPalError('errorResult.PAYPAL_PAYMENT_NOT_CAPTURED');
         }
 
         const refundResponse = await paypalCaptureService.refundCapture(ctx, captures[0].id, total, order);
