@@ -11,11 +11,11 @@ export interface PayPalSdkPluginOptions {
     clientId: string;
 }
 
-// @ts-ignore
 /**
  * This tagged template literal has no special functionality. It is used for syntax highlighting and formatting
  * purposes in the IDE.
  */
+// @ts-ignore
 function html(strings, ...values) {
     // @ts-ignore
     // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
