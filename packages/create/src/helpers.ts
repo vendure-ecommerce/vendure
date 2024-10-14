@@ -375,14 +375,14 @@ export async function isDockerAvailable(): Promise<{ result: 'not-found' | 'not-
     try {
         if (currentPlatform === 'win32') {
             // https://stackoverflow.com/a/44182489/772859
-            execSync('"C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe"');
+            execSync('"C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe"', { stdio: 'ignore' });
         } else if (currentPlatform === 'darwin') {
-            execSync('open -a Docker');
+            execSync('open -a Docker', { stdio: 'ignore' });
         } else {
-            execSync('systemctl start docker');
+            execSync('systemctl start docker', { stdio: 'ignore' });
         }
     } catch (e: any) {
-        dockerSpinner.message('Could not start Docker.');
+        dockerSpinner.stop('Could not start Docker.');
         log(e.message, { level: 'verbose' });
         return { result: 'not-running' };
     }
@@ -518,9 +518,15 @@ export function checkCancel<T>(value: T | symbol): value is T {
 
 export function cleanUpDockerResources(name: string) {
     try {
-        execSync(`docker stop $(docker ps -a -q --filter "label=io.vendure.create.name=${name}")`);
-        execSync(`docker rm $(docker ps -a -q --filter "label=io.vendure.create.name=${name}")`);
-        execSync(`docker volume rm $(docker volume ls --filter "label=io.vendure.create.name=${name}" -q)`);
+        execSync(`docker stop $(docker ps -a -q --filter "label=io.vendure.create.name=${name}")`, {
+            stdio: 'ignore',
+        });
+        execSync(`docker rm $(docker ps -a -q --filter "label=io.vendure.create.name=${name}")`, {
+            stdio: 'ignore',
+        });
+        execSync(`docker volume rm $(docker volume ls --filter "label=io.vendure.create.name=${name}" -q)`, {
+            stdio: 'ignore',
+        });
     } catch (e) {
         log(pc.yellow(`Could not clean up Docker resources`), { level: 'verbose' });
     }

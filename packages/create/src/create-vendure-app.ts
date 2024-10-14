@@ -238,9 +238,8 @@ export async function createVendureApp(
     }
     scaffoldSpinner.stop(`Generated app scaffold`);
 
-    cleanUpDockerResources(name);
-
     if (mode === 'quick' && dbType === 'postgres') {
+        cleanUpDockerResources(name);
         await startPostgresDatabase(root);
     }
 
@@ -297,6 +296,7 @@ export async function createVendureApp(
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     require(path.join(root, 'node_modules/ts-node')).register();
 
+    let superAdminCredentials: { identifier: string; password: string } | undefined;
     try {
         const { populate } = await import(path.join(root, 'node_modules/@vendure/core/cli/populate'));
         const { bootstrap, DefaultLogger, LogLevel, JobQueueService, ConfigModule } = await import(
@@ -304,7 +304,7 @@ export async function createVendureApp(
         );
         const { config } = await import(configFile);
         const assetsDir = path.join(__dirname, '../assets');
-
+        superAdminCredentials = config.authOptions.superadminCredentials;
         const initialDataPath = path.join(assetsDir, 'initial-data.json');
         const vendureLogLevel =
             logLevel === 'info' || logLevel === 'silent'
@@ -389,7 +389,7 @@ export async function createVendureApp(
 
                 // process.stdin.resume();
                 process.on('SIGINT', function () {
-                    displayOutro(root, name);
+                    displayOutro(root, name, superAdminCredentials);
                     quickStartProcess?.kill('SIGINT');
                     process.exit(0);
                 });
@@ -412,7 +412,7 @@ export async function createVendureApp(
             }
         } else {
             clearTimeout(timer);
-            displayOutro(root, name);
+            displayOutro(root, name, superAdminCredentials);
             process.exit(0);
         }
     } catch (e: any) {
@@ -422,19 +422,35 @@ export async function createVendureApp(
     }
 }
 
-function displayOutro(root: string, name: string) {
+function displayOutro(
+    root: string,
+    name: string,
+    superAdminCredentials?: { identifier: string; password: string },
+) {
     const startCommand = 'npm run dev';
     const nextSteps = [
-        `${pc.green('Success!')} Your new Vendure server was created!`,
+        `Your new Vendure server was created!`,
+        pc.gray(root),
         `\n`,
-        pc.italic(root),
-        `\n`,
-        `You can run it again with:`,
-        `\n`,
+        `Next, run:`,
         pc.gray('$ ') + pc.blue(pc.bold(`cd ${name}`)),
         pc.gray('$ ') + pc.blue(pc.bold(`${startCommand}`)),
+        `\n`,
+        `This will start the server in development mode.`,
+        `To access the Admin UI, open your browser and navigate to:`,
+        `\n`,
+        pc.green(`http://localhost:3000/admin`),
+        `\n`,
+        `Use the following credentials to log in:`,
+        `Username: ${pc.green(superAdminCredentials?.identifier ?? 'superadmin')}`,
+        `Password: ${pc.green(superAdminCredentials?.password ?? 'superadmin')}`,
+        '\n',
+        '➡️ Docs: https://docs.vendure.io',
+        '➡️ Discord community: https://vendure.io/community',
+        '➡️ Star us on GitHub:',
+        '   https://github.com/vendure-ecommerce/vendure',
     ];
-    note(nextSteps.join('\n'));
+    note(nextSteps.join('\n'), pc.green('Setup complete!'));
     outro(`Happy hacking!`);
 }
 
