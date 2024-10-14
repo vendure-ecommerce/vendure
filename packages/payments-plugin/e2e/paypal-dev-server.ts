@@ -19,19 +19,17 @@ import { PayPalSdkPlugin } from './paypal-sdk.plugin';
 /**
  * This should only be used to locally test the PayPal payment plugin
  * Make sure you have `PAYPAL_CLIENT_ID=xxxx`, `PAYPAL_CLIENT_SECRET=xxxx`
- * and `PAYPAL_MERCHANT_ID=xxxx` in your .env file
+ * , `PAYPAL_MERCHANT_ID=xxxx` and `PAYPAL_API_URL=xxx` in your .env file
  */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 async function runPayPalDevServer() {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     require('dotenv').config();
 
-    const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_MERCHANT_ID } = process.env;
-    if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET || !PAYPAL_MERCHANT_ID) {
+    const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_MERCHANT_ID, PAYPAL_API_URL } = process.env;
+    if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET || !PAYPAL_MERCHANT_ID || !PAYPAL_API_URL) {
         throw new Error('Please provide PayPal credentials in the .env file');
     }
-
-    const apiUrl = 'https://api-m.sandbox.paypal.com';
 
     registerInitializer('sqljs', new SqljsInitializer(path.join(__dirname, '__data__')));
     const config = mergeConfig(testConfig, {
@@ -43,10 +41,10 @@ async function runPayPalDevServer() {
                 port: 5001,
             }),
             PayPalPlugin.init({
-                apiUrl,
+                apiUrl: PAYPAL_API_URL,
             }),
             PayPalSdkPlugin.init({
-                apiUrl,
+                apiUrl: PAYPAL_API_URL,
                 clientId: PAYPAL_CLIENT_ID,
             }),
         ],

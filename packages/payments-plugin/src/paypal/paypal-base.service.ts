@@ -30,9 +30,7 @@ export abstract class PayPalBaseService {
 
     protected async getPaymentMethod(ctx: RequestContext): Promise<PaymentMethod | undefined> {
         const allPaymentMethods = await this.paymentMethodService.findAll(ctx);
-        const paymentMethod = allPaymentMethods.items.find(item => item.handler?.code === handlerCode);
-
-        return paymentMethod;
+        return allPaymentMethods.items.find(item => item.handler?.code === handlerCode);
     }
 
     protected async authenticate(ctx: RequestContext): Promise<PayPalAuthorizationResponse> {
