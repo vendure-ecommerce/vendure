@@ -30,6 +30,7 @@ import { LocalStorageService } from './providers/local-storage/local-storage.ser
 import { Permission } from './public_api';
 import { registerDefaultFormInputs } from './shared/dynamic-form-inputs/default-form-inputs';
 import { SharedModule } from './shared/shared.module';
+import { FloatingButtonComponent } from './components/floating-button/floating-button.component';
 
 @NgModule({
     imports: [
@@ -53,6 +54,7 @@ import { SharedModule } from './shared/shared.module';
         AppShellComponent,
         UserMenuComponent,
         BaseNavComponent,
+        FloatingButtonComponent,
         MainNavComponent,
         SettingsNavComponent,
         BreadcrumbComponent,

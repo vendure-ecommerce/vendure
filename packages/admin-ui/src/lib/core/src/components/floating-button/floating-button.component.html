@@ -1,0 +1,26 @@
+<div class="floating-button-container">
+    <button
+        *ngFor="let button of floatingButtons"
+        class="floating-button"
+        [ngClass]="{ disabled: button.disabled }"
+        [style.backgroundColor]="button.backgroundColor"
+        (click)="handleClick(button)"
+        [style.width]="button.buttonSize ? button.buttonSize + 'px' : '60px'"
+        [style.height]="button.buttonSize ? button.buttonSize + 'px' : '60px'"
+        [style.display]="
+            button.visible &&
+            (button.requiresPermission == null ||
+                button.requiresPermission === false ||
+                (button.requiresPermission && button.requiresPermission | hasPermission))
+                ? 'flex'
+                : 'none'
+        "
+    >
+        <clr-icon
+            [attr.shape]="button.icon"
+            [attr.size]="button.iconSize || '16'"
+            [style.color]="button.iconColor"
+        ></clr-icon>
+        <span>{{ button.label }}</span>
+    </button>
+</div>
