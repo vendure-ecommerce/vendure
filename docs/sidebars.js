@@ -72,6 +72,7 @@ const sidebars = {
                 'guides/developer-guide/events/index',
                 'guides/developer-guide/migrations/index',
                 'guides/developer-guide/plugins/index',
+                'guides/developer-guide/security/index',
                 'guides/developer-guide/strategies-configurable-operations/index',
                 'guides/developer-guide/testing/index',
                 'guides/developer-guide/updating/index',
