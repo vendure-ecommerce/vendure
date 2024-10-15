@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { mergeConfig } from '@vendure/core';
+import { ConfigService, mergeConfig } from '@vendure/core';
 import { AssetFragment } from '@vendure/core/e2e/graphql/generated-e2e-admin-types';
 import { createTestEnvironment } from '@vendure/testing';
+import { exec } from 'child_process';
 import fs from 'fs-extra';
 import gql from 'graphql-tag';
 import fetch from 'node-fetch';
@@ -193,6 +194,41 @@ describe('AssetServerPlugin', () => {
         it('does not error on non-integer height', async () => {
             return fetch(`${asset.preview}?h=10.5`);
         });
+
+        // https://github.com/vendure-ecommerce/vendure/security/advisories/GHSA-r9mq-3c9r-fmjq
+        describe('path traversal', () => {
+            function curlWithPathAsIs(url: string) {
+                return new Promise<string>((resolve, reject) => {
+                    // We use curl here rather than node-fetch or any other fetch-type function because
+                    // those will automatically perform path normalization which will mask the path traversal
+                    return exec(`curl --path-as-is ${url}`, (err, stdout, stderr) => {
+                        if (err) {
+                            reject(err);
+                        }
+                        resolve(stdout);
+                    });
+                });
+            }
+
+            function testPathTraversalOnUrl(urlPath: string) {
+                return async () => {
+                    const port = server.app.get(ConfigService).apiOptions.port;
+                    const result = await curlWithPathAsIs(`http://localhost:${port}/assets${urlPath}`);
+                    expect(result).not.toContain('@vendure/asset-server-plugin');
+                    expect(result.toLowerCase()).toContain('resource not found');
+                };
+            }
+
+            it('blocks path traversal 1', testPathTraversalOnUrl(`/../../package.json`));
+            it('blocks path traversal 2', testPathTraversalOnUrl(`/foo/../../../package.json`));
+            it('blocks path traversal 3', testPathTraversalOnUrl(`/foo/../../../foo/../package.json`));
+            it('blocks path traversal 4', testPathTraversalOnUrl(`/%2F..%2F..%2Fpackage.json`));
+            it('blocks path traversal 5', testPathTraversalOnUrl(`/%2E%2E/%2E%2E/package.json`));
+            it('blocks path traversal 6', testPathTraversalOnUrl(`/..//..//package.json`));
+            it('blocks path traversal 7', testPathTraversalOnUrl(`/.%2F.%2F.%2Fpackage.json`));
+            it('blocks path traversal 8', testPathTraversalOnUrl(`/..\\\\..\\\\package.json`));
+            it('blocks path traversal 9', testPathTraversalOnUrl(`/\\\\\\..\\\\\\..\\\\\\package.json`));
+        });
     });
 
     describe('deletion', () => {
@@ -268,7 +304,7 @@ describe('AssetServerPlugin', () => {
     // https://github.com/vendure-ecommerce/vendure/issues/1563
     it('falls back to binary preview if image file cannot be processed', async () => {
         const filesToUpload = [path.join(__dirname, 'fixtures/assets/bad-image.jpg')];
-        const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
+        const { createAssets }: CreateAssetsMutation = await adminClient.fileUploadMutation({
             mutation: CREATE_ASSETS,
             filePaths: filesToUpload,
             mapVariables: filePaths => ({
