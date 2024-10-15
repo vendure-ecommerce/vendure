@@ -1,5 +1,8 @@
 ## <small>2.3.3 (2024-10-15)</small>
 
+#### Fixes
+
+* **asset-server-plugin** Fix local file read vulnerability when using the LocalAssetStorageStrategy ([e2ee0c4](https://github.com/vendure-ecommerce/vendure/commit/e2ee0c43159b3d13b51b78654481094fdd4850c5)). See the [security advisory](https://github.com/vendure-ecommerce/vendure/security/advisories/GHSA-r9mq-3c9r-fmjq)
 
 ## <small>2.3.2 (2024-10-04)</small>
 
