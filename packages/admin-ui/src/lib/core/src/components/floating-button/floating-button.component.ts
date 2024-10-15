@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription, take } from 'rxjs';
 import { NavigationEnd, Router } from '@angular/router';
-import { FloatingButton, ModalService } from '@vendure/admin-ui/core';
+import { FloatingButton } from '../../providers/floating-button/floating-button-types';
 import { FloatingButtonService } from '../../providers/floating-button/floating-button.service';
 
 @Component({
