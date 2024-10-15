@@ -3,7 +3,17 @@ import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { Apollo, QueryRef } from 'apollo-angular';
 import { DocumentNode } from 'graphql';
 import { merge, Observable, Subject, Subscription } from 'rxjs';
-import { distinctUntilChanged, filter, finalize, map, skip, take, takeUntil } from 'rxjs/operators';
+import {
+    distinctUntilChanged,
+    filter,
+    finalize,
+    map,
+    shareReplay,
+    skip,
+    startWith,
+    take,
+    takeUntil,
+} from 'rxjs/operators';
 
 import { CustomFieldConfig, GetUserStatusQuery } from '../common/generated-types';
 
@@ -194,7 +204,9 @@ export class QueryResult<T, V extends Record<string, any> = Record<string, any>>
                 this.subscribeToQueryRef(this.queryRef);
                 this.queryRefSubscribed.set(this.queryRef, true);
             }
-            this.valueChangeSubject.subscribe(subscriber);
+            this.valueChangeSubject
+                .pipe(startWith(this.queryRef.getCurrentResult()), shareReplay(1))
+                .subscribe(subscriber);
             return () => {
                 this.queryRefSubscribed.delete(this.queryRef);
             };
