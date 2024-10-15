@@ -281,7 +281,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
         return async (err: any, req: Request, res: Response, next: NextFunction) => {
             if (err && (err.status === 404 || err.statusCode === 404)) {
                 if (req.query) {
-                    const decodedReqPath = decodeURIComponent(req.path);
+                    const decodedReqPath = this.sanitizeFilePath(req.path);
                     Logger.debug(`Pre-cached Asset not found: ${decodedReqPath}`, loggerCtx);
                     let file: Buffer;
                     try {
@@ -347,15 +347,27 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
             imageParamsString += quality;
         }
 
-        /* eslint-enable @typescript-eslint/restrict-template-expressions */
-
-        const decodedReqPath = decodeURIComponent(req.path);
+        const decodedReqPath = this.sanitizeFilePath(req.path);
         if (imageParamsString !== '') {
             const imageParamHash = this.md5(imageParamsString);
             return path.join(this.cacheDir, this.addSuffix(decodedReqPath, imageParamHash, imageFormat));
         } else {
             return decodedReqPath;
         }
+    }
+
+    /**
+     * Sanitize the file path to prevent directory traversal attacks.
+     */
+    private sanitizeFilePath(filePath: string): string {
+        let decodedPath: string;
+        try {
+            decodedPath = decodeURIComponent(filePath);
+        } catch (e: any) {
+            Logger.error((e.message as string) + ': ' + filePath, loggerCtx);
+            return '';
+        }
+        return path.normalize(decodedPath).replace(/(\.\.[\/\\])+/, '');
     }
 
     private md5(input: string): string {
