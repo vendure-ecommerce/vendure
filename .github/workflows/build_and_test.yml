@@ -60,23 +60,25 @@ jobs:
       mariadb:
         image: bitnami/mariadb:10.3
         env:
-          ALLOW_EMPTY_PASSWORD: yes
+          MARIADB_ROOT_USER: vendure
+          MARIADB_ROOT_PASSWORD: password
         ports:
           - 3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
       mysql:
         image: bitnami/mysql:8.0
         env:
-          ALLOW_EMPTY_PASSWORD: yes
           MYSQL_AUTHENTICATION_PLUGIN: mysql_native_password
+          MYSQL_ROOT_USER: vendure
+          MYSQL_ROOT_PASSWORD: password
         ports:
           - 3306
         options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=20s --health-retries=10
       postgres:
-        image: postgres:12
+        image: postgres:16
         env:
-          POSTGRES_USER: admin
-          POSTGRES_PASSWORD: secret
+          POSTGRES_USER: vendure
+          POSTGRES_PASSWORD: password
         ports:
           - 5432
         options: --health-cmd=pg_isready --health-interval=10s --health-timeout=5s --health-retries=3

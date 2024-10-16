@@ -62,39 +62,51 @@ Packages must be built (i.e. TypeScript compiled, admin ui app built, certain as
 
 Note that this can take a few minutes.
 
-### 3. Set up the server
+### 3. Start the docker containers
 
-The server requires an SQL database to be available. The simplest option is to use SQLite, but if you have Docker available you can use the [dev-server docker-compose file](./packages/dev-server/docker-compose.yml) which will start up both MariaDB and Postgres as well as their GUI management tools.
+All the necessary infrastructure is defined in the root [docker-compose.yml](./docker-compose.yml) file. At a minimum,
+you will need to start a database, for example:
 
-Vendure uses [TypeORM](http://typeorm.io), and officially supports **MySQL**, **PostgreSQL** and **SQLite**, though other TypeORM-supported databases may work.
+```bash
+docker-compose up -d mariadb
+```
 
-1. Configure the [dev config](./packages/dev-server/dev-config.ts), making sure the connection settings in the `getDbConfig()` function are correct for the database type you will be using.
-2. Create the database using your DB admin tool of choice (e.g. phpMyAdmin if you are using the docker image suggested above). Name it according to the `getDbConfig()` settings. If you are using SQLite, you can skip this step.
-3. Populate mock data: 
-   ```bash
-    cd packages/dev-server
-    DB=<mysql|postgres|sqlite> npm run populate
-    ```
-   If you do not specify the `DB` variable, it will default to "mysql".
+MariaDB/MySQL is the default that will be used by the dev server if you don't explicitly set the `DB` environment variable.
 
-### 4. Run the dev server
+If for example you are doing development on the Elasticsearch plugin, you will also need to start the Elasticsearch container:
+
+```bash
+docker-compose up -d elasticsearch
+```
+
+### 4. Populate test data
+
+Vendure uses [TypeORM](http://typeorm.io), and officially supports **MySQL**, **MariaDB**, **PostgreSQL** and **SQLite**.
+
+The first step is to populate the dev server with some test data:
+
+```bash
+cd packages/dev-server
+
+[DB=mysql|postres|sqlite] npm run populate
+ ```
+
+If you do not specify the `DB` variable, it will default to "mysql". If you specifically want to develop against Postgres,
+you need to run the `postgres_16` container and then run `DB=postgres npm run populate`. 
+
+### 5. Run the dev server
 
 ```
 cd packages/dev-server
-DB=<mysql|postgres|sqlite> npm run start
+[DB=mysql|postgres|sqlite] npm run dev
 ```
-Or if you are in the root package 
-```
-DB=<mysql|postgres|sqlite> npm run dev-server:start
-```
-If you do not specify the `DB` argument, it will default to "mysql".
 
 ### Testing admin ui changes locally
 
 If you are making changes to the admin ui, you need to start the admin ui independent from the dev-server:
 
 1. `cd packages/admin-ui`
-2. `npm run start`
+2. `npm run dev`
 3. Go to http://localhost:4200 and log in with "superadmin", "superadmin"
 
 This will auto restart when you make changes to the admin ui. You don't need this step when you just use the admin ui just
@@ -125,7 +137,7 @@ npm run watch:core-common
 ```shell
 # Terminal 2
 cd packages/dev-server
-DB=sqlite npm run start
+DB=sqlite npm run dev
 ```
 
 3. The dev-server will now have your local changes from the changed package.

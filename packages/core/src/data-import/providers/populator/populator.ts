@@ -271,8 +271,6 @@ export class Populator {
         taxRates: Array<{ name: string; percentage: number }>,
         zoneMap: ZoneMap,
     ) {
-        const taxCategories: TaxCategory[] = [];
-
         for (const taxRate of taxRates) {
             const category = await this.taxCategoryService.create(ctx, { name: taxRate.name });
 

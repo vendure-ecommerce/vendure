@@ -2147,6 +2147,145 @@ describe('Promotions applied to Orders', () => {
         });
     });
 
+    // https://github.com/vendure-ecommerce/vendure/issues/2052
+    describe('multi-channel usage', () => {
+        const SECOND_CHANNEL_TOKEN = 'second_channel_token';
+        const THIRD_CHANNEL_TOKEN = 'third_channel_token';
+        const promoCode = 'TEST_COMMON_CODE';
+
+        async function createChannelAndAssignProducts(code: string, token: string) {
+            const result = await adminClient.query<
+                Codegen.CreateChannelMutation,
+                Codegen.CreateChannelMutationVariables
+            >(CREATE_CHANNEL, {
+                input: {
+                    code,
+                    token,
+                    defaultLanguageCode: LanguageCode.en,
+                    currencyCode: CurrencyCode.GBP,
+                    pricesIncludeTax: true,
+                    defaultShippingZoneId: 'T_1',
+                    defaultTaxZoneId: 'T_1',
+                },
+            });
+
+            await adminClient.query<
+                Codegen.AssignProductsToChannelMutation,
+                Codegen.AssignProductsToChannelMutationVariables
+            >(ASSIGN_PRODUCT_TO_CHANNEL, {
+                input: {
+                    channelId: (result.createChannel as Codegen.ChannelFragment).id,
+                    priceFactor: 1,
+                    productIds: products.map(p => p.id),
+                },
+            });
+
+            return result.createChannel as Codegen.ChannelFragment;
+        }
+
+        async function addItemAndApplyPromoCode() {
+            await shopClient.asAnonymousUser();
+            await shopClient.query<
+                CodegenShop.AddItemToOrderMutation,
+                CodegenShop.AddItemToOrderMutationVariables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: getVariantBySlug('item-5000').id,
+                quantity: 1,
+            });
+
+            const { applyCouponCode } = await shopClient.query<
+                CodegenShop.ApplyCouponCodeMutation,
+                CodegenShop.ApplyCouponCodeMutationVariables
+            >(APPLY_COUPON_CODE, {
+                couponCode: promoCode,
+            });
+
+            orderResultGuard.assertSuccess(applyCouponCode);
+            return applyCouponCode;
+        }
+
+        beforeAll(async () => {
+            await createChannelAndAssignProducts('second-channel', SECOND_CHANNEL_TOKEN);
+            await createChannelAndAssignProducts('third-channel', THIRD_CHANNEL_TOKEN);
+        });
+
+        it('create promotion in second channel', async () => {
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+
+            const result = await createPromotion({
+                enabled: true,
+                name: 'common-promotion-second-channel',
+                couponCode: promoCode,
+                actions: [
+                    {
+                        code: orderPercentageDiscount.code,
+                        arguments: [{ name: 'discount', value: '20' }],
+                    },
+                ],
+                conditions: [],
+            });
+
+            expect(result.name).toBe('common-promotion-second-channel');
+        });
+
+        it('create promotion in third channel', async () => {
+            adminClient.setChannelToken(THIRD_CHANNEL_TOKEN);
+
+            const result = await createPromotion({
+                enabled: true,
+                name: 'common-promotion-third-channel',
+                couponCode: promoCode,
+                actions: [
+                    {
+                        code: orderPercentageDiscount.code,
+                        arguments: [{ name: 'discount', value: '20' }],
+                    },
+                ],
+                conditions: [],
+            });
+
+            expect(result.name).toBe('common-promotion-third-channel');
+        });
+
+        it('applies promotion in second channel', async () => {
+            shopClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+
+            const result = await addItemAndApplyPromoCode();
+            expect(result.discounts.length).toBe(1);
+            expect(result.discounts[0].description).toBe('common-promotion-second-channel');
+        });
+
+        it('applies promotion in third channel', async () => {
+            shopClient.setChannelToken(THIRD_CHANNEL_TOKEN);
+
+            const result = await addItemAndApplyPromoCode();
+            expect(result.discounts.length).toBe(1);
+            expect(result.discounts[0].description).toBe('common-promotion-third-channel');
+        });
+
+        it('applies promotion from current channel, not default channel', async () => {
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const defaultChannelPromotion = await createPromotion({
+                enabled: true,
+                name: 'common-promotion-default-channel',
+                couponCode: promoCode,
+                actions: [
+                    {
+                        code: orderPercentageDiscount.code,
+                        arguments: [{ name: 'discount', value: '20' }],
+                    },
+                ],
+                conditions: [],
+            });
+
+            shopClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+
+            const result = await addItemAndApplyPromoCode();
+            expect(result.discounts.length).toBe(1);
+            expect(result.discounts[0].description).toBe('common-promotion-second-channel');
+        });
+    });
+
     async function getProducts() {
         const result = await adminClient.query<Codegen.GetProductsWithVariantPricesQuery>(
             GET_PRODUCTS_WITH_VARIANT_PRICES,

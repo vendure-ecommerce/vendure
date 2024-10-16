@@ -481,6 +481,7 @@ export class IndexerController {
                                         loadEagerRelations: false,
                                         where: {
                                             productId: variant.productId,
+                                            deletedAt: IsNull(),
                                         },
                                     })
                                     .then(_variants =>

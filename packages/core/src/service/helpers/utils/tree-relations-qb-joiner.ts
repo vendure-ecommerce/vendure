@@ -110,7 +110,7 @@ export function joinTreeRelationsDynamically<T extends VendureEntity>(
         }
         const nextAlias = DriverUtils.buildAlias(
             qb.connection.driver,
-            { shorten: false },
+            { shorten: false, joiner: joinConnector },
             currentAlias,
             part.replace(/\./g, '_'),
         );
