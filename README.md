@@ -98,7 +98,7 @@ you need to run the `postgres_16` container and then run `DB=postgres npm run po
 
 ```
 cd packages/dev-server
-[DB=mysql|postgres|sqlite] npm run start
+[DB=mysql|postgres|sqlite] npm run dev
 ```
 
 ### Testing admin ui changes locally
@@ -106,7 +106,7 @@ cd packages/dev-server
 If you are making changes to the admin ui, you need to start the admin ui independent from the dev-server:
 
 1. `cd packages/admin-ui`
-2. `npm run start`
+2. `npm run dev`
 3. Go to http://localhost:4200 and log in with "superadmin", "superadmin"
 
 This will auto restart when you make changes to the admin ui. You don't need this step when you just use the admin ui just
@@ -137,7 +137,7 @@ npm run watch:core-common
 ```shell
 # Terminal 2
 cd packages/dev-server
-DB=sqlite npm run start
+DB=sqlite npm run dev
 ```
 
 3. The dev-server will now have your local changes from the changed package.
