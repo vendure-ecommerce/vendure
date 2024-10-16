@@ -193,7 +193,9 @@ describe('PayPal payments', () => {
         it('Should fail when no active order is set', async ({ expect }) => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
             const createOrderPromise = shopClient.query(CREATE_PAYPAL_ORDER);
-            await expect(createOrderPromise).rejects.toThrowError('Session has no active order');
+            await expect(createOrderPromise).rejects.toThrowError(
+                'No active Order could be determined nor created',
+            );
         });
         it('Should fail when not in ArrangingPayment state', async ({ expect }) => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
@@ -208,7 +210,9 @@ describe('PayPal payments', () => {
 
             await setShipping(shopClient);
             const createOrderPromise = shopClient.query(CREATE_PAYPAL_ORDER);
-            await expect(createOrderPromise).rejects.toThrowError('Order must be in arranging payment state');
+            await expect(createOrderPromise).rejects.toThrowError(
+                'A Payment may only be added when Order is in "ArrangingPayment" state',
+            );
         });
         it('Should create an order with correct content', async ({ expect }) => {
             let createOrderRequest: CreatePayPalOrderRequest | undefined;
@@ -356,20 +360,14 @@ describe('PayPal payments', () => {
         it('Should print error message when orderId is not set', async ({ expect }) => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
 
-            const addPaymentToOrderResult = await shopClient.query(ADD_PAYMENT_TO_ORDER, {
-                input: {
-                    method: methodCode,
-                    metadata: {},
-                },
-            });
-            expect(addPaymentToOrderResult).toEqual({
-                addPaymentToOrder: {
-                    message: 'The payment failed',
-                    errorCode: 'PAYMENT_FAILED_ERROR',
-                    paymentErrorMessage:
-                        '"orderId" must be set in metadata. Call "createPayPalOrder" to get order id',
-                },
-            });
+            await expect(
+                shopClient.query(ADD_PAYMENT_TO_ORDER, {
+                    input: {
+                        method: methodCode,
+                        metadata: {},
+                    },
+                }),
+            ).rejects.toThrow('The argument "orderId" is required');
         });
         it('Should return validation result if validation fails', async ({ expect }) => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
@@ -427,7 +425,7 @@ describe('PayPal payments', () => {
                 addPaymentToOrder: {
                     message: 'The payment failed',
                     errorCode: 'PAYMENT_FAILED_ERROR',
-                    paymentErrorMessage: 'Payment authorization failed. Error while accessing PayPal.',
+                    paymentErrorMessage: 'Payment authorization failed. Error while accessing PayPal',
                 },
             });
         });
@@ -492,12 +490,6 @@ describe('PayPal payments', () => {
                     },
                     {
                         id: 'T_3',
-                        state: 'Error',
-                        transactionId: null,
-                        method: methodCode,
-                    },
-                    {
-                        id: 'T_4',
                         state: 'Authorized',
                         transactionId: paypalOrderId,
                         method: methodCode,
@@ -559,14 +551,14 @@ describe('PayPal payments', () => {
 
             // We use the last payment of the previous describe block that was successful.
             const { settlePayment } = await adminClient.query(SETTLE_PAYMENT, {
-                id: 'T_4',
+                id: 'T_3',
             });
 
             expect(settlePayment).toEqual({
                 errorCode: 'SETTLE_PAYMENT_ERROR',
                 message: 'Settling the payment failed',
                 __typename: 'SettlePaymentError',
-                paymentErrorMessage: 'No authorizations found in order details.',
+                paymentErrorMessage: 'No authorizations found in order details',
             });
         });
         it('Should capture order and return success', async ({ expect }) => {
@@ -631,7 +623,7 @@ describe('PayPal payments', () => {
             });
 
             expect(settlePayment).toEqual({
-                id: 'T_5',
+                id: 'T_4',
                 transactionId: paypalOrderId,
                 amount: 120990,
                 method: methodCode,
@@ -721,7 +713,7 @@ describe('PayPal payments', () => {
 
             expect(reauthorizeRequestCount).toBe(1);
             expect(settlePayment).toEqual({
-                id: 'T_6',
+                id: 'T_5',
                 transactionId: paypalOrderId,
                 amount: 120990,
                 method: methodCode,
@@ -749,7 +741,7 @@ describe('PayPal payments', () => {
                         ],
                         shipping: 1000,
                         adjustment: 119900,
-                        paymentId: 'T_5',
+                        paymentId: 'T_4',
                         reason: 'Test refund',
                     },
                 }),
@@ -788,7 +780,7 @@ describe('PayPal payments', () => {
                         ],
                         shipping: 1000,
                         adjustment: 119900,
-                        paymentId: 'T_5',
+                        paymentId: 'T_4',
                         reason: 'Test refund',
                     },
                 }),
@@ -824,7 +816,7 @@ describe('PayPal payments', () => {
                     amount: 120990,
                     shipping: 0,
                     adjustment: 0,
-                    paymentId: 'T_5',
+                    paymentId: 'T_4',
                     reason: 'Test refund',
                 },
             });
@@ -872,7 +864,7 @@ describe('PayPal payments', () => {
                     amount: 120000,
                     shipping: 0,
                     adjustment: 0,
-                    paymentId: 'T_6',
+                    paymentId: 'T_5',
                     reason: 'Test refund',
                 },
             });
@@ -883,7 +875,7 @@ describe('PayPal payments', () => {
                     amount: 990,
                     shipping: 0,
                     adjustment: 0,
-                    paymentId: 'T_6',
+                    paymentId: 'T_5',
                     reason: 'Test refund',
                 },
             });
