@@ -131,7 +131,8 @@ export class PayPalOrderService extends PayPalBaseService {
             return {
                 state: 'Error' as const,
                 amount: 0,
-                errorMessage: 'errorResult.PAYPAL_ORDER_MATCH_INVALID',
+                errorMessage:
+                    'PayPal order must have exactly one purchase_unit assigned. Please use "createPayPalOrder" to create a new order',
             };
         }
 
@@ -140,7 +141,7 @@ export class PayPalOrderService extends PayPalBaseService {
             return {
                 state: 'Error' as const,
                 amount: 0,
-                errorMessage: 'errorResult.PAYPAL_ORDER_MATCH_INVALID',
+                errorMessage: `Currency mismatch. Expected ${internalOrder.currencyCode}, got ${purchaseUnit.amount.currency_code}`,
             };
         }
 
@@ -148,7 +149,7 @@ export class PayPalOrderService extends PayPalBaseService {
             return {
                 state: 'Error' as const,
                 amount: 0,
-                errorMessage: 'errorResult.PAYPAL_ORDER_MATCH_INVALID',
+                errorMessage: `Reference ID mismatch. Expected ${internalOrder.code}, got ${purchaseUnit.reference_id ?? 'no reference id'}`,
             };
         }
 
@@ -157,7 +158,7 @@ export class PayPalOrderService extends PayPalBaseService {
             return {
                 state: 'Error' as const,
                 amount: 0,
-                errorMessage: 'errorResult.PAYPAL_ORDER_MATCH_INVALID',
+                errorMessage: `Amount mismatch. Expected ${orderTotal}, got ${purchaseUnit.amount.value}`,
             };
         }
 
@@ -165,7 +166,7 @@ export class PayPalOrderService extends PayPalBaseService {
             return {
                 state: 'Error' as const,
                 amount: 0,
-                errorMessage: 'errorResult.PAYPAL_ORDER_MATCH_INVALID',
+                errorMessage: 'Payee mismatch',
             };
         }
     }

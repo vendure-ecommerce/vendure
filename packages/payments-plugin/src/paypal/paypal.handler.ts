@@ -63,7 +63,7 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
             return {
                 state: 'Error' as const,
                 amount: 0,
-                errorMessage: error.message,
+                errorMessage: 'Payment authorization failed. Error while accessing PayPal',
             };
         }
 
@@ -71,7 +71,7 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
             return {
                 state: 'Error' as const,
                 amount: 0,
-                errorMessage: 'errorResult.PAYPAL_ORDER_WITHOUT_PAYMENTS',
+                errorMessage: 'Payment authorization failed. No payments found',
             };
         }
 
@@ -79,7 +79,7 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
             return {
                 state: 'Error' as const,
                 amount: 0,
-                errorMessage: 'errorResult.PAYPAL_ORDER_WITHOUT_AUTHORIZATIONS',
+                errorMessage: 'Payment authorization failed. No authorizations found',
             };
         }
 
@@ -89,7 +89,7 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
             return {
                 state: 'Error' as const,
                 amount: 0,
-                errorMessage: 'errorResult.PAYPAL_ORDER_STATUS_NOT_CREATED',
+                errorMessage: 'Payment authorization failed. Payment status must be "CREATED"',
             };
         }
 
@@ -107,7 +107,7 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
         if (payment.state !== 'Authorized') {
             return {
                 success: false,
-                errorMessage: 'errorResult.PAYPAL_ORDER_WITHOUT_AUTHORIZATIONS',
+                errorMessage: 'Payment is not authorized. Call "createPayment" to authorize payment',
                 state: 'Error' as const,
             };
         }
@@ -121,7 +121,7 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
         if (!authorizations?.length) {
             return {
                 success: false,
-                errorMessage: 'errorResult.PAYPAL_ORDER_WITHOUT_AUTHORIZATIONS',
+                errorMessage: 'No authorizations found in order details',
                 state: 'Error' as const,
             };
         }
@@ -153,11 +153,11 @@ export const paypalPaymentMethodHandler = new PaymentMethodHandler({
         const captures = payments?.captures;
 
         if (!captures || !captures.length) {
-            throw new PayPalError('errorResult.PAYPAL_ORDER_WITHOUT_PAYMENTS');
+            throw new PayPalError('No payments were captured in this order');
         }
 
         if (captures.length !== 1) {
-            throw new PayPalError('errorResult.MULTIPLE_CAPTURES');
+            throw new PayPalError('Multiple captures assigned to this order');
         }
 
         const capture = captures[0];
