@@ -1,0 +1,117 @@
+# This contains the services required to develop and test Vendure
+# locally. It includes multiple SQL databases (for testing specific
+# versions), Elasticsearch, Redis etc.
+version: '3.7'
+name: vendure-monorepo
+services:
+  mariadb:
+    image: 'bitnami/mariadb:latest'
+    container_name: mariadb
+    environment:
+      MARIADB_DATABASE: vendure-dev
+      MARIADB_ROOT_USER: vendure
+      MARIADB_ROOT_PASSWORD: password
+    volumes:
+      - 'mariadb_data:/bitnami'
+    ports:
+      - '3306:3306'
+  mysql_8:
+    image: bitnami/mysql:8.0
+    container_name: mysql-8
+    environment:
+      MYSQL_AUTHENTICATION_PLUGIN: mysql_native_password
+      MYSQL_DATABASE: vendure-dev
+      MYSQL_ROOT_USER: vendure
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - 'mysql_data:/bitnami'
+    ports:
+      - '3306:3306'
+  mysql_5:
+    image: bitnami/mysql:5.7
+    container_name: mysql-5.7
+    environment:
+      MYSQL_AUTHENTICATION_PLUGIN: mysql_native_password
+      MYSQL_DATABASE: vendure-dev
+      MYSQL_ROOT_USER: vendure
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - 'mysql_data:/bitnami'
+    ports:
+      - '3306:3306'
+  postgres_12:
+    image: postgres:12.3
+    container_name: postgres_12
+    environment:
+      POSTGRES_DB: vendure-dev
+      POSTGRES_USER: vendure
+      POSTGRES_PASSWORD: password
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - postgres_12_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    command: postgres -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.track=all -c pg_stat_statements.max=100000 -c max_connections=200
+  postgres_16:
+    image: postgres:16
+    container_name: postgres_16
+    environment:
+      POSTGRES_DB: vendure-dev
+      POSTGRES_USER: vendure
+      POSTGRES_PASSWORD: password
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - postgres_16_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    command: postgres -c shared_preload_libraries=pg_stat_statements -c pg_stat_statements.track=all -c pg_stat_statements.max=100000 -c max_connections=200
+  # This is the Keycloak service which is used
+  # to test the Keycloak auth strategy
+  keycloak:
+    image: quay.io/keycloak/keycloak
+    ports:
+      - "9000:8080"
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    command:
+      - start-dev
+      - --import-realm
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.2
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+  redis:
+    image: bitnami/redis:7.4.1
+    hostname: redis
+    container_name: redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "6379:6379"
+volumes:
+  postgres_16_data:
+    driver: local
+  postgres_12_data:
+    driver: local
+  mariadb_data:
+    driver: local
+  mysql_data:
+    driver: local
+  keycloak_data:
+    driver: local
+  esdata:
+    driver: local
