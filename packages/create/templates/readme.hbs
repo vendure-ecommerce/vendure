@@ -79,10 +79,24 @@ used in development.
 - `vendure` - we are referencing the tag we set up during the build.
 - `npm run start:server` - this last part is the actual command that should be run inside the container.
 
-### Docker compose
+### Docker Compose
 
-We've included a sample [docker-compose.yml](./docker-compose.yml) file which demonstrates how the server, worker, and
-database may be orchestrated with Docker Compose.
+We've included a [docker-compose.yml](./docker-compose.yml) file which includes configuration for commonly-used
+services such as PostgreSQL, MySQL, MariaDB, Elasticsearch and Redis.
+
+To use Docker Compose, you will need to have Docker installed on your machine. Here are installation
+instructions for [Mac](https://docs.docker.com/desktop/install/mac-install/), [Windows](https://docs.docker.com/desktop/install/windows-install/),
+and [Linux](https://docs.docker.com/desktop/install/linux/).
+
+You can start the services with:
+
+```shell
+docker-compose up <service>
+
+# examples:
+docker-compose up postgres_db
+docker-compose up redis
+```
 
 ## Plugins
 
