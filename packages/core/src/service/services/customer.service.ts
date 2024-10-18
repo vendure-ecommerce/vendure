@@ -389,12 +389,9 @@ export class CustomerService {
         const hasNativeAuthMethod = !!user?.authenticationMethods.find(
             m => m instanceof NativeAuthenticationMethod,
         );
-        if (user && user.verified) {
-            if (hasNativeAuthMethod) {
-                // If the user has already been verified and has already
-                // registered with the native authentication strategy, do nothing.
-                return { success: true };
-            }
+        if (user && hasNativeAuthMethod) {
+            // Only register customers if they do not have a user and native authentication method.
+            return new EmailAddressConflictError();
         }
         const customFields = (input as any).customFields;
         const customer = await this.createOrUpdate(ctx, {
