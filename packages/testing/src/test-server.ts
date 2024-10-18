@@ -1,7 +1,8 @@
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DefaultLogger, JobQueueService, Logger, VendureConfig } from '@vendure/core';
-import { preBootstrapConfig, configureSessionCookies } from '@vendure/core/dist/bootstrap';
+import { configureSessionCookies, preBootstrapConfig } from '@vendure/core/dist/bootstrap';
+import getPort from 'get-port';
 
 import { populateForTesting } from './data-population/populate-for-testing';
 import { getInitializerFor } from './initializers/initializers';
@@ -40,6 +41,7 @@ export class TestServer {
         } catch (e: any) {
             throw e;
         }
+
         await this.bootstrap();
     }
 
