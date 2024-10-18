@@ -4,7 +4,7 @@
     "license": "GPL-3.0-or-later",
     "scripts": {
         "ng": "ng",
-        "start": "node scripts/set-version.js && ng serve",
+        "dev": "node scripts/set-version.js && ng serve",
         "build:app": "ng build vendure-admin --configuration production",
         "build": "node scripts/copy-package-json.js && node scripts/set-version.js && node scripts/build-public-api.js && ng build vendure-admin-lib --configuration production && node scripts/compile-styles.js",
         "watch": "ng build --watch=true",
