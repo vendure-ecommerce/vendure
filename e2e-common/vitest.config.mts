@@ -10,6 +10,9 @@ export default defineConfig({
          * automatically fail for going over the 5 second default timeout.
          */
         testTimeout: process.env.E2E_DEBUG ? 1800 * 1000 : process.env.CI ? 30 * 1000 : 15 * 1000,
+        sequence: {
+            concurrent: false,
+        },
         // threads: false,
         // singleThread: true,
         // reporters: ['verbose'],
