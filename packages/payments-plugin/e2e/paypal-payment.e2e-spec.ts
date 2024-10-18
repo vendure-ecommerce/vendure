@@ -38,8 +38,10 @@ import {
     paypalOrderId,
     postOrderPath,
     postRefundPath,
+    productVariantQuantity,
     reauthorizePath,
     refundId,
+    productVariantId,
 } from './fixtures/paypal.fixtures';
 import {
     CREATE_CHANNEL,
@@ -203,8 +205,8 @@ describe('PayPal payments', () => {
                 AddItemToOrderMutation,
                 AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
-                productVariantId: 'T_5',
-                quantity: 10,
+                productVariantId,
+                quantity: productVariantQuantity,
             });
             order = addItemToOrder as TestOrderFragmentFragment;
 
@@ -241,7 +243,7 @@ describe('PayPal payments', () => {
                 reference_id: order.code,
                 amount: {
                     currency_code: 'USD',
-                    value: '1209.90',
+                    value: '1209.88',
                     breakdown: {
                         item_total: { currency_code: 'USD', value: '1199.90' },
                         shipping: { currency_code: 'USD', value: '10.00' },
@@ -338,7 +340,7 @@ describe('PayPal payments', () => {
                 AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
                 productVariantId: 'T_1',
-                quantity: 10,
+                quantity: productVariantQuantity,
             });
             const alternativeOrder = addItemToOrder as TestOrderFragmentFragment;
             await proceedToArrangingPayment(shopClient);
@@ -567,8 +569,8 @@ describe('PayPal payments', () => {
                 AddItemToOrderMutation,
                 AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
-                productVariantId: 'T_5',
-                quantity: 10,
+                productVariantId,
+                quantity: productVariantQuantity,
             });
             order = addItemToOrder as TestOrderFragmentFragment;
 
@@ -625,7 +627,7 @@ describe('PayPal payments', () => {
             expect(settlePayment).toEqual({
                 id: 'T_4',
                 transactionId: paypalOrderId,
-                amount: 120990,
+                amount: 120988,
                 method: methodCode,
                 state: 'Settled',
                 metadata: {
@@ -640,8 +642,8 @@ describe('PayPal payments', () => {
                 AddItemToOrderMutation,
                 AddItemToOrderMutationVariables
             >(ADD_ITEM_TO_ORDER, {
-                productVariantId: 'T_5',
-                quantity: 10,
+                productVariantId,
+                quantity: productVariantQuantity,
             });
             order = addItemToOrder as TestOrderFragmentFragment;
 
@@ -715,7 +717,7 @@ describe('PayPal payments', () => {
             expect(settlePayment).toEqual({
                 id: 'T_5',
                 transactionId: paypalOrderId,
-                amount: 120990,
+                amount: 120988,
                 method: methodCode,
                 state: 'Settled',
                 metadata: {
@@ -813,7 +815,7 @@ describe('PayPal payments', () => {
             const { refundOrder } = await adminClient.query(REFUND_ORDER, {
                 input: {
                     lines: [],
-                    amount: 120990,
+                    amount: 120988,
                     shipping: 0,
                     adjustment: 0,
                     paymentId: 'T_4',
@@ -828,7 +830,7 @@ describe('PayPal payments', () => {
                 items: 0,
                 transactionId: refundId,
                 shipping: 0,
-                total: 120990,
+                total: 120988,
                 metadata: {},
             });
         });
@@ -872,7 +874,7 @@ describe('PayPal payments', () => {
             const { refundOrder: secondRefund } = await adminClient.query(REFUND_ORDER, {
                 input: {
                     lines: [],
-                    amount: 990,
+                    amount: 988,
                     shipping: 0,
                     adjustment: 0,
                     paymentId: 'T_5',
@@ -898,7 +900,7 @@ describe('PayPal payments', () => {
                 items: 0,
                 transactionId: refundId,
                 shipping: 0,
-                total: 990,
+                total: 988,
                 metadata: {},
             });
         });

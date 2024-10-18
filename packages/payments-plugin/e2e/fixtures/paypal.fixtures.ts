@@ -30,12 +30,21 @@ export const getOrderPath = `/v2/checkout/orders/${paypalOrderId}`;
 export const postOrderPath = `/v2/checkout/orders`;
 export const postRefundPath = `/v2/payments/captures/${captureId}/refund`;
 
+// The default product variant id used for test orders in this file.
+export const productVariantId = 'T_5';
+
+// The default product variant quantity used for test orders in this file.
+export const productVariantQuantity = 10;
+
+// The default order total with taxes and to on
+export const orderTotal = '1209.88';
+
 export const payments: Required<PayPalPaymentInformation> = {
     authorizations: [
         {
             amount: {
                 currency_code: 'USD',
-                value: '1209.90',
+                value: orderTotal,
             },
             create_time: '2000-01-01T00:00:00Z',
             expiration_time: '3000-01-01T00:00:00Z',
@@ -53,7 +62,7 @@ export const paypalOrder: PayPalOrderInformation = {
             reference_id: orderCode,
             amount: {
                 currency_code: 'USD',
-                value: '1209.90',
+                value: orderTotal,
                 breakdown: {
                     item_total: { currency_code: 'USD', value: '1199.90' },
                     shipping: { currency_code: 'USD', value: '10.00' },
