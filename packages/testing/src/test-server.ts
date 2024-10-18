@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DefaultLogger, JobQueueService, Logger, VendureConfig } from '@vendure/core';
-import { preBootstrapConfig, configureSessionCookies } from '@vendure/core/dist/bootstrap';
+import { configureSessionCookies, preBootstrapConfig } from '@vendure/core/dist/bootstrap';
 
 import { populateForTesting } from './data-population/populate-for-testing';
 import { getInitializerFor } from './initializers/initializers';
@@ -40,7 +40,28 @@ export class TestServer {
         } catch (e: any) {
             throw e;
         }
-        await this.bootstrap();
+        await this.initializeApp();
+    }
+
+    async initializeApp() {
+        const maxRetries = 5;
+        let attempt = 0;
+
+        while (attempt < maxRetries) {
+            try {
+                await this.bootstrap();
+            } catch (error) {
+                attempt++;
+                console.error(`Bootstrap failed on attempt ${attempt}:`, error);
+
+                if (attempt < maxRetries) {
+                    const backoffTime = Math.pow(2, attempt) * 10; // Exponential backoff
+                    await new Promise(resolve => setTimeout(resolve, backoffTime));
+                } else {
+                    console.error('Max retries reached. Failed to bootstrap the application.');
+                }
+            }
+        }
     }
 
     /**

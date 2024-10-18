@@ -31,7 +31,10 @@ import { Request, Response } from 'express';
 
 import { isGraphQlErrorResult } from '../../../common/error/error-result';
 import { ForbiddenError } from '../../../common/error/errors';
-import { NativeAuthStrategyError } from '../../../common/error/generated-graphql-shop-errors';
+import {
+    EmailAddressConflictError,
+    NativeAuthStrategyError,
+} from '../../../common/error/generated-graphql-shop-errors';
 import { NATIVE_AUTH_STRATEGY_NAME } from '../../../config/auth/native-authentication-strategy';
 import { ConfigService } from '../../../config/config.service';
 import { Logger } from '../../../config/logger/vendure-logger';
@@ -118,12 +121,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         }
         const result = await this.customerService.registerCustomerAccount(ctx, args.input);
         if (isGraphQlErrorResult(result)) {
-            if (result.errorCode === ErrorCode.EMAIL_ADDRESS_CONFLICT_ERROR) {
-                // We do not want to reveal the email address conflict,
-                // otherwise account enumeration attacks become possible.
-                return { success: true };
-            }
-            return result as MissingPasswordError;
+            return result;
         }
         return { success: true };
     }
