@@ -14,8 +14,10 @@
         "e2e": "cross-env PACKAGE=payments-plugin vitest --config ../../e2e-common/vitest.config.mts --run",
         "e2e:watch": "cross-env PACKAGE=payments-plugin vitest --config ../../e2e-common/vitest.config.mts",
         "lint": "eslint --fix .",
+        "test": "vitest --config vitest.config.mts --run",
         "ci": "npm run build",
         "dev-server:mollie": "npm run build && DB=sqlite node -r ts-node/register e2e/mollie-dev-server.ts",
+        "dev-server:paypal": "npm run build && DB=sqlite node -r ts-node/register e2e/paypal-dev-server.ts",
         "dev-server:stripe": "npm run build && DB=sqlite node -r ts-node/register e2e/stripe-dev-server.ts"
     },
     "homepage": "https://www.vendure.io/",
@@ -51,7 +53,7 @@
         "@vendure/testing": "3.1.0-next.3",
         "braintree": "^3.22.0",
         "localtunnel": "2.0.2",
-        "nock": "^13.1.4",
+        "nock": "14.0.0-beta.7",
         "rimraf": "^5.0.5",
         "stripe": "^13.3.0",
         "typescript": "5.1.6"
