@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DefaultLogger, JobQueueService, Logger, VendureConfig } from '@vendure/core';
-import { preBootstrapConfig, configureSessionCookies } from '@vendure/core/dist/bootstrap';
+import { configureSessionCookies, preBootstrapConfig } from '@vendure/core/dist/bootstrap';
 
 import { populateForTesting } from './data-population/populate-for-testing';
 import { getInitializerFor } from './initializers/initializers';
@@ -40,7 +40,7 @@ export class TestServer {
         } catch (e: any) {
             throw e;
         }
-        await this.bootstrap();
+        await this.retryAsync(() => this.bootstrap());
     }
 
     /**
@@ -93,7 +93,8 @@ export class TestServer {
         testingConfig: Required<VendureConfig>,
         options: TestServerOptions,
     ): Promise<void> {
-        const app = await populateForTesting(testingConfig, this.bootstrapForTesting, {
+        const bootstrapForTesting = () => this.retryAsync(() => this.bootstrapForTesting(testingConfig));
+        const app = await populateForTesting(testingConfig, bootstrapForTesting, {
             logging: false,
             ...options,
         });
@@ -132,8 +133,42 @@ export class TestServer {
             DefaultLogger.restoreOriginalLogLevel();
             return app;
         } catch (e: any) {
-            console.log(e);
             throw e;
         }
+    }
+
+    /**
+     * @description
+     * A generic retry utility for asynchronous functions.
+     *
+     * @param fn The asynchronous function to retry.
+     * @param retries Number of retry attempts.
+     * @param delay Initial delay between retries in milliseconds.
+     * @param factor Exponential backoff factor.
+     * @returns The result of the asynchronous function.
+     */
+    async retryAsync<T>(
+        fn: () => Promise<T>,
+        retries: number = 5,
+        delay: number = 10,
+        factor: number = 2,
+    ): Promise<T> {
+        let attempt = 0;
+        let currentDelay = delay;
+
+        while (attempt < retries) {
+            try {
+                return await fn();
+            } catch (error) {
+                attempt++;
+                if (attempt >= retries) {
+                    throw error;
+                }
+                await new Promise(resolve => setTimeout(resolve, currentDelay));
+                currentDelay *= factor;
+            }
+        }
+        // This line should never be reached
+        throw new Error('Retry attempts exhausted');
     }
 }
