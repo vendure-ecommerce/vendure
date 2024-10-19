@@ -277,7 +277,7 @@ export class RoleService {
         if (targetChannels) {
             patchedRole.channels = targetChannels;
         }
-        await this.connection.getRepository(ctx, Role).save(patchedRole);
+        await this.connection.getRepository(ctx, Role).save(patchedRole, { reload: false });
         const updatedRole = await assertFound(this.findOne(ctx, role.id));
         await this.eventBus.publish(new RoleEvent(ctx, updatedRole, 'updated', input));
         return updatedRole;
