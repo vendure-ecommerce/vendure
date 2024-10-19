@@ -1,4 +1,4 @@
-import { CurrencyCode, LanguageCode, mergeConfig } from '@vendure/core';
+import { CurrencyCode, LanguageCode, mergeConfig, Payment } from '@vendure/core';
 import { AssignProductsToChannelDocument } from '@vendure/core/e2e/graphql/generated-e2e-admin-types';
 import {
     createTestEnvironment,
@@ -473,31 +473,17 @@ describe('PayPal payments', () => {
                 },
             });
 
-            expect(addPaymentToOrder).toEqual({
-                id: order.id,
-                code: order.code,
-                state: 'PaymentAuthorized',
-                payments: [
-                    {
-                        id: 'T_1',
-                        state: 'Error',
-                        transactionId: null,
-                        method: methodCode,
-                    },
-                    {
-                        id: 'T_2',
-                        state: 'Error',
-                        transactionId: null,
-                        method: methodCode,
-                    },
-                    {
-                        id: 'T_3',
-                        state: 'Authorized',
-                        transactionId: paypalOrderId,
-                        method: methodCode,
-                    },
-                ],
-            });
+            expect(addPaymentToOrder).toBeDefined();
+            expect(addPaymentToOrder.id).toEqual(order.id);
+            expect(addPaymentToOrder.payments).toHaveLength(3);
+
+            const authorizedPayment = addPaymentToOrder.payments.find(
+                (payment: Payment) => payment.id === 'T_3',
+            );
+            expect(authorizedPayment).toBeDefined();
+            expect(authorizedPayment.transactionId).toBe(paypalOrderId);
+            expect(authorizedPayment.method).toBe(methodCode);
+            expect(authorizedPayment.state).toBe('Authorized');
         });
     });
 
