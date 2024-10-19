@@ -267,7 +267,7 @@ export class RoleService {
                 input.permissions,
             );
         }
-        const patchedRole = patchEntity(role, {
+        patchEntity(role, {
             code: input.code,
             description: input.description,
             permissions: input.permissions
@@ -275,9 +275,9 @@ export class RoleService {
                 : undefined,
         });
         if (targetChannels) {
-            patchedRole.channels = targetChannels;
+            role.channels = targetChannels;
         }
-        await this.connection.getRepository(ctx, Role).save(patchedRole, { reload: false });
+        await this.connection.getRepository(ctx, Role).save(role, { reload: false });
         const updatedRole = await assertFound(this.findOne(ctx, role.id));
         await this.eventBus.publish(new RoleEvent(ctx, updatedRole, 'updated', input));
         return updatedRole;
