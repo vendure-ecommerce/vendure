@@ -26,7 +26,7 @@ import {
     UserInputError,
 } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
-import { assertFound, idsAreEqual } from '../../common/utils';
+import { idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Channel } from '../../entity/channel/channel.entity';
@@ -267,7 +267,7 @@ export class RoleService {
                 input.permissions,
             );
         }
-        const updatedRole = patchEntity(role, {
+        const patchedRole = patchEntity(role, {
             code: input.code,
             description: input.description,
             permissions: input.permissions
@@ -275,11 +275,11 @@ export class RoleService {
                 : undefined,
         });
         if (targetChannels) {
-            updatedRole.channels = targetChannels;
+            patchedRole.channels = targetChannels;
         }
-        await this.connection.getRepository(ctx, Role).save(updatedRole, { reload: false });
-        await this.eventBus.publish(new RoleEvent(ctx, role, 'updated', input));
-        return await assertFound(this.findOne(ctx, role.id));
+        const updatedRole = await this.connection.getRepository(ctx, Role).save(patchedRole);
+        await this.eventBus.publish(new RoleEvent(ctx, updatedRole, 'updated', input));
+        return updatedRole;
     }
 
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
