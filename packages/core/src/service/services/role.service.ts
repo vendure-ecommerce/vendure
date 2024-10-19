@@ -26,7 +26,7 @@ import {
     UserInputError,
 } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
-import { idsAreEqual } from '../../common/utils';
+import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Channel } from '../../entity/channel/channel.entity';
@@ -277,7 +277,8 @@ export class RoleService {
         if (targetChannels) {
             patchedRole.channels = targetChannels;
         }
-        const updatedRole = await this.connection.getRepository(ctx, Role).save(patchedRole);
+        await this.connection.getRepository(ctx, Role).save(patchedRole);
+        const updatedRole = await assertFound(this.findOne(ctx, role.id));
         await this.eventBus.publish(new RoleEvent(ctx, updatedRole, 'updated', input));
         return updatedRole;
     }
