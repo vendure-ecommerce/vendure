@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { PubSub } from 'graphql-subscriptions';
 
 import { CacheModule } from '../cache/cache.module';
 import { ConfigModule } from '../config/config.module';
@@ -51,6 +52,13 @@ import { ServiceModule } from '../service/service.module';
         I18nModule,
         ProcessContextModule,
         DataImportModule,
+        'PUB_SUB',
+    ],
+    providers: [
+        {
+            provide: 'PUB_SUB',
+            useValue: new PubSub(),
+        },
     ],
 })
 export class PluginCommonModule {}
