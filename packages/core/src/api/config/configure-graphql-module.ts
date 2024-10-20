@@ -134,6 +134,14 @@ async function createGraphQLOptions(
         plugins: apolloServerPlugins,
         validationRules: options.validationRules,
         introspection: configService.apiOptions.introspection ?? true,
+        subscriptions: {
+            'graphql-ws': {
+                path: '/' + options.apiPath,
+            },
+            'subscriptions-transport-ws': {
+                path: '/' + options.apiPath,
+            },
+        },
     } as ApolloDriverConfig;
 
     /**
