@@ -2,6 +2,7 @@ import { PutObjectRequest, S3ClientConfig } from '@aws-sdk/client-s3';
 import { AwsCredentialIdentity, AwsCredentialIdentityProvider } from '@aws-sdk/types';
 import { AssetStorageStrategy, Logger } from '@vendure/core';
 import { Request } from 'express';
+import { Buffer } from "node:buffer";
 import * as path from 'node:path';
 import { Readable } from 'node:stream';
 
@@ -210,13 +211,8 @@ export class S3AssetStorageStrategy implements AssetStorageStrategy {
             Logger.error(`Got undefined Body for ${identifier}`, loggerCtx);
             return Buffer.from('');
         }
-
-        const chunks: Buffer[] = [];
-        for await (const chunk of body) {
-            chunks.push(chunk);
-        }
-
-        return Buffer.concat(chunks);
+        const typedArray = await body.transformToByteArray()
+        return Buffer.from(typedArray)
     }
 
     async readFileToStream(identifier: string) {
@@ -230,14 +226,15 @@ export class S3AssetStorageStrategy implements AssetStorageStrategy {
             });
         }
 
-        return body;
+        const typedArray = await body.transformToByteArray();
+        return Readable.from(typedArray)
     }
 
     private async readFile(identifier: string) {
         const { GetObjectCommand } = this.AWS;
 
         const result = await this.s3Client.send(new GetObjectCommand(this.getObjectParams(identifier)));
-        return result.Body as Readable | undefined;
+        return result.Body;
     }
 
     private async writeFile(fileName: string, data: PutObjectRequest['Body'] | string | Uint8Array | Buffer) {
