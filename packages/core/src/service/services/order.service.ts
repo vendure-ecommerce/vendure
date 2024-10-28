@@ -77,6 +77,7 @@ import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
+import { Logger } from '../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Customer } from '../../entity/customer/customer.entity';
@@ -818,7 +819,6 @@ export class OrderService {
         }
         const orderLinesToDelete: OrderLine[] = [];
         for (const orderLineId of orderLineIds) {
-            // Validation check to ensure that the OrderLine exists on the Order
             const orderLine = this.getOrderLineOrThrow(order, orderLineId);
             orderLinesToDelete.push(orderLine);
         }
@@ -1760,41 +1760,27 @@ export class OrderService {
         }
         if (order && linesToInsert) {
             const orderId = order.id;
-            for (const line of linesToInsert) {
-                const result = await this.addItemToOrder(
-                    ctx,
-                    orderId,
-                    line.productVariantId,
-                    line.quantity,
-                    line.customFields,
-                );
-                if (!isGraphQlErrorResult(result)) {
-                    order = result;
-                }
-            }
+            const result = await this.addItemsToOrder(ctx, orderId, linesToInsert);
+            order = result.order;
         }
         if (order && linesToModify) {
             const orderId = order.id;
-            for (const line of linesToModify) {
-                const result = await this.adjustOrderLine(
+            const result = await this.adjustOrderLines(ctx, orderId, linesToModify);
+            order = result.order;
+        }
+        if (order && linesToDelete) {
+            const orderId = order.id;
+            try {
+                const result = await this.removeItemsFromOrder(
                     ctx,
                     orderId,
-                    line.orderLineId,
-                    line.quantity,
-                    line.customFields,
+                    linesToDelete.map(l => l.orderLineId),
                 );
                 if (!isGraphQlErrorResult(result)) {
                     order = result;
                 }
-            }
-        }
-        if (order && linesToDelete) {
-            const orderId = order.id;
-            for (const line of linesToDelete) {
-                const result = await this.removeItemFromOrder(ctx, orderId, line.orderLineId);
-                if (!isGraphQlErrorResult(result)) {
-                    order = result;
-                }
+            } catch (e: any) {
+                Logger.error(e.message, undefined, e.stack);
             }
         }
         const customer = await this.customerService.findOneByUserId(ctx, user.id);
