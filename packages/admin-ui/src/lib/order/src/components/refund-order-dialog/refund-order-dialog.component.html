@@ -50,7 +50,7 @@
         </vdr-dt2-column>
         <vdr-dt2-column id="prorated-unit-price" [heading]="'order.prorated-unit-price' | translate">
             <ng-template let-line="item">
-                {{ line.proratedUnitPriceWithTax | localeCurrency : order.currencyCode }}
+                {{ line.unitPriceWithTax | localeCurrency : order.currencyCode }}
                 <ng-container *ngIf="line.discounts as discounts">
                     <vdr-dropdown *ngIf="discounts.length">
                         <div class="promotions-label" vdrDropdownTrigger>
