@@ -1,7 +1,7 @@
 import { JsonCompatible } from '@vendure/common/lib/shared-types';
 
 import { CacheTtlProvider, DefaultCacheTtlProvider } from '../../cache/cache-ttl-provider';
-import { Injector } from '../../common/index';
+import { Injector } from '../../common/injector';
 import { ConfigService, Logger } from '../../config/index';
 import { CacheStrategy, SetCacheKeyOptions } from '../../config/system/cache-strategy';
 import { TransactionalConnection } from '../../connection/index';

@@ -1,11 +1,10 @@
-import { CacheService, DefaultCachePlugin, mergeConfig } from '@vendure/core';
+import { CacheService, mergeConfig, RedisCachePlugin } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
-import { afterAll, beforeAll, describe, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
-import { TestingCacheTtlProvider } from '../src/cache/cache-ttl-provider';
 
 import {
     deletesAKey,
@@ -22,16 +21,16 @@ import {
     setsObjectValue,
 } from './fixtures/cache-service-shared-tests';
 
-describe('CacheService with DefaultCachePlugin (sql)', () => {
-    const ttlProvider = new TestingCacheTtlProvider();
-
+describe('CacheService with RedisCachePlugin', () => {
     let cacheService: CacheService;
     const { server, adminClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
             plugins: [
-                DefaultCachePlugin.init({
-                    cacheSize: 5,
-                    cacheTtlProvider: ttlProvider,
+                RedisCachePlugin.init({
+                    redisOptions: {
+                        host: '127.0.0.1',
+                        port: process.env.CI ? +(process.env.E2E_REDIS_PORT || 6379) : 6379,
+                    },
                 }),
             ],
         }),
@@ -63,10 +62,6 @@ describe('CacheService with DefaultCachePlugin (sql)', () => {
     it('sets an array of objects', () => setsArrayOfObjects(cacheService));
 
     it('deletes a key', () => deletesAKey(cacheService));
-
-    it('sets a key with ttl', () => setsAKeyWithTtl(cacheService, ttlProvider));
-
-    it('evicts the oldest key when cache is full', () => evictsTheOldestKeyWhenCacheIsFull(cacheService));
 
     it('invalidates by single tag', () => invalidatesBySingleTag(cacheService));
 

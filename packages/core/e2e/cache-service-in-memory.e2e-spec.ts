@@ -15,8 +15,12 @@ import {
     invalidatesALargeNumberOfKeysByTag,
     invalidatesByMultipleTags,
     invalidatesBySingleTag,
+    invalidatesManyByMultipleTags,
     setsAKey,
     setsAKeyWithTtl,
+    setsArrayOfObjects,
+    setsArrayValue,
+    setsObjectValue,
 } from './fixtures/cache-service-shared-tests';
 
 describe('CacheService in-memory', () => {
@@ -53,6 +57,12 @@ describe('CacheService in-memory', () => {
 
     it('sets a key', () => setsAKey(cacheService));
 
+    it('sets an object value', () => setsObjectValue(cacheService));
+
+    it('sets an array value', () => setsArrayValue(cacheService));
+
+    it('sets an array of objects', () => setsArrayOfObjects(cacheService));
+
     it('deletes a key', () => deletesAKey(cacheService));
 
     it('sets a key with ttl', () => setsAKeyWithTtl(cacheService, ttlProvider));
@@ -62,6 +72,8 @@ describe('CacheService in-memory', () => {
     it('invalidates by single tag', () => invalidatesBySingleTag(cacheService));
 
     it('invalidates by multiple tags', () => invalidatesByMultipleTags(cacheService));
+
+    it('invalidates many by multiple tags', () => invalidatesManyByMultipleTags(cacheService));
 
     it('invalidates a large number of keys by tag', () => invalidatesALargeNumberOfKeysByTag(cacheService));
 });
