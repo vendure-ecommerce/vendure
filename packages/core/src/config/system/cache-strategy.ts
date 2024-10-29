@@ -15,6 +15,12 @@ export interface SetCacheKeyOptions {
      * this is equivalent to having an infinite ttl.
      */
     ttl?: number;
+    /**
+     * @description
+     * An array of tags which can be used to group cache keys together.
+     * This can be useful for bulk deletion of related keys.
+     */
+    tags?: string[];
 }
 
 /**
@@ -49,4 +55,10 @@ export interface CacheStrategy extends InjectableStrategy {
      * Deletes an item from the cache.
      */
     delete(key: string): Promise<void>;
+
+    /**
+     * @description
+     * Deletes all items from the cache which contain at least one matching tag.
+     */
+    invalidateTags(tags: string[]): Promise<void>;
 }

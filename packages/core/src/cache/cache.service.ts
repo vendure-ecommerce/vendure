@@ -71,4 +71,21 @@ export class CacheService {
             Logger.error(`Could not delete key [${key}] from CacheService`, undefined, e.stack);
         }
     }
+
+    /**
+     * @description
+     * Deletes all items from the cache which contain at least one matching tag.
+     */
+    async invalidateTags(tags: string[]): Promise<void> {
+        try {
+            await this.cacheStrategy.invalidateTags(tags);
+            Logger.debug(`Invalidated tags [${tags.join(', ')}] from CacheService`);
+        } catch (e: any) {
+            Logger.error(
+                `Could not invalidate tags [${tags.join(', ')}] from CacheService`,
+                undefined,
+                e.stack,
+            );
+        }
+    }
 }
