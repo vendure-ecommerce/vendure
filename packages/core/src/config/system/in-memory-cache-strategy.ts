@@ -13,6 +13,9 @@ export interface CacheItem<T> {
  * A {@link CacheStrategy} that stores the cache in memory using a simple
  * JavaScript Map.
  *
+ * This is the default strategy that will be used if no other strategy is
+ * configured.
+ *
  * **Caution** do not use this in a multi-instance deployment because
  * cache invalidation will not propagate to other instances.
  *

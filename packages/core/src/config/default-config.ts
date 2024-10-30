@@ -45,7 +45,7 @@ import { UseGuestStrategy } from './order/use-guest-strategy';
 import { defaultPaymentProcess } from './payment/default-payment-process';
 import { defaultPromotionActions, defaultPromotionConditions } from './promotion';
 import { defaultRefundProcess } from './refund/default-refund-process';
-import { InMemorySessionCacheStrategy } from './session-cache/in-memory-session-cache-strategy';
+import { DefaultSessionCacheStrategy } from './session-cache/default-session-cache-strategy';
 import { defaultShippingCalculator } from './shipping-method/default-shipping-calculator';
 import { defaultShippingEligibilityChecker } from './shipping-method/default-shipping-eligibility-checker';
 import { DefaultShippingLineAssignmentStrategy } from './shipping-method/default-shipping-line-assignment-strategy';
@@ -97,7 +97,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         },
         authTokenHeaderKey: DEFAULT_AUTH_TOKEN_HEADER_KEY,
         sessionDuration: '1y',
-        sessionCacheStrategy: new InMemorySessionCacheStrategy(),
+        sessionCacheStrategy: new DefaultSessionCacheStrategy(),
         sessionCacheTTL: 300,
         requireVerification: true,
         verificationTokenDuration: '7d',

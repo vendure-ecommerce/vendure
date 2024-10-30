@@ -382,11 +382,10 @@ export interface AuthOptions {
     sessionDuration?: string | number;
     /**
      * @description
-     * This strategy defines how sessions will be cached. By default, sessions are cached using a simple
-     * in-memory caching strategy which is suitable for development and low-traffic, single-instance
-     * deployments.
+     * This strategy defines how sessions will be cached. By default, since v3.1.0, sessions are cached using
+     * the underlying cache strategy defined in the {@link SystemOptions.cacheStrategy}.
      *
-     * @default InMemorySessionCacheStrategy
+     * @default DefaultSessionCacheStrategy
      */
     sessionCacheStrategy?: SessionCacheStrategy;
     /**
