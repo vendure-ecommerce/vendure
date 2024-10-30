@@ -1,6 +1,33 @@
 import { JsonCompatible } from '@vendure/common/lib/shared-types';
 
-import { CacheConfig, CacheService } from './cache.service';
+import { SetCacheKeyOptions } from '../config/system/cache-strategy';
+
+import { CacheService } from './cache.service';
+
+/**
+ * @description
+ * Configuration for a new {@link Cache} instance.
+ */
+export interface CacheConfig {
+    /**
+     * @description
+     * A function which generates a cache key from the given id.
+     * This key will be used to store the value in the cache.
+     *
+     * By convention, the key should be namespaced to avoid conflicts.
+     *
+     * @example
+     * ```ts
+     * getKey: id => `MyStrategy:getProductVariantIds:${id}`,
+     * ```
+     */
+    getKey: (id: string | number) => string;
+    /**
+     * @description
+     * Options available when setting the value in the cache.
+     */
+    options?: SetCacheKeyOptions;
+}
 
 /**
  * @description

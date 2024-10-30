@@ -5,32 +5,7 @@ import { ConfigService } from '../config/config.service';
 import { Logger } from '../config/index';
 import { CacheStrategy, SetCacheKeyOptions } from '../config/system/cache-strategy';
 
-import { Cache } from './cache';
-
-/**
- * @description
- * Configuration for a new {@link Cache} instance.
- */
-export interface CacheConfig {
-    /**
-     * @description
-     * A function which generates a cache key from the given id.
-     * This key will be used to store the value in the cache.
-     *
-     * By convention, the key should be namespaced to avoid conflicts.
-     *
-     * @example
-     * ```ts
-     * getKey: id => `MyStrategy.getProductVariantIds.${id}`,
-     * ```
-     */
-    getKey: (id: string | number) => string;
-    /**
-     * @description
-     * Options available when setting the value in the cache.
-     */
-    options?: SetCacheKeyOptions;
-}
+import { Cache, CacheConfig } from './cache';
 
 /**
  * @description
@@ -58,7 +33,7 @@ export class CacheService {
      * @example
      * ```ts
      * const cache = cacheService.createCache({
-     *   getKey: id => `ProductVariantIds.${id}`,
+     *   getKey: id => `ProductVariantIds:${id}`,
      *   options: {
      *     ttl: 1000 * 60 * 60,
      *     tags: ['products'],
