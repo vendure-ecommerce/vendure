@@ -1340,7 +1340,7 @@ export type CustomFieldConfig = BooleanCustomFieldConfig | DateTimeCustomFieldCo
 
 /**
  * This type is deprecated in v2.2 in favor of the EntityCustomFields type,
- * which allows custom fields to be defined on user-supplies entities.
+ * which allows custom fields to be defined on user-supplied entities.
  */
 export type CustomFields = {
   __typename?: 'CustomFields';
@@ -6096,6 +6096,32 @@ export type StringOperators = {
   regex?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type StructCustomFieldConfig = CustomField & {
+  __typename?: 'StructCustomFieldConfig';
+  description?: Maybe<Array<LocalizedString>>;
+  fields: Array<StructFieldConfig>;
+  internal?: Maybe<Scalars['Boolean']['output']>;
+  label?: Maybe<Array<LocalizedString>>;
+  list: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  nullable?: Maybe<Scalars['Boolean']['output']>;
+  readonly?: Maybe<Scalars['Boolean']['output']>;
+  requiresPermission?: Maybe<Array<Permission>>;
+  type: Scalars['String']['output'];
+  ui?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type StructFieldConfig = {
+  __typename?: 'StructFieldConfig';
+  description?: Maybe<Array<LocalizedString>>;
+  label?: Maybe<Array<LocalizedString>>;
+  list?: Maybe<Scalars['Boolean']['output']>;
+  name: Scalars['String']['output'];
+  nullable?: Maybe<Scalars['Boolean']['output']>;
+  type: Scalars['String']['output'];
+  ui?: Maybe<Scalars['JSON']['output']>;
+};
+
 /** Indicates that an operation succeeded, where we do not want to return any more specific information. */
 export type Success = {
   __typename?: 'Success';
@@ -8241,9 +8267,11 @@ type CustomFieldConfig_RelationCustomFieldConfig_Fragment = { __typename?: 'Rela
 
 type CustomFieldConfig_StringCustomFieldConfig_Fragment = { __typename?: 'StringCustomFieldConfig', name: string, type: string, list: boolean, readonly?: boolean | null, nullable?: boolean | null, requiresPermission?: Array<Permission> | null, ui?: any | null, description?: Array<{ __typename?: 'LocalizedString', languageCode: LanguageCode, value: string }> | null, label?: Array<{ __typename?: 'LocalizedString', languageCode: LanguageCode, value: string }> | null };
 
+type CustomFieldConfig_StructCustomFieldConfig_Fragment = { __typename?: 'StructCustomFieldConfig', name: string, type: string, list: boolean, readonly?: boolean | null, nullable?: boolean | null, requiresPermission?: Array<Permission> | null, ui?: any | null, description?: Array<{ __typename?: 'LocalizedString', languageCode: LanguageCode, value: string }> | null, label?: Array<{ __typename?: 'LocalizedString', languageCode: LanguageCode, value: string }> | null };
+
 type CustomFieldConfig_TextCustomFieldConfig_Fragment = { __typename?: 'TextCustomFieldConfig', name: string, type: string, list: boolean, readonly?: boolean | null, nullable?: boolean | null, requiresPermission?: Array<Permission> | null, ui?: any | null, description?: Array<{ __typename?: 'LocalizedString', languageCode: LanguageCode, value: string }> | null, label?: Array<{ __typename?: 'LocalizedString', languageCode: LanguageCode, value: string }> | null };
 
-export type CustomFieldConfigFragment = CustomFieldConfig_BooleanCustomFieldConfig_Fragment | CustomFieldConfig_DateTimeCustomFieldConfig_Fragment | CustomFieldConfig_FloatCustomFieldConfig_Fragment | CustomFieldConfig_IntCustomFieldConfig_Fragment | CustomFieldConfig_LocaleStringCustomFieldConfig_Fragment | CustomFieldConfig_LocaleTextCustomFieldConfig_Fragment | CustomFieldConfig_RelationCustomFieldConfig_Fragment | CustomFieldConfig_StringCustomFieldConfig_Fragment | CustomFieldConfig_TextCustomFieldConfig_Fragment;
+export type CustomFieldConfigFragment = CustomFieldConfig_BooleanCustomFieldConfig_Fragment | CustomFieldConfig_DateTimeCustomFieldConfig_Fragment | CustomFieldConfig_FloatCustomFieldConfig_Fragment | CustomFieldConfig_IntCustomFieldConfig_Fragment | CustomFieldConfig_LocaleStringCustomFieldConfig_Fragment | CustomFieldConfig_LocaleTextCustomFieldConfig_Fragment | CustomFieldConfig_RelationCustomFieldConfig_Fragment | CustomFieldConfig_StringCustomFieldConfig_Fragment | CustomFieldConfig_StructCustomFieldConfig_Fragment | CustomFieldConfig_TextCustomFieldConfig_Fragment;
 
 export type StringCustomFieldFragment = { __typename?: 'StringCustomFieldConfig', pattern?: string | null, name: string, type: string, list: boolean, readonly?: boolean | null, nullable?: boolean | null, requiresPermission?: Array<Permission> | null, ui?: any | null, options?: Array<{ __typename?: 'StringFieldOption', value: string, label?: Array<{ __typename?: 'LocalizedString', languageCode: LanguageCode, value: string }> | null }> | null, description?: Array<{ __typename?: 'LocalizedString', languageCode: LanguageCode, value: string }> | null, label?: Array<{ __typename?: 'LocalizedString', languageCode: LanguageCode, value: string }> | null };
 
@@ -8279,9 +8307,11 @@ type CustomFields_RelationCustomFieldConfig_Fragment = { __typename?: 'RelationC
 
 type CustomFields_StringCustomFieldConfig_Fragment = { __typename?: 'StringCustomFieldConfig', pattern?: string | null, name: string, type: string, list: boolean, readonly?: boolean | null, nullable?: boolean | null, requiresPermission?: Array<Permission> | null, ui?: any | null, options?: Array<{ __typename?: 'StringFieldOption', value: string, label?: Array<{ __typename?: 'LocalizedString', languageCode: LanguageCode, value: string }> | null }> | null, description?: Array<{ __typename?: 'LocalizedString', languageCode: LanguageCode, value: string }> | null, label?: Array<{ __typename?: 'LocalizedString', languageCode: LanguageCode, value: string }> | null };
 
+type CustomFields_StructCustomFieldConfig_Fragment = { __typename?: 'StructCustomFieldConfig' };
+
 type CustomFields_TextCustomFieldConfig_Fragment = { __typename?: 'TextCustomFieldConfig', name: string, type: string, list: boolean, readonly?: boolean | null, nullable?: boolean | null, requiresPermission?: Array<Permission> | null, ui?: any | null, description?: Array<{ __typename?: 'LocalizedString', languageCode: LanguageCode, value: string }> | null, label?: Array<{ __typename?: 'LocalizedString', languageCode: LanguageCode, value: string }> | null };
 
-export type CustomFieldsFragment = CustomFields_BooleanCustomFieldConfig_Fragment | CustomFields_DateTimeCustomFieldConfig_Fragment | CustomFields_FloatCustomFieldConfig_Fragment | CustomFields_IntCustomFieldConfig_Fragment | CustomFields_LocaleStringCustomFieldConfig_Fragment | CustomFields_LocaleTextCustomFieldConfig_Fragment | CustomFields_RelationCustomFieldConfig_Fragment | CustomFields_StringCustomFieldConfig_Fragment | CustomFields_TextCustomFieldConfig_Fragment;
+export type CustomFieldsFragment = CustomFields_BooleanCustomFieldConfig_Fragment | CustomFields_DateTimeCustomFieldConfig_Fragment | CustomFields_FloatCustomFieldConfig_Fragment | CustomFields_IntCustomFieldConfig_Fragment | CustomFields_LocaleStringCustomFieldConfig_Fragment | CustomFields_LocaleTextCustomFieldConfig_Fragment | CustomFields_RelationCustomFieldConfig_Fragment | CustomFields_StringCustomFieldConfig_Fragment | CustomFields_StructCustomFieldConfig_Fragment | CustomFields_TextCustomFieldConfig_Fragment;
 
 export type GetServerConfigQueryVariables = Exact<{ [key: string]: never; }>;
 

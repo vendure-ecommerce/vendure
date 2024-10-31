@@ -109,7 +109,10 @@ export type CustomFieldType =
     | 'datetime'
     | 'relation'
     | 'text'
-    | 'localeText';
+    | 'localeText'
+    | 'struct';
+
+export type StructFieldType = 'string' | 'int' | 'float' | 'boolean' | 'datetime' | 'text';
 
 /**
  * @description

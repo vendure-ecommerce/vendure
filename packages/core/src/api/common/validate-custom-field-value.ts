@@ -68,6 +68,9 @@ function validateSingleValue(config: CustomFieldConfig, value: any) {
         case 'text':
         case 'localeText':
             break;
+        case 'struct':
+            // TODO: recursive validate of struct fields
+            break;
         default:
             assertNever(config);
     }

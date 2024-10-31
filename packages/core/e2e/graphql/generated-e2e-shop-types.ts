@@ -3109,6 +3109,30 @@ export type StringOperators = {
     regex?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type StructCustomFieldConfig = CustomField & {
+    description?: Maybe<Array<LocalizedString>>;
+    fields: Array<StructFieldConfig>;
+    internal?: Maybe<Scalars['Boolean']['output']>;
+    label?: Maybe<Array<LocalizedString>>;
+    list: Scalars['Boolean']['output'];
+    name: Scalars['String']['output'];
+    nullable?: Maybe<Scalars['Boolean']['output']>;
+    readonly?: Maybe<Scalars['Boolean']['output']>;
+    requiresPermission?: Maybe<Array<Permission>>;
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type StructFieldConfig = {
+    description?: Maybe<Array<LocalizedString>>;
+    label?: Maybe<Array<LocalizedString>>;
+    list?: Maybe<Scalars['Boolean']['output']>;
+    name: Scalars['String']['output'];
+    nullable?: Maybe<Scalars['Boolean']['output']>;
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
+};
+
 /** Indicates that an operation succeeded, where we do not want to return any more specific information. */
 export type Success = {
     success: Scalars['Boolean']['output'];

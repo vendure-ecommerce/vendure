@@ -11,6 +11,8 @@ import {
     RelationCustomFieldConfig as GraphQLRelationCustomFieldConfig,
     StringCustomFieldConfig as GraphQLStringCustomFieldConfig,
     TextCustomFieldConfig as GraphQLTextCustomFieldConfig,
+    StructFieldConfig as GraphQLStructFieldConfig,
+    StructCustomFieldConfig as GraphQLStructCustomFieldConfig,
 } from '@vendure/common/lib/generated-types';
 import {
     CustomFieldsObject,
@@ -18,6 +20,7 @@ import {
     DefaultFormComponentId,
     Type,
     UiComponentConfig,
+    StructFieldType,
 } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -101,10 +104,16 @@ export type LocaleTextCustomFieldConfig = TypedCustomFieldConfig<
     'localeText',
     GraphQLLocaleTextCustomFieldConfig
 >;
+export type StructFieldConfig = Omit<GraphQLStructFieldConfig, '__typename' | 'type'> & {
+    type: StructFieldType;
+};
 export type IntCustomFieldConfig = TypedCustomFieldConfig<'int', GraphQLIntCustomFieldConfig>;
 export type FloatCustomFieldConfig = TypedCustomFieldConfig<'float', GraphQLFloatCustomFieldConfig>;
 export type BooleanCustomFieldConfig = TypedCustomFieldConfig<'boolean', GraphQLBooleanCustomFieldConfig>;
 export type DateTimeCustomFieldConfig = TypedCustomFieldConfig<'datetime', GraphQLDateTimeCustomFieldConfig>;
+export type StructCustomFieldConfig = TypedCustomFieldConfig<'struct', GraphQLStructCustomFieldConfig> & {
+    fields: StructFieldConfig[];
+};
 export type RelationCustomFieldConfig = TypedCustomFieldConfig<
     'relation',
     Omit<GraphQLRelationCustomFieldConfig, 'entity' | 'scalarFields'>
@@ -130,7 +139,8 @@ export type CustomFieldConfig =
     | FloatCustomFieldConfig
     | BooleanCustomFieldConfig
     | DateTimeCustomFieldConfig
-    | RelationCustomFieldConfig;
+    | RelationCustomFieldConfig
+    | StructCustomFieldConfig;
 
 /**
  * @description
