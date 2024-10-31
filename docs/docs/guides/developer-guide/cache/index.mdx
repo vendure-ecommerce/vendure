@@ -198,7 +198,7 @@ any kind of data, not just serializable data.
 ## Session Cache
 
 There is an additional cache which is specifically used to cache session data, since this data is commonly
-accessed on almost all requests. Since v3.1, the default is to use the [DefaultSessionCacheStrategy](/reference/typescript-api/cache/default-session-cache-strategy)
+accessed on almost all requests. Since v3.1, the default is to use the [DefaultSessionCacheStrategy](/reference/typescript-api/auth/default-session-cache-strategy)
 which internally just uses whatever the current `CacheStrategy` is to store the data.
 
 This means that in most cases you don't need to worry about the session cache, but if you have specific
