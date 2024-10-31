@@ -47,7 +47,12 @@ export class DefaultSessionCacheStrategy implements SessionCacheStrategy {
     }
 
     clear(): Promise<void> {
-        return this.cacheService.invalidateTags(this.tags);
+        // We use the `?` here because there is a case where in the SessionService,
+        // the clearSessionCacheOnDataChange() method may be invoked during bootstrap prior to
+        // the cacheService being initialized in the `init()` method above.
+        // This is an edge-case limited to seeding initial data as in e2e tests or a
+        // @vendure/create installation, so it is safe to not invalidate the cache in this case.
+        return this.cacheService?.invalidateTags(this.tags);
     }
 
     /**
