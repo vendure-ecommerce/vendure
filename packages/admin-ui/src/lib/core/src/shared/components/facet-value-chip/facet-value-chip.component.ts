@@ -13,4 +13,9 @@ export class FacetValueChipComponent {
     @Input() removable = true;
     @Input() displayFacetName = true;
     @Output() remove = new EventEmitter<void>();
+
+    get formattedTitle(): string {
+        const facetCode = this.facetValue.facet.code ? `(${this.facetValue.facet.code}) ` : '';
+        return `${this.facetValue.facet.name} ${facetCode}- ${this.facetValue.name}`;
+    }
 }
