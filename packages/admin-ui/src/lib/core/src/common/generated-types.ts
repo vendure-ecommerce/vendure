@@ -7267,7 +7267,7 @@ export type DeleteCustomerNoteMutationVariables = Exact<{
 
 export type DeleteCustomerNoteMutation = { deleteCustomerNote: { __typename?: 'DeletionResponse', result: DeletionResult, message?: string | null } };
 
-export type FacetValueFragment = { __typename?: 'FacetValue', id: string, createdAt: any, updatedAt: any, languageCode: LanguageCode, code: string, name: string, translations: Array<{ __typename?: 'FacetValueTranslation', id: string, languageCode: LanguageCode, name: string }>, facet: { __typename?: 'Facet', id: string, createdAt: any, updatedAt: any, name: string } };
+export type FacetValueFragment = { __typename?: 'FacetValue', id: string, createdAt: any, updatedAt: any, languageCode: LanguageCode, code: string, name: string, translations: Array<{ __typename?: 'FacetValueTranslation', id: string, languageCode: LanguageCode, name: string }>, facet: { __typename?: 'Facet', id: string, createdAt: any, updatedAt: any, name: string, code: string } };
 
 export type FacetWithValuesFragment = { __typename?: 'Facet', id: string, createdAt: any, updatedAt: any, languageCode: LanguageCode, isPrivate: boolean, code: string, name: string, translations: Array<{ __typename?: 'FacetTranslation', id: string, languageCode: LanguageCode, name: string }>, values: Array<{ __typename?: 'FacetValue', id: string, createdAt: any, updatedAt: any, languageCode: LanguageCode, code: string, name: string, translations: Array<{ __typename?: 'FacetValueTranslation', id: string, languageCode: LanguageCode, name: string }>, facet: { __typename?: 'Facet', id: string, createdAt: any, updatedAt: any, name: string } }> };
 
@@ -7330,7 +7330,7 @@ export type GetFacetValueListQueryVariables = Exact<{
 }>;
 
 
-export type GetFacetValueListQuery = { facetValues: { __typename?: 'FacetValueList', totalItems: number, items: Array<{ __typename?: 'FacetValue', id: string, createdAt: any, updatedAt: any, languageCode: LanguageCode, code: string, name: string, translations: Array<{ __typename?: 'FacetValueTranslation', id: string, languageCode: LanguageCode, name: string }>, facet: { __typename?: 'Facet', id: string, createdAt: any, updatedAt: any, name: string } }> } };
+export type GetFacetValueListQuery = { facetValues: { __typename?: 'FacetValueList', totalItems: number, items: Array<{ __typename?: 'FacetValue', id: string, createdAt: any, updatedAt: any, languageCode: LanguageCode, code: string, name: string, translations: Array<{ __typename?: 'FacetValueTranslation', id: string, languageCode: LanguageCode, name: string }>, facet: { __typename?: 'Facet', id: string, createdAt: any, updatedAt: any, name: string, code: string } }> } };
 
 export type AssignFacetsToChannelMutationVariables = Exact<{
   input: AssignFacetsToChannelInput;
