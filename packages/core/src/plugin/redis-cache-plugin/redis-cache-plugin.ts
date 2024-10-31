@@ -5,6 +5,15 @@ import { PLUGIN_INIT_OPTIONS } from './constants';
 import { RedisCacheStrategy } from './redis-cache-strategy';
 import { RedisCachePluginInitOptions } from './types';
 
+/**
+ * @description
+ * This plugin provides a Redis-based {@link RedisCacheStrategy} which stores cached items in a Redis instance.
+ * This is a high-performance cache strategy which is suitable for production use, and is a drop-in
+ * replacement for the {@link DefaultCachePlugin}.
+ *
+ * @docsCategory cache
+ * @since 3.1.0
+ */
 @VendurePlugin({
     imports: [PluginCommonModule],
     providers: [{ provide: PLUGIN_INIT_OPTIONS, useFactory: () => RedisCachePlugin.options }],

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ShippingEligibilityChecker
 
-<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-eligibility-checker.ts" sourceLine="49" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/shipping-method/shipping-eligibility-checker.ts" sourceLine="50" packageName="@vendure/core" />
 
 The ShippingEligibilityChecker class is used to check whether an order qualifies for a
 given <a href='/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>.
@@ -34,6 +34,7 @@ const minOrderTotalEligibilityChecker = new ShippingEligibilityChecker({
 ```ts title="Signature"
 class ShippingEligibilityChecker<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<T> {
     constructor(config: ShippingEligibilityCheckerConfig<T>)
+    init(injector: Injector) => ;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>
@@ -45,6 +46,11 @@ class ShippingEligibilityChecker<T extends ConfigArgs = ConfigArgs> extends Conf
 ### constructor
 
 <MemberInfo kind="method" type={`(config: <a href='/reference/typescript-api/shipping/shipping-eligibility-checker-config#shippingeligibilitycheckerconfig'>ShippingEligibilityCheckerConfig</a>&#60;T&#62;) => ShippingEligibilityChecker`}   />
+
+
+### init
+
+<MemberInfo kind="method" type={`(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) => `}   />
 
 
 

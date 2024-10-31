@@ -6,6 +6,14 @@ import { CacheStrategy, SetCacheKeyOptions } from '../../config/system/cache-str
 import { DEFAULT_NAMESPACE, DEFAULT_TTL, loggerCtx } from './constants';
 import { RedisCachePluginInitOptions } from './types';
 
+/**
+ * @description
+ * A {@link CacheStrategy} which stores cached items in a Redis instance.
+ * This is a high-performance cache strategy which is suitable for production use.
+ *
+ * @docsCategory cache
+ * @since 3.1.0
+ */
 export class RedisCacheStrategy implements CacheStrategy {
     private client: import('ioredis').Redis;
 

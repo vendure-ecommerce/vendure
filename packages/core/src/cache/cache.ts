@@ -7,6 +7,9 @@ import { CacheService } from './cache.service';
 /**
  * @description
  * Configuration for a new {@link Cache} instance.
+ *
+ * @docsCategory cache
+ * @since 3.1.0
  */
 export interface CacheConfig {
     /**
@@ -41,7 +44,30 @@ export interface CacheConfig {
  *
  * In most cases, using the `Cache` class will result in simpler and more readable code.
  *
- * This class is normally created via the {@link CacheService.createCache} method.
+ * This class is normally created via the {@link CacheService}.`createCache()` method.
+ *
+ * @example
+ * ```ts
+ * const cache = cacheService.createCache({
+ *   getKey: id => `ProductVariantIds:${id}`,
+ *   options: {
+ *     ttl: 1000 * 60 * 60,
+ *     tags: ['products'],
+ *   },
+ * });
+ *
+ * // This will fetch the value from the cache if it exists, or
+ * // fetch it from the ProductService if not, and then cache
+ * // using the key 'ProductVariantIds.${id}'.
+ * const variantIds = await cache.get(id, async () => {
+ *   const variants await ProductService.getVariantsByProductId(ctx, id) ;
+ *   // The cached value must be serializable, so we just return the ids
+ *   return variants.map(v => v.id);
+ * });
+ * ```
+ *
+ * @docsCategory cache
+ * @since 3.1.0
  */
 export class Cache {
     constructor(

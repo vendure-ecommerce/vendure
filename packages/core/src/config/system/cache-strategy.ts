@@ -31,6 +31,7 @@ export interface SetCacheKeyOptions {
  * from the cache.
  *
  * @since 3.1.0
+ * @docsCategory cache
  */
 export interface CacheStrategy extends InjectableStrategy {
     /**

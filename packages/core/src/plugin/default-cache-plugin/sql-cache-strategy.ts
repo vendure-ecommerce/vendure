@@ -10,13 +10,10 @@ import { CacheItem } from './cache-item.entity';
 import { CacheTag } from './cache-tag.entity';
 
 /**
- * A {@link CacheStrategy} that stores the cache in memory using a simple
- * JavaScript Map.
- *
- * **Caution** do not use this in a multi-instance deployment because
- * cache invalidation will not propagate to other instances.
+ * A {@link CacheStrategy} that stores cached items in the database.
  *
  * @since 3.1.0
+ * @docsCategory cache
  */
 export class SqlCacheStrategy implements CacheStrategy {
     protected cacheSize = 10_000;

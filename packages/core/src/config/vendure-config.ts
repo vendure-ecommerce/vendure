@@ -383,7 +383,7 @@ export interface AuthOptions {
     /**
      * @description
      * This strategy defines how sessions will be cached. By default, since v3.1.0, sessions are cached using
-     * the underlying cache strategy defined in the {@link SystemOptions.cacheStrategy}.
+     * the underlying cache strategy defined in the {@link SystemOptions}`.cacheStrategy`.
      *
      * @default DefaultSessionCacheStrategy
      */

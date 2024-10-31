@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SystemOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1042" packageName="@vendure/core" since="1.6.0" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="1044" packageName="@vendure/core" since="1.6.0" />
 
 Options relating to system functions.
 
@@ -19,6 +19,7 @@ Options relating to system functions.
 interface SystemOptions {
     healthChecks?: HealthCheckStrategy[];
     errorHandlers?: ErrorHandlerStrategy[];
+    cacheStrategy?: CacheStrategy;
 }
 ```
 
@@ -36,6 +37,12 @@ that any critical systems which the Vendure server depends on are also healthy.
 
 Defines an array of <a href='/reference/typescript-api/errors/error-handler-strategy#errorhandlerstrategy'>ErrorHandlerStrategy</a> instances which are used to define logic to be executed
 when an error occurs, either on the server or the worker.
+### cacheStrategy
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/cache/cache-strategy#cachestrategy'>CacheStrategy</a>`} default={`InMemoryCacheStrategy`}  since="3.1.0"  />
+
+Defines the underlying method used to store cache key-value pairs which powers the
+<a href='/reference/typescript-api/cache/cache-service#cacheservice'>CacheService</a>.
 
 
 </div>

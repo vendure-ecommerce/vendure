@@ -15,6 +15,7 @@ import { Cache, CacheConfig } from './cache';
  * the cache into a key-value store.
  *
  * @since 3.1.0
+ * @docsCategory cache
  */
 @Injectable()
 export class CacheService {
@@ -29,27 +30,6 @@ export class CacheService {
      *
      * The `Cache` instance provides a convenience wrapper around the `CacheService`
      * methods.
-     *
-     * @example
-     * ```ts
-     * const cache = cacheService.createCache({
-     *   getKey: id => `ProductVariantIds:${id}`,
-     *   options: {
-     *     ttl: 1000 * 60 * 60,
-     *     tags: ['products'],
-     *   },
-     * });
-     *
-     * // This will fetch the value from the cache if it exists, or
-     * // fetch it from the ProductService if not, and then cache
-     * // using the key 'ProductVariantIds.${id}'.
-     * const variantIds = await cache.get(id, async () => {
-     *   const variants await ProductService.getVariantsByProductId(ctx, id)
-     *   ;
-     *   // The cached value must be serializable, so we just return the ids
-     *   return variants.map(v => v.id);
-     * });
-     * ```
      */
     createCache(config: CacheConfig): Cache {
         return new Cache(config, this);

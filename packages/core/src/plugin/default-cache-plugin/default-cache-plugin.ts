@@ -21,6 +21,16 @@ export interface DefaultCachePluginInitOptions {
     cacheTtlProvider?: CacheTtlProvider;
 }
 
+/**
+ * @description
+ * This plugin provides a simple SQL-based cache strategy {@link SqlCacheStrategy} which stores cached
+ * items in the database.
+ * It is suitable for production use (including multi-instance setups). For increased performance
+ * you can also consider using the {@link RedisCachePlugin}.
+ *
+ * @docsCategory cache
+ * @since 3.1.0
+ */
 @VendurePlugin({
     imports: [PluginCommonModule],
     entities: [CacheItem, CacheTag],

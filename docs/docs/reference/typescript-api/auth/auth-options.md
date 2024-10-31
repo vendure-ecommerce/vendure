@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AuthOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="330" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="331" packageName="@vendure/core" />
 
 The AuthOptions define how authentication and authorization is managed.
 
@@ -23,7 +23,7 @@ interface AuthOptions {
     authTokenHeaderKey?: string;
     sessionDuration?: string | number;
     sessionCacheStrategy?: SessionCacheStrategy;
-    sessionCacheTTL?: number;
+    sessionCacheTTL?: string | number;
     requireVerification?: boolean;
     verificationTokenDuration?: string | number;
     superadminCredentials?: SuperadminCredentials;
@@ -82,16 +82,15 @@ If passed as a number should represent milliseconds and if passed as a string de
 [zeit/ms](https://github.com/zeit/ms.js).  Eg: `60`, `'2 days'`, `'10h'`, `'7d'`
 ### sessionCacheStrategy
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/auth/session-cache-strategy#sessioncachestrategy'>SessionCacheStrategy</a>`} default={`<a href='/reference/typescript-api/auth/in-memory-session-cache-strategy#inmemorysessioncachestrategy'>InMemorySessionCacheStrategy</a>`}   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/auth/session-cache-strategy#sessioncachestrategy'>SessionCacheStrategy</a>`} default={`<a href='/reference/typescript-api/auth/default-session-cache-strategy#defaultsessioncachestrategy'>DefaultSessionCacheStrategy</a>`}   />
 
-This strategy defines how sessions will be cached. By default, sessions are cached using a simple
-in-memory caching strategy which is suitable for development and low-traffic, single-instance
-deployments.
+This strategy defines how sessions will be cached. By default, since v3.1.0, sessions are cached using
+the underlying cache strategy defined in the <a href='/reference/typescript-api/configuration/system-options#systemoptions'>SystemOptions</a>`.cacheStrategy`.
 ### sessionCacheTTL
 
-<MemberInfo kind="property" type={`string | number`} default={`300`} />
+<MemberInfo kind="property" type={`string | number`} default={`300`}   />
 
-The "time to live" of a given item in the session cache. This determines the length of time that a cache entry 
+The "time to live" of a given item in the session cache. This determines the length of time that a cache entry
 is kept before being considered "stale" and being replaced with fresh data taken from the database.
 
 If passed as a number should represent seconds and if passed as a string describes a time span per
