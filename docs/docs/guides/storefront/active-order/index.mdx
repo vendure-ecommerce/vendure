@@ -190,10 +190,6 @@ To remove a coupon code from the active order, we use the [`removeCouponCode` mu
 mutation RemoveCouponCode($couponCode: String!) {
   removeCouponCode(couponCode: $couponCode) {
     ...ActiveOrder
-    ... on ErrorResult {
-      errorCode
-      message
-    }
   }
 }
 ```

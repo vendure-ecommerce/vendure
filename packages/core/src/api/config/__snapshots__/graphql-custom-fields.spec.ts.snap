@@ -250,6 +250,15 @@ scalar JSON
 scalar DateTime"
 `;
 
+exports[`addGraphQLCustomFields() > uses JSON scalar in UpdateActiveAdministratorInput if only internal custom fields defined on Administrator 1`] = `
+"scalar JSON
+
+input UpdateActiveAdministratorInput {
+  placeholder: String
+  customFields: JSON
+}"
+`;
+
 exports[`addOrderLineCustomFieldsInput() > Modifies the schema when the addItemToOrder & adjustOrderLine mutation is present 1`] = `
 "type Mutation {
   addItemToOrder(id: ID!, quantity: Int!, customFields: OrderLineCustomFieldsInput = null): Boolean
