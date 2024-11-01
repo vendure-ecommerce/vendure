@@ -11,8 +11,14 @@ import {
     RelationCustomFieldConfig as GraphQLRelationCustomFieldConfig,
     StringCustomFieldConfig as GraphQLStringCustomFieldConfig,
     TextCustomFieldConfig as GraphQLTextCustomFieldConfig,
-    StructFieldConfig as GraphQLStructFieldConfig,
     StructCustomFieldConfig as GraphQLStructCustomFieldConfig,
+    StructField as GraphQLStructField,
+    StringStructFieldConfig as GraphQLStringStructFieldConfig,
+    IntStructFieldConfig as GraphQLIntStructFieldConfig,
+    TextStructFieldConfig as GraphQLTextStructFieldConfig,
+    FloatStructFieldConfig as GraphQLFloatStructFieldConfig,
+    BooleanStructFieldConfig as GraphQLBooleanStructFieldConfig,
+    DateTimeStructFieldConfig as GraphQLDateTimeStructFieldConfig,
 } from '@vendure/common/lib/generated-types';
 import {
     CustomFieldsObject,
@@ -94,6 +100,7 @@ export type TypedCustomFieldConfig<
 > = BaseTypedCustomFieldConfig<T, C> &
     (TypedCustomSingleFieldConfig<T, C> | TypedCustomListFieldConfig<T, C>);
 
+// Type-safe custom field type definitions
 export type StringCustomFieldConfig = TypedCustomFieldConfig<'string', GraphQLStringCustomFieldConfig>;
 export type LocaleStringCustomFieldConfig = TypedCustomFieldConfig<
     'localeString',
@@ -104,16 +111,10 @@ export type LocaleTextCustomFieldConfig = TypedCustomFieldConfig<
     'localeText',
     GraphQLLocaleTextCustomFieldConfig
 >;
-export type StructFieldConfig = Omit<GraphQLStructFieldConfig, '__typename' | 'type'> & {
-    type: StructFieldType;
-};
 export type IntCustomFieldConfig = TypedCustomFieldConfig<'int', GraphQLIntCustomFieldConfig>;
 export type FloatCustomFieldConfig = TypedCustomFieldConfig<'float', GraphQLFloatCustomFieldConfig>;
 export type BooleanCustomFieldConfig = TypedCustomFieldConfig<'boolean', GraphQLBooleanCustomFieldConfig>;
 export type DateTimeCustomFieldConfig = TypedCustomFieldConfig<'datetime', GraphQLDateTimeCustomFieldConfig>;
-export type StructCustomFieldConfig = TypedCustomFieldConfig<'struct', GraphQLStructCustomFieldConfig> & {
-    fields: StructFieldConfig[];
-};
 export type RelationCustomFieldConfig = TypedCustomFieldConfig<
     'relation',
     Omit<GraphQLRelationCustomFieldConfig, 'entity' | 'scalarFields'>
@@ -122,6 +123,60 @@ export type RelationCustomFieldConfig = TypedCustomFieldConfig<
     graphQLType?: string;
     eager?: boolean;
     inverseSide?: string | ((object: any) => any);
+};
+
+// Struct field definitions
+export type BaseTypedStructFieldConfig<T extends StructFieldType, C extends GraphQLStructField> = Omit<
+    C,
+    '__typename' | 'list'
+> & {
+    type: T;
+    nullable?: boolean;
+    ui?: UiComponentConfig<DefaultFormComponentId | string>;
+};
+export type TypedStructSingleFieldConfig<
+    T extends StructFieldType,
+    C extends GraphQLStructField,
+> = BaseTypedStructFieldConfig<T, C> & {
+    list?: false;
+    validate?: (
+        value: DefaultValueType<T>,
+        injector: Injector,
+        ctx: RequestContext,
+    ) => string | LocalizedString[] | void | Promise<string | LocalizedString[] | void>;
+};
+
+export type TypedStructListFieldConfig<
+    T extends StructFieldType,
+    C extends GraphQLStructField,
+> = BaseTypedStructFieldConfig<T, C> & {
+    list?: true;
+    validate?: (value: Array<DefaultValueType<T>>) => string | LocalizedString[] | void;
+};
+
+export type TypedStructFieldConfig<
+    T extends StructFieldType,
+    C extends GraphQLStructField,
+> = BaseTypedStructFieldConfig<T, C> &
+    (TypedStructSingleFieldConfig<T, C> | TypedStructListFieldConfig<T, C>);
+
+export type StringStructFieldConfig = TypedStructFieldConfig<'string', GraphQLStringStructFieldConfig>;
+export type TextStructFieldConfig = TypedStructFieldConfig<'text', GraphQLTextStructFieldConfig>;
+export type IntStructFieldConfig = TypedStructFieldConfig<'int', GraphQLIntStructFieldConfig>;
+export type FloatStructFieldConfig = TypedStructFieldConfig<'float', GraphQLFloatStructFieldConfig>;
+export type BooleanStructFieldConfig = TypedStructFieldConfig<'boolean', GraphQLBooleanStructFieldConfig>;
+export type DateTimeStructFieldConfig = TypedStructFieldConfig<'datetime', GraphQLDateTimeStructFieldConfig>;
+
+export type StructFieldConfig =
+    | StringStructFieldConfig
+    | TextStructFieldConfig
+    | IntStructFieldConfig
+    | FloatStructFieldConfig
+    | BooleanStructFieldConfig
+    | DateTimeStructFieldConfig;
+
+export type StructCustomFieldConfig = TypedCustomFieldConfig<'struct', GraphQLStructCustomFieldConfig> & {
+    fields: StructFieldConfig[];
 };
 
 /**

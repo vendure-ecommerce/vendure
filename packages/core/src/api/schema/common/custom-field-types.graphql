@@ -123,30 +123,6 @@ type RelationCustomFieldConfig implements CustomField {
     ui: JSON
 }
 
-type StructFieldConfig {
-    name: String!
-    type: String!
-    list: Boolean
-    label: [LocalizedString!]
-    description: [LocalizedString!]
-    nullable: Boolean
-    ui: JSON
-}
-
-type StructCustomFieldConfig implements CustomField {
-    name: String!
-    type: String!
-    list: Boolean!
-    fields: [StructFieldConfig!]!
-    label: [LocalizedString!]
-    description: [LocalizedString!]
-    readonly: Boolean
-    internal: Boolean
-    nullable: Boolean
-    requiresPermission: [Permission!]
-    ui: JSON
-}
-
 type TextCustomFieldConfig implements CustomField {
     name: String!
     type: String!
@@ -173,6 +149,111 @@ type LocaleTextCustomFieldConfig implements CustomField {
     ui: JSON
 }
 
+interface StructField {
+    name: String!
+    type: String!
+    list: Boolean
+    label: [LocalizedString!]
+    description: [LocalizedString!]
+    nullable: Boolean
+    ui: JSON
+}
+
+type StringStructFieldConfig implements StructField {
+    name: String!
+    type: String!
+    list: Boolean!
+    label: [LocalizedString!]
+    description: [LocalizedString!]
+    length: Int
+    nullable: Boolean
+    pattern: String
+    options: [StringFieldOption!]
+    ui: JSON
+}
+
+type IntStructFieldConfig implements StructField {
+    name: String!
+    type: String!
+    list: Boolean!
+    label: [LocalizedString!]
+    description: [LocalizedString!]
+    nullable: Boolean
+    min: Int
+    max: Int
+    step: Int
+    ui: JSON
+}
+type FloatStructFieldConfig implements StructField {
+    name: String!
+    type: String!
+    list: Boolean!
+    label: [LocalizedString!]
+    description: [LocalizedString!]
+    nullable: Boolean
+    min: Float
+    max: Float
+    step: Float
+    ui: JSON
+}
+type BooleanStructFieldConfig implements StructField {
+    name: String!
+    type: String!
+    list: Boolean!
+    label: [LocalizedString!]
+    description: [LocalizedString!]
+    nullable: Boolean
+    ui: JSON
+}
+"""
+Expects the same validation formats as the `<input type="datetime-local">` HTML element.
+See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
+"""
+type DateTimeStructFieldConfig implements StructField {
+    name: String!
+    type: String!
+    list: Boolean!
+    label: [LocalizedString!]
+    description: [LocalizedString!]
+    nullable: Boolean
+    min: String
+    max: String
+    step: Int
+    ui: JSON
+}
+
+type TextStructFieldConfig implements StructField {
+    name: String!
+    type: String!
+    list: Boolean!
+    label: [LocalizedString!]
+    description: [LocalizedString!]
+    nullable: Boolean
+    ui: JSON
+}
+
+union StructFieldConfig =
+    StringStructFieldConfig
+    | IntStructFieldConfig
+    | FloatStructFieldConfig
+    | BooleanStructFieldConfig
+    | DateTimeStructFieldConfig
+    | TextStructFieldConfig
+
+type StructCustomFieldConfig implements CustomField {
+    name: String!
+    type: String!
+    list: Boolean!
+    fields: [StructFieldConfig!]!
+    label: [LocalizedString!]
+    description: [LocalizedString!]
+    readonly: Boolean
+    internal: Boolean
+    nullable: Boolean
+    requiresPermission: [Permission!]
+    ui: JSON
+}
+
 type LocalizedString {
     languageCode: LanguageCode!
     value: String!
@@ -188,3 +269,4 @@ union CustomFieldConfig =
     | RelationCustomFieldConfig
     | TextCustomFieldConfig
     | LocaleTextCustomFieldConfig
+    | StructCustomFieldConfig

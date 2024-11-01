@@ -9,7 +9,11 @@ import {
     IntCustomFieldConfig,
     LocaleStringCustomFieldConfig,
     StringCustomFieldConfig,
+    StringStructFieldConfig,
+    StructCustomFieldConfig,
+    StructFieldConfig,
     TypedCustomFieldConfig,
+    TypedStructFieldConfig,
 } from '../../config/custom-field/custom-field-types';
 
 import { RequestContext } from './request-context';
@@ -50,7 +54,7 @@ export async function validateCustomFieldValue(
     await validateCustomFunction(config as TypedCustomFieldConfig<any, any>, value, injector, ctx);
 }
 
-function validateSingleValue(config: CustomFieldConfig, value: any) {
+function validateSingleValue(config: CustomFieldConfig | StructFieldConfig, value: any) {
     switch (config.type) {
         case 'string':
         case 'localeString':
@@ -69,19 +73,23 @@ function validateSingleValue(config: CustomFieldConfig, value: any) {
         case 'localeText':
             break;
         case 'struct':
-            // TODO: recursive validate of struct fields
+            validateStructField(config, value);
             break;
         default:
             assertNever(config);
     }
 }
 
-async function validateCustomFunction<T extends TypedCustomFieldConfig<any, any>>(
-    config: T,
-    value: any,
-    injector: Injector,
-    ctx: RequestContext,
-) {
+function validateStructField(config: StructCustomFieldConfig, value: any) {
+    for (const field of config.fields ?? []) {
+        const fieldValue = value[field.name];
+        validateSingleValue(field, fieldValue);
+    }
+}
+
+async function validateCustomFunction<
+    T extends TypedCustomFieldConfig<any, any> | TypedStructFieldConfig<any, any>,
+>(config: T, value: any, injector: Injector, ctx: RequestContext) {
     if (typeof config.validate === 'function') {
         const error = await config.validate(value, injector, ctx);
         if (typeof error === 'string') {
@@ -95,7 +103,7 @@ async function validateCustomFunction<T extends TypedCustomFieldConfig<any, any>
 }
 
 function validateStringField(
-    config: StringCustomFieldConfig | LocaleStringCustomFieldConfig,
+    config: StringCustomFieldConfig | LocaleStringCustomFieldConfig | StringStructFieldConfig,
     value: string,
 ): void {
     const { pattern } = config;
