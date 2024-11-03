@@ -47,9 +47,15 @@ export async function validateCustomFieldValue(
     if (config.list === true && Array.isArray(value)) {
         for (const singleValue of value) {
             validateSingleValue(config, singleValue);
+            if (config.type === 'struct') {
+                await validateStructField(config, singleValue, injector, ctx);
+            }
         }
     } else {
         validateSingleValue(config, value);
+        if (config.type === 'struct') {
+            await validateStructField(config, value, injector, ctx);
+        }
     }
     await validateCustomFunction(config as TypedCustomFieldConfig<any, any>, value, injector, ctx);
 }
@@ -72,18 +78,35 @@ function validateSingleValue(config: CustomFieldConfig | StructFieldConfig, valu
         case 'text':
         case 'localeText':
             break;
+        // Structs get validated separately
         case 'struct':
-            validateStructField(config, value);
             break;
         default:
             assertNever(config);
     }
 }
 
-function validateStructField(config: StructCustomFieldConfig, value: any) {
+async function validateStructField(
+    config: StructCustomFieldConfig,
+    value: any,
+    injector: Injector,
+    ctx: RequestContext,
+) {
     for (const field of config.fields ?? []) {
         const fieldValue = value[field.name];
-        validateSingleValue(field, fieldValue);
+        if (fieldValue !== undefined) {
+            validateSingleValue(field, fieldValue);
+        }
+        if (typeof field.validate === 'function') {
+            const error = await (field.validate as any)(fieldValue, injector, ctx);
+            if (typeof error === 'string') {
+                throw new UserInputError(error);
+            }
+            if (Array.isArray(error)) {
+                const localizedError = error.find(e => e.languageCode === ctx.languageCode) || error[0];
+                throw new UserInputError(localizedError.value);
+            }
+        }
     }
 }
 

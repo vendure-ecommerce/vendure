@@ -34,7 +34,7 @@ import { Injector } from '../../common/injector';
 import { VendureEntity } from '../../entity/base/base.entity';
 
 // prettier-ignore
-export type DefaultValueType<T extends CustomFieldType> =
+export type DefaultValueType<T extends CustomFieldType | StructFieldType> =
     T extends 'string' | 'localeString' | 'text' | 'localeText' ? string :
         T extends 'int' | 'float' ? number :
             T extends 'boolean' ? boolean :
@@ -91,7 +91,9 @@ export type TypedCustomListFieldConfig<
 > = BaseTypedCustomFieldConfig<T, C> & {
     list?: true;
     defaultValue?: Array<DefaultValueType<T>>;
-    validate?: (value: Array<DefaultValueType<T>>) => string | LocalizedString[] | void;
+    validate?: (
+        value: Array<DefaultValueType<T>>,
+    ) => string | LocalizedString[] | void | Promise<string | LocalizedString[] | void>;
 };
 
 export type TypedCustomFieldConfig<
@@ -151,7 +153,9 @@ export type TypedStructListFieldConfig<
     C extends GraphQLStructField,
 > = BaseTypedStructFieldConfig<T, C> & {
     list?: true;
-    validate?: (value: Array<DefaultValueType<T>>) => string | LocalizedString[] | void;
+    validate?: (
+        value: Array<DefaultValueType<T>>,
+    ) => string | LocalizedString[] | void | Promise<string | LocalizedString[] | void>;
 };
 
 export type TypedStructFieldConfig<
@@ -175,7 +179,10 @@ export type StructFieldConfig =
     | BooleanStructFieldConfig
     | DateTimeStructFieldConfig;
 
-export type StructCustomFieldConfig = TypedCustomFieldConfig<'struct', GraphQLStructCustomFieldConfig> & {
+export type StructCustomFieldConfig = TypedCustomFieldConfig<
+    'struct',
+    Omit<GraphQLStructCustomFieldConfig, 'fields'>
+> & {
     fields: StructFieldConfig[];
 };
 

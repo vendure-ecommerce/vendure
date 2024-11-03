@@ -665,7 +665,7 @@ function getGraphQlTypeForStructField(config: StructFieldConfig): string {
         case 'float':
             return 'Float';
         default:
-            assertNever(config.type);
+            assertNever(config);
     }
     return 'String';
 }

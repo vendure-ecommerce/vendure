@@ -155,7 +155,6 @@ interface StructField {
     list: Boolean
     label: [LocalizedString!]
     description: [LocalizedString!]
-    nullable: Boolean
     ui: JSON
 }
 
@@ -166,7 +165,6 @@ type StringStructFieldConfig implements StructField {
     label: [LocalizedString!]
     description: [LocalizedString!]
     length: Int
-    nullable: Boolean
     pattern: String
     options: [StringFieldOption!]
     ui: JSON
@@ -178,7 +176,6 @@ type IntStructFieldConfig implements StructField {
     list: Boolean!
     label: [LocalizedString!]
     description: [LocalizedString!]
-    nullable: Boolean
     min: Int
     max: Int
     step: Int
@@ -190,7 +187,6 @@ type FloatStructFieldConfig implements StructField {
     list: Boolean!
     label: [LocalizedString!]
     description: [LocalizedString!]
-    nullable: Boolean
     min: Float
     max: Float
     step: Float
@@ -202,7 +198,6 @@ type BooleanStructFieldConfig implements StructField {
     list: Boolean!
     label: [LocalizedString!]
     description: [LocalizedString!]
-    nullable: Boolean
     ui: JSON
 }
 """
@@ -215,7 +210,6 @@ type DateTimeStructFieldConfig implements StructField {
     list: Boolean!
     label: [LocalizedString!]
     description: [LocalizedString!]
-    nullable: Boolean
     min: String
     max: String
     step: Int
@@ -228,7 +222,6 @@ type TextStructFieldConfig implements StructField {
     list: Boolean!
     label: [LocalizedString!]
     description: [LocalizedString!]
-    nullable: Boolean
     ui: JSON
 }
 
