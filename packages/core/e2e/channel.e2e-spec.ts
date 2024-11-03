@@ -384,7 +384,7 @@ describe('Channels', () => {
             Codegen.DeleteChannelMutationVariables
         >(DELETE_CHANNEL, { id: defaultChannelId! });
 
-        expect(mutation.deleteChannel.result).toEqual({
+        expect(mutation.deleteChannel).toEqual({
             result: DeletionResult.NOT_DELETED,
             message: 'The default Channel cannot be deleted',
         });
