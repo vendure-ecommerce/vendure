@@ -152,7 +152,8 @@ export type DefaultFormComponentId =
     | 'text-form-input'
     | 'textarea-form-input'
     | 'product-multi-form-input'
-    | 'combination-mode-form-input';
+    | 'combination-mode-form-input'
+    | 'struct-form-input';
 
 /**
  * @description

@@ -1331,6 +1331,7 @@ export type CustomFieldConfig =
     | LocaleTextCustomFieldConfig
     | RelationCustomFieldConfig
     | StringCustomFieldConfig
+    | StructCustomFieldConfig
     | TextCustomFieldConfig;
 
 /**
