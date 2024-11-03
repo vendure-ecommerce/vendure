@@ -1331,6 +1331,7 @@ export type CustomFieldConfig =
     | LocaleTextCustomFieldConfig
     | RelationCustomFieldConfig
     | StringCustomFieldConfig
+    | StructCustomFieldConfig
     | TextCustomFieldConfig;
 
 /**
@@ -8073,6 +8074,7 @@ export type GetGlobalSettingsQuery = {
                     | { name: string }
                     | { name: string }
                     | { name: string }
+                    | { name: string }
                 >;
             };
         };
@@ -8604,6 +8606,7 @@ export type GlobalSettingsFragment = {
         permissions: Array<{ name: string; description: string; assignable: boolean }>;
         customFieldConfig: {
             Customer: Array<
+                | { name: string }
                 | { name: string }
                 | { name: string }
                 | { name: string }
@@ -10270,6 +10273,7 @@ export type UpdateGlobalSettingsMutation = {
                   permissions: Array<{ name: string; description: string; assignable: boolean }>;
                   customFieldConfig: {
                       Customer: Array<
+                          | { name: string }
                           | { name: string }
                           | { name: string }
                           | { name: string }
