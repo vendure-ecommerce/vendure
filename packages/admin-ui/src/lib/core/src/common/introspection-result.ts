@@ -58,6 +58,7 @@ const result: PossibleTypesResultData = {
             'LocaleTextCustomFieldConfig',
             'RelationCustomFieldConfig',
             'StringCustomFieldConfig',
+            'StructCustomFieldConfig',
             'TextCustomFieldConfig',
         ],
         DuplicateEntityResult: ['DuplicateEntityError', 'DuplicateEntitySuccess'],

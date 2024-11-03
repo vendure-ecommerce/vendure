@@ -186,7 +186,8 @@ export class DataTableFilterCollection<FilterInput extends Record<string, any> =
                     filterType = { kind: 'text' };
                     break;
                 case 'relation':
-                    // Cannot sort relations
+                case 'struct':
+                    // Cannot filter relations
                     break;
                 default:
                     assertNever(type);
