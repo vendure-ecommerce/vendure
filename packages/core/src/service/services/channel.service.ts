@@ -457,6 +457,12 @@ export class ChannelService {
 
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         const channel = await this.connection.getEntityOrThrow(ctx, Channel, id);
+        if (channel.code === DEFAULT_CHANNEL_CODE)
+            return {
+                result: DeletionResult.NOT_DELETED,
+                message: ctx.translate('error.cannot-delete-default-channel'),
+            };
+
         const deletedChannel = new Channel(channel);
         await this.connection.getRepository(ctx, Session).delete({ activeChannelId: id });
         await this.connection.getRepository(ctx, Channel).delete(id);
