@@ -1706,9 +1706,9 @@ export type Mutation = {
     setOrderShippingMethod: SetOrderShippingMethodResult;
     /** Transitions an Order to a new state. Valid next states can be found by querying `nextOrderStates` */
     transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
-    /** Unsets the billing address for the active Order */
+    /** Unsets the billing address for the active Order. Available since version 3.1.0 */
     unsetOrderBillingAddress: ActiveOrderResult;
-    /** Unsets the shipping address for the active Order */
+    /** Unsets the shipping address for the active Order. Available since version 3.1.0 */
     unsetOrderShippingAddress: ActiveOrderResult;
     /** Update an existing Customer */
     updateCustomer: Customer;

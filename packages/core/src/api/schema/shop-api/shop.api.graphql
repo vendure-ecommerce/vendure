@@ -66,9 +66,9 @@ type Mutation {
     setOrderShippingAddress(input: CreateAddressInput!): ActiveOrderResult!
     "Sets the billing address for the active Order"
     setOrderBillingAddress(input: CreateAddressInput!): ActiveOrderResult!
-    "Unsets the shipping address for the active Order"
+    "Unsets the shipping address for the active Order. Available since version 3.1.0"
     unsetOrderShippingAddress: ActiveOrderResult!
-    "Unsets the billing address for the active Order"
+    "Unsets the billing address for the active Order. Available since version 3.1.0"
     unsetOrderBillingAddress: ActiveOrderResult!
     "Allows any custom fields to be set for the active Order"
     setOrderCustomFields(input: UpdateOrderInput!): ActiveOrderResult!

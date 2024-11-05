@@ -1033,6 +1033,8 @@ export class OrderService {
     /**
      * @description
      * Unsets the shipping address for the Order.
+     *
+     * @since 3.1.0
      */
     async unsetShippingAddress(ctx: RequestContext, orderId: ID): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
@@ -1055,6 +1057,8 @@ export class OrderService {
     /**
      * @description
      * Unsets the billing address for the Order.
+     *
+     * @since 3.1.0
      */
     async unsetBillingAddress(ctx: RequestContext, orderId: ID): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
