@@ -63,22 +63,7 @@ export const devConfig: VendureConfig = {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
 
-    customFields: {
-        Product: [
-            {
-                name: 'test',
-                type: 'relation',
-                entity: Asset,
-            },
-        ],
-        FacetValue: [
-            {
-                name: 'childFacetValue',
-                type: 'relation',
-                entity: FacetValue,
-            },
-        ],
-    },
+    customFields: {},
     logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),

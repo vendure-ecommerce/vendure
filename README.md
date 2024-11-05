@@ -142,6 +142,10 @@ DB=sqlite npm run dev
 
 3. The dev-server will now have your local changes from the changed package.
 
+### Interactive debugging
+
+To debug the dev server with VS Code use the include [launch.json](/.vscode/launch.json) configuration.
+
 ### Code generation
 
 [graphql-code-generator](https://github.com/dotansimha/graphql-code-generator) is used to automatically create TypeScript interfaces for all GraphQL server operations and admin ui queries. These generated interfaces are used in both the admin ui and the server.
