@@ -2,25 +2,24 @@
 
 An open-source headless commerce platform built on [Node.js](https://nodejs.org) with [GraphQL](https://graphql.org/), [Nest](https://nestjs.com/) & [TypeScript](http://www.typescriptlang.org/), with a focus on developer productivity and ease of customization.
 
-[![Build Status](https://github.com/vendure-ecommerce/vendure/workflows/Build%20&%20Test/badge.svg)](https://github.com/vendure-ecommerce/vendure/actions) 
+[![Build Status](https://github.com/vendure-ecommerce/vendure/workflows/Build%20&%20Test/badge.svg)](https://github.com/vendure-ecommerce/vendure/actions)
 [![Publish & Install](https://github.com/vendure-ecommerce/vendure/workflows/Publish%20&%20Install/badge.svg)](https://github.com/vendure-ecommerce/vendure/actions/workflows/publish_and_install.yml)
 [![Lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
 
 ![vendure-github-social-banner](https://github.com/vendure-ecommerce/vendure/assets/24294584/ada25fa3-185d-45ce-896d-bece3685a829)
 
-
 ### [www.vendure.io](https://www.vendure.io/)
 
-* [Getting Started](https://docs.vendure.io/guides/getting-started/installation/): Get Vendure up and running locally in a matter of minutes with a single command
-* [Live Demo](https://demo.vendure.io/)
-* [Vendure Discord](https://www.vendure.io/community): Join us on Discord for support and answers to your questions
+-   [Getting Started](https://docs.vendure.io/guides/getting-started/installation/): Get Vendure up and running locally in a matter of minutes with a single command
+-   [Live Demo](https://demo.vendure.io/)
+-   [Vendure Discord](https://www.vendure.io/community): Join us on Discord for support and answers to your questions
 
 ## Branches
 
-- `master` - The latest stable release, currently the 2.x series.
-- `minor` - The next patch release, including new features
-- `major` - The next major release (v3.0)
-- `v2.x` - The 2.x line, which will receive critical fixes until the end-of-life on 31.12.2024. The code in this branch is under the MIT license.
+-   `master` - The latest stable release, currently the 2.x series.
+-   `minor` - The next patch release, including new features
+-   `major` - The next major release (v3.0)
+-   `v2.x` - The 2.x line, which will receive critical fixes until the end-of-life on 31.12.2024. The code in this branch is under the MIT license.
 
 ## Structure
 
@@ -41,8 +40,7 @@ vendure/
 ## Development
 
 > [!IMPORTANT]
-> The following instructions are for those who want to develop the Vendure core framework or plugins (e.g. if you intend to make a pull request). For instructions on how to build a project *using* Vendure, please see the [Getting Started guide](https://docs.vendure.io/guides/getting-started/installation/).
-
+> The following instructions are for those who want to develop the Vendure core framework or plugins (e.g. if you intend to make a pull request). For instructions on how to build a project _using_ Vendure, please see the [Getting Started guide](https://docs.vendure.io/guides/getting-started/installation/).
 
 ### 1. Install top-level dependencies
 
@@ -50,9 +48,9 @@ vendure/
 
 The root directory has a `package.json` which contains build-related dependencies for tasks including:
 
-* Building & deploying the docs 
-* Generating TypeScript types from the GraphQL schema
-* Linting, formatting & testing tasks to run on git commit & push
+-   Building & deploying the docs
+-   Generating TypeScript types from the GraphQL schema
+-   Linting, formatting & testing tasks to run on git commit & push
 
 ### 2. Build all packages
 
@@ -89,10 +87,10 @@ The first step is to populate the dev server with some test data:
 cd packages/dev-server
 
 [DB=mysql|postres|sqlite] npm run populate
- ```
+```
 
 If you do not specify the `DB` variable, it will default to "mysql". If you specifically want to develop against Postgres,
-you need to run the `postgres_16` container and then run `DB=postgres npm run populate`. 
+you need to run the `postgres_16` container and then run `DB=postgres npm run populate`.
 
 ### 5. Run the dev server
 
@@ -113,19 +111,22 @@ This will auto restart when you make changes to the admin ui. You don't need thi
 to test backend changes.
 
 ### Testing your changes locally
+
 This example shows how to test changes to the `payments-plugin` package locally, but it will also work for other packages.
 
 1. Open 2 terminal windows:
 
-- Terminal 1 for watching and compiling the changes of the package you are developing
-- Terminal 2 for running the dev-server
+-   Terminal 1 for watching and compiling the changes of the package you are developing
+-   Terminal 2 for running the dev-server
 
 ```shell
 # Terminal 1
 cd packages/payments-plugin
 npm run watch
 ```
+
 :warning: If you are developing changes for the `core`package, you also need to watch the `common` package:
+
 ```shell
 # Terminal 1
 # Root of the project
@@ -142,17 +143,21 @@ DB=sqlite npm run dev
 
 3. The dev-server will now have your local changes from the changed package.
 
+### Interactive debugging
+
+To debug the dev server with VS Code use the include [launch.json](/.vscode/launch.json) configuration.
+
 ### Code generation
 
 [graphql-code-generator](https://github.com/dotansimha/graphql-code-generator) is used to automatically create TypeScript interfaces for all GraphQL server operations and admin ui queries. These generated interfaces are used in both the admin ui and the server.
 
 Running `npm run codegen` will generate the following files:
 
-* [`packages/common/src/generated-types.ts`](./packages/common/src/generated-types.ts): Types, Inputs & resolver args relating to the Admin API
-* [`packages/common/src/generated-shop-types.ts`](./packages/common/src/generated-shop-types.ts): Types, Inputs & resolver args relating to the Shop API
-* [`packages/admin-ui/src/lib/core/src/common/generated-types.ts`](./packages/admin-ui/src/lib/core/src/common/generated-types.ts): Types & operations relating to the admin-ui queries & mutations.
-* [`packages/admin-ui/src/lib/core/src/common/introspection-result.ts`](./packages/admin-ui/src/lib/core/src/common/introspection-result.ts): Used by the Apollo Client [`IntrospectionFragmentMatcher`](https://www.apollographql.com/docs/react/data/fragments/#fragments-on-unions-and-interfaces) to correctly handle fragments in the Admin UI.
-* Also generates types used in e2e tests in those packages which feature e2e tests (core, elasticsearch-plugin, asset-server-plugin etc).
+-   [`packages/common/src/generated-types.ts`](./packages/common/src/generated-types.ts): Types, Inputs & resolver args relating to the Admin API
+-   [`packages/common/src/generated-shop-types.ts`](./packages/common/src/generated-shop-types.ts): Types, Inputs & resolver args relating to the Shop API
+-   [`packages/admin-ui/src/lib/core/src/common/generated-types.ts`](./packages/admin-ui/src/lib/core/src/common/generated-types.ts): Types & operations relating to the admin-ui queries & mutations.
+-   [`packages/admin-ui/src/lib/core/src/common/introspection-result.ts`](./packages/admin-ui/src/lib/core/src/common/introspection-result.ts): Used by the Apollo Client [`IntrospectionFragmentMatcher`](https://www.apollographql.com/docs/react/data/fragments/#fragments-on-unions-and-interfaces) to correctly handle fragments in the Admin UI.
+-   Also generates types used in e2e tests in those packages which feature e2e tests (core, elasticsearch-plugin, asset-server-plugin etc).
 
 ### Testing
 
@@ -180,7 +185,7 @@ To make a release:
 
 ##### 1. `npm run publish-release`
 
-It will run `lerna publish` which will prompt for which version to update to. Although we are using [conventional commits](https://www.conventionalcommits.org), the version is not automatically being calculated from the commit messages. Therefore the next version should be manually selected. 
+It will run `lerna publish` which will prompt for which version to update to. Although we are using [conventional commits](https://www.conventionalcommits.org), the version is not automatically being calculated from the commit messages. Therefore the next version should be manually selected.
 
 Next it will build all packages to ensure the distributed files are up to date.
 
