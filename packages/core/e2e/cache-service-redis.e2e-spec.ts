@@ -1,21 +1,19 @@
 import { CacheService, mergeConfig, RedisCachePlugin } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import {
     deletesAKey,
-    evictsTheOldestKeyWhenCacheIsFull,
     getReturnsUndefinedForNonExistentKey,
     invalidatesALargeNumberOfKeysByTag,
     invalidatesByMultipleTags,
     invalidatesBySingleTag,
     invalidatesManyByMultipleTags,
     setsAKey,
-    setsAKeyWithTtl,
     setsArrayOfObjects,
     setsArrayValue,
     setsObjectValue,
