@@ -1032,6 +1032,50 @@ export class OrderService {
 
     /**
      * @description
+     * Unsets the shipping address for the Order.
+     */
+    async unsetShippingAddress(ctx: RequestContext, orderId: ID): Promise<Order> {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        await this.connection
+            .getRepository(ctx, Order)
+            .createQueryBuilder('order')
+            .update(Order)
+            .set({ shippingAddress: {} })
+            .where('id = :id', { id: order.id })
+            .execute();
+        order.shippingAddress = {};
+        // Since a changed ShippingAddress could alter the activeTaxZone,
+        // we will remove any cached activeTaxZone, so it can be re-calculated
+        // as needed.
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone, undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA, undefined);
+        return this.applyPriceAdjustments(ctx, order, order.lines);
+    }
+
+    /**
+     * @description
+     * Unsets the billing address for the Order.
+     */
+    async unsetBillingAddress(ctx: RequestContext, orderId: ID): Promise<Order> {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        await this.connection
+            .getRepository(ctx, Order)
+            .createQueryBuilder('order')
+            .update(Order)
+            .set({ billingAddress: {} })
+            .where('id = :id', { id: order.id })
+            .execute();
+        order.billingAddress = {};
+        // Since a changed BillingAddress could alter the activeTaxZone,
+        // we will remove any cached activeTaxZone, so it can be re-calculated
+        // as needed.
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone, undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA, undefined);
+        return this.applyPriceAdjustments(ctx, order, order.lines);
+    }
+
+    /**
+     * @description
      * Returns an array of quotes stating which {@link ShippingMethod}s may be applied to this Order.
      * This is determined by the configured {@link ShippingEligibilityChecker} of each ShippingMethod.
      *

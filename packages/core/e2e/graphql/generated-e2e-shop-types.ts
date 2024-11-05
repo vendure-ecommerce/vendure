@@ -985,7 +985,7 @@ export type FacetTranslation = {
 export type FacetValue = Node & {
     code: Scalars['String']['output'];
     createdAt: Scalars['DateTime']['output'];
-    customFields?: Maybe<Scalars['JSON']['output']>;
+    customFields?: Maybe<FacetValueCustomFields>;
     facet: Facet;
     facetId: Scalars['ID']['output'];
     id: Scalars['ID']['output'];
@@ -993,6 +993,10 @@ export type FacetValue = Node & {
     name: Scalars['String']['output'];
     translations: Array<FacetValueTranslation>;
     updatedAt: Scalars['DateTime']['output'];
+};
+
+export type FacetValueCustomFields = {
+    childFacetValue?: Maybe<FacetValue>;
 };
 
 /**
@@ -1048,6 +1052,7 @@ export type FacetValueResult = {
 };
 
 export type FacetValueSortParameter = {
+    childFacetValue?: InputMaybe<SortOrder>;
     code?: InputMaybe<SortOrder>;
     createdAt?: InputMaybe<SortOrder>;
     facetId?: InputMaybe<SortOrder>;
@@ -1630,7 +1635,7 @@ export type MissingPasswordError = ErrorResult & {
 };
 
 export type Mutation = {
-    /** Adds an item to the order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available. */
+    /** Adds an item to the Order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available. */
     addItemToOrder: UpdateOrderItemsResult;
     /** Add a Payment to the Order */
     addPaymentToOrder: AddPaymentToOrderResult;
@@ -1691,11 +1696,11 @@ export type Mutation = {
     resetPassword: ResetPasswordResult;
     /** Set the Customer for the Order. Required only if the Customer is not currently logged in */
     setCustomerForOrder: SetCustomerForOrderResult;
-    /** Sets the billing address for this order */
+    /** Sets the billing address for the active Order */
     setOrderBillingAddress: ActiveOrderResult;
-    /** Allows any custom fields to be set for the active order */
+    /** Allows any custom fields to be set for the active Order */
     setOrderCustomFields: ActiveOrderResult;
-    /** Sets the shipping address for this order */
+    /** Sets the shipping address for the active Order */
     setOrderShippingAddress: ActiveOrderResult;
     /**
      * Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query.
@@ -1706,6 +1711,10 @@ export type Mutation = {
     setOrderShippingMethod: SetOrderShippingMethodResult;
     /** Transitions an Order to a new state. Valid next states can be found by querying `nextOrderStates` */
     transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
+    /** Unsets the billing address for the active Order */
+    unsetOrderBillingAddress: ActiveOrderResult;
+    /** Unsets the shipping address for the active Order */
+    unsetOrderShippingAddress: ActiveOrderResult;
     /** Update an existing Customer */
     updateCustomer: Customer;
     /** Update an existing Address */
@@ -2486,7 +2495,7 @@ export type Product = Node & {
     assets: Array<Asset>;
     collections: Array<Collection>;
     createdAt: Scalars['DateTime']['output'];
-    customFields?: Maybe<Scalars['JSON']['output']>;
+    customFields?: Maybe<ProductCustomFields>;
     description: Scalars['String']['output'];
     enabled: Scalars['Boolean']['output'];
     facetValues: Array<FacetValue>;
@@ -2506,6 +2515,10 @@ export type Product = Node & {
 
 export type ProductVariantListArgs = {
     options?: InputMaybe<ProductVariantListOptions>;
+};
+
+export type ProductCustomFields = {
+    test?: Maybe<Asset>;
 };
 
 export type ProductFilterParameter = {
@@ -2586,6 +2599,7 @@ export type ProductSortParameter = {
     id?: InputMaybe<SortOrder>;
     name?: InputMaybe<SortOrder>;
     slug?: InputMaybe<SortOrder>;
+    test?: InputMaybe<SortOrder>;
     updatedAt?: InputMaybe<SortOrder>;
 };
 
@@ -4128,6 +4142,32 @@ export type TransitionToStateMutation = {
         | null;
 };
 
+export type OrderWithAddressesFragment = {
+    lines: Array<{ id: string }>;
+    shippingAddress?: {
+        fullName?: string | null;
+        company?: string | null;
+        streetLine1?: string | null;
+        streetLine2?: string | null;
+        city?: string | null;
+        province?: string | null;
+        postalCode?: string | null;
+        country?: string | null;
+        phoneNumber?: string | null;
+    } | null;
+    billingAddress?: {
+        fullName?: string | null;
+        company?: string | null;
+        streetLine1?: string | null;
+        streetLine2?: string | null;
+        city?: string | null;
+        province?: string | null;
+        postalCode?: string | null;
+        country?: string | null;
+        phoneNumber?: string | null;
+    } | null;
+};
+
 export type SetShippingAddressMutationVariables = Exact<{
     input: CreateAddressInput;
 }>;
@@ -4136,7 +4176,19 @@ export type SetShippingAddressMutation = {
     setOrderShippingAddress:
         | { errorCode: ErrorCode; message: string }
         | {
+              lines: Array<{ id: string }>;
               shippingAddress?: {
+                  fullName?: string | null;
+                  company?: string | null;
+                  streetLine1?: string | null;
+                  streetLine2?: string | null;
+                  city?: string | null;
+                  province?: string | null;
+                  postalCode?: string | null;
+                  country?: string | null;
+                  phoneNumber?: string | null;
+              } | null;
+              billingAddress?: {
                   fullName?: string | null;
                   company?: string | null;
                   streetLine1?: string | null;
@@ -4158,6 +4210,82 @@ export type SetBillingAddressMutation = {
     setOrderBillingAddress:
         | { errorCode: ErrorCode; message: string }
         | {
+              lines: Array<{ id: string }>;
+              shippingAddress?: {
+                  fullName?: string | null;
+                  company?: string | null;
+                  streetLine1?: string | null;
+                  streetLine2?: string | null;
+                  city?: string | null;
+                  province?: string | null;
+                  postalCode?: string | null;
+                  country?: string | null;
+                  phoneNumber?: string | null;
+              } | null;
+              billingAddress?: {
+                  fullName?: string | null;
+                  company?: string | null;
+                  streetLine1?: string | null;
+                  streetLine2?: string | null;
+                  city?: string | null;
+                  province?: string | null;
+                  postalCode?: string | null;
+                  country?: string | null;
+                  phoneNumber?: string | null;
+              } | null;
+          };
+};
+
+export type UnsetShippingAddressMutationVariables = Exact<{ [key: string]: never }>;
+
+export type UnsetShippingAddressMutation = {
+    unsetOrderShippingAddress:
+        | { errorCode: ErrorCode; message: string }
+        | {
+              lines: Array<{ id: string }>;
+              shippingAddress?: {
+                  fullName?: string | null;
+                  company?: string | null;
+                  streetLine1?: string | null;
+                  streetLine2?: string | null;
+                  city?: string | null;
+                  province?: string | null;
+                  postalCode?: string | null;
+                  country?: string | null;
+                  phoneNumber?: string | null;
+              } | null;
+              billingAddress?: {
+                  fullName?: string | null;
+                  company?: string | null;
+                  streetLine1?: string | null;
+                  streetLine2?: string | null;
+                  city?: string | null;
+                  province?: string | null;
+                  postalCode?: string | null;
+                  country?: string | null;
+                  phoneNumber?: string | null;
+              } | null;
+          };
+};
+
+export type UnsetBillingAddressMutationVariables = Exact<{ [key: string]: never }>;
+
+export type UnsetBillingAddressMutation = {
+    unsetOrderBillingAddress:
+        | { errorCode: ErrorCode; message: string }
+        | {
+              lines: Array<{ id: string }>;
+              shippingAddress?: {
+                  fullName?: string | null;
+                  company?: string | null;
+                  streetLine1?: string | null;
+                  streetLine2?: string | null;
+                  city?: string | null;
+                  province?: string | null;
+                  postalCode?: string | null;
+                  country?: string | null;
+                  phoneNumber?: string | null;
+              } | null;
               billingAddress?: {
                   fullName?: string | null;
                   company?: string | null;
@@ -4847,6 +4975,65 @@ export const ActiveOrderCustomerFragmentDoc = {
         },
     ],
 } as unknown as DocumentNode<ActiveOrderCustomerFragment, unknown>;
+export const OrderWithAddressesFragmentDoc = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'OrderWithAddresses' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Order' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'lines' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'billingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<OrderWithAddressesFragment, unknown>;
 export const TestOrderFragmentFragmentDoc = {
     kind: 'Document',
     definitions: [
@@ -8264,61 +8451,8 @@ export const SetShippingAddressDocument = {
                             kind: 'SelectionSet',
                             selections: [
                                 {
-                                    kind: 'InlineFragment',
-                                    typeCondition: {
-                                        kind: 'NamedType',
-                                        name: { kind: 'Name', value: 'Order' },
-                                    },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'Field',
-                                                name: { kind: 'Name', value: 'shippingAddress' },
-                                                selectionSet: {
-                                                    kind: 'SelectionSet',
-                                                    selections: [
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'fullName' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'company' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'streetLine1' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'streetLine2' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'city' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'province' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'postalCode' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'country' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'phoneNumber' },
-                                                        },
-                                                    ],
-                                                },
-                                            },
-                                        ],
-                                    },
+                                    kind: 'FragmentSpread',
+                                    name: { kind: 'Name', value: 'OrderWithAddresses' },
                                 },
                                 {
                                     kind: 'InlineFragment',
@@ -8334,6 +8468,60 @@ export const SetShippingAddressDocument = {
                                         ],
                                     },
                                 },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'OrderWithAddresses' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Order' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'lines' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'billingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
                             ],
                         },
                     },
@@ -8376,61 +8564,8 @@ export const SetBillingAddressDocument = {
                             kind: 'SelectionSet',
                             selections: [
                                 {
-                                    kind: 'InlineFragment',
-                                    typeCondition: {
-                                        kind: 'NamedType',
-                                        name: { kind: 'Name', value: 'Order' },
-                                    },
-                                    selectionSet: {
-                                        kind: 'SelectionSet',
-                                        selections: [
-                                            {
-                                                kind: 'Field',
-                                                name: { kind: 'Name', value: 'billingAddress' },
-                                                selectionSet: {
-                                                    kind: 'SelectionSet',
-                                                    selections: [
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'fullName' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'company' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'streetLine1' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'streetLine2' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'city' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'province' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'postalCode' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'country' },
-                                                        },
-                                                        {
-                                                            kind: 'Field',
-                                                            name: { kind: 'Name', value: 'phoneNumber' },
-                                                        },
-                                                    ],
-                                                },
-                                            },
-                                        ],
-                                    },
+                                    kind: 'FragmentSpread',
+                                    name: { kind: 'Name', value: 'OrderWithAddresses' },
                                 },
                                 {
                                     kind: 'InlineFragment',
@@ -8452,8 +8587,254 @@ export const SetBillingAddressDocument = {
                 ],
             },
         },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'OrderWithAddresses' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Order' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'lines' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'billingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
     ],
 } as unknown as DocumentNode<SetBillingAddressMutation, SetBillingAddressMutationVariables>;
+export const UnsetShippingAddressDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'UnsetShippingAddress' },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'unsetOrderShippingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                {
+                                    kind: 'FragmentSpread',
+                                    name: { kind: 'Name', value: 'OrderWithAddresses' },
+                                },
+                                {
+                                    kind: 'InlineFragment',
+                                    typeCondition: {
+                                        kind: 'NamedType',
+                                        name: { kind: 'Name', value: 'ErrorResult' },
+                                    },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'errorCode' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'message' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'OrderWithAddresses' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Order' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'lines' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'billingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<UnsetShippingAddressMutation, UnsetShippingAddressMutationVariables>;
+export const UnsetBillingAddressDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'UnsetBillingAddress' },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'unsetOrderBillingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                {
+                                    kind: 'FragmentSpread',
+                                    name: { kind: 'Name', value: 'OrderWithAddresses' },
+                                },
+                                {
+                                    kind: 'InlineFragment',
+                                    typeCondition: {
+                                        kind: 'NamedType',
+                                        name: { kind: 'Name', value: 'ErrorResult' },
+                                    },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'errorCode' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'message' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'OrderWithAddresses' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Order' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'lines' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'billingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<UnsetBillingAddressMutation, UnsetBillingAddressMutationVariables>;
 export const GetActiveOrderWithPaymentsDocument = {
     kind: 'Document',
     definitions: [
