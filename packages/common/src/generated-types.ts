@@ -817,13 +817,9 @@ export type CreateFacetInput = {
   values?: InputMaybe<Array<CreateFacetValueWithFacetInput>>;
 };
 
-export type CreateFacetValueCustomFieldsInput = {
-  childFacetValueId?: InputMaybe<Scalars['ID']['input']>;
-};
-
 export type CreateFacetValueInput = {
   code: Scalars['String']['input'];
-  customFields?: InputMaybe<CreateFacetValueCustomFieldsInput>;
+  customFields?: InputMaybe<Scalars['JSON']['input']>;
   facetId: Scalars['ID']['input'];
   translations: Array<FacetValueTranslationInput>;
 };
@@ -855,13 +851,9 @@ export type CreatePaymentMethodInput = {
   translations: Array<PaymentMethodTranslationInput>;
 };
 
-export type CreateProductCustomFieldsInput = {
-  testId?: InputMaybe<Scalars['ID']['input']>;
-};
-
 export type CreateProductInput = {
   assetIds?: InputMaybe<Array<Scalars['ID']['input']>>;
-  customFields?: InputMaybe<CreateProductCustomFieldsInput>;
+  customFields?: InputMaybe<Scalars['JSON']['input']>;
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
   facetValueIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   featuredAssetId?: InputMaybe<Scalars['ID']['input']>;
@@ -1762,7 +1754,7 @@ export type FacetValue = Node & {
   __typename?: 'FacetValue';
   code: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
-  customFields?: Maybe<FacetValueCustomFields>;
+  customFields?: Maybe<Scalars['JSON']['output']>;
   facet: Facet;
   facetId: Scalars['ID']['output'];
   id: Scalars['ID']['output'];
@@ -1770,11 +1762,6 @@ export type FacetValue = Node & {
   name: Scalars['String']['output'];
   translations: Array<FacetValueTranslation>;
   updatedAt: Scalars['DateTime']['output'];
-};
-
-export type FacetValueCustomFields = {
-  __typename?: 'FacetValueCustomFields';
-  childFacetValue?: Maybe<FacetValue>;
 };
 
 /**
@@ -1832,7 +1819,6 @@ export type FacetValueResult = {
 };
 
 export type FacetValueSortParameter = {
-  childFacetValue?: InputMaybe<SortOrder>;
   code?: InputMaybe<SortOrder>;
   createdAt?: InputMaybe<SortOrder>;
   facetId?: InputMaybe<SortOrder>;
@@ -4561,7 +4547,7 @@ export type Product = Node & {
   channels: Array<Channel>;
   collections: Array<Collection>;
   createdAt: Scalars['DateTime']['output'];
-  customFields?: Maybe<ProductCustomFields>;
+  customFields?: Maybe<Scalars['JSON']['output']>;
   description: Scalars['String']['output'];
   enabled: Scalars['Boolean']['output'];
   facetValues: Array<FacetValue>;
@@ -4582,11 +4568,6 @@ export type Product = Node & {
 
 export type ProductVariantListArgs = {
   options?: InputMaybe<ProductVariantListOptions>;
-};
-
-export type ProductCustomFields = {
-  __typename?: 'ProductCustomFields';
-  test?: Maybe<Asset>;
 };
 
 export type ProductFilterParameter = {
@@ -4696,7 +4677,6 @@ export type ProductSortParameter = {
   id?: InputMaybe<SortOrder>;
   name?: InputMaybe<SortOrder>;
   slug?: InputMaybe<SortOrder>;
-  test?: InputMaybe<SortOrder>;
   updatedAt?: InputMaybe<SortOrder>;
 };
 
@@ -6393,13 +6373,9 @@ export type UpdateFacetInput = {
   translations?: InputMaybe<Array<FacetTranslationInput>>;
 };
 
-export type UpdateFacetValueCustomFieldsInput = {
-  childFacetValueId?: InputMaybe<Scalars['ID']['input']>;
-};
-
 export type UpdateFacetValueInput = {
   code?: InputMaybe<Scalars['String']['input']>;
-  customFields?: InputMaybe<UpdateFacetValueCustomFieldsInput>;
+  customFields?: InputMaybe<Scalars['JSON']['input']>;
   id: Scalars['ID']['input'];
   translations?: InputMaybe<Array<FacetValueTranslationInput>>;
 };
@@ -6448,13 +6424,9 @@ export type UpdatePaymentMethodInput = {
   translations?: InputMaybe<Array<PaymentMethodTranslationInput>>;
 };
 
-export type UpdateProductCustomFieldsInput = {
-  testId?: InputMaybe<Scalars['ID']['input']>;
-};
-
 export type UpdateProductInput = {
   assetIds?: InputMaybe<Array<Scalars['ID']['input']>>;
-  customFields?: InputMaybe<UpdateProductCustomFieldsInput>;
+  customFields?: InputMaybe<Scalars['JSON']['input']>;
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
   facetValueIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   featuredAssetId?: InputMaybe<Scalars['ID']['input']>;

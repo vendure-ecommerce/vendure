@@ -1024,7 +1024,7 @@ export type FacetValue = Node & {
     __typename?: 'FacetValue';
     code: Scalars['String']['output'];
     createdAt: Scalars['DateTime']['output'];
-    customFields?: Maybe<FacetValueCustomFields>;
+    customFields?: Maybe<Scalars['JSON']['output']>;
     facet: Facet;
     facetId: Scalars['ID']['output'];
     id: Scalars['ID']['output'];
@@ -1032,11 +1032,6 @@ export type FacetValue = Node & {
     name: Scalars['String']['output'];
     translations: Array<FacetValueTranslation>;
     updatedAt: Scalars['DateTime']['output'];
-};
-
-export type FacetValueCustomFields = {
-    __typename?: 'FacetValueCustomFields';
-    childFacetValue?: Maybe<FacetValue>;
 };
 
 /**
@@ -1094,7 +1089,6 @@ export type FacetValueResult = {
 };
 
 export type FacetValueSortParameter = {
-    childFacetValue?: InputMaybe<SortOrder>;
     code?: InputMaybe<SortOrder>;
     createdAt?: InputMaybe<SortOrder>;
     facetId?: InputMaybe<SortOrder>;
@@ -2651,7 +2645,7 @@ export type Product = Node & {
     assets: Array<Asset>;
     collections: Array<Collection>;
     createdAt: Scalars['DateTime']['output'];
-    customFields?: Maybe<ProductCustomFields>;
+    customFields?: Maybe<Scalars['JSON']['output']>;
     description: Scalars['String']['output'];
     enabled: Scalars['Boolean']['output'];
     facetValues: Array<FacetValue>;
@@ -2671,11 +2665,6 @@ export type Product = Node & {
 
 export type ProductVariantListArgs = {
     options?: InputMaybe<ProductVariantListOptions>;
-};
-
-export type ProductCustomFields = {
-    __typename?: 'ProductCustomFields';
-    test?: Maybe<Asset>;
 };
 
 export type ProductFilterParameter = {
@@ -2761,7 +2750,6 @@ export type ProductSortParameter = {
     id?: InputMaybe<SortOrder>;
     name?: InputMaybe<SortOrder>;
     slug?: InputMaybe<SortOrder>;
-    test?: InputMaybe<SortOrder>;
     updatedAt?: InputMaybe<SortOrder>;
 };
 
