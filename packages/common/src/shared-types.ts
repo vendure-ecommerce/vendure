@@ -185,6 +185,7 @@ type DefaultFormConfigHash = {
         selectionMode?: 'product' | 'variant';
     };
     'combination-mode-form-input': Record<string, never>;
+    'struct-form-input': Record<string, never>;
 };
 
 export type DefaultFormComponentUiConfig<T extends DefaultFormComponentId | string> =
