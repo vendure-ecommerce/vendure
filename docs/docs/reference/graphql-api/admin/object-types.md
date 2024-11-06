@@ -802,7 +802,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level comment">This type is deprecated in v2.2 in favor of the EntityCustomFields type,</div>
 
-<div class="graphql-code-line top-level comment">which allows custom fields to be defined on user-supplies entities.</div>
+<div class="graphql-code-line top-level comment">which allows custom fields to be defined on user-supplied entities.</div>
 <div class="graphql-code-line top-level comment">"""</div>
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">CustomFields</span> &#123;</div>
 <div class="graphql-code-line ">Address: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>

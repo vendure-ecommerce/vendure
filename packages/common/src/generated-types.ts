@@ -1328,7 +1328,7 @@ export type CustomFieldConfig = BooleanCustomFieldConfig | DateTimeCustomFieldCo
 
 /**
  * This type is deprecated in v2.2 in favor of the EntityCustomFields type,
- * which allows custom fields to be defined on user-supplies entities.
+ * which allows custom fields to be defined on user-supplied entities.
  */
 export type CustomFields = {
   __typename?: 'CustomFields';
