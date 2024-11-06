@@ -264,19 +264,6 @@ export class MollieService {
                 `Unable to find order ${mollieOrder.orderNumber}, unable to process Mollie order ${mollieOrder.id}`,
             );
         }
-        if (order.orderPlacedAt) {
-            const paymentWithSameTransactionId = order.payments.find(
-                p => p.transactionId === mollieOrder.id && p.state === 'Settled',
-            );
-            if (!paymentWithSameTransactionId) {
-                // The order is paid for again, with another transaction ID. This means the customer paid twice
-                Logger.error(
-                    `Order '${order.code}' is already paid. Mollie order '${mollieOrder.id}' should be refunded.`,
-                    loggerCtx,
-                );
-                return;
-            }
-        }
         const statesThatRequireAction: OrderState[] = [
             'AddingItems',
             'ArrangingPayment',
@@ -296,6 +283,20 @@ export class MollieService {
         if (mollieOrder.status === OrderStatus.expired) {
             // Expired is fine, a customer can retry the payment later
             return;
+        }
+        if (order.orderPlacedAt) {
+            // Verify if the Vendure order isn't already paid for, and log if so
+            const paymentWithSameTransactionId = order.payments.find(
+                p => p.transactionId === mollieOrder.id && p.state === 'Settled',
+            );
+            if (!paymentWithSameTransactionId) {
+                // The order is paid for again, with another transaction ID. This means the customer paid twice
+                Logger.error(
+                    `Order '${order.code}' is already paid. Mollie order '${mollieOrder.id}' should be refunded.`,
+                    loggerCtx,
+                );
+                return;
+            }
         }
         if (mollieOrder.status === OrderStatus.paid) {
             // Paid is only used by 1-step payments without Authorized state. This will settle immediately
