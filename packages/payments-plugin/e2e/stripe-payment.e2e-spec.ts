@@ -246,6 +246,46 @@ describe('Stripe payments', () => {
         StripePlugin.options.paymentIntentCreateParams = undefined;
     });
 
+    // https://github.com/vendure-ecommerce/vendure/issues/3183
+    it('should attach additional options to payment intent using requestOptions', async () => {
+        StripePlugin.options.requestOptions = async (injector, ctx, currentOrder) => {
+            return {
+                stripeAccount: 'acct_connected',
+            };
+        };
+        let connectedAccountHeader: any;
+        let createPaymentIntentPayload: any;
+        const { activeOrder } = await shopClient.query<GetActiveOrderQuery>(GET_ACTIVE_ORDER);
+        nock('https://api.stripe.com/', {
+            reqheaders: {
+                'Stripe-Account': headerValue => {
+                    connectedAccountHeader = headerValue;
+                    return true;
+                },
+            },
+        })
+            .post('/v1/payment_intents', body => {
+                createPaymentIntentPayload = body;
+                return true;
+            })
+            .reply(200, {
+                client_secret: 'test-client-secret',
+            });
+        const { createStripePaymentIntent } = await shopClient.query(CREATE_STRIPE_PAYMENT_INTENT);
+        expect(createPaymentIntentPayload).toEqual({
+            amount: activeOrder?.totalWithTax.toString(),
+            currency: activeOrder?.currencyCode?.toLowerCase(),
+            customer: 'new-customer-id',
+            'automatic_payment_methods[enabled]': 'true',
+            'metadata[channelToken]': E2E_DEFAULT_CHANNEL_TOKEN,
+            'metadata[orderId]': '1',
+            'metadata[orderCode]': activeOrder?.code,
+        });
+        expect(connectedAccountHeader).toEqual('acct_connected');
+        expect(createStripePaymentIntent).toEqual('test-client-secret');
+        StripePlugin.options.paymentIntentCreateParams = undefined;
+    });
+
     // https://github.com/vendure-ecommerce/vendure/issues/2412
     it('should attach additional params to customer using customerCreateParams', async () => {
         StripePlugin.options.customerCreateParams = async (injector, ctx, currentOrder) => {
