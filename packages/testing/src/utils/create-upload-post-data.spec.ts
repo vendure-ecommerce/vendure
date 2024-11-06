@@ -1,4 +1,5 @@
 import gql from 'graphql-tag';
+import { describe, it, assert } from 'vitest';
 
 import { createUploadPostData } from './create-upload-post-data';
 
@@ -8,8 +9,16 @@ describe('createUploadPostData()', () => {
             gql`
                 mutation CreateAssets($input: [CreateAssetInput!]!) {
                     createAssets(input: $input) {
-                        id
-                        name
+                        ... on Asset {
+                            id
+                            name
+                        }
+                        ... on MimeTypeError {
+                            errorCode
+                            message
+                            fileName
+                            mimeType
+                        }
                     }
                 }
             `,
@@ -19,15 +28,18 @@ describe('createUploadPostData()', () => {
             }),
         );
 
-        expect(result.operations.operationName).toBe('CreateAssets');
-        expect(result.operations.variables).toEqual({
+        assert.equal(result.operations.operationName, 'CreateAssets');
+        assert.deepEqual(result.operations.variables, {
             input: [{ file: null }, { file: null }],
         });
-        expect(result.map).toEqual({
+        assert.deepEqual(result.map, {
             0: 'variables.input.0.file',
             1: 'variables.input.1.file',
         });
-        expect(result.filePaths).toEqual([{ name: '0', file: 'a.jpg' }, { name: '1', file: 'b.jpg' }]);
+        assert.deepEqual(result.filePaths, [
+            { name: '0', file: 'a.jpg' },
+            { name: '1', file: 'b.jpg' },
+        ]);
     });
 
     it('creates correct output for importProducts mutation', () => {
@@ -36,7 +48,7 @@ describe('createUploadPostData()', () => {
                 mutation ImportProducts($input: Upload!) {
                     importProducts(csvFile: $input) {
                         errors
-                        importedCount
+                        imported
                     }
                 }
             `,
@@ -44,11 +56,11 @@ describe('createUploadPostData()', () => {
             () => ({ csvFile: null }),
         );
 
-        expect(result.operations.operationName).toBe('ImportProducts');
-        expect(result.operations.variables).toEqual({ csvFile: null });
-        expect(result.map).toEqual({
+        assert.equal(result.operations.operationName, 'ImportProducts');
+        assert.deepEqual(result.operations.variables, { csvFile: null });
+        assert.deepEqual(result.map, {
             0: 'variables.csvFile',
         });
-        expect(result.filePaths).toEqual([{ name: '0', file: 'data.csv' }]);
+        assert.deepEqual(result.filePaths, [{ name: '0', file: 'data.csv' }]);
     });
 });
