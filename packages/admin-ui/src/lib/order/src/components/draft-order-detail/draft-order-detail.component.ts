@@ -131,13 +131,13 @@ export class DraftOrderDetailComponent
                                           this.id,
                                           this.mapToAddressInput(defaultShippingAddress),
                                       )
-                                    : of(null),
+                                    : this.dataService.order.unsetDraftOrderShippingAddress(this.id),
                                 defaultBillingAddress
                                     ? this.dataService.order.setDraftOrderBillingAddress(
                                           this.id,
                                           this.mapToAddressInput(defaultBillingAddress),
                                       )
-                                    : of(null),
+                                    : this.dataService.order.unsetDraftOrderBillingAddress(this.id),
                             ]);
                         }),
                     )
@@ -151,8 +151,17 @@ export class DraftOrderDetailComponent
 
     private mapToAddressInput(address: AddressFragment): CreateAddressInput {
         return {
+            fullName: address.fullName,
+            company: address.company,
+            streetLine1: address.streetLine1,
+            streetLine2: address.streetLine2,
+            city: address.city,
+            province: address.province,
+            postalCode: address.postalCode,
             countryCode: address.country.code,
-            ...address,
+            phoneNumber: address.phoneNumber,
+            defaultShippingAddress: address.defaultShippingAddress,
+            defaultBillingAddress: address.defaultBillingAddress,
         };
     }
 

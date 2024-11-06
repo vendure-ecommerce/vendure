@@ -2007,7 +2007,9 @@ export class OrderService {
         await this.connection.getRepository(ctx, ShippingLine).save(order.shippingLines, { reload: false });
         await this.promotionService.runPromotionSideEffects(ctx, order, activePromotionsPre);
 
-        return assertFound(this.findOne(ctx, order.id, relations));
+        const test = this.findOne(ctx, order.id, relations);
+
+        return assertFound(test);
     }
 
     /**
