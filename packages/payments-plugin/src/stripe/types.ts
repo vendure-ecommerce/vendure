@@ -15,6 +15,8 @@ type AdditionalPaymentIntentCreateParams = Partial<
     Omit<Stripe.PaymentIntentCreateParams, 'amount' | 'currency' | 'customer'>
 >;
 
+type AdditionalRequestOptions = Partial<Omit<Stripe.RequestOptions, 'idempotencyKey'>>;
+
 type AdditionalCustomerCreateParams = Partial<Omit<Stripe.CustomerCreateParams, 'email'>>;
 
 /**
@@ -106,6 +108,41 @@ export interface StripePluginOptions {
         ctx: RequestContext,
         order: Order,
     ) => AdditionalPaymentIntentCreateParams | Promise<AdditionalPaymentIntentCreateParams>;
+
+    /**
+     * @description
+     * Provide additional options to the Stripe payment intent creation. By default,
+     * the plugin will already pass the `idempotencyKey` parameter.
+     *
+     * For example, if you want to provide a `stripeAccount` for the payment intent, you can do so like this:
+     *
+     * @example
+     * ```ts
+     * import { VendureConfig } from '\@vendure/core';
+     * import { StripePlugin } from '\@vendure/payments-plugin/package/stripe';
+     *
+     * export const config: VendureConfig = {
+     *   // ...
+     *   plugins: [
+     *     StripePlugin.init({
+     *       requestOptions: (injector, ctx, order) => {
+     *         return {
+     *           stripeAccount: ctx.channel.seller?.customFields.connectedAccountId
+     *         },
+     *       }
+     *     }),
+     *   ],
+     * };
+     * ```
+     *
+     * @since 3.0.6
+     *
+     */
+    requestOptions?: (
+        injector: Injector,
+        ctx: RequestContext,
+        order: Order,
+    ) => AdditionalRequestOptions | Promise<AdditionalRequestOptions>;
 
     /**
      * @description
