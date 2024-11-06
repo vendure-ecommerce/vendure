@@ -85,12 +85,7 @@ export function createUploadPostData<P extends string[] | string, V>(
             variables,
             query: print(mutation),
         },
-        map: filePathsArray.reduce(
-            (output, filePath, i) => {
-                return { ...output, [i.toString()]: objectPath(variables, i).join('.') };
-            },
-            {} as Record<number, string>,
-        ),
+        map: objectPath(variables).reduce((acc, path, i) => ({ ...acc, [i.toString()]: path }), {}),
         filePaths: filePathsArray.map((filePath, i) => ({
             name: i.toString(),
             file: filePath,
@@ -99,23 +94,35 @@ export function createUploadPostData<P extends string[] | string, V>(
     return postData;
 }
 
-function objectPath(variables: any, i: number): Array<string | number> {
-    const path: Array<string | number> = ['variables'];
-    let current = variables;
-    while (current !== null) {
-        const props = Object.getOwnPropertyNames(current);
-        if (props) {
-            const firstProp = props[0];
-            const val = current[firstProp];
-            if (Array.isArray(val)) {
-                path.push(firstProp);
-                path.push(i);
-                current = val[0];
-            } else {
-                path.push(firstProp);
-                current = val;
+/**
+ * This function visits each property in the `variables` object, including
+ * nested ones, and returns the path of each null value, in order.
+ *
+ * @example
+ * // variables:
+ * {
+ *   input: {
+ *     name: "George's Pots and Pans",
+ *     logo: null,
+ *     user: {
+ *       profilePicture: null
+ *     }
+ *   }
+ * }
+ * // return value:
+ * ['variables.input.logo', 'variables.input.user.profilePicture']
+ */
+function objectPath(variables: any): string[] {
+    const pathsToNulls: string[] = [];
+    const checkValue = (pathSoFar: string, value: any) => {
+        if (value === null) {
+            pathsToNulls.push(pathSoFar);
+        } else if (typeof value === 'object') {
+            for (const key of Object.getOwnPropertyNames(value)) {
+                checkValue(`${pathSoFar}.${key}`, value[key]);
             }
         }
-    }
-    return path;
+    };
+    checkValue('variables', variables);
+    return pathsToNulls;
 }

@@ -63,4 +63,40 @@ describe('createUploadPostData()', () => {
         });
         assert.deepEqual(result.filePaths, [{ name: '0', file: 'data.csv' }]);
     });
+
+    it('creates correct output for a mutation with nested Upload and non-Upload fields', () => {
+        // this is not meant to be a real mutation; it's just an example of one
+        // that could exist
+        const result = createUploadPostData(
+            gql`
+                mutation ComplexUpload($input: ComplexTypeIncludingUpload!) {
+                    complexUpload(input: $input) {
+                        results
+                        errors
+                    }
+                }
+            `,
+            // the two file paths that are specified must appear in the same
+            // order as the `null` variables that stand in for the Upload fields
+            ['logo.png', 'profilePicture.jpg'],
+            () => ({ name: 'George', sellerLogo: null, someOtherThing: { profilePicture: null } }),
+        );
+
+        assert.equal(result.operations.operationName, 'ComplexUpload');
+        assert.deepEqual(result.operations.variables, {
+            name: 'George',
+            sellerLogo: null,
+            someOtherThing: { profilePicture: null },
+        });
+        // `result.map` should map `result.filePaths` onto the Upload fields
+        // implied by `variables`
+        assert.deepEqual(result.map, {
+            0: 'variables.sellerLogo',
+            1: 'variables.someOtherThing.profilePicture',
+        });
+        assert.deepEqual(result.filePaths, [
+            { name: '0', file: 'logo.png' },
+            { name: '1', file: 'profilePicture.jpg' },
+        ]);
+    });
 });
