@@ -13,6 +13,8 @@ const loggerCtx = 'AddressBasedTaxZoneStrategy';
  *
  * Returns the default {@link Channel}'s default tax zone if no applicable zone is found.
  *
+ * @since 3.1.0
+ *
  * :::info
  *
  * This is configured via `taxOptions.taxZoneStrategy = new AddressBasedTaxZoneStrategy()` in
