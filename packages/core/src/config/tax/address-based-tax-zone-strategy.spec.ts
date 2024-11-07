@@ -1,6 +1,8 @@
 import { RequestContext, Zone, Channel, Order } from '@vendure/core';
 import { describe, it, expect } from 'vitest';
 
+import { Logger } from '../logger/vendure-logger';
+
 import { AddressBasedTaxZoneStrategy } from './address-based-tax-zone-strategy';
 
 describe('AddressBasedTaxZoneStrategy', () => {

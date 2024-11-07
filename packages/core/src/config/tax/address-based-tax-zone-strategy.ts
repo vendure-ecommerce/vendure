@@ -1,5 +1,8 @@
-import { Channel, Logger, Order, RequestContext, Zone } from '@vendure/core';
-import { TaxZoneStrategy } from '@vendure/core/dist/config/tax/tax-zone-strategy';
+import { RequestContext } from '../../api/common/request-context';
+import { Channel, Order, Zone } from '../../entity';
+import { Logger } from '../logger/vendure-logger';
+
+import { TaxZoneStrategy } from './tax-zone-strategy';
 
 const loggerCtx = 'AddressBasedTaxZoneStrategy';
 
