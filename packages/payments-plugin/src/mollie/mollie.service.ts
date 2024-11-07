@@ -264,7 +264,12 @@ export class MollieService {
                 `Unable to find order ${mollieOrder.orderNumber}, unable to process Mollie order ${mollieOrder.id}`,
             );
         }
+        if (mollieOrder.status === OrderStatus.expired) {
+            // Expired is fine, a customer can retry the payment later
+            return;
+        }
         if (order.orderPlacedAt) {
+            // Verify if the Vendure order isn't already paid for, and log if so
             const paymentWithSameTransactionId = order.payments.find(
                 p => p.transactionId === mollieOrder.id && p.state === 'Settled',
             );
@@ -293,10 +298,6 @@ export class MollieService {
             return;
         }
         const amount = amountToCents(mollieOrder.amount);
-        if (mollieOrder.status === OrderStatus.expired) {
-            // Expired is fine, a customer can retry the payment later
-            return;
-        }
         if (mollieOrder.status === OrderStatus.paid) {
             // Paid is only used by 1-step payments without Authorized state. This will settle immediately
             await this.addPayment(ctx, order, amount, mollieOrder, paymentMethod.code, 'Settled');
