@@ -587,6 +587,24 @@ export const SET_BILLING_ADDRESS_FOR_DRAFT_ORDER = gql`
     ${ORDER_DETAIL_FRAGMENT}
 `;
 
+export const UNSET_SHIPPING_ADDRESS_FOR_DRAFT_ORDER = gql`
+    mutation UnsetDraftOrderShippingAddress($orderId: ID!) {
+        unsetDraftOrderShippingAddress(orderId: $orderId) {
+            ...OrderDetail
+        }
+    }
+    ${ORDER_DETAIL_FRAGMENT}
+`;
+
+export const UNSET_BILLING_ADDRESS_FOR_DRAFT_ORDER = gql`
+    mutation UnsetDraftOrderBillingAddress($orderId: ID!) {
+        unsetDraftOrderBillingAddress(orderId: $orderId) {
+            ...OrderDetail
+        }
+    }
+    ${ORDER_DETAIL_FRAGMENT}
+`;
+
 export const APPLY_COUPON_CODE_TO_DRAFT_ORDER = gql`
     mutation ApplyCouponCodeToDraftOrder($orderId: ID!, $couponCode: String!) {
         applyCouponCodeToDraftOrder(orderId: $orderId, couponCode: $couponCode) {
