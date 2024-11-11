@@ -14,7 +14,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/core/src/job-queue/job.ts" sourceLine="37" packageName="@vendure/core" />
 
 A Job represents a piece of work to be run in the background, i.e. outside the request-response cycle.
-It is intended to be used for long-running work triggered by API requests. Jobs should not generally
+It is intended to be used for long-running work triggered by API requests. Jobs should now generally
 be directly instantiated. Rather, the <a href='/reference/typescript-api/job-queue/#jobqueue'>JobQueue</a> `add()` method should be used to create and
 add a new Job to a queue.
 
