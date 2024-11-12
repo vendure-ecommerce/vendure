@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 import { FacetValueFragment } from '../../../common/generated-types';
 
@@ -8,14 +8,15 @@ import { FacetValueFragment } from '../../../common/generated-types';
     styleUrls: ['./facet-value-chip.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FacetValueChipComponent {
+export class FacetValueChipComponent implements OnInit {
     @Input() facetValue: FacetValueFragment;
     @Input() removable = true;
     @Input() displayFacetName = true;
     @Output() remove = new EventEmitter<void>();
+    formattedTitle: string;
 
-    get formattedTitle(): string {
-        const facetCode = this.facetValue.facet.code ? `(${this.facetValue.facet.code}) ` : '';
-        return `${this.facetValue.facet.name} ${facetCode}- ${this.facetValue.name}`;
+    ngOnInit() {
+        const facetCode = this.facetValue.facet?.code ? `(${this.facetValue.facet.code}) ` : '';
+        this.formattedTitle = `${this.facetValue.facet.name} ${facetCode}- ${this.facetValue.name}`;
     }
 }
