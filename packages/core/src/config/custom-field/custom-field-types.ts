@@ -133,7 +133,6 @@ export type BaseTypedStructFieldConfig<T extends StructFieldType, C extends Grap
     '__typename' | 'list'
 > & {
     type: T;
-    nullable?: boolean;
     ui?: UiComponentConfig<DefaultFormComponentId | string>;
 };
 export type TypedStructSingleFieldConfig<
@@ -171,6 +170,33 @@ export type FloatStructFieldConfig = TypedStructFieldConfig<'float', GraphQLFloa
 export type BooleanStructFieldConfig = TypedStructFieldConfig<'boolean', GraphQLBooleanStructFieldConfig>;
 export type DateTimeStructFieldConfig = TypedStructFieldConfig<'datetime', GraphQLDateTimeStructFieldConfig>;
 
+/**
+ * @description
+ * Configures an individual field of a "struct" custom field. The individual fields share
+ * the same API as the top-level custom fields, with the exception that they do not support the
+ * `readonly`, `internal`, `nullable`, `unique` and `requiresPermission` options.
+ *
+ * @example
+ * ```ts
+ * const customFields: CustomFields = {
+ *   Product: [
+ *     {
+ *       name: 'specifications',
+ *       type: 'struct',
+ *       fields: [
+ *         { name: 'processor', type: 'string' },
+ *         { name: 'ram', type: 'string' },
+ *         { name: 'screenSize', type: 'float' },
+ *       ],
+ *     },
+ *   ],
+ * };
+ * ```
+ *
+ *
+ * @docsCategory custom-fields
+ * @since 3.1.0
+ */
 export type StructFieldConfig =
     | StringStructFieldConfig
     | TextStructFieldConfig
@@ -179,6 +205,13 @@ export type StructFieldConfig =
     | BooleanStructFieldConfig
     | DateTimeStructFieldConfig;
 
+/**
+ * @description
+ * Configures a "struct" custom field.
+ *
+ * @docsCategory custom-fields
+ * @since 3.1.0
+ */
 export type StructCustomFieldConfig = TypedCustomFieldConfig<
     'struct',
     Omit<GraphQLStructCustomFieldConfig, 'fields'>

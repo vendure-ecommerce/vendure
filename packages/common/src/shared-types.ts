@@ -88,11 +88,12 @@ export type ID = string | number;
  * string       | varchar                               | String
  * localeString | varchar                               | String
  * text         | longtext(m), text(p,s)                | String
- * localeText    | longtext(m), text(p,s)                | String
+ * localeText   | longtext(m), text(p,s)                | String
  * int          | int                                   | Int
  * float        | double precision                      | Float
  * boolean      | tinyint (m), bool (p), boolean (s)    | Boolean
  * datetime     | datetime (m,s), timestamp (p)         | DateTime
+ * struct       | json (m), jsonb (p), text (s)         | JSON
  * relation     | many-to-one / many-to-many relation   | As specified in config
  *
  * Additionally, the CustomFieldType also dictates which [configuration options](/reference/typescript-api/custom-fields/#custom-field-config-properties)

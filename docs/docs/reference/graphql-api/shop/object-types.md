@@ -210,6 +210,28 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
+## BooleanStructFieldConfig
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">BooleanStructFieldConfig</span> &#123;</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">list: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+
+<div class="graphql-code-line ">label: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+
+<div class="graphql-code-line ">description: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+
+<div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">ui: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
 ## Channel
 
 <div class="graphql-code-block">
@@ -581,7 +603,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">union <span class="graphql-code-identifier">CustomFieldConfig</span> =</div>
-<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#stringcustomfieldconfig">StringCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#localestringcustomfieldconfig">LocaleStringCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#intcustomfieldconfig">IntCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#floatcustomfieldconfig">FloatCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#booleancustomfieldconfig">BooleanCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#datetimecustomfieldconfig">DateTimeCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#relationcustomfieldconfig">RelationCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#textcustomfieldconfig">TextCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#localetextcustomfieldconfig">LocaleTextCustomFieldConfig</a></div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#stringcustomfieldconfig">StringCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#localestringcustomfieldconfig">LocaleStringCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#intcustomfieldconfig">IntCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#floatcustomfieldconfig">FloatCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#booleancustomfieldconfig">BooleanCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#datetimecustomfieldconfig">DateTimeCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#relationcustomfieldconfig">RelationCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#textcustomfieldconfig">TextCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#localetextcustomfieldconfig">LocaleTextCustomFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#structcustomfieldconfig">StructCustomFieldConfig</a></div>
 </div>
 
 ## Customer
@@ -683,6 +705,39 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
 <div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/shop/enums#permission">Permission</a>!]</div>
+
+<div class="graphql-code-line ">min: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">max: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">step: <a href="/reference/graphql-api/shop/object-types#int">Int</a></div>
+
+<div class="graphql-code-line ">ui: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## DateTimeStructFieldConfig
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Expects the same validation formats as the <code>&lt;input type="datetime-local"&gt;</code> HTML element.</div>
+
+<div class="graphql-code-line top-level comment">See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">DateTimeStructFieldConfig</span> &#123;</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">list: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+
+<div class="graphql-code-line ">label: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+
+<div class="graphql-code-line ">description: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+
+<div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
 <div class="graphql-code-line ">min: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
 
@@ -920,6 +975,34 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
+## FloatStructFieldConfig
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">FloatStructFieldConfig</span> &#123;</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">list: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+
+<div class="graphql-code-line ">label: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+
+<div class="graphql-code-line ">description: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+
+<div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">min: <a href="/reference/graphql-api/shop/object-types#float">Float</a></div>
+
+<div class="graphql-code-line ">max: <a href="/reference/graphql-api/shop/object-types#float">Float</a></div>
+
+<div class="graphql-code-line ">step: <a href="/reference/graphql-api/shop/object-types#float">Float</a></div>
+
+<div class="graphql-code-line ">ui: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
 ## Fulfillment
 
 <div class="graphql-code-block">
@@ -1135,6 +1218,34 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
 <div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/shop/enums#permission">Permission</a>!]</div>
+
+<div class="graphql-code-line ">min: <a href="/reference/graphql-api/shop/object-types#int">Int</a></div>
+
+<div class="graphql-code-line ">max: <a href="/reference/graphql-api/shop/object-types#int">Int</a></div>
+
+<div class="graphql-code-line ">step: <a href="/reference/graphql-api/shop/object-types#int">Int</a></div>
+
+<div class="graphql-code-line ">ui: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## IntStructFieldConfig
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">IntStructFieldConfig</span> &#123;</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">list: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+
+<div class="graphql-code-line ">label: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+
+<div class="graphql-code-line ">description: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+
+<div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
 <div class="graphql-code-line ">min: <a href="/reference/graphql-api/shop/object-types#int">Int</a></div>
 
@@ -2800,6 +2911,71 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
+## StringStructFieldConfig
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">StringStructFieldConfig</span> &#123;</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">list: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+
+<div class="graphql-code-line ">label: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+
+<div class="graphql-code-line ">description: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+
+<div class="graphql-code-line ">length: <a href="/reference/graphql-api/shop/object-types#int">Int</a></div>
+
+<div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">pattern: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
+
+<div class="graphql-code-line ">options: [<a href="/reference/graphql-api/shop/object-types#stringfieldoption">StringFieldOption</a>!]</div>
+
+<div class="graphql-code-line ">ui: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## StructCustomFieldConfig
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">StructCustomFieldConfig</span> &#123;</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">list: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+
+<div class="graphql-code-line ">fields: [<a href="/reference/graphql-api/shop/object-types#structfieldconfig">StructFieldConfig</a>!]!</div>
+
+<div class="graphql-code-line ">label: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+
+<div class="graphql-code-line ">description: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+
+<div class="graphql-code-line ">readonly: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">internal: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
+
+<div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/shop/enums#permission">Permission</a>!]</div>
+
+<div class="graphql-code-line ">ui: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## StructFieldConfig
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">union <span class="graphql-code-identifier">StructFieldConfig</span> =</div>
+<div class="graphql-code-line "><a href="/reference/graphql-api/shop/object-types#stringstructfieldconfig">StringStructFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#intstructfieldconfig">IntStructFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#floatstructfieldconfig">FloatStructFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#booleanstructfieldconfig">BooleanStructFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#datetimestructfieldconfig">DateTimeStructFieldConfig</a> | <a href="/reference/graphql-api/shop/object-types#textstructfieldconfig">TextStructFieldConfig</a></div>
+</div>
+
 ## Success
 
 <div class="graphql-code-block">
@@ -2960,6 +3136,28 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
 <div class="graphql-code-line ">requiresPermission: [<a href="/reference/graphql-api/shop/enums#permission">Permission</a>!]</div>
+
+<div class="graphql-code-line ">ui: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## TextStructFieldConfig
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">TextStructFieldConfig</span> &#123;</div>
+<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">type: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">list: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a>!</div>
+
+<div class="graphql-code-line ">label: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+
+<div class="graphql-code-line ">description: [<a href="/reference/graphql-api/shop/object-types#localizedstring">LocalizedString</a>!]</div>
+
+<div class="graphql-code-line ">nullable: <a href="/reference/graphql-api/shop/object-types#boolean">Boolean</a></div>
 
 <div class="graphql-code-line ">ui: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
