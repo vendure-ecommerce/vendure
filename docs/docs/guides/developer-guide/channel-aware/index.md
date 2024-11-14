@@ -1,5 +1,5 @@
 ---
-title: "Channel-aware Entities"
+title: "Channelaware entities"
 showtoc: true
 ---
 
