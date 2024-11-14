@@ -16,7 +16,7 @@ let paypalCaptureService: PayPalCaptureService;
  */
 export const paypalPaymentMethodHandler = new PaymentMethodHandler({
     code: handlerCode,
-    description: [{ languageCode: LanguageCode.en, value: 'PayPal' }],
+    description: [{ languageCode: LanguageCode.en, value: 'PayPal payments' }],
     args: {
         clientId: {
             type: 'string',
