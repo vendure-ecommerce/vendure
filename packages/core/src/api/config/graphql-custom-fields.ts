@@ -256,7 +256,7 @@ export function addServerConfigCustomFields(
     const customFieldTypeDefs = `
             """
             This type is deprecated in v2.2 in favor of the EntityCustomFields type,
-            which allows custom fields to be defined on user-supplies entities.
+            which allows custom fields to be defined on user-supplied entities.
             """
             type CustomFields {
                 ${Object.keys(customFieldConfig).reduce(
@@ -288,7 +288,9 @@ export function addActiveAdministratorCustomFields(
     administratorCustomFields: CustomFieldConfig[],
 ) {
     const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
-    const writableCustomFields = administratorCustomFields?.filter(field => field.readonly !== true);
+    const writableCustomFields = administratorCustomFields?.filter(
+        field => field.readonly !== true && field.internal !== true,
+    );
     const extension = `
         extend input UpdateActiveAdministratorInput {
             customFields: ${
