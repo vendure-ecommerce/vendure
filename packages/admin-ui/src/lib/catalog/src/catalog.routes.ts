@@ -1,3 +1,4 @@
+
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, Route } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
