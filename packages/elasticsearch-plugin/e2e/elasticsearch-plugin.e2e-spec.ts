@@ -188,6 +188,7 @@ describe('Elasticsearch plugin', () => {
             customerCount: 1,
         });
         await adminClient.asSuperAdmin();
+        await awaitRunningJobs(adminClient);
         await adminClient.query(REINDEX);
         await awaitRunningJobs(adminClient);
     }, TEST_SETUP_TIMEOUT_MS);

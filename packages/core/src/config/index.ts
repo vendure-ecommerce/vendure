@@ -87,6 +87,7 @@ export * from './system/health-check-strategy';
 export * from './system/error-handler-strategy';
 export * from './tax/default-tax-line-calculation-strategy';
 export * from './tax/default-tax-zone-strategy';
+export * from './tax/address-based-tax-zone-strategy';
 export * from './tax/tax-line-calculation-strategy';
 export * from './tax/tax-zone-strategy';
 export * from './vendure-config';

@@ -1748,7 +1748,7 @@ export type MolliePaymentMethodsInput = {
 };
 
 export type Mutation = {
-    /** Adds an item to the order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available. */
+    /** Adds an item to the Order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available. */
     addItemToOrder: UpdateOrderItemsResult;
     /** Add a Payment to the Order */
     addPaymentToOrder: AddPaymentToOrderResult;
@@ -1810,11 +1810,11 @@ export type Mutation = {
     resetPassword: ResetPasswordResult;
     /** Set the Customer for the Order. Required only if the Customer is not currently logged in */
     setCustomerForOrder: SetCustomerForOrderResult;
-    /** Sets the billing address for this order */
+    /** Sets the billing address for the active Order */
     setOrderBillingAddress: ActiveOrderResult;
-    /** Allows any custom fields to be set for the active order */
+    /** Allows any custom fields to be set for the active Order */
     setOrderCustomFields: ActiveOrderResult;
-    /** Sets the shipping address for this order */
+    /** Sets the shipping address for the active Order */
     setOrderShippingAddress: ActiveOrderResult;
     /**
      * Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query.
@@ -1825,6 +1825,10 @@ export type Mutation = {
     setOrderShippingMethod: SetOrderShippingMethodResult;
     /** Transitions an Order to a new state. Valid next states can be found by querying `nextOrderStates` */
     transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
+    /** Unsets the billing address for the active Order. Available since version 3.1.0 */
+    unsetOrderBillingAddress: ActiveOrderResult;
+    /** Unsets the shipping address for the active Order. Available since version 3.1.0 */
+    unsetOrderShippingAddress: ActiveOrderResult;
     /** Update an existing Customer */
     updateCustomer: Customer;
     /** Update an existing Address */

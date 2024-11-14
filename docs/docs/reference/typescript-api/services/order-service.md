@@ -54,6 +54,8 @@ class OrderService {
     getNextOrderStates(order: Order) => readonly OrderState[];
     setShippingAddress(ctx: RequestContext, orderId: ID, input: CreateAddressInput) => Promise<Order>;
     setBillingAddress(ctx: RequestContext, orderId: ID, input: CreateAddressInput) => Promise<Order>;
+    unsetShippingAddress(ctx: RequestContext, orderId: ID) => Promise<Order>;
+    unsetBillingAddress(ctx: RequestContext, orderId: ID) => Promise<Order>;
     getEligibleShippingMethods(ctx: RequestContext, orderId: ID) => Promise<ShippingMethodQuote[]>;
     getEligiblePaymentMethods(ctx: RequestContext, orderId: ID) => Promise<PaymentMethodQuote[]>;
     setShippingMethod(ctx: RequestContext, orderId: ID, shippingMethodIds: ID[]) => Promise<ErrorResultUnion<SetOrderShippingMethodResult, Order>>;
@@ -189,7 +191,7 @@ incrementing an existing one.
 If you need to add multiple items to an Order, use `addItemsToOrder()` instead.
 ### addItemsToOrder
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, items: Array&#60;{             productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>;             quantity: number;             customFields?: { [key: string]: any };         }&#62;, relations?: RelationPaths&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;) => Promise&#60;{ order: <a href='/reference/typescript-api/entities/order#order'>Order</a>; errorResults: Array&#60;JustErrorResults&#60;UpdateOrderItemsResult&#62;&#62; }&#62;`}  since="3.1.0"  />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, items: Array&#60;{             productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>;             quantity: number;             customFields?: { [key: string]: any };         }&#62;, relations?: RelationPaths&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;) => Promise&#60;{ order: <a href='/reference/typescript-api/entities/order#order'>Order</a>; errorResults: Array&#60;JustErrorResults&#60;UpdateOrderItemsResult&#62;&#62; }&#62;`}  since="3.1.0"  />
 
 Adds multiple items to an Order. This method is more efficient than calling `addItemToOrder`
 multiple times, as it only needs to fetch the entire Order once, and only performs
@@ -273,6 +275,16 @@ Sets the shipping address for the Order.
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, input: CreateAddressInput) => Promise&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;`}   />
 
 Sets the billing address for the Order.
+### unsetShippingAddress
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;`}  since="3.1.0"  />
+
+Unsets the shipping address for the Order.
+### unsetBillingAddress
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;`}  since="3.1.0"  />
+
+Unsets the billing address for the Order.
 ### getEligibleShippingMethods
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;ShippingMethodQuote[]&#62;`}   />

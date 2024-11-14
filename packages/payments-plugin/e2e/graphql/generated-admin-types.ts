@@ -2993,6 +2993,10 @@ export type Mutation = {
     transitionFulfillmentToState: TransitionFulfillmentToStateResult;
     transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
     transitionPaymentToState: TransitionPaymentToStateResult;
+    /** Unsets the billing address for a draft Order */
+    unsetDraftOrderBillingAddress: Order;
+    /** Unsets the sthipping address for a draft Order */
+    unsetDraftOrderShippingAddress: Order;
     /** Update the active (currently logged-in) Administrator */
     updateActiveAdministrator: Administrator;
     /** Update an existing Administrator */
@@ -3597,6 +3601,14 @@ export type MutationTransitionOrderToStateArgs = {
 export type MutationTransitionPaymentToStateArgs = {
     id: Scalars['ID']['input'];
     state: Scalars['String']['input'];
+};
+
+export type MutationUnsetDraftOrderBillingAddressArgs = {
+    orderId: Scalars['ID']['input'];
+};
+
+export type MutationUnsetDraftOrderShippingAddressArgs = {
+    orderId: Scalars['ID']['input'];
 };
 
 export type MutationUpdateActiveAdministratorArgs = {
