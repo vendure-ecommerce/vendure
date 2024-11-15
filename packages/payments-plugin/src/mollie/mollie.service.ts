@@ -13,6 +13,7 @@ import {
     EntityHydrator,
     ErrorResult,
     ID,
+    idsAreEqual,
     Injector,
     LanguageCode,
     Logger,
@@ -94,16 +95,33 @@ export class MollieService {
         if (order instanceof PaymentIntentError) {
             return order;
         }
-        await this.entityHydrator.hydrate(ctx, order, {
-            relations: [
-                'customer',
-                'surcharges',
-                'lines.productVariant',
-                'lines.productVariant.translations',
-                'shippingLines.shippingMethod',
-                'payments',
-            ],
-        });
+        if (!paymentMethod) {
+            return new PaymentIntentError(`No paymentMethod found with code ${String(paymentMethodCode)}`);
+        }
+        const [eligiblePaymentMethods] = await Promise.all([
+            this.orderService.getEligiblePaymentMethods(ctx, order.id),
+            await this.entityHydrator.hydrate(ctx, order, {
+                relations: [
+                    'customer',
+                    'surcharges',
+                    'lines.productVariant',
+                    'lines.productVariant.translations',
+                    'shippingLines.shippingMethod',
+                    'payments',
+                ],
+            }),
+        ]);
+        if (
+            !eligiblePaymentMethods.find(
+                eligibleMethod =>
+                    idsAreEqual(eligibleMethod.id, paymentMethod?.id) && eligibleMethod.isEligible,
+            )
+        ) {
+            // Given payment method code is not eligible for this order
+            return new InvalidInputError(
+                `Payment method ${paymentMethod?.code} is not eligible for order ${order.code}`,
+            );
+        }
         if (order.state !== 'ArrangingPayment' && order.state !== 'ArrangingAdditionalPayment') {
             // Pre-check if order is transitionable to ArrangingPayment, because that will happen after Mollie payment
             try {
@@ -124,9 +142,6 @@ export class MollieService {
             return new PaymentIntentError(
                 'Cannot create payment intent for order with customer that has no lastName set',
             );
-        }
-        if (!paymentMethod) {
-            return new PaymentIntentError(`No paymentMethod found with code ${String(paymentMethodCode)}`);
         }
         let redirectUrl = input.redirectUrl;
         if (!redirectUrl) {
