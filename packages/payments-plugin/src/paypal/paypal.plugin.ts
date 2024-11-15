@@ -54,8 +54,11 @@ import { PayPalPluginOptions } from './types';
  * 4. Capture the payment
  *
  * ### Create PayPal order
- * This step creates the order within the PayPal REST API. It does not modify the current state of your
- * Vendure instance. The information about your order is passed to the PayPal API in this step.
+ *
+ * Begin by creating a new PayPal order. This order is the reference for the payment and is used to authorize the payment.
+ * Make sure to store the order ID in your frontend, as it is needed in the next steps.
+ *
+ * This step does not modify any data on your Vendure instance. It only creates a new order in the PayPal system.
  *
  * Create the PayPal order using the following mutation:
  * ```GraphQL
@@ -68,19 +71,15 @@ import { PayPalPluginOptions } from './types';
  * }
  * ```
  *
- * The PayPal order ID will be used in the next step to add a payment to your order.
- *
  * ### Authorize payment
  * The PayPal order you created must be authorized by your customers. This step is handled by the PayPal SDK for the most part.
- * You should be able to create the payment using the SDK and the provided client ID and order ID.
  *
  * For JavaScript projects, you can check out this integration guide to
- * integrate the PayPal SDK: [PayPal SDK Integration Guide](https://developer.paypal.com/studio/checkout/standard/integrate). Using this SDK, the
- * payment should be added in the `onApprove` callback.
+ * integrate the PayPal SDK: [PayPal SDK Integration Guide](https://developer.paypal.com/studio/checkout/standard/integrate).
  *
  * ### Add payment
  * After authorizing the payment, you need to add it to the Vendure order. This will add and validate the authorizations
- * add to the payment in the previous step.
+ * add to the payment in the previous step. If the payment is valid, the order will be updated to the next state.
  *
  * ```GraphQL
  * mutation AddPaymentToOrder() {
