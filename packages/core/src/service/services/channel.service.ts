@@ -112,7 +112,7 @@ export class ChannelService {
      * @description
      * Assigns a ChannelAware entity to the default Channel as well as any channel
      * specified in the RequestContext. This method will not save the entity to the database, but
-     * assigns the `channels` property off the entity.
+     * assigns the `channels` property of the entity.
      */
     async assignToCurrentChannel<T extends ChannelAware & VendureEntity>(
         entity: T,

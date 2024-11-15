@@ -1,14 +1,14 @@
 ---
-title: "Channelaware entities"
+title: "Implementing ChannelAware"
 showtoc: true
 ---
 
-# Defining channel-aware entities
+## Defining channel-aware entities
 
 Making an entity channel-aware means that it can be associated with a specific [Channel](/reference/typescript-api/channel/).
 This is useful when you want to have different data or features for different channels. First you will have to create
-a base entity ([Define a database entity](/guides/developer-guide/database-entity/)) that implements the `ChannelAware` interface.
-This interface requires the entity to have a `channels` property
+an entity ([Define a database entity](/guides/developer-guide/database-entity/)) that implements the `ChannelAware` interface.
+This interface requires the entity to provide a `channels` property
 
 ```ts title="src/plugins/requests/entities/product-request.entity.ts"
 import { DeepPartial } from '@vendure/common/lib/shared-types';
@@ -29,14 +29,15 @@ class ProductRequest extends VendureEntity {
 
     @Column()
     text: string;
-
+// highlight-start
     @ManyToMany(() => Channel)
     @JoinTable()
     channels: Channel[];
+// highlight-end
 }
 ```
 
-# Creating channel-aware entities
+## Creating channel-aware entities
 
 Creating a channel-aware entity is similar to creating a regular entity. The only difference is that you need to assign the entity to the current channel.
 This can be done by using the `ChannelService` which provides the `assignToCurrentChannel` helper function. 
@@ -55,19 +56,20 @@ export class RequestService {
     async create(ctx: RequestContext, input: CreateRequestInput): Promise<ProductRequest> {
         const request = new ProductRequest(input);
         // Now we need to assign the request to the current channel (+ default channel)
-        await this.channelService.assignToCurrentChannel(requestInput, ctx);
+// highlight-next-line
+        await this.channelService.assignToCurrentChannel(input, ctx);
         
         return await this.connection.getRepository(ProductRequest).save(request);
     }
 }
 ```
-For [Translatable entities](/guides/developer-guide/translations/), the best place to assign the channels is inside the `beforeSave` input of the [TranslateableSave](/reference/typescript-api/service-helpers/translatable-saver/).
+For [Translatable entities](/guides/developer-guide/translations/), the best place to assign the channels is inside the `beforeSave` input of the [TranslateableSave](/reference/typescript-api/service-helpers/translatable-saver/) helper class.
 
 
-# Querying channel-aware entities
+## Querying channel-aware entities
 
 When querying channel-aware entities, you can use the [ListQueryBuilder](/reference/typescript-api/data-access/list-query-builder/#extendedlistqueryoptions) or
-the [TransactionalConnection](/reference/typescript-api/data-access/transactional-connection/#findoneinchannel)to automatically filter entities based on the provided channel id.
+the [TransactionalConnection](/reference/typescript-api/data-access/transactional-connection/#findoneinchannel) to automatically filter entities based on the provided channel id.
 
 
 ```ts title="src/plugins/requests/service/product-request.service.ts"
@@ -83,9 +85,11 @@ export class RequestService {
     findOne(ctx: RequestContext,
             requestId: ID,
             relations?: RelationPaths<ProductRequest>) {
+// highlight-start
         return this.connection.findOneInChannel(ctx, ProductRequest, requestId, ctx.channelId, {
             relations: unique(effectiveRelations)
         });
+// highlight-end
     }
 
     findAll(
@@ -97,6 +101,7 @@ export class RequestService {
             .build(ProductRequest, options, {
                 ctx,
                 relations,
+// highlight-next-line
                 channelId: ctx.channelId,
             })
             .getManyAndCount()
