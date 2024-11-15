@@ -3,6 +3,7 @@ import {
     CustomFields as GraphQLCustomFields,
     CustomFieldConfig as GraphQLCustomFieldConfig,
     RelationCustomFieldConfig as GraphQLRelationCustomFieldConfig,
+    StructCustomFieldConfig as GraphQLStructCustomFieldConfig,
     EntityCustomFields,
     MutationUpdateGlobalSettingsArgs,
     Permission,
@@ -29,6 +30,7 @@ import {
     CustomFieldConfig,
     CustomFields,
     RelationCustomFieldConfig,
+    StructCustomFieldConfig,
 } from '../../../config/custom-field/custom-field-types';
 import { GlobalSettings } from '../../../entity/global-settings/global-settings.entity';
 import { ChannelService } from '../../../service/services/channel.service';
@@ -112,6 +114,9 @@ export class GlobalSettingsResolver {
                         c.entity = c.entity.name;
                         c.scalarFields = this.getScalarFieldsOfType(info, c.graphQLType || c.entity);
                     }
+                    if (c.type === 'struct') {
+                        c.fields = c.fields.map((f: any) => ({ ...f, list: !!f.list }));
+                    }
                     return c;
                 });
         }
@@ -134,8 +139,8 @@ export class GlobalSettingsResolver {
                         c.requiresPermission = Array.isArray(requiresPermission)
                             ? requiresPermission
                             : !!requiresPermission
-                            ? [requiresPermission]
-                            : [];
+                              ? [requiresPermission]
+                              : [];
                         return c;
                     })
                     .map(c => {
@@ -148,6 +153,9 @@ export class GlobalSettingsResolver {
                                 info,
                                 c.graphQLType || c.entity.name,
                             );
+                        }
+                        if (this.isStructGraphQLType(customFieldConfig) && this.isStructConfigType(c)) {
+                            customFieldConfig.fields = c.fields.map(f => ({ ...f, list: !!f.list as any }));
                         }
                         return customFieldConfig;
                     });
@@ -162,8 +170,16 @@ export class GlobalSettingsResolver {
         return config.type === 'relation';
     }
 
+    private isStructGraphQLType(config: GraphQLCustomFieldConfig): config is GraphQLStructCustomFieldConfig {
+        return config.type === 'struct';
+    }
+
     private isRelationConfigType(config: CustomFieldConfig): config is RelationCustomFieldConfig {
         return config.type === 'relation';
+    }
+
+    private isStructConfigType(config: CustomFieldConfig): config is StructCustomFieldConfig {
+        return config.type === 'struct';
     }
 
     private getScalarFieldsOfType(info: GraphQLResolveInfo, typeName: string): string[] {

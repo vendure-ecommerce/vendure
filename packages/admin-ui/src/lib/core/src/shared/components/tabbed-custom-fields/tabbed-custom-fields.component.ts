@@ -46,6 +46,7 @@ export class TabbedCustomFieldsComponent implements OnInit {
             customField.type === 'text' ||
             customField.type === 'localeText' ||
             customField.type === 'relation' ||
+            customField.type === 'struct' ||
             (customField.ui?.component && !smallComponents.includes(customField.ui?.component))
         );
     }

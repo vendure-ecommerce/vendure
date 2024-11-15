@@ -146,6 +146,7 @@ The following types are available for custom fields:
 | `float`        | Floating point number        | product review rating                                    |
 | `boolean`      | Boolean                      | isDownloadable flag on product                           |
 | `datetime`     | A datetime                   | date that variant is back in stock                       |
+| `struct`       | Structured json-like data    | Key-value attributes with additional data for products   |
 | `relation`     | A relation to another entity | Asset used as a customer avatar, related Products        |
 
 To see the underlying DB data type and GraphQL type used for each, see the [CustomFieldType doc](/reference/typescript-api/custom-fields/custom-field-type).
@@ -881,6 +882,111 @@ const config = {
 <CustomFieldProperty required={false} type="string" />
 
 The step value. See [the MDN datetime-local docs](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#step) to understand how this is used.
+
+### Properties for `struct` fields
+
+:::info
+The `struct` custom field type is available from Vendure v3.1.0.
+:::
+
+In addition to the common properties, the `struct` custom fields have some type-specific properties:
+
+- [`fields`](#fields)
+
+#### fields
+
+<CustomFieldProperty required={true} type="StructFieldConfig[]" typeLink="/reference/typescript-api/custom-fields/struct-field-config" />
+
+A `struct` is a data structure comprising a set of named fields, each with its own type. The `fields` property is an array of `StructFieldConfig` objects, each of which defines a field within the struct.
+
+```ts title="src/vendure-config.ts"
+const config = {
+    // ...
+    customFields: {
+        Product: [
+            {
+                name: 'dimensions',
+                type: 'struct',
+                // highlight-start
+                fields: [
+                    { name: 'length', type: 'int' },
+                    { name: 'width', type: 'int' },
+                    { name: 'height', type: 'int' },
+                ],
+                // highlight-end
+            },
+        ]
+    }
+};
+```
+
+When querying the `Product` entity, the `dimensions` field will be an object with the fields `length`, `width` and `height`:
+
+```graphql
+query {
+    product(id: 1) {
+        customFields {
+            dimensions {
+                length
+                width
+                height
+            }
+        }
+    }
+}
+```
+
+Struct fields support many of the same properties as other custom fields, such as `list`, `label`, `description`, `validate`, `ui` and 
+type-specific properties such as `options` and `pattern` for string types.
+
+:::note
+The following properties are **not** supported for `struct` fields: `public`, `readonly`, `internal`, `defaultValue`, `nullable`, `unique`, `requiresPermission`.
+:::
+
+```ts title="src/vendure-config.ts"
+import { LanguageCode } from '@vendure/core';
+
+const config = {
+    // ...
+    customFields: {
+        OrderLine: [
+            {
+                name: 'customizationOptions',
+                type: 'struct',
+                fields: [
+                    {
+                        name: 'color',
+                        type: 'string',
+                        // highlight-start
+                        options: [
+                            {value: 'red', label: [{languageCode: LanguageCode.en, value: 'Red'}]},
+                            {value: 'blue', label: [{languageCode: LanguageCode.en, value: 'Blue'}]},
+                        ],
+                        // highlight-end
+                    },
+                    {
+                        name: 'engraving',
+                        type: 'string',
+                        // highlight-start
+                        validate: (value: any) => {
+                            if (value.length > 20) {
+                                return 'Engraving text must be 20 characters or fewer';
+                            }
+                        },
+                    },
+                    {
+                        name: 'notifyEmailAddresses',
+                        type: 'string',
+                        // highlight-start
+                        list: true,
+                        // highlight-end
+                    }
+                ],
+            },
+        ]
+    }
+};
+```
 
 ### Properties for `relation` fields
 

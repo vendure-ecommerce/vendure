@@ -21,20 +21,41 @@
                 {{ item.customFields[customField.name] | slice : 0 : 50 }}
             </ng-container>
             <ng-container *ngSwitchCase="'relation'">
-                <vdr-dropdown>
-                    <button
-                        class="btn btn-link btn-icon"
-                        vdrDropdownTrigger
-                        [title]="'common.details' | translate"
-                    >
-                        <clr-icon shape="details"></clr-icon>
-                    </button>
-                    <vdr-dropdown-menu>
-                        <div class="result-detail px-2 py-1">
-                            <vdr-object-tree [value]="item.customFields[customField.name]"></vdr-object-tree>
-                        </div>
-                    </vdr-dropdown-menu>
-                </vdr-dropdown>
+                <ng-container *ngIf="item.customFields[customField.name] as value">
+                    <vdr-dropdown>
+                        <button
+                            class="button-small"
+                            vdrDropdownTrigger
+                            [title]="'common.details' | translate"
+                        >
+                            <clr-icon shape="details"></clr-icon>
+                        </button>
+                        <vdr-dropdown-menu>
+                            <div class="result-detail px-2 py-1">
+                                <vdr-object-tree [value]="value"></vdr-object-tree>
+                            </div>
+                        </vdr-dropdown-menu>
+                    </vdr-dropdown>
+                </ng-container>
+
+            </ng-container>
+            <ng-container *ngSwitchCase="'struct'">
+                <ng-container *ngIf="item.customFields[customField.name] as value">
+                    <vdr-dropdown>
+                        <button
+                            class="button-small"
+                            vdrDropdownTrigger
+                            [title]="'common.details' | translate"
+                        >
+                            <clr-icon shape="details"></clr-icon>
+                        </button>
+                        <vdr-dropdown-menu>
+                            <div class="result-detail px-2 py-1">
+                                <vdr-object-tree [value]="value"></vdr-object-tree>
+                            </div>
+                        </vdr-dropdown-menu>
+                    </vdr-dropdown>
+                </ng-container>
             </ng-container>
             <ng-container *ngSwitchDefault>
                 {{ item.customFields[customField.name] }}

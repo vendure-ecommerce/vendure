@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DefaultFormConfigHash
 
-<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="160" packageName="@vendure/common" />
+<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="165" packageName="@vendure/common" />
 
 Used to define the expected arguments for a given default form input component.
 
@@ -40,6 +40,7 @@ type DefaultFormConfigHash = {
         selectionMode?: 'product' | 'variant';
     };
     'combination-mode-form-input': Record<string, never>;
+    'struct-form-input': Record<string, never>;
 }
 ```
 
@@ -126,6 +127,11 @@ type DefaultFormConfigHash = {
 
 
 ### 'combination-mode-form-input'
+
+<MemberInfo kind="property" type={`Record&#60;string, never&#62;`}   />
+
+
+### 'struct-form-input'
 
 <MemberInfo kind="property" type={`Record&#60;string, never&#62;`}   />
 
