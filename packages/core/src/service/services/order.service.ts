@@ -1806,6 +1806,15 @@ export class OrderService {
         if (orderToDelete) {
             await this.deleteOrder(ctx, orderToDelete);
         }
+        if (order && linesToDelete) {
+            const orderId = order.id;
+            for (const line of linesToDelete) {
+                const result = await this.removeItemFromOrder(ctx, orderId, line.orderLineId);
+                if (!isGraphQlErrorResult(result)) {
+                    order = result;
+                }
+            }
+        }
         if (order && linesToInsert) {
             const orderId = order.id;
             const result = await this.addItemsToOrder(ctx, orderId, linesToInsert);

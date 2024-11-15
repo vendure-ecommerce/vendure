@@ -115,14 +115,12 @@ input CancelOrderInput {
 }
 
 input RefundOrderInput {
-    lines: [OrderLineInput!]!
-    shipping: Money!
-    adjustment: Money!
+    lines: [OrderLineInput!] @deprecated(reason: "Use the `amount` field instead")
+    shipping: Money @deprecated(reason: "Use the `amount` field instead")
+    adjustment: Money @deprecated(reason: "Use the `amount` field instead")
     """
-    If an amount is specified, this value will be used to create a Refund rather than calculating the
-    amount automatically. This was added in v2.2 and will be the preferred way to specify the refund
-    amount in the future. The `lines`, `shipping` and `adjustment` fields will likely be removed in a future
-    version.
+    The amount to be refunded to this particular payment. This was introduced in v2.2.0 as the preferred way to specify the refund amount.
+    Can be as much as the total amount of the payment minus the sum of all previous refunds.
     """
     amount: Money
     paymentId: ID!
