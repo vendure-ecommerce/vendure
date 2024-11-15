@@ -11,13 +11,17 @@ import { PayPalPluginOptions } from './types';
 
 /**
  * @description
- * Plugin to enable payments through the [PayPal platform](https://www.paypal.com).
- * This plugin uses the [Order API of PayPal](https://developer.paypal.com/docs/api/orders/v2/#orders_create).
+ * This plugin enables payments via the [PayPal Order API](https://developer.paypal.com/docs/api/orders/v2/#orders_create).
+ *
+ * > **_Note:_** This plugin only supports a [2 step flow](https://docs.vendure.io/guides/core-concepts/payment/#two-step).
+ * > This means that the payment has to manually captured by an admin.
  *
  * ## Requirements
  *
- * 1. You will need to create a PayPal account and get your clientID, clientSecret and merchantId in the dashboard.
- * 2. Install the Payments plugin:
+ * 1. Create a PayPal business account.
+ * 2. Make sure you have the client ID and secret of your PayPal REST API app.
+ * 3. Get the merchant ID from your PayPal account. This is the account ID of your PayPal business account.
+ * 4. Install the Payments plugin:
  *
  *     `yarn add \@vendure/payments-plugin`
  *
@@ -28,91 +32,91 @@ import { PayPalPluginOptions } from './types';
  * ## Setup
  *
  * 1. Add the plugin to your VendureConfig `plugins` array:
- *     ```ts
- *     import { PayPalPlugin } from '\@vendure/payments-plugin/package/paypal';
+ * ```ts
+ * import { PayPalPlugin } from '\@vendure/payments-plugin/package/paypal';
  *
- *     // ...
+ * // ...
  *
- *     plugins: [
- *       PayPalPlugin.init({ apiUrl: 'https://api-m.sandbox.paypal.com/' }), // To use the PayPal sandbox environment.
- *     ]
- *     ```
+ * plugins: [
+ *     // Set the apiUrl to the PayPal sandbox environment
+ *     PayPalPlugin.init({ apiUrl: 'https://sandbox.paypal.com/' }),
+ * ]
+ * ```
  * 2. Create a new PaymentMethod in the Admin UI, and select "PayPal payments" as the handler.
- * 3. Set your Mollie clientId, clientSecret and merchantId in the according fields.
+ * 3. Set your PayPal client ID, secret and merchant ID in the according fields.
  *
  * ## Storefront usage
  *
- * In your storefront you add a payment to an order using the `createMolliePaymentIntent` mutation. In this example, our Mollie
- * PaymentMethod was given the code "mollie-payment-method". The `redirectUrl``is the url that is used to redirect the end-user
- * back to your storefront after completing the payment.
+ * To successfully make a payment, the following steps are explained in detail:
+ * 1. Create a PayPal order
+ * 2. Use the PayPal SDK to authorize the payment
+ * 3. Add the payment to the order
+ * 4. Capture the payment
  *
+ * ### Create PayPal order
+ * This step creates the order within the PayPal REST API. It does not modify the current state of your
+ * Vendure instance. The information about your order is passed to the PayPal API in this step.
+ *
+ * Create the PayPal order using the following mutation:
  * ```GraphQL
- * mutation CreateMolliePaymentIntent {
- *   createMolliePaymentIntent(input: {
- *     redirectUrl: "https://storefront/order/1234XYZ"
- *     paymentMethodCode: "mollie-payment-method"
- *     molliePaymentMethodCode: "ideal"
- *   }) {
- *          ... on MolliePaymentIntent {
- *               url
- *           }
- *          ... on MolliePaymentIntentError {
- *               errorCode
- *               message
- *          }
- *   }
+ * mutation CreatePayPalOrder {
+ *     createPayPalOrder() {
+ *         ... on PayPalOrder {
+ *             id
+ *         }
+ *     }
  * }
  * ```
  *
- * The response will contain
- * a redirectUrl, which can be used to redirect your customer to the Mollie
- * platform.
+ * The PayPal order ID will be used in the next step to add a payment to your order.
  *
- * 'molliePaymentMethodCode' is an optional parameter that can be passed to skip Mollie's hosted payment method selection screen
- * You can get available Mollie payment methods with the following query:
+ * ### Authorize payment
+ * The PayPal order you created must be authorized by your customers. This step is handled by the PayPal SDK for the most part.
+ * You should be able to create the payment using the SDK and the provided client ID and order ID.
+ *
+ * For JavaScript projects, you can check out this integration guide to
+ * integrate the PayPal SDK: [PayPal SDK Integration Guide](https://developer.paypal.com/studio/checkout/standard/integrate). Using this SDK, the
+ * payment should be added in the `onApprove` callback.
+ *
+ * ### Add payment
+ * After authorizing the payment, you need to add it to the Vendure order. This will add and validate the authorizations
+ * add to the payment in the previous step.
  *
  * ```GraphQL
- * {
- *  molliePaymentMethods(input: { paymentMethodCode: "mollie-payment-method" }) {
- *    id
- *    code
- *    description
- *    minimumAmount {
- *      value
- *      currency
- *    }
- *    maximumAmount {
- *      value
- *      currency
- *    }
- *    image {
- *      size1x
- *      size2x
- *      svg
- *    }
- *  }
+ * mutation AddPaymentToOrder() {
+ *     addPaymentToOrder(input: {
+ *         method: "paypal-payment-method",
+ *         metadata: {
+ *             orderId: "the PayPal order ID"
+ *         }
+ *     }) {
+ *         ... on Order {
+ *             id
+ *             code
+ *             state
+ *             payments {
+ *                 id
+ *                 state
+ *                 transactionId
+ *                 method
+ *             }
+ *         }
+ *         ... on ErrorResult {
+ *             message
+ *             errorCode
+ *         }
+ *         ... on PaymentFailedError {
+ *             paymentErrorMessage
+ *         }
+ *     }
  * }
  * ```
- * You can pass `creditcard` for example, to the `createMolliePaymentIntent` mutation to skip the method selection.
  *
- * After completing payment on the Mollie platform,
- * the user is redirected to the given redirect url, e.g. `https://storefront/order/CH234X5`
+ * ### Capture payment
+ * Using the admin ui, the admin can settle this payment. After this step, the payment is successfully captured.
  *
- * ## Pay later methods
- * Mollie supports pay-later methods like 'Klarna Pay Later'. For pay-later methods, the status of an order is
- * 'PaymentAuthorized' after the Mollie hosted checkout. You need to manually settle the payment via the admin ui to capture the payment!
- * Make sure you capture a payment within 28 days, because this is the Klarna expiry time
- *
- * If you don't want this behaviour (Authorized first), you can set 'autoCapture=true' on the payment method. This option will immediately
- * capture the payment after a customer authorizes the payment.
- *
- * ## ArrangingAdditionalPayment state
- *
- * In some rare cases, a customer can add items to the active order, while a Mollie payment is still open,
- * for example by opening your storefront in another browser tab.
- * This could result in an order being in `ArrangingAdditionalPayment` status after the customer finished payment.
- * You should check if there is still an active order with status `ArrangingAdditionalPayment` on your order confirmation page,
- * and if so, allow your customer to pay for the additional items by creating another Mollie payment.
+ * ## Creating refunds
+ * Refunds can be created like any other refund in Vendure. The refund will be processed through the PayPal API.
  *
  * @docsCategory core plugins/PaymentsPlugin
  * @docsPage PayPalPlugin
