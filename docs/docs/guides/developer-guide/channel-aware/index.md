@@ -16,7 +16,7 @@ import { VendureEntity, Product, EntityId, ID, ChannelAware } from '@vendure/cor
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 @Entity()
-class ProductRequest extends VendureEntity {
+class ProductRequest extends VendureEntity implements ChannelAware {
     constructor(input?: DeepPartial<ProductRequest>) {
         super(input);
     }
