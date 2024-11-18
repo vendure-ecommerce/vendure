@@ -122,6 +122,9 @@ export const ADD_ITEM_TO_ORDER = gql`
                     ...UpdatedOrder
                 }
             }
+            ... on OrderInterceptorError {
+                interceptorError
+            }
         }
     }
     ${UPDATED_ORDER_FRAGMENT}
@@ -384,6 +387,9 @@ export const REMOVE_ITEM_FROM_ORDER = gql`
             ... on ErrorResult {
                 errorCode
                 message
+            }
+            ... on OrderInterceptorError {
+                interceptorError
             }
         }
     }

@@ -37,6 +37,7 @@ import { ChangedPriceHandlingStrategy } from './order/changed-price-handling-str
 import { GuestCheckoutStrategy } from './order/guest-checkout-strategy';
 import { OrderByCodeAccessStrategy } from './order/order-by-code-access-strategy';
 import { OrderCodeStrategy } from './order/order-code-strategy';
+import { OrderInterceptor } from './order/order-interceptor';
 import { OrderItemPriceCalculationStrategy } from './order/order-item-price-calculation-strategy';
 import { OrderMergeStrategy } from './order/order-merge-strategy';
 import { OrderPlacedStrategy } from './order/order-placed-strategy';
@@ -612,10 +613,19 @@ export interface OrderOptions {
      * @description
      * Defines how we deal with guest checkouts.
      *
-     * @since 2.0.0
+     * @sinc
+     * e 2.0.0
      * @default DefaultGuestCheckoutStrategy
      */
     guestCheckoutStrategy?: GuestCheckoutStrategy;
+    /**
+     * @description
+     * An array of {@link OrderInterceptor}s which can be used to modify the behavior of the Order process.
+     *
+     * @since 3.1.0
+     * @default []
+     */
+    orderInterceptors?: OrderInterceptor[];
 }
 
 /**
