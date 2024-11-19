@@ -64,8 +64,15 @@ export class FacetService {
     ): Promise<PaginatedList<Translated<Facet>>> {
         return this.listQueryBuilder
             .build(Facet, options, {
-                relations: relations ?? ['values', 'values.facet', 'channels'],
+                relations: relations?.filter(r => !['values', 'values.facet', 'channels'].includes(r)) ?? [],
                 ctx,
+                channelId: ctx.channelId,
+                entityAlias: 'facet',
+            })
+            .leftJoinAndSelect('facet.values', 'facet_value')
+            .leftJoinAndSelect('facet_value.facet', 'facet')
+            .leftJoin('facet_value.channels', 'value_channel')
+            .andWhere('value_channel.channelId = :channelId', {
                 channelId: ctx.channelId,
             })
             .getManyAndCount()
@@ -85,15 +92,29 @@ export class FacetService {
         facetId: ID,
         relations?: RelationPaths<Facet>,
     ): Promise<Translated<Facet> | undefined> {
-        return this.connection
-            .findOneInChannel(ctx, Facet, facetId, ctx.channelId, {
-                relations: relations ?? ['values', 'values.facet', 'channels'],
+        return this.listQueryBuilder
+            .build(Facet, undefined, {
+                relations: relations?.filter(r => !['values', 'values.facet', 'channels'].includes(r)) ?? [],
+                ctx,
+                channelId: ctx.channelId,
+                entityAlias: 'facet',
+                where: {
+                    id: facetId,
+                },
             })
-            .then(
-                facet =>
-                    (facet && this.translator.translate(facet, ctx, ['values', ['values', 'facet']])) ??
-                    undefined,
-            );
+            .leftJoinAndSelect('facet.values', 'facet_value')
+            .leftJoinAndSelect('facet_value.facet', 'facet')
+            .leftJoin('facet_value.channels', 'value_channel')
+            .andWhere('value_channel.channelId = :channelId', {
+                channelId: ctx.channelId,
+            })
+            .getMany()
+            .then(facets => {
+                const items = facets.map(facet =>
+                    this.translator.translate(facet, ctx, ['values', ['values', 'facet']]),
+                );
+                return items[0];
+            });
     }
 
     /**
@@ -110,7 +131,6 @@ export class FacetService {
         facetCodeOrLang: string | LanguageCode,
         lang?: LanguageCode,
     ): Promise<Translated<Facet> | undefined> {
-        const relations = ['values', 'values.facet'];
         const [repository, facetCode, languageCode] =
             ctxOrFacetCode instanceof RequestContext
                 ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -122,13 +142,24 @@ export class FacetService {
                   ];
 
         // TODO: Implement usage of channelLanguageCode
-        return repository
-            .findOne({
-                where: {
-                    code: facetCode,
-                },
-                relations,
-            })
+        const qb = repository
+            .createQueryBuilder('facet')
+            .leftJoinAndSelect('facet.values', 'facet_value')
+            .leftJoinAndSelect('facet_value.facet', 'value_facet')
+            .where('facet.code = :code', { code: facetCode });
+
+        if (ctxOrFacetCode instanceof RequestContext) {
+            qb.leftJoin('facet.channels', 'channel')
+                .leftJoin('facet_value.channels', 'value_channel')
+                .andWhere('channel.channelId = :channelId', {
+                    channelId: ctxOrFacetCode.channelId,
+                })
+                .andWhere('value_channel.channelId = :channelId', {
+                    channelId: ctxOrFacetCode.channelId,
+                });
+        }
+        return qb
+            .getOne()
             .then(
                 facet =>
                     (facet && translateDeep(facet, languageCode, ['values', ['values', 'facet']])) ??
@@ -147,6 +178,29 @@ export class FacetService {
             .leftJoinAndSelect('facet.translations', 'translations')
             .leftJoin('facet.values', 'facetValue')
             .where('facetValue.id = :id', { id })
+            .getOne();
+        if (facet) {
+            return this.translator.translate(facet, ctx);
+        }
+    }
+
+    /**
+     * @description
+     * Returns the Facet which contains the given FacetValue id filtered by channelId.
+     */
+    async findByFacetValueIdList(ctx: RequestContext, id: ID): Promise<Translated<Facet> | undefined> {
+        const facet = await this.connection
+            .getRepository(ctx, Facet)
+            .createQueryBuilder('facet')
+            .leftJoin('facet.channels', 'channel', 'channel.channelId = :channelId', {
+                channelId: ctx.channelId,
+            })
+            .leftJoinAndSelect('facet.translations', 'translations')
+            .leftJoin('facet.values', 'facet_value')
+            .leftJoin('facet_value.channels', 'value_channel', 'value_channel.channelId = :channelId', {
+                channelId: ctx.channelId,
+            })
+            .where('facet_value.id = :id', { id })
             .getOne();
         if (facet) {
             return this.translator.translate(facet, ctx);
