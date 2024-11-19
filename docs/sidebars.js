@@ -92,6 +92,7 @@ const sidebars = {
                     className: 'sidebar-section-header',
                 },
                 'guides/developer-guide/channel-aware/index',
+                'guides/developer-guide/translateable/index',
                 'guides/developer-guide/db-subscribers/index',
                 'guides/developer-guide/importing-data/index',
                 'guides/developer-guide/logging/index',
