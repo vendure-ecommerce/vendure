@@ -2,7 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { ID } from '@vendure/common/lib/shared-types';
 import crypto from 'crypto';
 import ms from 'ms';
-import { EntitySubscriberInterface, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
+import {
+    EntitySubscriberInterface,
+    InsertEvent,
+    LessThan,
+    LessThanOrEqual,
+    RemoveEvent,
+    UpdateEvent,
+} from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { ConfigService } from '../../config/config.service';
@@ -293,6 +300,28 @@ export class SessionService implements EntitySubscriberInterface {
     async deleteSessionsByActiveOrderId(ctx: RequestContext, activeOrderId: ID): Promise<void> {
         const sessions = await this.connection.getRepository(ctx, Session).find({ where: { activeOrderId } });
         await this.connection.getRepository(ctx, Session).remove(sessions);
+        for (const session of sessions) {
+            await this.withTimeout(this.sessionCacheStrategy.delete(session.token));
+        }
+    }
+
+    /**
+     * @description
+     * Deletes all expired sessions.
+     *
+     * @since 3.1.0
+     */
+    async cleanupExpiredSessions(ctx: RequestContext): Promise<void> {
+        const now = new Date();
+        const sessions = await this.connection
+            .getRepository(ctx, Session)
+            .createQueryBuilder('session')
+            .select('session.id')
+            .where('session.expires <= :now', { now })
+            .getMany();
+
+        await this.connection.getRepository(ctx, Session).remove(sessions, { chunk: 500 });
+
         for (const session of sessions) {
             await this.withTimeout(this.sessionCacheStrategy.delete(session.token));
         }
