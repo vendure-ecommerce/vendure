@@ -13,7 +13,7 @@ import { DataService } from '../../../data/providers/data.service';
  * @example
  * ```HTML
  * <vdr-product-variant-selector
- *   (productSelected)="selectResult($event)"></vdr-product-selector>
+ *   (productSelected)="selectResult($event)"></vdr-product-variant-selector>
  * ```
  *
  * @docsCategory components

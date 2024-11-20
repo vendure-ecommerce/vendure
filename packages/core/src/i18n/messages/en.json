@@ -4,6 +4,7 @@
     "available-currency-codes-must-include-default": "availableCurrencyCodes must include the defaultCurrencyCode ({ defaultCurrencyCode })",
     "cannot-delete-role": "The role \"{ roleCode }\" cannot be deleted",
     "cannot-delete-sole-superadmin": "The sole SuperAdmin cannot be deleted",
+    "cannot-delete-default-channel": "The default Channel cannot be deleted",
     "cannot-locate-customer-for-user": "Cannot locate a Customer for the user",
     "cannot-modify-role": "The role \"{ roleCode }\" cannot be modified",
     "cannot-move-collection-into-self": "Cannot move a Collection into itself",
