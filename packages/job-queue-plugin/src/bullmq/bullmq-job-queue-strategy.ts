@@ -52,8 +52,24 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     private readonly CANCEL_JOB_CHANNEL = 'cancel-job';
     private readonly CANCELLED_JOB_LIST_NAME = 'vendure:cancelled-jobs';
 
-    async init(injector: Injector): Promise<void> {
+    private initOptions(injector: Injector): BullMQPluginOptions {
         const options = injector.get<BullMQPluginOptions>(BULLMQ_PLUGIN_OPTIONS);
+        if (!options.workerOptions) {
+            options.workerOptions = {};
+        }
+        options.workerOptions.removeOnComplete = options.workerOptions.removeOnComplete || {
+            age: 60 * 60 * 24 * 30,
+            count: 5000,
+        };
+        options.workerOptions.removeOnFail = options.workerOptions.removeOnFail || {
+            age: 60 * 60 * 24 * 30,
+            count: 5000,
+        };
+        return options
+    }
+
+    async init(injector: Injector): Promise<void> {
+        const options = this.initOptions(injector);
         this.options = {
             ...options,
             workerOptions: {
@@ -413,8 +429,9 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         args: Args,
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
+            const prefix = this.options.workerOptions?.prefix ?? 'bull';
             (this.redisConnection as any)[scriptDef.name](
-                `bull:${this.queue.name}:`,
+                `${prefix}:${this.queue.name}:`,
                 ...args,
                 (err: any, result: any) => {
                     if (err) {
