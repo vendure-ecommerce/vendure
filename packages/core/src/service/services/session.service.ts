@@ -30,6 +30,15 @@ import { OrderService } from './order.service';
  * @description
  * Contains methods relating to {@link Session} entities.
  *
+ * :::note
+ *
+ * Sessions are neither automatically deleted when expired nor cleaned up periodically by Vendure. The How-to guide
+ * [Expired Session Cleanup](/guides/how-to/expired-session-cleanup/) demonstrates how to create a [Stand-alone CLI
+ * Script](/guides/developer-guide/stand-alone-scripts/) which calls the [cleanupExpiredSessions](#cleanupexpiredsessions)
+ * method to automate this process.
+ *
+ * :::
+ *
  * @docsCategory services
  */
 @Injectable()
