@@ -1,6 +1,5 @@
 import { Module, OnApplicationBootstrap, OnApplicationShutdown } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
 import { ConfigurableOperationDef } from '../common/configurable-operation';
 import { Injector } from '../common/injector';
@@ -83,6 +82,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             sessionCacheStrategy,
             passwordHashingStrategy,
             passwordValidationStrategy,
+            rolePermissionResolverStrategy,
         } = this.configService.authOptions;
         const { taxZoneStrategy, taxLineCalculationStrategy } = this.configService.taxOptions;
         const { jobQueueStrategy, jobBufferStorageStrategy } = this.configService.jobQueueOptions;
@@ -117,6 +117,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             sessionCacheStrategy,
             passwordHashingStrategy,
             passwordValidationStrategy,
+            rolePermissionResolverStrategy,
             assetNamingStrategy,
             assetPreviewStrategy,
             assetStorageStrategy,

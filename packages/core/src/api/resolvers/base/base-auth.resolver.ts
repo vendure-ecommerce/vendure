@@ -1,6 +1,6 @@
 import {
-    AuthenticationResult as ShopAuthenticationResult,
     PasswordValidationError,
+    AuthenticationResult as ShopAuthenticationResult,
 } from '@vendure/common/lib/generated-shop-types';
 import {
     AuthenticationResult as AdminAuthenticationResult,
@@ -22,7 +22,6 @@ import { NATIVE_AUTH_STRATEGY_NAME } from '../../../config/auth/native-authentic
 import { ConfigService } from '../../../config/config.service';
 import { LogLevel } from '../../../config/logger/vendure-logger';
 import { User } from '../../../entity/user/user.entity';
-import { getUserChannelsPermissions } from '../../../service/helpers/utils/get-user-channels-permissions';
 import { AdministratorService } from '../../../service/services/administrator.service';
 import { AuthService } from '../../../service/services/auth.service';
 import { UserService } from '../../../service/services/user.service';
@@ -143,11 +142,13 @@ export class BaseAuthResolver {
     /**
      * Exposes a subset of the User properties which we want to expose to the public API.
      */
-    protected publiclyAccessibleUser(user: User): CurrentUser {
+    protected async publiclyAccessibleUser(user: User): Promise<CurrentUser> {
         return {
             id: user.id,
             identifier: user.identifier,
-            channels: getUserChannelsPermissions(user) as CurrentUserChannel[],
+            channels: (await this.configService.authOptions.rolePermissionResolverStrategy.resolvePermissions(
+                user,
+            )) as CurrentUserChannel[],
         };
     }
 }
