@@ -23,6 +23,10 @@ import { DataSourceOptions } from 'typeorm';
 
 import { MultivendorPlugin } from './example-plugins/multivendor-plugin/multivendor.plugin';
 
+import { BraintreePlugin } from '../payments-plugin/package/braintree'
+import { Environment } from 'braintree';
+
+
 /**
  * Config settings used during development
  */
@@ -114,6 +118,7 @@ export const devConfig: VendureConfig = {
                 changeEmailAddressUrl: 'http://localhost:4201/change-email-address',
             },
         }),
+
         AdminUiPlugin.init({
             route: 'admin',
             port: 5001,
@@ -137,6 +142,45 @@ export const devConfig: VendureConfig = {
             //     devMode: true,
             // }),
         }),
+
+        BraintreePlugin.init({
+            environment: Environment.Sandbox,
+            storeCustomersInBraintree: false,
+            merchantAccountIds: {
+                USD: process.env.BRAINTREE_MERCHANT_ACCOUNT_ID_USD!,
+                EUR: process.env.BRAINTREE_MERCHANT_ACCOUNT_ID_EUR!
+            }
+        }),
+
+        // StripePlugin.init({
+        //     apiKeys: {
+        //         secretKey: 'sk_test_51Hq842F4778778778778778778778778778778778778778778778778778778778778778778778778778',
+        //         publishableKey: 'pk_test_51Hq842F4778778778778778778778778778778778778778778777877877877877877877877877878778',
+        //     },
+        //     webhookSigningSecret: 'whsec_1234567890',
+        //     currencyCode: 'USD',
+        //     paymentIntentStatus: ['requires_payment_method', 'requires_action'],
+        //     storeCustomersInStripe: false,
+        // }),
+        // PayPalPlugin.init({
+        //     clientId: 'AQ4q842F477877877877877877877877877877877877877877877787778778778778778778778778778',
+        //     clientSecret: 'EH4q842F477877877877877877877877877877877877877877877787778778778778778778778778778',
+        //     webhookId: '1234567890',
+        //     currencyCode: 'USD',
+        //     storeCustomersInPayPal: false,
+        // }),
+        // KlarnaPlugin.init({
+        //     apiKeys: {
+        //         secretKey: 'secret-key',
+        //         publishableKey: 'publishable-key',
+        //     },
+        //     currencyCode: 'USD',
+        //     storeCustomersInKlarna: false,
+        // }),
+        // StripePaymentIntentsPlugin.init({
+        //     apiKeys: {
+        //         secretKey: 'sk_test_51Hq842F477877877877877877877877877877877877877877877787778778778778778778778778778',
+        //})
     ],
 };
 

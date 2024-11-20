@@ -1,6 +1,7 @@
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import {
     ChannelService,
+    configureDefaultOrderProcess,
     DefaultLogger,
     LanguageCode,
     Logger,
@@ -14,8 +15,8 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { StripePlugin } from '../src/stripe';
-import { stripePaymentMethodHandler } from '../src/stripe/stripe.handler';
+import { BraintreePlugin } from '../src/braintree';
+import { braintreePaymentMethodHandler } from '../src/braintree/braintree.handler';
 
 /* eslint-disable */
 import { CREATE_PAYMENT_METHOD } from './graphql/admin-queries';
@@ -25,10 +26,11 @@ import {
 } from './graphql/generated-admin-types';
 import { AddItemToOrderMutation, AddItemToOrderMutationVariables } from './graphql/generated-shop-types';
 import { ADD_ITEM_TO_ORDER } from './graphql/shop-queries';
-import { CREATE_STRIPE_PAYMENT_INTENT, setShipping } from './payment-helpers';
-import { StripeCheckoutTestPlugin } from './fixtures/stripe-checkout-test.plugin';
+import { GENERATE_BRAINTREE_CLIENT_TOKEN, setShipping } from './payment-helpers';
+import { Environment } from 'braintree';
+import { BraintreeTestPlugin } from './fixtures/braintree-checkout-test.plugin';
 
-export let clientSecret: string;
+export let clientToken: string;
 
 /**
  * The actual starting of the dev server
@@ -36,16 +38,31 @@ export let clientSecret: string;
 (async () => {
     require('dotenv').config();
 
+    const customOrderProcess = configureDefaultOrderProcess({
+        arrangingPaymentRequiresShipping: false,
+        arrangingPaymentRequiresCustomer: false,
+    });
+
     registerInitializer('sqljs', new SqljsInitializer(path.join(__dirname, '__data__')));
     const config = mergeConfig(testConfig, {
+        orderOptions: {
+            process: [customOrderProcess as any],
+        },
         plugins: [
             ...testConfig.plugins,
             AdminUiPlugin.init({
                 route: 'admin',
                 port: 5001,
             }),
-            StripePlugin.init({}),
-            StripeCheckoutTestPlugin,
+            BraintreePlugin.init({
+                storeCustomersInBraintree: false,
+                environment: Environment.Sandbox,
+                merchantAccountIds: {
+                    USD: process.env.BRAINTREE_MERCHANT_ACCOUNT_ID_USD,
+                    EUR: process.env.BRAINTREE_MERCHANT_ACCOUNT_ID_EUR,
+                },
+            }),
+            BraintreeTestPlugin,
         ],
         logger: new DefaultLogger({ level: LogLevel.Debug }),
     });
@@ -61,20 +78,21 @@ export let clientSecret: string;
         CREATE_PAYMENT_METHOD,
         {
             input: {
-                code: 'stripe-payment-method',
+                code: 'braintree-payment-method',
                 enabled: true,
                 translations: [
                     {
-                        name: 'Stripe',
-                        description: 'This is a Stripe test payment method',
+                        name: 'Braintree',
+                        description: 'This is a Braintree test payment method',
                         languageCode: LanguageCode.en,
                     },
                 ],
                 handler: {
-                    code: stripePaymentMethodHandler.code,
+                    code: braintreePaymentMethodHandler.code,
                     arguments: [
-                        { name: 'apiKey', value: process.env.STRIPE_APIKEY! },
-                        { name: 'webhookSecret', value: process.env.STRIPE_WEBHOOK_SECRET! },
+                        { name: 'privateKey', value: process.env.BRAINTREE_PRIVATE_KEY! },
+                        { name: 'publicKey', value: process.env.BRAINTREE_PUBLIC_KEY! },
+                        { name: 'merchantId', value: process.env.BRAINTREE_MERCHANT_ID! },
                     ],
                 },
             },
@@ -97,7 +115,7 @@ export let clientSecret: string;
         listPrice: -20000,
     });
     await setShipping(shopClient);
-    const { createStripePaymentIntent } = await shopClient.query(CREATE_STRIPE_PAYMENT_INTENT);
-    clientSecret = createStripePaymentIntent;
-    Logger.info('http://localhost:3050/checkout', 'Stripe DevServer');
+    const { generateBraintreeClientToken } = await shopClient.query(GENERATE_BRAINTREE_CLIENT_TOKEN);
+    clientToken = generateBraintreeClientToken;
+    Logger.info('http://localhost:3050/checkout', 'Braintree DevServer');
 })();

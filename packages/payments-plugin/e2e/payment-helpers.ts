@@ -229,6 +229,12 @@ export const CREATE_STRIPE_PAYMENT_INTENT = gql`
     }
 `;
 
+export const GENERATE_BRAINTREE_CLIENT_TOKEN = gql`
+    query generateBraintreeClientToken {
+        generateBraintreeClientToken
+    }
+`;
+
 export const GET_MOLLIE_PAYMENT_METHODS = gql`
     query molliePaymentMethods($input: MolliePaymentMethodsInput!) {
         molliePaymentMethods(input: $input) {

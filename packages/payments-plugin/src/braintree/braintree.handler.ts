@@ -11,7 +11,7 @@ import {
 } from '@vendure/core';
 import { BraintreeGateway } from 'braintree';
 
-import { defaultExtractMetadataFn, getGateway } from './braintree-common';
+import { defaultExtractMetadataFn, getGateway, lookupMerchantAccountIdByCurrency } from './braintree-common';
 import { BRAINTREE_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { BraintreePluginOptions } from './types';
 
@@ -100,6 +100,7 @@ async function processPayment(
         amount: (amount / 100).toString(10),
         orderId: order.code,
         paymentMethodNonce,
+        merchantAccountId: lookupMerchantAccountIdByCurrency(options.merchantAccountIds, order.currencyCode),
         options: {
             submitForSettlement: true,
             storeInVaultOnSuccess: !!customerId,
