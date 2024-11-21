@@ -1,5 +1,5 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne, Unique } from 'typeorm';
 
 import { HasCustomFields } from '../../config';
 import { VendureEntity } from '../base/base.entity';
@@ -15,6 +15,7 @@ import { User } from '../user/user.entity';
  * @docsCategory entities
  */
 @Entity()
+@Unique('UNIQUE_CHANNEL_ROLE_PER_USER', ['user', 'channel', 'role'])
 export class ChannelRole extends VendureEntity implements HasCustomFields {
     constructor(input?: DeepPartial<ChannelRole>) {
         super(input);
