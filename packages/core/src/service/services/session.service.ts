@@ -5,7 +5,6 @@ import ms from 'ms';
 import { EntitySubscriberInterface, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { RolePermissionResolverStrategy } from '../../config/auth/role-permission-resolver-strategy';
 import { ConfigService } from '../../config/config.service';
 import { CachedSession, SessionCacheStrategy } from '../../config/session-cache/session-cache-strategy';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -28,7 +27,6 @@ import { OrderService } from './order.service';
 @Injectable()
 export class SessionService implements EntitySubscriberInterface {
     private sessionCacheStrategy: SessionCacheStrategy;
-    private rolePermissionResolverStrategy: RolePermissionResolverStrategy;
     private readonly sessionDurationInMs: number;
     private readonly sessionCacheTimeoutMs = 50;
 
@@ -38,7 +36,6 @@ export class SessionService implements EntitySubscriberInterface {
         private orderService: OrderService,
     ) {
         this.sessionCacheStrategy = this.configService.authOptions.sessionCacheStrategy;
-        this.rolePermissionResolverStrategy = this.configService.authOptions.rolePermissionResolverStrategy;
 
         const { sessionDuration } = this.configService.authOptions;
         this.sessionDurationInMs =
@@ -171,7 +168,10 @@ export class SessionService implements EntitySubscriberInterface {
                 id: user.id,
                 identifier: user.identifier,
                 verified: user.verified,
-                channelPermissions: await this.rolePermissionResolverStrategy.resolvePermissions(user),
+                channelPermissions:
+                    await this.configService.authOptions.rolePermissionResolverStrategy.resolvePermissions(
+                        user,
+                    ),
             };
         }
         return serializedSession;
