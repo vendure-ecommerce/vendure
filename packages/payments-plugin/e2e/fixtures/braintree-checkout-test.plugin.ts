@@ -24,14 +24,15 @@ export class BraintreeTestCheckoutController {
 </head>
 <html>
 
-<label for="currency">
-If you are using merchantAccountId, the checkout currency here must match the currency used for clientToken generation.
-</label>
+
 <select id="currency">
     <option value="USD">USD</option>
     <option value="EUR">EUR</option>
     <option value="GBP">GBP</option>
 </select>
+<label for="currency">
+If you are using merchantAccountId, the checkout currency here must match the currency used for clientToken generation.
+</label>
 
 <div id="dropin-container"></div>
 <button id="submit-button">Purchase</button>

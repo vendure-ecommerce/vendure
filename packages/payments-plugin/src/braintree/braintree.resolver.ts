@@ -55,7 +55,7 @@ export class BraintreeResolver {
 
             if (merchantAccountId) {
                 Logger.debug(
-                    `Merchant Account ID used is ${merchantAccountId} with currency ${order.currencyCode}.`,
+                    `Generating clientToken with Merchant Account ID ${merchantAccountId} for currency ${order.currencyCode}.`,
                     loggerCtx,
                 );
             }
