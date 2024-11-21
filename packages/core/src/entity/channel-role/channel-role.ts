@@ -23,12 +23,12 @@ export class ChannelRole extends VendureEntity implements HasCustomFields {
     @Column(type => CustomChannelRoleFields)
     customFields: CustomChannelRoleFields;
 
-    @ManyToOne(type => User)
+    @ManyToOne(type => User, { onDelete: 'CASCADE' })
     user: User;
 
-    @ManyToOne(type => Channel)
+    @ManyToOne(type => Channel, { onDelete: 'CASCADE' })
     channel: Channel;
 
-    @ManyToOne(type => Role)
+    @ManyToOne(type => Role, { onDelete: 'CASCADE' })
     role: Role;
 }
