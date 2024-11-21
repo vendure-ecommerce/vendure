@@ -48,13 +48,22 @@ export class BraintreeResolver {
             const customerId = order.customer?.customFields?.braintreeCustomerId ?? undefined;
             const args = await this.getPaymentMethodArgs(ctx);
             const gateway = getGateway(args, this.options);
+            const merchantAccountId = lookupMerchantAccountIdByCurrency(
+                this.options.merchantAccountIds,
+                order.currencyCode,
+            );
+
+            if (merchantAccountId) {
+                Logger.debug(
+                    `Merchant Account ID used is ${merchantAccountId} with currency ${order.currencyCode}.`,
+                    loggerCtx,
+                );
+            }
+
             try {
                 let result = await gateway.clientToken.generate({
                     customerId: includeCustomerId === false ? undefined : customerId,
-                    merchantAccountId: lookupMerchantAccountIdByCurrency(
-                        this.options.merchantAccountIds,
-                        order.currencyCode,
-                    ),
+                    merchantAccountId,
                 });
 
                 if (result.success === true) {
@@ -72,10 +81,7 @@ export class BraintreeResolver {
                         }
                         result = await gateway.clientToken.generate({
                             customerId: undefined,
-                            merchantAccountId: lookupMerchantAccountIdByCurrency(
-                                this.options.merchantAccountIds,
-                                order.currencyCode,
-                            ),
+                            merchantAccountId,
                         });
                         if (result.success === true) {
                             return result.clientToken;

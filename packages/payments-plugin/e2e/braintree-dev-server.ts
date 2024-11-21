@@ -7,6 +7,7 @@ import {
     Logger,
     LogLevel,
     mergeConfig,
+    Order,
     OrderService,
     RequestContext,
 } from '@vendure/core';
@@ -41,7 +42,7 @@ import { GENERATE_BRAINTREE_CLIENT_TOKEN, proceedToArrangingPayment, setShipping
 import braintree, { Environment, Test } from 'braintree';
 import { BraintreeTestPlugin } from './fixtures/braintree-checkout-test.plugin';
 
-export let clientToken: string;
+export let exposedClientToken: string;
 export let exposedShopClient: SimpleGraphQLClient;
 
 /**
@@ -49,12 +50,6 @@ export let exposedShopClient: SimpleGraphQLClient;
  */
 (async () => {
     require('dotenv').config();
-
-    // const customOrderProcess = configureDefaultOrderProcess({
-    //     arrangingPaymentRequiresShipping: false,
-    //     arrangingPaymentRequiresCustomer: false,
-    // });
-
     registerInitializer('sqljs', new SqljsInitializer(path.join(__dirname, '__data__')));
     const config = mergeConfig(testConfig, {
         authOptions: {
@@ -63,9 +58,6 @@ export let exposedShopClient: SimpleGraphQLClient;
                 secret: 'cookie-secret',
             },
         },
-        // orderOptions: {
-        //     process: [customOrderProcess as any],
-        // },
         plugins: [
             ...testConfig.plugins,
             AdminUiPlugin.init({
@@ -85,13 +77,16 @@ export let exposedShopClient: SimpleGraphQLClient;
         logger: new DefaultLogger({ level: LogLevel.Debug }),
     });
     const { server, shopClient, adminClient } = createTestEnvironment(config as any);
+
+    // We are exposing the shopClient for the braintree-checkout-test.plugin
     exposedShopClient = shopClient;
+
     await server.init({
         initialData,
         productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
         customerCount: 1,
     });
-    // Create method
+
     await adminClient.asSuperAdmin();
     await adminClient.query<CreatePaymentMethodMutation, CreatePaymentMethodMutationVariables>(
         CREATE_PAYMENT_METHOD,
@@ -119,22 +114,35 @@ export let exposedShopClient: SimpleGraphQLClient;
     );
     // Prepare order for payment
     await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
-    await shopClient.query<AddItemToOrderMutation, AddItemToOrderMutationVariables>(ADD_ITEM_TO_ORDER, {
+
+    // Set EUR or other currency for test flow, should be matching with a value in BraintreePlugin option's merchantAccountIds
+    await adminClient.asSuperAdmin();
+    await adminClient.query(gql`
+        mutation {
+            updateChannel(input: { id: "T_1", currencyCode: EUR }) {
+                __typename
+            }
+        }
+    `);
+
+    const { addItemToOrder } = await shopClient.query<
+        AddItemToOrderMutation,
+        AddItemToOrderMutationVariables
+    >(ADD_ITEM_TO_ORDER, {
         productVariantId: 'T_1',
         quantity: 1,
     });
-    const ctx = new RequestContext({
-        apiType: 'admin',
-        isAuthorized: true,
-        authorizedAsOwnerOnly: false,
-        channel: await server.app.get(ChannelService).getDefaultChannel(),
-    });
-    await server.app.get(OrderService).addSurchargeToOrder(ctx, 1, {
-        description: 'Negative test surcharge',
-        listPrice: -20000,
-    });
+
+    Logger.info(`Order's currency code is ${(addItemToOrder as any)?.currencyCode}`, 'braintree-dev-server');
+
     await setShipping(shopClient);
+    await proceedToArrangingPayment(shopClient);
+
     const { generateBraintreeClientToken } = await shopClient.query(GENERATE_BRAINTREE_CLIENT_TOKEN);
-    clientToken = generateBraintreeClientToken;
-    Logger.info('http://localhost:3050/checkout', 'Braintree DevServer');
+    exposedClientToken = generateBraintreeClientToken;
+    Logger.info('http://localhost:3050/checkout', 'braintree-dev-server');
+    Logger.info(
+        'The drop-in checkout currency must match with clientToken currency.',
+        'braintree-dev-server',
+    );
 })();

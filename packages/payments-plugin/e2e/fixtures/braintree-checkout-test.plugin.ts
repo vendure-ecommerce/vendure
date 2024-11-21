@@ -3,8 +3,7 @@ import { Controller, Res, Get, Post, Body } from '@nestjs/common';
 import { PluginCommonModule, VendurePlugin } from '@vendure/core';
 import { Response } from 'express';
 
-import { clientToken, exposedShopClient } from '../braintree-dev-server';
-import { proceedToArrangingPayment } from '../payment-helpers';
+import { exposedClientToken, exposedShopClient } from '../braintree-dev-server';
 import {
     AddPaymentToOrderMutation,
     AddPaymentToOrderMutationVariables,
@@ -25,20 +24,32 @@ export class BraintreeTestCheckoutController {
 </head>
 <html>
 
+<label for="currency">
+If you are using merchantAccountId, the checkout currency here must match the currency used for clientToken generation.
+</label>
+<select id="currency">
+    <option value="USD">USD</option>
+    <option value="EUR">EUR</option>
+    <option value="GBP">GBP</option>
+</select>
+
 <div id="dropin-container"></div>
 <button id="submit-button">Purchase</button>
 <div id="result"/>
 
 <script>    
+
+    var currencySelector = document.querySelector('#currency');
     var submitButton = document.querySelector('#submit-button');
+
     braintree.dropin.create({
-        authorization: "${clientToken}",
+        authorization: "${exposedClientToken}",
         container: '#dropin-container',
         dataCollector: true,
         paypal: {
             flow: 'checkout',
             amount: 100,
-            currency: 'GBP',
+            currency: 'USD',
         },
     }, function (err, dropinInstance) {
 
@@ -46,6 +57,11 @@ export class BraintreeTestCheckoutController {
             dropinInstance.requestPaymentMethod(async function (err, payload) {
                 sendPayloadToServer(payload)
             });
+        });
+
+        currencySelector.addEventListener("change", (event) => {
+            dropinInstance.updateConfiguration('paypal', 'currency', event.target.value);
+            console.log(event.target)
         });
 
         if (dropinInstance.isPaymentMethodRequestable()) {
@@ -80,34 +96,35 @@ export class BraintreeTestCheckoutController {
         .catch(err => console.error(err))
 
         document.querySelector('#result').innerHTML = JSON.stringify(response)
-        console.log(response)
-
+        
     }
 </script>
 
 </html>
     `);
     }
+    /**
+     * This method handles the payment result from the Braintree drop-in page.
+     * The `paymentResult` body is created with a normal clientToken by the drop-in UI, which takes the order's currency in consideration.
+     */
     @Post('checkout')
-    async test(@Body() body: Request, @Res() res: Response): Promise<void> {
-        await proceedToArrangingPayment(exposedShopClient);
+    async handlePayment(@Body() paymentResult: Request, @Res() res: Response): Promise<void> {
         const { addPaymentToOrder } = await exposedShopClient.query<
             AddPaymentToOrderMutation,
             AddPaymentToOrderMutationVariables
         >(ADD_PAYMENT, {
             input: {
                 method: 'braintree-payment-method',
-                metadata: body,
+                metadata: paymentResult,
             },
         });
-        console.log(addPaymentToOrder);
 
         res.send(addPaymentToOrder);
     }
 }
 
 /**
- * Test plugin for serving the Stripe intent checkout page
+ * Test plugin for serving the Braintree drop-in page and handling the payment
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
