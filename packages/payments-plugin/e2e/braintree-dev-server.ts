@@ -1,16 +1,5 @@
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
-import {
-    ChannelService,
-    configureDefaultOrderProcess,
-    DefaultLogger,
-    LanguageCode,
-    Logger,
-    LogLevel,
-    mergeConfig,
-    Order,
-    OrderService,
-    RequestContext,
-} from '@vendure/core';
+import { DefaultLogger, LanguageCode, Logger, LogLevel, mergeConfig } from '@vendure/core';
 import {
     createTestEnvironment,
     registerInitializer,
@@ -31,12 +20,7 @@ import {
     CreatePaymentMethodMutation,
     CreatePaymentMethodMutationVariables,
 } from './graphql/generated-admin-types';
-import {
-    AddItemToOrderMutation,
-    AddItemToOrderMutationVariables,
-    AddPaymentToOrderMutation,
-    AddPaymentToOrderMutationVariables,
-} from './graphql/generated-shop-types';
+import { AddItemToOrderMutation, AddItemToOrderMutationVariables } from './graphql/generated-shop-types';
 import { ADD_ITEM_TO_ORDER, ADD_PAYMENT } from './graphql/shop-queries';
 import { GENERATE_BRAINTREE_CLIENT_TOKEN, proceedToArrangingPayment, setShipping } from './payment-helpers';
 import braintree, { Environment, Test } from 'braintree';
