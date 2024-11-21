@@ -474,6 +474,12 @@ export interface AuthOptions {
      * @default DefaultPasswordValidationStrategy
      */
     passwordValidationStrategy?: PasswordValidationStrategy;
+    /**
+     * @todo TODO
+     * @description TODO By default, it uses the {@link DefaultRolePermissionResolverStrategy}, which TODO
+     * @since TODO
+     * @default DefaultRolePermissionResolverStrategy
+     */
     rolePermissionResolverStrategy?: RolePermissionResolverStrategy;
 }
 

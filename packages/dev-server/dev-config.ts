@@ -4,6 +4,7 @@ import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
     Asset,
+    ChannelRolePermissionResolverStrategy,
     DefaultJobQueuePlugin,
     DefaultLogger,
     DefaultSearchPlugin,
@@ -46,10 +47,8 @@ export const devConfig: VendureConfig = {
         cookieOptions: {
             secret: 'abc',
         },
-        // TODO THIS DOESNT WORK? TYPE MISMATCH??
-        // but it works in default config... huhhhh?? why
-        // For now if you wanna test, change the default-config.ts
-        // rolePermissionResolverStrategy: new ChannelRolePermissionResolverStrategy(),
+        // TODO remove once PR is ready to merge :)
+        rolePermissionResolverStrategy: new ChannelRolePermissionResolverStrategy(),
     },
     dbConnectionOptions: {
         synchronize: false,

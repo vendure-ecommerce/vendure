@@ -111,8 +111,6 @@ export const defaultConfig: RuntimeVendureConfig = {
         passwordHashingStrategy: new BcryptPasswordHashingStrategy(),
         passwordValidationStrategy: new DefaultPasswordValidationStrategy({ minLength: 4 }),
         rolePermissionResolverStrategy: new DefaultRolePermissionResolverStrategy(),
-        // TODO: remove once the weird type mismatch from dev-config gets fixed
-        // rolePermissionResolverStrategy: new ChannelRolePermissionResolverStrategy(),
     },
     catalogOptions: {
         collectionFilters: defaultCollectionFilters,
