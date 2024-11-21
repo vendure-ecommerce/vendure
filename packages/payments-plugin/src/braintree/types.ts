@@ -97,6 +97,13 @@ export interface BraintreePluginOptions {
      *
      * @since 1.7.0
      */
-    merchantAccountIds?: BraintreeMerchantAccountIds;
     extractMetadata?: (transaction: Transaction) => PaymentMetadata;
+    /**
+     * @description
+     * An object containing currency codes as keys and
+     * [Braintree Merchant Account Id](https://developer.paypal.com/braintree/articles/control-panel/important-gateway-credentials#merchant-account-id) as values.
+     * If no object properties are set, the default merchant account is being used for clientToken and transactions.
+     * @since 3.1.0
+     */
+    merchantAccountIds?: BraintreeMerchantAccountIds;
 }

@@ -78,10 +78,10 @@ function decodeAvsCode(code: string): string {
 
 /**
  * @description
- * Looks up a single mmerchantAccountId from `merchantAccountIds` passed through the plugin options.
+ * Looks up a single merchantAccountId from `merchantAccountIds`, which are passed through the BraintreePlugin options.
  * Example: `{NOK: BRAINTREE_MERCHANT_ACCOUNT_ID_NOK}` for Norway.
- * Merchant Account IDs have to be setup in the Braintree dashboard,
- * see: https://developer.paypal.com/braintree/articles/control-panel/important-gateway-credentials#merchant-account-id
+ * Merchant Account IDs have to be setup in the Braintree dashboard.
+ * Learn more here: [Merchant Account Id](https://developer.paypal.com/braintree/articles/control-panel/important-gateway-credentials#merchant-account-id)
  */
 export function lookupMerchantAccountIdByCurrency(
     merchantAccountIds: BraintreeMerchantAccountIds | undefined,
