@@ -274,6 +274,9 @@ export class RoleService {
         if (targetChannels) {
             updatedRole.channels = targetChannels;
         }
+
+        // TODO need to update the channel-role rows here if the strategy demands it
+
         await this.connection.getRepository(ctx, Role).save(updatedRole, { reload: false });
         await this.eventBus.publish(new RoleEvent(ctx, role, 'updated', input));
         return await assertFound(this.findOne(ctx, role.id));
@@ -433,8 +436,11 @@ export class RoleService {
             code: input.code,
             description: input.description,
             permissions: unique([Permission.Authenticated, ...input.permissions]),
+            channels,
         });
-        role.channels = channels;
+
+        // TODO need to create channel-role rows here if the strategy demands it
+
         return this.connection.getRepository(ctx, Role).save(role);
     }
 
