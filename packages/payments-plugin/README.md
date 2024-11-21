@@ -48,6 +48,7 @@ will create an order, set Braintree as payment method, and create a clientToken,
 
 1. Get the test keys from your Braintree dashboard, under menu settings, API section: https://sandbox.braintreegateway.com
 2. Create a `.env` file in the `packages/payments-plugin` directory with the following content:
+3. Optionally, if you want to add multi currency support, on Braintree dashboard, under menu settings, Business section, get Merchant Account ID keys.
 
 ```sh
 BRAINTREE_PRIVATE_KEY=asdf...
