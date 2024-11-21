@@ -1,6 +1,7 @@
 {
   "error": {
     "cannot-delete-role": "Die Rolle \"{ roleCode }\" kann nicht gelöscht werden",
+    "cannot-delete-default-channel": "Der Standardkanal kann nicht gelöscht werden",
     "cannot-locate-customer-for-user": "Es konnte kein Kunde für den Nutzer gefunden werden",
     "cannot-modify-role": "Die Rolle \"{ roleCode }\" kann nicht geändert werden",
     "cannot-create-sales-for-active-order": "Es kann kein Sale für eine aktive Bestellung erstellt werden",
