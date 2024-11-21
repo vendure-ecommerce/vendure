@@ -5,7 +5,6 @@ import {
 import {
     AuthenticationResult as AdminAuthenticationResult,
     CurrentUser,
-    CurrentUserChannel,
     MutationAuthenticateArgs,
     MutationLoginArgs,
     Success,
@@ -146,9 +145,8 @@ export class BaseAuthResolver {
         return {
             id: user.id,
             identifier: user.identifier,
-            channels: (await this.configService.authOptions.rolePermissionResolverStrategy.resolvePermissions(
-                user,
-            )) as CurrentUserChannel[],
+            channels:
+                await this.configService.authOptions.rolePermissionResolverStrategy.resolvePermissions(user),
         };
     }
 }
