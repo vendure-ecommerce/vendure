@@ -95,12 +95,17 @@ async function processPayment(
     customerId: string | undefined,
     pluginOptions: BraintreePluginOptions,
 ) {
+    const merchantAccountId = lookupMerchantAccountIdByCurrency(
+        options.merchantAccountIds,
+        order.currencyCode,
+    );
+
     const response = await gateway.transaction.sale({
         customerId,
         amount: (amount / 100).toString(10),
         orderId: order.code,
         paymentMethodNonce,
-        merchantAccountId: lookupMerchantAccountIdByCurrency(options.merchantAccountIds, order.currencyCode),
+        merchantAccountId,
         options: {
             submitForSettlement: true,
             storeInVaultOnSuccess: !!customerId,

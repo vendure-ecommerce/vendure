@@ -10,7 +10,13 @@ import {
     OrderService,
     RequestContext,
 } from '@vendure/core';
-import { createTestEnvironment, registerInitializer, SqljsInitializer, testConfig } from '@vendure/testing';
+import {
+    createTestEnvironment,
+    registerInitializer,
+    SimpleGraphQLClient,
+    SqljsInitializer,
+    testConfig,
+} from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -24,13 +30,19 @@ import {
     CreatePaymentMethodMutation,
     CreatePaymentMethodMutationVariables,
 } from './graphql/generated-admin-types';
-import { AddItemToOrderMutation, AddItemToOrderMutationVariables } from './graphql/generated-shop-types';
-import { ADD_ITEM_TO_ORDER } from './graphql/shop-queries';
-import { GENERATE_BRAINTREE_CLIENT_TOKEN, setShipping } from './payment-helpers';
-import { Environment } from 'braintree';
+import {
+    AddItemToOrderMutation,
+    AddItemToOrderMutationVariables,
+    AddPaymentToOrderMutation,
+    AddPaymentToOrderMutationVariables,
+} from './graphql/generated-shop-types';
+import { ADD_ITEM_TO_ORDER, ADD_PAYMENT } from './graphql/shop-queries';
+import { GENERATE_BRAINTREE_CLIENT_TOKEN, proceedToArrangingPayment, setShipping } from './payment-helpers';
+import braintree, { Environment, Test } from 'braintree';
 import { BraintreeTestPlugin } from './fixtures/braintree-checkout-test.plugin';
 
 export let clientToken: string;
+export let exposedShopClient: SimpleGraphQLClient;
 
 /**
  * The actual starting of the dev server
@@ -38,16 +50,22 @@ export let clientToken: string;
 (async () => {
     require('dotenv').config();
 
-    const customOrderProcess = configureDefaultOrderProcess({
-        arrangingPaymentRequiresShipping: false,
-        arrangingPaymentRequiresCustomer: false,
-    });
+    // const customOrderProcess = configureDefaultOrderProcess({
+    //     arrangingPaymentRequiresShipping: false,
+    //     arrangingPaymentRequiresCustomer: false,
+    // });
 
     registerInitializer('sqljs', new SqljsInitializer(path.join(__dirname, '__data__')));
     const config = mergeConfig(testConfig, {
-        orderOptions: {
-            process: [customOrderProcess as any],
+        authOptions: {
+            tokenMethod: ['bearer', 'cookie'],
+            cookieOptions: {
+                secret: 'cookie-secret',
+            },
         },
+        // orderOptions: {
+        //     process: [customOrderProcess as any],
+        // },
         plugins: [
             ...testConfig.plugins,
             AdminUiPlugin.init({
@@ -67,6 +85,7 @@ export let clientToken: string;
         logger: new DefaultLogger({ level: LogLevel.Debug }),
     });
     const { server, shopClient, adminClient } = createTestEnvironment(config as any);
+    exposedShopClient = shopClient;
     await server.init({
         initialData,
         productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),

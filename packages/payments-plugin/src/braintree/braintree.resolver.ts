@@ -56,6 +56,7 @@ export class BraintreeResolver {
                         order.currencyCode,
                     ),
                 });
+
                 if (result.success === true) {
                     return result.clientToken;
                 } else {
