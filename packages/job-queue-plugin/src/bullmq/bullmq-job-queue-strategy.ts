@@ -54,17 +54,18 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
 
     private initOptions(injector: Injector): BullMQPluginOptions {
         const options = injector.get<BullMQPluginOptions>(BULLMQ_PLUGIN_OPTIONS);
-        if (!options.workerOptions) {
-            options.workerOptions = {};
+        options.workerOptions = {
+            ...(options.workerOptions ?? {
+                removeOnComplete: {
+                    age: 60 * 60 * 24 * 30,
+                    count: 5000,
+                },
+                removeOnFail: {
+                    age: 60 * 60 * 24 * 30,
+                    count: 5000,
+                },
+            })
         }
-        options.workerOptions.removeOnComplete = options.workerOptions.removeOnComplete || {
-            age: 60 * 60 * 24 * 30,
-            count: 5000,
-        };
-        options.workerOptions.removeOnFail = options.workerOptions.removeOnFail || {
-            age: 60 * 60 * 24 * 30,
-            count: 5000,
-        };
         return options
     }
 
