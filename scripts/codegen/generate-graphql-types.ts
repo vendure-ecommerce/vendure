@@ -218,6 +218,17 @@ Promise.all([
                     plugins: clientPlugins,
                     config,
                 },
+                [path.join(
+                    __dirname,
+                    '../../packages/payments-plugin/src/paypal/graphql/generated-shop-types.ts',
+                )]: {
+                    schema: [
+                        SHOP_SCHEMA_OUTPUT_FILE,
+                        path.join(__dirname, '../../packages/payments-plugin/src/paypal/api-extensions.ts'),
+                    ],
+                    plugins: clientPlugins,
+                    config,
+                },
             },
         };
         return generate(codegenConfig);

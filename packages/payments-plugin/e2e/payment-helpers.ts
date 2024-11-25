@@ -251,3 +251,88 @@ export const GET_MOLLIE_PAYMENT_METHODS = gql`
         }
     }
 `;
+
+export const ADD_PAYMENT_TO_ORDER = gql`
+    mutation AddPaymentToOrder($input: PaymentInput!) {
+        addPaymentToOrder(input: $input) {
+            ... on Order {
+                id
+                code
+                state
+                payments {
+                    id
+                    state
+                    transactionId
+                    method
+                }
+            }
+            ... on ErrorResult {
+                message
+                errorCode
+            }
+            ... on PaymentFailedError {
+                paymentErrorMessage
+            }
+        }
+    }
+`;
+
+export const CREATE_PAYPAL_ORDER = gql`
+    mutation CreatePayPalOrder {
+        createPayPalOrder {
+            id
+            links {
+                href
+                rel
+                method
+            }
+        }
+    }
+`;
+
+export const SETTLE_PAYMENT = gql`
+    mutation SettlePayment($id: ID!) {
+        settlePayment(id: $id) {
+            ...Payment
+            ...ErrorResult
+            ... on SettlePaymentError {
+                paymentErrorMessage
+                __typename
+            }
+            ... on PaymentStateTransitionError {
+                transitionError
+                __typename
+            }
+            ... on OrderStateTransitionError {
+                transitionError
+                __typename
+            }
+            __typename
+        }
+    }
+
+    fragment ErrorResult on ErrorResult {
+        errorCode
+        message
+        __typename
+    }
+
+    fragment Payment on Payment {
+        id
+        transactionId
+        amount
+        method
+        state
+        metadata
+        __typename
+    }
+`;
+
+export const ASSIGN_SHIPPING_METHODS_TO_CHANNEL = gql`
+    mutation AssignShippingMethodsToChannel($input: AssignShippingMethodsToChannelInput!) {
+        assignShippingMethodsToChannel(input: $input) {
+            id
+            code
+        }
+    }
+`;
