@@ -7,14 +7,13 @@ import {
     WillAddItemToOrderInput,
     WillAdjustOrderLineInput,
 } from '@vendure/core';
-import { ADJUST_ORDER_LINE } from '@vendure/payments-plugin/e2e/graphql/shop-queries';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
-import { mock } from 'node:test';
 import path from 'path';
-import { afterAll, beforeAll, it, describe, expect, vi } from 'vitest';
-import { initialData } from '../../../e2e-common/e2e-initial-data';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
+import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig } from '../../../e2e-common/test-config';
+
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import {
     ADD_ITEM_TO_ORDER,
@@ -107,7 +106,6 @@ describe('Order interceptor', () => {
     beforeAll(async () => {
         await server.init({
             initialData,
-
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 1,
         });
@@ -210,7 +208,7 @@ describe('Order interceptor', () => {
         const { adjustOrderLine } = await shopClient.query<
             CodegenShop.AdjustItemQuantityMutation,
             CodegenShop.AdjustItemQuantityMutationVariables
-        >(ADJUST_ORDER_LINE, {
+        >(ADJUST_ITEM_QUANTITY, {
             orderLineId: 'T_2',
             quantity: 1,
         });
