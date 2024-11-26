@@ -203,6 +203,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         FacetValue: [],
         Fulfillment: [],
         GlobalSettings: [],
+        HistoryEntry: [],
         Order: [],
         OrderLine: [],
         Payment: [],

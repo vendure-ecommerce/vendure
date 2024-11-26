@@ -273,6 +273,7 @@ export type CustomFields = {
     FacetValue?: CustomFieldConfig[];
     Fulfillment?: CustomFieldConfig[];
     GlobalSettings?: CustomFieldConfig[];
+    HistoryEntry?: CustomFieldConfig[];
     Order?: CustomFieldConfig[];
     OrderLine?: CustomFieldConfig[];
     Payment?: CustomFieldConfig[];

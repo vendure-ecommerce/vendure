@@ -12,6 +12,7 @@ export class CustomFacetValueFields {}
 export class CustomFacetValueFieldsTranslation {}
 export class CustomFulfillmentFields {}
 export class CustomGlobalSettingsFields {}
+export class CustomHistoryEntryFields {}
 export class CustomOrderFields {}
 export class CustomOrderLineFields {}
 export class CustomPaymentFields {}
