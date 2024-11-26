@@ -12,8 +12,6 @@ import { fixPostgresTimezone } from './utils/fix-pg-timezone';
 
 fixPostgresTimezone();
 
-const validateInjectorSpy = vi.fn();
-
 const customConfig = mergeConfig(testConfig(), {
     dbConnectionOptions: {
         timezone: 'Z',
@@ -64,6 +62,26 @@ const customConfig = mergeConfig(testConfig(), {
                             }
                         },
                     },
+                ],
+            },
+        ],
+        OrderLine: [
+            {
+                type: 'struct',
+                name: 'fromBundle',
+                fields: [
+                    { name: 'bundleId', type: 'string' },
+                    { name: 'bundleName', type: 'string' },
+                ],
+            },
+        ],
+        Address: [
+            {
+                name: 'geoLocation',
+                type: 'struct',
+                fields: [
+                    { name: 'latitude', type: 'float' },
+                    { name: 'longitude', type: 'float' },
                 ],
             },
         ],
@@ -286,6 +304,111 @@ describe('Custom field struct type', () => {
             weight: null,
             isDownloadable: null,
             releaseDate: null,
+        });
+    });
+
+    it('updating OrderLine custom fields', async () => {
+        const result = await shopClient.query(gql`
+            mutation {
+                addItemToOrder(
+                    productVariantId: "T_1"
+                    quantity: 1
+                    customFields: { fromBundle: { bundleId: "bundle-1", bundleName: "Bundle 1" } }
+                ) {
+                    ... on Order {
+                        id
+                        lines {
+                            id
+                            customFields {
+                                fromBundle {
+                                    bundleId
+                                    bundleName
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        `);
+
+        expect(result.addItemToOrder.lines[0].customFields).toEqual({
+            fromBundle: {
+                bundleId: 'bundle-1',
+                bundleName: 'Bundle 1',
+            },
+        });
+    });
+
+    it('updating Address custom fields', async () => {
+        const result = await adminClient.query(gql`
+            mutation {
+                updateCustomerAddress(
+                    input: { id: "T_1", customFields: { geoLocation: { latitude: 1.23, longitude: 4.56 } } }
+                ) {
+                    id
+                    customFields {
+                        geoLocation {
+                            latitude
+                            longitude
+                        }
+                    }
+                }
+            }
+        `);
+
+        expect(result.updateCustomerAddress.customFields).toEqual({
+            geoLocation: {
+                latitude: 1.23,
+                longitude: 4.56,
+            },
+        });
+    });
+
+    it('updating OrderAddress custom fields', async () => {
+        const result = await shopClient.query(
+            gql`
+                mutation SetShippingAddress($input: CreateAddressInput!) {
+                    setOrderShippingAddress(input: $input) {
+                        ... on Order {
+                            id
+                            shippingAddress {
+                                customFields {
+                                    geoLocation {
+                                        latitude
+                                        longitude
+                                    }
+                                }
+                            }
+                        }
+                        ... on ErrorResult {
+                            errorCode
+                            message
+                        }
+                    }
+                }
+            `,
+            {
+                input: {
+                    fullName: 'name',
+                    streetLine1: '12 the street',
+                    city: 'foo',
+                    postalCode: '123456',
+                    countryCode: 'US',
+                    customFields: {
+                        geoLocation: {
+                            latitude: 1.23,
+                            longitude: 4.56,
+                        },
+                    },
+                },
+            },
+        );
+
+        expect(result.setOrderShippingAddress.shippingAddress.customFields).toEqual({
+            geoLocation: {
+                latitude: 1.23,
+                longitude: 4.56,
+            },
         });
     });
 

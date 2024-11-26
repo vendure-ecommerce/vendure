@@ -66,6 +66,7 @@ import {
 import {
     InsufficientStockError,
     NegativeQuantityError,
+    OrderInterceptorError,
     OrderLimitError,
     OrderModificationError,
     OrderPaymentStateError,
@@ -581,7 +582,7 @@ export class OrderService {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const errorResults: Array<JustErrorResults<UpdateOrderItemsResult>> = [];
         const updatedOrderLines: OrderLine[] = [];
-        for (const item of items) {
+        addItem: for (const item of items) {
             const { productVariantId, quantity, customFields } = item;
             const existingOrderLine = await this.orderModifier.getExistingOrderLine(
                 ctx,
@@ -629,6 +630,20 @@ export class OrderService {
                     new InsufficientStockError({ order, quantityAvailable: correctedQuantity }),
                 );
                 continue;
+            }
+            const { orderInterceptors } = this.configService.orderOptions;
+            for (const interceptor of orderInterceptors) {
+                if (interceptor.willAddItemToOrder) {
+                    const error = await interceptor.willAddItemToOrder(ctx, order, {
+                        productVariant: variant,
+                        quantity: correctedQuantity,
+                        customFields,
+                    });
+                    if (error) {
+                        errorResults.push(new OrderInterceptorError({ interceptorError: error }));
+                        continue addItem;
+                    }
+                }
             }
             const orderLine = await this.orderModifier.getOrCreateOrderLine(
                 ctx,
@@ -714,7 +729,7 @@ export class OrderService {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const errorResults: Array<JustErrorResults<UpdateOrderItemsResult>> = [];
         const updatedOrderLines: OrderLine[] = [];
-        for (const line of lines) {
+        adjustLine: for (const line of lines) {
             const { orderLineId, quantity, customFields } = line;
             const orderLine = this.getOrderLineOrThrow(order, orderLineId);
             const validationError =
@@ -725,6 +740,20 @@ export class OrderService {
             if (validationError) {
                 errorResults.push(validationError);
                 continue;
+            }
+            const { orderInterceptors } = this.configService.orderOptions;
+            for (const interceptor of orderInterceptors) {
+                if (interceptor.willAdjustOrderLine) {
+                    const error = await interceptor.willAdjustOrderLine(ctx, order, {
+                        orderLine,
+                        quantity,
+                        customFields,
+                    });
+                    if (error) {
+                        errorResults.push(new OrderInterceptorError({ interceptorError: error }));
+                        continue adjustLine;
+                    }
+                }
             }
             if (customFields != null) {
                 orderLine.customFields = customFields;
@@ -820,6 +849,15 @@ export class OrderService {
         const orderLinesToDelete: OrderLine[] = [];
         for (const orderLineId of orderLineIds) {
             const orderLine = this.getOrderLineOrThrow(order, orderLineId);
+            const { orderInterceptors } = this.configService.orderOptions;
+            for (const interceptor of orderInterceptors) {
+                if (interceptor.willRemoveItemFromOrder) {
+                    const error = await interceptor.willRemoveItemFromOrder(ctx, order, orderLine);
+                    if (error) {
+                        return new OrderInterceptorError({ interceptorError: error });
+                    }
+                }
+            }
             orderLinesToDelete.push(orderLine);
         }
 

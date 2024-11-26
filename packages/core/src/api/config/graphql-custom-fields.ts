@@ -404,17 +404,44 @@ export function addOrderLineCustomFieldsInput(
     if (!mutationType) {
         return schema;
     }
+    const structFields = orderLineCustomFields.filter(
+        (f): f is StructCustomFieldConfig => f.type === 'struct',
+    );
+    const structInputTypes: GraphQLInputObjectType[] = [];
+    if (0 < structFields.length) {
+        for (const structField of structFields) {
+            const structInputName = getStructInputName('OrderLine', structField);
+            structInputTypes.push(
+                new GraphQLInputObjectType({
+                    name: structInputName,
+                    fields: structField.fields.reduce((fields, field) => {
+                        const name = getGraphQlInputName(field);
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        const primitiveType = schema.getType(getGraphQlInputType('OrderLine')(field))!;
+                        const type = field.list === true ? new GraphQLList(primitiveType) : primitiveType;
+                        return { ...fields, [name]: { type } };
+                    }, {}),
+                }),
+            );
+        }
+    }
     const input = new GraphQLInputObjectType({
         name: 'OrderLineCustomFieldsInput',
         fields: publicCustomFields.reduce((fields, field) => {
             const name = getGraphQlInputName(field);
+            const inputTypeName = getGraphQlInputType('OrderLine')(field);
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const primitiveType = schema.getType(getGraphQlInputType('OrderLine')(field))!;
-            const type = field.list === true ? new GraphQLList(primitiveType) : primitiveType;
+            const inputType =
+                schema.getType(getGraphQlInputType('OrderLine')(field)) ??
+                structInputTypes.find(t => t.name === inputTypeName);
+            if (!inputType) {
+                throw new Error(`Could not find input type for field ${field.name}`);
+            }
+            const type = field.list === true ? new GraphQLList(inputType) : inputType;
             return { ...fields, [name]: { type } };
         }, {}),
     });
-    schemaConfig.types = [...schemaConfig.types, input];
+    schemaConfig.types = [...schemaConfig.types, ...structInputTypes, input];
 
     const addItemToOrderMutation = mutationType.getFields().addItemToOrder;
     const adjustOrderLineMutation = mutationType.getFields().adjustOrderLine;

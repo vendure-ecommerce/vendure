@@ -98,6 +98,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             changedPriceHandlingStrategy,
             orderSellerStrategy,
             guestCheckoutStrategy,
+            orderInterceptors,
         } = this.configService.orderOptions;
         const {
             customFulfillmentProcess,
@@ -152,6 +153,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             guestCheckoutStrategy,
             ...refundProcess,
             cacheStrategy,
+            ...orderInterceptors,
         ];
     }
 

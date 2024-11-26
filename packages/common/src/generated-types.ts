@@ -338,7 +338,6 @@ export type BooleanStructFieldConfig = StructField & {
   label?: Maybe<Array<LocalizedString>>;
   list: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
-  nullable?: Maybe<Scalars['Boolean']['output']>;
   type: Scalars['String']['output'];
   ui?: Maybe<Scalars['JSON']['output']>;
 };
@@ -1547,7 +1546,6 @@ export type DateTimeStructFieldConfig = StructField & {
   max?: Maybe<Scalars['String']['output']>;
   min?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
-  nullable?: Maybe<Scalars['Boolean']['output']>;
   step?: Maybe<Scalars['Int']['output']>;
   type: Scalars['String']['output'];
   ui?: Maybe<Scalars['JSON']['output']>;
@@ -1672,6 +1670,7 @@ export enum ErrorCode {
   NOTHING_TO_REFUND_ERROR = 'NOTHING_TO_REFUND_ERROR',
   NO_ACTIVE_ORDER_ERROR = 'NO_ACTIVE_ORDER_ERROR',
   NO_CHANGES_SPECIFIED_ERROR = 'NO_CHANGES_SPECIFIED_ERROR',
+  ORDER_INTERCEPTOR_ERROR = 'ORDER_INTERCEPTOR_ERROR',
   ORDER_LIMIT_ERROR = 'ORDER_LIMIT_ERROR',
   ORDER_MODIFICATION_ERROR = 'ORDER_MODIFICATION_ERROR',
   ORDER_MODIFICATION_STATE_ERROR = 'ORDER_MODIFICATION_STATE_ERROR',
@@ -1897,7 +1896,6 @@ export type FloatStructFieldConfig = StructField & {
   max?: Maybe<Scalars['Float']['output']>;
   min?: Maybe<Scalars['Float']['output']>;
   name: Scalars['String']['output'];
-  nullable?: Maybe<Scalars['Boolean']['output']>;
   step?: Maybe<Scalars['Float']['output']>;
   type: Scalars['String']['output'];
   ui?: Maybe<Scalars['JSON']['output']>;
@@ -2117,7 +2115,6 @@ export type IntStructFieldConfig = StructField & {
   max?: Maybe<Scalars['Int']['output']>;
   min?: Maybe<Scalars['Int']['output']>;
   name: Scalars['String']['output'];
-  nullable?: Maybe<Scalars['Boolean']['output']>;
   step?: Maybe<Scalars['Int']['output']>;
   type: Scalars['String']['output'];
   ui?: Maybe<Scalars['JSON']['output']>;
@@ -2980,7 +2977,7 @@ export type Mutation = {
   transitionPaymentToState: TransitionPaymentToStateResult;
   /** Unsets the billing address for a draft Order */
   unsetDraftOrderBillingAddress: Order;
-  /** Unsets the sthipping address for a draft Order */
+  /** Unsets the shipping address for a draft Order */
   unsetDraftOrderShippingAddress: Order;
   /** Update the active (currently logged-in) Administrator */
   updateActiveAdministrator: Administrator;
@@ -4048,6 +4045,14 @@ export type OrderFilterParameter = {
   transactionId?: InputMaybe<StringOperators>;
   type?: InputMaybe<StringOperators>;
   updatedAt?: InputMaybe<DateOperators>;
+};
+
+/** Returned when an order operation is rejected by an OrderInterceptor method. */
+export type OrderInterceptorError = ErrorResult & {
+  __typename?: 'OrderInterceptorError';
+  errorCode: ErrorCode;
+  interceptorError: Scalars['String']['output'];
+  message: Scalars['String']['output'];
 };
 
 /** Returned when the maximum order size limit has been reached. */
@@ -5472,18 +5477,19 @@ export type RefundLine = {
 };
 
 export type RefundOrderInput = {
-  adjustment: Scalars['Money']['input'];
+  /** @deprecated Use the `amount` field instead */
+  adjustment?: InputMaybe<Scalars['Money']['input']>;
   /**
-   * If an amount is specified, this value will be used to create a Refund rather than calculating the
-   * amount automatically. This was added in v2.2 and will be the preferred way to specify the refund
-   * amount in the future. The `lines`, `shipping` and `adjustment` fields will likely be removed in a future
-   * version.
+   * The amount to be refunded to this particular payment. This was introduced in v2.2.0 as the preferred way to specify the refund amount.
+   * Can be as much as the total amount of the payment minus the sum of all previous refunds.
    */
   amount?: InputMaybe<Scalars['Money']['input']>;
-  lines: Array<OrderLineInput>;
+  /** @deprecated Use the `amount` field instead */
+  lines?: InputMaybe<Array<OrderLineInput>>;
   paymentId: Scalars['ID']['input'];
   reason?: InputMaybe<Scalars['String']['input']>;
-  shipping: Scalars['Money']['input'];
+  /** @deprecated Use the `amount` field instead */
+  shipping?: InputMaybe<Scalars['Money']['input']>;
 };
 
 export type RefundOrderResult = AlreadyRefundedError | MultipleOrderError | NothingToRefundError | OrderStateTransitionError | PaymentOrderMismatchError | QuantityTooGreatError | Refund | RefundAmountError | RefundOrderStateError | RefundStateTransitionError;
@@ -5580,7 +5586,7 @@ export type RemoveFacetsFromChannelInput = {
 
 export type RemoveOptionGroupFromProductResult = Product | ProductOptionInUseError;
 
-export type RemoveOrderItemsResult = Order | OrderModificationError;
+export type RemoveOrderItemsResult = Order | OrderInterceptorError | OrderModificationError;
 
 export type RemovePaymentMethodsFromChannelInput = {
   channelId: Scalars['ID']['input'];
@@ -6096,7 +6102,6 @@ export type StringStructFieldConfig = StructField & {
   length?: Maybe<Scalars['Int']['output']>;
   list: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
-  nullable?: Maybe<Scalars['Boolean']['output']>;
   options?: Maybe<Array<StringFieldOption>>;
   pattern?: Maybe<Scalars['String']['output']>;
   type: Scalars['String']['output'];
@@ -6123,7 +6128,6 @@ export type StructField = {
   label?: Maybe<Array<LocalizedString>>;
   list?: Maybe<Scalars['Boolean']['output']>;
   name: Scalars['String']['output'];
-  nullable?: Maybe<Scalars['Boolean']['output']>;
   type: Scalars['String']['output'];
   ui?: Maybe<Scalars['JSON']['output']>;
 };
@@ -6355,7 +6359,6 @@ export type TextStructFieldConfig = StructField & {
   label?: Maybe<Array<LocalizedString>>;
   list: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
-  nullable?: Maybe<Scalars['Boolean']['output']>;
   type: Scalars['String']['output'];
   ui?: Maybe<Scalars['JSON']['output']>;
 };
@@ -6529,7 +6532,7 @@ export type UpdateOrderInput = {
   id: Scalars['ID']['input'];
 };
 
-export type UpdateOrderItemsResult = InsufficientStockError | NegativeQuantityError | Order | OrderLimitError | OrderModificationError;
+export type UpdateOrderItemsResult = InsufficientStockError | NegativeQuantityError | Order | OrderInterceptorError | OrderLimitError | OrderModificationError;
 
 export type UpdateOrderNoteInput = {
   isPublic?: InputMaybe<Scalars['Boolean']['input']>;

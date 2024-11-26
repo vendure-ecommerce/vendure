@@ -57,6 +57,7 @@ export * from './order/guest-checkout-strategy';
 export * from './order/merge-orders-strategy';
 export * from './order/order-by-code-access-strategy';
 export * from './order/order-code-strategy';
+export * from './order/order-interceptor';
 export * from './order/order-item-price-calculation-strategy';
 export * from './order/order-merge-strategy';
 export * from './order/order-placed-strategy';
