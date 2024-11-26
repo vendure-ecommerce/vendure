@@ -37,3 +37,26 @@ STRIPE_PUBLISHABLE_KEY=pk_test_xxxx
 3. Watch the logs for the link or go to `http://localhost:3050/checkout` to test the checkout.
 
 After checkout completion you can see your payment in https://dashboard.stripe.com/test/payments/
+
+### Braintree local development
+
+For testing out changes to the Braintree plugin locally, with a real Braintree account, follow the steps below. These steps
+will create an order, set Braintree as payment method, and create a clientToken, which will be used with a drop-in UI on the test checkout page.
+
+1. Get the test keys from your Braintree dashboard, under menu settings, API section: https://sandbox.braintreegateway.com
+2. Create a `.env` file in the `packages/payments-plugin` directory with the following content:
+3. Optionally, if you want to add multi currency support, on Braintree dashboard, under menu settings, Business section, get Merchant Account ID keys.
+
+```sh
+BRAINTREE_PRIVATE_KEY=asdf...
+BRAINTREE_PUBLIC_KEY=ghjk...
+BRAINTREE_MERCHANT_ID=12ly...
+BRAINTREE_ENVIRONMENT=sandbox
+BRAINTREE_MERCHANT_ACCOUNT_ID_EUR=account_for_eur #optional, can be used a different naming scheme as well
+BRAINTREE_MERCHANT_ACCOUNT_ID_USD=account_for_usd #optional, can be used a different naming scheme as well
+```
+
+1. `cd packages/payments-plugin`
+2. `npm run dev-server:braintree`
+3. Watch the logs for the link or go to `http://localhost:3050/checkout` to test the checkout.
+4. If you have added `BRAINTREE_MERCHANT_ACCOUNT_ID_XXX`, those have to be added to BraintreePlugin options in `e2e/braintree-dev-server.ts`
