@@ -286,6 +286,7 @@ export type CustomFields = {
     Refund?: CustomFieldConfig[];
     Region?: CustomFieldConfig[];
     Seller?: CustomFieldConfig[];
+    ShippingLine?: CustomFieldConfig[];
     ShippingMethod?: CustomFieldConfig[];
     StockLocation?: CustomFieldConfig[];
     TaxCategory?: CustomFieldConfig[];
