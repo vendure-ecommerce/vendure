@@ -216,6 +216,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         Refund: [],
         Region: [],
         Seller: [],
+        Session: [],
         ShippingLine: [],
         ShippingMethod: [],
         StockLevel: [],
