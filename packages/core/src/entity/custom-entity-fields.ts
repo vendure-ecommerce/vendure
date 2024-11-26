@@ -28,6 +28,7 @@ export class CustomProductVariantFieldsTranslation {}
 export class CustomProductVariantPriceFields {}
 export class CustomPromotionFields {}
 export class CustomPromotionFieldsTranslation {}
+export class CustomRefundFields {}
 export class CustomRegionFields {}
 export class CustomRegionFieldsTranslation {}
 export class CustomSellerFields {}

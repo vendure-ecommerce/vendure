@@ -283,6 +283,7 @@ export type CustomFields = {
     ProductVariant?: CustomFieldConfig[];
     ProductVariantPrice?: CustomFieldConfig[];
     Promotion?: CustomFieldConfig[];
+    Refund?: CustomFieldConfig[];
     Region?: CustomFieldConfig[];
     Seller?: CustomFieldConfig[];
     ShippingMethod?: CustomFieldConfig[];
