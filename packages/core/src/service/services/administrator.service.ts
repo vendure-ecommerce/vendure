@@ -132,15 +132,22 @@ export class AdministratorService {
         let createdAdministrator = await this.connection
             .getRepository(ctx, Administrator)
             .save(administrator);
-        for (const roleId of input.roleIds) {
-            createdAdministrator = await this.assignRole(ctx, createdAdministrator.id, roleId);
-        }
+
+        await this.configService.authOptions.rolePermissionResolverStrategy.persistUserAndTheirRoles(
+            ctx,
+            createdAdministrator.user,
+            /* TODO input.channels */
+            input.roleIds,
+        );
+
         await this.customFieldRelationService.updateRelations(
             ctx,
             Administrator,
             input,
             createdAdministrator,
         );
+
+        createdAdministrator = await assertFound(this.findOne(ctx, createdAdministrator.id));
         await this.eventBus.publish(new AdministratorEvent(ctx, createdAdministrator, 'created', input));
         return createdAdministrator;
     }
@@ -180,29 +187,41 @@ export class AdministratorService {
                     throw new InternalServerError('error.superadmin-must-have-superadmin-role');
                 }
             }
-            const removeIds = administrator.user.roles
-                .map(role => role.id)
-                .filter(roleId => (input.roleIds as ID[]).indexOf(roleId) === -1);
 
-            const addIds = (input.roleIds as ID[]).filter(
-                roleId => !administrator.user.roles.some(role => role.id === roleId),
+            await this.configService.authOptions.rolePermissionResolverStrategy.persistUserAndTheirRoles(
+                ctx,
+                administrator.user,
+                /* TODO input.channels */
+                input.roleIds,
             );
-
-            administrator.user.roles = [];
-            await this.connection.getRepository(ctx, User).save(administrator.user, { reload: false });
-            for (const roleId of input.roleIds) {
-                updatedAdministrator = await this.assignRole(ctx, administrator.id, roleId);
-            }
-            await this.eventBus.publish(new RoleChangeEvent(ctx, administrator, addIds, 'assigned'));
-            await this.eventBus.publish(new RoleChangeEvent(ctx, administrator, removeIds, 'removed'));
         }
+
+        updatedAdministrator = await assertFound(this.findOne(ctx, administrator.id));
+
         await this.customFieldRelationService.updateRelations(
             ctx,
             Administrator,
             input,
             updatedAdministrator,
         );
-        await this.eventBus.publish(new AdministratorEvent(ctx, administrator, 'updated', input));
+
+        if (input.roleIds) {
+            const roleIdsAdded = (input.roleIds as ID[]).filter(
+                roleId => !administrator.user.roles.some(role => role.id === roleId),
+            );
+
+            const roleIdsRemoved = administrator.user.roles
+                .map(role => role.id)
+                .filter(roleId => (input.roleIds as ID[]).indexOf(roleId) === -1);
+
+            await this.eventBus.publish(
+                new RoleChangeEvent(ctx, updatedAdministrator, roleIdsAdded, 'assigned'),
+            );
+            await this.eventBus.publish(
+                new RoleChangeEvent(ctx, updatedAdministrator, roleIdsRemoved, 'removed'),
+            );
+        }
+        await this.eventBus.publish(new AdministratorEvent(ctx, updatedAdministrator, 'updated', input));
         return updatedAdministrator;
     }
 
