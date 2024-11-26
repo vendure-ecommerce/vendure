@@ -28,6 +28,10 @@ export class ChannelRolePermissionResolverStrategy implements RolePermissionReso
             roleIds.length === 0
                 ? []
                 : await this.connection.getRepository(ctx, Role).findBy(roleIds.map(id => ({ id })));
+        for (const roleId of roleIds) {
+            const foundRole = roles.find(role => role.id === roleId);
+            if (!foundRole) throw new EntityNotFoundError('Role', roleId);
+        }
 
         // TODO we are relying here on the `roles` relation existing, it could be missing if you query
         // user entries without supplying the relations argument, for example:

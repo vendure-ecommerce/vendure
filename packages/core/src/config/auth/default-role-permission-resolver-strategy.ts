@@ -1,7 +1,7 @@
 import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api';
-import { Injector } from '../../common';
+import { EntityNotFoundError, Injector } from '../../common';
 import { TransactionalConnection } from '../../connection';
 import { Role, User } from '../../entity';
 import {
@@ -27,6 +27,10 @@ export class DefaultRolePermissionResolverStrategy implements RolePermissionReso
             roleIds.length === 0
                 ? []
                 : await this.connection.getRepository(ctx, Role).findBy(roleIds.map(id => ({ id })));
+        for (const roleId of roleIds) {
+            const foundRole = roles.find(role => role.id === roleId);
+            if (!foundRole) throw new EntityNotFoundError('Role', roleId);
+        }
         // Copy so as to not mutate the original user object when setting roles
         const userCopy = new User({ ...user, roles });
         await this.connection.getRepository(ctx, User).save(userCopy, { reload: false });
