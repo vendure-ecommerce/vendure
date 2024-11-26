@@ -290,6 +290,7 @@ export type CustomFields = {
     ShippingMethod?: CustomFieldConfig[];
     StockLevel?: CustomFieldConfig[];
     StockLocation?: CustomFieldConfig[];
+    StockMovement?: CustomFieldConfig[];
     TaxCategory?: CustomFieldConfig[];
     TaxRate?: CustomFieldConfig[];
     User?: CustomFieldConfig[];

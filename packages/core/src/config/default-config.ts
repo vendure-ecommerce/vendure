@@ -220,6 +220,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         ShippingMethod: [],
         StockLevel: [],
         StockLocation: [],
+        StockMovement: [],
         TaxCategory: [],
         TaxRate: [],
         User: [],
