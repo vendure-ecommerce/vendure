@@ -375,6 +375,9 @@ export const ADJUST_ITEM_QUANTITY = gql`
                 errorCode
                 message
             }
+            ... on OrderInterceptorError {
+                interceptorError
+            }
         }
     }
     ${TEST_ORDER_FRAGMENT}
