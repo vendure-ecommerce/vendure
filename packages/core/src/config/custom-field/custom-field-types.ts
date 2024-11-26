@@ -275,6 +275,7 @@ export type CustomFields = {
     GlobalSettings?: CustomFieldConfig[];
     Order?: CustomFieldConfig[];
     OrderLine?: CustomFieldConfig[];
+    Payment?: CustomFieldConfig[];
     PaymentMethod?: CustomFieldConfig[];
     Product?: CustomFieldConfig[];
     ProductOption?: CustomFieldConfig[];

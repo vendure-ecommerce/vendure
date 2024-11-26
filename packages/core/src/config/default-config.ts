@@ -205,6 +205,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         GlobalSettings: [],
         Order: [],
         OrderLine: [],
+        Payment: [],
         PaymentMethod: [],
         Product: [],
         ProductOption: [],
