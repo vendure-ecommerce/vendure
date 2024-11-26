@@ -1,6 +1,7 @@
+import { CurrencyCode } from '@vendure/core';
 import { BraintreeGateway, Environment, Transaction } from 'braintree';
 
-import { BraintreePluginOptions, PaymentMethodArgsHash } from './types';
+import { BraintreeMerchantAccountIds, BraintreePluginOptions, PaymentMethodArgsHash } from './types';
 
 export function getGateway(args: PaymentMethodArgsHash, options: BraintreePluginOptions): BraintreeGateway {
     return new BraintreeGateway({
@@ -73,4 +74,19 @@ function decodeAvsCode(code: string): string {
         default:
             return 'Unknown';
     }
+}
+
+/**
+ * @description
+ * Looks up a single `merchantAccountId` from `merchantAccountIds` object, which is passed through the **BraintreePlugin** options.
+ */
+export function lookupMerchantAccountIdByCurrency(
+    merchantAccountIds: BraintreeMerchantAccountIds | undefined,
+    currencyCode: CurrencyCode,
+): string | undefined {
+    if (!merchantAccountIds || !currencyCode) {
+        return undefined;
+    }
+    const merchantAccountIdForCurrency = merchantAccountIds[currencyCode];
+    return merchantAccountIdForCurrency;
 }

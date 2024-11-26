@@ -114,6 +114,7 @@ export const devConfig: VendureConfig = {
                 changeEmailAddressUrl: 'http://localhost:4201/change-email-address',
             },
         }),
+
         AdminUiPlugin.init({
             route: 'admin',
             port: 5001,

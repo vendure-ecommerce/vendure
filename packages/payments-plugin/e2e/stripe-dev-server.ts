@@ -26,7 +26,7 @@ import {
 import { AddItemToOrderMutation, AddItemToOrderMutationVariables } from './graphql/generated-shop-types';
 import { ADD_ITEM_TO_ORDER } from './graphql/shop-queries';
 import { CREATE_STRIPE_PAYMENT_INTENT, setShipping } from './payment-helpers';
-import { StripeCheckoutTestPlugin } from './stripe-checkout-test.plugin';
+import { StripeCheckoutTestPlugin } from './fixtures/stripe-checkout-test.plugin';
 
 export let clientSecret: string;
 

@@ -13,7 +13,10 @@ import { StripeService } from './stripe.service';
 
 @Resolver()
 export class StripeResolver {
-    constructor(private stripeService: StripeService, private activeOrderService: ActiveOrderService) {}
+    constructor(
+        private stripeService: StripeService,
+        private activeOrderService: ActiveOrderService,
+    ) {}
 
     @Mutation()
     @Allow(Permission.Owner)

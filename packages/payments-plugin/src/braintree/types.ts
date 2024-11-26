@@ -1,4 +1,4 @@
-import { PaymentMetadata } from '@vendure/core';
+import { CurrencyCode, PaymentMetadata } from '@vendure/core';
 import { ConfigArgValues } from '@vendure/core/dist/common/configurable-operation';
 import '@vendure/core/dist/entity/custom-entity-fields';
 import { Environment, Transaction } from 'braintree';
@@ -6,6 +6,7 @@ import { Environment, Transaction } from 'braintree';
 import { braintreePaymentMethodHandler } from './braintree.handler';
 
 export type PaymentMethodArgsHash = ConfigArgValues<(typeof braintreePaymentMethodHandler)['args']>;
+export type BraintreeMerchantAccountIds = Partial<Record<CurrencyCode, string>>;
 
 // Note: deep import is necessary here because CustomCustomerFields is also extended in the Stripe
 // plugin. Reference: https://github.com/microsoft/TypeScript/issues/46617
@@ -97,4 +98,12 @@ export interface BraintreePluginOptions {
      * @since 1.7.0
      */
     extractMetadata?: (transaction: Transaction) => PaymentMetadata;
+    /**
+     * @description
+     * An object containing currency codes as keys and
+     * [Braintree Merchant Account Id](https://developer.paypal.com/braintree/articles/control-panel/important-gateway-credentials#merchant-account-id) as values.
+     * If no object properties are set, the default merchant account is being used for clientToken and transactions.
+     * @since 3.1.0
+     */
+    merchantAccountIds?: BraintreeMerchantAccountIds;
 }

@@ -1,10 +1,7 @@
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import { Allow, Ctx, Permission, RequestContext } from '@vendure/core';
 
-import {
-    MolliePaymentMethod,
-    MolliePaymentMethodsInput
-} from './graphql/generated-shop-types';
+import { MolliePaymentMethod, MolliePaymentMethodsInput } from './graphql/generated-shop-types';
 import { MollieService } from './mollie.service';
 
 @Resolver()

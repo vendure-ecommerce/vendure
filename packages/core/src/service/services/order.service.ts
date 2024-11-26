@@ -1763,6 +1763,11 @@ export class OrderService {
             const result = await this.addItemsToOrder(ctx, orderId, linesToInsert);
             order = result.order;
         }
+        if (order && linesToInsert) {
+            const orderId = order.id;
+            const result = await this.addItemsToOrder(ctx, orderId, linesToInsert);
+            order = result.order;
+        }
         if (order && linesToModify) {
             const orderId = order.id;
             const result = await this.adjustOrderLines(ctx, orderId, linesToModify);

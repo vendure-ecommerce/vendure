@@ -7,7 +7,7 @@ import {
     mergeConfig,
     OrderPlacedEvent,
     OrderService,
-    RequestContext
+    RequestContext,
 } from '@vendure/core';
 import {
     SettlePaymentMutation,
@@ -41,14 +41,17 @@ import {
 import {
     AddItemToOrderMutation,
     AddItemToOrderMutationVariables,
+    AdjustOrderLineMutation,
+    AdjustOrderLineMutationVariables,
     GetOrderByCodeQuery,
     GetOrderByCodeQueryVariables,
     TestOrderFragmentFragment,
 } from './graphql/generated-shop-types';
 import {
     ADD_ITEM_TO_ORDER,
+    ADJUST_ORDER_LINE,
     APPLY_COUPON_CODE,
-    GET_ORDER_BY_CODE
+    GET_ORDER_BY_CODE,
 } from './graphql/shop-queries';
 import {
     addManualPayment,
@@ -58,6 +61,7 @@ import {
     GET_MOLLIE_PAYMENT_METHODS,
     refundOrderLine,
     setShipping,
+    testPaymentEligibilityChecker,
 } from './payment-helpers';
 
 const mockData = {
@@ -179,6 +183,9 @@ describe('Mollie payments', () => {
     beforeAll(async () => {
         const devConfig = mergeConfig(testConfig(), {
             plugins: [MolliePlugin.init({ vendureHost: mockData.host })],
+            paymentOptions: {
+                paymentMethodEligibilityCheckers: [testPaymentEligibilityChecker],
+            },
         });
         const env = createTestEnvironment(devConfig);
         serverPort = devConfig.apiOptions.port;
@@ -222,6 +229,10 @@ describe('Mollie payments', () => {
             input: {
                 code: mockData.methodCode,
                 enabled: true,
+                checker: {
+                    code: testPaymentEligibilityChecker.code,
+                    arguments: [],
+                },
                 handler: {
                     code: molliePaymentHandler.code,
                     arguments: [
@@ -388,7 +399,41 @@ describe('Mollie payments', () => {
             });
         });
 
+        it('Should not allow creating intent if payment method is not eligible', async () => {
+            // Set quantity to 9, which is not allowe by our test eligibility checker
+            await shopClient.query<AdjustOrderLineMutation, AdjustOrderLineMutationVariables>(
+                ADJUST_ORDER_LINE,
+                {
+                    orderLineId: order.lines[0].id,
+                    quantity: 9,
+                },
+            );
+            let mollieRequest: any | undefined;
+            nock('https://api.mollie.com/')
+                .post('/v2/orders', body => {
+                    mollieRequest = body;
+                    return true;
+                })
+                .reply(200, mockData.mollieOrderResponse);
+            const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
+                input: {
+                    paymentMethodCode: mockData.methodCode,
+                    redirectUrl: 'given-storefront-redirect-url',
+                },
+            });
+            expect(createMolliePaymentIntent.errorCode).toBe('INELIGIBLE_PAYMENT_METHOD_ERROR');
+            expect(createMolliePaymentIntent.message).toContain('is not eligible for order');
+        });
+
         it('Should get payment url with deducted amount if a payment is already made', async () => {
+            // Change quantity back to 10
+            await shopClient.query<AdjustOrderLineMutation, AdjustOrderLineMutationVariables>(
+                ADJUST_ORDER_LINE,
+                {
+                    orderLineId: order.lines[0].id,
+                    quantity: 10,
+                },
+            );
             let mollieRequest: any | undefined;
             nock('https://api.mollie.com/')
                 .post('/v2/orders', body => {
@@ -700,7 +745,6 @@ describe('Mollie payments', () => {
                 >(CREATE_PAYMENT_METHOD, {
                     input: {
                         code: mockData.methodCodeBroken,
-
                         enabled: true,
                         handler: {
                             code: molliePaymentHandler.code,
