@@ -154,6 +154,7 @@ export type AdministratorSortParameter = {
 export type Allocation = Node & StockMovement & {
   __typename?: 'Allocation';
   createdAt: Scalars['DateTime']['output'];
+  customFields?: Maybe<Scalars['JSON']['output']>;
   id: Scalars['ID']['output'];
   orderLine: OrderLine;
   productVariant: ProductVariant;
@@ -375,6 +376,7 @@ export type CancelPaymentResult = CancelPaymentError | Payment | PaymentStateTra
 export type Cancellation = Node & StockMovement & {
   __typename?: 'Cancellation';
   createdAt: Scalars['DateTime']['output'];
+  customFields?: Maybe<Scalars['JSON']['output']>;
   id: Scalars['ID']['output'];
   orderLine: OrderLine;
   productVariant: ProductVariant;
@@ -1353,8 +1355,10 @@ export type CustomFields = {
   FacetValue: Array<CustomFieldConfig>;
   Fulfillment: Array<CustomFieldConfig>;
   GlobalSettings: Array<CustomFieldConfig>;
+  HistoryEntry: Array<CustomFieldConfig>;
   Order: Array<CustomFieldConfig>;
   OrderLine: Array<CustomFieldConfig>;
+  Payment: Array<CustomFieldConfig>;
   PaymentMethod: Array<CustomFieldConfig>;
   Product: Array<CustomFieldConfig>;
   ProductOption: Array<CustomFieldConfig>;
@@ -1362,10 +1366,15 @@ export type CustomFields = {
   ProductVariant: Array<CustomFieldConfig>;
   ProductVariantPrice: Array<CustomFieldConfig>;
   Promotion: Array<CustomFieldConfig>;
+  Refund: Array<CustomFieldConfig>;
   Region: Array<CustomFieldConfig>;
   Seller: Array<CustomFieldConfig>;
+  Session: Array<CustomFieldConfig>;
+  ShippingLine: Array<CustomFieldConfig>;
   ShippingMethod: Array<CustomFieldConfig>;
+  StockLevel: Array<CustomFieldConfig>;
   StockLocation: Array<CustomFieldConfig>;
+  StockMovement: Array<CustomFieldConfig>;
   TaxCategory: Array<CustomFieldConfig>;
   TaxRate: Array<CustomFieldConfig>;
   User: Array<CustomFieldConfig>;
@@ -1970,6 +1979,7 @@ export type HistoryEntry = Node & {
   __typename?: 'HistoryEntry';
   administrator?: Maybe<Administrator>;
   createdAt: Scalars['DateTime']['output'];
+  customFields?: Maybe<Scalars['JSON']['output']>;
   data: Scalars['JSON']['output'];
   id: Scalars['ID']['output'];
   isPublic: Scalars['Boolean']['output'];
@@ -4254,6 +4264,7 @@ export type Payment = Node & {
   __typename?: 'Payment';
   amount: Scalars['Money']['output'];
   createdAt: Scalars['DateTime']['output'];
+  customFields?: Maybe<Scalars['JSON']['output']>;
   errorMessage?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   metadata?: Maybe<Scalars['JSON']['output']>;
@@ -5445,6 +5456,7 @@ export type Refund = Node & {
   __typename?: 'Refund';
   adjustment: Scalars['Money']['output'];
   createdAt: Scalars['DateTime']['output'];
+  customFields?: Maybe<Scalars['JSON']['output']>;
   id: Scalars['ID']['output'];
   items: Scalars['Money']['output'];
   lines: Array<RefundLine>;
@@ -5564,6 +5576,7 @@ export type RelationCustomFieldConfig = CustomField & {
 export type Release = Node & StockMovement & {
   __typename?: 'Release';
   createdAt: Scalars['DateTime']['output'];
+  customFields?: Maybe<Scalars['JSON']['output']>;
   id: Scalars['ID']['output'];
   productVariant: ProductVariant;
   quantity: Scalars['Int']['output'];
@@ -5621,6 +5634,7 @@ export type RemoveStockLocationsFromChannelInput = {
 export type Return = Node & StockMovement & {
   __typename?: 'Return';
   createdAt: Scalars['DateTime']['output'];
+  customFields?: Maybe<Scalars['JSON']['output']>;
   id: Scalars['ID']['output'];
   productVariant: ProductVariant;
   quantity: Scalars['Int']['output'];
@@ -5679,6 +5693,7 @@ export type RoleSortParameter = {
 export type Sale = Node & StockMovement & {
   __typename?: 'Sale';
   createdAt: Scalars['DateTime']['output'];
+  customFields?: Maybe<Scalars['JSON']['output']>;
   id: Scalars['ID']['output'];
   productVariant: ProductVariant;
   quantity: Scalars['Int']['output'];
@@ -5841,6 +5856,7 @@ export type SettleRefundResult = Refund | RefundStateTransitionError;
 
 export type ShippingLine = {
   __typename?: 'ShippingLine';
+  customFields?: Maybe<Scalars['JSON']['output']>;
   discountedPrice: Scalars['Money']['output'];
   discountedPriceWithTax: Scalars['Money']['output'];
   discounts: Array<Discount>;
@@ -5953,6 +5969,7 @@ export enum SortOrder {
 export type StockAdjustment = Node & StockMovement & {
   __typename?: 'StockAdjustment';
   createdAt: Scalars['DateTime']['output'];
+  customFields?: Maybe<Scalars['JSON']['output']>;
   id: Scalars['ID']['output'];
   productVariant: ProductVariant;
   quantity: Scalars['Int']['output'];
@@ -5963,6 +5980,7 @@ export type StockAdjustment = Node & StockMovement & {
 export type StockLevel = Node & {
   __typename?: 'StockLevel';
   createdAt: Scalars['DateTime']['output'];
+  customFields?: Maybe<Scalars['JSON']['output']>;
   id: Scalars['ID']['output'];
   stockAllocated: Scalars['Int']['output'];
   stockLocation: StockLocation;
