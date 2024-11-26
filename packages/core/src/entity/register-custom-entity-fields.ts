@@ -19,6 +19,7 @@ import { DateUtils } from 'typeorm/util/DateUtils';
 import { CustomFieldConfig, CustomFields } from '../config/custom-field/custom-field-types';
 import { Logger } from '../config/logger/vendure-logger';
 import { VendureConfig } from '../config/vendure-config';
+import { EntityId } from './entity-id.decorator';
 
 /**
  * The maximum length of the "length" argument of a MySQL varchar column.
@@ -53,6 +54,8 @@ function registerCustomFieldsForEntity(
                             eager: customField.eager,
                         })(instance, name);
                         JoinColumn()(instance, name);
+                        // add an "id" column to the custom field entity
+                        EntityId({ nullable: true })(instance, `${name}Id`);
                     }
                 } else {
                     const options: ColumnOptions = {

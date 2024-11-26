@@ -64,6 +64,9 @@ export class CustomFieldRelationService {
                             ...entity.customFields,
                             ...entityWithCustomFields?.customFields,
                             [field.name]: relations,
+                            ...(relations && !Array.isArray(relations)
+                                ? { [`${field.name}Id`]: relations.id }
+                                : {}),
                         };
                         await this.connection
                             .getRepository(ctx, entityType)

@@ -343,7 +343,7 @@ function generateCustomFieldResolvers(
 
 function getCustomScalars(configService: ConfigService, apiType: 'admin' | 'shop') {
     return getPluginAPIExtensions(configService.plugins, apiType)
-        .map(e => (typeof e.scalars === 'function' ? e.scalars() : (e.scalars ?? {})))
+        .map(e => (typeof e.scalars === 'function' ? e.scalars() : e.scalars ?? {}))
         .reduce(
             (all, scalarMap) => ({
                 ...all,

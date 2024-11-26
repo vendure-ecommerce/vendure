@@ -224,6 +224,7 @@ export async function preBootstrapConfig(
     Logger.useLogger(config.logger);
     config = await runPluginConfigurations(config);
     const entityIdStrategy = config.entityOptions.entityIdStrategy ?? config.entityIdStrategy;
+    registerCustomEntityFields(config);
     setEntityIdStrategy(entityIdStrategy, entities);
     const moneyStrategy = config.entityOptions.moneyStrategy;
     setMoneyStrategy(moneyStrategy, entities);
@@ -232,7 +233,7 @@ export async function preBootstrapConfig(
         process.exitCode = 1;
         throw new Error('CustomFields config error:\n- ' + customFieldValidationResult.errors.join('\n- '));
     }
-    registerCustomEntityFields(config);
+
     await runEntityMetadataModifiers(config);
     setExposedHeaders(config);
     return config;

@@ -1366,6 +1366,7 @@ describe('Custom field relations', () => {
             });
 
             it('findOne on Asset', async () => {
+                console.log(`HERE!!!`);
                 const { asset } = await adminClient.query(gql`
                     query {
                         asset(id: "T_1") {
@@ -1374,6 +1375,7 @@ describe('Custom field relations', () => {
                         }
                     }
                 `);
+                console.log(asset);
                 expect(asset.customFields.single.id).toBe('T_2');
                 expect(asset.customFields.multi.length).toEqual(2);
             });
@@ -1391,6 +1393,40 @@ describe('Custom field relations', () => {
                 expect(args[0].customFields.multi.length).toEqual(2);
             });
         });
+    });
+
+    it('relation Id is available without joining for non-list custom fields', async () => {
+        await adminClient.query(gql`
+            mutation {
+                updateProduct(input: { id: "T_1", customFields: { singleId: "T_2" } }) {
+                    id
+                }
+            }
+        `);
+
+        const connection = server.app.get(TransactionalConnection);
+
+        const result1 = await connection.rawConnection.getRepository(Product).findOne({
+            where: { id: 1 },
+        });
+
+        expect(result1?.customFields).toEqual({
+            owner: null,
+            primitive: 'test',
+            singleId: 2,
+        });
+
+        if (result1) {
+            result1.customFields.owner = { id: 1 };
+            await connection.rawConnection.getRepository(Product).save(result1);
+        }
+
+        const result2 = await connection.rawConnection.getRepository(Product).findOne({
+            where: { id: 1 },
+        });
+
+        expect(result2?.customFields.owner.id).toBe(1);
+        expect(result2?.customFields.ownerId).toBe(1);
     });
 
     it('null values', async () => {

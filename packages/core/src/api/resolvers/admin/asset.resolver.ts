@@ -32,7 +32,10 @@ export class AssetResolver {
         @Args() args: QueryAssetArgs,
         @Relations(Asset) relations: RelationPaths<Asset>,
     ): Promise<Asset | undefined> {
-        return this.assetService.findOne(ctx, args.id, relations);
+        console.log(`assetResolver findOne`, relations);
+        const asset = await this.assetService.findOne(ctx, args.id, relations);
+        console.log(`assetResolver findOne`, asset);
+        return asset;
     }
 
     @Query()
