@@ -288,6 +288,7 @@ export type CustomFields = {
     Seller?: CustomFieldConfig[];
     ShippingLine?: CustomFieldConfig[];
     ShippingMethod?: CustomFieldConfig[];
+    StockLevel?: CustomFieldConfig[];
     StockLocation?: CustomFieldConfig[];
     TaxCategory?: CustomFieldConfig[];
     TaxRate?: CustomFieldConfig[];

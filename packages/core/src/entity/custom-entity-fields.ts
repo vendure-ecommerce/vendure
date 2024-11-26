@@ -35,6 +35,7 @@ export class CustomSellerFields {}
 export class CustomShippingLineFields {}
 export class CustomShippingMethodFields {}
 export class CustomShippingMethodFieldsTranslation {}
+export class CustomStockLevelFields {}
 export class CustomStockLocationFields {}
 export class CustomTaxCategoryFields {}
 export class CustomTaxRateFields {}
