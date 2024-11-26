@@ -231,7 +231,7 @@ describe('Order interceptor', () => {
         const { adjustOrderLine } = await shopClient.query<
             CodegenShop.AdjustItemQuantityMutation,
             CodegenShop.AdjustItemQuantityMutationVariables
-        >(ADJUST_ORDER_LINE, {
+        >(ADJUST_ITEM_QUANTITY, {
             orderLineId: 'T_2',
             quantity: 5,
         });
