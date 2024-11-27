@@ -1072,6 +1072,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">data: <a href="/reference/graphql-api/shop/object-types#json">JSON</a>!</div>
 
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
+
 
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
@@ -1942,6 +1944,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">metadata: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
+
 
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
@@ -2470,6 +2474,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">metadata: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
+
 
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
@@ -2756,6 +2762,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">discountedPriceWithTax: <a href="/reference/graphql-api/shop/object-types#money">Money</a>!</div>
 
 <div class="graphql-code-line ">discounts: [<a href="/reference/graphql-api/shop/object-types#discount">Discount</a>!]!</div>
+
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/shop/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>

@@ -47,8 +47,10 @@ type CustomFields = {
     FacetValue?: CustomFieldConfig[];
     Fulfillment?: CustomFieldConfig[];
     GlobalSettings?: CustomFieldConfig[];
+    HistoryEntry?: CustomFieldConfig[];
     Order?: CustomFieldConfig[];
     OrderLine?: CustomFieldConfig[];
+    Payment?: CustomFieldConfig[];
     PaymentMethod?: CustomFieldConfig[];
     Product?: CustomFieldConfig[];
     ProductOption?: CustomFieldConfig[];
@@ -56,10 +58,15 @@ type CustomFields = {
     ProductVariant?: CustomFieldConfig[];
     ProductVariantPrice?: CustomFieldConfig[];
     Promotion?: CustomFieldConfig[];
+    Refund?: CustomFieldConfig[];
     Region?: CustomFieldConfig[];
     Seller?: CustomFieldConfig[];
+    Session?: CustomFieldConfig[];
+    ShippingLine?: CustomFieldConfig[];
     ShippingMethod?: CustomFieldConfig[];
+    StockLevel?: CustomFieldConfig[];
     StockLocation?: CustomFieldConfig[];
+    StockMovement?: CustomFieldConfig[];
     TaxCategory?: CustomFieldConfig[];
     TaxRate?: CustomFieldConfig[];
     User?: CustomFieldConfig[];

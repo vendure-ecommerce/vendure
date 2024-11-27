@@ -11,13 +11,13 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## StockMovement
 
-<GenerationInfo sourceFile="packages/core/src/entity/stock-movement/stock-movement.entity.ts" sourceLine="19" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/stock-movement/stock-movement.entity.ts" sourceLine="21" packageName="@vendure/core" />
 
 A StockMovement is created whenever stock of a particular ProductVariant goes in
 or out.
 
 ```ts title="Signature"
-class StockMovement extends VendureEntity {
+class StockMovement extends VendureEntity implements HasCustomFields {
     @Column({ nullable: false, type: 'varchar' })
     readonly type: StockMovementType;
     @Index()
@@ -30,9 +30,14 @@ class StockMovement extends VendureEntity {
     stockLocationId: ID;
     @Column()
     quantity: number;
+    @Column(type => CustomStockMovementFields)
+    customFields: CustomStockMovementFields;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+
+
+* Implements: <code>HasCustomFields</code>
 
 
 
@@ -61,6 +66,11 @@ class StockMovement extends VendureEntity {
 ### quantity
 
 <MemberInfo kind="property" type={`number`}   />
+
+
+### customFields
+
+<MemberInfo kind="property" type={`CustomStockMovementFields`}   />
 
 
 
