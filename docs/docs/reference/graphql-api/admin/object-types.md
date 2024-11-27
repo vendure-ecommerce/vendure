@@ -134,6 +134,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">orderLine: <a href="/reference/graphql-api/admin/object-types#orderline">OrderLine</a>!</div>
 
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
+
 
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
@@ -355,6 +357,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">quantity: <a href="/reference/graphql-api/admin/object-types#int">Int</a>!</div>
 
 <div class="graphql-code-line ">orderLine: <a href="/reference/graphql-api/admin/object-types#orderline">OrderLine</a>!</div>
+
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -847,9 +851,13 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">GlobalSettings: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>
 
+<div class="graphql-code-line ">HistoryEntry: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>
+
 <div class="graphql-code-line ">Order: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>
 
 <div class="graphql-code-line ">OrderLine: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>
+
+<div class="graphql-code-line ">Payment: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>
 
 <div class="graphql-code-line ">PaymentMethod: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>
 
@@ -865,13 +873,23 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">Promotion: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>
 
+<div class="graphql-code-line ">Refund: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>
+
 <div class="graphql-code-line ">Region: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>
 
 <div class="graphql-code-line ">Seller: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>
 
+<div class="graphql-code-line ">Session: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>
+
+<div class="graphql-code-line ">ShippingLine: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>
+
 <div class="graphql-code-line ">ShippingMethod: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>
 
+<div class="graphql-code-line ">StockLevel: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>
+
 <div class="graphql-code-line ">StockLocation: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>
+
+<div class="graphql-code-line ">StockMovement: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>
 
 <div class="graphql-code-line ">TaxCategory: [<a href="/reference/graphql-api/admin/object-types#customfieldconfig">CustomFieldConfig</a>!]!</div>
 
@@ -1515,6 +1533,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">type: <a href="/reference/graphql-api/admin/enums#historyentrytype">HistoryEntryType</a>!</div>
 
 <div class="graphql-code-line ">data: <a href="/reference/graphql-api/admin/object-types#json">JSON</a>!</div>
+
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2593,6 +2613,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">metadata: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
 
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
+
 
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
@@ -3226,6 +3248,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">metadata: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
 
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
+
 
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
@@ -3393,6 +3417,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">quantity: <a href="/reference/graphql-api/admin/object-types#int">Int</a>!</div>
 
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
+
 
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
@@ -3433,6 +3459,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">type: <a href="/reference/graphql-api/admin/enums#stockmovementtype">StockMovementType</a>!</div>
 
 <div class="graphql-code-line ">quantity: <a href="/reference/graphql-api/admin/object-types#int">Int</a>!</div>
+
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -3487,6 +3515,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">type: <a href="/reference/graphql-api/admin/enums#stockmovementtype">StockMovementType</a>!</div>
 
 <div class="graphql-code-line ">quantity: <a href="/reference/graphql-api/admin/object-types#int">Int</a>!</div>
+
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -3713,6 +3743,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">discounts: [<a href="/reference/graphql-api/admin/object-types#discount">Discount</a>!]!</div>
 
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
+
 
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
@@ -3837,6 +3869,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">quantity: <a href="/reference/graphql-api/admin/object-types#int">Int</a>!</div>
 
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
+
 
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
@@ -3858,6 +3892,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">stockAllocated: <a href="/reference/graphql-api/admin/object-types#int">Int</a>!</div>
 
 <div class="graphql-code-line ">stockLocation: <a href="/reference/graphql-api/admin/object-types#stocklocation">StockLocation</a>!</div>
+
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
