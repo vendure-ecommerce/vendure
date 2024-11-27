@@ -243,6 +243,8 @@ describe('AssetServerPlugin', () => {
             it('blocks path traversal 7', testPathTraversalOnUrl(`/.%2F.%2F.%2Fpackage.json`));
             it('blocks path traversal 8', testPathTraversalOnUrl(`/..\\\\..\\\\package.json`));
             it('blocks path traversal 9', testPathTraversalOnUrl(`/\\\\\\..\\\\\\..\\\\\\package.json`));
+            it('blocks path traversal 10', testPathTraversalOnUrl(`/./../././.././package.json`));
+            it('blocks path traversal 11', testPathTraversalOnUrl(`/\\.\\..\\.\\.\\..\\.\\package.json`));
         });
     });
 
