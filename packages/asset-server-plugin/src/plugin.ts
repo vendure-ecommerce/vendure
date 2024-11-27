@@ -1,7 +1,15 @@
-import { MiddlewareConsumer, NestModule, OnApplicationBootstrap } from '@nestjs/common';
+import {
+    MiddlewareConsumer,
+    NestModule,
+    OnApplicationBootstrap,
+    Inject,
+    OnApplicationShutdown,
+} from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { Type } from '@vendure/common/lib/shared-types';
 import {
     AssetStorageStrategy,
+    Injector,
     Logger,
     PluginCommonModule,
     ProcessContext,
@@ -15,12 +23,13 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { getValidFormat } from './common';
-import { DEFAULT_CACHE_HEADER, loggerCtx } from './constants';
+import { ASSET_SERVER_PLUGIN_INIT_OPTIONS, DEFAULT_CACHE_HEADER, loggerCtx } from './constants';
 import { defaultAssetStorageStrategyFactory } from './default-asset-storage-strategy-factory';
 import { HashedAssetNamingStrategy } from './hashed-asset-naming-strategy';
+import { ImageTransformParameters, ImageTransformStrategy } from './image-transform-strategy';
 import { SharpAssetPreviewStrategy } from './sharp-asset-preview-strategy';
 import { transformImage } from './transform-image';
-import { AssetServerOptions, ImageTransformPreset } from './types';
+import { AssetServerOptions, ImageTransformMode, ImageTransformPreset } from './types';
 
 async function getFileType(buffer: Buffer) {
     const { fileTypeFromBuffer } = await import('file-type');
@@ -153,9 +162,10 @@ async function getFileType(buffer: Buffer) {
 @VendurePlugin({
     imports: [PluginCommonModule],
     configuration: config => AssetServerPlugin.configure(config),
+    providers: [{ provide: ASSET_SERVER_PLUGIN_INIT_OPTIONS, useFactory: () => AssetServerPlugin.options }],
     compatibility: '^3.0.0',
 })
-export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
+export class AssetServerPlugin implements NestModule, OnApplicationBootstrap, OnApplicationShutdown {
     private static assetStorage: AssetStorageStrategy;
     private readonly cacheDir = 'cache';
     private presets: ImageTransformPreset[] = [
@@ -194,15 +204,19 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
         return config;
     }
 
-    constructor(private processContext: ProcessContext) {}
+    constructor(
+        @Inject(ASSET_SERVER_PLUGIN_INIT_OPTIONS) private options: AssetServerOptions,
+        private processContext: ProcessContext,
+        private moduleRef: ModuleRef,
+    ) {}
 
     /** @internal */
-    onApplicationBootstrap(): void {
+    async onApplicationBootstrap() {
         if (this.processContext.isWorker) {
             return;
         }
-        if (AssetServerPlugin.options.presets) {
-            for (const preset of AssetServerPlugin.options.presets) {
+        if (this.options.presets) {
+            for (const preset of this.options.presets) {
                 const existingIndex = this.presets.findIndex(p => p.name === preset.name);
                 if (-1 < existingIndex) {
                     this.presets.splice(existingIndex, 1, preset);
@@ -212,8 +226,20 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
             }
         }
 
+        if (this.options.imageTransformStrategy != null) {
+            const strategyArray = Array.isArray(this.options.imageTransformStrategy)
+                ? this.options.imageTransformStrategy
+                : [this.options.imageTransformStrategy];
+            const injector = new Injector(this.moduleRef);
+            for (const strategy of strategyArray) {
+                if (typeof strategy.init === 'function') {
+                    await strategy.init(injector);
+                }
+            }
+        }
+
         // Configure Cache-Control header
-        const { cacheHeader } = AssetServerPlugin.options;
+        const { cacheHeader } = this.options;
         if (!cacheHeader) {
             this.cacheHeader = DEFAULT_CACHE_HEADER;
         } else {
@@ -226,8 +252,25 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
             }
         }
 
-        const cachePath = path.join(AssetServerPlugin.options.assetUploadDir, this.cacheDir);
+        const cachePath = path.join(this.options.assetUploadDir, this.cacheDir);
         fs.ensureDirSync(cachePath);
+    }
+
+    /** @internal */
+    async onApplicationShutdown() {
+        if (this.processContext.isWorker) {
+            return;
+        }
+        if (this.options.imageTransformStrategy != null) {
+            const strategyArray = Array.isArray(this.options.imageTransformStrategy)
+                ? this.options.imageTransformStrategy
+                : [this.options.imageTransformStrategy];
+            for (const strategy of strategyArray) {
+                if (typeof strategy.destroy === 'function') {
+                    await strategy.destroy();
+                }
+            }
+        }
     }
 
     configure(consumer: MiddlewareConsumer) {
@@ -235,8 +278,8 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
             return;
         }
         Logger.info('Creating asset server middleware', loggerCtx);
-        consumer.apply(this.createAssetServer()).forRoutes(AssetServerPlugin.options.route);
-        registerPluginStartupMessage('Asset server', AssetServerPlugin.options.route);
+        consumer.apply(this.createAssetServer()).forRoutes(this.options.route);
+        registerPluginStartupMessage('Asset server', this.options.route);
     }
 
     /**
@@ -253,7 +296,15 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
      */
     private sendAsset() {
         return async (req: Request, res: Response, next: NextFunction) => {
-            const key = this.getFileNameFromRequest(req);
+            let params: ImageTransformParameters;
+            try {
+                params = await this.getImageTransformParameters(req);
+            } catch (e: any) {
+                Logger.error(e.message, loggerCtx);
+                res.status(400).send('Invalid parameters');
+                return;
+            }
+            const key = this.getFileNameFromParameters(req.path, params);
             try {
                 const file = await AssetServerPlugin.assetStorage.readFileToBuffer(key);
                 let mimeType = this.getMimeType(key);
@@ -290,10 +341,11 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
                         res.status(404).send('Resource not found');
                         return;
                     }
-                    const image = await transformImage(file, req.query as any, this.presets || []);
                     try {
+                        const parameters = await this.getImageTransformParameters(req);
+                        const image = await transformImage(file, parameters);
                         const imageBuffer = await image.toBuffer();
-                        const cachedFileName = this.getFileNameFromRequest(req);
+                        const cachedFileName = this.getFileNameFromParameters(req.path, parameters);
                         if (!req.query.cache || req.query.cache === 'true') {
                             await AssetServerPlugin.assetStorage.writeFileFromBuffer(
                                 cachedFileName,
@@ -320,8 +372,76 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
         };
     }
 
-    private getFileNameFromRequest(req: Request): string {
-        const { w, h, mode, preset, fpx, fpy, format, q } = req.query;
+    private async getImageTransformParameters(req: Request): Promise<ImageTransformParameters> {
+        let parameters = this.getInitialImageTransformParameters(req.query as any);
+        const transformStrategies = this.getImageTransformStrategyArray();
+        for (const strategy of transformStrategies) {
+            try {
+                parameters = await strategy.getImageTransformParameters({
+                    req,
+                    input: { ...parameters },
+                    availablePresets: this.presets,
+                });
+            } catch (e: any) {
+                Logger.error(`Error applying ImageTransformStrategy: ` + (e.message as string), loggerCtx);
+                throw e;
+            }
+        }
+
+        let targetWidth: number | undefined = parameters.width;
+        let targetHeight: number | undefined = parameters.height;
+        let targetMode: ImageTransformMode | undefined = parameters.mode;
+
+        if (parameters.preset) {
+            const matchingPreset = this.presets.find(p => p.name === parameters.preset);
+            if (matchingPreset) {
+                targetWidth = matchingPreset.width;
+                targetHeight = matchingPreset.height;
+                targetMode = matchingPreset.mode;
+            }
+        }
+        return {
+            ...parameters,
+            width: targetWidth,
+            height: targetHeight,
+            mode: targetMode,
+        };
+    }
+
+    private getImageTransformStrategyArray(): ImageTransformStrategy[] {
+        return this.options.imageTransformStrategy
+            ? Array.isArray(this.options.imageTransformStrategy)
+                ? this.options.imageTransformStrategy
+                : [this.options.imageTransformStrategy]
+            : [];
+    }
+
+    private getInitialImageTransformParameters(
+        queryParams: Record<string, string>,
+    ): ImageTransformParameters {
+        const width = Math.round(+queryParams.w) || undefined;
+        const height = Math.round(+queryParams.h) || undefined;
+        const quality =
+            queryParams.q != null ? Math.round(Math.max(Math.min(+queryParams.q, 100), 1)) : undefined;
+        const mode: ImageTransformMode = queryParams.mode === 'resize' ? 'resize' : 'crop';
+        const fpx = +queryParams.fpx || undefined;
+        const fpy = +queryParams.fpy || undefined;
+        const format = getValidFormat(queryParams.format);
+
+        return {
+            width,
+            height,
+            quality,
+            format,
+            mode,
+            fpx,
+            fpy,
+            preset: queryParams.preset,
+        };
+    }
+
+    private getFileNameFromParameters(filePath: string, params: ImageTransformParameters): string {
+        const { width: w, height: h, mode, preset, fpx, fpy, format, quality: q } = params;
         /* eslint-disable @typescript-eslint/restrict-template-expressions */
         const focalPoint = fpx && fpy ? `_fpx${fpx}_fpy${fpy}` : '';
         const quality = q ? `_q${q}` : '';
@@ -347,7 +467,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
             imageParamsString += quality;
         }
 
-        const decodedReqPath = this.sanitizeFilePath(req.path);
+        const decodedReqPath = this.sanitizeFilePath(filePath);
         if (imageParamsString !== '') {
             const imageParamHash = this.md5(imageParamsString);
             return path.join(this.cacheDir, this.addSuffix(decodedReqPath, imageParamHash, imageFormat));
