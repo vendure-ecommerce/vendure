@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AssetServerOptions
 
-<GenerationInfo sourceFile="packages/asset-server-plugin/src/types.ts" sourceLine="72" packageName="@vendure/asset-server-plugin" />
+<GenerationInfo sourceFile="packages/asset-server-plugin/src/types.ts" sourceLine="74" packageName="@vendure/asset-server-plugin" />
 
 The configuration options for the AssetServerPlugin.
 
@@ -23,6 +23,7 @@ interface AssetServerOptions {
     previewMaxWidth?: number;
     previewMaxHeight?: number;
     presets?: ImageTransformPreset[];
+    imageTransformStrategy?: ImageTransformStrategy | ImageTransformStrategy[];
     namingStrategy?: AssetNamingStrategy;
     previewStrategy?: AssetPreviewStrategy;
     storageStrategyFactory?: (
@@ -70,6 +71,17 @@ The max height in pixels of a generated preview image.
 <MemberInfo kind="property" type={`<a href='/reference/core-plugins/asset-server-plugin/image-transform-preset#imagetransformpreset'>ImageTransformPreset</a>[]`}   />
 
 An array of additional <a href='/reference/core-plugins/asset-server-plugin/image-transform-preset#imagetransformpreset'>ImageTransformPreset</a> objects.
+### imageTransformStrategy
+
+<MemberInfo kind="property" type={`<a href='/reference/core-plugins/asset-server-plugin/image-transform-strategy#imagetransformstrategy'>ImageTransformStrategy</a> | <a href='/reference/core-plugins/asset-server-plugin/image-transform-strategy#imagetransformstrategy'>ImageTransformStrategy</a>[]`} default={`[]`}  since="3.1.0"  />
+
+The strategy or strategies to use to determine the parameters for transforming an image.
+This can be used to implement custom image transformation logic, for example to
+limit transform parameters to a known set of presets.
+
+If multiple strategies are provided, they will be executed in the order in which they are defined.
+If a strategy throws an error, the image transformation will be aborted and the error
+will be logged, with an HTTP 400 response sent to the client.
 ### namingStrategy
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/assets/asset-naming-strategy#assetnamingstrategy'>AssetNamingStrategy</a>`} default={`<a href='/reference/core-plugins/asset-server-plugin/hashed-asset-naming-strategy#hashedassetnamingstrategy'>HashedAssetNamingStrategy</a>`}   />
@@ -83,7 +95,7 @@ Defines how previews are generated for a given Asset binary. By default, this us
 the <a href='/reference/core-plugins/asset-server-plugin/sharp-asset-preview-strategy#sharpassetpreviewstrategy'>SharpAssetPreviewStrategy</a>
 ### storageStrategyFactory
 
-<MemberInfo kind="property" type={`(         options: <a href='/reference/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions'>AssetServerOptions</a>,     ) =&#62; <a href='/reference/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a> | Promise&#60;<a href='/reference/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a>&#62;`} default={`() =&#62; <a href='/reference/core-plugins/asset-server-plugin/local-asset-storage-strategy#localassetstoragestrategy'>LocalAssetStorageStrategy</a>`}   />
+<MemberInfo kind="property" type={`(         options: <a href='/reference/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions'>AssetServerOptions</a>,     ) =&#62; <a href='/reference/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a> | Promise&#60;<a href='/reference/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a>&#62;`} default={`() =&#62; <a href='/reference/core-plugins/asset-server-plugin/local-asset-storage-strategy#localassetstoragestrategy'>LocalAssetStorageStrategy</a>`}   />
 
 A function which can be used to configure an <a href='/reference/typescript-api/assets/asset-storage-strategy#assetstoragestrategy'>AssetStorageStrategy</a>. This is useful e.g. if you wish to store your assets
 using a cloud storage provider. By default, the <a href='/reference/core-plugins/asset-server-plugin/local-asset-storage-strategy#localassetstoragestrategy'>LocalAssetStorageStrategy</a> is used.

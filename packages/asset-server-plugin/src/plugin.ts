@@ -145,6 +145,32 @@ import { AssetServerOptions, ImageTransformPreset } from './types';
  * By default, the AssetServerPlugin will cache every transformed image, so that the transformation only needs to be performed a single time for
  * a given configuration. Caching can be disabled per-request by setting the `?cache=false` query parameter.
  *
+ * ### Limiting transformations
+ *
+ * By default, the AssetServerPlugin will allow any transformation to be performed on an image. However, it is possible to restrict the transformations
+ * which can be performed by using an {@link ImageTransformStrategy}. This can be used to limit the transformations to a known set of presets, for example.
+ *
+ * This is advisable in order to prevent abuse of the image transformation feature, as it can be computationally expensive.
+ *
+ * Since v3.1.0 we ship with a {@link PresetOnlyStrategy} which allows only transformations using a known set of presets.
+ *
+ * @example
+ * ```ts
+ * import { AssetServerPlugin, PresetOnlyStrategy } from '\@vendure/core';
+ *
+ * // ...
+ *
+ * AssetServerPlugin.init({
+ *   //...
+ *   imageTransformStrategy: new PresetOnlyStrategy({
+ *     defaultPreset: 'thumbnail',
+ *     permittedQuality: [0, 50, 75, 85, 95],
+ *     permittedFormats: ['jpg', 'webp', 'avif'],
+ *     allowFocalPoint: false,
+ *   }),
+ * });
+ * ```
+ *
  * @docsCategory core plugins/AssetServerPlugin
  */
 @VendurePlugin({

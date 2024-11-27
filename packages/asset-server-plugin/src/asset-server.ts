@@ -16,6 +16,10 @@ async function getFileType(buffer: Buffer) {
     return fileTypeFromBuffer(buffer);
 }
 
+/**
+ * This houses the actual Express server that handles incoming requests, performs image transformations,
+ * caches the results, and serves the transformed images.
+ */
 @Injectable()
 export class AssetServer {
     private readonly assetStorageStrategy: AssetStorageStrategy;

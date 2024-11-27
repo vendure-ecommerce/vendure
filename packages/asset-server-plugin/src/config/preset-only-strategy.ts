@@ -49,6 +49,12 @@ export interface PresetOnlyStrategyOptions {
  * An {@link ImageTransformStrategy} which only allows transformations to be made using
  * presets which are defined in the available presets.
  *
+ * With this strategy enabled, requests to the asset server must include a `preset` parameter (or use the default preset)
+ *
+ * This is valid: `http://localhost:3000/assets/some-asset.jpg?preset=medium`
+ *
+ * This is invalid: `http://localhost:3000/assets/some-asset.jpg?w=200&h=200`, and the dimensions will be ignored.
+ *
  * The strategy can be configured to allow only certain quality values and formats, and to
  * optionally allow the focal point to be specified in the URL.
  *
@@ -56,7 +62,7 @@ export interface PresetOnlyStrategyOptions {
  *
  * @example
  * ```ts
- * import { AssetServerPlugin, PresetOnlyStrategy } from '@vendure/core';
+ * import { AssetServerPlugin, PresetOnlyStrategy } from '\@vendure/core';
  *
  * // ...
  *
@@ -73,6 +79,7 @@ export interface PresetOnlyStrategyOptions {
  *
  * @docsCategory core plugins/AssetServerPlugin
  * @docsPage PresetOnlyStrategy
+ * @docsWeight 0
  * @since 3.1.0
  */
 export class PresetOnlyStrategy implements ImageTransformStrategy {
