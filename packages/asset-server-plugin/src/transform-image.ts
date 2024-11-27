@@ -1,8 +1,8 @@
 import { Logger } from '@vendure/core';
 import sharp, { FormatEnum, Region, ResizeOptions } from 'sharp';
 
+import { ImageTransformParameters } from './config/image-transform-strategy';
 import { loggerCtx } from './constants';
-import { ImageTransformParameters } from './image-transform-strategy';
 import { ImageTransformFormat } from './types';
 
 export type Dimensions = { w: number; h: number };

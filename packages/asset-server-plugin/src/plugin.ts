@@ -1,40 +1,28 @@
 import {
+    Inject,
     MiddlewareConsumer,
     NestModule,
     OnApplicationBootstrap,
-    Inject,
     OnApplicationShutdown,
 } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { Type } from '@vendure/common/lib/shared-types';
 import {
-    AssetStorageStrategy,
     Injector,
     Logger,
     PluginCommonModule,
     ProcessContext,
     registerPluginStartupMessage,
-    RuntimeVendureConfig,
     VendurePlugin,
 } from '@vendure/core';
-import { createHash } from 'crypto';
-import express, { NextFunction, Request, Response } from 'express';
-import fs from 'fs-extra';
-import path from 'path';
 
-import { getValidFormat } from './common';
-import { ASSET_SERVER_PLUGIN_INIT_OPTIONS, DEFAULT_CACHE_HEADER, loggerCtx } from './constants';
-import { defaultAssetStorageStrategyFactory } from './default-asset-storage-strategy-factory';
-import { HashedAssetNamingStrategy } from './hashed-asset-naming-strategy';
-import { ImageTransformParameters, ImageTransformStrategy } from './image-transform-strategy';
-import { SharpAssetPreviewStrategy } from './sharp-asset-preview-strategy';
-import { transformImage } from './transform-image';
-import { AssetServerOptions, ImageTransformMode, ImageTransformPreset } from './types';
-
-async function getFileType(buffer: Buffer) {
-    const { fileTypeFromBuffer } = await import('file-type');
-    return fileTypeFromBuffer(buffer);
-}
+import { AssetServer } from './asset-server';
+import { defaultAssetStorageStrategyFactory } from './config/default-asset-storage-strategy-factory';
+import { HashedAssetNamingStrategy } from './config/hashed-asset-naming-strategy';
+import { ImageTransformStrategy } from './config/image-transform-strategy';
+import { SharpAssetPreviewStrategy } from './config/sharp-asset-preview-strategy';
+import { ASSET_SERVER_PLUGIN_INIT_OPTIONS, loggerCtx } from './constants';
+import { AssetServerOptions, ImageTransformPreset } from './types';
 
 /**
  * @description
@@ -161,22 +149,34 @@ async function getFileType(buffer: Buffer) {
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
-    configuration: config => AssetServerPlugin.configure(config),
-    providers: [{ provide: ASSET_SERVER_PLUGIN_INIT_OPTIONS, useFactory: () => AssetServerPlugin.options }],
+    configuration: async config => {
+        const options = AssetServerPlugin.options;
+        const storageStrategyFactory = options.storageStrategyFactory || defaultAssetStorageStrategyFactory;
+        config.assetOptions.assetPreviewStrategy =
+            options.previewStrategy ??
+            new SharpAssetPreviewStrategy({
+                maxWidth: options.previewMaxWidth,
+                maxHeight: options.previewMaxHeight,
+            });
+        config.assetOptions.assetStorageStrategy = await storageStrategyFactory(options);
+        config.assetOptions.assetNamingStrategy = options.namingStrategy || new HashedAssetNamingStrategy();
+        return config;
+    },
+    providers: [
+        { provide: ASSET_SERVER_PLUGIN_INIT_OPTIONS, useFactory: () => AssetServerPlugin.options },
+        AssetServer,
+    ],
     compatibility: '^3.0.0',
 })
 export class AssetServerPlugin implements NestModule, OnApplicationBootstrap, OnApplicationShutdown {
-    private static assetStorage: AssetStorageStrategy;
-    private readonly cacheDir = 'cache';
-    private presets: ImageTransformPreset[] = [
+    private static options: AssetServerOptions;
+    private readonly defaultPresets: ImageTransformPreset[] = [
         { name: 'tiny', width: 50, height: 50, mode: 'crop' },
         { name: 'thumb', width: 150, height: 150, mode: 'crop' },
         { name: 'small', width: 300, height: 300, mode: 'resize' },
         { name: 'medium', width: 500, height: 500, mode: 'resize' },
         { name: 'large', width: 800, height: 800, mode: 'resize' },
     ];
-    private static options: AssetServerOptions;
-    private cacheHeader: string;
 
     /**
      * @description
@@ -187,27 +187,11 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap, On
         return this;
     }
 
-    /** @internal */
-    static async configure(config: RuntimeVendureConfig) {
-        const storageStrategyFactory =
-            this.options.storageStrategyFactory || defaultAssetStorageStrategyFactory;
-        this.assetStorage = await storageStrategyFactory(this.options);
-        config.assetOptions.assetPreviewStrategy =
-            this.options.previewStrategy ??
-            new SharpAssetPreviewStrategy({
-                maxWidth: this.options.previewMaxWidth,
-                maxHeight: this.options.previewMaxHeight,
-            });
-        config.assetOptions.assetStorageStrategy = this.assetStorage;
-        config.assetOptions.assetNamingStrategy =
-            this.options.namingStrategy || new HashedAssetNamingStrategy();
-        return config;
-    }
-
     constructor(
         @Inject(ASSET_SERVER_PLUGIN_INIT_OPTIONS) private options: AssetServerOptions,
         private processContext: ProcessContext,
         private moduleRef: ModuleRef,
+        private assetServer: AssetServer,
     ) {}
 
     /** @internal */
@@ -215,45 +199,14 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap, On
         if (this.processContext.isWorker) {
             return;
         }
-        if (this.options.presets) {
-            for (const preset of this.options.presets) {
-                const existingIndex = this.presets.findIndex(p => p.name === preset.name);
-                if (-1 < existingIndex) {
-                    this.presets.splice(existingIndex, 1, preset);
-                } else {
-                    this.presets.push(preset);
-                }
-            }
-        }
-
         if (this.options.imageTransformStrategy != null) {
-            const strategyArray = Array.isArray(this.options.imageTransformStrategy)
-                ? this.options.imageTransformStrategy
-                : [this.options.imageTransformStrategy];
             const injector = new Injector(this.moduleRef);
-            for (const strategy of strategyArray) {
+            for (const strategy of this.getImageTransformStrategyArray()) {
                 if (typeof strategy.init === 'function') {
                     await strategy.init(injector);
                 }
             }
         }
-
-        // Configure Cache-Control header
-        const { cacheHeader } = this.options;
-        if (!cacheHeader) {
-            this.cacheHeader = DEFAULT_CACHE_HEADER;
-        } else {
-            if (typeof cacheHeader === 'string') {
-                this.cacheHeader = cacheHeader;
-            } else {
-                this.cacheHeader = [cacheHeader.restriction, `max-age: ${cacheHeader.maxAge}`]
-                    .filter(value => !!value)
-                    .join(', ');
-            }
-        }
-
-        const cachePath = path.join(this.options.assetUploadDir, this.cacheDir);
-        fs.ensureDirSync(cachePath);
     }
 
     /** @internal */
@@ -262,10 +215,7 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap, On
             return;
         }
         if (this.options.imageTransformStrategy != null) {
-            const strategyArray = Array.isArray(this.options.imageTransformStrategy)
-                ? this.options.imageTransformStrategy
-                : [this.options.imageTransformStrategy];
-            for (const strategy of strategyArray) {
+            for (const strategy of this.getImageTransformStrategyArray()) {
                 if (typeof strategy.destroy === 'function') {
                     await strategy.destroy();
                 }
@@ -277,135 +227,24 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap, On
         if (this.processContext.isWorker) {
             return;
         }
+        const presets = [...this.defaultPresets];
+        if (this.options.presets) {
+            for (const preset of this.options.presets) {
+                const existingIndex = presets.findIndex(p => p.name === preset.name);
+                if (-1 < existingIndex) {
+                    presets.splice(existingIndex, 1, preset);
+                } else {
+                    presets.push(preset);
+                }
+            }
+        }
         Logger.info('Creating asset server middleware', loggerCtx);
-        consumer.apply(this.createAssetServer()).forRoutes(this.options.route);
+        const assetServerRouter = this.assetServer.createAssetServer({
+            presets,
+            imageTransformStrategies: this.getImageTransformStrategyArray(),
+        });
+        consumer.apply(assetServerRouter).forRoutes(this.options.route);
         registerPluginStartupMessage('Asset server', this.options.route);
-    }
-
-    /**
-     * Creates the image server instance
-     */
-    private createAssetServer() {
-        const assetServer = express.Router();
-        assetServer.use(this.sendAsset(), this.generateTransformedImage());
-        return assetServer;
-    }
-
-    /**
-     * Reads the file requested and send the response to the browser.
-     */
-    private sendAsset() {
-        return async (req: Request, res: Response, next: NextFunction) => {
-            let params: ImageTransformParameters;
-            try {
-                params = await this.getImageTransformParameters(req);
-            } catch (e: any) {
-                Logger.error(e.message, loggerCtx);
-                res.status(400).send('Invalid parameters');
-                return;
-            }
-            const key = this.getFileNameFromParameters(req.path, params);
-            try {
-                const file = await AssetServerPlugin.assetStorage.readFileToBuffer(key);
-                let mimeType = this.getMimeType(key);
-                if (!mimeType) {
-                    mimeType = (await getFileType(file))?.mime || 'application/octet-stream';
-                }
-                res.contentType(mimeType);
-                res.setHeader('content-security-policy', "default-src 'self'");
-                res.setHeader('Cache-Control', this.cacheHeader);
-                res.send(file);
-            } catch (e: any) {
-                const err = new Error('File not found');
-                (err as any).status = 404;
-                return next(err);
-            }
-        };
-    }
-
-    /**
-     * If an exception was thrown by the first handler, then it may be because a transformed image
-     * is being requested which does not yet exist. In this case, this handler will generate the
-     * transformed image, save it to cache, and serve the result as a response.
-     */
-    private generateTransformedImage() {
-        return async (err: any, req: Request, res: Response, next: NextFunction) => {
-            if (err && (err.status === 404 || err.statusCode === 404)) {
-                if (req.query) {
-                    const decodedReqPath = this.sanitizeFilePath(req.path);
-                    Logger.debug(`Pre-cached Asset not found: ${decodedReqPath}`, loggerCtx);
-                    let file: Buffer;
-                    try {
-                        file = await AssetServerPlugin.assetStorage.readFileToBuffer(decodedReqPath);
-                    } catch (_err: any) {
-                        res.status(404).send('Resource not found');
-                        return;
-                    }
-                    try {
-                        const parameters = await this.getImageTransformParameters(req);
-                        const image = await transformImage(file, parameters);
-                        const imageBuffer = await image.toBuffer();
-                        const cachedFileName = this.getFileNameFromParameters(req.path, parameters);
-                        if (!req.query.cache || req.query.cache === 'true') {
-                            await AssetServerPlugin.assetStorage.writeFileFromBuffer(
-                                cachedFileName,
-                                imageBuffer,
-                            );
-                            Logger.debug(`Saved cached asset: ${cachedFileName}`, loggerCtx);
-                        }
-                        let mimeType = this.getMimeType(cachedFileName);
-                        if (!mimeType) {
-                            mimeType = (await getFileType(imageBuffer))?.mime || 'image/jpeg';
-                        }
-                        res.set('Content-Type', mimeType);
-                        res.setHeader('content-security-policy', "default-src 'self'");
-                        res.send(imageBuffer);
-                        return;
-                    } catch (e: any) {
-                        Logger.error(e.message, loggerCtx, e.stack);
-                        res.status(500).send('An error occurred when generating the image');
-                        return;
-                    }
-                }
-            }
-            next();
-        };
-    }
-
-    private async getImageTransformParameters(req: Request): Promise<ImageTransformParameters> {
-        let parameters = this.getInitialImageTransformParameters(req.query as any);
-        const transformStrategies = this.getImageTransformStrategyArray();
-        for (const strategy of transformStrategies) {
-            try {
-                parameters = await strategy.getImageTransformParameters({
-                    req,
-                    input: { ...parameters },
-                    availablePresets: this.presets,
-                });
-            } catch (e: any) {
-                Logger.error(`Error applying ImageTransformStrategy: ` + (e.message as string), loggerCtx);
-                throw e;
-            }
-        }
-
-        let targetWidth: number | undefined = parameters.width;
-        let targetHeight: number | undefined = parameters.height;
-        let targetMode: ImageTransformMode | undefined = parameters.mode;
-
-        if (parameters.preset) {
-            const matchingPreset = this.presets.find(p => p.name === parameters.preset);
-            if (matchingPreset) {
-                targetWidth = matchingPreset.width;
-                targetHeight = matchingPreset.height;
-                targetMode = matchingPreset.mode;
-            }
-        }
-        return {
-            ...parameters,
-            width: targetWidth,
-            height: targetHeight,
-            mode: targetMode,
-        };
     }
 
     private getImageTransformStrategyArray(): ImageTransformStrategy[] {
@@ -414,113 +253,5 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap, On
                 ? this.options.imageTransformStrategy
                 : [this.options.imageTransformStrategy]
             : [];
-    }
-
-    private getInitialImageTransformParameters(
-        queryParams: Record<string, string>,
-    ): ImageTransformParameters {
-        const width = Math.round(+queryParams.w) || undefined;
-        const height = Math.round(+queryParams.h) || undefined;
-        const quality =
-            queryParams.q != null ? Math.round(Math.max(Math.min(+queryParams.q, 100), 1)) : undefined;
-        const mode: ImageTransformMode = queryParams.mode === 'resize' ? 'resize' : 'crop';
-        const fpx = +queryParams.fpx || undefined;
-        const fpy = +queryParams.fpy || undefined;
-        const format = getValidFormat(queryParams.format);
-
-        return {
-            width,
-            height,
-            quality,
-            format,
-            mode,
-            fpx,
-            fpy,
-            preset: queryParams.preset,
-        };
-    }
-
-    private getFileNameFromParameters(filePath: string, params: ImageTransformParameters): string {
-        const { width: w, height: h, mode, preset, fpx, fpy, format, quality: q } = params;
-        /* eslint-disable @typescript-eslint/restrict-template-expressions */
-        const focalPoint = fpx && fpy ? `_fpx${fpx}_fpy${fpy}` : '';
-        const quality = q ? `_q${q}` : '';
-        const imageFormat = getValidFormat(format);
-        let imageParamsString = '';
-        if (w || h) {
-            const width = w || '';
-            const height = h || '';
-            imageParamsString = `_transform_w${width}_h${height}_m${mode}`;
-        } else if (preset) {
-            if (this.presets && !!this.presets.find(p => p.name === preset)) {
-                imageParamsString = `_transform_pre_${preset}`;
-            }
-        }
-
-        if (focalPoint) {
-            imageParamsString += focalPoint;
-        }
-        if (imageFormat) {
-            imageParamsString += imageFormat;
-        }
-        if (quality) {
-            imageParamsString += quality;
-        }
-
-        const decodedReqPath = this.sanitizeFilePath(filePath);
-        if (imageParamsString !== '') {
-            const imageParamHash = this.md5(imageParamsString);
-            return path.join(this.cacheDir, this.addSuffix(decodedReqPath, imageParamHash, imageFormat));
-        } else {
-            return decodedReqPath;
-        }
-    }
-
-    /**
-     * Sanitize the file path to prevent directory traversal attacks.
-     */
-    private sanitizeFilePath(filePath: string): string {
-        let decodedPath: string;
-        try {
-            decodedPath = decodeURIComponent(filePath);
-        } catch (e: any) {
-            Logger.error((e.message as string) + ': ' + filePath, loggerCtx);
-            return '';
-        }
-        return path.normalize(decodedPath).replace(/(\.\.[\/\\])+/, '');
-    }
-
-    private md5(input: string): string {
-        return createHash('md5').update(input).digest('hex');
-    }
-
-    private addSuffix(fileName: string, suffix: string, ext?: string): string {
-        const originalExt = path.extname(fileName);
-        const effectiveExt = ext ? `.${ext}` : originalExt;
-        const baseName = path.basename(fileName, originalExt);
-        const dirName = path.dirname(fileName);
-        return path.join(dirName, `${baseName}${suffix}${effectiveExt}`);
-    }
-
-    /**
-     * Attempt to get the mime type from the file name.
-     */
-    private getMimeType(fileName: string): string | undefined {
-        const ext = path.extname(fileName);
-        switch (ext) {
-            case '.jpg':
-            case '.jpeg':
-                return 'image/jpeg';
-            case '.png':
-                return 'image/png';
-            case '.gif':
-                return 'image/gif';
-            case '.svg':
-                return 'image/svg+xml';
-            case '.tiff':
-                return 'image/tiff';
-            case '.webp':
-                return 'image/webp';
-        }
     }
 }

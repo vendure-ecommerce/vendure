@@ -1,7 +1,7 @@
 import { InjectableStrategy } from '@vendure/core';
 import { Request } from 'express';
 
-import { ImageTransformFormat, ImageTransformMode, ImageTransformPreset } from './types';
+import { ImageTransformFormat, ImageTransformMode, ImageTransformPreset } from '../types';
 
 /**
  * @description

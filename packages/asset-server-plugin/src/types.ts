@@ -5,7 +5,7 @@ import {
     RequestContext,
 } from '@vendure/core';
 
-import { ImageTransformStrategy } from './image-transform-strategy';
+import { ImageTransformStrategy } from './config/image-transform-strategy';
 
 export type ImageTransformFormat = 'jpg' | 'jpeg' | 'png' | 'webp' | 'avif';
 

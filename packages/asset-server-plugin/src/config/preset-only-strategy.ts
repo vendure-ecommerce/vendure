@@ -1,9 +1,10 @@
+import { ImageTransformFormat } from '../types';
+
 import {
     GetImageTransformParametersArgs,
     ImageTransformParameters,
     ImageTransformStrategy,
 } from './image-transform-strategy';
-import { ImageTransformFormat } from './types';
 
 /**
  * @description
