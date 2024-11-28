@@ -11,39 +11,25 @@ import { Allocation } from '../../entity/stock-movement/allocation.entity';
 
 import { AvailableStock, LocationWithQuantity, StockLocationStrategy } from './stock-location-strategy';
 
-/**
- * @description
- * The DefaultStockLocationStrategy is the default implementation of the {@link StockLocationStrategy}.
- * It assumes only a single StockLocation and that all stock is allocated from that location.
- *
- * @docsCategory products & stock
- * @since 2.0.0
- */
-export class DefaultStockLocationStrategy implements StockLocationStrategy {
+export abstract class BaseStockLocationStrategy implements StockLocationStrategy {
     protected connection: TransactionalConnection;
 
     init(injector: Injector) {
         this.connection = injector.get(TransactionalConnection);
     }
 
-    getAvailableStock(ctx: RequestContext, productVariantId: ID, stockLevels: StockLevel[]): AvailableStock {
-        let stockOnHand = 0;
-        let stockAllocated = 0;
-        for (const stockLevel of stockLevels) {
-            stockOnHand += stockLevel.stockOnHand;
-            stockAllocated += stockLevel.stockAllocated;
-        }
-        return { stockOnHand, stockAllocated };
-    }
+    abstract getAvailableStock(
+        ctx: RequestContext,
+        productVariantId: ID,
+        stockLevels: StockLevel[],
+    ): AvailableStock | Promise<AvailableStock>;
 
-    forAllocation(
+    abstract forAllocation(
         ctx: RequestContext,
         stockLocations: StockLocation[],
         orderLine: OrderLine,
         quantity: number,
-    ): LocationWithQuantity[] | Promise<LocationWithQuantity[]> {
-        return [{ location: stockLocations[0], quantity }];
-    }
+    ): LocationWithQuantity[] | Promise<LocationWithQuantity[]>;
 
     async forCancellation(
         ctx: RequestContext,
@@ -103,5 +89,40 @@ export class DefaultStockLocationStrategy implements StockLocationStrategy {
             location: stockLocations.find(l => idsAreEqual(l.id, locationId))!,
             quantity: qty,
         }));
+    }
+}
+
+/**
+ * @description
+ * The DefaultStockLocationStrategy was the default implementation of the {@link StockLocationStrategy}
+ * prior to the introduction of the {@link MultiChannelStockLocationStrategy}.
+ * It assumes only a single StockLocation and that all stock is allocated from that location. When
+ * more than one StockLocation or Channel is used, it will not behave as expected.
+ *
+ * @docsCategory products & stock
+ * @since 2.0.0
+ */
+export class DefaultStockLocationStrategy extends BaseStockLocationStrategy {
+    init(injector: Injector) {
+        super.init(injector);
+    }
+
+    getAvailableStock(ctx: RequestContext, productVariantId: ID, stockLevels: StockLevel[]): AvailableStock {
+        let stockOnHand = 0;
+        let stockAllocated = 0;
+        for (const stockLevel of stockLevels) {
+            stockOnHand += stockLevel.stockOnHand;
+            stockAllocated += stockLevel.stockAllocated;
+        }
+        return { stockOnHand, stockAllocated };
+    }
+
+    forAllocation(
+        ctx: RequestContext,
+        stockLocations: StockLocation[],
+        orderLine: OrderLine,
+        quantity: number,
+    ): LocationWithQuantity[] | Promise<LocationWithQuantity[]> {
+        return [{ location: stockLocations[0], quantity }];
     }
 }

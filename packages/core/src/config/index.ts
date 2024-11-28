@@ -15,6 +15,7 @@ export * from './catalog/default-product-variant-price-selection-strategy';
 export * from './catalog/default-product-variant-price-update-strategy';
 export * from './catalog/default-stock-display-strategy';
 export * from './catalog/default-stock-location-strategy';
+export * from './catalog/multi-channel-stock-location-strategy';
 export * from './catalog/product-variant-price-calculation-strategy';
 export * from './catalog/product-variant-price-selection-strategy';
 export * from './catalog/product-variant-price-update-strategy';
