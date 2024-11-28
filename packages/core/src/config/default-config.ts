@@ -24,6 +24,7 @@ import { DefaultProductVariantPriceSelectionStrategy } from './catalog/default-p
 import { DefaultProductVariantPriceUpdateStrategy } from './catalog/default-product-variant-price-update-strategy';
 import { DefaultStockDisplayStrategy } from './catalog/default-stock-display-strategy';
 import { DefaultStockLocationStrategy } from './catalog/default-stock-location-strategy';
+import { MultiChannelStockLocationStrategy } from './catalog/multi-channel-stock-location-strategy';
 import { AutoIncrementIdStrategy } from './entity/auto-increment-id-strategy';
 import { DefaultMoneyStrategy } from './entity/default-money-strategy';
 import { defaultEntityDuplicators } from './entity/entity-duplicators/index';
@@ -119,7 +120,7 @@ export const defaultConfig: RuntimeVendureConfig = {
             syncPricesAcrossChannels: false,
         }),
         stockDisplayStrategy: new DefaultStockDisplayStrategy(),
-        stockLocationStrategy: new DefaultStockLocationStrategy(),
+        stockLocationStrategy: new MultiChannelStockLocationStrategy(),
     },
     assetOptions: {
         assetNamingStrategy: new DefaultAssetNamingStrategy(),

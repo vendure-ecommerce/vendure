@@ -36,7 +36,7 @@ import {
     TRANSITION_TO_STATE,
 } from './graphql/shop-definitions';
 
-describe('Stock control', () => {
+describe('Stock control (multi-location)', () => {
     let defaultStockLocationId: string;
     let secondStockLocationId: string;
     const { server, adminClient, shopClient } = createTestEnvironment(
@@ -111,9 +111,8 @@ describe('Stock control', () => {
     });
 
     it('default StockLocation exists', async () => {
-        const { stockLocations } = await adminClient.query<Codegen.GetStockLocationsQuery>(
-            GET_STOCK_LOCATIONS,
-        );
+        const { stockLocations } =
+            await adminClient.query<Codegen.GetStockLocationsQuery>(GET_STOCK_LOCATIONS);
         expect(stockLocations.items.length).toBe(1);
         expect(stockLocations.items[0].name).toBe('Default Stock Location');
         defaultStockLocationId = stockLocations.items[0].id;
