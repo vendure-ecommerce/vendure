@@ -18,6 +18,7 @@ import { getValidFormat } from './common';
 import { DEFAULT_CACHE_HEADER, loggerCtx } from './constants';
 import { defaultAssetStorageStrategyFactory } from './default-asset-storage-strategy-factory';
 import { HashedAssetNamingStrategy } from './hashed-asset-naming-strategy';
+import { S3AssetStorageStrategy } from './s3-asset-storage-strategy';
 import { SharpAssetPreviewStrategy } from './sharp-asset-preview-strategy';
 import { transformImage } from './transform-image';
 import { AssetServerOptions, ImageTransformPreset } from './types';
@@ -367,7 +368,14 @@ export class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
             Logger.error((e.message as string) + ': ' + filePath, loggerCtx);
             return '';
         }
-        return path.normalize(decodedPath).replace(/(\.\.[\/\\])+/, '');
+        if (!(AssetServerPlugin.assetStorage instanceof S3AssetStorageStrategy)) {
+            // For S3 storage, we don't need to sanitize the path because
+            // directory traversal attacks are not possible, and modifying the
+            // path in this way can s3 files to be not found.
+            return path.normalize(decodedPath).replace(/(\.\.[\/\\])+/, '');
+        } else {
+            return decodedPath;
+        }
     }
 
     private md5(input: string): string {
