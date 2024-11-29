@@ -5,6 +5,7 @@ import {
     CreateProductMutationVariables,
     CreateProductVariantsMutation,
     CreateProductVariantsMutationVariables,
+    TestCreateStockLocationDocument,
 } from '@vendure/core/e2e/graphql/generated-e2e-admin-types';
 import { CREATE_PRODUCT, CREATE_PRODUCT_VARIANTS } from '@vendure/core/e2e/graphql/shared-definitions';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
@@ -453,6 +454,12 @@ describe('Stripe payments', () => {
             adminClient.setChannelToken(JAPAN_CHANNEL_TOKEN);
             shopClient.setChannelToken(JAPAN_CHANNEL_TOKEN);
 
+            const { createStockLocation } = await adminClient.query(TestCreateStockLocationDocument, {
+                input: {
+                    name: 'Japan warehouse',
+                },
+            });
+
             const { createProduct } = await adminClient.query<
                 CreateProductMutation,
                 CreateProductMutationVariables
@@ -478,7 +485,12 @@ describe('Stripe payments', () => {
                         sku: 'PV1',
                         optionIds: [],
                         price: 5000,
-                        stockOnHand: 100,
+                        stockLevels: [
+                            {
+                                stockLocationId: createStockLocation.id,
+                                stockOnHand: 100,
+                            },
+                        ],
                         translations: [{ languageCode: LanguageCode.en, name: 'Variant 1' }],
                     },
                 ],
