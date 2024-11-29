@@ -14,6 +14,17 @@ import { JobQueueStrategy } from './job-queue-strategy';
 export interface InspectableJobQueueStrategy extends JobQueueStrategy {
     /**
      * @description
+     * Whether the `jobs` query should return a list of all jobs across all queues.
+     * If this is `false`, the `jobs` query will only return jobs for the specified queue.
+     * Defaults to `true`.
+     *
+     * @default true
+     * @since 3.1.0
+     */
+    supportsListAllQueues?: boolean;
+
+    /**
+     * @description
      * Returns a job by its id.
      */
     findOne(id: ID): Promise<Job | undefined>;

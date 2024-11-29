@@ -191,7 +191,6 @@ export const defaultConfig: RuntimeVendureConfig = {
         jobBufferStorageStrategy: new InMemoryJobBufferStorageStrategy(),
         activeQueues: [],
         prefix: '',
-        supportsListAllQueues: true,
     },
     customFields: {
         Address: [],

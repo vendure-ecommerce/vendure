@@ -32,6 +32,7 @@ import {
     RelationCustomFieldConfig,
     StructCustomFieldConfig,
 } from '../../../config/custom-field/custom-field-types';
+import { isInspectableJobQueueStrategy } from '../../../config/job-queue/inspectable-job-queue-strategy';
 import { GlobalSettings } from '../../../entity/global-settings/global-settings.entity';
 import { ChannelService } from '../../../service/services/channel.service';
 import { GlobalSettingsService } from '../../../service/services/global-settings.service';
@@ -64,6 +65,11 @@ export class GlobalSettingsResolver {
         const permissions = getAllPermissionsMetadata(
             this.configService.authOptions.customPermissions,
         ).filter(p => !p.internal);
+        const { jobQueueStrategy } = this.configService.jobQueueOptions;
+        const isInspectable = isInspectableJobQueueStrategy(jobQueueStrategy);
+        const supportsListAllQueues = isInspectable
+            ? jobQueueStrategy.supportsListAllQueues !== false
+            : false;
         return {
             customFieldConfig: this.generateCustomFieldConfig(info),
             entityCustomFields: this.generateEntityCustomFieldConfig(info),
@@ -72,7 +78,8 @@ export class GlobalSettingsResolver {
             permissions,
             moneyStrategyPrecision: this.configService.entityOptions.moneyStrategy.precision ?? 2,
             jobQueue: {
-                supportsListAllQueues: this.configService.jobQueueOptions.supportsListAllQueues ?? true,
+                isInspectable,
+                supportsListAllQueues,
             },
         };
     }

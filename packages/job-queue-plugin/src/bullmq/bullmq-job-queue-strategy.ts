@@ -53,6 +53,16 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     private readonly CANCELLED_JOB_LIST_NAME = 'vendure:cancelled-jobs';
     private jobQueueService: JobQueueService;
 
+    /**
+     * Currently, this strategy does not support listing all jobs across all queues.
+     * This limitation was introduced in v3.1.0 and may be lifted in a future version.
+     *
+     * The reason for this chance was a switch from using a single BullMQ queue for all jobs to using
+     * a separate queue for each JobQueue. This change was made to allow for more fine-grained control
+     * over the processing of different types of jobs.
+     */
+    readonly supportsListAllQueues = false;
+
     async init(injector: Injector): Promise<void> {
         const options = injector.get<BullMQPluginOptions>(BULLMQ_PLUGIN_OPTIONS);
         this.jobQueueService = injector.get(JobQueueService);

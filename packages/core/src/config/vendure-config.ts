@@ -951,15 +951,6 @@ export interface JobQueueOptions {
      * @since 1.5.0
      */
     prefix?: string;
-
-    /**
-     * @description
-     * Defines if the job queue strategy supports listing all jobs of all queues.
-     * By default, this is set to true, but some strategies may not support this feature.
-     *
-     * @since 3.1.0
-     */
-    supportsListAllQueues?: boolean;
 }
 
 /**
