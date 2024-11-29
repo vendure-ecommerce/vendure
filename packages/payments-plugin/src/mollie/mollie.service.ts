@@ -279,15 +279,21 @@ export class MollieService {
                 `Unable to find order ${mollieOrder.orderNumber}, unable to process Mollie order ${mollieOrder.id}`,
             );
         }
-        if (mollieOrder.status === OrderStatus.expired) {
-            // Expired is fine, a customer can retry the payment later
+        const mollieStatesThatRequireAction: OrderStatus[] = [
+            OrderStatus.completed,
+            OrderStatus.authorized,
+            OrderStatus.paid,
+        ];
+        if (!mollieStatesThatRequireAction.includes(mollieOrder.status)) {
+            // No need to handle this mollie webhook status
+            Logger.info(
+                `Ignoring Mollie status '${mollieOrder.status}' from incoming webhook for '${order.code}'`,
+                loggerCtx,
+            );
             return;
         }
         if (order.orderPlacedAt) {
-            // Verify if the Vendure order isn't already paid for, and log if so
-            const paymentWithSameTransactionId = order.payments.find(
-                p => p.transactionId === mollieOrder.id && p.state === 'Settled',
-            );
+            const paymentWithSameTransactionId = order.payments.find(p => p.transactionId === mollieOrder.id);
             if (!paymentWithSameTransactionId) {
                 // The order is paid for again, with another transaction ID. This means the customer paid twice
                 Logger.error(
@@ -297,14 +303,14 @@ export class MollieService {
                 return;
             }
         }
-        const statesThatRequireAction: OrderState[] = [
+        const vendureStatesThatRequireAction: OrderState[] = [
             'AddingItems',
             'ArrangingPayment',
             'ArrangingAdditionalPayment',
             'PaymentAuthorized',
             'Draft',
         ];
-        if (!statesThatRequireAction.includes(order.state)) {
+        if (!vendureStatesThatRequireAction.includes(order.state)) {
             // If order is not in one of these states, we don't need to handle the Mollie webhook
             Logger.info(
                 `Order ${order.code} is already '${order.state}', no need for handling Mollie status '${mollieOrder.status}'`,
