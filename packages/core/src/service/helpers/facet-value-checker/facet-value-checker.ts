@@ -63,9 +63,14 @@ export class FacetValueChecker implements OnModuleInit {
      */
     constructor(
         private connection: TransactionalConnection,
-        private cacheService?: CacheService,
+        private cacheService: CacheService,
         private eventBus?: EventBus,
     ) {}
+
+    private facetValueCache = this.cacheService.createCache({
+        getKey: (variantId: ID) => `FacetValueChecker.${variantId}`,
+        options: { ttl: ms('1w') },
+    });
 
     onModuleInit(): any {
         this.eventBus
@@ -73,7 +78,7 @@ export class FacetValueChecker implements OnModuleInit {
             .pipe(filter(event => event.type === 'updated'))
             .subscribe(async event => {
                 if ((event.input as UpdateProductInput)?.facetValueIds) {
-                    const variantIds = await this.connection.rawConnection
+                    const variantIds: ID[] = await this.connection.rawConnection
                         .getRepository(ProductVariant)
                         .createQueryBuilder('variant')
                         .select('variant.id', 'id')
@@ -82,7 +87,7 @@ export class FacetValueChecker implements OnModuleInit {
                         .then(result => result.map(r => r.id));
 
                     if (variantIds.length) {
-                        await this.deleteVariantIdsFromCache(variantIds);
+                        await this.facetValueCache.delete(variantIds);
                     }
                 }
             });
@@ -99,14 +104,10 @@ export class FacetValueChecker implements OnModuleInit {
                         }
                     }
                 }
-                if (updatedVariantIds.length > 0) {
-                    await this.deleteVariantIdsFromCache(updatedVariantIds);
+                if (updatedVariantIds.length) {
+                    await this.facetValueCache.delete(updatedVariantIds);
                 }
             });
-    }
-
-    private deleteVariantIdsFromCache(variantIds: ID[]) {
-        return Promise.all(variantIds.map(id => this.cacheService?.delete(this.getCacheKey(id))));
     }
 
     /**
@@ -117,9 +118,7 @@ export class FacetValueChecker implements OnModuleInit {
      */
     async hasFacetValues(orderLine: OrderLine, facetValueIds: ID[], ctx?: RequestContext): Promise<boolean> {
         const variantId = orderLine.productVariant.id;
-        const cacheKey = this.getCacheKey(variantId);
-        let variantFacetValueIds = await this.cacheService?.get<ID[]>(cacheKey);
-        if (!variantFacetValueIds) {
+        const variantFacetValueIds = await this.facetValueCache.get(variantId, async () => {
             const variant = await this.connection
                 .getRepository(ctx, ProductVariant)
                 .findOne({
@@ -129,21 +128,14 @@ export class FacetValueChecker implements OnModuleInit {
                 })
                 .then(result => result ?? undefined);
             if (!variant) {
-                variantFacetValueIds = [];
+                return [];
             } else {
-                variantFacetValueIds = unique(
-                    [...variant.facetValues, ...variant.product.facetValues].map(fv => fv.id),
-                );
+                return unique([...variant.facetValues, ...variant.product.facetValues].map(fv => fv.id));
             }
-            await this.cacheService?.set(cacheKey, variantFacetValueIds, { ttl: ms('1w') });
-        }
+        });
         return facetValueIds.reduce(
             (result, id) => result && !!(variantFacetValueIds ?? []).find(_id => idsAreEqual(_id, id)),
             true as boolean,
         );
-    }
-
-    private getCacheKey(variantId: ID) {
-        return `FacetValueChecker.${variantId}`;
     }
 }

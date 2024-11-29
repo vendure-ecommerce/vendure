@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ElasticsearchPlugin
 
-<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/plugin.ts" sourceLine="223" packageName="@vendure/elasticsearch-plugin" />
+<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/plugin.ts" sourceLine="224" packageName="@vendure/elasticsearch-plugin" />
 
 This plugin allows your product search to be powered by [Elasticsearch](https://github.com/elastic/elasticsearch) - a powerful Open Source search
 engine. This is a drop-in replacement for the DefaultSearchPlugin which exposes many powerful configuration options enabling your storefront

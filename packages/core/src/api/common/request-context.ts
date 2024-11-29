@@ -154,7 +154,7 @@ export function internal_getRequestContext(
  * presence of the RequestContext object in order to correctly handle per-request database transactions.
  *
  * The RequestContext also provides mechanisms for managing the database replication mode via the
- * {@link setReplicationMode} method and the {@link replicationMode} getter. This allows for finer control
+ * `setReplicationMode` method and the `replicationMode` getter. This allows for finer control
  * over whether database queries within the context should be executed against the master or a replica
  * database, which can be particularly useful in distributed database environments.
  *

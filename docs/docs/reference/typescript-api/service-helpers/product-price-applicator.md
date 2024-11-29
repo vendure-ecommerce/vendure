@@ -49,7 +49,7 @@ class ProductPriceApplicator {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(configService: ConfigService, taxRateService: <a href='/reference/typescript-api/services/tax-rate-service#taxrateservice'>TaxRateService</a>, zoneService: <a href='/reference/typescript-api/services/zone-service#zoneservice'>ZoneService</a>, requestCache: RequestContextCacheService) => ProductPriceApplicator`}   />
+<MemberInfo kind="method" type={`(configService: ConfigService, taxRateService: <a href='/reference/typescript-api/services/tax-rate-service#taxrateservice'>TaxRateService</a>, zoneService: <a href='/reference/typescript-api/services/zone-service#zoneservice'>ZoneService</a>, requestCache: <a href='/reference/typescript-api/cache/request-context-cache-service#requestcontextcacheservice'>RequestContextCacheService</a>) => ProductPriceApplicator`}   />
 
 
 ### applyChannelPriceAndTax

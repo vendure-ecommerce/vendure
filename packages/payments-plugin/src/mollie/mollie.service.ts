@@ -13,6 +13,7 @@ import {
     EntityHydrator,
     ErrorResult,
     ID,
+    idsAreEqual,
     Injector,
     LanguageCode,
     Logger,
@@ -94,16 +95,33 @@ export class MollieService {
         if (order instanceof PaymentIntentError) {
             return order;
         }
-        await this.entityHydrator.hydrate(ctx, order, {
-            relations: [
-                'customer',
-                'surcharges',
-                'lines.productVariant',
-                'lines.productVariant.translations',
-                'shippingLines.shippingMethod',
-                'payments',
-            ],
-        });
+        if (!paymentMethod) {
+            return new PaymentIntentError(`No paymentMethod found with code ${String(paymentMethodCode)}`);
+        }
+        const [eligiblePaymentMethods] = await Promise.all([
+            this.orderService.getEligiblePaymentMethods(ctx, order.id),
+            await this.entityHydrator.hydrate(ctx, order, {
+                relations: [
+                    'customer',
+                    'surcharges',
+                    'lines.productVariant',
+                    'lines.productVariant.translations',
+                    'shippingLines.shippingMethod',
+                    'payments',
+                ],
+            }),
+        ]);
+        if (
+            !eligiblePaymentMethods.find(
+                eligibleMethod =>
+                    idsAreEqual(eligibleMethod.id, paymentMethod?.id) && eligibleMethod.isEligible,
+            )
+        ) {
+            // Given payment method code is not eligible for this order
+            return new InvalidInputError(
+                `Payment method ${paymentMethod?.code} is not eligible for order ${order.code}`,
+            );
+        }
         if (order.state !== 'ArrangingPayment' && order.state !== 'ArrangingAdditionalPayment') {
             // Pre-check if order is transitionable to ArrangingPayment, because that will happen after Mollie payment
             try {
@@ -124,9 +142,6 @@ export class MollieService {
             return new PaymentIntentError(
                 'Cannot create payment intent for order with customer that has no lastName set',
             );
-        }
-        if (!paymentMethod) {
-            return new PaymentIntentError(`No paymentMethod found with code ${String(paymentMethodCode)}`);
         }
         let redirectUrl = input.redirectUrl;
         if (!redirectUrl) {
@@ -264,10 +279,21 @@ export class MollieService {
                 `Unable to find order ${mollieOrder.orderNumber}, unable to process Mollie order ${mollieOrder.id}`,
             );
         }
-        if (order.orderPlacedAt) {
-            const paymentWithSameTransactionId = order.payments.find(
-                p => p.transactionId === mollieOrder.id && p.state === 'Settled',
+        const mollieStatesThatRequireAction: OrderStatus[] = [
+            OrderStatus.completed,
+            OrderStatus.authorized,
+            OrderStatus.paid,
+        ];
+        if (!mollieStatesThatRequireAction.includes(mollieOrder.status)) {
+            // No need to handle this mollie webhook status
+            Logger.info(
+                `Ignoring Mollie status '${mollieOrder.status}' from incoming webhook for '${order.code}'`,
+                loggerCtx,
             );
+            return;
+        }
+        if (order.orderPlacedAt) {
+            const paymentWithSameTransactionId = order.payments.find(p => p.transactionId === mollieOrder.id);
             if (!paymentWithSameTransactionId) {
                 // The order is paid for again, with another transaction ID. This means the customer paid twice
                 Logger.error(
@@ -277,14 +303,14 @@ export class MollieService {
                 return;
             }
         }
-        const statesThatRequireAction: OrderState[] = [
+        const vendureStatesThatRequireAction: OrderState[] = [
             'AddingItems',
             'ArrangingPayment',
             'ArrangingAdditionalPayment',
             'PaymentAuthorized',
             'Draft',
         ];
-        if (!statesThatRequireAction.includes(order.state)) {
+        if (!vendureStatesThatRequireAction.includes(order.state)) {
             // If order is not in one of these states, we don't need to handle the Mollie webhook
             Logger.info(
                 `Order ${order.code} is already '${order.state}', no need for handling Mollie status '${mollieOrder.status}'`,
@@ -293,10 +319,6 @@ export class MollieService {
             return;
         }
         const amount = amountToCents(mollieOrder.amount);
-        if (mollieOrder.status === OrderStatus.expired) {
-            // Expired is fine, a customer can retry the payment later
-            return;
-        }
         if (mollieOrder.status === OrderStatus.paid) {
             // Paid is only used by 1-step payments without Authorized state. This will settle immediately
             await this.addPayment(ctx, order, amount, mollieOrder, paymentMethod.code, 'Settled');

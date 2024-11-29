@@ -9,7 +9,13 @@ import {
     parse,
 } from 'graphql';
 
-import { CustomFieldConfig, CustomFields } from '../../config/custom-field/custom-field-types';
+import {
+    CustomFieldConfig,
+    CustomFields,
+    StructCustomFieldConfig,
+    RelationCustomFieldConfig,
+    StructFieldConfig,
+} from '../../config/custom-field/custom-field-types';
 import { Logger } from '../../config/logger/vendure-logger';
 
 import { getCustomFieldsConfigWithoutInterfaces } from './get-custom-fields-config-without-interfaces';
@@ -84,13 +90,29 @@ export function addGraphQLCustomFields(
         );
         const writeableLocalizedFields = localizedFields.filter(field => !field.readonly);
         const writeableNonLocalizedFields = nonLocalizedFields.filter(field => !field.readonly);
-        const filterableFields = customEntityFields.filter(field => field.type !== 'relation');
+        const sortableFields = customEntityFields.filter(
+            field => field.list !== true && field.type !== 'struct',
+        );
+        const filterableFields = customEntityFields.filter(
+            field => field.type !== 'relation' && field.type !== 'struct',
+        );
+        const structCustomFields = customEntityFields.filter(
+            (f): f is StructCustomFieldConfig => f.type === 'struct',
+        );
 
         if (schema.getType(entityName)) {
             if (customEntityFields.length) {
+                for (const structCustomField of structCustomFields) {
+                    customFieldTypeDefs += `
+                        type ${getStructTypeName(entityName, structCustomField)} {
+                            ${mapToStructFields(structCustomField.fields, wrapListType(getGraphQlTypeForStructField))}
+                        }
+                    `;
+                }
+
                 customFieldTypeDefs += `
                     type ${entityName}CustomFields {
-                        ${mapToFields(customEntityFields, wrapListType(getGraphQlType))}
+                        ${mapToFields(customEntityFields, wrapListType(getGraphQlType(entityName)))}
                     }
 
                     extend type ${entityName} {
@@ -109,7 +131,7 @@ export function addGraphQLCustomFields(
         if (localizedFields.length && schema.getType(`${entityName}Translation`)) {
             customFieldTypeDefs += `
                     type ${entityName}TranslationCustomFields {
-                         ${mapToFields(localizedFields, wrapListType(getGraphQlType))}
+                         ${mapToFields(localizedFields, wrapListType(getGraphQlType(entityName)))}
                     }
 
                     extend type ${entityName}Translation {
@@ -120,11 +142,19 @@ export function addGraphQLCustomFields(
 
         if (schema.getType(`Create${entityName}Input`)) {
             if (writeableNonLocalizedFields.length) {
+                for (const structCustomField of structCustomFields) {
+                    customFieldTypeDefs += `
+                        input ${getStructInputName(entityName, structCustomField)} {
+                            ${mapToStructFields(structCustomField.fields, wrapListType(getGraphQlInputType(entityName)))}
+                        }
+                    `;
+                }
+
                 customFieldTypeDefs += `
                     input Create${entityName}CustomFieldsInput {
                        ${mapToFields(
                            writeableNonLocalizedFields,
-                           wrapListType(getGraphQlInputType),
+                           wrapListType(getGraphQlInputType(entityName)),
                            getGraphQlInputName,
                        )}
                     }
@@ -148,7 +178,7 @@ export function addGraphQLCustomFields(
                     input Update${entityName}CustomFieldsInput {
                        ${mapToFields(
                            writeableNonLocalizedFields,
-                           wrapListType(getGraphQlInputType),
+                           wrapListType(getGraphQlInputType(entityName)),
                            getGraphQlInputName,
                        )}
                     }
@@ -166,13 +196,12 @@ export function addGraphQLCustomFields(
             }
         }
 
-        const customEntityNonListFields = customEntityFields.filter(f => f.list !== true);
-        if (customEntityNonListFields.length && schema.getType(`${entityName}SortParameter`)) {
+        if (sortableFields.length && schema.getType(`${entityName}SortParameter`)) {
             // Sorting list fields makes no sense, so we only add "sort" fields
             // to non-list fields.
             customFieldTypeDefs += `
                     extend input ${entityName}SortParameter {
-                         ${mapToFields(customEntityNonListFields, () => 'SortOrder')}
+                         ${mapToFields(sortableFields, () => 'SortOrder')}
                     }
                 `;
         }
@@ -196,7 +225,7 @@ export function addGraphQLCustomFields(
                     if (writeableLocalizedFields.length) {
                         customFieldTypeDefs += `
                             input ${inputName}CustomFields {
-                                ${mapToFields(writeableLocalizedFields, wrapListType(getGraphQlType))}
+                                ${mapToFields(writeableLocalizedFields, wrapListType(getGraphQlType(entityName)))}
                             }
 
                             extend input ${inputName} {
@@ -256,7 +285,7 @@ export function addServerConfigCustomFields(
     const customFieldTypeDefs = `
             """
             This type is deprecated in v2.2 in favor of the EntityCustomFields type,
-            which allows custom fields to be defined on user-supplies entities.
+            which allows custom fields to be defined on user-supplied entities.
             """
             type CustomFields {
                 ${Object.keys(customFieldConfig).reduce(
@@ -288,7 +317,9 @@ export function addActiveAdministratorCustomFields(
     administratorCustomFields: CustomFieldConfig[],
 ) {
     const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
-    const writableCustomFields = administratorCustomFields?.filter(field => field.readonly !== true);
+    const writableCustomFields = administratorCustomFields?.filter(
+        field => field.readonly !== true && field.internal !== true,
+    );
     const extension = `
         extend input UpdateActiveAdministratorInput {
             customFields: ${
@@ -320,7 +351,7 @@ export function addRegisterCustomerCustomFieldsInput(
     }
     const customFieldTypeDefs = `
         input RegisterCustomerCustomFieldsInput {
-            ${mapToFields(publicWritableCustomFields, wrapListType(getGraphQlInputType), getGraphQlInputName)}
+            ${mapToFields(publicWritableCustomFields, wrapListType(getGraphQlInputType('Customer')), getGraphQlInputName)}
         }
 
         extend input RegisterCustomerInput {
@@ -373,17 +404,44 @@ export function addOrderLineCustomFieldsInput(
     if (!mutationType) {
         return schema;
     }
+    const structFields = orderLineCustomFields.filter(
+        (f): f is StructCustomFieldConfig => f.type === 'struct',
+    );
+    const structInputTypes: GraphQLInputObjectType[] = [];
+    if (0 < structFields.length) {
+        for (const structField of structFields) {
+            const structInputName = getStructInputName('OrderLine', structField);
+            structInputTypes.push(
+                new GraphQLInputObjectType({
+                    name: structInputName,
+                    fields: structField.fields.reduce((fields, field) => {
+                        const name = getGraphQlInputName(field);
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        const primitiveType = schema.getType(getGraphQlInputType('OrderLine')(field))!;
+                        const type = field.list === true ? new GraphQLList(primitiveType) : primitiveType;
+                        return { ...fields, [name]: { type } };
+                    }, {}),
+                }),
+            );
+        }
+    }
     const input = new GraphQLInputObjectType({
         name: 'OrderLineCustomFieldsInput',
         fields: publicCustomFields.reduce((fields, field) => {
             const name = getGraphQlInputName(field);
+            const inputTypeName = getGraphQlInputType('OrderLine')(field);
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const primitiveType = schema.getType(getGraphQlInputType(field))!;
-            const type = field.list === true ? new GraphQLList(primitiveType) : primitiveType;
+            const inputType =
+                schema.getType(getGraphQlInputType('OrderLine')(field)) ??
+                structInputTypes.find(t => t.name === inputTypeName);
+            if (!inputType) {
+                throw new Error(`Could not find input type for field ${field.name}`);
+            }
+            const type = field.list === true ? new GraphQLList(inputType) : inputType;
             return { ...fields, [name]: { type } };
         }, {}),
     });
-    schemaConfig.types = [...schemaConfig.types, input];
+    schemaConfig.types = [...schemaConfig.types, ...structInputTypes, input];
 
     const addItemToOrderMutation = mutationType.getFields().addItemToOrder;
     const adjustOrderLineMutation = mutationType.getFields().adjustOrderLine;
@@ -524,6 +582,27 @@ function mapToFields(
     return res.join('\n');
 }
 
+/**
+ * Maps an array of CustomFieldConfig objects into a string of SDL fields.
+ */
+function mapToStructFields(
+    fieldDefs: StructFieldConfig[],
+    typeFn: (def: StructFieldConfig) => string | undefined,
+    nameFn?: (def: Pick<StructFieldConfig, 'name' | 'type' | 'list'>) => string,
+): string {
+    const res = fieldDefs
+        .map(field => {
+            const type = typeFn(field);
+            if (!type) {
+                return;
+            }
+            const name = nameFn ? nameFn(field) : field.name;
+            return `${name}: ${type}`;
+        })
+        .filter(x => x != null);
+    return res.join('\n');
+}
+
 function getFilterOperator(config: CustomFieldConfig): string | undefined {
     switch (config.type) {
         case 'datetime':
@@ -539,6 +618,7 @@ function getFilterOperator(config: CustomFieldConfig): string | undefined {
         case 'float':
             return config.list ? 'NumberListOperators' : 'NumberOperators';
         case 'relation':
+        case 'struct':
             return undefined;
         default:
             assertNever(config);
@@ -546,14 +626,23 @@ function getFilterOperator(config: CustomFieldConfig): string | undefined {
     return 'String';
 }
 
-function getGraphQlInputType(config: CustomFieldConfig): string {
-    return config.type === 'relation' ? 'ID' : getGraphQlType(config);
+function getGraphQlInputType(entityName: string) {
+    return (config: CustomFieldConfig): string => {
+        switch (config.type) {
+            case 'relation':
+                return 'ID';
+            case 'struct':
+                return getStructInputName(entityName, config);
+            default:
+                return getGraphQlType(entityName)(config);
+        }
+    };
 }
 
-function wrapListType(
-    getTypeFn: (def: CustomFieldConfig) => string | undefined,
-): (def: CustomFieldConfig) => string | undefined {
-    return (def: CustomFieldConfig) => {
+function wrapListType<T extends CustomFieldConfig | StructFieldConfig>(
+    getTypeFn: (def: T) => string | undefined,
+): (def: T) => string | undefined {
+    return (def: T) => {
         const type = getTypeFn(def);
         if (!type) {
             return;
@@ -562,12 +651,37 @@ function wrapListType(
     };
 }
 
-function getGraphQlType(config: CustomFieldConfig): string {
+function getGraphQlType(entityName: string) {
+    return (config: CustomFieldConfig): string => {
+        switch (config.type) {
+            case 'string':
+            case 'localeString':
+            case 'text':
+            case 'localeText':
+                return 'String';
+            case 'datetime':
+                return 'DateTime';
+            case 'boolean':
+                return 'Boolean';
+            case 'int':
+                return 'Int';
+            case 'float':
+                return 'Float';
+            case 'relation':
+                return config.graphQLType || config.entity.name;
+            case 'struct':
+                return getStructTypeName(entityName, config);
+            default:
+                assertNever(config);
+        }
+        return 'String';
+    };
+}
+
+function getGraphQlTypeForStructField(config: StructFieldConfig): string {
     switch (config.type) {
         case 'string':
-        case 'localeString':
         case 'text':
-        case 'localeText':
             return 'String';
         case 'datetime':
             return 'DateTime';
@@ -577,10 +691,20 @@ function getGraphQlType(config: CustomFieldConfig): string {
             return 'Int';
         case 'float':
             return 'Float';
-        case 'relation':
-            return config.graphQLType || config.entity.name;
         default:
             assertNever(config);
     }
     return 'String';
+}
+
+function getStructTypeName(entityName: string, fieldDef: StructCustomFieldConfig): string {
+    return `${entityName}${pascalCase(fieldDef.name)}Struct`;
+}
+
+function getStructInputName(entityName: string, fieldDef: StructCustomFieldConfig): string {
+    return `${entityName}${pascalCase(fieldDef.name)}StructInput`;
+}
+
+function pascalCase(input: string) {
+    return input.charAt(0).toUpperCase() + input.slice(1);
 }

@@ -106,7 +106,7 @@ Defines the logic used to round monetary values. For instance, the default behav
 in the <a href='/reference/typescript-api/money/default-money-strategy#defaultmoneystrategy'>DefaultMoneyStrategy</a> is to round the value, then multiply.
 
 ```ts
-return Math.round(value) * quantity;
+return Math.round(value * quantity);
 ```
 
 However, it may be desirable to instead round only _after_ the unit amount has been

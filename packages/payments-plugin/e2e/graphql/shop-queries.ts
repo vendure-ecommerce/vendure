@@ -201,6 +201,9 @@ export const ADJUST_ORDER_LINE = gql`
                     ...TestOrderFragment
                 }
             }
+            ... on OrderInterceptorError {
+                interceptorError
+            }
         }
     }
     ${TEST_ORDER_FRAGMENT}

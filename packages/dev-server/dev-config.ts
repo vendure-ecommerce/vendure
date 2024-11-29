@@ -134,9 +134,9 @@ function getDbConfig(): DataSourceOptions {
                 type: 'postgres',
                 host: process.env.DB_HOST || 'localhost',
                 port: Number(process.env.DB_PORT) || 5432,
-                username: process.env.DB_USERNAME || 'postgres',
-                password: process.env.DB_PASSWORD || 'postgres',
-                database: process.env.DB_NAME || 'vendure',
+                username: process.env.DB_USERNAME || 'vendure',
+                password: process.env.DB_PASSWORD || 'password',
+                database: process.env.DB_NAME || 'vendure-dev',
                 schema: process.env.DB_SCHEMA || 'public',
             };
         case 'sqlite':
@@ -155,6 +155,7 @@ function getDbConfig(): DataSourceOptions {
                 location: path.join(__dirname, 'vendure.sqlite'),
             };
         case 'mysql':
+        case 'mariadb':
         default:
             console.log('Using mysql connection');
             return {
@@ -162,8 +163,8 @@ function getDbConfig(): DataSourceOptions {
                 type: 'mariadb',
                 host: '127.0.0.1',
                 port: 3306,
-                username: 'root',
-                password: '',
+                username: 'vendure',
+                password: 'password',
                 database: 'vendure-dev',
             };
     }

@@ -24,6 +24,7 @@ import { DefaultProductVariantPriceSelectionStrategy } from './catalog/default-p
 import { DefaultProductVariantPriceUpdateStrategy } from './catalog/default-product-variant-price-update-strategy';
 import { DefaultStockDisplayStrategy } from './catalog/default-stock-display-strategy';
 import { DefaultStockLocationStrategy } from './catalog/default-stock-location-strategy';
+import { MultiChannelStockLocationStrategy } from './catalog/multi-channel-stock-location-strategy';
 import { AutoIncrementIdStrategy } from './entity/auto-increment-id-strategy';
 import { DefaultMoneyStrategy } from './entity/default-money-strategy';
 import { defaultEntityDuplicators } from './entity/entity-duplicators/index';
@@ -45,7 +46,7 @@ import { UseGuestStrategy } from './order/use-guest-strategy';
 import { defaultPaymentProcess } from './payment/default-payment-process';
 import { defaultPromotionActions, defaultPromotionConditions } from './promotion';
 import { defaultRefundProcess } from './refund/default-refund-process';
-import { InMemorySessionCacheStrategy } from './session-cache/in-memory-session-cache-strategy';
+import { DefaultSessionCacheStrategy } from './session-cache/default-session-cache-strategy';
 import { defaultShippingCalculator } from './shipping-method/default-shipping-calculator';
 import { defaultShippingEligibilityChecker } from './shipping-method/default-shipping-eligibility-checker';
 import { DefaultShippingLineAssignmentStrategy } from './shipping-method/default-shipping-line-assignment-strategy';
@@ -97,7 +98,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         },
         authTokenHeaderKey: DEFAULT_AUTH_TOKEN_HEADER_KEY,
         sessionDuration: '1y',
-        sessionCacheStrategy: new InMemorySessionCacheStrategy(),
+        sessionCacheStrategy: new DefaultSessionCacheStrategy(),
         sessionCacheTTL: 300,
         requireVerification: true,
         verificationTokenDuration: '7d',
@@ -119,7 +120,7 @@ export const defaultConfig: RuntimeVendureConfig = {
             syncPricesAcrossChannels: false,
         }),
         stockDisplayStrategy: new DefaultStockDisplayStrategy(),
-        stockLocationStrategy: new DefaultStockLocationStrategy(),
+        stockLocationStrategy: new MultiChannelStockLocationStrategy(),
     },
     assetOptions: {
         assetNamingStrategy: new DefaultAssetNamingStrategy(),
@@ -168,6 +169,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         activeOrderStrategy: new DefaultActiveOrderStrategy(),
         orderSellerStrategy: new DefaultOrderSellerStrategy(),
         guestCheckoutStrategy: new DefaultGuestCheckoutStrategy(),
+        orderInterceptors: [],
     },
     paymentOptions: {
         paymentMethodEligibilityCheckers: [],
@@ -203,8 +205,10 @@ export const defaultConfig: RuntimeVendureConfig = {
         FacetValue: [],
         Fulfillment: [],
         GlobalSettings: [],
+        HistoryEntry: [],
         Order: [],
         OrderLine: [],
+        Payment: [],
         PaymentMethod: [],
         Product: [],
         ProductOption: [],
@@ -212,10 +216,15 @@ export const defaultConfig: RuntimeVendureConfig = {
         ProductVariant: [],
         ProductVariantPrice: [],
         Promotion: [],
+        Refund: [],
         Region: [],
         Seller: [],
+        Session: [],
+        ShippingLine: [],
         ShippingMethod: [],
+        StockLevel: [],
         StockLocation: [],
+        StockMovement: [],
         TaxCategory: [],
         TaxRate: [],
         User: [],

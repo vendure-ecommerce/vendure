@@ -182,7 +182,7 @@ Initialize the Stripe payment plugin
 
 ## StripePluginOptions
 
-<GenerationInfo sourceFile="packages/payments-plugin/src/stripe/types.ts" sourceLine="27" packageName="@vendure/payments-plugin" />
+<GenerationInfo sourceFile="packages/payments-plugin/src/stripe/types.ts" sourceLine="29" packageName="@vendure/payments-plugin" />
 
 Configuration options for the Stripe payments plugin.
 
@@ -199,6 +199,11 @@ interface StripePluginOptions {
         ctx: RequestContext,
         order: Order,
     ) => AdditionalPaymentIntentCreateParams | Promise<AdditionalPaymentIntentCreateParams>;
+    requestOptions?: (
+        injector: Injector,
+        ctx: RequestContext,
+        order: Order,
+    ) => AdditionalRequestOptions | Promise<AdditionalRequestOptions>;
     customerCreateParams?: (
         injector: Injector,
         ctx: RequestContext,
@@ -269,6 +274,34 @@ export const config: VendureConfig = {
       paymentIntentCreateParams: (injector, ctx, order) => {
         return {
           description: `Order #${order.code} for ${order.customer?.emailAddress}`
+        },
+      }
+    }),
+  ],
+};
+```
+### requestOptions
+
+<MemberInfo kind="property" type={`(         injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>,         ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>,         order: <a href='/reference/typescript-api/entities/order#order'>Order</a>,     ) =&#62; AdditionalRequestOptions | Promise&#60;AdditionalRequestOptions&#62;`}  since="3.1.0"  />
+
+Provide additional options to the Stripe payment intent creation. By default,
+the plugin will already pass the `idempotencyKey` parameter.
+
+For example, if you want to provide a `stripeAccount` for the payment intent, you can do so like this:
+
+*Example*
+
+```ts
+import { VendureConfig } from '@vendure/core';
+import { StripePlugin } from '@vendure/payments-plugin/package/stripe';
+
+export const config: VendureConfig = {
+  // ...
+  plugins: [
+    StripePlugin.init({
+      requestOptions: (injector, ctx, order) => {
+        return {
+          stripeAccount: ctx.channel.seller?.customFields.connectedAccountId
         },
       }
     }),

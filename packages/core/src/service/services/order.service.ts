@@ -47,7 +47,7 @@ import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { RequestContextCacheService } from '../../cache/request-context-cache.service';
 import { CacheKey } from '../../common/constants';
-import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
+import { ErrorResultUnion, isGraphQlErrorResult, JustErrorResults } from '../../common/error/error-result';
 import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
 import {
     CancelPaymentError,
@@ -66,6 +66,7 @@ import {
 import {
     InsufficientStockError,
     NegativeQuantityError,
+    OrderInterceptorError,
     OrderLimitError,
     OrderModificationError,
     OrderPaymentStateError,
@@ -77,6 +78,7 @@ import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
+import { Logger } from '../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Customer } from '../../entity/customer/customer.entity';
@@ -532,6 +534,8 @@ export class OrderService {
      * @description
      * Adds an item to the Order, either creating a new OrderLine or
      * incrementing an existing one.
+     *
+     * If you need to add multiple items to an Order, use `addItemsToOrder()` instead.
      */
     async addItemToOrder(
         ctx: RequestContext,
@@ -541,74 +545,149 @@ export class OrderService {
         customFields?: { [key: string]: any },
         relations?: RelationPaths<Order>,
     ): Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>> {
-        const order = await this.getOrderOrThrow(ctx, orderId);
-        const existingOrderLine = await this.orderModifier.getExistingOrderLine(
+        const result = await this.addItemsToOrder(
             ctx,
-            order,
-            productVariantId,
-            customFields,
+            orderId,
+            [{ productVariantId, quantity, customFields }],
+            relations,
         );
-        const validationError =
-            this.assertQuantityIsPositive(quantity) ||
-            this.assertAddingItemsState(order) ||
-            this.assertNotOverOrderItemsLimit(order, quantity) ||
-            this.assertNotOverOrderLineItemsLimit(existingOrderLine, quantity);
-        if (validationError) {
-            return validationError;
-        }
-        const variant = await this.connection.getEntityOrThrow(ctx, ProductVariant, productVariantId, {
-            relations: ['product'],
-            where: {
-                enabled: true,
-                deletedAt: IsNull(),
-            },
-            loadEagerRelations: false,
-        });
-        if (variant.product.enabled === false) {
-            throw new EntityNotFoundError('ProductVariant', productVariantId);
-        }
-        const existingQuantityInOtherLines = summate(
-            order.lines.filter(
-                l =>
-                    idsAreEqual(l.productVariantId, productVariantId) &&
-                    !idsAreEqual(l.id, existingOrderLine?.id),
-            ),
-            'quantity',
-        );
-        const correctedQuantity = await this.orderModifier.constrainQuantityToSaleable(
-            ctx,
-            variant,
-            quantity,
-            existingOrderLine?.quantity,
-            existingQuantityInOtherLines,
-        );
-        if (correctedQuantity === 0) {
-            return new InsufficientStockError({ order, quantityAvailable: correctedQuantity });
-        }
-        const orderLine = await this.orderModifier.getOrCreateOrderLine(
-            ctx,
-            order,
-            productVariantId,
-            customFields,
-        );
-        if (correctedQuantity < quantity) {
-            const newQuantity = (existingOrderLine ? existingOrderLine?.quantity : 0) + correctedQuantity;
-            await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, newQuantity, order);
+        if (result.errorResults.length) {
+            return result.errorResults[0];
         } else {
-            await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, correctedQuantity, order);
-        }
-        const quantityWasAdjustedDown = correctedQuantity < quantity;
-        const updatedOrder = await this.applyPriceAdjustments(ctx, order, [orderLine], relations);
-        if (quantityWasAdjustedDown) {
-            return new InsufficientStockError({ quantityAvailable: correctedQuantity, order: updatedOrder });
-        } else {
-            return updatedOrder;
+            return result.order;
         }
     }
 
     /**
      * @description
+     * Adds multiple items to an Order. This method is more efficient than calling `addItemToOrder`
+     * multiple times, as it only needs to fetch the entire Order once, and only performs
+     * price adjustments once at the end.
+     *
+     * Since this method can return multiple error results, it is recommended to check the `errorResults`
+     * array to determine if any errors occurred.
+     *
+     * @since 3.1.0
+     */
+    async addItemsToOrder(
+        ctx: RequestContext,
+        orderId: ID,
+        items: Array<{
+            productVariantId: ID;
+            quantity: number;
+            customFields?: { [key: string]: any };
+        }>,
+        relations?: RelationPaths<Order>,
+    ): Promise<{ order: Order; errorResults: Array<JustErrorResults<UpdateOrderItemsResult>> }> {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        const errorResults: Array<JustErrorResults<UpdateOrderItemsResult>> = [];
+        const updatedOrderLines: OrderLine[] = [];
+        addItem: for (const item of items) {
+            const { productVariantId, quantity, customFields } = item;
+            const existingOrderLine = await this.orderModifier.getExistingOrderLine(
+                ctx,
+                order,
+                productVariantId,
+                customFields,
+            );
+            const validationError =
+                this.assertQuantityIsPositive(quantity) ||
+                this.assertAddingItemsState(order) ||
+                this.assertNotOverOrderItemsLimit(order, quantity) ||
+                this.assertNotOverOrderLineItemsLimit(existingOrderLine, quantity);
+            if (validationError) {
+                errorResults.push(validationError);
+                continue;
+            }
+            const variant = await this.connection.getEntityOrThrow(ctx, ProductVariant, productVariantId, {
+                relations: ['product'],
+                where: {
+                    enabled: true,
+                    deletedAt: IsNull(),
+                },
+                loadEagerRelations: false,
+            });
+            if (variant.product.enabled === false) {
+                throw new EntityNotFoundError('ProductVariant', productVariantId);
+            }
+            const existingQuantityInOtherLines = summate(
+                order.lines.filter(
+                    l =>
+                        idsAreEqual(l.productVariantId, productVariantId) &&
+                        !idsAreEqual(l.id, existingOrderLine?.id),
+                ),
+                'quantity',
+            );
+            const correctedQuantity = await this.orderModifier.constrainQuantityToSaleable(
+                ctx,
+                variant,
+                quantity,
+                existingOrderLine?.quantity,
+                existingQuantityInOtherLines,
+            );
+            if (correctedQuantity === 0) {
+                errorResults.push(
+                    new InsufficientStockError({ order, quantityAvailable: correctedQuantity }),
+                );
+                continue;
+            }
+            const { orderInterceptors } = this.configService.orderOptions;
+            for (const interceptor of orderInterceptors) {
+                if (interceptor.willAddItemToOrder) {
+                    const error = await interceptor.willAddItemToOrder(ctx, order, {
+                        productVariant: variant,
+                        quantity: correctedQuantity,
+                        customFields,
+                    });
+                    if (error) {
+                        errorResults.push(new OrderInterceptorError({ interceptorError: error }));
+                        continue addItem;
+                    }
+                }
+            }
+            const orderLine = await this.orderModifier.getOrCreateOrderLine(
+                ctx,
+                order,
+                productVariantId,
+                customFields,
+            );
+            if (correctedQuantity < quantity) {
+                const newQuantity = (existingOrderLine ? existingOrderLine?.quantity : 0) + correctedQuantity;
+                await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, newQuantity, order);
+            } else {
+                await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, correctedQuantity, order);
+            }
+            updatedOrderLines.push(orderLine);
+            const quantityWasAdjustedDown = correctedQuantity < quantity;
+            if (quantityWasAdjustedDown) {
+                errorResults.push(
+                    new InsufficientStockError({ quantityAvailable: correctedQuantity, order }),
+                );
+                continue;
+            }
+        }
+        const updatedOrder = await this.applyPriceAdjustments(ctx, order, updatedOrderLines, relations);
+        // for any InsufficientStockError errors, we want to make sure we use the final updatedOrder
+        // after having applied all price adjustments
+        for (const [i, errorResult] of Object.entries(errorResults)) {
+            if (errorResult.__typename === 'InsufficientStockError') {
+                errorResults[+i] = new InsufficientStockError({
+                    quantityAvailable: errorResult.quantityAvailable,
+                    order: updatedOrder,
+                });
+            }
+        }
+        return {
+            order: updatedOrder,
+            errorResults,
+        };
+    }
+
+    /**
+     * @description
      * Adjusts the quantity and/or custom field values of an existing OrderLine.
+     *
+     * If you need to adjust multiple OrderLines, use `adjustOrderLines()` instead.
      */
     async adjustOrderLine(
         ctx: RequestContext,
@@ -618,84 +697,182 @@ export class OrderService {
         customFields?: { [key: string]: any },
         relations?: RelationPaths<Order>,
     ): Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>> {
-        const order = await this.getOrderOrThrow(ctx, orderId);
-        const orderLine = this.getOrderLineOrThrow(order, orderLineId);
-        const validationError =
-            this.assertAddingItemsState(order) ||
-            this.assertQuantityIsPositive(quantity) ||
-            this.assertNotOverOrderItemsLimit(order, quantity - orderLine.quantity) ||
-            this.assertNotOverOrderLineItemsLimit(orderLine, quantity - orderLine.quantity);
-        if (validationError) {
-            return validationError;
-        }
-        if (customFields != null) {
-            orderLine.customFields = customFields;
-            await this.customFieldRelationService.updateRelations(
-                ctx,
-                OrderLine,
-                { customFields },
-                orderLine,
-            );
-        }
-        const existingQuantityInOtherLines = summate(
-            order.lines.filter(
-                l =>
-                    idsAreEqual(l.productVariantId, orderLine.productVariantId) &&
-                    !idsAreEqual(l.id, orderLineId),
-            ),
-            'quantity',
-        );
-        const correctedQuantity = await this.orderModifier.constrainQuantityToSaleable(
+        const result = await this.adjustOrderLines(
             ctx,
-            orderLine.productVariant,
-            quantity,
-            0,
-            existingQuantityInOtherLines,
+            orderId,
+            [{ orderLineId, quantity, customFields }],
+            relations,
         );
-        let updatedOrderLines = [orderLine];
-        if (correctedQuantity === 0) {
-            order.lines = order.lines.filter(l => !idsAreEqual(l.id, orderLine.id));
-            const deletedOrderLine = new OrderLine(orderLine);
-            await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
-            await this.eventBus.publish(new OrderLineEvent(ctx, order, deletedOrderLine, 'deleted'));
-            updatedOrderLines = [];
+        if (result.errorResults.length) {
+            return result.errorResults[0];
         } else {
-            await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, correctedQuantity, order);
-        }
-        const quantityWasAdjustedDown = correctedQuantity < quantity;
-        const updatedOrder = await this.applyPriceAdjustments(ctx, order, updatedOrderLines, relations);
-        if (quantityWasAdjustedDown) {
-            return new InsufficientStockError({ quantityAvailable: correctedQuantity, order: updatedOrder });
-        } else {
-            return updatedOrder;
+            return result.order;
         }
     }
 
     /**
      * @description
+     * Adjusts the quantity and/or custom field values of existing OrderLines.
+     * This method is more efficient than calling `adjustOrderLine` multiple times, as it only needs to fetch
+     * the entire Order once, and only performs price adjustments once at the end.
+     * Since this method can return multiple error results, it is recommended to check the `errorResults`
+     * array to determine if any errors occurred.
+     *
+     * @since 3.1.0
+     */
+    async adjustOrderLines(
+        ctx: RequestContext,
+        orderId: ID,
+        lines: Array<{ orderLineId: ID; quantity: number; customFields?: { [key: string]: any } }>,
+        relations?: RelationPaths<Order>,
+    ): Promise<{ order: Order; errorResults: Array<JustErrorResults<UpdateOrderItemsResult>> }> {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        const errorResults: Array<JustErrorResults<UpdateOrderItemsResult>> = [];
+        const updatedOrderLines: OrderLine[] = [];
+        adjustLine: for (const line of lines) {
+            const { orderLineId, quantity, customFields } = line;
+            const orderLine = this.getOrderLineOrThrow(order, orderLineId);
+            const validationError =
+                this.assertAddingItemsState(order) ||
+                this.assertQuantityIsPositive(quantity) ||
+                this.assertNotOverOrderItemsLimit(order, quantity - orderLine.quantity) ||
+                this.assertNotOverOrderLineItemsLimit(orderLine, quantity - orderLine.quantity);
+            if (validationError) {
+                errorResults.push(validationError);
+                continue;
+            }
+            const { orderInterceptors } = this.configService.orderOptions;
+            for (const interceptor of orderInterceptors) {
+                if (interceptor.willAdjustOrderLine) {
+                    const error = await interceptor.willAdjustOrderLine(ctx, order, {
+                        orderLine,
+                        quantity,
+                        customFields,
+                    });
+                    if (error) {
+                        errorResults.push(new OrderInterceptorError({ interceptorError: error }));
+                        continue adjustLine;
+                    }
+                }
+            }
+            if (customFields != null) {
+                orderLine.customFields = customFields;
+                await this.customFieldRelationService.updateRelations(
+                    ctx,
+                    OrderLine,
+                    { customFields },
+                    orderLine,
+                );
+            }
+            const existingQuantityInOtherLines = summate(
+                order.lines.filter(
+                    l =>
+                        idsAreEqual(l.productVariantId, orderLine.productVariantId) &&
+                        !idsAreEqual(l.id, orderLineId),
+                ),
+                'quantity',
+            );
+            const correctedQuantity = await this.orderModifier.constrainQuantityToSaleable(
+                ctx,
+                orderLine.productVariant,
+                quantity,
+                0,
+                existingQuantityInOtherLines,
+            );
+            if (correctedQuantity === 0) {
+                order.lines = order.lines.filter(l => !idsAreEqual(l.id, orderLine.id));
+                const deletedOrderLine = new OrderLine(orderLine);
+                await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
+                await this.eventBus.publish(new OrderLineEvent(ctx, order, deletedOrderLine, 'deleted'));
+            } else {
+                await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, correctedQuantity, order);
+                updatedOrderLines.push(orderLine);
+            }
+            const quantityWasAdjustedDown = correctedQuantity < quantity;
+
+            if (quantityWasAdjustedDown) {
+                errorResults.push(
+                    new InsufficientStockError({
+                        quantityAvailable: correctedQuantity,
+                        order,
+                    }),
+                );
+            }
+        }
+        const updatedOrder = await this.applyPriceAdjustments(ctx, order, updatedOrderLines, relations);
+        for (const [i, errorResult] of Object.entries(errorResults)) {
+            if (errorResult.__typename === 'InsufficientStockError') {
+                errorResults[+i] = new InsufficientStockError({
+                    quantityAvailable: errorResult.quantityAvailable,
+                    order: updatedOrder,
+                });
+            }
+        }
+        return {
+            order: updatedOrder,
+            errorResults,
+        };
+    }
+
+    /**
+     * @description
      * Removes the specified OrderLine from the Order.
+     *
+     * If you need to remove multiple OrderLines, use `removeItemsFromOrder()` instead.
      */
     async removeItemFromOrder(
         ctx: RequestContext,
         orderId: ID,
         orderLineId: ID,
     ): Promise<ErrorResultUnion<RemoveOrderItemsResult, Order>> {
+        return this.removeItemsFromOrder(ctx, orderId, [orderLineId]);
+    }
+
+    /**
+     * @description
+     * Removes the specified OrderLines from the Order.
+     * This method is more efficient than calling `removeItemFromOrder` multiple times, as it only needs to fetch
+     * the entire Order once, and only performs price adjustments once at the end.
+     *
+     * @since 3.1.0
+     */
+    async removeItemsFromOrder(
+        ctx: RequestContext,
+        orderId: ID,
+        orderLineIds: ID[],
+    ): Promise<ErrorResultUnion<RemoveOrderItemsResult, Order>> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const validationError = this.assertAddingItemsState(order);
         if (validationError) {
             return validationError;
         }
-        const orderLine = this.getOrderLineOrThrow(order, orderLineId);
-        order.lines = order.lines.filter(line => !idsAreEqual(line.id, orderLineId));
+        const orderLinesToDelete: OrderLine[] = [];
+        for (const orderLineId of orderLineIds) {
+            const orderLine = this.getOrderLineOrThrow(order, orderLineId);
+            const { orderInterceptors } = this.configService.orderOptions;
+            for (const interceptor of orderInterceptors) {
+                if (interceptor.willRemoveItemFromOrder) {
+                    const error = await interceptor.willRemoveItemFromOrder(ctx, order, orderLine);
+                    if (error) {
+                        return new OrderInterceptorError({ interceptorError: error });
+                    }
+                }
+            }
+            orderLinesToDelete.push(orderLine);
+        }
+
+        order.lines = order.lines.filter(line => !orderLineIds.find(olId => idsAreEqual(line.id, olId)));
         // Persist the orderLine removal before applying price adjustments
         // so that any hydration of the Order entity during the course of the
         // `applyPriceAdjustments()` (e.g. in a ShippingEligibilityChecker etc)
         // will not re-add the OrderLine.
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
-        const deletedOrderLine = new OrderLine(orderLine);
-        await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
-        await this.eventBus.publish(new OrderLineEvent(ctx, order, deletedOrderLine, 'deleted'));
+        for (const orderLine of orderLinesToDelete) {
+            const deletedOrderLine = new OrderLine(orderLine);
+            await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
+            await this.eventBus.publish(new OrderLineEvent(ctx, order, deletedOrderLine, 'deleted'));
+        }
         return updatedOrder;
     }
 
@@ -883,6 +1060,54 @@ export class OrderService {
             .where('id = :id', { id: order.id })
             .execute();
         order.billingAddress = billingAddress;
+        // Since a changed BillingAddress could alter the activeTaxZone,
+        // we will remove any cached activeTaxZone, so it can be re-calculated
+        // as needed.
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone, undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA, undefined);
+        return this.applyPriceAdjustments(ctx, order, order.lines);
+    }
+
+    /**
+     * @description
+     * Unsets the shipping address for the Order.
+     *
+     * @since 3.1.0
+     */
+    async unsetShippingAddress(ctx: RequestContext, orderId: ID): Promise<Order> {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        await this.connection
+            .getRepository(ctx, Order)
+            .createQueryBuilder('order')
+            .update(Order)
+            .set({ shippingAddress: {} })
+            .where('id = :id', { id: order.id })
+            .execute();
+        order.shippingAddress = {};
+        // Since a changed ShippingAddress could alter the activeTaxZone,
+        // we will remove any cached activeTaxZone, so it can be re-calculated
+        // as needed.
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone, undefined);
+        this.requestCache.set(ctx, CacheKey.ActiveTaxZone_PPA, undefined);
+        return this.applyPriceAdjustments(ctx, order, order.lines);
+    }
+
+    /**
+     * @description
+     * Unsets the billing address for the Order.
+     *
+     * @since 3.1.0
+     */
+    async unsetBillingAddress(ctx: RequestContext, orderId: ID): Promise<Order> {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        await this.connection
+            .getRepository(ctx, Order)
+            .createQueryBuilder('order')
+            .update(Order)
+            .set({ billingAddress: {} })
+            .where('id = :id', { id: order.id })
+            .execute();
+        order.billingAddress = {};
         // Since a changed BillingAddress could alter the activeTaxZone,
         // we will remove any cached activeTaxZone, so it can be re-calculated
         // as needed.
@@ -1619,36 +1844,6 @@ export class OrderService {
         if (orderToDelete) {
             await this.deleteOrder(ctx, orderToDelete);
         }
-        if (order && linesToInsert) {
-            const orderId = order.id;
-            for (const line of linesToInsert) {
-                const result = await this.addItemToOrder(
-                    ctx,
-                    orderId,
-                    line.productVariantId,
-                    line.quantity,
-                    line.customFields,
-                );
-                if (!isGraphQlErrorResult(result)) {
-                    order = result;
-                }
-            }
-        }
-        if (order && linesToModify) {
-            const orderId = order.id;
-            for (const line of linesToModify) {
-                const result = await this.adjustOrderLine(
-                    ctx,
-                    orderId,
-                    line.orderLineId,
-                    line.quantity,
-                    line.customFields,
-                );
-                if (!isGraphQlErrorResult(result)) {
-                    order = result;
-                }
-            }
-        }
         if (order && linesToDelete) {
             const orderId = order.id;
             for (const line of linesToDelete) {
@@ -1656,6 +1851,31 @@ export class OrderService {
                 if (!isGraphQlErrorResult(result)) {
                     order = result;
                 }
+            }
+        }
+        if (order && linesToInsert) {
+            const orderId = order.id;
+            const result = await this.addItemsToOrder(ctx, orderId, linesToInsert);
+            order = result.order;
+        }
+        if (order && linesToModify) {
+            const orderId = order.id;
+            const result = await this.adjustOrderLines(ctx, orderId, linesToModify);
+            order = result.order;
+        }
+        if (order && linesToDelete) {
+            const orderId = order.id;
+            try {
+                const result = await this.removeItemsFromOrder(
+                    ctx,
+                    orderId,
+                    linesToDelete.map(l => l.orderLineId),
+                );
+                if (!isGraphQlErrorResult(result)) {
+                    order = result;
+                }
+            } catch (e: any) {
+                Logger.error(e.message, undefined, e.stack);
             }
         }
         const customer = await this.customerService.findOneByUserId(ctx, user.id);

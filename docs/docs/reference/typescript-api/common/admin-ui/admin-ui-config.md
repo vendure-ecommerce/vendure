@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AdminUiConfig
 
-<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="215" packageName="@vendure/common" />
+<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="221" packageName="@vendure/common" />
 
 This interface describes JSON config file (vendure-ui-config.json) used by the Admin UI.
 The values are loaded at run-time by the Admin UI app, and allow core configuration to be

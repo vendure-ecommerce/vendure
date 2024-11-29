@@ -57,6 +57,10 @@ type Mutation {
     setDraftOrderShippingAddress(orderId: ID!, input: CreateAddressInput!): Order!
     "Sets the billing address for a draft Order"
     setDraftOrderBillingAddress(orderId: ID!, input: CreateAddressInput!): Order!
+    "Unsets the shipping address for a draft Order"
+    unsetDraftOrderShippingAddress(orderId: ID!): Order!
+    "Unsets the billing address for a draft Order"
+    unsetDraftOrderBillingAddress(orderId: ID!): Order!
     "Allows any custom fields to be set for the active order"
     setDraftOrderCustomFields(orderId: ID!, input: UpdateOrderInput!): Order!
     "Applies the given coupon code to the draft Order"
@@ -111,14 +115,12 @@ input CancelOrderInput {
 }
 
 input RefundOrderInput {
-    lines: [OrderLineInput!]!
-    shipping: Money!
-    adjustment: Money!
+    lines: [OrderLineInput!] @deprecated(reason: "Use the `amount` field instead")
+    shipping: Money @deprecated(reason: "Use the `amount` field instead")
+    adjustment: Money @deprecated(reason: "Use the `amount` field instead")
     """
-    If an amount is specified, this value will be used to create a Refund rather than calculating the
-    amount automatically. This was added in v2.2 and will be the preferred way to specify the refund
-    amount in the future. The `lines`, `shipping` and `adjustment` fields will likely be removed in a future
-    version.
+    The amount to be refunded to this particular payment. This was introduced in v2.2.0 as the preferred way to specify the refund amount.
+    Can be as much as the total amount of the payment minus the sum of all previous refunds.
     """
     amount: Money
     paymentId: ID!
@@ -410,13 +412,13 @@ type ManualPaymentStateError implements ErrorResult {
 
 union TransitionOrderToStateResult = Order | OrderStateTransitionError
 union SettlePaymentResult =
-      Payment
+    | Payment
     | SettlePaymentError
     | PaymentStateTransitionError
     | OrderStateTransitionError
 union CancelPaymentResult = Payment | CancelPaymentError | PaymentStateTransitionError
 union AddFulfillmentToOrderResult =
-      Fulfillment
+    | Fulfillment
     | EmptyOrderLineSelectionError
     | ItemsAlreadyFulfilledError
     | InsufficientStockOnHandError
@@ -424,14 +426,14 @@ union AddFulfillmentToOrderResult =
     | FulfillmentStateTransitionError
     | CreateFulfillmentError
 union CancelOrderResult =
-      Order
+    | Order
     | EmptyOrderLineSelectionError
     | QuantityTooGreatError
     | MultipleOrderError
     | CancelActiveOrderError
     | OrderStateTransitionError
 union RefundOrderResult =
-      Refund
+    | Refund
     | QuantityTooGreatError
     | NothingToRefundError
     | OrderStateTransitionError
@@ -445,7 +447,7 @@ union SettleRefundResult = Refund | RefundStateTransitionError
 union TransitionFulfillmentToStateResult = Fulfillment | FulfillmentStateTransitionError
 union TransitionPaymentToStateResult = Payment | PaymentStateTransitionError
 union ModifyOrderResult =
-      Order
+    | Order
     | NoChangesSpecifiedError
     | OrderModificationStateError
     | PaymentMethodMissingError
