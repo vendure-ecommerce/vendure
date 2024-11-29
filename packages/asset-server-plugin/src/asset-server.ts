@@ -7,6 +7,7 @@ import path from 'path';
 
 import { getValidFormat } from './common';
 import { ImageTransformParameters, ImageTransformStrategy } from './config/image-transform-strategy';
+import { S3AssetStorageStrategy } from './config/s3-asset-storage-strategy';
 import { ASSET_SERVER_PLUGIN_INIT_OPTIONS, DEFAULT_CACHE_HEADER, loggerCtx } from './constants';
 import { transformImage } from './transform-image';
 import { AssetServerOptions, ImageTransformMode, ImageTransformPreset } from './types';
@@ -257,7 +258,14 @@ export class AssetServer {
             Logger.error((e.message as string) + ': ' + filePath, loggerCtx);
             return '';
         }
-        return path.normalize(decodedPath).replace(/(\.\.[\/\\])+/, '');
+        if (!(this.assetStorageStrategy instanceof S3AssetStorageStrategy)) {
+            // For S3 storage, we don't need to sanitize the path because
+            // directory traversal attacks are not possible, and modifying the
+            // path in this way can s3 files to be not found.
+            return path.normalize(decodedPath).replace(/(\.\.[\/\\])+/, '');
+        } else {
+            return decodedPath;
+        }
     }
 
     private md5(input: string): string {
