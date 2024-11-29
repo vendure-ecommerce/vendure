@@ -473,6 +473,13 @@ export interface AuthOptions {
      * @default DefaultPasswordValidationStrategy
      */
     passwordValidationStrategy?: PasswordValidationStrategy;
+    /**
+     * @description
+     * Disable the last login update (prevent a save on user entity) when a user logs in.
+     * This can be useful when there is a lot of authentication in a short period of time and get lock on the user table.
+     * @since 3.0.7
+     */
+    disableLastLoginUpdate?: boolean
 }
 
 /**
