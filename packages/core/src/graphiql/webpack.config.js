@@ -10,7 +10,7 @@ const webpack = require('webpack');
 module.exports = {
     entry: path.resolve(__dirname, 'index.mjs'),
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, 'output'),
         clean: true,
         publicPath: '',
     },
