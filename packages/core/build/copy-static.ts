@@ -6,6 +6,7 @@ import path from 'path';
 
 const SCHEMAS_GLOB = '**/*.graphql';
 const MESSAGES_GLOB = 'i18n/messages/**/*';
+const GRAPHIQL_GLOB = 'graphiql/output/**/*';
 const DEST_DIR = path.join(__dirname, '../dist');
 
 function copyFiles(sourceGlob: string, destinationDir: string) {
@@ -42,17 +43,29 @@ function copyI18nMessages() {
     }
 }
 
+function copyBundlededGraphiQLPage() {
+    try {
+        copyFiles(GRAPHIQL_GLOB, DEST_DIR);
+        console.log('Bundled GraphiQL page copied successfully!');
+    } catch (error) {
+        console.error('Error copying GraphiQL page:', error);
+    }
+}
+
 function build() {
     copySchemas();
     copyI18nMessages();
+    copyBundlededGraphiQLPage();
 }
 
 function watch() {
     const watcher1 = chokidar.watch(SCHEMAS_GLOB, { cwd: path.join(__dirname, '../src') });
     const watcher2 = chokidar.watch(MESSAGES_GLOB, { cwd: path.join(__dirname, '../src') });
+    const watcher3 = chokidar.watch(GRAPHIQL_GLOB, { cwd: path.join(__dirname, '../src') });
 
     watcher1.on('change', copySchemas);
     watcher2.on('change', copyI18nMessages);
+    watcher3.on('change', copyBundlededGraphiQLPage);
 
     console.log('Watching for changes...');
 }
