@@ -42,7 +42,7 @@ export interface GraphQLApiOptions {
     typePaths: string[];
     apiPath: string;
     debug: boolean;
-    playground: boolean | any;
+    playground: boolean;
     // eslint-disable-next-line @typescript-eslint/ban-types
     resolverModule: Function;
     validationRules: Array<(context: ValidationContext) => any>;
@@ -141,7 +141,8 @@ async function createGraphQLOptions(
         // manually configure the graphql-upload package. See https://github.com/vendure-ecommerce/vendure/issues/396
         uploads: false,
         // similarly, the built-in playground is outdated and buggy, so we
-        // replace it with `GraphiQLPlugin` in the `plugins` array
+        // replace it with `GraphiQLPlugin` in the `plugins` array if
+        // `options.playground` is true
         // https://github.com/vendure-ecommerce/vendure/issues/3244
         playground: false,
         csrfPrevention: false,

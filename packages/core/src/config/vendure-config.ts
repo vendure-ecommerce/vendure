@@ -1,5 +1,4 @@
 import { ApolloServerPlugin } from '@apollo/server';
-import { RenderPageOptions } from '@apollographql/graphql-playground-html';
 import { DynamicModule, Type } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
@@ -96,24 +95,23 @@ export interface ApiOptions {
     shopApiPath?: string;
     /**
      * @description
-     * The playground config to the admin GraphQL API
-     * [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
+     * Whether to display the admin API's GraphiQL interface
+     * [GraphiQL](https://github.com/graphql/graphiql/).
      *
      * @default false
      */
-    adminApiPlayground?: boolean | RenderPageOptions;
+    adminApiPlayground?: boolean;
     /**
      * @description
-     * The playground config to the shop GraphQL API
-     * [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
+     * Whether to display the shop API's GraphiQL interface.
+     * [GraphiQL](https://github.com/graphql/graphiql/).
      *
      * @default false
      */
-    shopApiPlayground?: boolean | RenderPageOptions;
+    shopApiPlayground?: boolean;
     /**
      * @description
      * The debug config to the admin GraphQL API
-     * [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
      *
      * @default false
      */
@@ -121,7 +119,6 @@ export interface ApiOptions {
     /**
      * @description
      * The debug config to the shop GraphQL API
-     * [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
      *
      * @default false
      */
