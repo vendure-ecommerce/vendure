@@ -195,7 +195,7 @@ All that's left is to run your tests to find out whether your code behaves as ex
 
 :::caution
 **Note:** When using **Vitest** with multiple test suites (multiple `.e2e-spec.ts` files), it will attempt to run them in parallel. If all the test servers are running
-on the same port (the default in the `testConfig` is `3050`), then this will cause a port conflict. To avoid this, you can manually set a unique port for each test suite. Be aware that `mergeConfig` is used here:
+on the same port (the default in the `testConfig` is `3050`), then this will cause a port conflict. To avoid this, you can use the `VITEST_WORKER_ID` environment variable to set a unique port for each test suite. Be aware that `mergeConfig` is used here:
 
 ```ts title="src/plugins/my-plugin/e2e/my-plugin.e2e-spec.ts"
 import { createTestEnvironment, testConfig } from '@vendure/testing';
@@ -208,7 +208,7 @@ describe('my plugin', () => {
     const {server, adminClient, shopClient} = createTestEnvironment(mergeConfig(testConfig, {
         // highlight-start
         apiOptions: {
-            port: 3051,
+            port: 3050 + Number(process.env.VITEST_WORKER_ID),
         },
         // highlight-end
         plugins: [MyPlugin],
