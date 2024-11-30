@@ -2,6 +2,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { DynamicModule } from '@nestjs/common';
 import { GraphQLModule, GraphQLTypesLoader } from '@nestjs/graphql';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { readFileSync } from 'fs';
 import { buildSchema, extendSchema, GraphQLSchema, printSchema, ValidationContext } from 'graphql';
 import path from 'path';
 
@@ -115,6 +116,20 @@ async function createGraphQLOptions(
         apolloServerPlugins.unshift(new IdCodecPlugin(idCodecService));
     }
 
+    const GraphiQLPlugin = {
+        async serverWillStart() {
+            return {
+                async renderLandingPage() {
+                    return {
+                        html: readFileSync(path.resolve(__dirname, '../../graphiql/output/index.html'), {
+                            encoding: 'utf-8',
+                        }).replace('__API_URL__', '/' + options.apiPath),
+                    };
+                },
+            };
+        },
+    };
+
     return {
         path: '/' + options.apiPath,
         typeDefs: printSchema(builtSchema),
@@ -125,13 +140,16 @@ async function createGraphQLOptions(
         // We no longer rely on the upload facility bundled with Apollo Server, and instead
         // manually configure the graphql-upload package. See https://github.com/vendure-ecommerce/vendure/issues/396
         uploads: false,
-        playground: options.playground,
+        // similarly, the built-in playground is outdated and buggy, so we
+        // replace it with `GraphiQLPlugin` in the `plugins` array
+        // https://github.com/vendure-ecommerce/vendure/issues/3244
+        playground: false,
         csrfPrevention: false,
         debug: options.debug || false,
         context: (req: any) => req,
         // This is handled by the Express cors plugin
         cors: false,
-        plugins: apolloServerPlugins,
+        plugins: apolloServerPlugins.concat(options.playground ? [GraphiQLPlugin] : []),
         validationRules: options.validationRules,
         introspection: configService.apiOptions.introspection ?? true,
     } as ApolloDriverConfig;
