@@ -19,7 +19,6 @@ docs/static/intro.css*
 docs/public
 docs/data/build.json
 yarn-error.log
-e2e-common/ports.json
 
 # Sensitive or high-churn files:
 .idea/**/dataSources/

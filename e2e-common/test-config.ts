@@ -6,10 +6,8 @@ import {
     SqljsInitializer,
     testConfig as defaultTestConfig,
 } from '@vendure/testing';
-import fs from 'fs-extra';
 import path from 'path';
 import { DataSourceOptions } from 'typeorm';
-import { fileURLToPath } from 'url';
 
 import { getPackageDir } from './get-package-dir';
 
@@ -36,25 +34,16 @@ registerInitializer('mysql', new MysqlInitializer());
 registerInitializer('mariadb', new MysqlInitializer());
 
 export const testConfig = () => {
-    // @ts-ignore
-    const portsFile = fileURLToPath(new URL('ports.json', import.meta.url));
-    fs.ensureFileSync(portsFile);
-    let usedPorts: number[];
-    try {
-        usedPorts = fs.readJSONSync(portsFile) ?? [3010];
-    } catch (e: any) {
-        usedPorts = [3010];
+    const testWorkerId = Number(process.env.VITEST_WORKER_ID);
+    if (!testWorkerId || isNaN(testWorkerId)) {
+        console.warn(
+            `VITEST_WORKER_ID has value ${testWorkerId} in the environment; ` +
+                "port numbers can't be reliably allocated to test suites",
+        );
     }
-    const nextPort = Math.max(...usedPorts) + 1;
-    usedPorts.push(nextPort);
-    if (100 < usedPorts.length) {
-        // reset the used ports after it gets 100 entries long
-        usedPorts = [3010];
-    }
-    fs.writeJSONSync(portsFile, usedPorts);
     return mergeConfig(defaultTestConfig, {
         apiOptions: {
-            port: nextPort,
+            port: 3010 + testWorkerId,
         },
         importExportOptions: {
             importAssetsDir: path.join(packageDir, 'fixtures/assets'),
