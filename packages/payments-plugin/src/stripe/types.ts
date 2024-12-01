@@ -1,5 +1,5 @@
-import '@vendure/core/dist/entity/custom-entity-fields';
 import type { Injector, Order, RequestContext } from '@vendure/core';
+import '@vendure/core/dist/entity/custom-entity-fields';
 import type { Request } from 'express';
 import type Stripe from 'stripe';
 
@@ -151,6 +151,12 @@ export interface StripePluginOptions {
         ctx: RequestContext,
         order: Order,
     ) => AdditionalCustomerCreateParams | Promise<AdditionalCustomerCreateParams>;
+    /**
+     * @description
+     * If your Stripe account also generates payment intents which are independent of Vendure orders, you can set this
+     * to `true` to skip processing those payment intents.
+     */
+    skipPaymentIntentsWithoutExpectedMetadata?: boolean;
 }
 
 export interface RequestWithRawBody extends Request {
