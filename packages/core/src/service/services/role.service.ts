@@ -438,8 +438,6 @@ export class RoleService {
             channels,
         });
 
-        // TODO need to create channel-role rows here if the strategy demands it
-
         return this.connection.getRepository(ctx, Role).save(role);
     }
 
