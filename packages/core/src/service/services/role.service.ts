@@ -275,8 +275,6 @@ export class RoleService {
             role.channels = targetChannels;
         }
 
-        // TODO need to update the channel-role rows here if the strategy demands it
-
         await this.connection.getRepository(ctx, Role).save(role, { reload: false });
         const updatedRole = await assertFound(this.findOne(ctx, role.id));
         await this.eventBus.publish(new RoleEvent(ctx, updatedRole, 'updated', input));
