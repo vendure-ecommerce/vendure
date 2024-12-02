@@ -16,20 +16,16 @@ import {
 import Bull, { ConnectionOptions, JobType, Processor, Queue, Worker, WorkerOptions } from 'bullmq';
 import { EventEmitter } from 'events';
 import { Cluster, Redis, RedisOptions } from 'ioredis';
-import { firstValueFrom, Subject, Subscription, lastValueFrom } from 'rxjs';
-import { map, tap, filter, takeUntil, debounceTime } from 'rxjs/operators';
+import { firstValueFrom, Subject, Subscription } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
 
 import { ALL_JOB_TYPES, BULLMQ_PLUGIN_OPTIONS, loggerCtx } from './constants';
+import { getGlobalId, MAX_QUEUE_ID, parseGlobalId } from './global-id';
 import { RedisHealthIndicator } from './redis-health-indicator';
 import { BullMQPluginOptions } from './types';
 
 const QUEUE_NAME_PREFIX = 'vendure-queue-';
 const DEFAULT_CONCURRENCY = 3;
-
-const QUEUE_ID_BITS = 12; // 12 bits for the queue ID (supports 4096 queues)
-const JOB_ID_BITS = 41; // 41 bits for the job ID (supports ~2 trillion jobs per queue)
-// eslint-disable-next-line no-bitwise
-const MAX_QUEUE_ID = (1 << QUEUE_ID_BITS) - 1; // Max queue ID (65535)
 
 export class GracefulShutdownTimeoutError extends Error {
     constructor(message: string) {
@@ -290,19 +286,6 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         }
     }
 
-    getGlobalId(queueName: string, jobId: number) {
-        const queueID = this.queueIds.get(queueName);
-        if (queueID == null) {
-            throw new Error(`Queue "${queueName}" not found`);
-        }
-        // eslint-disable-next-line no-bitwise
-        if (jobId >= 1 << JOB_ID_BITS) {
-            throw new Error('Job ID exceeds maximum allowed value');
-        }
-        // eslint-disable-next-line no-bitwise
-        return (queueID << JOB_ID_BITS) | jobId;
-    }
-
     async findMany(options?: JobListOptions): Promise<PaginatedList<Job>> {
         const skip = options?.skip ?? 0;
         const take = options?.take ?? 10;
@@ -346,22 +329,6 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             if (queueNameIsEqualFilter) {
                 const bullQueue = await this.getOrCreateBullQueue(queueNameIsEqualFilter);
                 items = (await bullQueue?.getJobs(jobTypes, skip, take)) ?? [];
-
-                // items = (
-                //     await Promise.all(
-                //         items
-                //             .filter(job => notNullOrUndefined(job.id))
-                //             .map(job => {
-                //                 return this.findOneBullJob(
-                //                     this.buildUniqueJobId(
-                //                         this.getBullQueueName(queueNameIsEqualFilter),
-                //                         Number(job.id),
-                //                     ),
-                //                 );
-                //             }),
-                //     )
-                // ).filter(notNullOrUndefined);
-
                 const jobCounts = (await bullQueue?.getJobCounts(...jobTypes)) ?? 0;
                 totalItems = Object.values(jobCounts).reduce((sum, num) => sum + num, 0);
             }
@@ -398,10 +365,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     }
 
     private async getBullJobFromGlobalId(globalId: number): Promise<Bull.Job | undefined> {
-        // eslint-disable-next-line no-bitwise
-        const queueId = (globalId >> JOB_ID_BITS) & MAX_QUEUE_ID;
-        // eslint-disable-next-line no-bitwise
-        const jobId = globalId & ((1 << JOB_ID_BITS) - 1);
+        const { queueId, jobId } = parseGlobalId(globalId);
         const queueName = Array.from(this.queueIds.entries()).find(([_, index]) => index === queueId)?.[0];
 
         if (!queueName) {
@@ -526,7 +490,6 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
                 Logger.info(`Closing worker`, loggerCtx);
                 const gracefulShutdownTimeout = this.options.gracefulShutdownTimeout ?? 1000 * 60 * 10;
                 const startTime = Date.now();
-                let timer: NodeJS.Timeout;
                 const checkActive = async (resolve: (value: boolean) => void) => {
                     let activeCount = 0;
                     const activeJobs: Bull.Job[] = [];
@@ -542,12 +505,16 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
                         Logger.info(
                             `Waiting on ${activeCount} active ${
                                 activeCount > 1 ? 'jobs' : 'job'
-                            } (${activeJobs.map(j => this.getGlobalId(j.queueName, Number(j.id))).join(', ')})...`,
+                            } (${activeJobs
+                                .map(j => {
+                                    const queueId = this.queueIds.get(j.queueName);
+                                    return queueId ? getGlobalId(queueId, Number(j.id)) : 'unknown queue';
+                                })
+                                .join(', ')})...`,
                             loggerCtx,
                         );
                         if (Date.now() - startTime > gracefulShutdownTimeout) {
                             // If we've waited too long, just close the worker
-                            // timer = setTimeout(checkActive, 2000);
                             Logger.warn(
                                 `The graceful shutdown timeout of ${gracefulShutdownTimeout}ms has been exceeded. ` +
                                     `Setting ${activeCount} jobs as failed...`,
@@ -557,18 +524,17 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
                             Logger.warn('All active jobs set as failed', loggerCtx);
                             resolve(false);
                         } else {
-                            timer = setTimeout(() => checkActive(resolve), 2000);
+                            setTimeout(() => checkActive(resolve), 2000);
                         }
                     } else {
                         resolve(true);
                     }
                 };
-                const gracefullyStopped = await new Promise(resolve => checkActive(resolve));
+                await new Promise(resolve => checkActive(resolve));
 
                 await this.closeAllWorkers();
                 Logger.info(`Worker closed`, loggerCtx);
                 await this.closeAllQueues();
-                // clearTimeout(timer);
                 Logger.info(`Queue closed`, loggerCtx);
                 this.cancellationSub.off('message', this.subscribeToCancellationEvents);
             } catch (e: any) {
@@ -599,9 +565,13 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
 
     private async createVendureJob(bullJob: Bull.Job): Promise<Job> {
         const jobJson = bullJob.toJSON();
+        const queueId = this.queueIds.get(this.getBullQueueName(bullJob.queueName));
+        if (queueId == null) {
+            throw new InternalServerError(`Queue ID not found for queue ${bullJob.queueName}`);
+        }
         return new Job({
             queueName: bullJob.name,
-            id: this.getGlobalId(bullJob.queueName, Number(bullJob.id)),
+            id: getGlobalId(queueId, Number(bullJob.id)),
             state: await this.getState(bullJob),
             data: bullJob.data,
             attempts: bullJob.attemptsMade,

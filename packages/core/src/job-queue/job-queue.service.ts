@@ -199,6 +199,11 @@ export class JobQueueService implements OnModuleDestroy {
     }
 
     private shouldStartQueue(queueName: string): boolean {
+        if (this.configService.jobQueueOptions.excludedQueues.length > 0) {
+            if (this.configService.jobQueueOptions.excludedQueues.includes(queueName)) {
+                return false;
+            }
+        }
         if (this.configService.jobQueueOptions.activeQueues.length > 0) {
             if (!this.configService.jobQueueOptions.activeQueues.includes(queueName)) {
                 return false;

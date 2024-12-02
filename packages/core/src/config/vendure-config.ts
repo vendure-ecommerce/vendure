@@ -934,12 +934,26 @@ export interface JobQueueOptions {
      * @description
      * Defines the queues that will run in this process.
      * This can be used to configure only certain queues to run in this process.
-     * If its empty all queues will be run. Note: this option is primarily intended
+     *
+     * If its empty all queues will be run, except for any queues
+     * listed in `excludedQueues`.
+     *
+     * Note: this option is primarily intended
      * to apply to the Worker process. Jobs will _always_ get published to the queue
      * regardless of this setting, but this setting determines whether they get
      * _processed_ or not.
      */
     activeQueues?: string[];
+    /**
+     * @description
+     * Defines the queues that will be excluded from running in this process.
+     * Any queue in this list will not be processed by the worker process.
+     *
+     * If a queue is in both `activeQueues` and `excludeQueues`, it will be excluded.
+     *
+     * @since 3.1.0
+     */
+    excludedQueues?: string[];
     /**
      * @description
      * Prefixes all job queue names with the passed string. This is useful with multiple deployments
