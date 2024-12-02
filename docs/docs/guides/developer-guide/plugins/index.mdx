@@ -528,7 +528,7 @@ export class WishlistShopResolver {
 
     @Query()
     @Allow(Permission.Owner)
-    activeCustomerWishlist(@Ctx() ctx: RequestContext) {
+    async activeCustomerWishlist(@Ctx() ctx: RequestContext) {
         return this.wishlistService.getWishlistItems(ctx);
     }
 
@@ -760,6 +760,7 @@ mutation RemoveFromWishlist {
     removeFromWishlist(itemId: "4") {
         id
         productVariant {
+            id
             name
         }
     }
