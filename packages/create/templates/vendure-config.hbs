@@ -22,13 +22,9 @@ export const config: VendureConfig = {
         // but are best turned off for production for security
         // reasons.
         ...(IS_DEV ? {
-            adminApiPlayground: {
-                settings: { 'request.credentials': 'include' },
-            },
+            adminApiPlayground: true,
             adminApiDebug: true,
-            shopApiPlayground: {
-                settings: { 'request.credentials': 'include' },
-            },
+            shopApiPlayground: true,
             shopApiDebug: true,
         } : {}),
     },

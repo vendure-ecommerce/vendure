@@ -11,7 +11,7 @@ import { HardenPluginOptions } from './types';
  *
  * - It analyzes the complexity on incoming graphql queries and rejects queries that are too complex and
  *   could be used to overload the resources of the server.
- * - It disables dev-mode API features such as introspection and the GraphQL playground app.
+ * - It disables dev-mode API features such as introspection and the GraphiQL playground app.
  * - It removes field name suggestions to prevent trial-and-error schema sniffing.
  *
  * It is a recommended plugin for all production configurations.
