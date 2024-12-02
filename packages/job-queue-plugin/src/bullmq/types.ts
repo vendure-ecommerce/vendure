@@ -77,6 +77,16 @@ export interface BullMQPluginOptions {
      * @default 'exponential', 1000
      */
     setBackoff?: (queueName: string, job: Job) => BackoffOptions | undefined;
+    /**
+     * @description
+     * The maximum time in ms to wait for the graceful shutdown of the job queue
+     * when a shutdown event is received and there are jobs which are still
+     * running.
+     *
+     * @since 3.1.0
+     * @default 1000 * 60 * 10
+     */
+    gracefulShutdownTimeout?: number;
 }
 
 /**

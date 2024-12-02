@@ -1,4 +1,4 @@
-import { Controller, Get, OnModuleInit } from '@nestjs/common';
+import { Controller, Get, OnModuleInit, Query } from '@nestjs/common';
 import { JobQueue, JobQueueService, PluginCommonModule, VendurePlugin } from '@vendure/core';
 import { Subject } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -30,8 +30,13 @@ class TestController implements OnModuleInit {
     }
 
     @Get()
-    async runJob() {
-        await this.queue.add({});
+    async runJob(@Query('retries') retries?: string) {
+        await this.queue.add(
+            {},
+            {
+                retries: retries ? parseInt(retries, 10) : undefined,
+            },
+        );
         return true;
     }
 
