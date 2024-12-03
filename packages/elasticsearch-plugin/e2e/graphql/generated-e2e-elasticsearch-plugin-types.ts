@@ -2165,6 +2165,19 @@ export type JobQueue = {
     running: Scalars['Boolean']['output'];
 };
 
+export type JobQueueInfo = {
+    /**
+     * Whether the JobQueue is inspectable, i.e. it is possible to fetch
+     * information about jobs and their state.
+     */
+    isInspectable: Scalars['Boolean']['output'];
+    /**
+     * Whether the JobQueue supports listing all queues at once. If this is false,
+     * then the `jobs` query must have a `queueName` filter set.
+     */
+    supportsListAllQueues: Scalars['Boolean']['output'];
+};
+
 export type JobSortParameter = {
     attempts?: InputMaybe<SortOrder>;
     createdAt?: InputMaybe<SortOrder>;
@@ -5497,6 +5510,7 @@ export type ServerConfig = {
      */
     customFieldConfig: CustomFields;
     entityCustomFields: Array<EntityCustomFields>;
+    jobQueue: JobQueueInfo;
     moneyStrategyPrecision: Scalars['Int']['output'];
     orderProcess: Array<OrderProcessState>;
     permissions: Array<PermissionDefinition>;

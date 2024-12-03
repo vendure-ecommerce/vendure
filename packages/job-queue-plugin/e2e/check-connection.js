@@ -2,8 +2,8 @@ const { RedisConnection } = require('bullmq');
 const { redisHost, redisPort } = require('./constants');
 
 const connection = new RedisConnection({
-    port: redisPort,
-    host: redisHost,
+    host: '127.0.0.1',
+    port: process.env.CI ? +(process.env.E2E_REDIS_PORT || 6379) : 6379,
 });
 
 let timer;

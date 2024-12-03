@@ -755,6 +755,9 @@ export const GET_SERVER_CONFIG = gql`
                         ...CustomFields
                     }
                 }
+                jobQueue {
+                    supportsListAllQueues
+                }
             }
         }
     }
