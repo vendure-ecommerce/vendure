@@ -1,3 +1,10 @@
+## <small>3.0.8 (2024-12-03)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix adding country to zone dialog ([22eaf6c](https://github.com/vendure-ecommerce/vendure/commit/22eaf6c)), closes [#3212](https://github.com/vendure-ecommerce/vendure/issues/3212)
+
 ## <small>3.0.7 (2024-12-02)</small>
 
 
