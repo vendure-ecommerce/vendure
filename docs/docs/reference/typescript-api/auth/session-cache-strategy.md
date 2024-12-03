@@ -18,18 +18,18 @@ object for permissions data, it can become a bottleneck to go to the database an
 SQL query each time. Therefore, we cache the session data only perform the SQL query once and upon
 invalidation of the cache.
 
-The Vendure default from v3.1+ is to use a the <a href='/reference/typescript-api/auth/default-session-cache-strategy#defaultsessioncachestrategy'>DefaultSessionCacheStrategy</a>, which delegates
+The Vendure default from v3.1+ is to use the <a href='/reference/typescript-api/auth/default-session-cache-strategy#defaultsessioncachestrategy'>DefaultSessionCacheStrategy</a>, which delegates
 to the configured <a href='/reference/typescript-api/cache/cache-strategy#cachestrategy'>CacheStrategy</a> to store the session data. This should be suitable
 for most use-cases.
 
 :::note
 
-If you are using v3.1 or later, you should not normally need to implement a custom `SessionCacheStrategy`,
+If you are using v3.1 or later, you should normally not need to implement a custom `SessionCacheStrategy`,
 since this is now handled by the <a href='/reference/typescript-api/auth/default-session-cache-strategy#defaultsessioncachestrategy'>DefaultSessionCacheStrategy</a>.
 
 :::
 
-Prior to v3.1, the default was to use the <a href='/reference/typescript-api/auth/in-memory-session-cache-strategy#inmemorysessioncachestrategy'>InMemorySessionCacheStrategy</a>, which is fast but suitable for
+Prior to v3.1, the default was to use the <a href='/reference/typescript-api/auth/in-memory-session-cache-strategy#inmemorysessioncachestrategy'>InMemorySessionCacheStrategy</a>, which is fast but only suitable for
 single-instance deployments.
 
 :::info
