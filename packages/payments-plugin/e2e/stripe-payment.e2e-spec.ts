@@ -17,7 +17,7 @@ import { Stripe } from 'stripe';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { StripePlugin } from '../src/stripe';
 import { stripePaymentMethodHandler } from '../src/stripe/stripe.handler';
 
@@ -428,6 +428,50 @@ describe('Stripe payments', () => {
         // I would expect to the status to be 200, but at the moment either the
         // `orderService.transitionToState()` or the `orderService.addPaymentToOrder()`
         // throws an error of 'error.entity-with-id-not-found'
+        expect(result.status).toEqual(200);
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/3249
+    it('Should skip events without expected metadata, when the plugin option is set', async () => {
+        StripePlugin.options.skipPaymentIntentsWithoutExpectedMetadata = true;
+
+        const MOCKED_WEBHOOK_PAYLOAD = {
+            id: 'evt_0',
+            object: 'event',
+            api_version: '2022-11-15',
+            data: {
+                object: {
+                    id: 'pi_0',
+                    currency: 'usd',
+                    metadata: {
+                        dummy: 'not a vendure payload',
+                    },
+                    amount_received: 10000,
+                    status: 'succeeded',
+                },
+            },
+            livemode: false,
+            pending_webhooks: 1,
+            request: {
+                id: 'req_0',
+                idempotency_key: '00000000-0000-0000-0000-000000000000',
+            },
+            type: 'payment_intent.succeeded',
+        };
+
+        const payloadString = JSON.stringify(MOCKED_WEBHOOK_PAYLOAD, null, 2);
+        const stripeWebhooks = new Stripe('test-api-secret', { apiVersion: '2023-08-16' }).webhooks;
+        const header = stripeWebhooks.generateTestHeaderString({
+            payload: payloadString,
+            secret: 'test-signing-secret',
+        });
+
+        const result = await fetch(`http://localhost:${serverPort}/payments/stripe`, {
+            method: 'post',
+            body: payloadString,
+            headers: { 'Content-Type': 'application/json', 'Stripe-Signature': header },
+        });
+
         expect(result.status).toEqual(200);
     });
 
