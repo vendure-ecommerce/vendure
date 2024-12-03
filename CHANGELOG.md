@@ -32,7 +32,6 @@
 
 #### Fixes
 
-* **admin-ui** Fix collection product filter dark theme (#3172) ([55f7b71](https://github.com/vendure-ecommerce/vendure/commit/55f7b71)), closes [#3172](https://github.com/vendure-ecommerce/vendure/issues/3172)
 * **admin-ui** Only update facetValueIds if changed ([8f22ef8](https://github.com/vendure-ecommerce/vendure/commit/8f22ef8))
 * **core** Fix error in FacetValueChecker on nullish input ([44aad49](https://github.com/vendure-ecommerce/vendure/commit/44aad49))
 * **core** Fix error with new session cache when seeding data ([508f797](https://github.com/vendure-ecommerce/vendure/commit/508f797))
