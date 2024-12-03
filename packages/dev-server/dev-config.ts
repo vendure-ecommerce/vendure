@@ -22,6 +22,7 @@ import path from 'path';
 import { DataSourceOptions } from 'typeorm';
 
 import { MultivendorPlugin } from './example-plugins/multivendor-plugin/multivendor.plugin';
+import { GraphqlSubscriptionsPlugin } from './test-plugins/graphql-subscriptions/graphql-subscriptions-plugin';
 
 /**
  * Config settings used during development
@@ -122,6 +123,7 @@ export const devConfig: VendureConfig = {
             //     devMode: true,
             // }),
         }),
+        GraphqlSubscriptionsPlugin,
     ],
 };
 

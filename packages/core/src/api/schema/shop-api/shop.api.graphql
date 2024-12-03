@@ -151,6 +151,10 @@ type Mutation {
     resetPassword(token: String!, password: String!): ResetPasswordResult!
 }
 
+type Subscription {
+    ping: String!
+}
+
 # Populated at run-time
 input AuthenticationInput
 
