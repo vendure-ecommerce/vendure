@@ -209,6 +209,7 @@ interface StripePluginOptions {
         ctx: RequestContext,
         order: Order,
     ) => AdditionalCustomerCreateParams | Promise<AdditionalCustomerCreateParams>;
+    skipPaymentIntentsWithoutExpectedMetadata?: boolean;
 }
 ```
 
@@ -347,6 +348,12 @@ export const config: VendureConfig = {
   ],
 };
 ```
+### skipPaymentIntentsWithoutExpectedMetadata
+
+<MemberInfo kind="property" type={`boolean`}   />
+
+If your Stripe account also generates payment intents which are independent of Vendure orders, you can set this
+to `true` to skip processing those payment intents.
 
 
 </div>
