@@ -39,7 +39,7 @@ export async function transformImage(
         options.fit = 'inside';
     }
 
-    const image = sharp(originalImage);
+    const image = sharp(originalImage).rotate();
     try {
         await applyFormat(image, imageFormat, quality);
     } catch (e: any) {
