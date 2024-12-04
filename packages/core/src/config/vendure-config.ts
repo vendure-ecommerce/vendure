@@ -17,6 +17,7 @@ import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-str
 import { AuthenticationStrategy } from './auth/authentication-strategy';
 import { PasswordHashingStrategy } from './auth/password-hashing-strategy';
 import { PasswordValidationStrategy } from './auth/password-validation-strategy';
+import { RolePermissionResolverStrategy } from './auth/role-permission-resolver-strategy';
 import { CollectionFilter } from './catalog/collection-filter';
 import { ProductVariantPriceCalculationStrategy } from './catalog/product-variant-price-calculation-strategy';
 import { ProductVariantPriceSelectionStrategy } from './catalog/product-variant-price-selection-strategy';
@@ -473,6 +474,13 @@ export interface AuthOptions {
      * @default DefaultPasswordValidationStrategy
      */
     passwordValidationStrategy?: PasswordValidationStrategy;
+    /**
+     * @todo TODO
+     * @description TODO By default, it uses the {@link DefaultRolePermissionResolverStrategy}, which TODO
+     * @since TODO
+     * @default DefaultRolePermissionResolverStrategy
+     */
+    rolePermissionResolverStrategy?: RolePermissionResolverStrategy;
 }
 
 /**
