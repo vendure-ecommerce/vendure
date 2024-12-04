@@ -68,6 +68,7 @@
       "LocaleTextCustomFieldConfig",
       "RelationCustomFieldConfig",
       "StringCustomFieldConfig",
+      "StructCustomFieldConfig",
       "TextCustomFieldConfig"
     ],
     "CustomFieldConfig": [
@@ -79,6 +80,7 @@
       "LocaleTextCustomFieldConfig",
       "RelationCustomFieldConfig",
       "StringCustomFieldConfig",
+      "StructCustomFieldConfig",
       "TextCustomFieldConfig"
     ],
     "DuplicateEntityResult": [
@@ -116,6 +118,7 @@
       "NoActiveOrderError",
       "NoChangesSpecifiedError",
       "NothingToRefundError",
+      "OrderInterceptorError",
       "OrderLimitError",
       "OrderModificationError",
       "OrderModificationStateError",
@@ -248,6 +251,7 @@
     ],
     "RemoveOrderItemsResult": [
       "Order",
+      "OrderInterceptorError",
       "OrderModificationError"
     ],
     "SearchResultPrice": [
@@ -290,6 +294,22 @@
       "Sale",
       "StockAdjustment"
     ],
+    "StructField": [
+      "BooleanStructFieldConfig",
+      "DateTimeStructFieldConfig",
+      "FloatStructFieldConfig",
+      "IntStructFieldConfig",
+      "StringStructFieldConfig",
+      "TextStructFieldConfig"
+    ],
+    "StructFieldConfig": [
+      "BooleanStructFieldConfig",
+      "DateTimeStructFieldConfig",
+      "FloatStructFieldConfig",
+      "IntStructFieldConfig",
+      "StringStructFieldConfig",
+      "TextStructFieldConfig"
+    ],
     "TransitionFulfillmentToStateResult": [
       "Fulfillment",
       "FulfillmentStateTransitionError"
@@ -318,6 +338,7 @@
       "InsufficientStockError",
       "NegativeQuantityError",
       "Order",
+      "OrderInterceptorError",
       "OrderLimitError",
       "OrderModificationError"
     ],

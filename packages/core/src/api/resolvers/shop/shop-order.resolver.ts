@@ -182,6 +182,44 @@ export class ShopOrderResolver {
         return new NoActiveOrderError();
     }
 
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.Owner)
+    async unsetOrderShippingAddress(
+        @Ctx() ctx: RequestContext,
+        @Args() args: ActiveOrderArgs,
+    ): Promise<ErrorResultUnion<ActiveOrderResult, Order>> {
+        if (ctx.authorizedAsOwnerOnly) {
+            const sessionOrder = await this.activeOrderService.getActiveOrder(
+                ctx,
+                args[ACTIVE_ORDER_INPUT_FIELD_NAME],
+            );
+            if (sessionOrder) {
+                return this.orderService.unsetShippingAddress(ctx, sessionOrder.id);
+            }
+        }
+        return new NoActiveOrderError();
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.Owner)
+    async unsetOrderBillingAddress(
+        @Ctx() ctx: RequestContext,
+        @Args() args: ActiveOrderArgs,
+    ): Promise<ErrorResultUnion<ActiveOrderResult, Order>> {
+        if (ctx.authorizedAsOwnerOnly) {
+            const sessionOrder = await this.activeOrderService.getActiveOrder(
+                ctx,
+                args[ACTIVE_ORDER_INPUT_FIELD_NAME],
+            );
+            if (sessionOrder) {
+                return this.orderService.unsetBillingAddress(ctx, sessionOrder.id);
+            }
+        }
+        return new NoActiveOrderError();
+    }
+
     @Query()
     @Allow(Permission.Owner)
     async eligibleShippingMethods(
