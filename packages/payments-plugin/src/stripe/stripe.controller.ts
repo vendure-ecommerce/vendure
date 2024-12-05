@@ -1,7 +1,7 @@
-import { Controller, Headers, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { Controller, Headers, HttpStatus, Inject, Post, Req, Res } from '@nestjs/common';
 import type { PaymentMethod, RequestContext } from '@vendure/core';
-import { ChannelService } from '@vendure/core';
 import {
+    ChannelService,
     InternalServerError,
     LanguageCode,
     Logger,
@@ -15,18 +15,21 @@ import { OrderStateTransitionError } from '@vendure/core/dist/common/error/gener
 import type { Response } from 'express';
 import type Stripe from 'stripe';
 
-import { loggerCtx } from './constants';
+import { loggerCtx, STRIPE_PLUGIN_OPTIONS } from './constants';
+import { isExpectedVendureStripeEventMetadata } from './stripe-utils';
 import { stripePaymentMethodHandler } from './stripe.handler';
 import { StripeService } from './stripe.service';
-import { RequestWithRawBody } from './types';
+import { RequestWithRawBody, StripePluginOptions } from './types';
 
 const missingHeaderErrorMessage = 'Missing stripe-signature header';
 const signatureErrorMessage = 'Error verifying Stripe webhook signature';
 const noPaymentIntentErrorMessage = 'No payment intent in the event payload';
+const ignorePaymentIntentEvent = 'Event has no Vendure metadata, skipped.';
 
 @Controller('payments')
 export class StripeController {
     constructor(
+        @Inject(STRIPE_PLUGIN_OPTIONS) private options: StripePluginOptions,
         private paymentMethodService: PaymentMethodService,
         private orderService: OrderService,
         private stripeService: StripeService,
@@ -56,7 +59,20 @@ export class StripeController {
             return;
         }
 
-        const { metadata: { channelToken, orderCode, orderId } = {} } = paymentIntent;
+        const { metadata } = paymentIntent;
+
+        if (!isExpectedVendureStripeEventMetadata(metadata)) {
+            if (this.options.skipPaymentIntentsWithoutExpectedMetadata) {
+                response.status(HttpStatus.OK).send(ignorePaymentIntentEvent);
+                return;
+            }
+            throw new Error(
+                `Missing expected payment intent metadata, unable to settle payment ${paymentIntent.id}!`,
+            );
+        }
+
+        const { channelToken, orderCode, orderId } = metadata;
+
         const outerCtx = await this.createContext(channelToken, request);
 
         await this.connection.withTransaction(outerCtx, async (ctx: RequestContext) => {

@@ -54,6 +54,11 @@ export interface VendurePluginMetadata extends ModuleMetadata {
      *
      * To effectively disable this check for a plugin, you can use an overly-permissive string such as `>0.0.0`.
      *
+     * :::note
+     * Since Vendure v3.1.0, it is possible to ignore compatibility errors for specific plugins by
+     * passing the `ignoreCompatibilityErrorsForPlugins` option to the {@link bootstrap} function.
+     * :::
+     *
      * @example
      * ```ts
      * compatibility: '^3.0.0'

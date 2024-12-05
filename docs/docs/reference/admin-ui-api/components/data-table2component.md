@@ -84,6 +84,7 @@ class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
     @Input() activeIndex = -1;
     @Output() pageChange = new EventEmitter<number>();
     @Output() itemsPerPageChange = new EventEmitter<number>();
+    @Output() visibleColumnsChange = new EventEmitter<Array<DataTable2ColumnComponent<T>>>();
     @ContentChildren(DataTable2ColumnComponent) columns: QueryList<DataTable2ColumnComponent<T>>;
     @ContentChildren(DataTableCustomFieldColumnComponent)
     customFieldColumns: QueryList<DataTableCustomFieldColumnComponent<T>>;
@@ -95,6 +96,7 @@ class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
     route = inject(ActivatedRoute);
     filterPresetService = inject(FilterPresetService);
     dataTableCustomComponentService = inject(DataTableCustomComponentService);
+    dataTableConfigService = inject(DataTableConfigService);
     protected customComponents = new Map<string, { config: DataTableComponentConfig; injector: Injector }>();
     rowTemplate: TemplateRef<any>;
     currentStart: number;
@@ -103,7 +105,7 @@ class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
     showSearchFilterRow = false;
     protected uiLanguage$: Observable<LanguageCode>;
     protected destroy$ = new Subject<void>();
-    constructor(changeDetectorRef: ChangeDetectorRef, localStorageService: LocalStorageService, dataService: DataService)
+    constructor(changeDetectorRef: ChangeDetectorRef, dataService: DataService)
     selectionManager: void
     allColumns: void
     visibleSortedColumns: void
@@ -117,7 +119,6 @@ class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
     trackByFn(index: number, item: any) => ;
     onToggleAllClick() => ;
     onRowClick(item: T, event: MouseEvent) => ;
-    getDataTableConfig() => DataTableConfig;
 }
 ```
 * Implements: <code>AfterContentInit</code>, <code>OnChanges</code>, <code>OnDestroy</code>
@@ -176,6 +177,11 @@ class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
 <MemberInfo kind="property" type={``}   />
 
 
+### visibleColumnsChange
+
+<MemberInfo kind="property" type={``}   />
+
+
 ### columns
 
 <MemberInfo kind="property" type={`QueryList&#60;DataTable2ColumnComponent&#60;T&#62;&#62;`}   />
@@ -226,6 +232,11 @@ class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
 <MemberInfo kind="property" type={``}   />
 
 
+### dataTableConfigService
+
+<MemberInfo kind="property" type={``}   />
+
+
 ### customComponents
 
 <MemberInfo kind="property" type={``}   />
@@ -268,7 +279,7 @@ class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(changeDetectorRef: ChangeDetectorRef, localStorageService: LocalStorageService, dataService: <a href='/reference/admin-ui-api/services/data-service#dataservice'>DataService</a>) => DataTable2Component`}   />
+<MemberInfo kind="method" type={`(changeDetectorRef: ChangeDetectorRef, dataService: <a href='/reference/admin-ui-api/services/data-service#dataservice'>DataService</a>) => DataTable2Component`}   />
 
 
 ### selectionManager
@@ -334,11 +345,6 @@ class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
 ### onRowClick
 
 <MemberInfo kind="method" type={`(item: T, event: MouseEvent) => `}   />
-
-
-### getDataTableConfig
-
-<MemberInfo kind="method" type={`() => DataTableConfig`}   />
 
 
 

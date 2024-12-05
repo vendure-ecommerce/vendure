@@ -98,6 +98,12 @@ jobs:
         ports:
           - 9200
         options: --health-cmd="curl --silent --fail localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=3
+      redis:
+        image: bitnami/redis:7.4.1
+        env:
+          ALLOW_EMPTY_PASSWORD: yes
+        ports:
+          - 6379
     strategy:
       fail-fast: false
       matrix:
@@ -121,5 +127,6 @@ jobs:
           E2E_MARIADB_PORT: ${{ job.services.mariadb.ports['3306'] }}
           E2E_POSTGRES_PORT: ${{ job.services.postgres.ports['5432'] }}
           E2E_ELASTIC_PORT: ${{ job.services.elastic.ports['9200'] }}
+          E2E_REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
           DB: ${{ matrix.db }}
         run: npm run e2e

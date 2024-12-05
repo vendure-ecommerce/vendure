@@ -1,13 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { assertNever } from '@vendure/common/lib/shared-utils';
-import {
-    ConfigService,
-    Logger,
-    Order,
-    RequestContext,
-    TransactionalConnection,
-    TtlCache,
-} from '@vendure/core';
+import { CacheService, Logger, Order, RequestContext, TransactionalConnection } from '@vendure/core';
+import { createHash } from 'crypto';
 import {
     Duration,
     endOfDay,
@@ -35,9 +29,12 @@ export type MetricData = {
 
 @Injectable()
 export class MetricsService {
-    private cache = new TtlCache<string, MetricSummary[]>({ ttl: 1000 * 60 * 60 * 24 });
     metricCalculations: MetricCalculation[];
-    constructor(private connection: TransactionalConnection, private configService: ConfigService) {
+
+    constructor(
+        private connection: TransactionalConnection,
+        private cacheService: CacheService,
+    ) {
         this.metricCalculations = [
             new AverageOrderValueMetric(),
             new OrderCountMetric(),
@@ -52,13 +49,18 @@ export class MetricsService {
         // Set 23:59:59.999 as endDate
         const endDate = endOfDay(new Date());
         // Check if we have cached result
-        const cacheKey = JSON.stringify({
-            endDate,
-            types: types.sort(),
-            interval,
-            channel: ctx.channel.token,
-        });
-        const cachedMetricList = this.cache.get(cacheKey);
+        const hash = createHash('sha1')
+            .update(
+                JSON.stringify({
+                    endDate,
+                    types: types.sort(),
+                    interval,
+                    channel: ctx.channel.token,
+                }),
+            )
+            .digest('base64');
+        const cacheKey = `MetricsService:${hash}`;
+        const cachedMetricList = await this.cacheService.get<MetricSummary[]>(cacheKey);
         if (cachedMetricList && refresh !== true) {
             Logger.verbose(`Returning cached metrics for channel ${ctx.channel.token}`, loggerCtx);
             return cachedMetricList;
@@ -90,7 +92,7 @@ export class MetricsService {
                 entries,
             });
         }
-        this.cache.set(cacheKey, metrics);
+        await this.cacheService.set(cacheKey, metrics, { ttl: 1000 * 60 * 60 * 24 });
         return metrics;
     }
 
@@ -154,7 +156,7 @@ export class MetricsService {
         const ticks = [];
         for (let i = 1; i <= nrOfEntries; i++) {
             if (startTick + i >= maxTick) {
-                // make sure we dont go over month 12 or week 52
+                // make sure we don't go over month 12 or week 52
                 ticks.push(startTick + i - maxTick);
             } else {
                 ticks.push(startTick + i);

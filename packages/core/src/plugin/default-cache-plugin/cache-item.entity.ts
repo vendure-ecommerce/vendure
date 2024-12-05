@@ -9,6 +9,9 @@ export class CacheItem extends VendureEntity {
         super(input);
     }
 
+    @Column({ precision: 3 })
+    insertedAt: Date;
+
     @Index('cache_item_key')
     @Column({ unique: true })
     key: string;

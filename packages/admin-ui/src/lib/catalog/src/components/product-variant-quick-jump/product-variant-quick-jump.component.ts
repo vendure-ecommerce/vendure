@@ -31,14 +31,17 @@ export class ProductVariantQuickJumpComponent implements OnInit {
     @Input() productId: string;
     selectedVariantId: string | undefined;
     variants$: Observable<NonNullable<GetProductVariantsQuickJumpQuery['product']>['variants']>;
-    constructor(private dataService: DataService, private router: Router) {}
+    constructor(
+        private dataService: DataService,
+        private router: Router,
+    ) {}
 
     ngOnInit() {
         this.variants$ = this.dataService
             .query(GetProductVariantsQuickJumpDocument, {
                 id: this.productId,
             })
-            .mapSingle(data => data.product?.variants ?? []);
+            .mapStream(data => data.product?.variants ?? []);
     }
 
     searchFn = (

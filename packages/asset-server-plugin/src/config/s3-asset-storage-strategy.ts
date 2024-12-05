@@ -5,9 +5,9 @@ import { Request } from 'express';
 import * as path from 'node:path';
 import { Readable } from 'node:stream';
 
-import { getAssetUrlPrefixFn } from './common';
-import { loggerCtx } from './constants';
-import { AssetServerOptions } from './types';
+import { getAssetUrlPrefixFn } from '../common';
+import { loggerCtx } from '../constants';
+import { AssetServerOptions } from '../types';
 
 /**
  * @description

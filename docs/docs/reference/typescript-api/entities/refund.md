@@ -11,12 +11,12 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Refund
 
-<GenerationInfo sourceFile="packages/core/src/entity/refund/refund.entity.ts" sourceLine="17" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/refund/refund.entity.ts" sourceLine="19" packageName="@vendure/core" />
 
 A refund the belongs to an order
 
 ```ts title="Signature"
-class Refund extends VendureEntity {
+class Refund extends VendureEntity implements HasCustomFields {
     constructor(input?: DeepPartial<Refund>)
     @Money() items: number;
     @Money() shipping: number;
@@ -36,9 +36,14 @@ class Refund extends VendureEntity {
     @EntityId()
     paymentId: ID;
     @Column('simple-json') metadata: PaymentMetadata;
+    @Column(type => CustomRefundFields)
+    customFields: CustomRefundFields;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+
+
+* Implements: <code>HasCustomFields</code>
 
 
 
@@ -107,6 +112,11 @@ class Refund extends VendureEntity {
 ### metadata
 
 <MemberInfo kind="property" type={`PaymentMetadata`}   />
+
+
+### customFields
+
+<MemberInfo kind="property" type={`CustomRefundFields`}   />
 
 
 

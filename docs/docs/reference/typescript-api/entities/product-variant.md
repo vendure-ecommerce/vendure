@@ -37,6 +37,8 @@ class ProductVariant extends VendureEntity implements Translatable, HasCustomFie
     @Index()
     @ManyToOne(type => Asset, asset => asset.featuredInVariants, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
+    @EntityId({ nullable: true })
+    featuredAssetId: ID;
     @OneToMany(type => ProductVariantAsset, productVariantAsset => productVariantAsset.productVariant, {
         onDelete: 'SET NULL',
     })
@@ -44,6 +46,8 @@ class ProductVariant extends VendureEntity implements Translatable, HasCustomFie
     @Index()
     @ManyToOne(type => TaxCategory, taxCategory => taxCategory.productVariants)
     taxCategory: TaxCategory;
+    @EntityId({ nullable: true })
+    taxCategoryId: ID;
     @OneToMany(type => ProductVariantPrice, price => price.variant, { eager: true })
     productVariantPrices: ProductVariantPrice[];
     @OneToMany(type => ProductVariantTranslation, translation => translation.base, { eager: true })
@@ -149,6 +153,11 @@ class ProductVariant extends VendureEntity implements Translatable, HasCustomFie
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>`}   />
 
 
+### featuredAssetId
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
+
+
 ### assets
 
 <MemberInfo kind="property" type={`ProductVariantAsset[]`}   />
@@ -157,6 +166,11 @@ class ProductVariant extends VendureEntity implements Translatable, HasCustomFie
 ### taxCategory
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>`}   />
+
+
+### taxCategoryId
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 ### productVariantPrices

@@ -2917,20 +2917,16 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">input <span class="graphql-code-identifier">RefundOrderInput</span> &#123;</div>
-<div class="graphql-code-line ">lines: [<a href="/reference/graphql-api/admin/input-types#orderlineinput">OrderLineInput</a>!]!</div>
+<div class="graphql-code-line ">lines: [<a href="/reference/graphql-api/admin/input-types#orderlineinput">OrderLineInput</a>!]</div>
 
-<div class="graphql-code-line ">shipping: <a href="/reference/graphql-api/admin/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">shipping: <a href="/reference/graphql-api/admin/object-types#money">Money</a></div>
 
-<div class="graphql-code-line ">adjustment: <a href="/reference/graphql-api/admin/object-types#money">Money</a>!</div>
+<div class="graphql-code-line ">adjustment: <a href="/reference/graphql-api/admin/object-types#money">Money</a></div>
 
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line comment">If an amount is specified, this value will be used to create a Refund rather than calculating the</div>
+<div class="graphql-code-line comment">The amount to be refunded to this particular payment. This was introduced in v2.2.0 as the preferred way to specify the refund amount.</div>
 
-<div class="graphql-code-line comment">amount automatically. This was added in v2.2 and will be the preferred way to specify the refund</div>
-
-<div class="graphql-code-line comment">amount in the future. The `lines`, <code>shipping</code> and <code>adjustment</code> fields will likely be removed in a future</div>
-
-<div class="graphql-code-line comment">version.</div>
+<div class="graphql-code-line comment">Can be as much as the total amount of the payment minus the sum of all previous refunds.</div>
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line ">amount: <a href="/reference/graphql-api/admin/object-types#money">Money</a></div>
 

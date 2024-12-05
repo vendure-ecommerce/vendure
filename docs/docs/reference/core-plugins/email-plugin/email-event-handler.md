@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EmailEventHandler
 
-<GenerationInfo sourceFile="packages/email-plugin/src/handler/event-handler.ts" sourceLine="135" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/handler/event-handler.ts" sourceLine="136" packageName="@vendure/email-plugin" />
 
 The EmailEventHandler defines how the EmailPlugin will respond to a given event.
 
@@ -135,6 +135,7 @@ class EmailEventHandler<T extends string = string, Event extends EventWithContex
     setSubject(defaultSubject: string | SetSubjectFn<Event>) => EmailEventHandler<T, Event>;
     setFrom(from: string) => EmailEventHandler<T, Event>;
     setOptionalAddressFields(optionalAddressFieldsFn: SetOptionalAddressFieldsFn<Event>) => ;
+    setMetadata(optionalSetMetadataFn: SetMetadataFn<Event>) => ;
     setAttachments(setAttachmentsFn: SetAttachmentsFn<Event>) => ;
     addTemplate(config: EmailTemplateConfig) => EmailEventHandler<T, Event>;
     loadData(loadDataFn: LoadDataFn<Event, R>) => EmailEventHandlerWithAsyncData<R, T, Event, EventWithAsyncData<Event, R>>;
@@ -192,6 +193,31 @@ setTemplateVars() method.
 <MemberInfo kind="method" type={`(optionalAddressFieldsFn: <a href='/reference/core-plugins/email-plugin/email-plugin-types#setoptionaladdressfieldsfn'>SetOptionalAddressFieldsFn</a>&#60;Event&#62;) => `}  since="1.1.0"  />
 
 A function which allows <a href='/reference/core-plugins/email-plugin/email-plugin-types#optionaladdressfields'>OptionalAddressFields</a> to be specified such as "cc" and "bcc".
+### setMetadata
+
+<MemberInfo kind="method" type={`(optionalSetMetadataFn: <a href='/reference/core-plugins/email-plugin/email-plugin-types#setmetadatafn'>SetMetadataFn</a>&#60;Event&#62;) => `}  since="3.1.0"  />
+
+A function which allows <a href='/reference/core-plugins/email-plugin/email-plugin-types#emailmetadata'>EmailMetadata</a> to be specified for the email. This can be used
+to store arbitrary data about the email which can be used for tracking or other purposes.
+
+It will be exposed in the <a href='/reference/core-plugins/email-plugin/email-send-event#emailsendevent'>EmailSendEvent</a> as `event.metadata`. Here's an example of usage:
+
+- An <a href='/reference/typescript-api/events/event-types#orderstatetransitionevent'>OrderStateTransitionEvent</a> occurs, and the EmailEventListener starts processing it.
+- The EmailEventHandler attaches metadata to the email:
+   ```ts
+   new EmailEventListener(EventType.ORDER_CONFIRMATION)
+     .on(OrderStateTransitionEvent)
+     .setMetadata(event => ({
+       type: EventType.ORDER_CONFIRMATION,
+       orderId: event.order.id,
+     }));
+  ```
+- Then, the EmailPlugin tries to send the email and publishes <a href='/reference/core-plugins/email-plugin/email-send-event#emailsendevent'>EmailSendEvent</a>,
+  passing ctx, emailDetails, error or success, and this metadata.
+- In another part of the server, we have an eventBus that subscribes to EmailSendEvent. We can use
+  `metadata.type` and `metadata.orderId` to identify the related order. For example, we can indicate on the
+   order that the email was successfully sent, or in case of an error, send a notification confirming
+   the order in another available way.
 ### setAttachments
 
 <MemberInfo kind="method" type={`(setAttachmentsFn: <a href='/reference/core-plugins/email-plugin/email-plugin-types#setattachmentsfn'>SetAttachmentsFn</a>&#60;Event&#62;) => `}   />

@@ -370,6 +370,26 @@ describe('Channels', () => {
         expect(product!.channels.map(c => c.id)).toEqual(['T_1']);
     });
 
+    it('Fail to delete the default channel', async () => {
+        await adminClient.asSuperAdmin();
+
+        const defaultChannelId = (
+            await adminClient.query<Codegen.GetChannelsQuery, Codegen.GetChannelsQueryVariables>(GET_CHANNELS)
+        ).channels.items.find(channel => channel.code === DEFAULT_CHANNEL_CODE)?.id;
+
+        expect(defaultChannelId).not.toBeUndefined();
+
+        const mutation = await adminClient.query<
+            Codegen.DeleteChannelMutation,
+            Codegen.DeleteChannelMutationVariables
+        >(DELETE_CHANNEL, { id: defaultChannelId! });
+
+        expect(mutation.deleteChannel).toEqual({
+            result: DeletionResult.NOT_DELETED,
+            message: 'The default Channel cannot be deleted',
+        });
+    });
+
     describe('currencyCode support', () => {
         beforeAll(async () => {
             await adminClient.asSuperAdmin();

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SharpAssetPreviewStrategy
 
-<GenerationInfo sourceFile="packages/asset-server-plugin/src/sharp-asset-preview-strategy.ts" sourceLine="95" packageName="@vendure/asset-server-plugin" />
+<GenerationInfo sourceFile="packages/asset-server-plugin/src/config/sharp-asset-preview-strategy.ts" sourceLine="95" packageName="@vendure/asset-server-plugin" />
 
 This <a href='/reference/typescript-api/assets/asset-preview-strategy#assetpreviewstrategy'>AssetPreviewStrategy</a> uses the [Sharp library](https://sharp.pixelplumbing.com/) to generate
 preview images of uploaded binary files. For non-image binaries, a generic "file" icon with the mime type
@@ -62,7 +62,7 @@ class SharpAssetPreviewStrategy implements AssetPreviewStrategy {
 
 ## SharpAssetPreviewConfig
 
-<GenerationInfo sourceFile="packages/asset-server-plugin/src/sharp-asset-preview-strategy.ts" sourceLine="17" packageName="@vendure/asset-server-plugin" />
+<GenerationInfo sourceFile="packages/asset-server-plugin/src/config/sharp-asset-preview-strategy.ts" sourceLine="17" packageName="@vendure/asset-server-plugin" />
 
 This <a href='/reference/typescript-api/assets/asset-preview-strategy#assetpreviewstrategy'>AssetPreviewStrategy</a> uses the [Sharp library](https://sharp.pixelplumbing.com/) to generate
 preview images of uploaded binary files. For non-image binaries, a generic "file" icon with the mime type

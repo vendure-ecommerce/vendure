@@ -5,6 +5,8 @@ import { ConfigService } from '../config/config.service';
 import { Logger } from '../config/index';
 import { CacheStrategy, SetCacheKeyOptions } from '../config/system/cache-strategy';
 
+import { Cache, CacheConfig } from './cache';
+
 /**
  * @description
  * The CacheService is used to cache data in order to optimize performance.
@@ -13,12 +15,24 @@ import { CacheStrategy, SetCacheKeyOptions } from '../config/system/cache-strate
  * the cache into a key-value store.
  *
  * @since 3.1.0
+ * @docsCategory cache
  */
 @Injectable()
 export class CacheService {
     protected cacheStrategy: CacheStrategy;
     constructor(private configService: ConfigService) {
         this.cacheStrategy = this.configService.systemOptions.cacheStrategy;
+    }
+
+    /**
+     * @description
+     * Creates a new {@link Cache} instance with the given configuration.
+     *
+     * The `Cache` instance provides a convenience wrapper around the `CacheService`
+     * methods.
+     */
+    createCache(config: CacheConfig): Cache {
+        return new Cache(config, this);
     }
 
     /**
@@ -69,6 +83,23 @@ export class CacheService {
             Logger.debug(`Deleted key [${key}] from CacheService`);
         } catch (e: any) {
             Logger.error(`Could not delete key [${key}] from CacheService`, undefined, e.stack);
+        }
+    }
+
+    /**
+     * @description
+     * Deletes all items from the cache which contain at least one matching tag.
+     */
+    async invalidateTags(tags: string[]): Promise<void> {
+        try {
+            await this.cacheStrategy.invalidateTags(tags);
+            Logger.debug(`Invalidated tags [${tags.join(', ')}] from CacheService`);
+        } catch (e: any) {
+            Logger.error(
+                `Could not invalidate tags [${tags.join(', ')}] from CacheService`,
+                undefined,
+                e.stack,
+            );
         }
     }
 }

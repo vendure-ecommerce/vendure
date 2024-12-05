@@ -255,7 +255,7 @@ type BlogPostInputTypes = CreateBlogPostInput | UpdateBlogPostInput | ID | ID[];
  * This event is fired whenever a BlogPost is added, updated
  * or deleted.
  */
-export class BlogPostEvent extends VendureEntityEvent<BlogPost[], BlogPostInputTypes> {
+export class BlogPostEvent extends VendureEntityEvent<BlogPost, BlogPostInputTypes> {
     constructor(
         ctx: RequestContext,
         entity: BlogPost,

@@ -375,6 +375,56 @@ describe('custom ActiveOrderStrategy', () => {
             });
         });
 
+        it('unsetOrderShippingAddress', async () => {
+            const { unsetOrderShippingAddress } = await shopClient.query(gql`
+                mutation {
+                    unsetOrderShippingAddress(${activeOrderInput}) {
+                        ...on Order {
+                            id
+                            orderToken
+                            shippingAddress {
+                                streetLine1
+                                country
+                            }
+                        }
+                    }
+                }
+            `);
+            expect(unsetOrderShippingAddress).toEqual({
+                id: 'T_1',
+                orderToken: 'token-2',
+                shippingAddress: {
+                    streetLine1: null,
+                    country: null,
+                },
+            });
+        });
+
+        it('unsetOrderBillingAddress', async () => {
+            const { unsetOrderBillingAddress } = await shopClient.query(gql`
+                mutation {
+                    unsetOrderBillingAddress(${activeOrderInput}) {
+                        ...on Order {
+                            id
+                            orderToken
+                            billingAddress {
+                                streetLine1
+                                country
+                            }
+                        }
+                    }
+                }
+            `);
+            expect(unsetOrderBillingAddress).toEqual({
+                id: 'T_1',
+                orderToken: 'token-2',
+                billingAddress: {
+                    streetLine1: null,
+                    country: null,
+                },
+            });
+        });
+
         it('eligibleShippingMethods', async () => {
             const { eligibleShippingMethods } = await shopClient.query(gql`
                 query {

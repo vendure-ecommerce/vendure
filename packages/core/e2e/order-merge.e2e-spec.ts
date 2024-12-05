@@ -193,6 +193,25 @@ describe('Order merging', () => {
         ).toEqual([{ productVariantId: 'T_5', quantity: 3 }]);
     });
 
+    it('UseGuestStrategy with conflicting lines', async () => {
+        const result = await testMerge({
+            strategy: new UseGuestStrategy(),
+            customerEmailAddress: customers[8].emailAddress,
+            existingOrderLines: [
+                { productVariantId: 'T_7', quantity: 1 },
+                { productVariantId: 'T_8', quantity: 1 },
+            ],
+            guestOrderLines: [{ productVariantId: 'T_8', quantity: 3 }],
+        });
+
+        expect(
+            (result?.lines || []).sort(sortById).map(line => ({
+                productVariantId: line.productVariant.id,
+                quantity: line.quantity,
+            })),
+        ).toEqual([{ productVariantId: 'T_8', quantity: 3 }]);
+    });
+
     it('UseGuestIfExistingEmptyStrategy with empty existing', async () => {
         const result = await testMerge({
             strategy: new UseGuestIfExistingEmptyStrategy(),

@@ -30,8 +30,7 @@ class Populator {
 <MemberInfo kind="method" type={`(data: <a href='/reference/typescript-api/import-export/initial-data#initialdata'>InitialData</a>, channel?: <a href='/reference/typescript-api/entities/channel#channel'>Channel</a>) => `}   />
 
 Should be run *before* populating the products, so that there are TaxRates by which
-product prices can be set. If the `channel` argument is set, then any <a href='/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a>
-entities will be assigned to that Channel.
+product prices can be set. If the `channel` argument is set, then any <a href='/reference/typescript-api/entities/interfaces#channelaware'>ChannelAware</a>entities will be assigned to that Channel.
 ### populateCollections
 
 <MemberInfo kind="method" type={`(data: <a href='/reference/typescript-api/import-export/initial-data#initialdata'>InitialData</a>, channel?: <a href='/reference/typescript-api/entities/channel#channel'>Channel</a>) => `}   />

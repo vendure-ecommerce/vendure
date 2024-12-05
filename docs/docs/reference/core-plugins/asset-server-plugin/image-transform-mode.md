@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ImageTransformMode
 
-<GenerationInfo sourceFile="packages/asset-server-plugin/src/types.ts" sourceLine="21" packageName="@vendure/asset-server-plugin" />
+<GenerationInfo sourceFile="packages/asset-server-plugin/src/types.ts" sourceLine="23" packageName="@vendure/asset-server-plugin" />
 
 Specifies the way in which an asset preview image will be resized to fit in the
 proscribed dimensions:

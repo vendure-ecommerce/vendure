@@ -19,6 +19,8 @@ import {
     MutationSetDraftOrderBillingAddressArgs,
     MutationSetDraftOrderShippingAddressArgs,
     MutationSetDraftOrderShippingMethodArgs,
+    MutationUnsetDraftOrderShippingAddressArgs,
+    MutationUnsetDraftOrderBillingAddressArgs,
     Permission,
     QueryEligibleShippingMethodsForDraftOrderArgs,
     ShippingMethodQuote,
@@ -172,6 +174,26 @@ export class DraftOrderResolver {
         @Args() args: MutationSetDraftOrderBillingAddressArgs,
     ): Promise<ErrorResultUnion<ActiveOrderResult, Order>> {
         return this.orderService.setBillingAddress(ctx, args.orderId, args.input);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.CreateOrder)
+    async unsetDraftOrderShippingAddress(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationUnsetDraftOrderShippingAddressArgs,
+    ): Promise<ErrorResultUnion<ActiveOrderResult, Order>> {
+        return this.orderService.unsetShippingAddress(ctx, args.orderId);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.CreateOrder)
+    async unsetDraftOrderBillingAddress(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationUnsetDraftOrderBillingAddressArgs,
+    ): Promise<ErrorResultUnion<ActiveOrderResult, Order>> {
+        return this.orderService.unsetBillingAddress(ctx, args.orderId);
     }
 
     @Transaction()

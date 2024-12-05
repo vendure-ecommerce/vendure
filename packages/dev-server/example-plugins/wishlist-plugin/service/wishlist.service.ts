@@ -33,7 +33,7 @@ export class WishlistService {
      */
     async addItem(ctx: RequestContext, variantId: ID): Promise<WishlistItem[]> {
         const customer = await this.getCustomerWithWishlistItems(ctx);
-        const variant = this.productVariantService.findOne(ctx, variantId);
+        const variant = await this.productVariantService.findOne(ctx, variantId);
         if (!variant) {
             throw new UserInputError(`No ProductVariant with the id ${variantId} could be found`);
         }

@@ -1,8 +1,10 @@
 import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 import { Column, Entity, Index, ManyToOne, TableInheritance } from 'typeorm';
 
+import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { Administrator } from '../administrator/administrator.entity';
 import { VendureEntity } from '../base/base.entity';
+import { CustomHistoryEntryFields } from '../custom-entity-fields';
 
 /**
  * @description
@@ -13,7 +15,7 @@ import { VendureEntity } from '../base/base.entity';
  */
 @Entity()
 @TableInheritance({ column: { type: 'varchar', name: 'discriminator' } })
-export abstract class HistoryEntry extends VendureEntity {
+export abstract class HistoryEntry extends VendureEntity implements HasCustomFields {
     @Index()
     @ManyToOne(type => Administrator)
     administrator?: Administrator;
@@ -26,4 +28,7 @@ export abstract class HistoryEntry extends VendureEntity {
 
     @Column('simple-json')
     data: any;
+
+    @Column(type => CustomHistoryEntryFields)
+    customFields: CustomHistoryEntryFields;
 }

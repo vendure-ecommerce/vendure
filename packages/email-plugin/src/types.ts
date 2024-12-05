@@ -505,8 +505,15 @@ export type SetOptionalAddressFieldsFn<Event> = (
  * @since 3.1.0
  * @docsCategory core plugins/EmailPlugin
  * @docsPage Email Plugin Types
- *
  */
 export type SetMetadataFn<Event> = (event: Event) => EmailMetadata | Promise<EmailMetadata>;
 
+/**
+ * @description
+ * Metadata that can be attached to an email via the {@link EmailEventHandler}`.setMetadata()` method.
+ *
+ * @since 3.1.0
+ * @docsCategory core plugins/EmailPlugin
+ * @docsPage Email Plugin Types
+ */
 export type EmailMetadata = Record<string, any>;

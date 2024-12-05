@@ -640,6 +640,54 @@ export const RELATION_CUSTOM_FIELD_FRAGMENT = gql`
     ${CUSTOM_FIELD_CONFIG_FRAGMENT}
 `;
 
+export const STRUCT_CUSTOM_FIELD_FRAGMENT = gql`
+    fragment StructCustomField on StructCustomFieldConfig {
+        ...CustomFieldConfig
+        fields {
+            ... on StructField {
+                name
+                type
+                list
+                description {
+                    languageCode
+                    value
+                }
+                label {
+                    languageCode
+                    value
+                }
+                ui
+            }
+            ... on StringStructFieldConfig {
+                pattern
+                options {
+                    label {
+                        languageCode
+                        value
+                    }
+                    value
+                }
+            }
+            ... on IntStructFieldConfig {
+                intMin: min
+                intMax: max
+                intStep: step
+            }
+            ... on FloatStructFieldConfig {
+                floatMin: min
+                floatMax: max
+                floatStep: step
+            }
+            ... on DateTimeStructFieldConfig {
+                datetimeMin: min
+                datetimeMax: max
+                datetimeStep: step
+            }
+        }
+    }
+    ${CUSTOM_FIELD_CONFIG_FRAGMENT}
+`;
+
 export const ALL_CUSTOM_FIELDS_FRAGMENT = gql`
     fragment CustomFields on CustomField {
         ... on StringCustomFieldConfig {
@@ -669,6 +717,9 @@ export const ALL_CUSTOM_FIELDS_FRAGMENT = gql`
         ... on RelationCustomFieldConfig {
             ...RelationCustomField
         }
+        ... on StructCustomFieldConfig {
+            ...StructCustomField
+        }
     }
     ${STRING_CUSTOM_FIELD_FRAGMENT}
     ${LOCALE_STRING_CUSTOM_FIELD_FRAGMENT}
@@ -679,6 +730,7 @@ export const ALL_CUSTOM_FIELDS_FRAGMENT = gql`
     ${DATE_TIME_CUSTOM_FIELD_FRAGMENT}
     ${RELATION_CUSTOM_FIELD_FRAGMENT}
     ${LOCALE_TEXT_CUSTOM_FIELD_FRAGMENT}
+    ${STRUCT_CUSTOM_FIELD_FRAGMENT}
 `;
 
 export const GET_SERVER_CONFIG = gql`

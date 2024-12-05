@@ -44,7 +44,10 @@ export class SimpleGraphQLClient {
         'Apollo-Require-Preflight': 'true',
     };
 
-    constructor(private vendureConfig: Required<VendureConfig>, private apiUrl: string = '') {}
+    constructor(
+        private vendureConfig: Required<VendureConfig>,
+        private apiUrl: string = '',
+    ) {}
 
     /**
      * @description
@@ -136,15 +139,13 @@ export class SimpleGraphQLClient {
     async asUserWithCredentials(username: string, password: string) {
         // first log out as the current user
         if (this.authToken) {
-            await this.query(
-                gql`
-                    mutation {
-                        logout {
-                            success
-                        }
+            await this.query(gql`
+                mutation {
+                    logout {
+                        success
                     }
-                `,
-            );
+                }
+            `);
         }
         const result = await this.query(LOGIN, { username, password });
         if (result.login.channels?.length === 1) {
@@ -170,15 +171,13 @@ export class SimpleGraphQLClient {
      * Logs out so that the client is then treated as an anonymous user.
      */
     async asAnonymousUser() {
-        await this.query(
-            gql`
-                mutation {
-                    logout {
-                        success
-                    }
+        await this.query(gql`
+            mutation {
+                logout {
+                    success
                 }
-            `,
-        );
+            }
+        `);
     }
 
     private async makeGraphQlRequest(
@@ -214,7 +213,38 @@ export class SimpleGraphQLClient {
      * Perform a file upload mutation.
      *
      * Upload spec: https://github.com/jaydenseric/graphql-multipart-request-spec
+     *
      * Discussion of issue: https://github.com/jaydenseric/apollo-upload-client/issues/32
+     *
+     * @param mutation - GraphQL document for a mutation that has input files
+     * with the Upload type.
+     * @param filePaths - Array of paths to files, in the same order that the
+     * corresponding Upload fields appear in the variables for the mutation.
+     * @param mapVariables - Function that must return the variables for the
+     * mutation, with `null` as the value for each `Upload` field.
+     *
+     * @example
+     * ```ts
+     * // Testing a custom mutation:
+     * const result = await client.fileUploadMutation({
+     *   mutation: gql`
+     *     mutation AddSellerImages($input: AddSellerImagesInput!) {
+     *       addSellerImages(input: $input) {
+     *         id
+     *         name
+     *       }
+     *     }
+     *   `,
+     *   filePaths: ['./images/profile-picture.jpg', './images/logo.png'],
+     *   mapVariables: () => ({
+     *     name: "George's Pans",
+     *     profilePicture: null,  // corresponds to filePaths[0]
+     *     branding: {
+     *       logo: null  // corresponds to filePaths[1]
+     *     }
+     *   })
+     * });
+     * ```
      */
     async fileUploadMutation(options: {
         mutation: DocumentNode;
@@ -256,7 +286,10 @@ export class SimpleGraphQLClient {
 }
 
 export class ClientError extends Error {
-    constructor(public response: any, public request: any) {
+    constructor(
+        public response: any,
+        public request: any,
+    ) {
         super(ClientError.extractMessage(response));
     }
     private static extractMessage(response: any): string {

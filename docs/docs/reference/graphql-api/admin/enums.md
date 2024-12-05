@@ -423,6 +423,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">ORDER_MODIFICATION_ERROR</div>
 <div class="graphql-code-line ">INELIGIBLE_SHIPPING_METHOD_ERROR</div>
 <div class="graphql-code-line ">NO_ACTIVE_ORDER_ERROR</div>
+<div class="graphql-code-line ">ORDER_INTERCEPTOR_ERROR</div>
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 

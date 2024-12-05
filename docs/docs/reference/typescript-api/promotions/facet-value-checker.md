@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## FacetValueChecker
 
-<GenerationInfo sourceFile="packages/core/src/config/promotion/utils/facet-value-checker.ts" sourceLine="48" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/facet-value-checker/facet-value-checker.ts" sourceLine="53" packageName="@vendure/core" />
 
 The FacetValueChecker is a helper class used to determine whether a given OrderLine consists
 of ProductVariants containing the given FacetValues.
@@ -33,7 +33,7 @@ export const hasFacetValues = new PromotionCondition({
     facets: { type: 'ID', list: true, ui: { component: 'facet-value-form-input' } },
   },
   init(injector) {
-    facetValueChecker = new FacetValueChecker(injector.get(TransactionalConnection));
+    facetValueChecker = injector.get(FacetValueChecker);
   },
   async check(ctx, order, args) {
     let matches = 0;
@@ -48,17 +48,26 @@ export const hasFacetValues = new PromotionCondition({
 ```
 
 ```ts title="Signature"
-class FacetValueChecker {
-    constructor(connection: TransactionalConnection)
+class FacetValueChecker implements OnModuleInit {
+    constructor(connection: TransactionalConnection, cacheService: CacheService, eventBus?: EventBus)
+    onModuleInit() => any;
     hasFacetValues(orderLine: OrderLine, facetValueIds: ID[], ctx?: RequestContext) => Promise<boolean>;
 }
 ```
+* Implements: <code>OnModuleInit</code>
+
+
 
 <div className="members-wrapper">
 
 ### constructor
 
-<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>) => FacetValueChecker`}   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, cacheService: <a href='/reference/typescript-api/cache/cache-service#cacheservice'>CacheService</a>, eventBus?: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>) => FacetValueChecker`}   />
+
+
+### onModuleInit
+
+<MemberInfo kind="method" type={`() => any`}   />
 
 
 ### hasFacetValues

@@ -11,17 +11,26 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SessionCacheStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/session-cache/session-cache-strategy.ts" sourceLine="155" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/session-cache/session-cache-strategy.ts" sourceLine="164" packageName="@vendure/core" />
 
 This strategy defines how sessions get cached. Since most requests will need the Session
 object for permissions data, it can become a bottleneck to go to the database and do a multi-join
 SQL query each time. Therefore, we cache the session data only perform the SQL query once and upon
 invalidation of the cache.
 
-The Vendure default is to use a the <a href='/reference/typescript-api/auth/in-memory-session-cache-strategy#inmemorysessioncachestrategy'>InMemorySessionCacheStrategy</a>, which is fast and suitable for
-single-instance deployments. However, for multi-instance deployments (horizontally scaled, serverless etc.),
-you will need to define a custom strategy that stores the session cache in a shared data store, such as in the
-DB or in Redis.
+The Vendure default from v3.1+ is to use a the <a href='/reference/typescript-api/auth/default-session-cache-strategy#defaultsessioncachestrategy'>DefaultSessionCacheStrategy</a>, which delegates
+to the configured <a href='/reference/typescript-api/cache/cache-strategy#cachestrategy'>CacheStrategy</a> to store the session data. This should be suitable
+for most use-cases.
+
+:::note
+
+If you are using v3.1 or later, you should not normally need to implement a custom `SessionCacheStrategy`,
+since this is now handled by the <a href='/reference/typescript-api/auth/default-session-cache-strategy#defaultsessioncachestrategy'>DefaultSessionCacheStrategy</a>.
+
+:::
+
+Prior to v3.1, the default was to use the <a href='/reference/typescript-api/auth/in-memory-session-cache-strategy#inmemorysessioncachestrategy'>InMemorySessionCacheStrategy</a>, which is fast but suitable for
+single-instance deployments.
 
 :::info
 

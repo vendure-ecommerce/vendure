@@ -96,3 +96,12 @@ type NoActiveOrderError implements ErrorResult {
     errorCode: ErrorCode!
     message: String!
 }
+
+"""
+Returned when an order operation is rejected by an OrderInterceptor method.
+"""
+type OrderInterceptorError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    interceptorError: String!
+}

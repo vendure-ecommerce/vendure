@@ -19,7 +19,7 @@ A component for selecting product variants via an autocomplete-style select inpu
 
 ```HTML
 <vdr-product-variant-selector
-  (productSelected)="selectResult($event)"></vdr-product-selector>
+  (productSelected)="selectResult($event)"></vdr-product-variant-selector>
 ```
 
 ```ts title="Signature"

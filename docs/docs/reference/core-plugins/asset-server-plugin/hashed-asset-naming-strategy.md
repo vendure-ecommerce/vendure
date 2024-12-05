@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## HashedAssetNamingStrategy
 
-<GenerationInfo sourceFile="packages/asset-server-plugin/src/hashed-asset-naming-strategy.ts" sourceLine="20" packageName="@vendure/asset-server-plugin" />
+<GenerationInfo sourceFile="packages/asset-server-plugin/src/config/hashed-asset-naming-strategy.ts" sourceLine="20" packageName="@vendure/asset-server-plugin" />
 
 An extension of the <a href='/reference/typescript-api/assets/default-asset-naming-strategy#defaultassetnamingstrategy'>DefaultAssetNamingStrategy</a> which prefixes file names with
 the type (`'source'` or `'preview'`) as well as a 2-character sub-directory based on

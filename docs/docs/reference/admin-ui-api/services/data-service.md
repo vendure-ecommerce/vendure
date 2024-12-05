@@ -20,8 +20,8 @@ to be effectively cached.
 
 ```ts title="Signature"
 class DataService {
-    query(query: DocumentNode | TypedDocumentNode<T, V>, variables?: V, fetchPolicy: WatchQueryFetchPolicy = 'cache-and-network') => QueryResult<T, V>;
-    mutate(mutation: DocumentNode | TypedDocumentNode<T, V>, variables?: V, update?: MutationUpdaterFn<T>) => Observable<T>;
+    query(query: DocumentNode | TypedDocumentNode<T, V>, variables?: V, fetchPolicy: WatchQueryFetchPolicy = 'cache-and-network', options: ExtendedQueryOptions = {}) => QueryResult<T, V>;
+    mutate(mutation: DocumentNode | TypedDocumentNode<T, V>, variables?: V, update?: MutationUpdaterFn<T>, options: ExtendedQueryOptions = {}) => Observable<T>;
 }
 ```
 
@@ -29,7 +29,7 @@ class DataService {
 
 ### query
 
-<MemberInfo kind="method" type={`(query: DocumentNode | TypedDocumentNode&#60;T, V&#62;, variables?: V, fetchPolicy: WatchQueryFetchPolicy = 'cache-and-network') => <a href='/reference/admin-ui-api/services/data-service#queryresult'>QueryResult</a>&#60;T, V&#62;`}   />
+<MemberInfo kind="method" type={`(query: DocumentNode | TypedDocumentNode&#60;T, V&#62;, variables?: V, fetchPolicy: WatchQueryFetchPolicy = 'cache-and-network', options: ExtendedQueryOptions = {}) => <a href='/reference/admin-ui-api/services/data-service#queryresult'>QueryResult</a>&#60;T, V&#62;`}   />
 
 Perform a GraphQL query. Returns a <a href='/reference/admin-ui-api/services/data-service#queryresult'>QueryResult</a> which allows further control over
 they type of result returned, e.g. stream of values, single value etc.
@@ -50,7 +50,7 @@ const result$ = this.dataService.query(gql`
 ```
 ### mutate
 
-<MemberInfo kind="method" type={`(mutation: DocumentNode | TypedDocumentNode&#60;T, V&#62;, variables?: V, update?: MutationUpdaterFn&#60;T&#62;) => Observable&#60;T&#62;`}   />
+<MemberInfo kind="method" type={`(mutation: DocumentNode | TypedDocumentNode&#60;T, V&#62;, variables?: V, update?: MutationUpdaterFn&#60;T&#62;, options: ExtendedQueryOptions = {}) => Observable&#60;T&#62;`}   />
 
 Perform a GraphQL mutation.
 
@@ -74,21 +74,22 @@ const result$ = this.dataService.mutate(gql`
 
 ## QueryResult
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/data/query-result.ts" sourceLine="19" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/data/query-result.ts" sourceLine="31" packageName="@vendure/admin-ui" />
 
 This class wraps the Apollo Angular QueryRef object and exposes some getters
 for convenience.
 
 ```ts title="Signature"
 class QueryResult<T, V extends Record<string, any> = Record<string, any>> {
-    constructor(queryRef: QueryRef<T, V>, apollo: Apollo)
-    completed$ = new Subject<void>();
+    constructor(queryRef: QueryRef<T, V>, apollo: Apollo, customFieldMap: Map<string, CustomFieldConfig[]>)
     refetchOnChannelChange() => QueryResult<T, V>;
+    refetchOnCustomFieldsChange(customFieldsToInclude$: Observable<string[]>) => QueryResult<T, V>;
     single$: Observable<T>
     stream$: Observable<T>
     ref: QueryRef<T, V>
     mapSingle(mapFn: (item: T) => R) => Observable<R>;
     mapStream(mapFn: (item: T) => R) => Observable<R>;
+    destroy() => ;
 }
 ```
 
@@ -96,12 +97,7 @@ class QueryResult<T, V extends Record<string, any> = Record<string, any>> {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(queryRef: QueryRef&#60;T, V&#62;, apollo: Apollo) => QueryResult`}   />
-
-
-### completed$
-
-<MemberInfo kind="property" type={``}   />
+<MemberInfo kind="method" type={`(queryRef: QueryRef&#60;T, V&#62;, apollo: Apollo, customFieldMap: Map&#60;string, <a href='/reference/typescript-api/custom-fields/custom-field-config#customfieldconfig'>CustomFieldConfig</a>[]&#62;) => QueryResult`}   />
 
 
 ### refetchOnChannelChange
@@ -109,6 +105,12 @@ class QueryResult<T, V extends Record<string, any> = Record<string, any>> {
 <MemberInfo kind="method" type={`() => <a href='/reference/admin-ui-api/services/data-service#queryresult'>QueryResult</a>&#60;T, V&#62;`}   />
 
 Re-fetch this query whenever the active Channel changes.
+### refetchOnCustomFieldsChange
+
+<MemberInfo kind="method" type={`(customFieldsToInclude$: Observable&#60;string[]&#62;) => <a href='/reference/admin-ui-api/services/data-service#queryresult'>QueryResult</a>&#60;T, V&#62;`}  since="3.0.4"  />
+
+Re-fetch this query whenever the custom fields change, updating the query to include the
+specified custom fields.
 ### single$
 
 <MemberInfo kind="property" type={`Observable&#60;T&#62;`}   />
@@ -134,6 +136,11 @@ Returns a single-result Observable after applying the map function.
 <MemberInfo kind="method" type={`(mapFn: (item: T) =&#62; R) => Observable&#60;R&#62;`}   />
 
 Returns a multiple-result Observable after applying the map function.
+### destroy
+
+<MemberInfo kind="method" type={`() => `}   />
+
+Signals to the internal Observable subscriptions that they should complete.
 
 
 </div>

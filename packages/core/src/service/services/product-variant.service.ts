@@ -250,7 +250,7 @@ export class ProductVariantService {
         return this.connection
             .getRepository(ctx, ProductVariantPrice)
             .createQueryBuilder('pvp')
-            .where('pvp.productVariant = :productVariantId', { productVariantId })
+            .where('pvp.variant = :productVariantId', { productVariantId })
             .andWhere('pvp.channelId = :channelId', { channelId: ctx.channelId })
             .getMany();
     }

@@ -56,7 +56,7 @@ function registerCustomFieldsForEntity(
                     }
                 } else {
                     const options: ColumnOptions = {
-                        type: list ? 'simple-json' : getColumnType(dbEngine, customField.type),
+                        type: getColumnType(dbEngine, customField.type, list ?? false),
                         default: getDefault(customField, dbEngine),
                         name,
                         nullable: nullable === false ? false : true,
@@ -156,7 +156,11 @@ function formatDefaultDatetime(dbEngine: DataSourceOptions['type'], datetime: an
 function getColumnType(
     dbEngine: DataSourceOptions['type'],
     type: Exclude<CustomFieldType, 'relation'>,
+    isList: boolean,
 ): ColumnType {
+    if (isList && type !== 'struct') {
+        return 'simple-json';
+    }
     switch (type) {
         case 'string':
         case 'localeString':
@@ -194,6 +198,18 @@ function getColumnType(
                 case 'sqljs':
                 default:
                     return 'datetime';
+            }
+        case 'struct':
+            switch (dbEngine) {
+                case 'postgres':
+                    return 'jsonb';
+                case 'mysql':
+                case 'mariadb':
+                    return 'json';
+                case 'sqlite':
+                case 'sqljs':
+                default:
+                    return 'simple-json';
             }
         default:
             assertNever(type);

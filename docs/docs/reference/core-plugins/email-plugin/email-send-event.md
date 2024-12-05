@@ -19,7 +19,7 @@ which occurred.
 
 ```ts title="Signature"
 class EmailSendEvent extends VendureEvent {
-    constructor(ctx: RequestContext, details: EmailDetails, success: boolean, error?: Error)
+    constructor(ctx: RequestContext, details: EmailDetails, success: boolean, error?: Error, metadata?: EmailMetadata)
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
@@ -30,7 +30,7 @@ class EmailSendEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, details: <a href='/reference/core-plugins/email-plugin/email-plugin-types#emaildetails'>EmailDetails</a>, success: boolean, error?: Error) => EmailSendEvent`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, details: <a href='/reference/core-plugins/email-plugin/email-plugin-types#emaildetails'>EmailDetails</a>, success: boolean, error?: Error, metadata?: <a href='/reference/core-plugins/email-plugin/email-plugin-types#emailmetadata'>EmailMetadata</a>) => EmailSendEvent`}   />
 
 
 

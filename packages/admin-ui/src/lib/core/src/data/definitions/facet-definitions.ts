@@ -18,6 +18,7 @@ export const FACET_VALUE_FRAGMENT = gql`
             createdAt
             updatedAt
             name
+            code
         }
     }
 `;

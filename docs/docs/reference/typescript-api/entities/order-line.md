@@ -40,6 +40,8 @@ class OrderLine extends VendureEntity implements HasCustomFields {
     @Index()
     @ManyToOne(type => TaxCategory)
     taxCategory: TaxCategory;
+    @EntityId({ nullable: true })
+    taxCategoryId: ID;
     @Index()
     @ManyToOne(type => Asset, asset => asset.featuredInVariants, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
@@ -142,6 +144,11 @@ The <a href='/reference/typescript-api/entities/product-variant#productvariant'>
 ### taxCategory
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>`}   />
+
+
+### taxCategoryId
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 ### featuredAsset

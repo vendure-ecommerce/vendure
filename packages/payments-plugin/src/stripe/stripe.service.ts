@@ -44,6 +44,11 @@ export class StripeService {
             ctx,
             order,
         );
+        const additionalOptions = await this.options.requestOptions?.(
+            new Injector(this.moduleRef),
+            ctx,
+            order,
+        );
         const metadata = sanitizeMetadata({
             ...(typeof this.options.metadata === 'function'
                 ? await this.options.metadata(new Injector(this.moduleRef), ctx, order)
@@ -69,7 +74,10 @@ export class StripeService {
                 ...(additionalParams ?? {}),
                 metadata: allMetadata,
             },
-            { idempotencyKey: `${order.code}_${amountInMinorUnits}` },
+            {
+                idempotencyKey: `${order.code}_${amountInMinorUnits}`,
+                ...(additionalOptions ?? {}),
+            },
         );
 
         if (!client_secret) {

@@ -370,7 +370,7 @@ export class PaymentService {
             }
             refund = await this.connection.getRepository(ctx, Refund).save(refund);
             const refundLines: RefundLine[] = [];
-            for (const { orderLineId, quantity } of input.lines) {
+            for (const { orderLineId, quantity } of input.lines || []) {
                 const refundLine = await this.connection.getRepository(ctx, RefundLine).save(
                     new RefundLine({
                         refund,
@@ -447,16 +447,17 @@ export class PaymentService {
         // are involved.
         // It is deprecated and will be removed in a future version.
         let refundOrderLinesTotal = 0;
+        const inputLines = input.lines || [];
         const orderLines = await this.connection
             .getRepository(ctx, OrderLine)
-            .find({ where: { id: In(input.lines.map(l => l.orderLineId)) } });
-        for (const line of input.lines) {
+            .find({ where: { id: In(inputLines.map(l => l.orderLineId)) } });
+        for (const line of inputLines) {
             const orderLine = orderLines.find(l => idsAreEqual(l.id, line.orderLineId));
             if (orderLine && 0 < orderLine.orderPlacedQuantity) {
                 refundOrderLinesTotal += line.quantity * orderLine.proratedUnitPriceWithTax;
             }
         }
-        const total = refundOrderLinesTotal + input.shipping + input.adjustment;
+        const total = refundOrderLinesTotal + (input.shipping ?? 0) + (input.adjustment ?? 0);
         return { orderLinesTotal: refundOrderLinesTotal, total };
     }
 

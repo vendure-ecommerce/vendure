@@ -73,6 +73,8 @@ export function generateActiveOrderTypes(
         { name: 'setOrderShippingMethod', isMutation: true },
         { name: 'setOrderCustomFields', isMutation: true },
         { name: 'transitionOrderToState', isMutation: true },
+        { name: 'unsetOrderShippingAddress', isMutation: true },
+        { name: 'unsetOrderBillingAddress', isMutation: true },
     ];
 
     const queryType = schema.getQueryType();

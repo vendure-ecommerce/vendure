@@ -1,7 +1,9 @@
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, Index, ManyToOne } from 'typeorm';
 
+import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
+import { CustomStockLevelFields } from '../custom-entity-fields';
 import { EntityId } from '../entity-id.decorator';
 import { ProductVariant } from '../product-variant/product-variant.entity';
 import { StockLocation } from '../stock-location/stock-location.entity';
@@ -15,7 +17,7 @@ import { StockLocation } from '../stock-location/stock-location.entity';
  */
 @Entity()
 @Index(['productVariantId', 'stockLocationId'], { unique: true })
-export class StockLevel extends VendureEntity {
+export class StockLevel extends VendureEntity implements HasCustomFields {
     constructor(input: DeepPartial<StockLevel>) {
         super(input);
     }
@@ -39,4 +41,7 @@ export class StockLevel extends VendureEntity {
 
     @Column()
     stockAllocated: number;
+
+    @Column(type => CustomStockLevelFields)
+    customFields: CustomStockLevelFields;
 }

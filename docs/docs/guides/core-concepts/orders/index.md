@@ -352,3 +352,15 @@ If you have defined custom order states, the Admin UI will allow you to manually
 order from one state to another:
 
 ![./custom-order-ui.webp](./custom-order-ui.webp)
+
+## Order Interceptors
+
+Vendure v3.1 introduces the concept of [Order Interceptors](/reference/typescript-api/orders/order-interceptor/). 
+These are a way to intercept operations that add, modify or remove order lines. Examples use-cases include:
+
+* Preventing certain products from being added to the order based on some criteria, e.g. if the  product is already in another active order.
+* Enforcing a minimum or maximum quantity of a given product in the order
+* Using a CAPTCHA to prevent automated order creation
+
+Check the [Order Interceptor](/reference/typescript-api/orders/order-interceptor/) docs for more information as well as a complete
+example of how to implement an interceptor.

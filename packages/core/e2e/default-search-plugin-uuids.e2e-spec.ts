@@ -50,6 +50,10 @@ describe('Default search plugin with UUIDs', () => {
         // rebuild is not completed in time for the first test.
         await new Promise(resolve => setTimeout(resolve, 5000));
 
+        // We have extra time here because a lot of jobs are
+        // triggered from all the product updates
+        await awaitRunningJobs(adminClient, 10_000, 1000);
+
         const { facets } = await adminClient.query<GetFacetListQuery, GetFacetListQueryVariables>(
             GET_FACET_LIST,
             {

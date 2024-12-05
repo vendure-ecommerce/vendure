@@ -1,18 +1,18 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import ms from 'ms';
 import { Subscription } from 'rxjs';
 
-import { TtlCache } from '../../../common/ttl-cache';
+import { Cache } from '../../../cache/index';
 import { idsAreEqual } from '../../../common/utils';
 import { EventBus } from '../../../event-bus/event-bus';
 import { CustomerGroupChangeEvent } from '../../../event-bus/events/customer-group-change-event';
 import { PromotionCondition } from '../promotion-condition';
 
 let customerService: import('../../../service/services/customer.service').CustomerService;
+let cacheService: import('../../../cache/cache.service').CacheService;
 let subscription: Subscription | undefined;
 
-const fiveMinutes = 5 * 60 * 1000;
-const cache = new TtlCache<ID, ID[]>({ ttl: fiveMinutes });
+let groupIdCache: Cache;
 
 export const customerGroup = new PromotionCondition({
     code: 'customer_group',
@@ -27,16 +27,20 @@ export const customerGroup = new PromotionCondition({
     async init(injector) {
         // Lazily-imported to avoid circular dependency issues.
         const { CustomerService } = await import('../../../service/services/customer.service.js');
+        const { CacheService } = await import('../../../cache/cache.service.js');
         customerService = injector.get(CustomerService);
+        cacheService = injector.get(CacheService);
+        groupIdCache = cacheService.createCache({
+            getKey: id => `PromotionCondition:customer_group:${id}`,
+            options: { ttl: ms('1 week') },
+        });
         subscription = injector
             .get(EventBus)
             .ofType(CustomerGroupChangeEvent)
-            .subscribe(event => {
+            .subscribe(async event => {
                 // When a customer is added to or removed from a group, we need
                 // to invalidate the cache for that customer id
-                for (const customer of event.customers) {
-                    cache.delete(customer.id);
-                }
+                await groupIdCache.delete(event.customers.map(c => c.id));
             });
     },
     destroy() {
@@ -47,12 +51,11 @@ export const customerGroup = new PromotionCondition({
             return false;
         }
         const customerId = order.customer.id;
-        let groupIds = cache.get(customerId);
-        if (!groupIds) {
+        const groupIds = await groupIdCache.get(customerId, async () => {
             const groups = await customerService.getCustomerGroups(ctx, customerId);
-            groupIds = groups.map(g => g.id);
-            cache.set(customerId, groupIds);
-        }
+            return groups.map(g => g.id);
+        });
+
         return !!groupIds.find(id => idsAreEqual(id, args.customerGroupId));
     },
 });

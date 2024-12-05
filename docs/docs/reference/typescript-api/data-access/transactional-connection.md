@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TransactionalConnection
 
-<GenerationInfo sourceFile="packages/core/src/connection/transactional-connection.ts" sourceLine="40" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/connection/transactional-connection.ts" sourceLine="41" packageName="@vendure/core" />
 
 The TransactionalConnection is a wrapper around the TypeORM `Connection` object which works in conjunction
 with the <a href='/reference/typescript-api/request/transaction-decorator#transaction'>Transaction</a> decorator to implement per-request transactions. All services which access the
@@ -26,8 +26,12 @@ class TransactionalConnection {
     constructor(dataSource: DataSource, transactionWrapper: TransactionWrapper)
     rawConnection: DataSource
     getRepository(target: ObjectType<Entity> | EntitySchema<Entity> | string) => Repository<Entity>;
-    getRepository(ctx: RequestContext | undefined, target: ObjectType<Entity> | EntitySchema<Entity> | string) => Repository<Entity>;
-    getRepository(ctxOrTarget: RequestContext | ObjectType<Entity> | EntitySchema<Entity> | string | undefined, maybeTarget?: ObjectType<Entity> | EntitySchema<Entity> | string) => Repository<Entity>;
+    getRepository(ctx: RequestContext | undefined, target: ObjectType<Entity> | EntitySchema<Entity> | string, options?: {
+            replicationMode?: ReplicationMode;
+        }) => Repository<Entity>;
+    getRepository(ctxOrTarget: RequestContext | ObjectType<Entity> | EntitySchema<Entity> | string | undefined, maybeTarget?: ObjectType<Entity> | EntitySchema<Entity> | string, options?: {
+            replicationMode?: ReplicationMode;
+        }) => Repository<Entity>;
     withTransaction(work: (ctx: RequestContext) => Promise<T>) => Promise<T>;
     withTransaction(ctx: RequestContext, work: (ctx: RequestContext) => Promise<T>) => Promise<T>;
     withTransaction(ctxOrWork: RequestContext | ((ctx: RequestContext) => Promise<T>), maybeWork?: (ctx: RequestContext) => Promise<T>) => Promise<T>;
@@ -63,16 +67,21 @@ be aware of any existing transaction. Therefore, calling this method without sup
 is discouraged without a deliberate reason.
 ### getRepository
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> | undefined, target: ObjectType&#60;Entity&#62; | EntitySchema&#60;Entity&#62; | string) => Repository&#60;Entity&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> | undefined, target: ObjectType&#60;Entity&#62; | EntitySchema&#60;Entity&#62; | string, options?: {             replicationMode?: ReplicationMode;         }) => Repository&#60;Entity&#62;`}   />
 
 Returns a TypeORM repository which is bound to any existing transactions. It is recommended to _always_ pass
 the RequestContext argument when possible, otherwise the queries will be executed outside of any
 ongoing transactions which have been started by the <a href='/reference/typescript-api/request/transaction-decorator#transaction'>Transaction</a> decorator.
+
+The `options` parameter allows specifying additional configurations, such as the `replicationMode`,
+which determines whether the repository should interact with the master or replica database.
 ### getRepository
 
-<MemberInfo kind="method" type={`(ctxOrTarget: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> | ObjectType&#60;Entity&#62; | EntitySchema&#60;Entity&#62; | string | undefined, maybeTarget?: ObjectType&#60;Entity&#62; | EntitySchema&#60;Entity&#62; | string) => Repository&#60;Entity&#62;`}   />
+<MemberInfo kind="method" type={`(ctxOrTarget: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> | ObjectType&#60;Entity&#62; | EntitySchema&#60;Entity&#62; | string | undefined, maybeTarget?: ObjectType&#60;Entity&#62; | EntitySchema&#60;Entity&#62; | string, options?: {             replicationMode?: ReplicationMode;         }) => Repository&#60;Entity&#62;`}   />
 
-
+Returns a TypeORM repository. Depending on the parameters passed, it will either be transaction-aware
+or not. If `RequestContext` is provided, the repository is bound to any ongoing transactions. The
+`options` parameter allows further customization, such as selecting the replication mode (e.g., 'master').
 ### withTransaction
 
 <MemberInfo kind="method" type={`(work: (ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) =&#62; Promise&#60;T&#62;) => Promise&#60;T&#62;`}  since="1.3.0"  />

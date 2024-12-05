@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AdminUiAppDevModeConfig
 
-<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="377" packageName="@vendure/common" />
+<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="383" packageName="@vendure/common" />
 
 Information about the Admin UI app dev server.
 

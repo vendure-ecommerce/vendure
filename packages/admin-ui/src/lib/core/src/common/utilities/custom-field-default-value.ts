@@ -30,6 +30,8 @@ export function getDefaultValue(type: CustomFieldType, isNullable?: boolean) {
             return isNullable ? null : new Date();
         case 'relation':
             return null;
+        case 'struct':
+            return {};
         default:
             assertNever(type);
     }
