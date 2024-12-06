@@ -80,6 +80,7 @@ export interface APIExtensionDefinition {
     /**
      * @description
      * Extensions to the schema.
+     * Passes the current schema as an optional argument, allowing the extension to be based on the existing schema.
      *
      * @example
      * ```ts
@@ -97,6 +98,8 @@ export interface APIExtensionDefinition {
      * @description
      * An array of resolvers for the schema extensions. Should be defined as [Nestjs GraphQL resolver](https://docs.nestjs.com/graphql/resolvers-map)
      * classes, i.e. using the Nest `\@Resolver()` decorator etc.
+     *
+     * Passes the current schema as an optional argument, allowing the resolver to be based on the existing schema.
      */
     resolvers?: Array<Type<any>> | (() => Array<Type<any>>) | ((schema?: GraphQLSchema) => Array<Type<any>>);
     /**
