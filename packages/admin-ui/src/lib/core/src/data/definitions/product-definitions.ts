@@ -62,6 +62,13 @@ export const PRODUCT_OPTION_FRAGMENT = gql`
     }
 `;
 
+export const PRODUCT_VARIANT_PRICE_FRAGMENT = gql`
+    fragment ProductVariantPrice on ProductVariantPrice {
+        price
+        currencyCode
+    }
+`;
+
 export const PRODUCT_VARIANT_FRAGMENT = gql`
     fragment ProductVariant on ProductVariant {
         id

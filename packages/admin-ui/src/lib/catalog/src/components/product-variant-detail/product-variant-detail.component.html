@@ -195,12 +195,24 @@
                         [priceIncludesTax]="channelPriceIncludesTax$ | async"
                         [taxCategoryId]="detailForm.get('taxCategoryId')!.value"
                     />
+
+                    <vdr-card [title]="'common.custom-fields' | translate" *ngIf="customPriceFields.length">
+                        <vdr-tabbed-custom-fields
+                            entityName="ProductVariantPrice"
+                            [customFields]="customPriceFields"
+                            [customFieldsFormGroup]="price.get(['customFields'])"
+                            [readonly]="!(updatePermissions | hasPermission)"
+                        />
+                        {{ price.get(['customFields'])?.value | json}}
+                    </vdr-card>
                 </div>
+
                 <vdr-variant-price-strategy-detail
                     [channelPriceIncludesTax]="channelPriceIncludesTax$ | async"
                     [channelDefaultCurrencyCode]="channelDefaultCurrencyCode"
                     [variant]="variant"
                 />
+
                 <ng-container *ngIf="unusedCurrencyCodes$ | async as unusedCurrencyCodes">
                     <div *ngIf="unusedCurrencyCodes.length">
                         <vdr-dropdown>

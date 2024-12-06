@@ -11,7 +11,7 @@ import {
     RemoveProductVariantsFromChannelInput,
     UpdateProductVariantInput,
 } from '@vendure/common/lib/generated-types';
-import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { CustomFieldsObject, ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 import { In, IsNull } from 'typeorm';
 
@@ -552,6 +552,7 @@ export class ProductVariantService {
                         priceInput.price,
                         ctx.channelId,
                         priceInput.currencyCode,
+                        // TODO: Include once codegen works: priceInput.customFields
                     );
                 }
             }
@@ -570,6 +571,7 @@ export class ProductVariantService {
         price: number,
         channelId: ID,
         currencyCode?: CurrencyCode,
+        customFields?: CustomFieldsObject,
     ): Promise<ProductVariantPrice> {
         const { productVariantPriceUpdateStrategy } = this.configService.catalogOptions;
         const allPrices = await this.connection.getRepository(ctx, ProductVariantPrice).find({
@@ -598,6 +600,7 @@ export class ProductVariantService {
                     price,
                     variant: new ProductVariant({ id: productVariantId }),
                     currencyCode: currencyCode ?? ctx.channel.defaultCurrencyCode,
+                    // TODO: Add custom fields
                 }),
             );
             await this.eventBus.publish(new ProductVariantPriceEvent(ctx, [createdPrice], 'created'));
@@ -611,6 +614,7 @@ export class ProductVariantService {
             targetPrice.price = price;
             const updatedPrice = await this.connection
                 .getRepository(ctx, ProductVariantPrice)
+                // TODO: Update custom fields
                 .save(targetPrice);
             await this.eventBus.publish(new ProductVariantPriceEvent(ctx, [updatedPrice], 'updated'));
             additionalPricesToUpdate = await productVariantPriceUpdateStrategy.onPriceUpdated(
