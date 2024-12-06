@@ -48,6 +48,7 @@ import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-build
 import { ProductPriceApplicator } from '../helpers/product-price-applicator/product-price-applicator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { TranslatorService } from '../helpers/translator/translator.service';
+import { patchEntity } from '../helpers/utils/patch-entity';
 import { samplesEach } from '../helpers/utils/samples-each';
 
 import { AssetService } from './asset.service';
@@ -552,7 +553,7 @@ export class ProductVariantService {
                         priceInput.price,
                         ctx.channelId,
                         priceInput.currencyCode,
-                        // TODO: Include once codegen works: priceInput.customFields
+                        (priceInput as any).customFields,
                     );
                 }
             }
@@ -600,7 +601,6 @@ export class ProductVariantService {
                     price,
                     variant: new ProductVariant({ id: productVariantId }),
                     currencyCode: currencyCode ?? ctx.channel.defaultCurrencyCode,
-                    // TODO: Add custom fields
                 }),
             );
             await this.eventBus.publish(new ProductVariantPriceEvent(ctx, [createdPrice], 'created'));
@@ -611,11 +611,22 @@ export class ProductVariantService {
             );
             targetPrice = createdPrice;
         } else {
-            targetPrice.price = price;
+            patchEntity(targetPrice, {
+                price,
+                customFields: customFields || targetPrice.customFields,
+            });
             const updatedPrice = await this.connection
                 .getRepository(ctx, ProductVariantPrice)
-                // TODO: Update custom fields
                 .save(targetPrice);
+
+            if (customFields) {
+                await this.customFieldRelationService.updateRelations(
+                    ctx,
+                    ProductVariantPrice,
+                    customFields,
+                    updatedPrice,
+                );
+            }
             await this.eventBus.publish(new ProductVariantPriceEvent(ctx, [updatedPrice], 'updated'));
             additionalPricesToUpdate = await productVariantPriceUpdateStrategy.onPriceUpdated(
                 ctx,

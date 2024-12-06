@@ -196,15 +196,17 @@
                         [taxCategoryId]="detailForm.get('taxCategoryId')!.value"
                     />
 
-                    <vdr-card [title]="'common.custom-fields' | translate" *ngIf="customPriceFields.length">
+                    <div class="form-grid-span" *ngIf="customPriceFields.length">
+                        <div class="title-row">
+                            <span class="title">{{ 'common.custom-fields' | translate }}</span>
+                        </div>
                         <vdr-tabbed-custom-fields
                             entityName="ProductVariantPrice"
                             [customFields]="customPriceFields"
                             [customFieldsFormGroup]="price.get(['customFields'])"
                             [readonly]="!(updatePermissions | hasPermission)"
                         />
-                        {{ price.get(['customFields'])?.value | json}}
-                    </vdr-card>
+                    </div>
                 </div>
 
                 <vdr-variant-price-strategy-detail
