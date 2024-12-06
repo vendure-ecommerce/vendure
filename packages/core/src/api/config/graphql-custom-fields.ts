@@ -215,6 +215,26 @@ export function addGraphQLCustomFields(
         }
     }
 
+    // Only admin API needs to extend the ProductVariantPrice type
+    if (!publicOnly) {
+        // For custom fields on the ProductVariantPrice entity, we have to extend the ProductVariantPrice input type
+        if (customFieldConfig.ProductVariantPrice?.length) {
+            customFieldTypeDefs += `
+            input UpdateProductVariantPriceCustomFieldsInput {
+                       ${mapToFields(
+                           customFieldConfig.ProductVariantPrice,
+                           wrapListType(getGraphQlInputType),
+                           getGraphQlInputName,
+                       )}
+            }
+
+            extend input ProductVariantPriceInput {
+                customFields: UpdateProductVariantPriceCustomFieldsInput
+            }
+        `;
+        }
+    }
+
     const publicAddressFields = customFieldConfig.Address?.filter(
         config => !config.internal && (publicOnly === true ? config.public !== false : true),
     );
