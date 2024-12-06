@@ -92,13 +92,13 @@ export interface APIExtensionDefinition {
     schema?:
         | DocumentNode
         | (() => DocumentNode | undefined)
-        | ((schema: GraphQLSchema) => DocumentNode | undefined);
+        | ((schema?: GraphQLSchema) => DocumentNode | undefined);
     /**
      * @description
      * An array of resolvers for the schema extensions. Should be defined as [Nestjs GraphQL resolver](https://docs.nestjs.com/graphql/resolvers-map)
      * classes, i.e. using the Nest `\@Resolver()` decorator etc.
      */
-    resolvers?: Array<Type<any>> | (() => Array<Type<any>>) | ((schema: GraphQLSchema) => Array<Type<any>>);
+    resolvers?: Array<Type<any>> | (() => Array<Type<any>>) | ((schema?: GraphQLSchema) => Array<Type<any>>);
     /**
      * @description
      * A map of GraphQL scalar types which should correspond to any custom scalars defined in your schema.
