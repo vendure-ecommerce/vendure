@@ -17,7 +17,7 @@ An open-source headless commerce platform built on [Node.js](https://nodejs.org)
 
 ## Branches
 
-- `master` - The latest stable release, currently the 2.x series.
+- `master` - The latest stable release, currently the 3.x series.
 - `minor` - The next patch release, including new features
 - `major` - The next major release (v3.0)
 - `v2.x` - The 2.x line, which will receive critical fixes until the end-of-life on 31.12.2024. The code in this branch is under the MIT license.
