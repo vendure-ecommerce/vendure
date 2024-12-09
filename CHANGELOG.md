@@ -1,9 +1,5 @@
 ## 3.1.0 (2024-12-04)
 
-
-## 3.1.0-next.4 (2024-12-03)
-
-
 #### Features
 
 * **admin-ui** Improve facet selector with the code (#3175) ([35892a5](https://github.com/vendure-ecommerce/vendure/commit/35892a5)), closes [#3175](https://github.com/vendure-ecommerce/vendure/issues/3175)
