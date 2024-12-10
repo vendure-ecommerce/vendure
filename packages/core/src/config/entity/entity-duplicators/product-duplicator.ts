@@ -182,6 +182,7 @@ export const productDuplicator = new EntityDuplicator({
                         return {
                             languageCode: translation.languageCode,
                             name: translation.name,
+                            customFields: translation.customFields,
                         };
                     }),
                     optionIds: options.map(option => option.id),
@@ -190,6 +191,7 @@ export const productDuplicator = new EntityDuplicator({
                         stockLocationId: stockLevel.stockLocationId,
                         stockOnHand: stockLevel.stockOnHand,
                     })),
+                    customFields: variant.customFields,
                 };
             });
             const duplicatedProductVariants = await productVariantService.create(ctx, variantInput);
