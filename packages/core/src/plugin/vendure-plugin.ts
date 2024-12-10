@@ -4,7 +4,7 @@ import { ModuleMetadata } from '@nestjs/common/interfaces';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { pick } from '@vendure/common/lib/pick';
 import { Type } from '@vendure/common/lib/shared-types';
-import { DocumentNode, GraphQLScalarType } from 'graphql';
+import { DocumentNode, GraphQLScalarType, GraphQLSchema } from 'graphql';
 
 import { RuntimeVendureConfig } from '../config/vendure-config';
 
@@ -80,6 +80,7 @@ export interface APIExtensionDefinition {
     /**
      * @description
      * Extensions to the schema.
+     * Passes the current schema as an optional argument, allowing the extension to be based on the existing schema.
      *
      * @example
      * ```ts
@@ -89,13 +90,18 @@ export interface APIExtensionDefinition {
      * }`;
      * ```
      */
-    schema?: DocumentNode | (() => DocumentNode | undefined);
+    schema?:
+        | DocumentNode
+        | (() => DocumentNode | undefined)
+        | ((schema?: GraphQLSchema) => DocumentNode | undefined);
     /**
      * @description
      * An array of resolvers for the schema extensions. Should be defined as [Nestjs GraphQL resolver](https://docs.nestjs.com/graphql/resolvers-map)
      * classes, i.e. using the Nest `\@Resolver()` decorator etc.
+     *
+     * Passes the current schema as an optional argument, allowing the resolver to be based on the existing schema.
      */
-    resolvers?: Array<Type<any>> | (() => Array<Type<any>>);
+    resolvers?: Array<Type<any>> | (() => Array<Type<any>>) | ((schema?: GraphQLSchema) => Array<Type<any>>);
     /**
      * @description
      * A map of GraphQL scalar types which should correspond to any custom scalars defined in your schema.
