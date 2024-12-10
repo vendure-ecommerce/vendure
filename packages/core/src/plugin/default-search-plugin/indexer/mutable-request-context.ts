@@ -17,11 +17,8 @@ export class MutableRequestContext extends RequestContext {
     }
     private mutatedChannel: Channel | undefined;
 
-    setChannel(channel: Channel, currencyCode?: CurrencyCode) {
+    setChannel(channel: Channel) {
         this.mutatedChannel = channel;
-        if (currencyCode) {
-            this.mutatedChannel.defaultCurrencyCode = currencyCode;
-        }
     }
 
     get channel(): Channel {
