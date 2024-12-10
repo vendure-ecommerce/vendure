@@ -303,7 +303,7 @@ export class IndexerController {
         });
 
         if (variants) {
-            Logger.verbose(`Updating ${variants.length} variants`, workerLoggerCtx);
+            Logger.info(`Updating ${variants.length} variants`, workerLoggerCtx);
             await this.saveVariants(ctx, variants);
         }
         return true;
@@ -399,8 +399,6 @@ export class IndexerController {
     }
 
     private async saveVariants(ctx: MutableRequestContext, variants: ProductVariant[]) {
-        const items: SearchIndexItem[] = [];
-
         await this.removeSyntheticVariants(ctx, variants);
         const productMap = new Map<ID, Product>();
 
@@ -416,93 +414,116 @@ export class IndexerController {
                 productMap.set(variant.productId, product);
             }
             const availableLanguageCodes = unique(ctx.channel.availableLanguageCodes);
-            for (const languageCode of availableLanguageCodes) {
-                const productTranslation = this.getTranslation(product, languageCode);
-                const variantTranslation = this.getTranslation(variant, languageCode);
-                const collectionTranslations = variant.collections.map(c =>
-                    this.getTranslation(c, languageCode),
-                );
-                let channelIds = variant.channels.map(x => x.id);
-                const clone = new ProductVariant({ id: variant.id });
-                await this.entityHydrator.hydrate(ctx, clone, {
-                    relations: ['channels', 'channels.defaultTaxZone'],
-                });
-                channelIds.push(
-                    ...clone.channels
-                        .filter(x => x.availableLanguageCodes.includes(languageCode))
-                        .map(x => x.id),
-                );
-                channelIds = unique(channelIds);
+            const availableCurrencyCodes = this.options.indexCurrencyCode
+                ? unique(ctx.channel.availableCurrencyCodes)
+                : [ctx.channel.defaultCurrencyCode];
 
-                for (const channel of variant.channels) {
-                    ctx.setChannel(channel);
-                    await this.productPriceApplicator.applyChannelPriceAndTax(variant, ctx);
-                    const item = new SearchIndexItem({
-                        channelId: ctx.channelId,
-                        languageCode,
-                        productVariantId: variant.id,
-                        price: variant.price,
-                        priceWithTax: variant.priceWithTax,
-                        sku: variant.sku,
-                        enabled: product.enabled === false ? false : variant.enabled,
-                        slug: productTranslation?.slug ?? '',
-                        productId: product.id,
-                        productName: productTranslation?.name ?? '',
-                        description: this.constrainDescription(productTranslation?.description ?? ''),
-                        productVariantName: variantTranslation?.name ?? '',
-                        productAssetId: product.featuredAsset ? product.featuredAsset.id : null,
-                        productPreviewFocalPoint: product.featuredAsset
-                            ? product.featuredAsset.focalPoint
-                            : null,
-                        productVariantPreviewFocalPoint: variant.featuredAsset
-                            ? variant.featuredAsset.focalPoint
-                            : null,
-                        productVariantAssetId: variant.featuredAsset ? variant.featuredAsset.id : null,
-                        productPreview: product.featuredAsset ? product.featuredAsset.preview : '',
-                        productVariantPreview: variant.featuredAsset ? variant.featuredAsset.preview : '',
-                        channelIds: channelIds.map(x => x.toString()),
-                        facetIds: this.getFacetIds(variant, product),
-                        facetValueIds: this.getFacetValueIds(variant, product),
-                        collectionIds: variant.collections.map(c => c.id.toString()),
-                        collectionSlugs:
-                            collectionTranslations.map(c => c?.slug).filter(notNullOrUndefined) ?? [],
+            const items: SearchIndexItem[] = [];
+
+            for (const currencyCode of availableCurrencyCodes) {
+                for (const languageCode of availableLanguageCodes) {
+                    const productTranslation = this.getTranslation(product, languageCode);
+                    const variantTranslation = this.getTranslation(variant, languageCode);
+                    const collectionTranslations = variant.collections.map(c =>
+                        this.getTranslation(c, languageCode),
+                    );
+                    let channelIds = variant.channels.map(x => x.id);
+                    const clone = new ProductVariant({ id: variant.id });
+                    await this.entityHydrator.hydrate(ctx, clone, {
+                        relations: ['channels', 'channels.defaultTaxZone'],
                     });
-                    if (this.options.indexStockStatus) {
-                        item.inStock =
-                            0 < (await this.productVariantService.getSaleableStockLevel(ctx, variant));
-                        const productInStock = await this.requestContextCache.get(
+                    channelIds.push(
+                        ...clone.channels
+                            .filter(x => x.availableLanguageCodes.includes(languageCode))
+                            .map(x => x.id),
+                    );
+                    channelIds = unique(channelIds);
+
+                    for (const channel of variant.channels) {
+                        const ch = new Channel({ ...channel, defaultCurrencyCode: currencyCode });
+                        ctx.setChannel(ch);
+
+                        const mutatedVariant = await this.productPriceApplicator.applyChannelPriceAndTax(
+                            variant,
                             ctx,
-                            `productVariantsStock-${variant.productId}`,
-                            () =>
-                                this.connection
-                                    .getRepository(ctx, ProductVariant)
-                                    .find({
-                                        loadEagerRelations: false,
-                                        where: {
-                                            productId: variant.productId,
-                                            deletedAt: IsNull(),
-                                        },
-                                    })
-                                    .then(_variants =>
-                                        Promise.all(
-                                            _variants.map(v =>
-                                                this.productVariantService.getSaleableStockLevel(ctx, v),
-                                            ),
-                                        ),
-                                    )
-                                    .then(stockLevels => stockLevels.some(stockLevel => 0 < stockLevel)),
                         );
-                        item.productInStock = productInStock;
+
+                        const item = new SearchIndexItem({
+                            channelId: ctx.channelId,
+                            languageCode,
+                            currencyCode,
+                            productVariantId: mutatedVariant.id,
+                            price: mutatedVariant.price,
+                            priceWithTax: mutatedVariant.priceWithTax,
+                            sku: mutatedVariant.sku,
+                            enabled: product.enabled === false ? false : mutatedVariant.enabled,
+                            slug: productTranslation?.slug ?? '',
+                            productId: product.id,
+                            productName: productTranslation?.name ?? '',
+                            description: this.constrainDescription(productTranslation?.description ?? ''),
+                            productVariantName: variantTranslation?.name ?? '',
+                            productAssetId: product.featuredAsset ? product.featuredAsset.id : null,
+                            productPreviewFocalPoint: product.featuredAsset
+                                ? product.featuredAsset.focalPoint
+                                : null,
+                            productVariantPreviewFocalPoint: mutatedVariant.featuredAsset
+                                ? mutatedVariant.featuredAsset.focalPoint
+                                : null,
+                            productVariantAssetId: mutatedVariant.featuredAsset
+                                ? mutatedVariant.featuredAsset.id
+                                : null,
+                            productPreview: product.featuredAsset ? product.featuredAsset.preview : '',
+                            productVariantPreview: mutatedVariant.featuredAsset
+                                ? mutatedVariant.featuredAsset.preview
+                                : '',
+                            channelIds: channelIds.map(x => x.toString()),
+                            facetIds: this.getFacetIds(variant, product),
+                            facetValueIds: this.getFacetValueIds(variant, product),
+                            collectionIds: mutatedVariant.collections.map(c => c.id.toString()),
+                            collectionSlugs:
+                                collectionTranslations.map(c => c?.slug).filter(notNullOrUndefined) ?? [],
+                        });
+                        if (this.options.indexStockStatus) {
+                            item.inStock =
+                                0 < (await this.productVariantService.getSaleableStockLevel(ctx, variant));
+                            const productInStock = await this.requestContextCache.get(
+                                ctx,
+                                `productVariantsStock-${mutatedVariant.productId}`,
+                                () =>
+                                    this.connection
+                                        .getRepository(ctx, ProductVariant)
+                                        .find({
+                                            loadEagerRelations: false,
+                                            where: {
+                                                productId: mutatedVariant.productId,
+                                                deletedAt: IsNull(),
+                                            },
+                                        })
+                                        .then(_variants =>
+                                            Promise.all(
+                                                _variants.map(v =>
+                                                    this.productVariantService.getSaleableStockLevel(ctx, v),
+                                                ),
+                                            ),
+                                        )
+                                        .then(stockLevels => stockLevels.some(stockLevel => 0 < stockLevel)),
+                            );
+                            item.productInStock = productInStock;
+                        }
+
+                        items.push(item);
                     }
-                    items.push(item);
                 }
             }
-        }
-        ctx.setChannel(originalChannel);
 
-        await this.queue.push(() =>
-            this.connection.getRepository(ctx, SearchIndexItem).save(items, { chunk: 2500 }),
-        );
+            // Save in batches per currency code to avoid JS closure issues
+            ctx.setChannel(originalChannel);
+
+            await this.queue.push(() => {
+                this.connection.rawConnection.getRepository(SearchIndexItem).save(items, { chunk: 2500 });
+                console.log(JSON.stringify(items, null, 4));
+            });
+        }
     }
 
     /**
@@ -513,6 +534,7 @@ export class IndexerController {
         const productTranslation = this.getTranslation(product, ctx.languageCode);
         const item = new SearchIndexItem({
             channelId: ctx.channelId,
+            currencyCode: ctx.currencyCode,
             languageCode: ctx.languageCode,
             productVariantId: 0,
             price: 0,
