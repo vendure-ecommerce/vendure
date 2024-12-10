@@ -416,30 +416,30 @@ export class IndexerController {
                 productMap.set(variant.productId, product);
             }
             const availableLanguageCodes = unique(ctx.channel.availableLanguageCodes);
-            const availableCurrencyCodes = this.options.indexCurrencyCode
-                ? unique(ctx.channel.availableCurrencyCodes)
-                : [ctx.channel.defaultCurrencyCode];
+            for (const languageCode of availableLanguageCodes) {
+                const productTranslation = this.getTranslation(product, languageCode);
+                const variantTranslation = this.getTranslation(variant, languageCode);
+                const collectionTranslations = variant.collections.map(c =>
+                    this.getTranslation(c, languageCode),
+                );
+                let channelIds = variant.channels.map(x => x.id);
+                const clone = new ProductVariant({ id: variant.id });
+                await this.entityHydrator.hydrate(ctx, clone, {
+                    relations: ['channels', 'channels.defaultTaxZone'],
+                });
+                channelIds.push(
+                    ...clone.channels
+                        .filter(x => x.availableLanguageCodes.includes(languageCode))
+                        .map(x => x.id),
+                );
+                channelIds = unique(channelIds);
 
-            for (const currencyCode of availableCurrencyCodes) {
-                for (const languageCode of availableLanguageCodes) {
-                    const productTranslation = this.getTranslation(product, languageCode);
-                    const variantTranslation = this.getTranslation(variant, languageCode);
-                    const collectionTranslations = variant.collections.map(c =>
-                        this.getTranslation(c, languageCode),
-                    );
-                    let channelIds = variant.channels.map(x => x.id);
-                    const clone = new ProductVariant({ id: variant.id });
-                    await this.entityHydrator.hydrate(ctx, clone, {
-                        relations: ['channels', 'channels.defaultTaxZone'],
-                    });
-                    channelIds.push(
-                        ...clone.channels
-                            .filter(x => x.availableLanguageCodes.includes(languageCode))
-                            .map(x => x.id),
-                    );
-                    channelIds = unique(channelIds);
+                for (const channel of variant.channels) {
+                    const availableCurrencyCodes = this.options.indexCurrencyCode
+                        ? unique(channel.availableCurrencyCodes)
+                        : [ctx.channel.defaultCurrencyCode];
 
-                    for (const channel of variant.channels) {
+                    for (const currencyCode of availableCurrencyCodes) {
                         const ch = new Channel({ ...channel, defaultCurrencyCode: currencyCode });
                         ctx.setChannel(ch);
 
