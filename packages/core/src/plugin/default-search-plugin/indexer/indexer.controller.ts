@@ -443,20 +443,17 @@ export class IndexerController {
                         const ch = new Channel({ ...channel, defaultCurrencyCode: currencyCode });
                         ctx.setChannel(ch);
 
-                        const mutatedVariant = await this.productPriceApplicator.applyChannelPriceAndTax(
-                            variant,
-                            ctx,
-                        );
+                        await this.productPriceApplicator.applyChannelPriceAndTax(variant, ctx);
 
                         const item = new SearchIndexItem({
                             channelId: ctx.channelId,
                             languageCode,
                             currencyCode,
-                            productVariantId: mutatedVariant.id,
-                            price: mutatedVariant.price,
-                            priceWithTax: mutatedVariant.priceWithTax,
-                            sku: mutatedVariant.sku,
-                            enabled: product.enabled === false ? false : mutatedVariant.enabled,
+                            productVariantId: variant.id,
+                            price: variant.price,
+                            priceWithTax: variant.priceWithTax,
+                            sku: variant.sku,
+                            enabled: product.enabled === false ? false : variant.enabled,
                             slug: productTranslation?.slug ?? '',
                             productId: product.id,
                             productName: productTranslation?.name ?? '',
@@ -466,20 +463,16 @@ export class IndexerController {
                             productPreviewFocalPoint: product.featuredAsset
                                 ? product.featuredAsset.focalPoint
                                 : null,
-                            productVariantPreviewFocalPoint: mutatedVariant.featuredAsset
-                                ? mutatedVariant.featuredAsset.focalPoint
+                            productVariantPreviewFocalPoint: variant.featuredAsset
+                                ? variant.featuredAsset.focalPoint
                                 : null,
-                            productVariantAssetId: mutatedVariant.featuredAsset
-                                ? mutatedVariant.featuredAsset.id
-                                : null,
+                            productVariantAssetId: variant.featuredAsset ? variant.featuredAsset.id : null,
                             productPreview: product.featuredAsset ? product.featuredAsset.preview : '',
-                            productVariantPreview: mutatedVariant.featuredAsset
-                                ? mutatedVariant.featuredAsset.preview
-                                : '',
+                            productVariantPreview: variant.featuredAsset ? variant.featuredAsset.preview : '',
                             channelIds: channelIds.map(x => x.toString()),
                             facetIds: this.getFacetIds(variant, product),
                             facetValueIds: this.getFacetValueIds(variant, product),
-                            collectionIds: mutatedVariant.collections.map(c => c.id.toString()),
+                            collectionIds: variant.collections.map(c => c.id.toString()),
                             collectionSlugs:
                                 collectionTranslations.map(c => c?.slug).filter(notNullOrUndefined) ?? [],
                         });
@@ -488,14 +481,14 @@ export class IndexerController {
                                 0 < (await this.productVariantService.getSaleableStockLevel(ctx, variant));
                             const productInStock = await this.requestContextCache.get(
                                 ctx,
-                                `productVariantsStock-${mutatedVariant.productId}`,
+                                `productVariantsStock-${variant.productId}`,
                                 () =>
                                     this.connection
                                         .getRepository(ctx, ProductVariant)
                                         .find({
                                             loadEagerRelations: false,
                                             where: {
-                                                productId: mutatedVariant.productId,
+                                                productId: variant.productId,
                                                 deletedAt: IsNull(),
                                             },
                                         })
