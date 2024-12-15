@@ -6,10 +6,9 @@ import {
     SqljsInitializer,
     testConfig as defaultTestConfig,
 } from '@vendure/testing';
-import fs from 'fs-extra';
 import path from 'path';
 import { DataSourceOptions } from 'typeorm';
-import { fileURLToPath } from 'url';
+import { globSync } from 'glob';
 
 import { getPackageDir } from './get-package-dir';
 
@@ -36,25 +35,44 @@ registerInitializer('mysql', new MysqlInitializer());
 registerInitializer('mariadb', new MysqlInitializer());
 
 export const testConfig = () => {
-    // @ts-ignore
-    const portsFile = fileURLToPath(new URL('ports.json', import.meta.url));
-    fs.ensureFileSync(portsFile);
-    let usedPorts: number[];
-    try {
-        usedPorts = fs.readJSONSync(portsFile) ?? [3010];
-    } catch (e: any) {
-        usedPorts = [3010];
+    // this initial port value will be incremented according to which test we're
+    // running
+    let testPort = 3010;
+
+    // this regex extracts the filename of the e2e test we're running from the
+    // call stack of this function
+    const testFileNameRegex = /[\w-]+\.e2e-spec\.ts/;
+
+    // get the call stack of this function and find the filename of the e2e test
+    // we're running in it.
+
+    // `Error.prototype.stack` is not strictly standardized but is supported by
+    // all major JavaScript engines, including Node.js since version 0.10.0:
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/stack
+    const stack = new Error().stack;
+    if (!stack) {
+        throw new Error('could not get caller from stack in Error object');
     }
-    const nextPort = Math.max(...usedPorts) + 1;
-    usedPorts.push(nextPort);
-    if (100 < usedPorts.length) {
-        // reset the used ports after it gets 100 entries long
-        usedPorts = [3010];
+    const testFileNameMatch = stack.match(testFileNameRegex);
+    if (!testFileNameMatch) {
+        throw new Error("could not derive the current test file's name from this stack: \n" + stack);
     }
-    fs.writeJSONSync(portsFile, usedPorts);
+    const testFileName = testFileNameMatch[0];
+
+    // get an array of all of the e2e test files in this project, and find the
+    // current test's position in it
+    const e2eTests = globSync('../**/*.e2e-spec.ts')
+        .sort()
+        .map(testFilePath => path.basename(testFilePath));
+    const thisTestsIndex = e2eTests.indexOf(testFileName);
+
+    // increment the test port by the position of this test in the array of all
+    // tests, to ensure that this test gets a unique port value
+    testPort += thisTestsIndex;
+
     return mergeConfig(defaultTestConfig, {
         apiOptions: {
-            port: nextPort,
+            port: testPort,
         },
         importExportOptions: {
             importAssetsDir: path.join(packageDir, 'fixtures/assets'),
