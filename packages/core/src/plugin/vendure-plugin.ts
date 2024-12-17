@@ -98,7 +98,7 @@ export interface APIExtensionDefinition {
      *
      * Passes the current schema as an optional argument, allowing the resolver to be based on the existing schema.
      */
-    resolvers?: Array<Type<any>> | ((schema?: GraphQLSchema) => Array<Type<any>>);
+    resolvers?: Array<Type<any>> | (() => Array<Type<any>>);
     /**
      * @description
      * A map of GraphQL scalar types which should correspond to any custom scalars defined in your schema.
