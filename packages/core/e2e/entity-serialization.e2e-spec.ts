@@ -214,6 +214,17 @@ describe('Entity serialization', () => {
         assertCanBeSerialized(shippingLine);
     });
 
+    it('serialize Order with nested ShippingMethod', async () => {
+        const ctx = await createCtx();
+        const order = await server.app
+            .get(OrderService)
+            .findOne(ctx, 1, ['lines', 'shippingLines.shippingMethod']);
+
+        expect(order).not.toBeNull();
+        expect(order instanceof Order).toBe(true);
+        assertCanBeSerialized(order);
+    });
+
     function assertCanBeSerialized(entity: any) {
         try {
             const json = JSON.stringify(entity);

@@ -102,7 +102,7 @@ export class ShippingMethod
      * This is a fix for https://github.com/vendure-ecommerce/vendure/issues/3277,
      * to prevent circular references which cause the JSON.stringify() to fail.
      */
-    protected toJSON() {
+    protected toJSON(): any {
         return omit(this, ['allCheckers', 'allCalculators'] as any);
     }
 }
