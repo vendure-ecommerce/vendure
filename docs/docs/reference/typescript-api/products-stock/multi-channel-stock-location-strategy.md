@@ -23,11 +23,6 @@ does not take channels into account, update your VendureConfig to use to <a href
 
 ```ts title="Signature"
 class MultiChannelStockLocationStrategy extends BaseStockLocationStrategy {
-    protected cacheService: CacheService;
-    protected channelIdCache: Cache;
-    protected eventBus: EventBus;
-    protected globalSettingsService: GlobalSettingsService;
-    protected requestContextCache: RequestContextCacheService;
     getAvailableStock(ctx: RequestContext, productVariantId: ID, stockLevels: StockLevel[]) => Promise<AvailableStock>;
     forAllocation(ctx: RequestContext, stockLocations: StockLocation[], orderLine: OrderLine, quantity: number) => Promise<LocationWithQuantity[]>;
 }
@@ -37,31 +32,6 @@ class MultiChannelStockLocationStrategy extends BaseStockLocationStrategy {
 
 
 <div className="members-wrapper">
-
-### cacheService
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/cache/cache-service#cacheservice'>CacheService</a>`}   />
-
-
-### channelIdCache
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/cache/#cache'>Cache</a>`}   />
-
-
-### eventBus
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>`}   />
-
-
-### globalSettingsService
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/services/global-settings-service#globalsettingsservice'>GlobalSettingsService</a>`}   />
-
-
-### requestContextCache
-
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/cache/request-context-cache-service#requestcontextcacheservice'>RequestContextCacheService</a>`}   />
-
 
 ### getAvailableStock
 

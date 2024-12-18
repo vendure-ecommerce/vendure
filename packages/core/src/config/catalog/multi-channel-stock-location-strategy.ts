@@ -30,10 +30,15 @@ import { AvailableStock, LocationWithQuantity, StockLocationStrategy } from './s
  * @since 3.1.0
  */
 export class MultiChannelStockLocationStrategy extends BaseStockLocationStrategy {
+    /** @internal */
     protected cacheService: CacheService;
+    /** @internal */
     protected channelIdCache: Cache;
+    /** @internal */
     protected eventBus: EventBus;
+    /** @internal */
     protected globalSettingsService: GlobalSettingsService;
+    /** @internal */
     protected requestContextCache: RequestContextCacheService;
 
     /** @internal */
