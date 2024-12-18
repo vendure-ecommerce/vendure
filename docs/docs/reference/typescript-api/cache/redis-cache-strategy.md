@@ -35,7 +35,7 @@ class RedisCacheStrategy implements CacheStrategy {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(options: RedisCachePluginInitOptions) => RedisCacheStrategy`}   />
+<MemberInfo kind="method" type={`(options: <a href='/reference/typescript-api/cache/redis-cache-plugin#rediscacheplugininitoptions'>RedisCachePluginInitOptions</a>) => RedisCacheStrategy`}   />
 
 
 ### init
@@ -55,7 +55,7 @@ class RedisCacheStrategy implements CacheStrategy {
 
 ### set
 
-<MemberInfo kind="method" type={`(key: string, value: T, options?: SetCacheKeyOptions) => Promise&#60;void&#62;`}   />
+<MemberInfo kind="method" type={`(key: string, value: T, options?: <a href='/reference/typescript-api/cache/cache-strategy#setcachekeyoptions'>SetCacheKeyOptions</a>) => Promise&#60;void&#62;`}   />
 
 
 ### delete
