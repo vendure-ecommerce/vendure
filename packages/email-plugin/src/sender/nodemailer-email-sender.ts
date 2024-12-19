@@ -76,7 +76,9 @@ export class NodemailerEmailSender implements EmailSender {
     }
 
     private getSmtpTransport(options: SMTPTransportOptions) {
-        if (!this._smtpTransport) {
+        if (!this._smtpTransport ||
+            JSON.stringify(this._smtpTransport?.options) !== JSON.stringify(options)
+        ) {
             (options as any).logger = options.logging ? this.createLogger() : false;
             this._smtpTransport = createTransport(options);
         }
@@ -84,14 +86,19 @@ export class NodemailerEmailSender implements EmailSender {
     }
 
     private getSesTransport(options: SESTransportOptions) {
-        if (!this._sesTransport) {
+        if (!this._sesTransport ||
+            JSON.stringify(this._sesTransport?.options) !== JSON.stringify(options)
+        ) {
             this._sesTransport = createTransport(options);
         }
         return this._sesTransport;
     }
 
     private getSendMailTransport(options: SendmailTransportOptions) {
-        if (!this._sendMailTransport) {
+        if (!this._sendMailTransport ||
+            JSON.stringify(this._sendMailTransport?.options) !==
+            JSON.stringify({ sendmail: true, ...options })
+        ) {
             this._sendMailTransport = createTransport({ sendmail: true, ...options });
         }
         return this._sendMailTransport;
