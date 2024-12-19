@@ -14,12 +14,12 @@ import { ProductChannelEvent } from '../../event-bus/events/product-channel-even
 import { ProductEvent } from '../../event-bus/events/product-event';
 import { ProductVariantChannelEvent } from '../../event-bus/events/product-variant-channel-event';
 import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
+import { StockMovementEvent } from '../../event-bus/events/stock-movement-event';
 import { TaxRateModificationEvent } from '../../event-bus/events/tax-rate-modification-event';
 import { JobQueueService } from '../../job-queue/job-queue.service';
 import { PluginCommonModule } from '../plugin-common.module';
 import { VendurePlugin } from '../vendure-plugin';
 
-import { StockMovementEvent } from '../../event-bus/events/stock-movement-event';
 import { stockStatusExtension } from './api/api-extensions';
 import { AdminFulltextSearchResolver, ShopFulltextSearchResolver } from './api/fulltext-search.resolver';
 import { BUFFER_SEARCH_INDEX_UPDATES, PLUGIN_INIT_OPTIONS } from './constants';
