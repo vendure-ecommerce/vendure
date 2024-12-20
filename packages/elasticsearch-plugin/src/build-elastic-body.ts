@@ -41,6 +41,7 @@ export function buildElasticBody(
             {
                 multi_match: {
                     query: term,
+                    fuzziness: "AUTO", 
                     type: searchConfig.multiMatchType,
                     fields: [
                         `productName^${searchConfig.boostFields.productName}`,
