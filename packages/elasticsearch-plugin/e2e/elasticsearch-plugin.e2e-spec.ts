@@ -155,6 +155,12 @@ describe('Elasticsearch plugin', () => {
                                 },
                             },
                         },
+                        boostFields: {
+                            description: 1,
+                            productName: 1,
+                            productVariantName: 1,
+                            sku: 1,
+                        },
                         mapSort: (sort, input) => {
                             const priority = (input.sort as any)?.priority;
                             if (priority) {
