@@ -46,4 +46,11 @@ describe('normalizeString()', () => {
     it('replaces combining diaeresis with e', () => {
         expect(normalizeString('Ja quäkt Schwyz Pöbel vor Gmünd')).toBe('ja quaekt schwyz poebel vor gmuend');
     });
+
+    it('contracts multiple sequential replacers to a single replacer', () => {
+        expect(normalizeString('foo - bar', '-')).toBe('foo-bar');
+        expect(normalizeString('foo--bar', '-')).toBe('foo-bar');
+        expect(normalizeString('foo - bar', '_')).toBe('foo_-_bar');
+        expect(normalizeString('foo _ bar', '_')).toBe('foo_bar');
+    });
 });
