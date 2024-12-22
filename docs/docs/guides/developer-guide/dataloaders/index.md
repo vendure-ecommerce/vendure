@@ -45,6 +45,8 @@ export const shopApiExtensions = gql`
 **Dataloader skeleton**
 
 ```ts title="src/plugins/my-plugin/api/datalaoder.ts"
+import DataLoader from 'dataloader'
+
 const LoggerCtx = 'SubscriptionDataloaderService'
 
 @Injectable({ scope: Scope.REQUEST }) // Important! Dataloaders live at the request level
