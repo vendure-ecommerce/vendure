@@ -7,11 +7,9 @@ showtoc: true
 
 ## N+1 problem
 
-Imagine a cart with 20 items. Your database pool is configured to 15: enough to handle most sccenario's. Your implementation requires you to perform an `async` calculation `isSubscription` for each cart item whih executes one or more queries each time it is called. It works fine for a cart with 10 items. But with more than 15 items, suddenly the cart takes 20 seconds to load.
+Imagine a cart with 20 items. Your implementation requires you to perform an `async` calculation `isSubscription` for each cart item whih executes one or more queries each time it is called and it takes pretty long on each execution. It works fine for a cart with 1 or 2 items. But with more than 15 items, suddenly the cart takes a **lot** longer to load. Especially when the site is busy.
 
-The reason: the N+1 problem. Your cart is firing of 20 or more queries almost at the same time and is overwhelming your database pool. With 15 queries active in the pool, the next one has to wait until a slot becomes available in the pool, adding **significantly** to the GraphQL request. 
-
-And even if you don't overwhelm your database pool, executing 10 queries to get 10 items is like going to the McDonald's drive-in to get 10 hamburgers and getting in line 10 times to get 1 hamburger at a time. It's not efficient.
+The reason: the N+1 problem. Your cart is firing of 20 or more queries almost at the same time, adding **significantly** to the GraphQL request. It's like going to the McDonald's drive-in to get 10 hamburgers and getting in line 10 times to get 1 hamburger at a time. It's not efficient.
 
 ## The solution: dataloaders
 
