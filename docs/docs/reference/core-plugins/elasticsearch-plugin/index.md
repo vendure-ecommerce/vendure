@@ -75,6 +75,7 @@ type PriceRangeBucket {
 extend input SearchInput {
     priceRange: PriceRangeInput
     priceRangeWithTax: PriceRangeInput
+    inStock: Boolean
 }
 
 input PriceRangeInput {
