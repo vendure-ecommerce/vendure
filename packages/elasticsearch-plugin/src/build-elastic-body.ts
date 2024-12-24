@@ -41,7 +41,7 @@ export function buildElasticBody(
             {
                 multi_match: {
                     query: term,
-                    fuzziness: "AUTO", 
+                    fuzziness: 'AUTO',
                     type: searchConfig.multiMatchType,
                     fields: [
                         `productName^${searchConfig.boostFields.productName}`,
@@ -167,13 +167,13 @@ function createScriptFields(
             for (const name of fields) {
                 const scriptField = scriptFields[name];
                 if (scriptField.context === 'product' && groupByProduct === true) {
-                    (result )[name] = scriptField.scriptFn(input);
+                    result[name] = scriptField.scriptFn(input);
                 }
                 if (scriptField.context === 'variant' && groupByProduct === false) {
-                    (result )[name] = scriptField.scriptFn(input);
+                    result[name] = scriptField.scriptFn(input);
                 }
                 if (scriptField.context === 'both' || scriptField.context === undefined) {
-                    (result )[name] = scriptField.scriptFn(input);
+                    result[name] = scriptField.scriptFn(input);
                 }
             }
             return result;
