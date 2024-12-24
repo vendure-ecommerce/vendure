@@ -135,7 +135,7 @@ export class UserService {
         const authenticationMethod = new NativeAuthenticationMethod();
         if (this.configService.authOptions.requireVerification) {
             authenticationMethod.verificationToken =
-                this.verificationTokenGenerator.generateVerificationToken();
+                await this.verificationTokenGenerator.generateVerificationToken(ctx);
             user.verified = false;
         } else {
             user.verified = true;
@@ -193,7 +193,8 @@ export class UserService {
      */
     async setVerificationToken(ctx: RequestContext, user: User): Promise<User> {
         const nativeAuthMethod = user.getNativeAuthenticationMethod();
-        nativeAuthMethod.verificationToken = this.verificationTokenGenerator.generateVerificationToken();
+        nativeAuthMethod.verificationToken =
+            await this.verificationTokenGenerator.generateVerificationToken(ctx);
         user.verified = false;
         await this.connection.getRepository(ctx, NativeAuthenticationMethod).save(nativeAuthMethod);
         return this.connection.getRepository(ctx, User).save(user);
@@ -220,7 +221,11 @@ export class UserService {
             .where('authenticationMethod.verificationToken = :verificationToken', { verificationToken })
             .getOne();
         if (user) {
-            if (this.verificationTokenGenerator.verifyVerificationToken(verificationToken)) {
+            const isTokenValid = await this.verificationTokenGenerator.verifyVerificationToken(
+                ctx,
+                verificationToken,
+            );
+            if (isTokenValid) {
                 const nativeAuthMethod = user.getNativeAuthenticationMethod();
                 if (!password) {
                     if (!nativeAuthMethod.passwordHash) {
@@ -262,7 +267,8 @@ export class UserService {
         if (!nativeAuthMethod) {
             return undefined;
         }
-        nativeAuthMethod.passwordResetToken = this.verificationTokenGenerator.generateVerificationToken();
+        nativeAuthMethod.passwordResetToken =
+            await this.verificationTokenGenerator.generateVerificationToken(ctx);
         await this.connection.getRepository(ctx, NativeAuthenticationMethod).save(nativeAuthMethod);
         return user;
     }
@@ -295,7 +301,13 @@ export class UserService {
         if (passwordValidationResult !== true) {
             return passwordValidationResult;
         }
-        if (this.verificationTokenGenerator.verifyVerificationToken(passwordResetToken)) {
+
+        const isTokenValid = await this.verificationTokenGenerator.verifyVerificationToken(
+            ctx,
+            passwordResetToken,
+        );
+
+        if (isTokenValid) {
             const nativeAuthMethod = user.getNativeAuthenticationMethod();
             nativeAuthMethod.passwordHash = await this.passwordCipher.hash(password);
             nativeAuthMethod.passwordResetToken = null;
@@ -346,7 +358,8 @@ export class UserService {
      */
     async setIdentifierChangeToken(ctx: RequestContext, user: User): Promise<User> {
         const nativeAuthMethod = user.getNativeAuthenticationMethod();
-        nativeAuthMethod.identifierChangeToken = this.verificationTokenGenerator.generateVerificationToken();
+        nativeAuthMethod.identifierChangeToken =
+            await this.verificationTokenGenerator.generateVerificationToken(ctx);
         await this.connection.getRepository(ctx, NativeAuthenticationMethod).save(nativeAuthMethod);
         return user;
     }
@@ -376,7 +389,9 @@ export class UserService {
         if (!user) {
             return new IdentifierChangeTokenInvalidError();
         }
-        if (!this.verificationTokenGenerator.verifyVerificationToken(token)) {
+        const isTokenValid = await this.verificationTokenGenerator.verifyVerificationToken(ctx, token);
+
+        if (!isTokenValid) {
             return new IdentifierChangeTokenExpiredError();
         }
         const nativeAuthMethod = user.getNativeAuthenticationMethod();
