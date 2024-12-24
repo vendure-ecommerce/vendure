@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import ms from 'ms';
 
-import { generatePublicId } from '../../../common/generate-public-id';
+import { RequestContext } from '../../../api';
 import { ConfigService } from '../../../config/config.service';
 
 /**
@@ -13,31 +12,21 @@ export class VerificationTokenGenerator {
     constructor(private configService: ConfigService) {}
 
     /**
-     * Generates a verification token which encodes the time of generation and concatenates it with a
-     * random id.
+     * Generates a verification token using the configured {@link VerificationTokenStrategy}.
+     * @param ctx The RequestContext object.
+     * @returns The generated token.
      */
-    generateVerificationToken() {
-        const now = new Date();
-        const base64Now = Buffer.from(now.toJSON()).toString('base64');
-        const id = generatePublicId();
-        return `${base64Now}_${id}`;
+    async generateVerificationToken(ctx: RequestContext): Promise<string> {
+        return this.configService.authOptions.verificationTokenStrategy.generateVerificationToken(ctx);
     }
 
     /**
-     * Checks the age of the verification token to see if it falls within the token duration
-     * as specified in the VendureConfig.
+     * Verifies a verification token using the configured {@link VerificationTokenStrategy}.
+     * @param ctx The RequestContext object.
+     * @param token The token to verify.
+     * @returns `true` if the token is valid, `false` otherwise.
      */
-    verifyVerificationToken(token: string): boolean {
-        const { verificationTokenDuration } = this.configService.authOptions;
-        const verificationTokenDurationInMs =
-            typeof verificationTokenDuration === 'string'
-                ? ms(verificationTokenDuration)
-                : verificationTokenDuration;
-
-        const [generatedOn] = token.split('_');
-        const dateString = Buffer.from(generatedOn, 'base64').toString();
-        const date = new Date(dateString);
-        const elapsed = +new Date() - +date;
-        return elapsed < verificationTokenDurationInMs;
+    async verifyVerificationToken(ctx: RequestContext, token: string): Promise<boolean> {
+        return this.configService.authOptions.verificationTokenStrategy.verifyVerificationToken(ctx, token);
     }
 }
