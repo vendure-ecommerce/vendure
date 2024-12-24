@@ -34,7 +34,7 @@ function currencyHasFractionPart(currencyCode: CurrencyCode): boolean {
         currencyDisplay: 'symbol',
     }).formatToParts(123.45);
 
-    return !!parts.find(p => p.type === 'fraction');
+    return parts.some(p => p.type === 'fraction');
 }
 
 /**
