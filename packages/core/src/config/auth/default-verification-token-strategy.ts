@@ -15,7 +15,7 @@ import { VerificationTokenStrategy } from './verification-token-strategy';
  * time encoded in the token.
  *
  * @docsCategory auth
- * @since 1.5.0
+ * @since 3.2.0
  */
 export class DefaultVerificationTokenStrategy implements VerificationTokenStrategy {
     private configService: ConfigService;
