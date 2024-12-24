@@ -728,8 +728,8 @@ export const defaultOptions: ElasticsearchRuntimeOptions = {
         totalItemsMaxSize: 10000,
         multiMatchType: 'best_fields',
         boostFields: {
-            productName: 1,
-            productVariantName: 1,
+            productName: 5,
+            productVariantName: 5,
             description: 1,
             sku: 1,
         },
