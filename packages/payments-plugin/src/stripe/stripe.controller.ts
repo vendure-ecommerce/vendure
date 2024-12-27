@@ -71,9 +71,9 @@ export class StripeController {
             );
         }
 
-        const { channelToken, orderCode, orderId } = metadata;
+        const { channelToken, orderCode, orderId, languageCode } = metadata;
 
-        const outerCtx = await this.createContext(channelToken, request);
+        const outerCtx = await this.createContext(channelToken, languageCode, request);
 
         await this.connection.withTransaction(outerCtx, async (ctx: RequestContext) => {
             const order = await this.orderService.findOneByCode(ctx, orderCode);
@@ -112,7 +112,7 @@ export class StripeController {
                 // channel to fail. Using a default channel avoids "entity-with-id-not-found" errors.
                 // See https://github.com/vendure-ecommerce/vendure/issues/3072
                 const defaultChannel = await this.channelService.getDefaultChannel(ctx);
-                const ctxWithDefaultChannel = await this.createContext(defaultChannel.token, request);
+                const ctxWithDefaultChannel = await this.createContext(defaultChannel.token, languageCode, request);
                 const transitionToStateResult = await this.orderService.transitionToState(
                     ctxWithDefaultChannel,
                     orderId,
@@ -159,12 +159,12 @@ export class StripeController {
         }
     }
 
-    private async createContext(channelToken: string, req: RequestWithRawBody): Promise<RequestContext> {
+    private async createContext(channelToken: string, languageCode: LanguageCode, req: RequestWithRawBody): Promise<RequestContext> {
         return this.requestContextService.create({
             apiType: 'admin',
             channelOrToken: channelToken,
             req,
-            languageCode: LanguageCode.en,
+            languageCode,
         });
     }
 
