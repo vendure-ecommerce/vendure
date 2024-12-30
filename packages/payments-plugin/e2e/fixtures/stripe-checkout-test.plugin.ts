@@ -3,7 +3,7 @@ import { Controller, Res, Get } from '@nestjs/common';
 import { PluginCommonModule, VendurePlugin } from '@vendure/core';
 import { Response } from 'express';
 
-import { clientSecret } from './stripe-dev-server';
+import { clientSecret } from '../stripe-dev-server';
 
 /**
  * This test controller returns the Stripe intent checkout page
@@ -18,8 +18,8 @@ export class StripeTestCheckoutController {
   <title>Checkout</title>
   <script src="https://js.stripe.com/v3/"></script>
 </head>
-<html>
 
+<html>
 <form id="payment-form">
   <div id="payment-element">
     <!-- Elements will create form elements here -->
