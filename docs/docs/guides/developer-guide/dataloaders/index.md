@@ -15,7 +15,7 @@ The reason: the N+1 problem. Your cart is firing of 20 or more queries almost at
 
 Dataloaders allow you to say: instead of loading each field in the `grapqhl` tree one at a time, aggregate all the `ids` you want to execute the `async` calculation for, and then execute this for all the `ids` in one efficient `request`.
 
-Dataloaders are often used on `fieldResolver`s. Often, you will need a specific dataloader for a each field resolver.
+Dataloaders are generally used on `fieldResolver`s. Often, you will need a specific dataloader for each field resolver.
 
 A Dataloader can return anything: `boolean`, `ProductVariant`, `string`, etc
 
@@ -29,7 +29,7 @@ No, not normally. `CustomField` relations are automatically added to the root qu
 
 ## Example
 
-We will provider a complete example here for you to use as a starting point. The skeleton created can handle multiple dataloaders across multiple channels. We will implement a `fieldResolver` called `isSubscription` for an `OrderLine` that will return a `true/false` for each incoming `orderLine`, to indicate whether the `orderLine` represents a subscription.
+We will provide a complete example here for you to use as a starting point. The skeleton created can handle multiple dataloaders across multiple channels. We will implement a `fieldResolver` called `isSubscription` for an `OrderLine` that will return a `true/false` for each incoming `orderLine`, to indicate whether the `orderLine` represents a subscription.
 
 
 ```ts title="src/plugins/my-plugin/api/api-extensions.ts"
@@ -62,7 +62,7 @@ export class DataloaderService {
   getLoader(ctx: RequestContext, dataloaderKey: string) {
     const token = ctx.channel?.code ?? `${ctx.channelId}`
     
-    Logger.debug(`Dataloader retrieval: ${token}, ${dataloaderKey}`)
+    Logger.debug(`Dataloader retrieval: ${token}, ${dataloaderKey}`, LoggerCtx)
 
     if (!this.loaders.has(token)) {
       this.loaders.set(token, new Map<string, DataLoader<ID, any>>())
@@ -78,6 +78,7 @@ export class DataloaderService {
             this.batchLoadIsSubscription(ctx, ids as ID[]),
           )
           break
+        // Implement cases for your other dataloaders here
         default:
           throw new Error(`Unknown dataloader key ${dataloaderKey}`)
       }
@@ -91,12 +92,13 @@ export class DataloaderService {
     ctx: RequestContext,
     ids: ID[],
   ): Promise<Boolean[]> {
-    // returns a list of ids that represent those input ids that are subscriptions
+    // Returns an array of ids that represent those input ids that are subscriptions
+    // Remember: this array can be smaller than the input array
     const subscriptionIds = await this.service.whichSubscriptions(ctx, ids)
 
-    Logger.debug(`Dataloader is-subscription: ${ids}: ${subscriptionIds}`)
+    Logger.debug(`Dataloader is-subscription: ${ids}: ${subscriptionIds}`, LoggerCtx)
 
-    return ids.map((id) => subscriptionIds.includes(id)) // Important! preserve order and count of input ids
+    return ids.map((id) => subscriptionIds.includes(id)) // Important! preserve order and size of input ids array
   }
 }
 ```
