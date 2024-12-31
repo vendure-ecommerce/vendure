@@ -53,7 +53,7 @@ const config: VendureConfig = {
 ## Search API Extensions
 This plugin extends the default search query of the Shop API, allowing richer querying of your product data.
 
-The [SearchResponse](/reference/graphql-api/admin/object-types/#searchresponse) type is extended with information
+The [SearchResponse](/reference/graphql-api/shop/object-types/#searchresponse) type is extended with information
 about price ranges in the result set:
 ```graphql
 extend type SearchResponse {
