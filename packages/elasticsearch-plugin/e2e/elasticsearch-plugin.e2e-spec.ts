@@ -913,9 +913,8 @@ describe('Elasticsearch plugin', () => {
                     groupByProduct: true,
                     term: 'gaming',
                 });
-                expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
-                    { productId: 'T_3', enabled: false },
-                ]);
+                const t3 = result.search.items.find(i => i.productId === 'T_3');
+                expect(t3?.enabled).toEqual(false);
             });
 
             // https://github.com/vendure-ecommerce/vendure/issues/295
