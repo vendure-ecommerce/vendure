@@ -1,5 +1,5 @@
-import { CacheService } from '@vendure/core';
-import { expect } from 'vitest';
+import { CacheService, Logger } from '@vendure/core';
+import { expect, vi } from 'vitest';
 
 import { TestingCacheTtlProvider } from '../../src/cache/cache-ttl-provider';
 
@@ -49,6 +49,22 @@ export async function deletesAKey(cacheService: CacheService) {
 export async function setsAKeyWithTtl(cacheService: CacheService, ttlProvider: TestingCacheTtlProvider) {
     ttlProvider.setTime(new Date().getTime());
     await cacheService.set('test-key', 'test-value', { ttl: 1000 });
+    const result = await cacheService.get('test-key');
+    expect(result).toBe('test-value');
+
+    ttlProvider.incrementTime(2000);
+
+    const result2 = await cacheService.get('test-key');
+
+    expect(result2).toBeUndefined();
+}
+
+export async function setsAKeyWithSubSecondTtl(
+    cacheService: CacheService,
+    ttlProvider: TestingCacheTtlProvider,
+) {
+    ttlProvider.setTime(new Date().getTime());
+    await cacheService.set('test-key', 'test-value', { ttl: 700 });
     const result = await cacheService.get('test-key');
     expect(result).toBe('test-value');
 
@@ -126,4 +142,11 @@ export async function invalidatesALargeNumberOfKeysByTag(cacheService: CacheServ
     for (let i = 0; i < 100; i++) {
         expect(await cacheService.get(`taggedKey${i}`)).toBeUndefined();
     }
+}
+
+export async function invalidTTLsShouldNotSetKey(cacheService: CacheService) {
+    await cacheService.set('test-key', 'test-value', { ttl: -1500 });
+    const result = await cacheService.get('test-key');
+
+    expect(result).toBeUndefined();
 }

@@ -63,13 +63,24 @@ export class RedisCacheStrategy implements CacheStrategy {
                     return;
                 }
             }
-            multi.set(namedspacedKey, JSON.stringify(value), 'EX', ttl);
+            if (Math.round(ttl) <= 0) {
+                Logger.error(
+                    `Could not set cache item ${key}: TTL must be greater than 0 seconds`,
+                    loggerCtx,
+                );
+                return;
+            }
+            multi.set(namedspacedKey, JSON.stringify(value), 'EX', Math.round(ttl));
             if (options?.tags) {
                 for (const tag of options.tags) {
                     multi.sadd(this.tagNamespace(tag), namedspacedKey);
                 }
             }
-            await multi.exec();
+            const results = await multi.exec();
+            const resultWithError = results?.find(([err, _]) => err);
+            if (resultWithError) {
+                throw resultWithError[0];
+            }
         } catch (e: any) {
             Logger.error(`Could not set cache item ${key}: ${e.message as string}`, loggerCtx);
         }
