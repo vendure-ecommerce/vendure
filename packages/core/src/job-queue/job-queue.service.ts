@@ -54,7 +54,10 @@ export class JobQueueService implements OnModuleDestroy {
         return this.configService.jobQueueOptions.jobQueueStrategy;
     }
 
-    constructor(private configService: ConfigService, private jobBufferService: JobBufferService) {}
+    constructor(
+        private configService: ConfigService,
+        private jobBufferService: JobBufferService,
+    ) {}
 
     /** @internal */
     onModuleDestroy() {
@@ -155,6 +158,13 @@ export class JobQueueService implements OnModuleDestroy {
     }
 
     /**
+     * @description Returns the raw objects representing the JobQueues.
+     */
+    getRawJobQueues() {
+        return this.queues;
+    }
+
+    /**
      * @description
      * Returns an array of `{ name: string; running: boolean; }` for each
      * registered JobQueue.
@@ -189,6 +199,11 @@ export class JobQueueService implements OnModuleDestroy {
     }
 
     private shouldStartQueue(queueName: string): boolean {
+        if (this.configService.jobQueueOptions.excludedQueues.length > 0) {
+            if (this.configService.jobQueueOptions.excludedQueues.includes(queueName)) {
+                return false;
+            }
+        }
         if (this.configService.jobQueueOptions.activeQueues.length > 0) {
             if (!this.configService.jobQueueOptions.activeQueues.includes(queueName)) {
                 return false;

@@ -1,8 +1,14 @@
-import { bootstrapWorker } from '@vendure/core';
+import { bootstrapWorker, mergeConfig } from '@vendure/core';
 
 import { devConfig } from './dev-config';
 
-bootstrapWorker(devConfig)
+bootstrapWorker(
+    mergeConfig(devConfig, {
+        jobQueueOptions: {
+            // excludedQueues: ['update-search-index'],
+        },
+    }),
+)
     .then(worker => worker.startJobQueue())
     // .then(worker => worker.startHealthCheckServer({ port: 3001 }))
     .catch(err => {

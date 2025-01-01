@@ -8,11 +8,11 @@ import {
     DefaultLogger,
     DefaultSearchPlugin,
     dummyPaymentHandler,
-    FacetValue,
     LanguageCode,
     LogLevel,
     VendureConfig,
 } from '@vendure/core';
+import { PluginWithJobQueue } from '@vendure/core/e2e/fixtures/test-plugins/with-job-queue';
 import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
 import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
@@ -64,7 +64,7 @@ export const devConfig: VendureConfig = {
     },
 
     customFields: {},
-    logger: new DefaultLogger({ level: LogLevel.Info }),
+    logger: new DefaultLogger({ level: LogLevel.Verbose }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
@@ -73,14 +73,15 @@ export const devConfig: VendureConfig = {
         //     platformFeePercent: 10,
         //     platformFeeSKU: 'FEE',
         // }),
+        PluginWithJobQueue,
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
         }),
         DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: false }),
         // Enable if you need to debug the job queue
-        // BullMQJobQueuePlugin.init({}),
-        DefaultJobQueuePlugin.init({}),
+        BullMQJobQueuePlugin.init({}),
+        // DefaultJobQueuePlugin.init({}),
         // JobQueueTestPlugin.init({ queueCount: 10 }),
         // ElasticsearchPlugin.init({
         //     host: 'http://localhost',
@@ -131,7 +132,7 @@ function getDbConfig(): DataSourceOptions {
         case 'postgres':
             console.log('Using postgres connection');
             return {
-                synchronize: true,
+                synchronize: process.env.DB_SYNC === 'true',
                 type: 'postgres',
                 host: process.env.DB_HOST || 'localhost',
                 port: Number(process.env.DB_PORT) || 5432,
@@ -143,7 +144,7 @@ function getDbConfig(): DataSourceOptions {
         case 'sqlite':
             console.log('Using sqlite connection');
             return {
-                synchronize: true,
+                synchronize: process.env.DB_SYNC === 'true',
                 type: 'better-sqlite3',
                 database: path.join(__dirname, 'vendure.sqlite'),
             };
@@ -160,7 +161,7 @@ function getDbConfig(): DataSourceOptions {
         default:
             console.log('Using mysql connection');
             return {
-                synchronize: true,
+                synchronize: process.env.DB_SYNC === 'true',
                 type: 'mariadb',
                 host: '127.0.0.1',
                 port: 3306,
