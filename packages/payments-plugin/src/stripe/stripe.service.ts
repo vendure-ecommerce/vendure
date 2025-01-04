@@ -56,6 +56,7 @@ export class StripeService {
             channelToken: ctx.channel.token,
             orderId: order.id,
             orderCode: order.code,
+            languageCode: ctx.languageCode,
         });
 
         const allMetadata = {
