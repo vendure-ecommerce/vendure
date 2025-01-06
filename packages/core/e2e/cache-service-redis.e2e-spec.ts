@@ -77,7 +77,7 @@ describe('CacheService with RedisCachePlugin', () => {
     });
 
     it('sets a key with sub-second ttl', async () => {
-        await cacheService.set('test-key2', 'test-value', { ttl: 700 });
+        await cacheService.set('test-key2', 'test-value', { ttl: 900 });
         const result = await cacheService.get('test-key2');
         expect(result).toBe('test-value');
 

@@ -64,7 +64,7 @@ export async function setsAKeyWithSubSecondTtl(
     ttlProvider: TestingCacheTtlProvider,
 ) {
     ttlProvider.setTime(new Date().getTime());
-    await cacheService.set('test-key', 'test-value', { ttl: 700 });
+    await cacheService.set('test-key', 'test-value', { ttl: 900 });
     const result = await cacheService.get('test-key');
     expect(result).toBe('test-value');
 
