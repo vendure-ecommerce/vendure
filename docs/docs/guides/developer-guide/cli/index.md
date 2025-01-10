@@ -17,20 +17,20 @@ codebase to integrate new functionality.
 The Vendure CLI comes installed with a new Vendure project by default from v2.2.0+
 :::
 
-To manually install the CLI, run:
+To install the Vendure CLI globally, run:
 
 <Tabs groupId="package-manager">
 <TabItem value="npm" label="npm" default>
 
 ```bash
-npm install -D @vendure/cli
+npm install -g @vendure/cli
 ```
 
 </TabItem>
 <TabItem value="yarn" label="yarn">
 
 ```bash
-yarn add -D @vendure/cli
+yarn add -g @vendure/cli
 ```
 
 </TabItem>
