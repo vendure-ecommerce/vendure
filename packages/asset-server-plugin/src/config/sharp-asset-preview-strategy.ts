@@ -3,7 +3,7 @@ import { AssetPreviewStrategy, getAssetType, Logger, RequestContext } from '@ven
 import path from 'path';
 import sharp from 'sharp';
 
-import { loggerCtx } from './constants';
+import { loggerCtx } from '../constants';
 
 /**
  * @description
@@ -175,7 +175,7 @@ export class SharpAssetPreviewStrategy implements AssetPreviewStrategy {
     }
 
     private generateBinaryFilePreview(mimeType: string): Promise<Buffer> {
-        return sharp(path.join(__dirname, 'file-icon.png'))
+        return sharp(path.join(__dirname, '..', 'file-icon.png'))
             .resize(800, 800, { fit: 'outside' })
             .composite([
                 {

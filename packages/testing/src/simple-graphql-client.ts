@@ -224,6 +224,7 @@ export class SimpleGraphQLClient {
      * mutation, with `null` as the value for each `Upload` field.
      *
      * @example
+     * ```ts
      * // Testing a custom mutation:
      * const result = await client.fileUploadMutation({
      *   mutation: gql`
@@ -243,6 +244,7 @@ export class SimpleGraphQLClient {
      *     }
      *   })
      * });
+     * ```
      */
     async fileUploadMutation(options: {
         mutation: DocumentNode;

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ShippingMethod
 
-<GenerationInfo sourceFile="packages/core/src/entity/shipping-method/shipping-method.entity.ts" sourceLine="33" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/shipping-method/shipping-method.entity.ts" sourceLine="34" packageName="@vendure/core" />
 
 A ShippingMethod is used to apply a shipping price to an <a href='/reference/typescript-api/entities/order#order'>Order</a>. It is composed of a
 <a href='/reference/typescript-api/shipping/shipping-eligibility-checker#shippingeligibilitychecker'>ShippingEligibilityChecker</a> and a <a href='/reference/typescript-api/shipping/shipping-calculator#shippingcalculator'>ShippingCalculator</a>. For a given Order,
@@ -40,6 +40,7 @@ class ShippingMethod extends VendureEntity implements ChannelAware, SoftDeletabl
     customFields: CustomShippingMethodFields;
     apply(ctx: RequestContext, order: Order) => Promise<ShippingCalculationResult | undefined>;
     test(ctx: RequestContext, order: Order) => Promise<boolean>;
+    toJSON() => any;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
@@ -114,6 +115,11 @@ class ShippingMethod extends VendureEntity implements ChannelAware, SoftDeletabl
 ### test
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => Promise&#60;boolean&#62;`}   />
+
+
+### toJSON
+
+<MemberInfo kind="method" type={`() => any`}   />
 
 
 

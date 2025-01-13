@@ -116,34 +116,78 @@ describe('Job class', () => {
                 name: 'parent',
                 child: {
                     name: 'child',
-                    parent: {
-                        child: {
-                            name: 'child',
-                            parent: {
-                                child: {
-                                    name: 'child',
-                                    parent: {
-                                        child: {
-                                            name: 'child',
-                                            parent: {
-                                                child: {
-                                                    name: 'child',
-                                                    parent: {
-                                                        child: '[max depth reached]',
-                                                        name: '[max depth reached]',
-                                                    },
-                                                },
-                                                name: 'parent',
-                                            },
-                                        },
-                                        name: 'parent',
-                                    },
-                                },
-                                name: 'parent',
+                    parent: '[circular *child.parent]',
+                },
+            });
+        });
+
+        it('handles objects with deep cycles', () => {
+            const parent = {
+                name: 'parent',
+                child1: {
+                    name: 'child1',
+                    child2: {
+                        name: 'child2',
+                        child3: {
+                            name: 'child3',
+                            child4: {
+                                name: 'child4',
+                                parent: {} as any,
                             },
                         },
-                        name: 'parent',
                     },
+                },
+            };
+            parent.child1.child2.child3.child4.parent = parent;
+
+            const job = new Job({
+                queueName: 'test',
+                data: parent,
+            });
+
+            expect(job.data).toEqual({
+                name: 'parent',
+                child1: {
+                    name: 'child1',
+                    child2: {
+                        name: 'child2',
+                        child3: {
+                            name: 'child3',
+                            child4: {
+                                name: 'child4',
+                                parent: '[circular *child1.child2.child3.child4.parent]',
+                            },
+                        },
+                    },
+                },
+            });
+        });
+
+        it('handles class instances with cycles', async () => {
+            class Parent {
+                name = 'parent';
+                child = new Child();
+            }
+
+            class Child {
+                name = 'child';
+                parent = undefined as Parent | undefined;
+            }
+
+            const parent = new Parent();
+            const child = parent.child;
+            child.parent = parent;
+
+            const job = new Job({
+                queueName: 'test',
+                data: parent as any,
+            });
+
+            expect(job.data).toEqual({
+                name: 'parent',
+                child: {
+                    name: 'child',
+                    parent: '[circular *child.parent]',
                 },
             });
         });

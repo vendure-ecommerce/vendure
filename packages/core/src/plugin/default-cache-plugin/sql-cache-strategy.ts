@@ -10,7 +10,9 @@ import { CacheItem } from './cache-item.entity';
 import { CacheTag } from './cache-tag.entity';
 
 /**
- * A {@link CacheStrategy} that stores cached items in the database.
+ * @description
+ * A {@link CacheStrategy} that stores cached items in the database. This
+ * is the strategy used by the {@link DefaultCachePlugin}.
  *
  * @since 3.1.0
  * @docsCategory cache

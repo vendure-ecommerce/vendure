@@ -1541,6 +1541,30 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
+## unsetDraftOrderBillingAddress
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Unsets the billing address for a draft Order</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>
+<div class="graphql-code-line ">unsetDraftOrderBillingAddress(orderId: <a href="/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/reference/graphql-api/admin/object-types#order">Order</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## unsetDraftOrderShippingAddress
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Unsets the shipping address for a draft Order</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>
+<div class="graphql-code-line ">unsetDraftOrderShippingAddress(orderId: <a href="/reference/graphql-api/admin/object-types#id">ID</a>!): <a href="/reference/graphql-api/admin/object-types#order">Order</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
 ## updateActiveAdministrator
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level comment">"""</div>

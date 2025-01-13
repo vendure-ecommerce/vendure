@@ -164,6 +164,7 @@ export type AdministratorSortParameter = {
 export type Allocation = Node &
     StockMovement & {
         createdAt: Scalars['DateTime']['output'];
+        customFields?: Maybe<Scalars['JSON']['output']>;
         id: Scalars['ID']['output'];
         orderLine: OrderLine;
         productVariant: ProductVariant;
@@ -346,7 +347,6 @@ export type BooleanStructFieldConfig = StructField & {
     label?: Maybe<Array<LocalizedString>>;
     list: Scalars['Boolean']['output'];
     name: Scalars['String']['output'];
-    nullable?: Maybe<Scalars['Boolean']['output']>;
     type: Scalars['String']['output'];
     ui?: Maybe<Scalars['JSON']['output']>;
 };
@@ -388,6 +388,7 @@ export type CancelPaymentResult = CancelPaymentError | Payment | PaymentStateTra
 export type Cancellation = Node &
     StockMovement & {
         createdAt: Scalars['DateTime']['output'];
+        customFields?: Maybe<Scalars['JSON']['output']>;
         id: Scalars['ID']['output'];
         orderLine: OrderLine;
         productVariant: ProductVariant;
@@ -1354,8 +1355,10 @@ export type CustomFields = {
     FacetValue: Array<CustomFieldConfig>;
     Fulfillment: Array<CustomFieldConfig>;
     GlobalSettings: Array<CustomFieldConfig>;
+    HistoryEntry: Array<CustomFieldConfig>;
     Order: Array<CustomFieldConfig>;
     OrderLine: Array<CustomFieldConfig>;
+    Payment: Array<CustomFieldConfig>;
     PaymentMethod: Array<CustomFieldConfig>;
     Product: Array<CustomFieldConfig>;
     ProductOption: Array<CustomFieldConfig>;
@@ -1363,10 +1366,15 @@ export type CustomFields = {
     ProductVariant: Array<CustomFieldConfig>;
     ProductVariantPrice: Array<CustomFieldConfig>;
     Promotion: Array<CustomFieldConfig>;
+    Refund: Array<CustomFieldConfig>;
     Region: Array<CustomFieldConfig>;
     Seller: Array<CustomFieldConfig>;
+    Session: Array<CustomFieldConfig>;
+    ShippingLine: Array<CustomFieldConfig>;
     ShippingMethod: Array<CustomFieldConfig>;
+    StockLevel: Array<CustomFieldConfig>;
     StockLocation: Array<CustomFieldConfig>;
+    StockMovement: Array<CustomFieldConfig>;
     TaxCategory: Array<CustomFieldConfig>;
     TaxRate: Array<CustomFieldConfig>;
     User: Array<CustomFieldConfig>;
@@ -1538,7 +1546,6 @@ export type DateTimeStructFieldConfig = StructField & {
     max?: Maybe<Scalars['String']['output']>;
     min?: Maybe<Scalars['String']['output']>;
     name: Scalars['String']['output'];
-    nullable?: Maybe<Scalars['Boolean']['output']>;
     step?: Maybe<Scalars['Int']['output']>;
     type: Scalars['String']['output'];
     ui?: Maybe<Scalars['JSON']['output']>;
@@ -1655,6 +1662,7 @@ export enum ErrorCode {
     NOTHING_TO_REFUND_ERROR = 'NOTHING_TO_REFUND_ERROR',
     NO_ACTIVE_ORDER_ERROR = 'NO_ACTIVE_ORDER_ERROR',
     NO_CHANGES_SPECIFIED_ERROR = 'NO_CHANGES_SPECIFIED_ERROR',
+    ORDER_INTERCEPTOR_ERROR = 'ORDER_INTERCEPTOR_ERROR',
     ORDER_LIMIT_ERROR = 'ORDER_LIMIT_ERROR',
     ORDER_MODIFICATION_ERROR = 'ORDER_MODIFICATION_ERROR',
     ORDER_MODIFICATION_STATE_ERROR = 'ORDER_MODIFICATION_STATE_ERROR',
@@ -1870,7 +1878,6 @@ export type FloatStructFieldConfig = StructField & {
     max?: Maybe<Scalars['Float']['output']>;
     min?: Maybe<Scalars['Float']['output']>;
     name: Scalars['String']['output'];
-    nullable?: Maybe<Scalars['Boolean']['output']>;
     step?: Maybe<Scalars['Float']['output']>;
     type: Scalars['String']['output'];
     ui?: Maybe<Scalars['JSON']['output']>;
@@ -1939,6 +1946,7 @@ export type GuestCheckoutError = ErrorResult & {
 export type HistoryEntry = Node & {
     administrator?: Maybe<Administrator>;
     createdAt: Scalars['DateTime']['output'];
+    customFields?: Maybe<Scalars['JSON']['output']>;
     data: Scalars['JSON']['output'];
     id: Scalars['ID']['output'];
     isPublic: Scalars['Boolean']['output'];
@@ -2077,7 +2085,6 @@ export type IntStructFieldConfig = StructField & {
     max?: Maybe<Scalars['Int']['output']>;
     min?: Maybe<Scalars['Int']['output']>;
     name: Scalars['String']['output'];
-    nullable?: Maybe<Scalars['Boolean']['output']>;
     step?: Maybe<Scalars['Int']['output']>;
     type: Scalars['String']['output'];
     ui?: Maybe<Scalars['JSON']['output']>;
@@ -2995,7 +3002,7 @@ export type Mutation = {
     transitionPaymentToState: TransitionPaymentToStateResult;
     /** Unsets the billing address for a draft Order */
     unsetDraftOrderBillingAddress: Order;
-    /** Unsets the sthipping address for a draft Order */
+    /** Unsets the shipping address for a draft Order */
     unsetDraftOrderShippingAddress: Order;
     /** Update the active (currently logged-in) Administrator */
     updateActiveAdministrator: Administrator;
@@ -3901,6 +3908,13 @@ export type OrderFilterParameter = {
     updatedAt?: InputMaybe<DateOperators>;
 };
 
+/** Returned when an order operation is rejected by an OrderInterceptor method. */
+export type OrderInterceptorError = ErrorResult & {
+    errorCode: ErrorCode;
+    interceptorError: Scalars['String']['output'];
+    message: Scalars['String']['output'];
+};
+
 /** Returned when the maximum order size limit has been reached. */
 export type OrderLimitError = ErrorResult & {
     errorCode: ErrorCode;
@@ -4089,6 +4103,7 @@ export type PaginatedList = {
 export type Payment = Node & {
     amount: Scalars['Money']['output'];
     createdAt: Scalars['DateTime']['output'];
+    customFields?: Maybe<Scalars['JSON']['output']>;
     errorMessage?: Maybe<Scalars['String']['output']>;
     id: Scalars['ID']['output'];
     metadata?: Maybe<Scalars['JSON']['output']>;
@@ -5198,6 +5213,7 @@ export type QueryZonesArgs = {
 export type Refund = Node & {
     adjustment: Scalars['Money']['output'];
     createdAt: Scalars['DateTime']['output'];
+    customFields?: Maybe<Scalars['JSON']['output']>;
     id: Scalars['ID']['output'];
     items: Scalars['Money']['output'];
     lines: Array<RefundLine>;
@@ -5228,18 +5244,19 @@ export type RefundLine = {
 };
 
 export type RefundOrderInput = {
-    adjustment: Scalars['Money']['input'];
+    /** @deprecated Use the `amount` field instead */
+    adjustment?: InputMaybe<Scalars['Money']['input']>;
     /**
-     * If an amount is specified, this value will be used to create a Refund rather than calculating the
-     * amount automatically. This was added in v2.2 and will be the preferred way to specify the refund
-     * amount in the future. The `lines`, `shipping` and `adjustment` fields will likely be removed in a future
-     * version.
+     * The amount to be refunded to this particular payment. This was introduced in v2.2.0 as the preferred way to specify the refund amount.
+     * Can be as much as the total amount of the payment minus the sum of all previous refunds.
      */
     amount?: InputMaybe<Scalars['Money']['input']>;
-    lines: Array<OrderLineInput>;
+    /** @deprecated Use the `amount` field instead */
+    lines?: InputMaybe<Array<OrderLineInput>>;
     paymentId: Scalars['ID']['input'];
     reason?: InputMaybe<Scalars['String']['input']>;
-    shipping: Scalars['Money']['input'];
+    /** @deprecated Use the `amount` field instead */
+    shipping?: InputMaybe<Scalars['Money']['input']>;
 };
 
 export type RefundOrderResult =
@@ -5319,6 +5336,7 @@ export type RelationCustomFieldConfig = CustomField & {
 export type Release = Node &
     StockMovement & {
         createdAt: Scalars['DateTime']['output'];
+        customFields?: Maybe<Scalars['JSON']['output']>;
         id: Scalars['ID']['output'];
         productVariant: ProductVariant;
         quantity: Scalars['Int']['output'];
@@ -5341,7 +5359,7 @@ export type RemoveFacetsFromChannelInput = {
 
 export type RemoveOptionGroupFromProductResult = Product | ProductOptionInUseError;
 
-export type RemoveOrderItemsResult = Order | OrderModificationError;
+export type RemoveOrderItemsResult = Order | OrderInterceptorError | OrderModificationError;
 
 export type RemovePaymentMethodsFromChannelInput = {
     channelId: Scalars['ID']['input'];
@@ -5376,6 +5394,7 @@ export type RemoveStockLocationsFromChannelInput = {
 export type Return = Node &
     StockMovement & {
         createdAt: Scalars['DateTime']['output'];
+        customFields?: Maybe<Scalars['JSON']['output']>;
         id: Scalars['ID']['output'];
         productVariant: ProductVariant;
         quantity: Scalars['Int']['output'];
@@ -5432,6 +5451,7 @@ export type RoleSortParameter = {
 export type Sale = Node &
     StockMovement & {
         createdAt: Scalars['DateTime']['output'];
+        customFields?: Maybe<Scalars['JSON']['output']>;
         id: Scalars['ID']['output'];
         productVariant: ProductVariant;
         quantity: Scalars['Int']['output'];
@@ -5593,6 +5613,7 @@ export type SettleRefundInput = {
 export type SettleRefundResult = Refund | RefundStateTransitionError;
 
 export type ShippingLine = {
+    customFields?: Maybe<Scalars['JSON']['output']>;
     discountedPrice: Scalars['Money']['output'];
     discountedPriceWithTax: Scalars['Money']['output'];
     discounts: Array<Discount>;
@@ -5700,6 +5721,7 @@ export enum SortOrder {
 export type StockAdjustment = Node &
     StockMovement & {
         createdAt: Scalars['DateTime']['output'];
+        customFields?: Maybe<Scalars['JSON']['output']>;
         id: Scalars['ID']['output'];
         productVariant: ProductVariant;
         quantity: Scalars['Int']['output'];
@@ -5709,6 +5731,7 @@ export type StockAdjustment = Node &
 
 export type StockLevel = Node & {
     createdAt: Scalars['DateTime']['output'];
+    customFields?: Maybe<Scalars['JSON']['output']>;
     id: Scalars['ID']['output'];
     stockAllocated: Scalars['Int']['output'];
     stockLocation: StockLocation;
@@ -5842,7 +5865,6 @@ export type StringStructFieldConfig = StructField & {
     length?: Maybe<Scalars['Int']['output']>;
     list: Scalars['Boolean']['output'];
     name: Scalars['String']['output'];
-    nullable?: Maybe<Scalars['Boolean']['output']>;
     options?: Maybe<Array<StringFieldOption>>;
     pattern?: Maybe<Scalars['String']['output']>;
     type: Scalars['String']['output'];
@@ -5868,7 +5890,6 @@ export type StructField = {
     label?: Maybe<Array<LocalizedString>>;
     list?: Maybe<Scalars['Boolean']['output']>;
     name: Scalars['String']['output'];
-    nullable?: Maybe<Scalars['Boolean']['output']>;
     type: Scalars['String']['output'];
     ui?: Maybe<Scalars['JSON']['output']>;
 };
@@ -6093,7 +6114,6 @@ export type TextStructFieldConfig = StructField & {
     label?: Maybe<Array<LocalizedString>>;
     list: Scalars['Boolean']['output'];
     name: Scalars['String']['output'];
-    nullable?: Maybe<Scalars['Boolean']['output']>;
     type: Scalars['String']['output'];
     ui?: Maybe<Scalars['JSON']['output']>;
 };
@@ -6271,6 +6291,7 @@ export type UpdateOrderItemsResult =
     | InsufficientStockError
     | NegativeQuantityError
     | Order
+    | OrderInterceptorError
     | OrderLimitError
     | OrderModificationError;
 

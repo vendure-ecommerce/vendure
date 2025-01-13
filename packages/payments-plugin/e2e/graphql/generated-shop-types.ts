@@ -151,7 +151,6 @@ export type BooleanStructFieldConfig = StructField & {
     label?: Maybe<Array<LocalizedString>>;
     list: Scalars['Boolean']['output'];
     name: Scalars['String']['output'];
-    nullable?: Maybe<Scalars['Boolean']['output']>;
     type: Scalars['String']['output'];
     ui?: Maybe<Scalars['JSON']['output']>;
 };
@@ -881,7 +880,6 @@ export type DateTimeStructFieldConfig = StructField & {
     max?: Maybe<Scalars['String']['output']>;
     min?: Maybe<Scalars['String']['output']>;
     name: Scalars['String']['output'];
-    nullable?: Maybe<Scalars['Boolean']['output']>;
     step?: Maybe<Scalars['Int']['output']>;
     type: Scalars['String']['output'];
     ui?: Maybe<Scalars['JSON']['output']>;
@@ -931,6 +929,7 @@ export enum ErrorCode {
     NEGATIVE_QUANTITY_ERROR = 'NEGATIVE_QUANTITY_ERROR',
     NOT_VERIFIED_ERROR = 'NOT_VERIFIED_ERROR',
     NO_ACTIVE_ORDER_ERROR = 'NO_ACTIVE_ORDER_ERROR',
+    ORDER_INTERCEPTOR_ERROR = 'ORDER_INTERCEPTOR_ERROR',
     ORDER_LIMIT_ERROR = 'ORDER_LIMIT_ERROR',
     ORDER_MODIFICATION_ERROR = 'ORDER_MODIFICATION_ERROR',
     ORDER_PAYMENT_STATE_ERROR = 'ORDER_PAYMENT_STATE_ERROR',
@@ -1119,7 +1118,6 @@ export type FloatStructFieldConfig = StructField & {
     max?: Maybe<Scalars['Float']['output']>;
     min?: Maybe<Scalars['Float']['output']>;
     name: Scalars['String']['output'];
-    nullable?: Maybe<Scalars['Boolean']['output']>;
     step?: Maybe<Scalars['Float']['output']>;
     type: Scalars['String']['output'];
     ui?: Maybe<Scalars['JSON']['output']>;
@@ -1161,6 +1159,7 @@ export type GuestCheckoutError = ErrorResult & {
 
 export type HistoryEntry = Node & {
     createdAt: Scalars['DateTime']['output'];
+    customFields?: Maybe<Scalars['JSON']['output']>;
     data: Scalars['JSON']['output'];
     id: Scalars['ID']['output'];
     type: HistoryEntryType;
@@ -1304,7 +1303,6 @@ export type IntStructFieldConfig = StructField & {
     max?: Maybe<Scalars['Int']['output']>;
     min?: Maybe<Scalars['Int']['output']>;
     name: Scalars['String']['output'];
-    nullable?: Maybe<Scalars['Boolean']['output']>;
     step?: Maybe<Scalars['Int']['output']>;
     type: Scalars['String']['output'];
     ui?: Maybe<Scalars['JSON']['output']>;
@@ -2128,6 +2126,13 @@ export type OrderFilterParameter = {
     updatedAt?: InputMaybe<DateOperators>;
 };
 
+/** Returned when an order operation is rejected by an OrderInterceptor method. */
+export type OrderInterceptorError = ErrorResult & {
+    errorCode: ErrorCode;
+    interceptorError: Scalars['String']['output'];
+    message: Scalars['String']['output'];
+};
+
 /** Returned when the maximum order size limit has been reached. */
 export type OrderLimitError = ErrorResult & {
     errorCode: ErrorCode;
@@ -2313,6 +2318,7 @@ export type PasswordValidationError = ErrorResult & {
 export type Payment = Node & {
     amount: Scalars['Money']['output'];
     createdAt: Scalars['DateTime']['output'];
+    customFields?: Maybe<Scalars['JSON']['output']>;
     errorMessage?: Maybe<Scalars['String']['output']>;
     id: Scalars['ID']['output'];
     metadata?: Maybe<Scalars['JSON']['output']>;
@@ -2953,6 +2959,7 @@ export type RefreshCustomerVerificationResult = NativeAuthStrategyError | Succes
 export type Refund = Node & {
     adjustment: Scalars['Money']['output'];
     createdAt: Scalars['DateTime']['output'];
+    customFields?: Maybe<Scalars['JSON']['output']>;
     id: Scalars['ID']['output'];
     items: Scalars['Money']['output'];
     lines: Array<RefundLine>;
@@ -3027,7 +3034,7 @@ export type RelationCustomFieldConfig = CustomField & {
     ui?: Maybe<Scalars['JSON']['output']>;
 };
 
-export type RemoveOrderItemsResult = Order | OrderModificationError;
+export type RemoveOrderItemsResult = Order | OrderInterceptorError | OrderModificationError;
 
 export type RequestPasswordResetResult = NativeAuthStrategyError | Success;
 
@@ -3143,6 +3150,7 @@ export type SetOrderShippingMethodResult =
     | OrderModificationError;
 
 export type ShippingLine = {
+    customFields?: Maybe<Scalars['JSON']['output']>;
     discountedPrice: Scalars['Money']['output'];
     discountedPriceWithTax: Scalars['Money']['output'];
     discounts: Array<Discount>;
@@ -3247,7 +3255,6 @@ export type StringStructFieldConfig = StructField & {
     length?: Maybe<Scalars['Int']['output']>;
     list: Scalars['Boolean']['output'];
     name: Scalars['String']['output'];
-    nullable?: Maybe<Scalars['Boolean']['output']>;
     options?: Maybe<Array<StringFieldOption>>;
     pattern?: Maybe<Scalars['String']['output']>;
     type: Scalars['String']['output'];
@@ -3273,7 +3280,6 @@ export type StructField = {
     label?: Maybe<Array<LocalizedString>>;
     list?: Maybe<Scalars['Boolean']['output']>;
     name: Scalars['String']['output'];
-    nullable?: Maybe<Scalars['Boolean']['output']>;
     type: Scalars['String']['output'];
     ui?: Maybe<Scalars['JSON']['output']>;
 };
@@ -3365,7 +3371,6 @@ export type TextStructFieldConfig = StructField & {
     label?: Maybe<Array<LocalizedString>>;
     list: Scalars['Boolean']['output'];
     name: Scalars['String']['output'];
-    nullable?: Maybe<Scalars['Boolean']['output']>;
     type: Scalars['String']['output'];
     ui?: Maybe<Scalars['JSON']['output']>;
 };
@@ -3423,6 +3428,7 @@ export type UpdateOrderItemsResult =
     | InsufficientStockError
     | NegativeQuantityError
     | Order
+    | OrderInterceptorError
     | OrderLimitError
     | OrderModificationError;
 
@@ -3944,6 +3950,7 @@ export type AddItemToOrderMutation = {
               history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
           }
         | { errorCode: ErrorCode; message: string }
+        | { errorCode: ErrorCode; message: string }
         | { errorCode: ErrorCode; message: string };
 };
 
@@ -4092,6 +4099,7 @@ export type AdjustOrderLineMutation = {
               } | null;
               history: { items: Array<{ id: string; type: HistoryEntryType; data: any }> };
           }
+        | { errorCode: ErrorCode; message: string; interceptorError: string }
         | { errorCode: ErrorCode; message: string }
         | { errorCode: ErrorCode; message: string };
 };
@@ -5776,6 +5784,22 @@ export const AdjustOrderLineDocument = {
                                                         },
                                                     ],
                                                 },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: 'InlineFragment',
+                                    typeCondition: {
+                                        kind: 'NamedType',
+                                        name: { kind: 'Name', value: 'OrderInterceptorError' },
+                                    },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            {
+                                                kind: 'Field',
+                                                name: { kind: 'Name', value: 'interceptorError' },
                                             },
                                         ],
                                     },

@@ -12,6 +12,8 @@ import { RedisCachePluginInitOptions } from './types';
  * replacement for the {@link DefaultCachePlugin}.
  *
  * @docsCategory cache
+ * @docsPage RedisCachePlugin
+ * @docsWeight 0
  * @since 3.1.0
  */
 @VendurePlugin({

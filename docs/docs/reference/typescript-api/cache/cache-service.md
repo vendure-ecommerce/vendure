@@ -58,7 +58,7 @@ Gets an item from the cache, or returns undefined if the key is not found, or th
 item has expired.
 ### set
 
-<MemberInfo kind="method" type={`(key: string, value: T, options?: SetCacheKeyOptions) => Promise&#60;void&#62;`}   />
+<MemberInfo kind="method" type={`(key: string, value: T, options?: <a href='/reference/typescript-api/cache/cache-strategy#setcachekeyoptions'>SetCacheKeyOptions</a>) => Promise&#60;void&#62;`}   />
 
 Sets a key-value pair in the cache. The value must be serializable, so cannot contain
 things like functions, circular data structures, class instances etc.

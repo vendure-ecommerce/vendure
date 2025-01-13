@@ -491,7 +491,7 @@ export class OrderModifier {
                     const qtyDelta = initialLineQuantity - correctedQuantity;
 
                     refundInputs.forEach(ri => {
-                        ri.lines.push({
+                        ri.lines?.push({
                             orderLineId: orderLine.id,
                             quantity: qtyDelta,
                         });
@@ -524,7 +524,11 @@ export class OrderModifier {
             order.surcharges.push(surcharge);
             modification.surcharges.push(surcharge);
             if (surcharge.priceWithTax < 0) {
-                refundInputs.forEach(ri => (ri.adjustment += Math.abs(surcharge.priceWithTax)));
+                refundInputs.forEach(ri => {
+                    if (ri.adjustment != null) {
+                        ri.adjustment += Math.abs(surcharge.priceWithTax);
+                    }
+                });
             }
         }
         if (input.surcharges?.length) {
@@ -659,7 +663,9 @@ export class OrderModifier {
             if (shippingDelta < 0) {
                 primaryRefund.shipping = shippingDelta * -1;
             }
-            primaryRefund.adjustment += await this.calculateRefundAdjustment(ctx, delta, primaryRefund);
+            if (primaryRefund.adjustment != null) {
+                primaryRefund.adjustment += await this.calculateRefundAdjustment(ctx, delta, primaryRefund);
+            }
             // end
 
             for (const refundInput of refundInputs) {
@@ -777,14 +783,14 @@ export class OrderModifier {
         delta: number,
         refundInput: RefundOrderInput,
     ): Promise<number> {
-        const existingAdjustment = refundInput.adjustment;
+        const existingAdjustment = refundInput.adjustment ?? 0;
 
         let itemAmount = 0; // TODO: figure out what this should be
-        for (const lineInput of refundInput.lines) {
+        for (const lineInput of refundInput.lines ?? []) {
             const orderLine = await this.connection.getEntityOrThrow(ctx, OrderLine, lineInput.orderLineId);
             itemAmount += orderLine.proratedUnitPriceWithTax * lineInput.quantity;
         }
-        const calculatedDelta = itemAmount + refundInput.shipping + existingAdjustment;
+        const calculatedDelta = itemAmount + (refundInput.shipping ?? 0) + existingAdjustment;
         const absDelta = Math.abs(delta);
         return absDelta !== calculatedDelta ? absDelta - calculatedDelta : 0;
     }

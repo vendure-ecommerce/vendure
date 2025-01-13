@@ -35,6 +35,7 @@ const minOrderTotalEligibilityChecker = new ShippingEligibilityChecker({
 class ShippingEligibilityChecker<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<T> {
     constructor(config: ShippingEligibilityCheckerConfig<T>)
     init(injector: Injector) => ;
+    toJSON() => ;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>&#60;T&#62;</code>
@@ -51,6 +52,11 @@ class ShippingEligibilityChecker<T extends ConfigArgs = ConfigArgs> extends Conf
 ### init
 
 <MemberInfo kind="method" type={`(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>) => `}   />
+
+
+### toJSON
+
+<MemberInfo kind="method" type={`() => `}   />
 
 
 

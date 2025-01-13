@@ -31,10 +31,13 @@ export class OrderLineEntityResolver {
         @Ctx() ctx: RequestContext,
         @Parent() orderLine: OrderLine,
     ): Promise<Asset | undefined> {
-        if (orderLine.featuredAsset !== undefined) {
-            return orderLine.featuredAsset;
-        } else {
+        // In some scenarios (e.g. modifying an order to add a new item), orderLine.featuredAsset is an object
+        // with only an `id`. Since the resolver expects the featuredAsset to be a full Asset object, we need to
+        // fetch the full Asset object if it's not already populated.
+        if (!orderLine.featuredAsset?.preview) {
             return this.assetService.getFeaturedAsset(ctx, orderLine);
+        } else {
+            return orderLine.featuredAsset;
         }
     }
 

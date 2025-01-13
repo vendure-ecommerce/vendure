@@ -95,7 +95,7 @@ class PaymentMethodService {
 
 ### getMethodAndOperations
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, method: string) => Promise&#60;{         paymentMethod: <a href='/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>;         handler: <a href='/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>;         checker: <a href='/reference/typescript-api/payment/payment-method-eligibility-checker#paymentmethodeligibilitychecker'>PaymentMethodEligibilityChecker</a> | null;     }&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, method: string) => Promise&#60;{         paymentMethod: <a href='/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>;         handler: <a href='/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>;         checker: <a href='/reference/typescript-api/payment/payment-method-eligibility-checker#paymentmethodeligibilitychecker'>PaymentMethodEligibilityChecker</a> | null;     }&#62;`}   />
 
 
 
