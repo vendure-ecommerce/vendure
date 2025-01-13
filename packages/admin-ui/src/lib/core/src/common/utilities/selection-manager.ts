@@ -53,7 +53,7 @@ export class SelectionManager<T> {
                 this._selection = [item];
             }
         } else {
-            if (multiSelect && event?.ctrlKey) {
+            if (multiSelect && (event?.ctrlKey || event?.metaKey)) {
                 this._selection.splice(index, 1);
             } else if (1 < this._selection.length && !additiveMode) {
                 this._selection = [item];
