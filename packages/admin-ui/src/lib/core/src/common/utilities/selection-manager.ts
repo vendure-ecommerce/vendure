@@ -47,7 +47,7 @@ export class SelectionManager<T> {
                 ...this.items.slice(start, end).filter(a => !this._selection.find(s => itemsAreEqual(a, s))),
             );
         } else if (index === -1) {
-            if (multiSelect && (event?.ctrlKey || event?.shiftKey || additiveMode)) {
+            if (multiSelect && ((event?.ctrlKey || event?.metaKey) || event?.shiftKey || additiveMode)) {
                 this._selection.push(item);
             } else {
                 this._selection = [item];
