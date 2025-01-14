@@ -322,18 +322,13 @@ export class SessionService implements EntitySubscriberInterface {
      */
     async cleanupExpiredSessions(ctx: RequestContext): Promise<void> {
         const now = new Date();
-        const sessions = await this.connection
+
+        await this.connection
             .getRepository(ctx, Session)
             .createQueryBuilder('session')
-            .select('session.id')
             .where('session.expires <= :now', { now })
-            .getMany();
-
-        await this.connection.getRepository(ctx, Session).remove(sessions, { chunk: 500 });
-
-        for (const session of sessions) {
-            await this.withTimeout(this.sessionCacheStrategy.delete(session.token));
-        }
+            .delete()
+            .execute();
     }
 
     /**
