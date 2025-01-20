@@ -7,7 +7,7 @@ import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver()
 export class ShopPaymentMethodsResolver {
-    constructor(private paymentMethodService: PaymentMethodService) {}
+    constructor(readonly paymentMethodService: PaymentMethodService) {}
 
     @Query()
     async activePaymentMethods(@Ctx() ctx: RequestContext): Promise<PaymentMethod[]> {

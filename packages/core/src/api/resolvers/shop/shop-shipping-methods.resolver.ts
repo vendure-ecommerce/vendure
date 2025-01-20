@@ -7,7 +7,7 @@ import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver()
 export class ShopShippingMethodsResolver {
-    constructor(private shippingMethodService: ShippingMethodService) {}
+    constructor(readonly shippingMethodService: ShippingMethodService) {}
 
     @Query()
     async activeShippingMethods(@Ctx() ctx: RequestContext): Promise<ShippingMethod[]> {
