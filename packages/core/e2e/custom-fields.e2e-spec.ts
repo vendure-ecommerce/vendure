@@ -188,6 +188,16 @@ const customConfig = mergeConfig(testConfig(), {
             { name: 'secretKey2', type: 'string', defaultValue: '', public: false, internal: false },
         ],
         OrderLine: [{ name: 'validateInt', type: 'int', min: 0, max: 10 }],
+        // Single readonly Address custom field to test
+        // https://github.com/vendure-ecommerce/vendure/issues/3326
+        Address: [
+            {
+                name: 'hereId',
+                type: 'string',
+                readonly: true,
+                nullable: true,
+            },
+        ],
     } as CustomFields,
 });
 
