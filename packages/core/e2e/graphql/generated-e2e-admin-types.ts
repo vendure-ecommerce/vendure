@@ -160,6 +160,7 @@ export type AdministratorSortParameter = {
 export type Allocation = Node &
     StockMovement & {
         createdAt: Scalars['DateTime']['output'];
+        customFields?: Maybe<Scalars['JSON']['output']>;
         id: Scalars['ID']['output'];
         orderLine: OrderLine;
         productVariant: ProductVariant;
@@ -337,6 +338,15 @@ export type BooleanOperators = {
     isNull?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type BooleanStructFieldConfig = StructField & {
+    description?: Maybe<Array<LocalizedString>>;
+    label?: Maybe<Array<LocalizedString>>;
+    list: Scalars['Boolean']['output'];
+    name: Scalars['String']['output'];
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
+};
+
 /** Returned if an attempting to cancel lines from an Order which is still active */
 export type CancelActiveOrderError = ErrorResult & {
     errorCode: ErrorCode;
@@ -374,6 +384,7 @@ export type CancelPaymentResult = CancelPaymentError | Payment | PaymentStateTra
 export type Cancellation = Node &
     StockMovement & {
         createdAt: Scalars['DateTime']['output'];
+        customFields?: Maybe<Scalars['JSON']['output']>;
         id: Scalars['ID']['output'];
         orderLine: OrderLine;
         productVariant: ProductVariant;
@@ -1333,6 +1344,7 @@ export type CustomFieldConfig =
     | LocaleTextCustomFieldConfig
     | RelationCustomFieldConfig
     | StringCustomFieldConfig
+    | StructCustomFieldConfig
     | TextCustomFieldConfig;
 
 /**
@@ -1351,8 +1363,10 @@ export type CustomFields = {
     FacetValue: Array<CustomFieldConfig>;
     Fulfillment: Array<CustomFieldConfig>;
     GlobalSettings: Array<CustomFieldConfig>;
+    HistoryEntry: Array<CustomFieldConfig>;
     Order: Array<CustomFieldConfig>;
     OrderLine: Array<CustomFieldConfig>;
+    Payment: Array<CustomFieldConfig>;
     PaymentMethod: Array<CustomFieldConfig>;
     Product: Array<CustomFieldConfig>;
     ProductOption: Array<CustomFieldConfig>;
@@ -1360,10 +1374,15 @@ export type CustomFields = {
     ProductVariant: Array<CustomFieldConfig>;
     ProductVariantPrice: Array<CustomFieldConfig>;
     Promotion: Array<CustomFieldConfig>;
+    Refund: Array<CustomFieldConfig>;
     Region: Array<CustomFieldConfig>;
     Seller: Array<CustomFieldConfig>;
+    Session: Array<CustomFieldConfig>;
+    ShippingLine: Array<CustomFieldConfig>;
     ShippingMethod: Array<CustomFieldConfig>;
+    StockLevel: Array<CustomFieldConfig>;
     StockLocation: Array<CustomFieldConfig>;
+    StockMovement: Array<CustomFieldConfig>;
     TaxCategory: Array<CustomFieldConfig>;
     TaxRate: Array<CustomFieldConfig>;
     User: Array<CustomFieldConfig>;
@@ -1524,6 +1543,22 @@ export type DateTimeCustomFieldConfig = CustomField & {
     ui?: Maybe<Scalars['JSON']['output']>;
 };
 
+/**
+ * Expects the same validation formats as the `<input type="datetime-local">` HTML element.
+ * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
+ */
+export type DateTimeStructFieldConfig = StructField & {
+    description?: Maybe<Array<LocalizedString>>;
+    label?: Maybe<Array<LocalizedString>>;
+    list: Scalars['Boolean']['output'];
+    max?: Maybe<Scalars['String']['output']>;
+    min?: Maybe<Scalars['String']['output']>;
+    name: Scalars['String']['output'];
+    step?: Maybe<Scalars['Int']['output']>;
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
+};
+
 export type DeleteAssetInput = {
     assetId: Scalars['ID']['input'];
     deleteFromAllChannels?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1635,6 +1670,7 @@ export enum ErrorCode {
     NOTHING_TO_REFUND_ERROR = 'NOTHING_TO_REFUND_ERROR',
     NO_ACTIVE_ORDER_ERROR = 'NO_ACTIVE_ORDER_ERROR',
     NO_CHANGES_SPECIFIED_ERROR = 'NO_CHANGES_SPECIFIED_ERROR',
+    ORDER_INTERCEPTOR_ERROR = 'ORDER_INTERCEPTOR_ERROR',
     ORDER_LIMIT_ERROR = 'ORDER_LIMIT_ERROR',
     ORDER_MODIFICATION_ERROR = 'ORDER_MODIFICATION_ERROR',
     ORDER_MODIFICATION_STATE_ERROR = 'ORDER_MODIFICATION_STATE_ERROR',
@@ -1847,6 +1883,18 @@ export type FloatCustomFieldConfig = CustomField & {
     ui?: Maybe<Scalars['JSON']['output']>;
 };
 
+export type FloatStructFieldConfig = StructField & {
+    description?: Maybe<Array<LocalizedString>>;
+    label?: Maybe<Array<LocalizedString>>;
+    list: Scalars['Boolean']['output'];
+    max?: Maybe<Scalars['Float']['output']>;
+    min?: Maybe<Scalars['Float']['output']>;
+    name: Scalars['String']['output'];
+    step?: Maybe<Scalars['Float']['output']>;
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
+};
+
 export type FulfillOrderInput = {
     handler: ConfigurableOperationInput;
     lines: Array<OrderLineInput>;
@@ -1910,6 +1958,7 @@ export type GuestCheckoutError = ErrorResult & {
 export type HistoryEntry = Node & {
     administrator?: Maybe<Administrator>;
     createdAt: Scalars['DateTime']['output'];
+    customFields?: Maybe<Scalars['JSON']['output']>;
     data: Scalars['JSON']['output'];
     id: Scalars['ID']['output'];
     isPublic: Scalars['Boolean']['output'];
@@ -2036,6 +2085,18 @@ export type IntCustomFieldConfig = CustomField & {
     nullable?: Maybe<Scalars['Boolean']['output']>;
     readonly?: Maybe<Scalars['Boolean']['output']>;
     requiresPermission?: Maybe<Array<Permission>>;
+    step?: Maybe<Scalars['Int']['output']>;
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type IntStructFieldConfig = StructField & {
+    description?: Maybe<Array<LocalizedString>>;
+    label?: Maybe<Array<LocalizedString>>;
+    list: Scalars['Boolean']['output'];
+    max?: Maybe<Scalars['Int']['output']>;
+    min?: Maybe<Scalars['Int']['output']>;
+    name: Scalars['String']['output'];
     step?: Maybe<Scalars['Int']['output']>;
     type: Scalars['String']['output'];
     ui?: Maybe<Scalars['JSON']['output']>;
@@ -2890,6 +2951,10 @@ export type Mutation = {
     transitionFulfillmentToState: TransitionFulfillmentToStateResult;
     transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
     transitionPaymentToState: TransitionPaymentToStateResult;
+    /** Unsets the billing address for a draft Order */
+    unsetDraftOrderBillingAddress: Order;
+    /** Unsets the shipping address for a draft Order */
+    unsetDraftOrderShippingAddress: Order;
     /** Update the active (currently logged-in) Administrator */
     updateActiveAdministrator: Administrator;
     /** Update an existing Administrator */
@@ -3492,6 +3557,14 @@ export type MutationTransitionPaymentToStateArgs = {
     state: Scalars['String']['input'];
 };
 
+export type MutationUnsetDraftOrderBillingAddressArgs = {
+    orderId: Scalars['ID']['input'];
+};
+
+export type MutationUnsetDraftOrderShippingAddressArgs = {
+    orderId: Scalars['ID']['input'];
+};
+
 export type MutationUpdateActiveAdministratorArgs = {
     input: UpdateActiveAdministratorInput;
 };
@@ -3782,6 +3855,13 @@ export type OrderFilterParameter = {
     updatedAt?: InputMaybe<DateOperators>;
 };
 
+/** Returned when an order operation is rejected by an OrderInterceptor method. */
+export type OrderInterceptorError = ErrorResult & {
+    errorCode: ErrorCode;
+    interceptorError: Scalars['String']['output'];
+    message: Scalars['String']['output'];
+};
+
 /** Returned when the maximum order size limit has been reached. */
 export type OrderLimitError = ErrorResult & {
     errorCode: ErrorCode;
@@ -3970,6 +4050,7 @@ export type PaginatedList = {
 export type Payment = Node & {
     amount: Scalars['Money']['output'];
     createdAt: Scalars['DateTime']['output'];
+    customFields?: Maybe<Scalars['JSON']['output']>;
     errorMessage?: Maybe<Scalars['String']['output']>;
     id: Scalars['ID']['output'];
     metadata?: Maybe<Scalars['JSON']['output']>;
@@ -5091,6 +5172,7 @@ export type QueryZonesArgs = {
 export type Refund = Node & {
     adjustment: Scalars['Money']['output'];
     createdAt: Scalars['DateTime']['output'];
+    customFields?: Maybe<Scalars['JSON']['output']>;
     id: Scalars['ID']['output'];
     items: Scalars['Money']['output'];
     lines: Array<RefundLine>;
@@ -5213,6 +5295,7 @@ export type RelationCustomFieldConfig = CustomField & {
 export type Release = Node &
     StockMovement & {
         createdAt: Scalars['DateTime']['output'];
+        customFields?: Maybe<Scalars['JSON']['output']>;
         id: Scalars['ID']['output'];
         productVariant: ProductVariant;
         quantity: Scalars['Int']['output'];
@@ -5235,7 +5318,7 @@ export type RemoveFacetsFromChannelInput = {
 
 export type RemoveOptionGroupFromProductResult = Product | ProductOptionInUseError;
 
-export type RemoveOrderItemsResult = Order | OrderModificationError;
+export type RemoveOrderItemsResult = Order | OrderInterceptorError | OrderModificationError;
 
 export type RemovePaymentMethodsFromChannelInput = {
     channelId: Scalars['ID']['input'];
@@ -5270,6 +5353,7 @@ export type RemoveStockLocationsFromChannelInput = {
 export type Return = Node &
     StockMovement & {
         createdAt: Scalars['DateTime']['output'];
+        customFields?: Maybe<Scalars['JSON']['output']>;
         id: Scalars['ID']['output'];
         productVariant: ProductVariant;
         quantity: Scalars['Int']['output'];
@@ -5326,6 +5410,7 @@ export type RoleSortParameter = {
 export type Sale = Node &
     StockMovement & {
         createdAt: Scalars['DateTime']['output'];
+        customFields?: Maybe<Scalars['JSON']['output']>;
         id: Scalars['ID']['output'];
         productVariant: ProductVariant;
         quantity: Scalars['Int']['output'];
@@ -5487,6 +5572,7 @@ export type SettleRefundInput = {
 export type SettleRefundResult = Refund | RefundStateTransitionError;
 
 export type ShippingLine = {
+    customFields?: Maybe<Scalars['JSON']['output']>;
     discountedPrice: Scalars['Money']['output'];
     discountedPriceWithTax: Scalars['Money']['output'];
     discounts: Array<Discount>;
@@ -5594,6 +5680,7 @@ export enum SortOrder {
 export type StockAdjustment = Node &
     StockMovement & {
         createdAt: Scalars['DateTime']['output'];
+        customFields?: Maybe<Scalars['JSON']['output']>;
         id: Scalars['ID']['output'];
         productVariant: ProductVariant;
         quantity: Scalars['Int']['output'];
@@ -5603,6 +5690,7 @@ export type StockAdjustment = Node &
 
 export type StockLevel = Node & {
     createdAt: Scalars['DateTime']['output'];
+    customFields?: Maybe<Scalars['JSON']['output']>;
     id: Scalars['ID']['output'];
     stockAllocated: Scalars['Int']['output'];
     stockLocation: StockLocation;
@@ -5729,6 +5817,49 @@ export type StringOperators = {
     notIn?: InputMaybe<Array<Scalars['String']['input']>>;
     regex?: InputMaybe<Scalars['String']['input']>;
 };
+
+export type StringStructFieldConfig = StructField & {
+    description?: Maybe<Array<LocalizedString>>;
+    label?: Maybe<Array<LocalizedString>>;
+    length?: Maybe<Scalars['Int']['output']>;
+    list: Scalars['Boolean']['output'];
+    name: Scalars['String']['output'];
+    options?: Maybe<Array<StringFieldOption>>;
+    pattern?: Maybe<Scalars['String']['output']>;
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type StructCustomFieldConfig = CustomField & {
+    description?: Maybe<Array<LocalizedString>>;
+    fields: Array<StructFieldConfig>;
+    internal?: Maybe<Scalars['Boolean']['output']>;
+    label?: Maybe<Array<LocalizedString>>;
+    list: Scalars['Boolean']['output'];
+    name: Scalars['String']['output'];
+    nullable?: Maybe<Scalars['Boolean']['output']>;
+    readonly?: Maybe<Scalars['Boolean']['output']>;
+    requiresPermission?: Maybe<Array<Permission>>;
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type StructField = {
+    description?: Maybe<Array<LocalizedString>>;
+    label?: Maybe<Array<LocalizedString>>;
+    list?: Maybe<Scalars['Boolean']['output']>;
+    name: Scalars['String']['output'];
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type StructFieldConfig =
+    | BooleanStructFieldConfig
+    | DateTimeStructFieldConfig
+    | FloatStructFieldConfig
+    | IntStructFieldConfig
+    | StringStructFieldConfig
+    | TextStructFieldConfig;
 
 /** Indicates that an operation succeeded, where we do not want to return any more specific information. */
 export type Success = {
@@ -5937,6 +6068,15 @@ export type TextCustomFieldConfig = CustomField & {
     ui?: Maybe<Scalars['JSON']['output']>;
 };
 
+export type TextStructFieldConfig = StructField & {
+    description?: Maybe<Array<LocalizedString>>;
+    label?: Maybe<Array<LocalizedString>>;
+    list: Scalars['Boolean']['output'];
+    name: Scalars['String']['output'];
+    type: Scalars['String']['output'];
+    ui?: Maybe<Scalars['JSON']['output']>;
+};
+
 export type TransitionFulfillmentToStateResult = Fulfillment | FulfillmentStateTransitionError;
 
 export type TransitionOrderToStateResult = Order | OrderStateTransitionError;
@@ -6114,6 +6254,7 @@ export type UpdateOrderItemsResult =
     | InsufficientStockError
     | NegativeQuantityError
     | Order
+    | OrderInterceptorError
     | OrderLimitError
     | OrderModificationError;
 
@@ -7126,6 +7267,7 @@ export type AddItemToDraftOrderMutation = {
               }> | null;
           }
         | { errorCode: ErrorCode; message: string }
+        | { errorCode: ErrorCode; message: string }
         | { errorCode: ErrorCode; message: string };
 };
 
@@ -7206,6 +7348,7 @@ export type AdjustDraftOrderLineMutation = {
               }> | null;
           }
         | { errorCode: ErrorCode; message: string }
+        | { errorCode: ErrorCode; message: string }
         | { errorCode: ErrorCode; message: string };
 };
 
@@ -7283,6 +7426,7 @@ export type RemoveDraftOrderLineMutation = {
                   lines: Array<{ orderLineId: string; quantity: number }>;
               }> | null;
           }
+        | { errorCode: ErrorCode; message: string }
         | { errorCode: ErrorCode; message: string };
 };
 
@@ -7446,6 +7590,165 @@ export type SetDraftOrderBillingAddressMutationVariables = Exact<{
 
 export type SetDraftOrderBillingAddressMutation = {
     setDraftOrderBillingAddress: {
+        id: string;
+        createdAt: any;
+        updatedAt: any;
+        code: string;
+        state: string;
+        active: boolean;
+        subTotal: number;
+        subTotalWithTax: number;
+        total: number;
+        totalWithTax: number;
+        totalQuantity: number;
+        currencyCode: CurrencyCode;
+        shipping: number;
+        shippingWithTax: number;
+        billingAddress?: {
+            fullName?: string | null;
+            company?: string | null;
+            streetLine1?: string | null;
+            streetLine2?: string | null;
+            city?: string | null;
+            province?: string | null;
+            postalCode?: string | null;
+            country?: string | null;
+            phoneNumber?: string | null;
+        } | null;
+        customer?: { id: string; firstName: string; lastName: string } | null;
+        lines: Array<{
+            id: string;
+            unitPrice: number;
+            unitPriceWithTax: number;
+            quantity: number;
+            taxRate: number;
+            linePriceWithTax: number;
+            featuredAsset?: { preview: string } | null;
+            productVariant: { id: string; name: string; sku: string };
+            taxLines: Array<{ description: string; taxRate: number }>;
+        }>;
+        surcharges: Array<{
+            id: string;
+            description: string;
+            sku?: string | null;
+            price: number;
+            priceWithTax: number;
+        }>;
+        shippingLines: Array<{
+            priceWithTax: number;
+            shippingMethod: { id: string; code: string; name: string; description: string };
+        }>;
+        shippingAddress?: {
+            fullName?: string | null;
+            company?: string | null;
+            streetLine1?: string | null;
+            streetLine2?: string | null;
+            city?: string | null;
+            province?: string | null;
+            postalCode?: string | null;
+            country?: string | null;
+            phoneNumber?: string | null;
+        } | null;
+        payments?: Array<{
+            id: string;
+            transactionId?: string | null;
+            amount: number;
+            method: string;
+            state: string;
+            nextStates: Array<string>;
+            metadata?: any | null;
+            refunds: Array<{ id: string; total: number; reason?: string | null }>;
+        }> | null;
+        fulfillments?: Array<{
+            id: string;
+            state: string;
+            method: string;
+            trackingCode?: string | null;
+            lines: Array<{ orderLineId: string; quantity: number }>;
+        }> | null;
+    };
+};
+
+export type UnsetDraftOrderShippingAddressMutationVariables = Exact<{
+    orderId: Scalars['ID']['input'];
+}>;
+
+export type UnsetDraftOrderShippingAddressMutation = {
+    unsetDraftOrderShippingAddress: {
+        id: string;
+        createdAt: any;
+        updatedAt: any;
+        code: string;
+        state: string;
+        active: boolean;
+        subTotal: number;
+        subTotalWithTax: number;
+        total: number;
+        totalWithTax: number;
+        totalQuantity: number;
+        currencyCode: CurrencyCode;
+        shipping: number;
+        shippingWithTax: number;
+        shippingAddress?: {
+            fullName?: string | null;
+            company?: string | null;
+            streetLine1?: string | null;
+            streetLine2?: string | null;
+            city?: string | null;
+            province?: string | null;
+            postalCode?: string | null;
+            country?: string | null;
+            phoneNumber?: string | null;
+        } | null;
+        customer?: { id: string; firstName: string; lastName: string } | null;
+        lines: Array<{
+            id: string;
+            unitPrice: number;
+            unitPriceWithTax: number;
+            quantity: number;
+            taxRate: number;
+            linePriceWithTax: number;
+            featuredAsset?: { preview: string } | null;
+            productVariant: { id: string; name: string; sku: string };
+            taxLines: Array<{ description: string; taxRate: number }>;
+        }>;
+        surcharges: Array<{
+            id: string;
+            description: string;
+            sku?: string | null;
+            price: number;
+            priceWithTax: number;
+        }>;
+        shippingLines: Array<{
+            priceWithTax: number;
+            shippingMethod: { id: string; code: string; name: string; description: string };
+        }>;
+        payments?: Array<{
+            id: string;
+            transactionId?: string | null;
+            amount: number;
+            method: string;
+            state: string;
+            nextStates: Array<string>;
+            metadata?: any | null;
+            refunds: Array<{ id: string; total: number; reason?: string | null }>;
+        }> | null;
+        fulfillments?: Array<{
+            id: string;
+            state: string;
+            method: string;
+            trackingCode?: string | null;
+            lines: Array<{ orderLineId: string; quantity: number }>;
+        }> | null;
+    };
+};
+
+export type UnsetDraftOrderBillingAddressMutationVariables = Exact<{
+    orderId: Scalars['ID']['input'];
+}>;
+
+export type UnsetDraftOrderBillingAddressMutation = {
+    unsetDraftOrderBillingAddress: {
         id: string;
         createdAt: any;
         updatedAt: any;
@@ -8012,6 +8315,7 @@ export type GetGlobalSettingsQuery = {
                     | { name: string }
                     | { name: string }
                     | { name: string }
+                    | { name: string }
                 >;
             };
         };
@@ -8543,6 +8847,7 @@ export type GlobalSettingsFragment = {
         permissions: Array<{ name: string; description: string; assignable: boolean }>;
         customFieldConfig: {
             Customer: Array<
+                | { name: string }
                 | { name: string }
                 | { name: string }
                 | { name: string }
@@ -10209,6 +10514,7 @@ export type UpdateGlobalSettingsMutation = {
                   permissions: Array<{ name: string; description: string; assignable: boolean }>;
                   customFieldConfig: {
                       Customer: Array<
+                          | { name: string }
                           | { name: string }
                           | { name: string }
                           | { name: string }
@@ -20151,6 +20457,554 @@ export const SetDraftOrderBillingAddressDocument = {
 } as unknown as DocumentNode<
     SetDraftOrderBillingAddressMutation,
     SetDraftOrderBillingAddressMutationVariables
+>;
+export const UnsetDraftOrderShippingAddressDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'UnsetDraftOrderShippingAddress' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderId' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'unsetDraftOrderShippingAddress' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'orderId' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'orderId' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'OrderWithLines' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'shippingAddress' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            {
+                                                kind: 'FragmentSpread',
+                                                name: { kind: 'Name', value: 'ShippingAddress' },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'ShippingAddress' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderAddress' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'Payment' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Payment' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'transactionId' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'method' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'state' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'nextStates' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'metadata' } },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'refunds' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'total' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'reason' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'OrderWithLines' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Order' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'state' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'active' } },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'customer' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'firstName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'lastName' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'lines' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'featuredAsset' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'preview' } },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'productVariant' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'sku' } },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'taxLines' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'taxRate' } },
+                                        ],
+                                    },
+                                },
+                                { kind: 'Field', name: { kind: 'Name', value: 'unitPrice' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'unitPriceWithTax' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'quantity' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'unitPrice' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'unitPriceWithTax' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'taxRate' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'linePriceWithTax' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'surcharges' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'sku' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'price' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'priceWithTax' } },
+                            ],
+                        },
+                    },
+                    { kind: 'Field', name: { kind: 'Name', value: 'subTotal' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'subTotalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'total' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'totalQuantity' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'shipping' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'shippingWithTax' } },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingLines' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'priceWithTax' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'shippingMethod' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'ShippingAddress' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'payments' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'Payment' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'fulfillments' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'state' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'method' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'trackingCode' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'lines' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'orderLineId' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'quantity' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    { kind: 'Field', name: { kind: 'Name', value: 'total' } },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    UnsetDraftOrderShippingAddressMutation,
+    UnsetDraftOrderShippingAddressMutationVariables
+>;
+export const UnsetDraftOrderBillingAddressDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'UnsetDraftOrderBillingAddress' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderId' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'unsetDraftOrderBillingAddress' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'orderId' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'orderId' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'OrderWithLines' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'billingAddress' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            {
+                                                kind: 'FragmentSpread',
+                                                name: { kind: 'Name', value: 'ShippingAddress' },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'ShippingAddress' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderAddress' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    { kind: 'Field', name: { kind: 'Name', value: 'fullName' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'company' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'streetLine1' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'streetLine2' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'city' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'province' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'postalCode' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'country' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'phoneNumber' } },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'Payment' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Payment' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'transactionId' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'method' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'state' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'nextStates' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'metadata' } },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'refunds' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'total' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'reason' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+        {
+            kind: 'FragmentDefinition',
+            name: { kind: 'Name', value: 'OrderWithLines' },
+            typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'Order' } },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'state' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'active' } },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'customer' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'firstName' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'lastName' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'lines' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'featuredAsset' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'preview' } },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'productVariant' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'sku' } },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'taxLines' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'taxRate' } },
+                                        ],
+                                    },
+                                },
+                                { kind: 'Field', name: { kind: 'Name', value: 'unitPrice' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'unitPriceWithTax' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'quantity' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'unitPrice' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'unitPriceWithTax' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'taxRate' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'linePriceWithTax' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'surcharges' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'sku' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'price' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'priceWithTax' } },
+                            ],
+                        },
+                    },
+                    { kind: 'Field', name: { kind: 'Name', value: 'subTotal' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'subTotalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'total' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'totalWithTax' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'totalQuantity' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'currencyCode' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'shipping' } },
+                    { kind: 'Field', name: { kind: 'Name', value: 'shippingWithTax' } },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingLines' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'priceWithTax' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'shippingMethod' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'code' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'shippingAddress' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'ShippingAddress' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'payments' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'Payment' } },
+                            ],
+                        },
+                    },
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'fulfillments' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'state' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'method' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'trackingCode' } },
+                                {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'lines' },
+                                    selectionSet: {
+                                        kind: 'SelectionSet',
+                                        selections: [
+                                            { kind: 'Field', name: { kind: 'Name', value: 'orderLineId' } },
+                                            { kind: 'Field', name: { kind: 'Name', value: 'quantity' } },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    { kind: 'Field', name: { kind: 'Name', value: 'total' } },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    UnsetDraftOrderBillingAddressMutation,
+    UnsetDraftOrderBillingAddressMutationVariables
 >;
 export const ApplyCouponCodeToDraftOrderDocument = {
     kind: 'Document',

@@ -286,7 +286,7 @@ export class DynamicFormInputComponent
                         ({
                             id: this.listId++,
                             control: new UntypedFormControl(getConfigArgValue(value)),
-                        } as InputListItem),
+                        }) as InputListItem,
                 );
                 this.renderList$.next();
             }
@@ -331,6 +331,8 @@ export class DynamicFormInputComponent
                 return { component: 'text-form-input' };
             case 'relation':
                 return { component: 'relation-form-input' };
+            case 'struct':
+                return { component: 'struct-form-input' };
             default:
                 assertNever(type);
         }

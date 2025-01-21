@@ -1,9 +1,9 @@
 import { Logger } from '@vendure/core';
 import sharp, { FormatEnum, Region, ResizeOptions } from 'sharp';
 
-import { getValidFormat } from './common';
+import { ImageTransformParameters } from './config/image-transform-strategy';
 import { loggerCtx } from './constants';
-import { ImageTransformFormat, ImageTransformPreset } from './types';
+import { ImageTransformFormat } from './types';
 
 export type Dimensions = { w: number; h: number };
 export type Point = { x: number; y: number };
@@ -13,25 +13,9 @@ export type Point = { x: number; y: number };
  */
 export async function transformImage(
     originalImage: Buffer,
-    queryParams: Record<string, string>,
-    presets: ImageTransformPreset[],
+    parameters: ImageTransformParameters,
 ): Promise<sharp.Sharp> {
-    let targetWidth = Math.round(+queryParams.w) || undefined;
-    let targetHeight = Math.round(+queryParams.h) || undefined;
-    const quality =
-        queryParams.q != null ? Math.round(Math.max(Math.min(+queryParams.q, 100), 1)) : undefined;
-    let mode = queryParams.mode || 'crop';
-    const fpx = +queryParams.fpx || undefined;
-    const fpy = +queryParams.fpy || undefined;
-    const imageFormat = getValidFormat(queryParams.format);
-    if (queryParams.preset) {
-        const matchingPreset = presets.find(p => p.name === queryParams.preset);
-        if (matchingPreset) {
-            targetWidth = matchingPreset.width;
-            targetHeight = matchingPreset.height;
-            mode = matchingPreset.mode;
-        }
-    }
+    const { width, height, mode, format } = parameters;
     const options: ResizeOptions = {};
     if (mode === 'crop') {
         options.position = sharp.strategy.entropy;
@@ -39,27 +23,31 @@ export async function transformImage(
         options.fit = 'inside';
     }
 
-    const image = sharp(originalImage);
+    const image = sharp(originalImage).rotate();
     try {
-        await applyFormat(image, imageFormat, quality);
+        await applyFormat(image, parameters.format, parameters.quality);
     } catch (e: any) {
         Logger.error(e.message, loggerCtx, e.stack);
     }
-    if (fpx && fpy && targetWidth && targetHeight && mode === 'crop') {
+    if (parameters.fpx && parameters.fpy && width && height && mode === 'crop') {
         const metadata = await image.metadata();
         if (metadata.width && metadata.height) {
-            const xCenter = fpx * metadata.width;
-            const yCenter = fpy * metadata.height;
-            const { width, height, region } = resizeToFocalPoint(
+            const xCenter = parameters.fpx * metadata.width;
+            const yCenter = parameters.fpy * metadata.height;
+            const {
+                width: resizedWidth,
+                height: resizedHeight,
+                region,
+            } = resizeToFocalPoint(
                 { w: metadata.width, h: metadata.height },
-                { w: targetWidth, h: targetHeight },
+                { w: width, h: height },
                 { x: xCenter, y: yCenter },
             );
-            return image.resize(width, height).extract(region);
+            return image.resize(resizedWidth, resizedHeight).extract(region);
         }
     }
 
-    return image.resize(targetWidth, targetHeight, options);
+    return image.resize(width, height, options);
 }
 
 async function applyFormat(

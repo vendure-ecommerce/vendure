@@ -11,14 +11,14 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ShippingLine
 
-<GenerationInfo sourceFile="packages/core/src/entity/shipping-line/shipping-line.entity.ts" sourceLine="24" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/shipping-line/shipping-line.entity.ts" sourceLine="26" packageName="@vendure/core" />
 
 A ShippingLine is created when a <a href='/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a> is applied to an <a href='/reference/typescript-api/entities/order#order'>Order</a>.
 It contains information about the price of the shipping method, any discounts that were
 applied, and the resulting tax on the shipping method.
 
 ```ts title="Signature"
-class ShippingLine extends VendureEntity {
+class ShippingLine extends VendureEntity implements HasCustomFields {
     constructor(input?: DeepPartial<ShippingLine>)
     @EntityId()
     shippingMethodId: ID | null;
@@ -38,6 +38,8 @@ class ShippingLine extends VendureEntity {
     taxLines: TaxLine[];
     @OneToMany(type => OrderLine, orderLine => orderLine.shippingLine)
     orderLines: OrderLine[];
+    @Column(type => CustomShippingLineFields)
+    customFields: CustomShippingLineFields;
     price: number
     priceWithTax: number
     discountedPrice: number
@@ -49,6 +51,9 @@ class ShippingLine extends VendureEntity {
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+
+
+* Implements: <code>HasCustomFields</code>
 
 
 
@@ -97,6 +102,11 @@ class ShippingLine extends VendureEntity {
 ### orderLines
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>[]`}   />
+
+
+### customFields
+
+<MemberInfo kind="property" type={`CustomShippingLineFields`}   />
 
 
 ### price

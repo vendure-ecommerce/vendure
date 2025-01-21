@@ -15,6 +15,7 @@ import {
     ProductVariantChannelEvent,
     ProductVariantEvent,
     SearchJobBufferService,
+    StockMovementEvent,
     TaxRateModificationEvent,
     Type,
     VendurePlugin,
@@ -96,7 +97,7 @@ function getCustomResolvers(options: ElasticsearchRuntimeOptions) {
  * ## Search API Extensions
  * This plugin extends the default search query of the Shop API, allowing richer querying of your product data.
  *
- * The [SearchResponse](/reference/graphql-api/admin/object-types/#searchresponse) type is extended with information
+ * The [SearchResponse](/reference/graphql-api/shop/object-types/#searchresponse) type is extended with information
  * about price ranges in the result set:
  * ```graphql
  * extend type SearchResponse {
@@ -118,6 +119,7 @@ function getCustomResolvers(options: ElasticsearchRuntimeOptions) {
  * extend input SearchInput {
  *     priceRange: PriceRangeInput
  *     priceRangeWithTax: PriceRangeInput
+ *     inStock: Boolean
  * }
  *
  * input PriceRangeInput {
@@ -347,6 +349,13 @@ export class ElasticsearchPlugin implements OnApplicationBootstrap {
                     event.channelId,
                 );
             }
+        });
+
+        this.eventBus.ofType(StockMovementEvent).subscribe(event => {
+            return this.elasticsearchIndexService.updateVariants(
+                event.ctx,
+                event.stockMovements.map(m => m.productVariant),
+            );
         });
 
         // TODO: Remove this buffering logic because because we have dedicated buffering based on #1137

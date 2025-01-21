@@ -13,7 +13,6 @@ import { debounceTime, delay, finalize, map, take as rxjsTake, takeUntil, tap } 
 
 import {
     Asset,
-    CreateAssetsMutation,
     GetAssetListQuery,
     GetAssetListQueryVariables,
     LogicalOperator,
@@ -79,7 +78,10 @@ export class AssetPickerDialogComponent implements OnInit, AfterViewInit, OnDest
     private listQuery: QueryResult<GetAssetListQuery, GetAssetListQueryVariables>;
     private destroy$ = new Subject<void>();
 
-    constructor(private dataService: DataService, private notificationService: NotificationService) {}
+    constructor(
+        private dataService: DataService,
+        private notificationService: NotificationService,
+    ) {}
 
     ngOnInit() {
         this.listQuery = this.dataService.product.getAssetList(this.paginationConfig.itemsPerPage, 0);

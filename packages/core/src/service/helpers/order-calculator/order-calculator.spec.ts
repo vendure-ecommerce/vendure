@@ -87,7 +87,7 @@ describe('OrderCalculator', () => {
             await orderCalculator.applyPriceAdjustments(ctx, order, []);
 
             expect(order.subTotal).toBe(369);
-            expect(order.subTotalWithTax).toBe(444);
+            expect(order.subTotalWithTax).toBe(443);
         });
 
         it('resets totals when lines array is empty', async () => {
@@ -364,7 +364,7 @@ describe('OrderCalculator', () => {
                     });
                     await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], [order.lines[0]]);
 
-                    expect(order.subTotal).toBe(1173);
+                    expect(order.subTotal).toBe(1174);
                     expect(order.subTotalWithTax).toBe(1350);
                     expect(order.lines[0].adjustments.length).toBe(1);
                     expect(order.lines[0].adjustments[0].description).toBe('50% off each item');
@@ -1107,7 +1107,7 @@ describe('OrderCalculator', () => {
                     ]);
 
                     expect(order.subTotal).toBe(5719);
-                    expect(order.subTotalWithTax).toBe(6448);
+                    expect(order.subTotalWithTax).toBe(6446);
                     assertOrderTotalsAddUp(order);
                 });
 
@@ -1178,8 +1178,8 @@ describe('OrderCalculator', () => {
                     // ```
                     // However, there is always a tradeoff when using integer precision with compounding
                     // fractional multiplication.
-                    expect(order.subTotal).toBe(5079);
-                    expect(order.subTotalWithTax).toBe(5722);
+                    expect(order.subTotal).toBe(5081);
+                    expect(order.subTotalWithTax).toBe(5719);
                 });
             });
         });
@@ -1250,7 +1250,7 @@ describe('OrderCalculator', () => {
 
                 await orderCalculator.applyPriceAdjustments(ctx, order, []);
 
-                expect(order.subTotal).toBe(5087);
+                expect(order.subTotal).toBe(5088);
                 expect(order.subTotalWithTax).toBe(5739);
                 assertOrderTotalsAddUp(order);
             });

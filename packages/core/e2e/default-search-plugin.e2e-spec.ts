@@ -129,7 +129,9 @@ describe('Default search plugin', () => {
             customerCount: 1,
         });
         await adminClient.asSuperAdmin();
-        await awaitRunningJobs(adminClient);
+        // We have extra time here because a lot of jobs are
+        // triggered from all the product updates
+        await awaitRunningJobs(adminClient, 10_000, 1000);
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {

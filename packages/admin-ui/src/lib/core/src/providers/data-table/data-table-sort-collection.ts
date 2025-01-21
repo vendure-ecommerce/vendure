@@ -68,6 +68,7 @@ export class DataTableSortCollection<
                     this.addSort({ name: config.name });
                     break;
                 case 'relation':
+                case 'struct':
                     // Cannot sort relations
                     break;
                 default:

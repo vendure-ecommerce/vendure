@@ -1486,6 +1486,34 @@ class ShippingMethodEvent extends VendureEntityEvent<ShippingMethod, ShippingMet
 </div>
 
 
+## StockLocationEvent
+
+<GenerationInfo sourceFile="packages/core/src/event-bus/events/stock-location-event.ts" sourceLine="18" packageName="@vendure/core" />
+
+This event is fired whenever a <a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a> is added, updated
+or deleted.
+
+```ts title="Signature"
+class StockLocationEvent extends VendureEntityEvent<StockLocation, StockLocationInputTypes> {
+    constructor(ctx: RequestContext, entity: StockLocation, type: 'created' | 'updated' | 'deleted', input?: StockLocationInputTypes)
+}
+```
+* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;<a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>, StockLocationInputTypes&#62;</code>
+
+
+
+<div className="members-wrapper">
+
+### constructor
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>, type: 'created' | 'updated' | 'deleted', input?: StockLocationInputTypes) => StockLocationEvent`}   />
+
+
+
+
+</div>
+
+
 ## StockMovementEvent
 
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/stock-movement-event.ts" sourceLine="16" packageName="@vendure/core" since="1.1.0" />

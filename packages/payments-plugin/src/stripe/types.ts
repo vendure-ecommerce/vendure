@@ -1,5 +1,5 @@
-import '@vendure/core/dist/entity/custom-entity-fields';
 import type { Injector, Order, RequestContext } from '@vendure/core';
+import '@vendure/core/dist/entity/custom-entity-fields';
 import type { Request } from 'express';
 import type Stripe from 'stripe';
 
@@ -14,6 +14,8 @@ declare module '@vendure/core/dist/entity/custom-entity-fields' {
 type AdditionalPaymentIntentCreateParams = Partial<
     Omit<Stripe.PaymentIntentCreateParams, 'amount' | 'currency' | 'customer'>
 >;
+
+type AdditionalRequestOptions = Partial<Omit<Stripe.RequestOptions, 'idempotencyKey'>>;
 
 type AdditionalCustomerCreateParams = Partial<Omit<Stripe.CustomerCreateParams, 'email'>>;
 
@@ -109,6 +111,41 @@ export interface StripePluginOptions {
 
     /**
      * @description
+     * Provide additional options to the Stripe payment intent creation. By default,
+     * the plugin will already pass the `idempotencyKey` parameter.
+     *
+     * For example, if you want to provide a `stripeAccount` for the payment intent, you can do so like this:
+     *
+     * @example
+     * ```ts
+     * import { VendureConfig } from '\@vendure/core';
+     * import { StripePlugin } from '\@vendure/payments-plugin/package/stripe';
+     *
+     * export const config: VendureConfig = {
+     *   // ...
+     *   plugins: [
+     *     StripePlugin.init({
+     *       requestOptions: (injector, ctx, order) => {
+     *         return {
+     *           stripeAccount: ctx.channel.seller?.customFields.connectedAccountId
+     *         },
+     *       }
+     *     }),
+     *   ],
+     * };
+     * ```
+     *
+     * @since 3.1.0
+     *
+     */
+    requestOptions?: (
+        injector: Injector,
+        ctx: RequestContext,
+        order: Order,
+    ) => AdditionalRequestOptions | Promise<AdditionalRequestOptions>;
+
+    /**
+     * @description
      * Provide additional parameters to the Stripe customer creation. By default,
      * the plugin will already pass the `email` and `name` parameters.
      *
@@ -151,6 +188,12 @@ export interface StripePluginOptions {
         ctx: RequestContext,
         order: Order,
     ) => AdditionalCustomerCreateParams | Promise<AdditionalCustomerCreateParams>;
+    /**
+     * @description
+     * If your Stripe account also generates payment intents which are independent of Vendure orders, you can set this
+     * to `true` to skip processing those payment intents.
+     */
+    skipPaymentIntentsWithoutExpectedMetadata?: boolean;
 }
 
 export interface RequestWithRawBody extends Request {

@@ -28,6 +28,8 @@ import {
     TRANSITION_FULFILLMENT_TO_STATE,
     TRANSITION_ORDER_TO_STATE,
     TRANSITION_PAYMENT_TO_STATE,
+    UNSET_BILLING_ADDRESS_FOR_DRAFT_ORDER,
+    UNSET_SHIPPING_ADDRESS_FOR_DRAFT_ORDER,
     UPDATE_ORDER_CUSTOM_FIELDS,
     UPDATE_ORDER_NOTE,
 } from '../definitions/order-definitions';
@@ -252,6 +254,20 @@ export class OrderDataService {
             Codegen.SetDraftOrderBillingAddressMutation,
             Codegen.SetDraftOrderBillingAddressMutationVariables
         >(SET_BILLING_ADDRESS_FOR_DRAFT_ORDER, { orderId, input });
+    }
+
+    unsetDraftOrderShippingAddress(orderId: string) {
+        return this.baseDataService.mutate<
+            Codegen.UnsetDraftOrderShippingAddressMutation,
+            Codegen.UnsetDraftOrderShippingAddressMutationVariables
+        >(UNSET_SHIPPING_ADDRESS_FOR_DRAFT_ORDER, { orderId });
+    }
+
+    unsetDraftOrderBillingAddress(orderId: string) {
+        return this.baseDataService.mutate<
+            Codegen.UnsetDraftOrderBillingAddressMutation,
+            Codegen.UnsetDraftOrderBillingAddressMutationVariables
+        >(UNSET_BILLING_ADDRESS_FOR_DRAFT_ORDER, { orderId });
     }
 
     applyCouponCodeToDraftOrder(orderId: string, couponCode: string) {

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## BaseListComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/base-list.component.ts" sourceLine="40" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/base-list.component.ts" sourceLine="43" packageName="@vendure/admin-ui" />
 
 This is a base class which implements the logic required to fetch and manipulate
 a list of data from a query which returns a PaginatedList type.
@@ -33,11 +33,15 @@ class BaseListComponent<ResultType, ItemType, VariableType extends Record<string
     currentPage$: Observable<number>;
     protected destroy$ = new Subject<void>();
     protected refresh$ = new BehaviorSubject<undefined>(undefined);
+    protected visibleCustomFieldColumnChange$ = new Subject<
+        Array<DataTableCustomFieldColumnComponent<any>>
+    >();
     constructor(router: Router, route: ActivatedRoute)
     setQueryFn(listQueryFn: ListQueryFn<ResultType>, mappingFn: MappingFn<ItemType, ResultType>, onPageChangeFn?: OnPageChangeFn<VariableType>, defaults?: { take: number; skip: number }) => ;
     refreshListOnChanges(streams: Array<Observable<any>>) => ;
     setPageNumber(page: number) => ;
     setItemsPerPage(perPage: number) => ;
+    setVisibleColumns(columns: Array<DataTable2ColumnComponent<any>>) => ;
     refresh() => ;
     setQueryParam(hash: { [key: string]: any }, options?: { replaceUrl?: boolean; queryParamsHandling?: QueryParamsHandling }) => ;
     setQueryParam(key: string, value: any, options?: { replaceUrl?: boolean; queryParamsHandling?: QueryParamsHandling }) => ;
@@ -95,6 +99,11 @@ class BaseListComponent<ResultType, ItemType, VariableType extends Record<string
 <MemberInfo kind="property" type={``}   />
 
 
+### visibleCustomFieldColumnChange$
+
+<MemberInfo kind="property" type={``}   />
+
+
 ### constructor
 
 <MemberInfo kind="method" type={`(router: Router, route: ActivatedRoute) => BaseListComponent`}   />
@@ -120,6 +129,11 @@ Sets the current page number in the url.
 <MemberInfo kind="method" type={`(perPage: number) => `}   />
 
 Sets the number of items per page in the url.
+### setVisibleColumns
+
+<MemberInfo kind="method" type={`(columns: Array&#60;DataTable2ColumnComponent&#60;any&#62;&#62;) => `}   />
+
+
 ### refresh
 
 <MemberInfo kind="method" type={`() => `}   />

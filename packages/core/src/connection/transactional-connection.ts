@@ -11,6 +11,7 @@ import {
     ObjectType,
     Repository,
     SelectQueryBuilder,
+    ReplicationMode,
 } from 'typeorm';
 
 import { RequestContext } from '../api/common/request-context';
@@ -70,25 +71,63 @@ export class TransactionalConnection {
      * Returns a TypeORM repository which is bound to any existing transactions. It is recommended to _always_ pass
      * the RequestContext argument when possible, otherwise the queries will be executed outside of any
      * ongoing transactions which have been started by the {@link Transaction} decorator.
+     *
+     * The `options` parameter allows specifying additional configurations, such as the `replicationMode`,
+     * which determines whether the repository should interact with the master or replica database.
+     *
+     * @param ctx - The RequestContext, which ensures the repository is aware of any existing transactions.
+     * @param target - The entity type or schema for which the repository is returned.
+     * @param options - Additional options for configuring the repository, such as the `replicationMode`.
+     *
+     * @returns A TypeORM repository for the specified entity type.
      */
     getRepository<Entity extends ObjectLiteral>(
         ctx: RequestContext | undefined,
         target: ObjectType<Entity> | EntitySchema<Entity> | string,
+        options?: {
+            replicationMode?: ReplicationMode;
+        },
     ): Repository<Entity>;
+    /**
+     * @description
+     * Returns a TypeORM repository. Depending on the parameters passed, it will either be transaction-aware
+     * or not. If `RequestContext` is provided, the repository is bound to any ongoing transactions. The
+     * `options` parameter allows further customization, such as selecting the replication mode (e.g., 'master').
+     *
+     * @param ctxOrTarget - Either the RequestContext, which binds the repository to ongoing transactions, or the entity type/schema.
+     * @param maybeTarget - The entity type or schema for which the repository is returned (if `ctxOrTarget` is a RequestContext).
+     * @param options - Additional options for configuring the repository, such as the `replicationMode`.
+     *
+     * @returns A TypeORM repository for the specified entity type.
+     */
     getRepository<Entity extends ObjectLiteral>(
         ctxOrTarget: RequestContext | ObjectType<Entity> | EntitySchema<Entity> | string | undefined,
         maybeTarget?: ObjectType<Entity> | EntitySchema<Entity> | string,
+        options?: {
+            replicationMode?: ReplicationMode;
+        },
     ): Repository<Entity> {
         if (ctxOrTarget instanceof RequestContext) {
             const transactionManager = this.getTransactionManager(ctxOrTarget);
             if (transactionManager) {
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 return transactionManager.getRepository(maybeTarget!);
-            } else {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                return this.rawConnection.getRepository(maybeTarget!);
             }
+
+            if (ctxOrTarget.replicationMode === 'master' || options?.replicationMode === 'master') {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                return this.dataSource.createQueryRunner('master').manager.getRepository(maybeTarget!);
+            }
+
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            return this.rawConnection.getRepository(maybeTarget!);
         } else {
+            if (options?.replicationMode === 'master') {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                return this.dataSource
+                    .createQueryRunner(options.replicationMode)
+                    .manager.getRepository(maybeTarget!);
+            }
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             return this.rawConnection.getRepository(ctxOrTarget ?? maybeTarget!);
         }

@@ -38,7 +38,7 @@ export abstract class LocaleBasePipe implements OnDestroy, PipeTransform {
      * is valid for the Intl API.
      */
     protected getActiveLocale(localeOverride?: unknown): string {
-        const locale = typeof localeOverride === 'string' ? localeOverride : (this.locale ?? 'en');
+        const locale = typeof localeOverride === 'string' ? localeOverride : this.locale ?? 'en';
         const hyphenated = locale?.replace(/_/g, '-');
 
         // Check for a double-region string, containing 2 region codes like

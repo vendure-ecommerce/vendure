@@ -39,6 +39,10 @@ class ExternalAuthenticationService {
             roles: Role[];
         }) => ;
     findUser(ctx: RequestContext, strategy: string, externalIdentifier: string) => Promise<User | undefined>;
+    createUser(ctx: RequestContext, config: {
+            strategy: string;
+            externalIdentifier: string;
+        }) => Promise<User>;
 }
 ```
 
@@ -85,6 +89,14 @@ Administrator record in Vendure for that user.
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, strategy: string, externalIdentifier: string) => Promise&#60;<a href='/reference/typescript-api/entities/user#user'>User</a> | undefined&#62;`}   />
 
 
+### createUser
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, config: {             strategy: string;             externalIdentifier: string;         }) => Promise&#60;<a href='/reference/typescript-api/entities/user#user'>User</a>&#62;`}   />
+
+Looks up a User based on their identifier from an external authentication
+provider. Creates the user if does not exist. Unlike `findCustomerUser` and `findAdministratorUser`,
+this method does not enforce that the User is associated with a Customer or
+Administrator account.
 
 
 </div>

@@ -300,22 +300,19 @@ export class ProductVariantDetailComponent
     }
 
     removeFacetValue(facetValueId: string) {
-        const productGroup = this.detailForm;
-        const currentFacetValueIds = productGroup.value.facetValueIds ?? [];
-        productGroup.patchValue({
-            facetValueIds: currentFacetValueIds.filter(id => id !== facetValueId),
-        });
-        productGroup.markAsDirty();
+        const facetValueIdsControl = this.detailForm.controls.facetValueIds;
+        const currentFacetValueIds = facetValueIdsControl.value ?? [];
+        facetValueIdsControl.setValue(currentFacetValueIds.filter(id => id !== facetValueId));
+        facetValueIdsControl.markAsDirty();
     }
 
     selectFacetValue() {
         this.displayFacetValueModal().subscribe(facetValueIds => {
             if (facetValueIds) {
-                const currentFacetValueIds = this.detailForm.value.facetValueIds ?? [];
-                this.detailForm.patchValue({
-                    facetValueIds: unique([...currentFacetValueIds, ...facetValueIds]),
-                });
-                this.detailForm.markAsDirty();
+                const facetValueIdsControl = this.detailForm.controls.facetValueIds;
+                const currentFacetValueIds = facetValueIdsControl.value ?? [];
+                facetValueIdsControl.setValue(unique([...currentFacetValueIds, ...facetValueIds]));
+                facetValueIdsControl.markAsDirty();
             }
         });
     }
@@ -404,8 +401,12 @@ export class ProductVariantDetailComponent
             ...updatedProduct,
             assetIds: this.assetChanges.assets?.map(a => a.id),
             featuredAssetId: this.assetChanges.featuredAsset?.id,
-            facetValueIds: variantFormGroup.value.facetValueIds,
-            taxCategoryId: variantFormGroup.value.taxCategoryId,
+            facetValueIds: variantFormGroup.controls.facetValueIds.dirty
+                ? variantFormGroup.value.facetValueIds
+                : undefined,
+            taxCategoryId: variantFormGroup.controls.taxCategoryId.dirty
+                ? variantFormGroup.value.taxCategoryId
+                : undefined,
         } as UpdateProductVariantInput | CreateProductVariantInput;
     }
 }

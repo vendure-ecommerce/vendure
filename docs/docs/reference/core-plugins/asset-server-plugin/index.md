@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AssetServerPlugin
 
-<GenerationInfo sourceFile="packages/asset-server-plugin/src/plugin.ts" sourceLine="153" packageName="@vendure/asset-server-plugin" />
+<GenerationInfo sourceFile="packages/asset-server-plugin/src/plugin.ts" sourceLine="176" packageName="@vendure/asset-server-plugin" />
 
 The `AssetServerPlugin` serves assets (images and other files) from the local file system, and can also be configured to use
 other storage strategies (e.g. <a href='/reference/core-plugins/asset-server-plugin/s3asset-storage-strategy#s3assetstoragestrategy'>S3AssetStorageStrategy</a>. It can also perform on-the-fly image transformations
@@ -133,14 +133,41 @@ large | 800px | 800px | resize
 By default, the AssetServerPlugin will cache every transformed image, so that the transformation only needs to be performed a single time for
 a given configuration. Caching can be disabled per-request by setting the `?cache=false` query parameter.
 
+### Limiting transformations
+
+By default, the AssetServerPlugin will allow any transformation to be performed on an image. However, it is possible to restrict the transformations
+which can be performed by using an <a href='/reference/core-plugins/asset-server-plugin/image-transform-strategy#imagetransformstrategy'>ImageTransformStrategy</a>. This can be used to limit the transformations to a known set of presets, for example.
+
+This is advisable in order to prevent abuse of the image transformation feature, as it can be computationally expensive.
+
+Since v3.1.0 we ship with a <a href='/reference/core-plugins/asset-server-plugin/preset-only-strategy#presetonlystrategy'>PresetOnlyStrategy</a> which allows only transformations using a known set of presets.
+
+*Example*
+
+```ts
+import { AssetServerPlugin, PresetOnlyStrategy } from '@vendure/core';
+
+// ...
+
+AssetServerPlugin.init({
+  //...
+  imageTransformStrategy: new PresetOnlyStrategy({
+    defaultPreset: 'thumbnail',
+    permittedQuality: [0, 50, 75, 85, 95],
+    permittedFormats: ['jpg', 'webp', 'avif'],
+    allowFocalPoint: false,
+  }),
+});
+```
+
 ```ts title="Signature"
-class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
+class AssetServerPlugin implements NestModule, OnApplicationBootstrap, OnApplicationShutdown {
     init(options: AssetServerOptions) => Type<AssetServerPlugin>;
-    constructor(processContext: ProcessContext)
+    constructor(options: AssetServerOptions, processContext: ProcessContext, moduleRef: ModuleRef, assetServer: AssetServer)
     configure(consumer: MiddlewareConsumer) => ;
 }
 ```
-* Implements: <code>NestModule</code>, <code>OnApplicationBootstrap</code>
+* Implements: <code>NestModule</code>, <code>OnApplicationBootstrap</code>, <code>OnApplicationShutdown</code>
 
 
 
@@ -153,7 +180,7 @@ class AssetServerPlugin implements NestModule, OnApplicationBootstrap {
 Set the plugin options.
 ### constructor
 
-<MemberInfo kind="method" type={`(processContext: <a href='/reference/typescript-api/common/process-context#processcontext'>ProcessContext</a>) => AssetServerPlugin`}   />
+<MemberInfo kind="method" type={`(options: <a href='/reference/core-plugins/asset-server-plugin/asset-server-options#assetserveroptions'>AssetServerOptions</a>, processContext: <a href='/reference/typescript-api/common/process-context#processcontext'>ProcessContext</a>, moduleRef: ModuleRef, assetServer: AssetServer) => AssetServerPlugin`}   />
 
 
 ### configure
