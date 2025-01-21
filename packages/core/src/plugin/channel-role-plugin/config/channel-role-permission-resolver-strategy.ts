@@ -1,33 +1,95 @@
+import { CreateAdministratorInput } from '@vendure/common/lib/generated-types';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { ID } from '@vendure/common/lib/shared-types';
 
-import { RequestContext } from '../../api';
-import { EntityNotFoundError, Injector } from '../../common';
-import { TransactionalConnection } from '../../connection';
-import { Channel, Role, User } from '../../entity';
-import { ChannelRole } from '../../entity/channel-role/channel-role.entity';
-import { UserChannelPermissions } from '../../service/helpers/utils/get-user-channels-permissions';
-
-import { RolePermissionResolverStrategy } from './role-permission-resolver-strategy';
+import { RequestContext } from '../../../api/index';
+import { EntityNotFoundError, idsAreEqual, Injector } from '../../../common/index';
+import {
+    ChannelRoleInput,
+    RolePermissionResolverStrategy,
+} from '../../../config/auth/role-permission-resolver-strategy';
+import { TransactionalConnection } from '../../../connection/index';
+import { Channel, Role, User } from '../../../entity/index';
+import { ChannelRole } from '../entities/channel-role.entity';
+import { UserChannelPermissions } from '../../../service/helpers/utils/get-user-channels-permissions';
+import { ChannelRoleService } from '../services/channel-role.service';
 
 export class ChannelRolePermissionResolverStrategy implements RolePermissionResolverStrategy {
     private connection: TransactionalConnection;
-    private userService: import('../../service/services/user.service').UserService;
+    // TODO: Check if this can be turned into a normal import
+    private userService: import('../../../service/services/user.service').UserService;
+
+    private channelRoleService: ChannelRoleService;
 
     async init(injector: Injector) {
         this.connection = injector.get(TransactionalConnection);
-        this.userService = injector.get((await import('../../service/services/user.service.js')).UserService);
+        this.userService = injector.get(
+            (await import('../../../service/services/user.service.js')).UserService,
+        );
+        this.channelRoleService = injector.get(ChannelRoleService);
+    }
+
+    async getChannelIdsFromCreateAdministratorInput(
+        ctx: RequestContext,
+        input: CreateAdministratorInput & { channelRoleIds: Array<{ channelId: ID; roleId: ID }> },
+    ) {
+        // TODO: generate new type
+        return input.channelRoleIds;
     }
 
     /**
      * @description TODO
      */
-    async persistUserAndTheirRoles(ctx: RequestContext, user: User, roleIds: ID[]): Promise<void> {
+    async persistUserAndTheirRoles(
+        ctx: RequestContext,
+        user: User,
+        channelRoles: ChannelRoleInput[],
+    ): Promise<void> {
+        const currentChannelRoles = await this.connection
+            .getRepository(ctx, ChannelRole)
+            .find({ where: { user: { id: user.id } } });
+
+        // What needs to be added
+        for (const channelRole of channelRoles) {
+            if (
+                !currentChannelRoles.find(
+                    cr =>
+                        idsAreEqual(cr.roleId, channelRole.roleId) &&
+                        idsAreEqual(cr.channelId, channelRole.channelId),
+                )
+            ) {
+                // New channel role assignment found
+                await this.channelRoleService.create(ctx, {
+                    userId: user.id,
+                    channelId: channelRole.channelId,
+                    roleId: channelRole.roleId,
+                });
+            }
+        }
+
+        // What needs to be removed
+        for (const channelRole of currentChannelRoles) {
+            if (
+                !channelRoles.find(
+                    cr =>
+                        idsAreEqual(cr.roleId, channelRole.roleId) &&
+                        idsAreEqual(cr.channelId, channelRole.channelId),
+                )
+            ) {
+                // A channel role need to be removed
+                await this.channelRoleService.delete(ctx, channelRole.id);
+            }
+        }
+
+        // TODO: recycle this: @daniel <3
+
+        const roleIds = channelRoles.map(cr => cr.roleId);
         const roles =
             // Empty array is important because that would return every row when used in the query
             roleIds.length === 0
                 ? []
                 : await this.connection.getRepository(ctx, Role).findBy(roleIds.map(id => ({ id })));
+
         for (const roleId of roleIds) {
             const foundRole = roles.find(role => role.id === roleId);
             if (!foundRole) throw new EntityNotFoundError('Role', roleId);
@@ -90,6 +152,7 @@ export class ChannelRolePermissionResolverStrategy implements RolePermissionReso
                 permissions: channelRoleEntries[i].role.permissions,
             };
         }
+        // TODO: Is this needed?
         channelRoleEntries.sort((a, b) => (a.id < b.id ? -1 : 1));
 
         return channelRolePermissions;

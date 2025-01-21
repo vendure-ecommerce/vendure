@@ -133,11 +133,15 @@ export class AdministratorService {
             .getRepository(ctx, Administrator)
             .save(administrator);
 
+        const channelRoles =
+            await this.configService.authOptions.rolePermissionResolverStrategy.getChannelIdsFromCreateAdministratorInput(
+                ctx,
+                input,
+            );
         await this.configService.authOptions.rolePermissionResolverStrategy.persistUserAndTheirRoles(
             ctx,
             createdAdministrator.user,
-            /* TODO input.channels */
-            input.roleIds,
+            channelRoles,
         );
 
         await this.customFieldRelationService.updateRelations(
@@ -188,11 +192,15 @@ export class AdministratorService {
                 }
             }
 
+            const channelRoles =
+                await this.configService.authOptions.rolePermissionResolverStrategy.getChannelIdsFromCreateAdministratorInput(
+                    ctx,
+                    input,
+                );
             await this.configService.authOptions.rolePermissionResolverStrategy.persistUserAndTheirRoles(
                 ctx,
                 administrator.user,
-                /* TODO input.channels */
-                input.roleIds,
+                channelRoles,
             );
         }
 

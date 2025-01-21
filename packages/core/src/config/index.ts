@@ -10,7 +10,7 @@ export * from './auth/native-authentication-strategy';
 export * from './auth/password-hashing-strategy';
 export * from './auth/password-validation-strategy';
 export * from './auth/role-permission-resolver-strategy';
-export * from './auth/channel-role-permission-resolver-strategy';
+export * from '../plugin/channel-role-plugin/config/channel-role-permission-resolver-strategy';
 export * from './auth/default-role-permission-resolver-strategy';
 export * from './catalog/collection-filter';
 export * from './catalog/default-collection-filters';
