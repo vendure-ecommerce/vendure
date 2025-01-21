@@ -553,7 +553,7 @@ export class ProductVariantService {
                         priceInput.price,
                         ctx.channelId,
                         priceInput.currencyCode,
-                        (priceInput as any).customFields,
+                        priceInput.customFields,
                     );
                 }
             }

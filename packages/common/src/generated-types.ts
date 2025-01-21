@@ -6616,10 +6616,10 @@ export type UpdateProductVariantInput = {
  * If the `delete` flag is `true`, the price will be deleted for the given Channel.
  */
 export type UpdateProductVariantPriceInput = {
-  currencyCode?: InputMaybe<CurrencyCode>;
+  currencyCode: CurrencyCode;
   customFields?: InputMaybe<Scalars['JSON']['input']>;
   delete?: InputMaybe<Scalars['Boolean']['input']>;
-  price?: InputMaybe<Scalars['Money']['input']>;
+  price: Scalars['Money']['input'];
 };
 
 export type UpdatePromotionInput = {

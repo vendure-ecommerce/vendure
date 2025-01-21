@@ -141,8 +141,8 @@ Used to set up update the price of a ProductVariant in a particular Channel.
 If the `delete` flag is `true`, the price will be deleted for the given Channel.
 """
 input UpdateProductVariantPriceInput {
-    currencyCode: CurrencyCode
-    price: Money
+    currencyCode: CurrencyCode!
+    price: Money!
     delete: Boolean
 }
 
