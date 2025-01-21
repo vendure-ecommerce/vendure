@@ -196,6 +196,32 @@ export function addGraphQLCustomFields(
             }
         }
 
+        // ProductVariantPriceInput does not follow the usual "Create-" or "Update-" naming convention
+        // so we have a special case for that.
+        if (entityName === 'ProductVariantPrice' && schema.getType(`ProductVariantPriceInput`)) {
+            if (writeableNonLocalizedFields.length) {
+                customFieldTypeDefs += `
+                    input ProductVariantPriceInputCustomFieldsInput {
+                       ${mapToFields(
+                           writeableNonLocalizedFields,
+                           wrapListType(getGraphQlInputType(entityName)),
+                           getGraphQlInputName,
+                       )}
+                    }
+
+                    extend input ProductVariantPriceInput {
+                        customFields: ProductVariantPriceInputCustomFieldsInput
+                    }
+                `;
+            } else {
+                customFieldTypeDefs += `
+                    extend input ProductVariantPriceInput {
+                        customFields: JSON
+                    }
+                `;
+            }
+        }
+
         if (sortableFields.length && schema.getType(`${entityName}SortParameter`)) {
             // Sorting list fields makes no sense, so we only add "sort" fields
             // to non-list fields.

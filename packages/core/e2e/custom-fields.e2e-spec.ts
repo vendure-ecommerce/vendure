@@ -188,6 +188,12 @@ const customConfig = mergeConfig(testConfig(), {
             { name: 'secretKey2', type: 'string', defaultValue: '', public: false, internal: false },
         ],
         OrderLine: [{ name: 'validateInt', type: 'int', min: 0, max: 10 }],
+        ProductVariantPrice: [
+            {
+                name: 'costPrice',
+                type: 'int',
+            },
+        ],
     } as CustomFields,
 });
 
@@ -1154,5 +1160,50 @@ describe('Custom fields', () => {
                 expect(e.message).toContain(duplicateKeyErrMessage);
             }
         });
+    });
+
+    it('on ProductVariantPrice', async () => {
+        const { updateProductVariants } = await adminClient.query(
+            gql`
+                mutation UpdateProductVariants($input: [UpdateProductVariantInput!]!) {
+                    updateProductVariants(input: $input) {
+                        id
+                        prices {
+                            currencyCode
+                            price
+                            customFields {
+                                costPrice
+                            }
+                        }
+                    }
+                }
+            `,
+            {
+                input: [
+                    {
+                        id: 'T_1',
+                        prices: [
+                            {
+                                price: 129900,
+                                currencyCode: 'USD',
+                                customFields: {
+                                    costPrice: 100,
+                                },
+                            },
+                        ],
+                    },
+                ],
+            },
+        );
+
+        expect(updateProductVariants[0].prices).toEqual([
+            {
+                currencyCode: 'USD',
+                price: 129900,
+                customFields: {
+                    costPrice: 100,
+                },
+            },
+        ]);
     });
 });
