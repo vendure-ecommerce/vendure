@@ -51,6 +51,8 @@ label.rich-text-label {
     img {
         cursor: default;
         max-width: 100%;
+        width: revert-layer;
+        height: revert-layer;
     }
 
     a:link,

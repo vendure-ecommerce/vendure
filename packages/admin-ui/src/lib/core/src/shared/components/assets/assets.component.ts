@@ -50,6 +50,8 @@ export class AssetsComponent {
     @Input()
     updatePermissions: string | string[] | Permission | Permission[];
 
+    @Input() multiSelect = true;
+
     constructor(
         private modalService: ModalService,
         private changeDetector: ChangeDetectorRef,
@@ -59,11 +61,14 @@ export class AssetsComponent {
         this.modalService
             .fromComponent(AssetPickerDialogComponent, {
                 size: 'xl',
+                locals: {
+                    multiSelect: this.multiSelect,
+                },
             })
             .subscribe(result => {
                 if (result && result.length) {
-                    this.assets = unique(this.assets.concat(result), 'id');
-                    if (!this.featuredAsset) {
+                    this.assets = this.multiSelect ? unique(this.assets.concat(result), 'id') : result;
+                    if (!this.featuredAsset || !this.multiSelect) {
                         this.featuredAsset = result[0];
                     }
                     this.emitChangeEvent(this.assets, this.featuredAsset);

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## RequestContext
 
-<GenerationInfo sourceFile="packages/core/src/api/common/request-context.ts" sourceLine="44" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/api/common/request-context.ts" sourceLine="179" packageName="@vendure/core" />
 
 The RequestContext holds information relevant to the current request, which may be
 required at various points of the stack.
@@ -23,11 +23,26 @@ This allows the service layer to access information about the current user, the 
 the active Channel, and so on. In addition, the <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a> relies on the
 presence of the RequestContext object in order to correctly handle per-request database transactions.
 
+The RequestContext also provides mechanisms for managing the database replication mode via the
+`setReplicationMode` method and the `replicationMode` getter. This allows for finer control
+over whether database queries within the context should be executed against the master or a replica
+database, which can be particularly useful in distributed database environments.
+
 *Example*
 
 ```ts
 @Query()
 myQuery(@Ctx() ctx: RequestContext) {
+  return this.myService.getData(ctx);
+}
+```
+
+*Example*
+
+```ts
+@Query()
+myMutation(@Ctx() ctx: RequestContext) {
+  ctx.setReplicationMode('master');
   return this.myService.getData(ctx);
 }
 ```
@@ -50,6 +65,8 @@ class RequestContext {
     isAuthorized: boolean
     authorizedAsOwnerOnly: boolean
     translate(key: string, variables?: { [k: string]: any }) => string;
+    setReplicationMode(mode: ReplicationMode) => void;
+    replicationMode: ReplicationMode | undefined
 }
 ```
 
@@ -146,6 +163,20 @@ are owned by the current session.
 <MemberInfo kind="method" type={`(key: string, variables?: { [k: string]: any }) => string`}   />
 
 Translate the given i18n key
+### setReplicationMode
+
+<MemberInfo kind="method" type={`(mode: ReplicationMode) => void`}   />
+
+Sets the replication mode for the current RequestContext. This mode determines whether the operations
+within this context should interact with the master database or a replica. Use this method to explicitly
+define the replication mode for the context.
+### replicationMode
+
+<MemberInfo kind="property" type={`ReplicationMode | undefined`}   />
+
+Gets the current replication mode of the RequestContext. If no replication mode has been set,
+it returns `undefined`. This property indicates whether the context is configured to interact with
+the master database or a replica.
 
 
 </div>

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DefaultSearchPlugin
 
-<GenerationInfo sourceFile="packages/core/src/plugin/default-search-plugin/default-search-plugin.ts" sourceLine="69" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/plugin/default-search-plugin/default-search-plugin.ts" sourceLine="70" packageName="@vendure/core" />
 
 The DefaultSearchPlugin provides a full-text Product search based on the full-text searching capabilities of the
 underlying database.

@@ -5,10 +5,9 @@ import {
     LanguageCode,
     Logger,
     mergeConfig,
-    Order,
     OrderPlacedEvent,
     OrderService,
-    RequestContext,
+    RequestContext
 } from '@vendure/core';
 import {
     SettlePaymentMutation,
@@ -27,7 +26,7 @@ import path from 'path';
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { UPDATE_PRODUCT_VARIANTS } from '../../core/e2e/graphql/shared-definitions';
 import { MolliePlugin } from '../src/mollie';
 import { molliePaymentHandler } from '../src/mollie/mollie.handler';
@@ -52,8 +51,7 @@ import {
     ADD_ITEM_TO_ORDER,
     ADJUST_ORDER_LINE,
     APPLY_COUPON_CODE,
-    GET_ACTIVE_ORDER,
-    GET_ORDER_BY_CODE,
+    GET_ORDER_BY_CODE
 } from './graphql/shop-queries';
 import {
     addManualPayment,
@@ -359,7 +357,7 @@ describe('Mollie payments', () => {
             expect(mollieRequest?.webhookUrl).toEqual(
                 `${mockData.host}/payments/mollie/${E2E_DEFAULT_CHANNEL_TOKEN}/1`,
             );
-            expect(mollieRequest?.amount?.value).toBe('1009.90');
+            expect(mollieRequest?.amount?.value).toBe('1009.88');
             expect(mollieRequest?.amount?.currency).toBe('USD');
             expect(mollieRequest.lines[0].vatAmount.value).toEqual('199.98');
             let totalLineAmount = 0;
@@ -449,7 +447,7 @@ describe('Mollie payments', () => {
                     paymentMethodCode: mockData.methodCode,
                 },
             });
-            expect(mollieRequest.amount?.value).toBe('909.90'); // minus 100,00 from manual payment
+            expect(mollieRequest.amount?.value).toBe('909.88'); // minus 100,00 from manual payment
             let totalLineAmount = 0;
             for (const line of mollieRequest?.lines) {
                 totalLineAmount += Number(line.totalAmount.value);

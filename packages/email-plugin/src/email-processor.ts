@@ -75,7 +75,9 @@ export class EmailProcessor {
             };
             const transportSettings = await this.getTransportSettings(ctx);
             await this.emailSender.send(emailDetails, transportSettings);
-            await this.eventBus.publish(new EmailSendEvent(ctx, emailDetails, true));
+            await this.eventBus.publish(
+                new EmailSendEvent(ctx, emailDetails, true, undefined, data.metadata),
+            );
             return true;
         } catch (err: unknown) {
             if (err instanceof Error) {
@@ -84,7 +86,9 @@ export class EmailProcessor {
                 Logger.error(String(err), loggerCtx);
             }
 
-            await this.eventBus.publish(new EmailSendEvent(ctx, emailDetails, false, err as Error));
+            await this.eventBus.publish(
+                new EmailSendEvent(ctx, emailDetails, false, err as Error, data.metadata),
+            );
             throw err;
         }
     }

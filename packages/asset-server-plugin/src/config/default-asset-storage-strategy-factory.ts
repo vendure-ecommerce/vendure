@@ -1,8 +1,9 @@
 import { Request } from 'express';
 
-import { getAssetUrlPrefixFn } from './common';
+import { getAssetUrlPrefixFn } from '../common';
+import { AssetServerOptions } from '../types';
+
 import { LocalAssetStorageStrategy } from './local-asset-storage-strategy';
-import { AssetServerOptions } from './types';
 
 /**
  * By default the AssetServerPlugin will configure and use the LocalStorageStrategy to persist Assets.

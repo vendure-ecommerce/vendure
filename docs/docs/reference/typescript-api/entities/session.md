@@ -17,7 +17,7 @@ A Session is created when a user makes a request to restricted API operations. A
 in the case of un-authenticated users, otherwise it is an <a href='/reference/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a>.
 
 ```ts title="Signature"
-class Session extends VendureEntity {
+class Session extends VendureEntity implements HasCustomFields {
     @Index({ unique: true })
     @Column()
     token: string;
@@ -33,9 +33,14 @@ class Session extends VendureEntity {
     @Index()
     @ManyToOne(type => Channel)
     activeChannel: Channel | null;
+    @Column(type => CustomSessionFields)
+    customFields: CustomSessionFields;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+
+
+* Implements: <code>HasCustomFields</code>
 
 
 
@@ -74,6 +79,11 @@ class Session extends VendureEntity {
 ### activeChannel
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/channel#channel'>Channel</a> | null`}   />
+
+
+### customFields
+
+<MemberInfo kind="property" type={`CustomSessionFields`}   />
 
 
 

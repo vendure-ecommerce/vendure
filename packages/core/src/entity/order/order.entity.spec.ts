@@ -119,7 +119,7 @@ describe('Order entity methods', () => {
                     description: 'tax b',
                     taxRate: 7.5,
                     taxBase: 1600,
-                    taxTotal: 121,
+                    taxTotal: 120,
                 },
             ]);
             assertOrderTaxesAddsUp(order);

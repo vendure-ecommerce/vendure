@@ -41,7 +41,8 @@ In your storefront, you can therefore choose whether to display the prices with 
 When a customer adds an item to the Order, the following logic takes place:
 
 1. The price of the item, and whether that price is inclusive of tax, is determined according to the configured [OrderItemPriceCalculationStrategy](/reference/typescript-api/orders/order-item-price-calculation-strategy/).
-2. The active tax Zone is determined based on the configured [TaxZoneStrategy](/reference/typescript-api/tax/tax-zone-strategy/).
+2. The active tax Zone is determined based on the configured [TaxZoneStrategy](/reference/typescript-api/tax/tax-zone-strategy/). By default, Vendure will use the default tax Zone from the Channel settings.
+  However, you often want to use the customer's address as the basis for determining the tax Zone. In this case, you should use the [AddressBasedTaxZoneStrategy](/reference/typescript-api/tax/address-based-tax-zone-strategy).
 3. The applicable TaxRate is fetched based on the ProductVariant's TaxCategory and the active tax Zone determined in step 1.
 4. The `TaxLineCalculationStrategy.calculate()` of the configured [TaxLineCalculationStrategy](/reference/typescript-api/tax/tax-line-calculation-strategy/) is called, which will return one or more [TaxLines](/reference/graphql-api/admin/object-types/#taxline).
 5. The final `priceWithTax` of the order line is calculated based on all the above.

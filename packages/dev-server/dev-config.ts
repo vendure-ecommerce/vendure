@@ -3,13 +3,11 @@ import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
-    Asset,
     ChannelRolePermissionResolverStrategy,
     DefaultJobQueuePlugin,
     DefaultLogger,
     DefaultSearchPlugin,
     dummyPaymentHandler,
-    FacetValue,
     LogLevel,
     VendureConfig,
 } from '@vendure/core';
@@ -60,22 +58,7 @@ export const devConfig: VendureConfig = {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
 
-    customFields: {
-        Product: [
-            {
-                name: 'test',
-                type: 'relation',
-                entity: Asset,
-            },
-        ],
-        FacetValue: [
-            {
-                name: 'childFacetValue',
-                type: 'relation',
-                entity: FacetValue,
-            },
-        ],
-    },
+    customFields: {},
     // TODO remove if this feature is closer to merging
     logger: new DefaultLogger({ level: LogLevel.Debug }),
     importExportOptions: {

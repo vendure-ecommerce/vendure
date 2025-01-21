@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ImageTransformPreset
 
-<GenerationInfo sourceFile="packages/asset-server-plugin/src/types.ts" sourceLine="39" packageName="@vendure/asset-server-plugin" />
+<GenerationInfo sourceFile="packages/asset-server-plugin/src/types.ts" sourceLine="41" packageName="@vendure/asset-server-plugin" />
 
 A configuration option for an image size preset for the AssetServerPlugin.
 
