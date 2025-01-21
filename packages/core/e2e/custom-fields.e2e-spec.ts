@@ -192,6 +192,16 @@ const customConfig = mergeConfig(testConfig(), {
             {
                 name: 'costPrice',
                 type: 'int',
+            }
+        ],  
+        // Single readonly Address custom field to test
+        // https://github.com/vendure-ecommerce/vendure/issues/3326
+        Address: [
+            {
+                name: 'hereId',
+                type: 'string',
+                readonly: true,
+                nullable: true,
             },
         ],
     } as CustomFields,
