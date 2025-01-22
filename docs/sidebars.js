@@ -91,6 +91,7 @@ const sidebars = {
                     value: 'Advanced Topics',
                     className: 'sidebar-section-header',
                 },
+                'guides/developer-guide/channel-aware/index',
                 'guides/developer-guide/cache/index',
                 'guides/developer-guide/dataloaders/index',
                 'guides/developer-guide/db-subscribers/index',
