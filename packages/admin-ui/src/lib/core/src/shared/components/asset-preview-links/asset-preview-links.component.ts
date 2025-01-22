@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 import { AssetLike } from '../asset-gallery/asset-gallery.types';
 
+export const ASSET_SIZES = ['tiny', 'thumb', 'small', 'medium', 'large', 'full'];
+
 @Component({
     selector: 'vdr-asset-preview-links',
     templateUrl: './asset-preview-links.component.html',
@@ -10,5 +12,5 @@ import { AssetLike } from '../asset-gallery/asset-gallery.types';
 })
 export class AssetPreviewLinksComponent {
     @Input() asset: AssetLike;
-    sizes = ['tiny', 'thumb', 'small', 'medium', 'large', 'full'];
+    sizes = ASSET_SIZES;
 }

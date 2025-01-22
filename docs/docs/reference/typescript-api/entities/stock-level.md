@@ -11,13 +11,13 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## StockLevel
 
-<GenerationInfo sourceFile="packages/core/src/entity/stock-level/stock-level.entity.ts" sourceLine="16" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/stock-level/stock-level.entity.ts" sourceLine="18" packageName="@vendure/core" />
 
 A StockLevel represents the number of a particular <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> which are available
 at a particular <a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>.
 
 ```ts title="Signature"
-class StockLevel extends VendureEntity {
+class StockLevel extends VendureEntity implements HasCustomFields {
     constructor(input: DeepPartial<StockLevel>)
     @Index()
     @ManyToOne(type => ProductVariant, productVariant => productVariant.stockLevels, { onDelete: 'CASCADE' })
@@ -33,9 +33,14 @@ class StockLevel extends VendureEntity {
     stockOnHand: number;
     @Column()
     stockAllocated: number;
+    @Column(type => CustomStockLevelFields)
+    customFields: CustomStockLevelFields;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+
+
+* Implements: <code>HasCustomFields</code>
 
 
 
@@ -74,6 +79,11 @@ class StockLevel extends VendureEntity {
 ### stockAllocated
 
 <MemberInfo kind="property" type={`number`}   />
+
+
+### customFields
+
+<MemberInfo kind="property" type={`CustomStockLevelFields`}   />
 
 
 

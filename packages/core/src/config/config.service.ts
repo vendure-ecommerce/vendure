@@ -146,4 +146,12 @@ export class ConfigService implements VendureConfig {
         }
         return definedCustomFields;
     }
+
+    /**
+     * This is a precaution against attempting to JSON.stringify() a reference to
+     * this class, which can lead to a circular reference error.
+     */
+    protected toJSON() {
+        return {};
+    }
 }

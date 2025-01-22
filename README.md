@@ -12,14 +12,14 @@ An open-source headless commerce platform built on [Node.js](https://nodejs.org)
 ### [www.vendure.io](https://www.vendure.io/)
 
 * [Getting Started](https://docs.vendure.io/guides/getting-started/installation/): Get Vendure up and running locally in a matter of minutes with a single command
-* [Live Demo](https://demo.vendure.io/)
+* [Request Demo](https://vendure.io/demo)
 * [Vendure Discord](https://www.vendure.io/community): Join us on Discord for support and answers to your questions
 
 ## Branches
 
-- `master` - The latest stable release, currently the 2.x series.
-- `minor` - The next patch release, including new features
-- `major` - The next major release (v3.0)
+- `master` - The latest stable release, currently the 3.x series.
+- `minor` - The next minor release, including new features
+- `major` - The next major release (v4.0)
 - `v2.x` - The 2.x line, which will receive critical fixes until the end-of-life on 31.12.2024. The code in this branch is under the MIT license.
 
 ## Structure
@@ -106,7 +106,7 @@ cd packages/dev-server
 If you are making changes to the admin ui, you need to start the admin ui independent from the dev-server:
 
 1. `cd packages/admin-ui`
-2. `npm run dev`
+2. `npm run start`
 3. Go to http://localhost:4200 and log in with "superadmin", "superadmin"
 
 This will auto restart when you make changes to the admin ui. You don't need this step when you just use the admin ui just
@@ -141,6 +141,10 @@ DB=sqlite npm run dev
 ```
 
 3. The dev-server will now have your local changes from the changed package.
+
+### Interactive debugging
+
+To debug the dev server with VS Code use the include [launch.json](/.vscode/launch.json) configuration.
 
 ### Code generation
 

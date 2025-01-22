@@ -1,4 +1,5 @@
 import { ConfigurableOperation } from '@vendure/common/lib/generated-types';
+import { omit } from '@vendure/common/lib/omit';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 
@@ -95,5 +96,13 @@ export class ShippingMethod
         } else {
             return false;
         }
+    }
+
+    /**
+     * This is a fix for https://github.com/vendure-ecommerce/vendure/issues/3277,
+     * to prevent circular references which cause the JSON.stringify() to fail.
+     */
+    protected toJSON(): any {
+        return omit(this, ['allCheckers', 'allCalculators'] as any);
     }
 }

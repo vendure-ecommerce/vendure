@@ -29,3 +29,12 @@ vdr-product-variant-quick-jump {
         }
     }
 }
+
+.title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.title {
+    font-size: var(--font-size-base);
+}

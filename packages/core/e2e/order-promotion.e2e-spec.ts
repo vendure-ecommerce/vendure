@@ -28,7 +28,9 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { freeShipping } from '../src/config/promotion/actions/free-shipping-action';
 import { orderFixedDiscount } from '../src/config/promotion/actions/order-fixed-discount-action';
+import { orderLineFixedDiscount } from '../src/config/promotion/actions/order-line-fixed-discount-action';
 
+import { TestMoneyStrategy } from './fixtures/test-money-strategy';
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import { CurrencyCode, HistoryEntryType, LanguageCode } from './graphql/generated-e2e-admin-types';
 import * as Codegen from './graphql/generated-e2e-admin-types';
@@ -65,6 +67,9 @@ describe('Promotions applied to Orders', () => {
             dbConnectionOptions: { logging: true },
             paymentOptions: {
                 paymentMethodHandlers: [testSuccessfulPaymentMethod],
+            },
+            entityOptions: {
+                moneyStrategy: new TestMoneyStrategy(),
             },
         }),
     );
@@ -831,6 +836,58 @@ describe('Promotions applied to Orders', () => {
                 expect(applyCouponCode.discounts[0].description).toBe('$10 discount on order');
                 expect(applyCouponCode.subTotalWithTax).toBe(0);
                 expect(applyCouponCode.totalWithTax).toBe(500); // shipping price
+            });
+        });
+
+        describe('orderLineFixedDiscount', () => {
+            const couponCode = '1000_off_order_line';
+            let promotion: Codegen.PromotionFragment;
+
+            beforeAll(async () => {
+                promotion = await createPromotion({
+                    enabled: true,
+                    name: '$1000 discount on order line',
+                    couponCode,
+                    conditions: [],
+                    actions: [
+                        {
+                            code: orderLineFixedDiscount.code,
+                            arguments: [{ name: 'discount', value: '1000' }],
+                        },
+                    ],
+                });
+            });
+
+            afterAll(async () => {
+                await deletePromotion(promotion.id);
+            });
+
+            it('prices exclude tax', async () => {
+                await shopClient.asAnonymousUser();
+                const { addItemToOrder } = await shopClient.query<
+                    CodegenShop.AddItemToOrderMutation,
+                    CodegenShop.AddItemToOrderMutationVariables
+                >(ADD_ITEM_TO_ORDER, {
+                    productVariantId: getVariantBySlug('item-1000').id,
+                    quantity: 3,
+                });
+                orderResultGuard.assertSuccess(addItemToOrder);
+                expect(addItemToOrder.discounts.length).toBe(0);
+                expect(addItemToOrder.lines[0].discounts.length).toBe(0);
+                expect(addItemToOrder.total).toBe(3000);
+                expect(addItemToOrder.totalWithTax).toBe(3600);
+
+                const { applyCouponCode } = await shopClient.query<
+                    CodegenShop.ApplyCouponCodeMutation,
+                    CodegenShop.ApplyCouponCodeMutationVariables
+                >(APPLY_COUPON_CODE, {
+                    couponCode,
+                });
+                orderResultGuard.assertSuccess(applyCouponCode);
+
+                expect(applyCouponCode.total).toBe(2000);
+                expect(applyCouponCode.totalWithTax).toBe(2400);
+                expect(applyCouponCode.lines[0].discounts.length).toBe(1);
             });
         });
 

@@ -274,7 +274,8 @@ union UpdateOrderItemsResult =
     | OrderLimitError
     | NegativeQuantityError
     | InsufficientStockError
-union RemoveOrderItemsResult = Order | OrderModificationError
+    | OrderInterceptorError
+union RemoveOrderItemsResult = Order | OrderModificationError | OrderInterceptorError
 union SetOrderShippingMethodResult =
       Order
     | OrderModificationError

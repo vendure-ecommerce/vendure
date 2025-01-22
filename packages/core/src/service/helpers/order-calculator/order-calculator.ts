@@ -175,6 +175,8 @@ export class OrderCalculator {
      * Applies promotions to OrderItems. This is a quite complex function, due to the inherent complexity
      * of applying the promotions, and also due to added complexity in the name of performance
      * optimization. Therefore, it is heavily annotated so that the purpose of each step is clear.
+     * Additionally, this is used in both promotionItemAction and promotionLineAction,
+     * as it is difficult to separate action types at this stage.
      */
     private async applyOrderItemPromotions(
         ctx: RequestContext,
@@ -184,8 +186,8 @@ export class OrderCalculator {
         for (const line of order.lines) {
             // Must be re-calculated for each line, since the previous lines may have triggered promotions
             // which affected the order price.
-            const applicablePromotions = await filterAsync(promotions, p => p.test(ctx, order).then(Boolean));
             line.clearAdjustments();
+            const applicablePromotions = await filterAsync(promotions, p => p.test(ctx, order).then(Boolean));
 
             for (const promotion of applicablePromotions) {
                 let priceAdjusted = false;
@@ -198,7 +200,6 @@ export class OrderCalculator {
                     // for (const item of line.items) {
                     const adjustment = await promotion.apply(ctx, { orderLine: line }, state);
                     if (adjustment) {
-                        adjustment.amount = adjustment.amount * line.quantity;
                         line.addAdjustment(adjustment);
                         priceAdjusted = true;
                     }

@@ -23,7 +23,7 @@ class TaxRateService {
     create(ctx: RequestContext, input: CreateTaxRateInput) => Promise<TaxRate>;
     update(ctx: RequestContext, input: UpdateTaxRateInput) => Promise<TaxRate>;
     delete(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
-    getApplicableTaxRate(ctx: RequestContext, zone: Zone, taxCategory: TaxCategory) => Promise<TaxRate>;
+    getApplicableTaxRate(ctx: RequestContext, zone: Zone | ID, taxCategory: TaxCategory | ID) => Promise<TaxRate>;
 }
 ```
 
@@ -61,7 +61,7 @@ class TaxRateService {
 
 ### getApplicableTaxRate
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, zone: <a href='/reference/typescript-api/entities/zone#zone'>Zone</a>, taxCategory: <a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>) => Promise&#60;<a href='/reference/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, zone: <a href='/reference/typescript-api/entities/zone#zone'>Zone</a> | <a href='/reference/typescript-api/common/id#id'>ID</a>, taxCategory: <a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a> | <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/reference/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>&#62;`}   />
 
 Returns the applicable TaxRate based on the specified Zone and TaxCategory. Used when calculating Order
 prices.
