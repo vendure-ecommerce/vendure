@@ -247,6 +247,7 @@ export function addGraphQLCustomFields(
     const publicAddressFields = customFieldConfig.Address?.filter(
         config => !config.internal && (publicOnly === true ? config.public !== false : true),
     );
+    const writeablePublicAddressFields = publicAddressFields?.filter(field => !field.readonly);
     if (publicAddressFields?.length) {
         // For custom fields on the Address entity, we also extend the OrderAddress
         // type (which is used to store address snapshots on Orders)
@@ -257,7 +258,7 @@ export function addGraphQLCustomFields(
                 }
             `;
         }
-        if (schema.getType('UpdateOrderAddressInput')) {
+        if (schema.getType('UpdateOrderAddressInput') && writeablePublicAddressFields?.length) {
             customFieldTypeDefs += `
                 extend input UpdateOrderAddressInput {
                     customFields: UpdateAddressCustomFieldsInput

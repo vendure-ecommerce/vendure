@@ -186,8 +186,8 @@ export class OrderCalculator {
         for (const line of order.lines) {
             // Must be re-calculated for each line, since the previous lines may have triggered promotions
             // which affected the order price.
-            const applicablePromotions = await filterAsync(promotions, p => p.test(ctx, order).then(Boolean));
             line.clearAdjustments();
+            const applicablePromotions = await filterAsync(promotions, p => p.test(ctx, order).then(Boolean));
 
             for (const promotion of applicablePromotions) {
                 let priceAdjusted = false;
