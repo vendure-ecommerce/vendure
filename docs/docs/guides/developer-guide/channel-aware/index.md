@@ -5,7 +5,7 @@ showtoc: true
 
 ## Defining channel-aware entities
 
-Making an entity channel-aware means that it can be associated with a specific [Channel](/reference/typescript-api/channel/).
+Making an entity channel-aware means that it can be associated with a specific [Channel](/reference/typescript-api/entities/channel).
 This is useful when you want to have different data or features for different channels. First you will have to create
 an entity ([Define a database entity](/guides/developer-guide/database-entity/)) that implements the `ChannelAware` interface.
 This interface requires the entity to provide a `channels` property
@@ -29,11 +29,12 @@ class ProductRequest extends VendureEntity implements ChannelAware {
 
     @Column()
     text: string;
-// highlight-start
+    
+    // highlight-start
     @ManyToMany(() => Channel)
     @JoinTable()
     channels: Channel[];
-// highlight-end
+    // highlight-end
 }
 ```
 
