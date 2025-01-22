@@ -11,6 +11,7 @@
 * **core** Improvements to Redis cache plugin (#3303) ([b631781](https://github.com/vendure-ecommerce/vendure/commit/b631781)), closes [#3303](https://github.com/vendure-ecommerce/vendure/issues/3303)
 * **core** Include variant custom fields when duplicating a product (#3203) ([69a1de0](https://github.com/vendure-ecommerce/vendure/commit/69a1de0)), closes [#3203](https://github.com/vendure-ecommerce/vendure/issues/3203)
 * **create** Specify Typesense Docker image version ([fd6a9fd](https://github.com/vendure-ecommerce/vendure/commit/fd6a9fd))
+* **elasticsearch-plugin** Improve search results (#3284) ([b8112be0](https://github.com/vendure-ecommerce/vendure/commit/b8112be0))
 * **payments-plugin** Fix null access error in BraintreePlugin ([627d930](https://github.com/vendure-ecommerce/vendure/commit/627d930))
 * **payments-plugin** Stripe plugin supports correct languageCode (#3298) ([4349ef8](https://github.com/vendure-ecommerce/vendure/commit/4349ef8)), closes [#3298](https://github.com/vendure-ecommerce/vendure/issues/3298)
 
