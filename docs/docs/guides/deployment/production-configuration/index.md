@@ -116,3 +116,7 @@ In **Postgres**, you can execute:
 show timezone;
 ```
 and you should expect to see `UTC` or `Etc/UTC`.
+
+## Security Considerations
+
+Please read over the [Security](/guides/developer-guide/security) section of the Developer Guide for more information on how to secure your Vendure application.

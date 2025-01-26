@@ -1127,6 +1127,8 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <div class="graphql-code-line ">price: <a href="/reference/graphql-api/admin/object-types#money">Money</a></div>
 
+<div class="graphql-code-line ">prices: [<a href="/reference/graphql-api/admin/input-types#createproductvariantpriceinput">CreateProductVariantPriceInput</a>]</div>
+
 <div class="graphql-code-line ">taxCategoryId: <a href="/reference/graphql-api/admin/object-types#id">ID</a></div>
 
 <div class="graphql-code-line ">optionIds: [<a href="/reference/graphql-api/admin/object-types#id">ID</a>!]</div>
@@ -1160,6 +1162,20 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">code: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
 
 <div class="graphql-code-line ">translations: [<a href="/reference/graphql-api/admin/input-types#productoptiontranslationinput">ProductOptionTranslationInput</a>!]!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## CreateProductVariantPriceInput
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">CreateProductVariantPriceInput</span> &#123;</div>
+<div class="graphql-code-line ">currencyCode: <a href="/reference/graphql-api/admin/enums#currencycode">CurrencyCode</a>!</div>
+
+<div class="graphql-code-line ">price: <a href="/reference/graphql-api/admin/object-types#money">Money</a>!</div>
+
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -2627,25 +2643,6 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line comment">Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND.</div>
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line ">filterOperator: <a href="/reference/graphql-api/admin/enums#logicaloperator">LogicalOperator</a></div>
-
-
-<div class="graphql-code-line top-level">&#125;</div>
-</div>
-
-## ProductVariantPriceInput
-
-<div class="graphql-code-block">
-<div class="graphql-code-line top-level comment">"""</div>
-<div class="graphql-code-line top-level comment">Used to set up update the price of a ProductVariant in a particular Channel.</div>
-
-<div class="graphql-code-line top-level comment">If the <code>delete</code> flag is `true`, the price will be deleted for the given Channel.</div>
-<div class="graphql-code-line top-level comment">"""</div>
-<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">ProductVariantPriceInput</span> &#123;</div>
-<div class="graphql-code-line ">currencyCode: <a href="/reference/graphql-api/admin/enums#currencycode">CurrencyCode</a>!</div>
-
-<div class="graphql-code-line ">price: <a href="/reference/graphql-api/admin/object-types#money">Money</a>!</div>
-
-<div class="graphql-code-line ">delete: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
 
 
 <div class="graphql-code-line top-level">&#125;</div>
@@ -4216,7 +4213,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line comment">"""</div>
 <div class="graphql-code-line comment">Allows multiple prices to be set for the ProductVariant in different currencies.</div>
 <div class="graphql-code-line comment">"""</div>
-<div class="graphql-code-line ">prices: [<a href="/reference/graphql-api/admin/input-types#productvariantpriceinput">ProductVariantPriceInput</a>!]</div>
+<div class="graphql-code-line ">prices: [<a href="/reference/graphql-api/admin/input-types#updateproductvariantpriceinput">UpdateProductVariantPriceInput</a>!]</div>
 
 <div class="graphql-code-line ">featuredAssetId: <a href="/reference/graphql-api/admin/object-types#id">ID</a></div>
 
@@ -4231,6 +4228,27 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line ">useGlobalOutOfStockThreshold: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
 
 <div class="graphql-code-line ">trackInventory: <a href="/reference/graphql-api/admin/enums#globalflag">GlobalFlag</a></div>
+
+<div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## UpdateProductVariantPriceInput
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Used to set up update the price of a ProductVariant in a particular Channel.</div>
+
+<div class="graphql-code-line top-level comment">If the <code>delete</code> flag is `true`, the price will be deleted for the given Channel.</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">UpdateProductVariantPriceInput</span> &#123;</div>
+<div class="graphql-code-line ">currencyCode: <a href="/reference/graphql-api/admin/enums#currencycode">CurrencyCode</a>!</div>
+
+<div class="graphql-code-line ">price: <a href="/reference/graphql-api/admin/object-types#money">Money</a>!</div>
+
+<div class="graphql-code-line ">delete: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
 
 <div class="graphql-code-line ">customFields: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
 

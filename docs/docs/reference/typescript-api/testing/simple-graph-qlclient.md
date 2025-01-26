@@ -91,7 +91,7 @@ Logs in as the SuperAdmin user.
 Logs out so that the client is then treated as an anonymous user.
 ### fileUploadMutation
 
-<MemberInfo kind="method" type={`(options: {         mutation: DocumentNode;         filePaths: string[];         mapVariables: (filePaths: string[]) =&#62; any;     }) => Promise&#60;any&#62;`}   />
+<MemberInfo kind="method" type={`(options: {         mutation: DocumentNode;         filePaths: string[];         mapVariables: (filePaths: string[]) =&#62; any;     }) => Promise&#60;any&#62;`}   />
 
 Perform a file upload mutation.
 

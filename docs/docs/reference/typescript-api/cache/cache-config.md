@@ -40,7 +40,7 @@ getKey: id => `MyStrategy:getProductVariantIds:${id}`,
 ```
 ### options
 
-<MemberInfo kind="property" type={`SetCacheKeyOptions`}   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/cache/cache-strategy#setcachekeyoptions'>SetCacheKeyOptions</a>`}   />
 
 Options available when setting the value in the cache.
 
