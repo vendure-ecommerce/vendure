@@ -621,13 +621,27 @@ export const config: VendureConfig = {
 };
 ```
 
-### Test the plugin
+### Test the Plugin
 
-Now that the plugin is installed, we can test it out. Since we have defined a custom field, we'll need to generate and run a migration to add the new column to the database:
+Now that the plugin is installed, we can test it out. Since we have defined a custom field, we'll need to generate and run a migration to add the new column to the database.
 
-```bash
-npm run migration:generate wishlist-plugin
-```
+1. **Generate the Migration File**
+
+   Run the following command to generate a migration file for the `wishlist-plugin`:
+
+   ```bash
+   npx vendure migrate wishlist-plugin
+   ```
+
+When prompted, select the "Generate a new migration" option. This will create a new migration file in the `src/migrations` folder.
+
+2. **Run the Migration**
+
+After generating the migration file, apply the changes to the database by running the same command again:
+
+   ```bash
+   npx vendure migrate wishlist-plugin
+   ```
 
 Then start the server:
 
