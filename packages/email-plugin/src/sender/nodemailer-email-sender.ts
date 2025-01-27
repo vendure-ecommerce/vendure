@@ -40,7 +40,14 @@ export class NodemailerEmailSender implements EmailSender {
     private _smtpTransport: Mail | undefined;
     private _sendMailTransport: Mail | undefined;
     private _sesTransport: Mail | undefined;
-
+    private isNew(transport: Mail, options: EmailTransportOptions, ){
+        try {
+        return  JSON.stringify(transport?.options) !== JSON.stringify(options)
+        } catch (error:any) {
+            Logger.error( format(error.message), loggerCtx);
+            return false;
+        }
+    }
     async send(email: EmailDetails, options: EmailTransportOptions) {
         switch (options.type) {
             case 'none':
@@ -77,7 +84,7 @@ export class NodemailerEmailSender implements EmailSender {
 
     private getSmtpTransport(options: SMTPTransportOptions) {
         if (!this._smtpTransport ||
-            JSON.stringify(this._smtpTransport?.options) !== JSON.stringify(options)
+            this.isNew(this._smtpTransport, options)
         ) {
             (options as any).logger = options.logging ? this.createLogger() : false;
             this._smtpTransport = createTransport(options);
@@ -87,7 +94,7 @@ export class NodemailerEmailSender implements EmailSender {
 
     private getSesTransport(options: SESTransportOptions) {
         if (!this._sesTransport ||
-            JSON.stringify(this._sesTransport?.options) !== JSON.stringify(options)
+           this.isNew(this._sesTransport,options)
         ) {
             this._sesTransport = createTransport(options);
         }
@@ -96,8 +103,7 @@ export class NodemailerEmailSender implements EmailSender {
 
     private getSendMailTransport(options: SendmailTransportOptions) {
         if (!this._sendMailTransport ||
-            JSON.stringify(this._sendMailTransport?.options) !==
-            JSON.stringify({ sendmail: true, ...options })
+           this.isNew(this._sendMailTransport, { sendmail: true, ...options } as any)
         ) {
             this._sendMailTransport = createTransport({ sendmail: true, ...options });
         }
