@@ -1,8 +1,7 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 
-import { TransactionalConnection } from '../../../connection/transactional-connection';
+import { FacetValueChecker } from '../../../service/helpers/facet-value-checker/facet-value-checker';
 import { PromotionCondition } from '../promotion-condition';
-import { FacetValueChecker } from '../utils/facet-value-checker';
 
 let facetValueChecker: FacetValueChecker;
 
@@ -16,7 +15,7 @@ export const hasFacetValues = new PromotionCondition({
         facets: { type: 'ID', list: true, ui: { component: 'facet-value-form-input' } },
     },
     init(injector) {
-        facetValueChecker = new FacetValueChecker(injector.get(TransactionalConnection));
+        facetValueChecker = injector.get(FacetValueChecker);
     },
     // eslint-disable-next-line no-shadow,@typescript-eslint/no-shadow
     async check(ctx, order, args) {

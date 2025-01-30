@@ -8,6 +8,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { IsNull } from 'typeorm';
 
+import { idsAreEqual } from '../../../common';
 import { InternalServerError } from '../../../common/error/errors';
 import { Injector } from '../../../common/injector';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
@@ -78,7 +79,7 @@ export const productDuplicator = new EntityDuplicator({
             };
         });
         const productInput: CreateProductInput = {
-            featuredAssetId: product.featuredAsset.id,
+            featuredAssetId: product.featuredAsset?.id,
             enabled: false,
             assetIds: product.assets.map(value => value.assetId),
             facetValueIds: product.facetValues.map(value => value.id),
@@ -102,6 +103,8 @@ export const productDuplicator = new EntityDuplicator({
                     featuredAsset: true,
                     stockLevels: true,
                     facetValues: true,
+                    productVariantPrices: true,
+                    taxCategory: true,
                 },
             });
             if (product.optionGroups && product.optionGroups.length) {
@@ -150,7 +153,6 @@ export const productDuplicator = new EntityDuplicator({
                     options: true,
                 },
             });
-
             const variantInput: CreateProductVariantInput[] = productVariants.map((variant, i) => {
                 const options = variant.options.map(existingOption => {
                     const newOption = newOptionGroups
@@ -163,12 +165,16 @@ export const productDuplicator = new EntityDuplicator({
                     }
                     return newOption;
                 });
+                const price =
+                    variant.productVariantPrices.find(p => idsAreEqual(p.channelId, ctx.channelId))?.price ??
+                    variant.productVariantPrices[0]?.price;
                 return {
                     productId: duplicatedProduct.id,
-                    price: variant.price,
+                    price: price ?? variant.price,
                     sku: `${variant.sku}-copy`,
                     stockOnHand: 1,
                     featuredAssetId: variant.featuredAsset?.id,
+                    taxCategoryId: variant.taxCategory?.id,
                     useGlobalOutOfStockThreshold: variant.useGlobalOutOfStockThreshold,
                     trackInventory: variant.trackInventory,
                     assetIds: variant.assets.map(value => value.assetId),
@@ -176,6 +182,7 @@ export const productDuplicator = new EntityDuplicator({
                         return {
                             languageCode: translation.languageCode,
                             name: translation.name,
+                            customFields: translation.customFields,
                         };
                     }),
                     optionIds: options.map(option => option.id),
@@ -184,6 +191,7 @@ export const productDuplicator = new EntityDuplicator({
                         stockLocationId: stockLevel.stockLocationId,
                         stockOnHand: stockLevel.stockOnHand,
                     })),
+                    customFields: variant.customFields,
                 };
             });
             const duplicatedProductVariants = await productVariantService.create(ctx, variantInput);

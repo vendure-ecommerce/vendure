@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Product
 
-<GenerationInfo sourceFile="packages/core/src/entity/product/product.entity.ts" sourceLine="25" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/product/product.entity.ts" sourceLine="26" packageName="@vendure/core" />
 
 A Product contains one or more <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>s and serves as a container for those variants,
 providing an overall name, description etc.
@@ -29,6 +29,8 @@ class Product extends VendureEntity implements Translatable, HasCustomFields, Ch
     @Index()
     @ManyToOne(type => Asset, asset => asset.featuredInProducts, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
+    @EntityId({ nullable: true })
+    featuredAssetId: ID;
     @OneToMany(type => ProductAsset, productAsset => productAsset.product)
     assets: ProductAsset[];
     @OneToMany(type => ProductTranslation, translation => translation.base, { eager: true })
@@ -40,7 +42,7 @@ class Product extends VendureEntity implements Translatable, HasCustomFields, Ch
     @ManyToMany(type => FacetValue, facetValue => facetValue.products)
     @JoinTable()
     facetValues: FacetValue[];
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.products)
     @JoinTable()
     channels: Channel[];
     @Column(type => CustomProductFields)
@@ -89,6 +91,11 @@ class Product extends VendureEntity implements Translatable, HasCustomFields, Ch
 ### featuredAsset
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>`}   />
+
+
+### featuredAssetId
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 ### assets

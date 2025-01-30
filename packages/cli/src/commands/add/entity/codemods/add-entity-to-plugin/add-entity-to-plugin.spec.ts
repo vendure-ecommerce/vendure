@@ -19,8 +19,11 @@ describe('addEntityToPlugin', () => {
         const pluginClasses = getPluginClasses(project);
         expect(pluginClasses.length).toBe(1);
         const entityTemplatePath = path.join(__dirname, '../../templates/entity.template.ts');
-        const entityFile = createFile(project, entityTemplatePath);
-        entityFile.move(path.join(__dirname, 'fixtures', 'entity.ts'));
+        const entityFile = createFile(
+            project,
+            entityTemplatePath,
+            path.join(__dirname, 'fixtures', 'entity.ts'),
+        );
         const entityClass = entityFile.getClass('ScaffoldEntity');
         addEntityToPlugin(new VendurePluginRef(pluginClasses[0]), entityClass!);
 

@@ -10,6 +10,7 @@ import { RequestContext } from '../../../api/common/request-context';
 import { InternalServerError } from '../../../common/error/errors';
 import { ConfigService } from '../../../config/config.service';
 import { CustomFieldConfig } from '../../../config/custom-field/custom-field-types';
+import { Logger } from '../../../config/index';
 import { Facet } from '../../../entity/facet/facet.entity';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
 import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
@@ -159,6 +160,17 @@ export class Importer {
         let imported = 0;
         const languageCode = ctx.languageCode;
         const taxCategories = await this.taxCategoryService.findAll(ctx);
+        if (taxCategories.totalItems === 0) {
+            Logger.error(
+                [
+                    `No TaxCategories found in the database. Ensure that at least one TaxCategory exists.`,
+                    `If you are populating from an InitialData object, ensure the 'taxRates' array is not empty.`,
+                ].join('\n'),
+            );
+            throw new Error(
+                `No TaxCategories found in the database. Ensure the IntialData.taxRates array is not empty.`,
+            );
+        }
         await this.fastImporter.initialize(ctx.channel);
         for (const { product, variants } of rows) {
             const productMainTranslation = this.getTranslationByCodeOrFirst(
@@ -207,7 +219,7 @@ export class Importer {
                 );
                 const groupId = await this.fastImporter.createProductOptionGroup({
                     code,
-                    options: optionGroupMainTranslation.values.map(name => ({} as any)),
+                    options: optionGroupMainTranslation.values.map(name => ({}) as any),
                     translations: optionGroup.translations.map(translation => {
                         return {
                             languageCode: translation.languageCode,
@@ -297,7 +309,7 @@ export class Importer {
         return errors;
     }
 
-    private async getFacetValueIds(
+    protected async getFacetValueIds(
         ctx: RequestContext,
         facets: ParsedFacet[],
         languageCode: LanguageCode,
@@ -363,7 +375,10 @@ export class Importer {
         return facetValueIds;
     }
 
-    private processCustomFieldValues(customFields: { [field: string]: string }, config: CustomFieldConfig[]) {
+    protected processCustomFieldValues(
+        customFields: { [field: string]: string },
+        config: CustomFieldConfig[],
+    ) {
         const processed: { [field: string]: string | string[] | boolean | undefined } = {};
         for (const fieldDef of config) {
             const value = customFields[fieldDef.name];

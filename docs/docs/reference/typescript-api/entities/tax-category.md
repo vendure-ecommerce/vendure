@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TaxCategory
 
-<GenerationInfo sourceFile="packages/core/src/entity/tax-category/tax-category.entity.ts" sourceLine="15" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/tax-category/tax-category.entity.ts" sourceLine="16" packageName="@vendure/core" />
 
 A TaxCategory defines what type of taxes to apply to a <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>.
 
@@ -24,6 +24,8 @@ class TaxCategory extends VendureEntity implements HasCustomFields {
     customFields: CustomTaxCategoryFields;
     @OneToMany(type => ProductVariant, productVariant => productVariant.taxCategory)
     productVariants: ProductVariant[];
+    @OneToMany(type => TaxRate, taxRate => taxRate.category)
+    taxRates: TaxRate[];
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
@@ -58,6 +60,11 @@ class TaxCategory extends VendureEntity implements HasCustomFields {
 ### productVariants
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[]`}   />
+
+
+### taxRates
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/tax-rate#taxrate'>TaxRate</a>[]`}   />
 
 
 

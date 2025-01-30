@@ -88,7 +88,7 @@ interface MoneyStrategy extends InjectableStrategy {
 Defines the TypeORM column used to store monetary values.
 ### precision
 
-<MemberInfo kind="property" type={`number`} default="2"  since="2.2.0"  />
+<MemberInfo kind="property" type={`number`} default={`2`}  since="2.2.0"  />
 
 Defines the precision (i.e. number of decimal places) represented by the monetary values.
 For example, consider a product variant with a price value of `12345`.
@@ -106,7 +106,7 @@ Defines the logic used to round monetary values. For instance, the default behav
 in the <a href='/reference/typescript-api/money/default-money-strategy#defaultmoneystrategy'>DefaultMoneyStrategy</a> is to round the value, then multiply.
 
 ```ts
-return Math.round(value) * quantity;
+return Math.round(value * quantity);
 ```
 
 However, it may be desirable to instead round only _after_ the unit amount has been

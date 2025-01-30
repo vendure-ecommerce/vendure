@@ -23,11 +23,11 @@ describe('LocaleDatePipe', () => {
 
     it('medium format German', () => {
         const pipe = new LocaleDatePipe();
-        expect(pipe.transform(testDate, 'medium', LanguageCode.de)).toBe('12. Jan. 2021, 9:12:42 AM');
+        expect(pipe.transform(testDate, 'medium', LanguageCode.de)).toBe('12. Jan. 2021, 09:12:42');
     });
 
     it('medium format Chinese', () => {
         const pipe = new LocaleDatePipe();
-        expect(pipe.transform(testDate, 'medium', LanguageCode.zh)).toBe('2021年1月12日 上午9:12:42');
+        expect(pipe.transform(testDate, 'medium', LanguageCode.zh)).toBe('2021年1月12日 09:12:42');
     });
 });

@@ -34,7 +34,7 @@ nested joins. If the entity already has a particular relation available, that re
 will be skipped (no extra DB join will be added).
 ### applyProductVariantPrices
 
-<MemberInfo kind="property" type={`boolean`} default="false"   />
+<MemberInfo kind="property" type={`boolean`} default={`false`}   />
 
 If set to `true`, any ProductVariants will also have their `price` and `priceWithTax` fields
 applied based on the current context. If prices are not required, this can be left `false` which

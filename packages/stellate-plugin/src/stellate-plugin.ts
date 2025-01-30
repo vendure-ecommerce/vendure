@@ -250,7 +250,7 @@ const StellateOptionsProvider = {
         schema: shopApiExtensions,
         resolvers: [SearchResponseFieldResolver],
     },
-    compatibility: '^2.0.0',
+    compatibility: '^3.0.0',
 })
 export class StellatePlugin implements OnApplicationBootstrap {
     static options: StellatePluginOptions;

@@ -38,12 +38,12 @@ The path to an optional CSV file containing product data to import.
 An object containing non-product data which is used to populate the database.
 ### customerCount
 
-<MemberInfo kind="property" type={`number`} default="10"   />
+<MemberInfo kind="property" type={`number`} default={`10`}   />
 
 The number of fake Customers to populate into the database.
 ### logging
 
-<MemberInfo kind="property" type={`boolean`} default="false"   />
+<MemberInfo kind="property" type={`boolean`} default={`false`}   />
 
 Set this to `true` to log some information about the database population process.
 

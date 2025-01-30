@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ShippingOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="752" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="764" packageName="@vendure/core" />
 
 
 
@@ -53,7 +53,7 @@ Allows the definition of custom states and transition logic for the fulfillment 
 Takes an array of objects implementing the <a href='/reference/typescript-api/fulfillment/fulfillment-process#fulfillmentprocess'>FulfillmentProcess</a> interface.
 ### process
 
-<MemberInfo kind="property" type={`Array&#60;<a href='/reference/typescript-api/fulfillment/fulfillment-process#fulfillmentprocess'>FulfillmentProcess</a>&#60;any&#62;&#62;`} default="<a href='/reference/typescript-api/fulfillment/fulfillment-process#defaultfulfillmentprocess'>defaultFulfillmentProcess</a>"  since="2.0.0"  />
+<MemberInfo kind="property" type={`Array&#60;<a href='/reference/typescript-api/fulfillment/fulfillment-process#fulfillmentprocess'>FulfillmentProcess</a>&#60;any&#62;&#62;`} default={`<a href='/reference/typescript-api/fulfillment/fulfillment-process#defaultfulfillmentprocess'>defaultFulfillmentProcess</a>`}  since="2.0.0"  />
 
 Allows the definition of custom states and transition logic for the fulfillment process state machine.
 Takes an array of objects implementing the <a href='/reference/typescript-api/fulfillment/fulfillment-process#fulfillmentprocess'>FulfillmentProcess</a> interface.

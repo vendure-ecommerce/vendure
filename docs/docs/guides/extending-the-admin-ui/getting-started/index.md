@@ -21,6 +21,13 @@ UI extensions fall into two categories:
 :::cli
 Use `npx vendure add` and select "Set up Admin UI extensions".
 
+If you don't already have any plugins in your project, first create a plugin to house your
+UI extensions. Then select:
+
+```sh
+[Plugin: UI] Set up Admin UI extensions
+```
+
 Then follow the prompts, which will guide you through the process of 
 setting up the necessary files and folders for your UI extensions.
 :::
@@ -28,7 +35,7 @@ setting up the necessary files and folders for your UI extensions.
 ### Manual setup
 
 It is recommended to use the `vendure add` command as described above, but if you prefer to set up the 
-Admin UI extensions manually, follow these steps:
+Admin UI extensions manually, or just want to get a better understanding of what the CLI is doing, follow these steps:
 
 First, install the [`@vendure/ui-devkit` package](https://www.npmjs.com/package/@vendure/ui-devkit) as a dev dependency:
 
@@ -48,6 +55,30 @@ yarn add --dev @vendure/ui-devkit
 
 </TabItem>
 </Tabs>
+
+:::info
+If you plan to use React components in your UI extensions, you should also install the `@types/react` package:
+
+
+<Tabs>
+<TabItem value="npm" label="npm" default>
+
+```bash
+npm install --save-dev @types/react
+```
+
+</TabItem>
+<TabItem value="yarn" label="yarn">
+
+```bash
+yarn add --dev @types/react
+```
+
+</TabItem>
+</Tabs>
+
+:::
+
 
 You can then create the following folder structure to hold your UI extensions:
 
@@ -75,6 +106,32 @@ export default [
 ];
 ```
 
+Now we can configure the paths to your UI extension files. By convention, we will add this config object as a 
+static property on your plugin class:
+
+```ts title="src/plugins/my-plugin/my.plugin.ts"
+import * as path from 'path';
+import { PluginCommonModule, Type, VendurePlugin } from '@vendure/core';
+// highlight-next-line
+import { AdminUiExtension } from '@vendure/ui-devkit/compiler';
+
+@VendurePlugin({
+    imports: [PluginCommonModule],
+    compatibility: '^3.0.0',
+})
+export class MyPlugin {
+
+    // highlight-start
+    static ui: AdminUiExtension = {
+        id: 'my-plugin-ui',
+        extensionPath: path.join(__dirname, 'ui'),
+        routes: [{ route: 'my-plugin', filePath: 'routes.ts' }],
+        providers: ['providers.ts'],
+    };
+    // highlight-end
+}
+```
+
 You can then use the [`compileUiExtensions` function](/reference/admin-ui-api/ui-devkit/compile-ui-extensions/) to compile your UI extensions and add them to the Admin UI app bundle.
 
 ```ts title="src/vendure-config.ts"
@@ -82,7 +139,7 @@ import { VendureConfig } from '@vendure/core';
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 // highlight-next-line
 import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
-import * as path from 'path';
+import { MyPlugin } from './plugins/greeter/my.plugin'
 
 export const config: VendureConfig = {
     // ...
@@ -93,11 +150,7 @@ export const config: VendureConfig = {
             app: compileUiExtensions({
                 outputPath: path.join(__dirname, '../admin-ui'),
                 extensions: [
-                    {
-                        id: 'test-extension',
-                        extensionPath: path.join(__dirname, 'plugins/my-plugin/ui'),
-                        providers: ['providers.ts'],
-                    },
+                    MyPlugin.ui,
                 ],
                 devMode: true,
             }),
@@ -110,15 +163,18 @@ export const config: VendureConfig = {
 };
 ```
 
+Everything above will be automatically done for you when you use the CLI.
+
 Now when you start the server, the following will happen:
 
 1. A new folder called `admin-ui` will be created in the root of your project (as specified by the `outputPath` option). This is a temporary directory (it should not be added to version control) which will contain the source files of your custom Admin UI app.
 2. During bootstrap, the `compileUiExtensions` function will be called, which will compile the Admin UI app and serve it in development mode. The dev server will be listening on port `4200` but this port will also be proxied to port `3000` (as specified by `apiOptions.port`). This step can take up to a minute or two, depending on the speed of your machine.
 
 :::caution
-**Note:** the TypeScript source files of your UI extensions **must not** be compiled by your regular TypeScript build task. This is because they will instead be compiled by the Angular compiler when you run `compileUiExtensions()`.
+**Note:** the TypeScript source files of your UI extensions **must not** be compiled by your regular TypeScript build task. 
+This is because they will instead be compiled by the Angular compiler when you run `compileUiExtensions()`.
 
-You can exclude them in your main `tsconfig.json` by adding a line to the "exclude" array:
+You can exclude them in your main `tsconfig.json` by adding a line to the "exclude" array (this is already defined on a default Vendure project):
 
 ```json title="tsconfig.json"
 {
@@ -172,7 +228,8 @@ export default [
 
 ### Specifying providers
 
-When defining UI extensions in the `compileUiExtensions()` function, you must specify at least one providers file. This is done by passing an array of file paths, where each file path is relative to the directory specified by the `extensionPath` option.
+When defining UI extensions in the `compileUiExtensions()` function, you must specify at least one providers file. 
+This is done by passing an array of file paths, where each file path is relative to the directory specified by the `extensionPath` option.
 
 ```ts title="src/vendure-config.ts"
 import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
@@ -183,6 +240,9 @@ import * as path from 'path';
 compileUiExtensions({
     outputPath: path.join(__dirname, '../admin-ui'),
     extensions: [
+        // Note: this object will usually be 
+        // found in the `ui` static property
+        // of a plugin like `MyPlugin.ui`.
         {
             id: 'test-extension',
             extensionPath: path.join(__dirname, 'plugins/my-plugin/ui'),
@@ -333,12 +393,13 @@ export const config: VendureConfig = {
 ```
 
 :::info
-To compile the angular app ahead of time (for production) and copy the dist folder to Vendure's output dist folder, include the following commands in your packages.json scripts:
+To compile the angular app ahead of time (for production) and copy the dist folder to
+Vendure's output dist folder, include the following commands in your package.json scripts:
 
 ```json
 {
     "scripts": {
-        "copy": "npx copyfiles -u 1 'src/__admin-ui/dist/**/*' dist",
+        "copy": "npx copyfiles -u 1 'admin-ui/dist/**/*' dist",
         "build": "tsc && yarn copy",
         "build:admin": "rimraf admin-ui && npx ts-node src/compile-admin-ui.ts"
     }
@@ -346,7 +407,7 @@ To compile the angular app ahead of time (for production) and copy the dist fold
 ```
 
 "build:admin" will remove the admin-ui folder and run the compileUiExtensions function to generate the admin-ui Angular app.
-Make sure to install copyfiles before running the "copy" command:
+Make sure to install `copyfiles` before running the "copy" command:
 
 <Tabs>
 <TabItem value="npm" label="npm" default>
@@ -370,6 +431,43 @@ yarn add copyfiles
 ## Using other frameworks
 
 While the Admin UI natively supports extensions written with Angular or React, it is still possible to create extensions using other front-end frameworks such as Vue or Solid. Note that creating extensions in this way is much more limited, with only the ability to define new routes, and limited access to internal services such as data fetching and notifications. See [UI extensions in other frameworks](/guides/extending-the-admin-ui/using-other-frameworks/).
+
+## IDE Support
+
+### WebStorm
+
+If you are using Angular in your UI extensions and WebStorm is not recognizing the Angular templates, you can
+add an `angular.json` file to the `/src/plugins/<my-plugin>/ui` directory:
+
+```json title="angular.json"
+{
+    "$schema": "../../../../node_modules/@angular/cli/lib/config/schema.json",
+    "version": 1,
+    "newProjectRoot": "projects",
+    "projects": {
+        "ui-extensions": {
+            "root": "",
+            "sourceRoot": "src",
+            "projectType": "application"
+        }
+    }
+}
+```
+
+This allows WebStorm's built-in Angular support to recognize the Angular templates in your UI extensions. Note that depending
+on your folder structure, you may need to adjust the path to the schema file in the `$schema` property.
+
+### VS Code
+
+If you are using Angular in your UI extensions and VS Code is not recognizing the Angular templates, you can
+add an empty `tsconfig.json` file to the `/src/plugins/<my-plugin>/ui` directory:
+
+```json title="tsconfig.json"
+{}
+```
+
+This works around the fact that your main `tsconfig.json` file excludes the `src/plugins/**/ui` directory, 
+which would otherwise prevent the Angular Language Service from working correctly.
 
 ## Legacy API < v2.1.0
 

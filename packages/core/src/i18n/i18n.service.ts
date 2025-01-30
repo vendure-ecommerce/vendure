@@ -59,7 +59,7 @@ export class I18nService implements OnModuleInit {
             .use(ICU)
             .init({
                 nsSeparator: false,
-                preload: ['en', 'de', 'ru', 'uk'],
+                preload: ['en', 'de', 'ru', 'uk', 'fr'],
                 fallbackLng: 'en',
                 detection: {
                     lookupQuerystring: 'languageCode',

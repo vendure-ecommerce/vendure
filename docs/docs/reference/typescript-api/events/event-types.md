@@ -585,7 +585,7 @@ class FulfillmentStateTransitionEvent extends VendureEvent {
 
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/global-settings-event.ts" sourceLine="16" packageName="@vendure/core" since="1.4" />
 
-This event is fired whenever a {@link GlobalSettings} is added. The type is always `updated`, because it's
+This event is fired whenever a <a href='/reference/typescript-api/entities/global-settings#globalsettings'>GlobalSettings</a> is added. The type is always `updated`, because it's
 only created once and never deleted.
 
 ```ts title="Signature"
@@ -593,7 +593,7 @@ class GlobalSettingsEvent extends VendureEntityEvent<GlobalSettings, UpdateGloba
     constructor(ctx: RequestContext, entity: GlobalSettings, input?: UpdateGlobalSettingsInput)
 }
 ```
-* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;GlobalSettings, UpdateGlobalSettingsInput&#62;</code>
+* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;<a href='/reference/typescript-api/entities/global-settings#globalsettings'>GlobalSettings</a>, UpdateGlobalSettingsInput&#62;</code>
 
 
 
@@ -601,7 +601,7 @@ class GlobalSettingsEvent extends VendureEntityEvent<GlobalSettings, UpdateGloba
 
 ### constructor
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: GlobalSettings, input?: UpdateGlobalSettingsInput) => GlobalSettingsEvent`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/global-settings#globalsettings'>GlobalSettings</a>, input?: UpdateGlobalSettingsInput) => GlobalSettingsEvent`}   />
 
 
 
@@ -702,7 +702,7 @@ class IdentifierChangeRequestEvent extends VendureEvent {
 
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/initializer-event.ts" sourceLine="11" packageName="@vendure/core" since="1.7.0" />
 
-This event is fired when vendure finished initializing its services inside the {@code InitializerService}
+This event is fired when vendure finished initializing its services inside the <a href='/reference/typescript-api/services/initializer-service#initializerservice'>InitializerService</a>
 
 ```ts title="Signature"
 class InitializerEvent extends VendureEvent {
@@ -816,7 +816,7 @@ or deleted.
 
 ```ts title="Signature"
 class OrderLineEvent extends VendureEvent {
-    constructor(ctx: RequestContext, order: Order, orderLine: OrderLine, type: 'created' | 'updated' | 'deleted')
+    constructor(ctx: RequestContext, order: Order, orderLine: OrderLine, type: 'created' | 'updated' | 'deleted' | 'cancelled')
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
@@ -827,7 +827,7 @@ class OrderLineEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, type: 'created' | 'updated' | 'deleted') => OrderLineEvent`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, orderLine: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>, type: 'created' | 'updated' | 'deleted' | 'cancelled') => OrderLineEvent`}   />
 
 
 
@@ -1295,11 +1295,38 @@ class ProvinceEvent extends VendureEntityEvent<Province, ProvinceInputTypes> {
 </div>
 
 
+## RefundEvent
+
+<GenerationInfo sourceFile="packages/core/src/event-bus/events/refund-event.ts" sourceLine="12" packageName="@vendure/core" />
+
+This event is fired whenever a <a href='/reference/typescript-api/entities/refund#refund'>Refund</a> is created
+
+```ts title="Signature"
+class RefundEvent extends VendureEvent {
+    constructor(ctx: RequestContext, order: Order, refund: Refund, type: 'created')
+}
+```
+* Extends: <code><a href='/reference/typescript-api/events/vendure-event#vendureevent'>VendureEvent</a></code>
+
+
+
+<div className="members-wrapper">
+
+### constructor
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, refund: <a href='/reference/typescript-api/entities/refund#refund'>Refund</a>, type: 'created') => RefundEvent`}   />
+
+
+
+
+</div>
+
+
 ## RefundStateTransitionEvent
 
 <GenerationInfo sourceFile="packages/core/src/event-bus/events/refund-state-transition-event.ts" sourceLine="14" packageName="@vendure/core" />
 
-This event is fired whenever a {@link Refund} transitions from one <a href='/reference/typescript-api/payment/refund-state#refundstate'>RefundState</a> to another.
+This event is fired whenever a <a href='/reference/typescript-api/entities/refund#refund'>Refund</a> transitions from one <a href='/reference/typescript-api/payment/refund-state#refundstate'>RefundState</a> to another.
 
 ```ts title="Signature"
 class RefundStateTransitionEvent extends VendureEvent {
@@ -1314,7 +1341,7 @@ class RefundStateTransitionEvent extends VendureEvent {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(fromState: <a href='/reference/typescript-api/payment/refund-state#refundstate'>RefundState</a>, toState: <a href='/reference/typescript-api/payment/refund-state#refundstate'>RefundState</a>, ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, refund: Refund, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => RefundStateTransitionEvent`}   />
+<MemberInfo kind="method" type={`(fromState: <a href='/reference/typescript-api/payment/refund-state#refundstate'>RefundState</a>, toState: <a href='/reference/typescript-api/payment/refund-state#refundstate'>RefundState</a>, ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, refund: <a href='/reference/typescript-api/entities/refund#refund'>Refund</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => RefundStateTransitionEvent`}   />
 
 
 
@@ -1452,6 +1479,34 @@ class ShippingMethodEvent extends VendureEntityEvent<ShippingMethod, ShippingMet
 ### constructor
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a>, type: 'created' | 'updated' | 'deleted', input?: ShippingMethodInputTypes) => ShippingMethodEvent`}   />
+
+
+
+
+</div>
+
+
+## StockLocationEvent
+
+<GenerationInfo sourceFile="packages/core/src/event-bus/events/stock-location-event.ts" sourceLine="18" packageName="@vendure/core" />
+
+This event is fired whenever a <a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a> is added, updated
+or deleted.
+
+```ts title="Signature"
+class StockLocationEvent extends VendureEntityEvent<StockLocation, StockLocationInputTypes> {
+    constructor(ctx: RequestContext, entity: StockLocation, type: 'created' | 'updated' | 'deleted', input?: StockLocationInputTypes)
+}
+```
+* Extends: <code><a href='/reference/typescript-api/events/vendure-entity-event#vendureentityevent'>VendureEntityEvent</a>&#60;<a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>, StockLocationInputTypes&#62;</code>
+
+
+
+<div className="members-wrapper">
+
+### constructor
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entity: <a href='/reference/typescript-api/entities/stock-location#stocklocation'>StockLocation</a>, type: 'created' | 'updated' | 'deleted', input?: StockLocationInputTypes) => StockLocationEvent`}   />
 
 
 

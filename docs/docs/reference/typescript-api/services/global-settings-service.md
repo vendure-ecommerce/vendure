@@ -11,9 +11,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## GlobalSettingsService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/global-settings.service.ts" sourceLine="21" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/global-settings.service.ts" sourceLine="22" packageName="@vendure/core" />
 
-Contains methods relating to the {@link GlobalSettings} entity.
+Contains methods relating to the <a href='/reference/typescript-api/entities/global-settings#globalsettings'>GlobalSettings</a> entity.
 
 ```ts title="Signature"
 class GlobalSettingsService {
@@ -27,17 +27,17 @@ class GlobalSettingsService {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, customFieldRelationService: CustomFieldRelationService, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, requestCache: RequestContextCacheService) => GlobalSettingsService`}   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, customFieldRelationService: CustomFieldRelationService, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, requestCache: <a href='/reference/typescript-api/cache/request-context-cache-service#requestcontextcacheservice'>RequestContextCacheService</a>) => GlobalSettingsService`}   />
 
 
 ### getSettings
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;GlobalSettings&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;<a href='/reference/typescript-api/entities/global-settings#globalsettings'>GlobalSettings</a>&#62;`}   />
 
 Returns the GlobalSettings entity.
 ### updateSettings
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateGlobalSettingsInput) => Promise&#60;GlobalSettings&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: UpdateGlobalSettingsInput) => Promise&#60;<a href='/reference/typescript-api/entities/global-settings#globalsettings'>GlobalSettings</a>&#62;`}   />
 
 
 

@@ -2,7 +2,7 @@
 
 This is an example plugin which demonstrates how to build a multi-vendor marketplace with Vendure. It uses new APIs and features introduced in Vendure v2.0.
 
-The parts of the plugin are documented with explanations, and the overall guide can be found in the [Multi-vendor marketplace](https://docs.vendure.io/developer-guide/multi-vendor-marketplaces/) section of the Vendure docs.
+The parts of the plugin are documented with explanations, and the overall guide can be found in the [Multi-vendor marketplace](https://docs.vendure.io/guides/how-to/multi-vendor-marketplaces/) section of the Vendure docs.
 
 ## Setup
 

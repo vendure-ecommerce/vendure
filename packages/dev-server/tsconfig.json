@@ -1,14 +1,12 @@
 {
-  "extends": "../../tsconfig",
-  "compilerOptions": {
-    "module": "commonjs",
-    "sourceMap": true,
-    "jsx": "react",
-    "paths": {
-      "@vendure/admin-ui/*": ["../admin-ui/package/*"]
-    }
-  },
-  "exclude": [
-    "node_modules"
-  ],
+    "extends": "../../tsconfig",
+    "compilerOptions": {
+        "module": "NodeNext",
+        "sourceMap": true,
+        "jsx": "react",
+        "paths": {
+            "@vendure/admin-ui/*": ["../admin-ui/package/*"]
+        }
+    },
+    "exclude": ["node_modules"]
 }

@@ -122,7 +122,7 @@ const SentryOptionsProvider = {
         resolvers: () => (SentryPlugin.options.includeErrorTestMutation ? [SentryAdminTestResolver] : []),
     },
     exports: [SentryService],
-    compatibility: '^2.2.0-next.2',
+    compatibility: '^3.0.0',
 })
 export class SentryPlugin implements NestModule {
     static options: SentryPluginOptions = {} as any;

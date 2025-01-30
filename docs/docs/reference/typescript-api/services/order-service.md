@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrderService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/order.service.ts" sourceLine="133" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/order.service.ts" sourceLine="139" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/order#order'>Order</a> entities.
 
@@ -35,9 +35,16 @@ class OrderService {
     createDraft(ctx: RequestContext) => ;
     updateCustomFields(ctx: RequestContext, orderId: ID, customFields: any) => ;
     updateOrderCustomer(ctx: RequestContext, { customerId, orderId, note }: SetOrderCustomerInput) => ;
-    addItemToOrder(ctx: RequestContext, orderId: ID, productVariantId: ID, quantity: number, customFields?: { [key: string]: any }) => Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>>;
-    adjustOrderLine(ctx: RequestContext, orderId: ID, orderLineId: ID, quantity: number, customFields?: { [key: string]: any }) => Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>>;
+    addItemToOrder(ctx: RequestContext, orderId: ID, productVariantId: ID, quantity: number, customFields?: { [key: string]: any }, relations?: RelationPaths<Order>) => Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>>;
+    addItemsToOrder(ctx: RequestContext, orderId: ID, items: Array<{
+            productVariantId: ID;
+            quantity: number;
+            customFields?: { [key: string]: any };
+        }>, relations?: RelationPaths<Order>) => Promise<{ order: Order; errorResults: Array<JustErrorResults<UpdateOrderItemsResult>> }>;
+    adjustOrderLine(ctx: RequestContext, orderId: ID, orderLineId: ID, quantity: number, customFields?: { [key: string]: any }, relations?: RelationPaths<Order>) => Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>>;
+    adjustOrderLines(ctx: RequestContext, orderId: ID, lines: Array<{ orderLineId: ID; quantity: number; customFields?: { [key: string]: any } }>, relations?: RelationPaths<Order>) => Promise<{ order: Order; errorResults: Array<JustErrorResults<UpdateOrderItemsResult>> }>;
     removeItemFromOrder(ctx: RequestContext, orderId: ID, orderLineId: ID) => Promise<ErrorResultUnion<RemoveOrderItemsResult, Order>>;
+    removeItemsFromOrder(ctx: RequestContext, orderId: ID, orderLineIds: ID[]) => Promise<ErrorResultUnion<RemoveOrderItemsResult, Order>>;
     removeAllItemsFromOrder(ctx: RequestContext, orderId: ID) => Promise<ErrorResultUnion<RemoveOrderItemsResult, Order>>;
     addSurchargeToOrder(ctx: RequestContext, orderId: ID, surchargeInput: Partial<Omit<Surcharge, 'id' | 'createdAt' | 'updatedAt' | 'order'>>) => Promise<Order>;
     removeSurchargeFromOrder(ctx: RequestContext, orderId: ID, surchargeId: ID) => Promise<Order>;
@@ -47,11 +54,14 @@ class OrderService {
     getNextOrderStates(order: Order) => readonly OrderState[];
     setShippingAddress(ctx: RequestContext, orderId: ID, input: CreateAddressInput) => Promise<Order>;
     setBillingAddress(ctx: RequestContext, orderId: ID, input: CreateAddressInput) => Promise<Order>;
+    unsetShippingAddress(ctx: RequestContext, orderId: ID) => Promise<Order>;
+    unsetBillingAddress(ctx: RequestContext, orderId: ID) => Promise<Order>;
     getEligibleShippingMethods(ctx: RequestContext, orderId: ID) => Promise<ShippingMethodQuote[]>;
     getEligiblePaymentMethods(ctx: RequestContext, orderId: ID) => Promise<PaymentMethodQuote[]>;
     setShippingMethod(ctx: RequestContext, orderId: ID, shippingMethodIds: ID[]) => Promise<ErrorResultUnion<SetOrderShippingMethodResult, Order>>;
     transitionToState(ctx: RequestContext, orderId: ID, state: OrderState) => Promise<Order | OrderStateTransitionError>;
     transitionFulfillmentToState(ctx: RequestContext, fulfillmentId: ID, state: FulfillmentState) => Promise<Fulfillment | FulfillmentStateTransitionError>;
+    transitionRefundToState(ctx: RequestContext, refundId: ID, state: RefundState, transactionId?: string) => Promise<Refund | RefundStateTransitionError>;
     modifyOrder(ctx: RequestContext, input: ModifyOrderInput) => Promise<ErrorResultUnion<ModifyOrderResult, Order>>;
     transitionPaymentToState(ctx: RequestContext, paymentId: ID, state: PaymentState) => Promise<ErrorResultUnion<TransitionPaymentToStateResult, Payment>>;
     addPaymentToOrder(ctx: RequestContext, orderId: ID, input: PaymentInput) => Promise<ErrorResultUnion<AddPaymentToOrderResult, Order>>;
@@ -70,7 +80,7 @@ class OrderService {
     deleteOrderNote(ctx: RequestContext, id: ID) => Promise<DeletionResponse>;
     deleteOrder(ctx: RequestContext, orderOrId: ID | Order) => ;
     mergeOrders(ctx: RequestContext, user: User, guestOrder?: Order, existingOrder?: Order) => Promise<Order | undefined>;
-    applyPriceAdjustments(ctx: RequestContext, order: Order, updatedOrderLines?: OrderLine[]) => Promise<Order>;
+    applyPriceAdjustments(ctx: RequestContext, order: Order, updatedOrderLines?: OrderLine[], relations?: RelationPaths<Order>) => Promise<Order>;
 }
 ```
 
@@ -78,7 +88,7 @@ class OrderService {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, productVariantService: <a href='/reference/typescript-api/services/product-variant-service#productvariantservice'>ProductVariantService</a>, customerService: <a href='/reference/typescript-api/services/customer-service#customerservice'>CustomerService</a>, countryService: <a href='/reference/typescript-api/services/country-service#countryservice'>CountryService</a>, orderCalculator: <a href='/reference/typescript-api/service-helpers/order-calculator#ordercalculator'>OrderCalculator</a>, shippingCalculator: <a href='/reference/typescript-api/shipping/shipping-calculator#shippingcalculator'>ShippingCalculator</a>, orderStateMachine: OrderStateMachine, orderMerger: OrderMerger, paymentService: <a href='/reference/typescript-api/services/payment-service#paymentservice'>PaymentService</a>, paymentMethodService: <a href='/reference/typescript-api/services/payment-method-service#paymentmethodservice'>PaymentMethodService</a>, fulfillmentService: <a href='/reference/typescript-api/services/fulfillment-service#fulfillmentservice'>FulfillmentService</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, refundStateMachine: RefundStateMachine, historyService: <a href='/reference/typescript-api/services/history-service#historyservice'>HistoryService</a>, promotionService: <a href='/reference/typescript-api/services/promotion-service#promotionservice'>PromotionService</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, channelService: <a href='/reference/typescript-api/services/channel-service#channelservice'>ChannelService</a>, orderModifier: <a href='/reference/typescript-api/service-helpers/order-modifier#ordermodifier'>OrderModifier</a>, customFieldRelationService: CustomFieldRelationService, requestCache: RequestContextCacheService, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>, stockLevelService: <a href='/reference/typescript-api/services/stock-level-service#stocklevelservice'>StockLevelService</a>) => OrderService`}   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, productVariantService: <a href='/reference/typescript-api/services/product-variant-service#productvariantservice'>ProductVariantService</a>, customerService: <a href='/reference/typescript-api/services/customer-service#customerservice'>CustomerService</a>, countryService: <a href='/reference/typescript-api/services/country-service#countryservice'>CountryService</a>, orderCalculator: <a href='/reference/typescript-api/service-helpers/order-calculator#ordercalculator'>OrderCalculator</a>, shippingCalculator: <a href='/reference/typescript-api/shipping/shipping-calculator#shippingcalculator'>ShippingCalculator</a>, orderStateMachine: OrderStateMachine, orderMerger: OrderMerger, paymentService: <a href='/reference/typescript-api/services/payment-service#paymentservice'>PaymentService</a>, paymentMethodService: <a href='/reference/typescript-api/services/payment-method-service#paymentmethodservice'>PaymentMethodService</a>, fulfillmentService: <a href='/reference/typescript-api/services/fulfillment-service#fulfillmentservice'>FulfillmentService</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, refundStateMachine: RefundStateMachine, historyService: <a href='/reference/typescript-api/services/history-service#historyservice'>HistoryService</a>, promotionService: <a href='/reference/typescript-api/services/promotion-service#promotionservice'>PromotionService</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, channelService: <a href='/reference/typescript-api/services/channel-service#channelservice'>ChannelService</a>, orderModifier: <a href='/reference/typescript-api/service-helpers/order-modifier#ordermodifier'>OrderModifier</a>, customFieldRelationService: CustomFieldRelationService, requestCache: <a href='/reference/typescript-api/cache/request-context-cache-service#requestcontextcacheservice'>RequestContextCacheService</a>, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>, stockLevelService: <a href='/reference/typescript-api/services/stock-level-service#stocklevelservice'>StockLevelService</a>) => OrderService`}   />
 
 
 ### getOrderProcessStates
@@ -125,9 +135,9 @@ Returns all <a href='/reference/typescript-api/entities/payment#payment'>Payment
 Returns an array of any <a href='/reference/typescript-api/entities/order-modification#ordermodification'>OrderModification</a> entities associated with the Order.
 ### getPaymentRefunds
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, paymentId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;Refund[]&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, paymentId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/reference/typescript-api/entities/refund#refund'>Refund</a>[]&#62;`}   />
 
-Returns any {@link Refund}s associated with a <a href='/reference/typescript-api/entities/payment#payment'>Payment</a>.
+Returns any <a href='/reference/typescript-api/entities/refund#refund'>Refund</a>s associated with a <a href='/reference/typescript-api/entities/payment#payment'>Payment</a>.
 ### getSellerOrders
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>) => Promise&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a>[]&#62;`}   />
@@ -173,20 +183,52 @@ Updates the Customer which is assigned to a given Order. The target Customer mus
 Channels as the Order, otherwise an error will be thrown.
 ### addItemToOrder
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>, quantity: number, customFields?: { [key: string]: any }) => Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;UpdateOrderItemsResult, <a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>, quantity: number, customFields?: { [key: string]: any }, relations?: RelationPaths&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;) => Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;UpdateOrderItemsResult, <a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;&#62;`}   />
 
 Adds an item to the Order, either creating a new OrderLine or
 incrementing an existing one.
+
+If you need to add multiple items to an Order, use `addItemsToOrder()` instead.
+### addItemsToOrder
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, items: Array&#60;{             productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>;             quantity: number;             customFields?: { [key: string]: any };         }&#62;, relations?: RelationPaths&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;) => Promise&#60;{ order: <a href='/reference/typescript-api/entities/order#order'>Order</a>; errorResults: Array&#60;JustErrorResults&#60;UpdateOrderItemsResult&#62;&#62; }&#62;`}  since="3.1.0"  />
+
+Adds multiple items to an Order. This method is more efficient than calling `addItemToOrder`
+multiple times, as it only needs to fetch the entire Order once, and only performs
+price adjustments once at the end.
+
+Since this method can return multiple error results, it is recommended to check the `errorResults`
+array to determine if any errors occurred.
 ### adjustOrderLine
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, orderLineId: <a href='/reference/typescript-api/common/id#id'>ID</a>, quantity: number, customFields?: { [key: string]: any }) => Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;UpdateOrderItemsResult, <a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, orderLineId: <a href='/reference/typescript-api/common/id#id'>ID</a>, quantity: number, customFields?: { [key: string]: any }, relations?: RelationPaths&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;) => Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;UpdateOrderItemsResult, <a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;&#62;`}   />
 
 Adjusts the quantity and/or custom field values of an existing OrderLine.
+
+If you need to adjust multiple OrderLines, use `adjustOrderLines()` instead.
+### adjustOrderLines
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, lines: Array&#60;{ orderLineId: <a href='/reference/typescript-api/common/id#id'>ID</a>; quantity: number; customFields?: { [key: string]: any } }&#62;, relations?: RelationPaths&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;) => Promise&#60;{ order: <a href='/reference/typescript-api/entities/order#order'>Order</a>; errorResults: Array&#60;JustErrorResults&#60;UpdateOrderItemsResult&#62;&#62; }&#62;`}  since="3.1.0"  />
+
+Adjusts the quantity and/or custom field values of existing OrderLines.
+This method is more efficient than calling `adjustOrderLine` multiple times, as it only needs to fetch
+the entire Order once, and only performs price adjustments once at the end.
+Since this method can return multiple error results, it is recommended to check the `errorResults`
+array to determine if any errors occurred.
 ### removeItemFromOrder
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, orderLineId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;RemoveOrderItemsResult, <a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;&#62;`}   />
 
 Removes the specified OrderLine from the Order.
+
+If you need to remove multiple OrderLines, use `removeItemsFromOrder()` instead.
+### removeItemsFromOrder
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, orderLineIds: <a href='/reference/typescript-api/common/id#id'>ID</a>[]) => Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;RemoveOrderItemsResult, <a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;&#62;`}  since="3.1.0"  />
+
+Removes the specified OrderLines from the Order.
+This method is more efficient than calling `removeItemFromOrder` multiple times, as it only needs to fetch
+the entire Order once, and only performs price adjustments once at the end.
 ### removeAllItemsFromOrder
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;RemoveOrderItemsResult, <a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;&#62;`}   />
@@ -233,6 +275,16 @@ Sets the shipping address for the Order.
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, input: CreateAddressInput) => Promise&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;`}   />
 
 Sets the billing address for the Order.
+### unsetShippingAddress
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;`}  since="3.1.0"  />
+
+Unsets the shipping address for the Order.
+### unsetBillingAddress
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;`}  since="3.1.0"  />
+
+Unsets the billing address for the Order.
 ### getEligibleShippingMethods
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;ShippingMethodQuote[]&#62;`}   />
@@ -263,6 +315,11 @@ Transitions the Order to the given state.
 
 Transitions a Fulfillment to the given state and then transitions the Order state based on
 whether all Fulfillments of the Order are shipped or delivered.
+### transitionRefundToState
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, refundId: <a href='/reference/typescript-api/common/id#id'>ID</a>, state: <a href='/reference/typescript-api/payment/refund-state#refundstate'>RefundState</a>, transactionId?: string) => Promise&#60;<a href='/reference/typescript-api/entities/refund#refund'>Refund</a> | RefundStateTransitionError&#62;`}   />
+
+Transitions a Refund to the given state
 ### modifyOrder
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: ModifyOrderInput) => Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;ModifyOrderResult, <a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;&#62;`}   />
@@ -336,13 +393,13 @@ Cancels an Order by transitioning it to the `Cancelled` state. If stock is being
 in the Order, then new <a href='/reference/typescript-api/entities/stock-movement#stockmovement'>StockMovement</a>s will be created to correct the stock levels.
 ### refundOrder
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: RefundOrderInput) => Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;RefundOrderResult, Refund&#62;&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: RefundOrderInput) => Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;RefundOrderResult, <a href='/reference/typescript-api/entities/refund#refund'>Refund</a>&#62;&#62;`}   />
 
-Creates a {@link Refund} against the order and in doing so invokes the `createRefund()` method of the
+Creates a <a href='/reference/typescript-api/entities/refund#refund'>Refund</a> against the order and in doing so invokes the `createRefund()` method of the
 <a href='/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>.
 ### settleRefund
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: SettleRefundInput) => Promise&#60;Refund&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, input: SettleRefundInput) => Promise&#60;<a href='/reference/typescript-api/entities/refund#refund'>Refund</a>&#62;`}   />
 
 Settles a Refund by transitioning it to the `Settled` state.
 ### addCustomerToOrder
@@ -380,7 +437,7 @@ we need to reconcile the contents of the two orders.
 The logic used to do the merging is specified in the <a href='/reference/typescript-api/orders/order-options#orderoptions'>OrderOptions</a> `mergeStrategy` config setting.
 ### applyPriceAdjustments
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, updatedOrderLines?: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>[]) => Promise&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, order: <a href='/reference/typescript-api/entities/order#order'>Order</a>, updatedOrderLines?: <a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>[], relations?: RelationPaths&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;) => Promise&#60;<a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;`}   />
 
 Applies promotions, taxes and shipping to the Order. If the `updatedOrderLines` argument is passed in,
 then all of those OrderLines will have their prices re-calculated using the configured <a href='/reference/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy'>OrderItemPriceCalculationStrategy</a>.

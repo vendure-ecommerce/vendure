@@ -46,12 +46,13 @@ class ChannelService {
 <MemberInfo kind="method" type={`(entity: T, ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;T&#62;`}   />
 
 Assigns a ChannelAware entity to the default Channel as well as any channel
-specified in the RequestContext.
+specified in the RequestContext. This method will not save the entity to the database, but
+assigns the `channels` property of the entity.
 ### assignToChannels
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entityType: Type&#60;T&#62;, entityId: <a href='/reference/typescript-api/common/id#id'>ID</a>, channelIds: <a href='/reference/typescript-api/common/id#id'>ID</a>[]) => Promise&#60;T&#62;`}   />
 
-Assigns the entity to the given Channels and saves.
+Assigns the entity to the given Channels and saves all changes to the database.
 ### removeFromChannels
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, entityType: Type&#60;T&#62;, entityId: <a href='/reference/typescript-api/common/id#id'>ID</a>, channelIds: <a href='/reference/typescript-api/common/id#id'>ID</a>[]) => Promise&#60;T | undefined&#62;`}   />

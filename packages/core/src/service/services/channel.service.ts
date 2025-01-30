@@ -111,7 +111,8 @@ export class ChannelService {
     /**
      * @description
      * Assigns a ChannelAware entity to the default Channel as well as any channel
-     * specified in the RequestContext.
+     * specified in the RequestContext. This method will not save the entity to the database, but
+     * assigns the `channels` property of the entity.
      */
     async assignToCurrentChannel<T extends ChannelAware & VendureEntity>(
         entity: T,
@@ -162,7 +163,7 @@ export class ChannelService {
 
         return await this.connection
             .getRepository(ctx, entityType)
-            .createQueryBuilder()
+            .manager.createQueryBuilder()
             .select(`channel.${inverseJunctionColumnName}`, 'channelId')
             .from(junctionTableName, 'channel')
             .where(`channel.${junctionColumnName} = :entityId`, { entityId })
@@ -171,7 +172,7 @@ export class ChannelService {
 
     /**
      * @description
-     * Assigns the entity to the given Channels and saves.
+     * Assigns the entity to the given Channels and saves all changes to the database.
      */
     async assignToChannels<T extends ChannelAware & VendureEntity>(
         ctx: RequestContext,
@@ -457,6 +458,12 @@ export class ChannelService {
 
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         const channel = await this.connection.getEntityOrThrow(ctx, Channel, id);
+        if (channel.code === DEFAULT_CHANNEL_CODE)
+            return {
+                result: DeletionResult.NOT_DELETED,
+                message: ctx.translate('error.cannot-delete-default-channel'),
+            };
+
         const deletedChannel = new Channel(channel);
         await this.connection.getRepository(ctx, Session).delete({ activeChannelId: id });
         await this.connection.getRepository(ctx, Channel).delete(id);

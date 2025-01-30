@@ -168,15 +168,15 @@ export class ShippingMethodService {
                 input.fulfillmentHandler,
             );
         }
-        await this.connection
-            .getRepository(ctx, ShippingMethod)
-            .save(updatedShippingMethod, { reload: false });
         await this.customFieldRelationService.updateRelations(
             ctx,
             ShippingMethod,
             input,
             updatedShippingMethod,
         );
+        await this.connection
+            .getRepository(ctx, ShippingMethod)
+            .save(updatedShippingMethod, { reload: false });
         await this.eventBus.publish(new ShippingMethodEvent(ctx, shippingMethod, 'updated', input));
         return assertFound(this.findOne(ctx, shippingMethod.id));
     }

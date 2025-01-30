@@ -60,14 +60,14 @@ import {
  *
  * @example
  * ```ts
- * import { defaultEmailHandlers, EmailPlugin } from '\@vendure/email-plugin';
+ * import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '\@vendure/email-plugin';
  *
  * const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array
  *   plugins: [
  *     EmailPlugin.init({
  *       handler: defaultEmailHandlers,
- *       templatePath: path.join(__dirname, 'static/email/templates'),
+ *       templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/email/templates')),
  *       transport: {
  *         type: 'smtp',
  *         host: 'smtp.example.com',
@@ -124,6 +124,38 @@ import {
  * </mj-table>
  * ```
  *
+ * ### Setting global variables using `globalTemplateVars`
+ *
+ * `globalTemplateVars` is an object that can be passed to the configuration of the Email Plugin with static object variables.
+ * You can also pass an async function that will be called with the `RequestContext` and the `Injector` so you can access services
+ * and e.g. load channel specific theme configurations.
+ *
+ * @example
+ * ```ts
+ * EmailPlugin.init({
+ *    globalTemplateVars: {
+ *      primaryColor: '#FF0000',
+ *      fromAddress: 'no-reply@ourstore.com'
+ *    }
+ * })
+ * ```
+ * or
+ * ```ts
+ * EmailPlugin.init({
+ *    globalTemplateVars: async (ctx, injector) => {
+ *      const myAsyncService = injector.get(MyAsyncService);
+ *      const asyncValue = await myAsyncService.get(ctx);
+ *      const channel = ctx.channel;
+ *      const { primaryColor } = channel.customFields.theme;
+ *      const theme = {
+ *         primaryColor,
+ *         asyncValue,
+ *      };
+ *      return theme;
+ *    }
+ * })
+ * ```
+ *
  * ### Handlebars helpers
  *
  * The following helper functions are available for use in email templates:
@@ -138,7 +170,7 @@ import {
  * which respond to any of the available [VendureEvents](/reference/typescript-api/events/).
  *
  * A good way to learn how to create your own email handler is to take a look at the
- * [source code of the default handler](https://github.com/vendure-ecommerce/vendure/blob/master/packages/email-plugin/src/default-email-handlers.ts).
+ * [source code of the default handler](https://github.com/vendure-ecommerce/vendure/blob/master/packages/email-plugin/src/handler/default-email-handlers.ts).
  * New handler are defined in exactly the same way.
  *
  * It is also possible to modify the default handler:
@@ -194,13 +226,13 @@ import {
  *
  * @example
  * ```ts
- * import { defaultEmailHandlers, EmailPlugin } from '\@vendure/email-plugin';
+ * import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '\@vendure/email-plugin';
  * import { MyTransportService } from './transport.services.ts';
  * const config: VendureConfig = {
  *   plugins: [
  *     EmailPlugin.init({
  *       handler: defaultEmailHandlers,
- *       templatePath: path.join(__dirname, 'static/email/templates'),
+ *       templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/email/templates')),
  *       transport: (injector, ctx) => {
  *         if (ctx) {
  *           return injector.get(MyTransportService).getSettings(ctx);
@@ -228,7 +260,7 @@ import {
  *   devMode: true,
  *   route: 'mailbox',
  *   handler: defaultEmailHandlers,
- *   templatePath: path.join(__dirname, 'vendure/email/templates'),
+ *   templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/email/templates')),
  *   outputPath: path.join(__dirname, 'test-emails'),
  * })
  * ```
@@ -272,7 +304,7 @@ import {
 @VendurePlugin({
     imports: [PluginCommonModule],
     providers: [{ provide: EMAIL_PLUGIN_OPTIONS, useFactory: () => EmailPlugin.options }, EmailProcessor],
-    compatibility: '^2.0.0',
+    compatibility: '^3.0.0',
 })
 export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdown, NestModule {
     private static options: InitializedEmailPluginOptions;
@@ -378,9 +410,13 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
         const { type } = handler;
         try {
             const injector = new Injector(this.moduleRef);
+            let globalTemplateVars = this.options.globalTemplateVars;
+            if (typeof globalTemplateVars === 'function') {
+                globalTemplateVars = await globalTemplateVars(event.ctx, injector);
+            }
             const result = await handler.handle(
                 event as any,
-                EmailPlugin.options.globalTemplateVars,
+                globalTemplateVars as { [key: string]: any },
                 injector,
             );
             if (!result) {

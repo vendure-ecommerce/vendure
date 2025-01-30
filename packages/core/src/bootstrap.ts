@@ -1,4 +1,4 @@
-import { INestApplication, INestApplicationContext } from '@nestjs/common';
+import { DynamicModule, INestApplication, INestApplicationContext } from '@nestjs/common';
 import { NestApplicationContextOptions } from '@nestjs/common/interfaces/nest-application-context-options.interface';
 import { NestApplicationOptions } from '@nestjs/common/interfaces/nest-application-options.interface';
 import { NestFactory } from '@nestjs/core';
@@ -43,7 +43,31 @@ export interface BootstrapOptions {
      * @description
      * These options get passed directly to the `NestFactory.create()` method.
      */
-    nestApplicationOptions: NestApplicationOptions;
+    nestApplicationOptions?: NestApplicationOptions;
+    /**
+     * @description
+     * By default, if a plugin specifies a compatibility range which does not include the current
+     * Vendure version, the bootstrap process will fail. This option allows you to ignore compatibility
+     * errors for specific plugins.
+     *
+     * This setting should be used with caution, only if you are sure that the plugin will still
+     * work as expected with the current version of Vendure.
+     *
+     * @example
+     * ```ts
+     * import { bootstrap } from '\@vendure/core';
+     * import { config } from './vendure-config';
+     * import { MyPlugin } from './plugins/my-plugin';
+     *
+     * bootstrap(config, {
+     *  ignoreCompatibilityErrorsForPlugins: [MyPlugin],
+     * });
+     * ```
+     *
+     * @default []
+     * @since 3.1.0
+     */
+    ignoreCompatibilityErrorsForPlugins?: Array<DynamicModule | Type<any>>;
 }
 
 /**
@@ -60,7 +84,15 @@ export interface BootstrapWorkerOptions {
      * @description
      * These options get passed directly to the `NestFactory.createApplicationContext` method.
      */
-    nestApplicationContextOptions: NestApplicationContextOptions;
+    nestApplicationContextOptions?: NestApplicationContextOptions;
+    /**
+     * @description
+     * See the `ignoreCompatibilityErrorsForPlugins` option in {@link BootstrapOptions}.
+     *
+     * @default []
+     * @since 3.1.0
+     */
+    ignoreCompatibilityErrorsForPlugins?: Array<DynamicModule | Type<any>>;
 }
 
 /**
@@ -99,6 +131,27 @@ export interface BootstrapWorkerOptions {
  *   process.exit(1);
  * });
  * ```
+ *
+ * ### Ignoring compatibility errors for plugins
+ *
+ * Since v3.1.0, you can ignore compatibility errors for specific plugins by passing the `ignoreCompatibilityErrorsForPlugins` option.
+ *
+ * This should be used with caution, only if you are sure that the plugin will still work as expected with the current version of Vendure.
+ *
+ * @example
+ * ```ts
+ * import { bootstrap } from '\@vendure/core';
+ * import { config } from './vendure-config';
+ * import { MyPlugin } from './plugins/my-plugin';
+ *
+ * bootstrap(config, {
+ *   // Let's say that `MyPlugin` is not yet compatible with the current version of Vendure
+ *   // but we know that it will still work as expected, and we are not able to publish
+ *   // a new version of the plugin right now.
+ *   ignoreCompatibilityErrorsForPlugins: [MyPlugin],
+ * });
+ * ```
+ *
  * @docsCategory common
  * @docsPage bootstrap
  * @docsWeight 0
@@ -110,7 +163,7 @@ export async function bootstrap(
     const config = await preBootstrapConfig(userConfig);
     Logger.useLogger(config.logger);
     Logger.info(`Bootstrapping Vendure Server (pid: ${process.pid})...`);
-    checkPluginCompatibility(config);
+    checkPluginCompatibility(config, options?.ignoreCompatibilityErrorsForPlugins);
 
     // The AppModule *must* be loaded only after the entities have been set in the
     // config, so that they are available when the AppModule decorator is evaluated.
@@ -176,7 +229,7 @@ export async function bootstrapWorker(
     config.logger.setDefaultContext?.('Vendure Worker');
     Logger.useLogger(config.logger);
     Logger.info(`Bootstrapping Vendure Worker (pid: ${process.pid})...`);
-    checkPluginCompatibility(config);
+    checkPluginCompatibility(config, options?.ignoreCompatibilityErrorsForPlugins);
 
     setProcessContext('worker');
     DefaultLogger.hideNestBoostrapLogs();
@@ -204,7 +257,7 @@ export async function preBootstrapConfig(
         await setConfig(userConfig);
     }
 
-    const entities = await getAllEntities(userConfig);
+    const entities = getAllEntities(userConfig);
     const { coreSubscribersMap } = await import('./entity/subscribers.js');
     await setConfig({
         dbConnectionOptions: {
@@ -238,7 +291,10 @@ export async function preBootstrapConfig(
     return config;
 }
 
-function checkPluginCompatibility(config: RuntimeVendureConfig): void {
+function checkPluginCompatibility(
+    config: RuntimeVendureConfig,
+    ignoredPlugins: Array<DynamicModule | Type<any>> = [],
+): void {
     for (const plugin of config.plugins) {
         const compatibility = getCompatibility(plugin);
         const pluginName = (plugin as any).name as string;
@@ -248,13 +304,22 @@ function checkPluginCompatibility(config: RuntimeVendureConfig): void {
             );
         } else {
             if (!satisfies(VENDURE_VERSION, compatibility, { loose: true, includePrerelease: true })) {
-                Logger.error(
+                const compatibilityErrorMessage =
                     `Plugin "${pluginName}" is not compatible with this version of Vendure. ` +
-                        `It specifies a semver range of "${compatibility}" but the current version is "${VENDURE_VERSION}".`,
-                );
-                throw new InternalServerError(
-                    `Plugin "${pluginName}" is not compatible with this version of Vendure.`,
-                );
+                    `It specifies a semver range of "${compatibility}" but the current version is "${VENDURE_VERSION}".`;
+                if (ignoredPlugins.includes(plugin)) {
+                    Logger.warn(
+                        compatibilityErrorMessage +
+                            `However, this plugin has been explicitly marked as ignored using the 'ignoreCompatibilityErrorsForPlugins' bootstrap option,` +
+                            ` so it will be loaded anyway.`,
+                    );
+                    continue;
+                } else {
+                    Logger.error(compatibilityErrorMessage);
+                    throw new InternalServerError(
+                        `Plugin "${pluginName}" is not compatible with this version of Vendure.`,
+                    );
+                }
             }
         }
     }
@@ -267,7 +332,8 @@ async function runPluginConfigurations(config: RuntimeVendureConfig): Promise<Ru
     for (const plugin of config.plugins) {
         const configFn = getConfigurationFunction(plugin);
         if (typeof configFn === 'function') {
-            config = await configFn(config);
+            const result = await configFn(config);
+            Object.assign(config, result);
         }
     }
     return config;
@@ -276,7 +342,7 @@ async function runPluginConfigurations(config: RuntimeVendureConfig): Promise<Ru
 /**
  * Returns an array of core entities and any additional entities defined in plugins.
  */
-export async function getAllEntities(userConfig: Partial<VendureConfig>): Promise<Array<Type<any>>> {
+export function getAllEntities(userConfig: Partial<VendureConfig>): Array<Type<any>> {
     const coreEntities = Object.values(coreEntitiesMap) as Array<Type<any>>;
     const pluginEntities = getEntitiesFromPlugins(userConfig.plugins);
 
@@ -410,19 +476,14 @@ export function configureSessionCookies(
     userConfig: Readonly<RuntimeVendureConfig>,
 ): void {
     const { cookieOptions } = userConfig.authOptions;
+
+    // Globally set the cookie session middleware
+    const cookieName =
+        typeof cookieOptions?.name !== 'string' ? cookieOptions.name?.shop : cookieOptions.name;
     app.use(
         cookieSession({
             ...cookieOptions,
-            name: typeof cookieOptions?.name === 'string' ? cookieOptions.name : DEFAULT_COOKIE_NAME,
+            name: cookieName ?? DEFAULT_COOKIE_NAME,
         }),
     );
-
-    // If the Admin API and Shop API should have specific cookies names
-    if (typeof cookieOptions?.name === 'object') {
-        const shopApiCookieName = cookieOptions.name.shop;
-        const adminApiCookieName = cookieOptions.name.admin;
-        const { shopApiPath, adminApiPath } = userConfig.apiOptions;
-        app.use(`/${shopApiPath}`, cookieSession({ ...cookieOptions, name: shopApiCookieName }));
-        app.use(`/${adminApiPath}`, cookieSession({ ...cookieOptions, name: adminApiCookieName }));
-    }
 }

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AdminUiAppConfig
 
-<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="349" packageName="@vendure/common" />
+<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="355" packageName="@vendure/common" />
 
 Configures the path to a custom-build of the Admin UI app.
 
@@ -34,7 +34,7 @@ default build is used. This path should contain the `vendure-ui-config.json` fil
 index.html, the compiled js bundles etc.
 ### route
 
-<MemberInfo kind="property" type={`string`} default="'admin'"   />
+<MemberInfo kind="property" type={`string`} default={`'admin'`}   />
 
 Specifies the url route to the Admin UI app.
 ### compile

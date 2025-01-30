@@ -32,6 +32,7 @@ export class PromotionListComponent
     extends TypedBaseListComponent<typeof GetPromotionListDocument, 'promotions'>
     implements OnInit
 {
+    dataTableListId = 'promotion-list';
     readonly customFields = this.getCustomFieldConfig('Promotion');
     readonly filters = this.createFilterCollection()
         .addIdFilter()

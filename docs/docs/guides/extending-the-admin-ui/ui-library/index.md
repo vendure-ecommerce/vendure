@@ -180,6 +180,10 @@ Form inputs are styled globally, so you don't need to use special components for
     <vdr-form-field label="Invalid with error">
         <input type="text" [formControl]="invalidFormControl" />
     </vdr-form-field>
+    <vdr-rich-text-editor
+        class="form-grid-span"
+        label="Description"
+    ></vdr-rich-text-editor>
 </div>
 ```
 
@@ -189,7 +193,7 @@ Form inputs are styled globally, so you don't need to use special components for
 ```tsx
 import React from 'react';
 import { starIcon, userIcon } from '@cds/core/icon';
-import { FormField } from '@vendure/admin-ui/react';
+import { FormField, RichTextEditor } from '@vendure/admin-ui/react';
 
 export function DemoComponent() {
     return (
@@ -215,6 +219,7 @@ export function DemoComponent() {
             <FormField label="Invalid with error" invalid>
                 <input type="text" />
             </FormField>
+            <RichTextEditor className="form-grid-span" label="Description" readOnly={false} />
         </div>
     );
 }

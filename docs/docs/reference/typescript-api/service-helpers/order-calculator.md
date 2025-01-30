@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrderCalculator
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/order-calculator/order-calculator.ts" sourceLine="32" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/order-calculator/order-calculator.ts" sourceLine="34" packageName="@vendure/core" />
 
 This helper is used when making changes to an Order, to apply all applicable price adjustments to that Order,
 including:
@@ -32,7 +32,7 @@ class OrderCalculator {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(configService: ConfigService, zoneService: <a href='/reference/typescript-api/services/zone-service#zoneservice'>ZoneService</a>, taxRateService: <a href='/reference/typescript-api/services/tax-rate-service#taxrateservice'>TaxRateService</a>, shippingMethodService: <a href='/reference/typescript-api/services/shipping-method-service#shippingmethodservice'>ShippingMethodService</a>, shippingCalculator: <a href='/reference/typescript-api/shipping/shipping-calculator#shippingcalculator'>ShippingCalculator</a>, requestContextCache: RequestContextCacheService) => OrderCalculator`}   />
+<MemberInfo kind="method" type={`(configService: ConfigService, zoneService: <a href='/reference/typescript-api/services/zone-service#zoneservice'>ZoneService</a>, taxRateService: <a href='/reference/typescript-api/services/tax-rate-service#taxrateservice'>TaxRateService</a>, shippingMethodService: <a href='/reference/typescript-api/services/shipping-method-service#shippingmethodservice'>ShippingMethodService</a>, shippingCalculator: <a href='/reference/typescript-api/shipping/shipping-calculator#shippingcalculator'>ShippingCalculator</a>, requestContextCache: <a href='/reference/typescript-api/cache/request-context-cache-service#requestcontextcacheservice'>RequestContextCacheService</a>) => OrderCalculator`}   />
 
 
 ### applyPriceAdjustments

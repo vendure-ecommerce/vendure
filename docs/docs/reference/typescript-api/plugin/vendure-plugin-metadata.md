@@ -68,10 +68,15 @@ guaranteed to be compatible with the current version of Vendure.
 
 To effectively disable this check for a plugin, you can use an overly-permissive string such as `>0.0.0`.
 
+:::note
+Since Vendure v3.1.0, it is possible to ignore compatibility errors for specific plugins by
+passing the `ignoreCompatibilityErrorsForPlugins` option to the <a href='/reference/typescript-api/common/bootstrap#bootstrap'>bootstrap</a> function.
+:::
+
 *Example*
 
 ```ts
-compatibility: '^2.0.0'
+compatibility: '^3.0.0'
 ```
 
 
@@ -80,7 +85,7 @@ compatibility: '^2.0.0'
 
 ## APIExtensionDefinition
 
-<GenerationInfo sourceFile="packages/core/src/plugin/vendure-plugin.ts" sourceLine="74" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/plugin/vendure-plugin.ts" sourceLine="79" packageName="@vendure/core" />
 
 An object which allows a plugin to extend the Vendure GraphQL API.
 
@@ -128,7 +133,7 @@ Read more about defining custom scalars in the
 
 ## PluginConfigurationFn
 
-<GenerationInfo sourceFile="packages/core/src/plugin/vendure-plugin.ts" sourceLine="112" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/plugin/vendure-plugin.ts" sourceLine="117" packageName="@vendure/core" />
 
 This method is called before the app bootstraps and should be used to perform any needed modifications to the <a href='/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>.
 

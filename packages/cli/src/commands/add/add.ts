@@ -32,7 +32,7 @@ export async function addCommand() {
         message: 'Which feature would you like to add?',
         options: addCommands.map(c => ({
             value: c.id,
-            label: `[${c.category}] ${c.description}`,
+            label: `${pc.blue(`${c.category}`)} ${c.description}`,
         })),
     });
     if (isCancel(featureType)) {

@@ -26,6 +26,7 @@ export class ChannelListComponent
     extends TypedBaseListComponent<typeof GetChannelListDocument, 'channels'>
     implements OnInit
 {
+    dataTableListId = 'channel-list';
     readonly customFields = this.getCustomFieldConfig('Channel');
     readonly filters = this.createFilterCollection()
         .addIdFilter()

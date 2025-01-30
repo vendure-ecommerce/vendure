@@ -48,7 +48,7 @@ export class MyOrderCodeStrategy implements OrderCodeStrategy {
 
 :::info
 
-All strategies can be make use of existing services by using the `init()` method. This is because all strategies
+All strategies can make use of existing services by using the `init()` method. This is because all strategies
 extend the underlying [`InjectableStrategy` interface](/reference/typescript-api/common/injectable-strategy). In
 this example we are assuming that we already created an `OrderCodeService` which contains all the specific logic for
 connecting to our backend service which generates the order codes.

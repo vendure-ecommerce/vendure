@@ -1,6 +1,8 @@
-import { EntityMetadata, SelectQueryBuilder } from 'typeorm';
+import { EntityMetadata, FindOneOptions, SelectQueryBuilder } from 'typeorm';
 import { EntityTarget } from 'typeorm/common/EntityTarget';
+import { DriverUtils } from 'typeorm/driver/DriverUtils';
 
+import { findOptionsObjectToArray } from '../../../connection/find-options-object-to-array';
 import { VendureEntity } from '../../../entity';
 
 /**
@@ -55,11 +57,12 @@ function isTreeEntityMetadata(metadata: EntityMetadata): boolean {
 export function joinTreeRelationsDynamically<T extends VendureEntity>(
     qb: SelectQueryBuilder<T>,
     entity: EntityTarget<T>,
-    requestedRelations: string[] = [],
+    requestedRelations: FindOneOptions['relations'] = {},
     maxEagerDepth: number = 1,
 ): Map<string, string> {
     const joinedRelations = new Map<string, string>();
-    if (!requestedRelations.length) {
+    const relationsArray = findOptionsObjectToArray(requestedRelations);
+    if (!relationsArray.length) {
         return joinedRelations;
     }
 
@@ -105,7 +108,12 @@ export function joinTreeRelationsDynamically<T extends VendureEntity>(
         if (relationMetadata.isEager) {
             joinConnector = '__';
         }
-        const nextAlias = `${currentAlias}${joinConnector}${part.replace(/\./g, '_')}`;
+        const nextAlias = DriverUtils.buildAlias(
+            qb.connection.driver,
+            { shorten: false, joiner: joinConnector },
+            currentAlias,
+            part.replace(/\./g, '_'),
+        );
         const nextPath = parts.join('.');
         const fullPath = [...(parentPath || []), part].join('.');
         if (!qb.expressionMap.joinAttributes.some(ja => ja.alias.name === nextAlias)) {
@@ -147,7 +155,7 @@ export function joinTreeRelationsDynamically<T extends VendureEntity>(
         }
     };
 
-    requestedRelations.forEach(relationPath => {
+    relationsArray.forEach(relationPath => {
         if (!joinedRelations.has(relationPath)) {
             processRelation(sourceMetadata, sourceMetadataIsTree, relationPath, qb.alias);
         }

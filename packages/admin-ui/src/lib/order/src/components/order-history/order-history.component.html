@@ -1,5 +1,5 @@
 <div class="entry-list" [class.expanded]="expanded">
-    <vdr-timeline-entry iconShape="note" displayType="muted" [featured]="true">
+    <vdr-timeline-entry iconShape="note" displayType="muted" [featured]="true" [isFirst]="true">
         <div class="note-entry">
             <textarea [(ngModel)]="note" name="note" class="note"></textarea>
             <button class="btn btn-secondary" [disabled]="!note" (click)="addNoteToOrder()">

@@ -1,10 +1,23 @@
 import { ID } from '@vendure/common/lib/shared-types';
-import { ChannelService, OrderService, PaymentService, RequestContext } from '@vendure/core';
+import {
+    ChannelService,
+    ErrorResult,
+    LanguageCode,
+    OrderService,
+    PaymentMethodEligibilityChecker,
+    PaymentService,
+    RequestContext,
+    assertFound,
+} from '@vendure/core';
 import { SimpleGraphQLClient, TestServer } from '@vendure/testing';
 import gql from 'graphql-tag';
 
-import { REFUND_ORDER } from './graphql/admin-queries';
-import { RefundFragment, RefundOrderMutation, RefundOrderMutationVariables } from './graphql/generated-admin-types';
+import { CREATE_COUPON, REFUND_ORDER } from './graphql/admin-queries';
+import {
+    RefundFragment,
+    RefundOrderMutation,
+    RefundOrderMutationVariables,
+} from './graphql/generated-admin-types';
 import {
     GetShippingMethodsQuery,
     SetShippingMethodMutation,
@@ -21,7 +34,7 @@ import {
 } from './graphql/shop-queries';
 
 export async function setShipping(shopClient: SimpleGraphQLClient): Promise<void> {
-    await shopClient.query(SET_SHIPPING_ADDRESS, {
+    const { setOrderShippingAddress: order } = await shopClient.query(SET_SHIPPING_ADDRESS, {
         input: {
             fullName: 'name',
             streetLine1: '12 the street',
@@ -33,9 +46,17 @@ export async function setShipping(shopClient: SimpleGraphQLClient): Promise<void
     const { eligibleShippingMethods } = await shopClient.query<GetShippingMethodsQuery>(
         GET_ELIGIBLE_SHIPPING_METHODS,
     );
-    await shopClient.query<SetShippingMethodMutation, SetShippingMethodMutationVariables>(SET_SHIPPING_METHOD, {
-        id: eligibleShippingMethods[1].id,
-    });
+    if (!eligibleShippingMethods?.length) {
+        throw Error(
+            `No eligible shipping methods found for order '${String(order.code)}' with a total of '${String(order.totalWithTax)}'`,
+        );
+    }
+    await shopClient.query<SetShippingMethodMutation, SetShippingMethodMutationVariables>(
+        SET_SHIPPING_METHOD,
+        {
+            id: eligibleShippingMethods[1].id,
+        },
+    );
 }
 
 export async function proceedToArrangingPayment(shopClient: SimpleGraphQLClient): Promise<ID> {
@@ -78,17 +99,115 @@ export async function addManualPayment(server: TestServer, orderId: ID, amount: 
         authorizedAsOwnerOnly: false,
         channel: await server.app.get(ChannelService).getDefaultChannel(),
     });
-    const order = await server.app.get(OrderService).findOne(ctx, orderId);
+    const order = await assertFound(server.app.get(OrderService).findOne(ctx, orderId));
     // tslint:disable-next-line:no-non-null-assertion
-    await server.app.get(PaymentService).createManualPayment(ctx, order!, amount, {
+    await server.app.get(PaymentService).createManualPayment(ctx, order, amount, {
         method: 'Gift card',
-        // tslint:disable-next-line:no-non-null-assertion
-        orderId: order!.id,
+        orderId: order.id,
         metadata: {
             bogus: 'test',
         },
     });
 }
+
+/**
+ * Create a coupon with the given code and discount amount.
+ */
+export async function createFixedDiscountCoupon(
+    adminClient: SimpleGraphQLClient,
+    amount: number,
+    couponCode: string,
+): Promise<void> {
+    const { createPromotion } = await adminClient.query(CREATE_COUPON, {
+        input: {
+            conditions: [],
+            actions: [
+                {
+                    code: 'order_fixed_discount',
+                    arguments: [
+                        {
+                            name: 'discount',
+                            value: String(amount),
+                        },
+                    ],
+                },
+            ],
+            couponCode,
+            startsAt: null,
+            endsAt: null,
+            perCustomerUsageLimit: null,
+            usageLimit: null,
+            enabled: true,
+            translations: [
+                {
+                    languageCode: 'en',
+                    name: `Coupon ${couponCode}`,
+                    description: '',
+                    customFields: {},
+                },
+            ],
+            customFields: {},
+        },
+    });
+    if (createPromotion.__typename === 'ErrorResult') {
+        throw new Error(`Error creating coupon: ${(createPromotion as ErrorResult).errorCode}`);
+    }
+}
+/**
+ * Create a coupon that discounts the shipping costs
+ */
+export async function createFreeShippingCoupon(
+    adminClient: SimpleGraphQLClient,
+    couponCode: string,
+): Promise<void> {
+    const { createPromotion } = await adminClient.query(CREATE_COUPON, {
+        input: {
+            conditions: [],
+            actions: [
+                {
+                    code: 'free_shipping',
+                    arguments: [],
+                },
+            ],
+            couponCode,
+            startsAt: null,
+            endsAt: null,
+            perCustomerUsageLimit: null,
+            usageLimit: null,
+            enabled: true,
+            translations: [
+                {
+                    languageCode: 'en',
+                    name: `Coupon ${couponCode}`,
+                    description: '',
+                    customFields: {},
+                },
+            ],
+            customFields: {},
+        },
+    });
+    if (createPromotion.__typename === 'ErrorResult') {
+        throw new Error(`Error creating coupon: ${(createPromotion as ErrorResult).errorCode}`);
+    }
+}
+
+/**
+ * Test payment eligibility checker that doesn't allow orders with quantity 9 on an order line,
+ * just so that we can easily mock non-eligibility
+ */
+export const testPaymentEligibilityChecker = new PaymentMethodEligibilityChecker({
+    code: 'test-payment-eligibility-checker',
+    description: [{ languageCode: LanguageCode.en, value: 'Do not allow 9 items' }],
+    args: {},
+    check: (ctx, order, args) => {
+        const hasLineWithQuantity9 = order.lines.find(line => line.quantity === 9);
+        if (hasLineWithQuantity9) {
+            return false;
+        } else {
+            return true;
+        }
+    },
+});
 
 export const CREATE_MOLLIE_PAYMENT_INTENT = gql`
     mutation createMolliePaymentIntent($input: MolliePaymentIntentInput!) {
@@ -105,9 +224,10 @@ export const CREATE_MOLLIE_PAYMENT_INTENT = gql`
 `;
 
 export const CREATE_STRIPE_PAYMENT_INTENT = gql`
-    mutation createStripePaymentIntent{
+    mutation createStripePaymentIntent {
         createStripePaymentIntent
-    }`;
+    }
+`;
 
 export const GET_MOLLIE_PAYMENT_METHODS = gql`
     query molliePaymentMethods($input: MolliePaymentMethodsInput!) {

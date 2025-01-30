@@ -198,7 +198,7 @@ import { StripePluginOptions } from './types';
         `,
         resolvers: [StripeResolver],
     },
-    compatibility: '^2.0.0',
+    compatibility: '^3.0.0',
 })
 export class StripePlugin {
     static options: StripePluginOptions;

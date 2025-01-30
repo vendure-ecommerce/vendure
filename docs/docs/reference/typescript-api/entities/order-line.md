@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrderLine
 
-<GenerationInfo sourceFile="packages/core/src/entity/order-line/order-line.entity.ts" sourceLine="29" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/order-line/order-line.entity.ts" sourceLine="32" packageName="@vendure/core" />
 
 A single line on an <a href='/reference/typescript-api/entities/order#order'>Order</a> which contains information about the <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> and
 quantity ordered, as well as the price and tax information.
@@ -25,24 +25,33 @@ class OrderLine extends VendureEntity implements HasCustomFields {
     @EntityId({ nullable: true })
     sellerChannelId?: ID;
     @Index()
-    @ManyToOne(type => ShippingLine, { nullable: true, onDelete: 'SET NULL' })
+    @ManyToOne(type => ShippingLine, shippingLine => shippingLine.orderLines, {
+        nullable: true,
+        onDelete: 'SET NULL',
+    })
     shippingLine?: ShippingLine;
     @EntityId({ nullable: true })
     shippingLineId?: ID;
     @Index()
-    @ManyToOne(type => ProductVariant)
+    @ManyToOne(type => ProductVariant, productVariant => productVariant.lines, { onDelete: 'CASCADE' })
     productVariant: ProductVariant;
     @EntityId()
     productVariantId: ID;
     @Index()
     @ManyToOne(type => TaxCategory)
     taxCategory: TaxCategory;
+    @EntityId({ nullable: true })
+    taxCategoryId: ID;
     @Index()
-    @ManyToOne(type => Asset)
+    @ManyToOne(type => Asset, asset => asset.featuredInVariants, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
     @Index()
     @ManyToOne(type => Order, order => order.lines, { onDelete: 'CASCADE' })
     order: Order;
+    @OneToMany(type => OrderLineReference, lineRef => lineRef.orderLine)
+    linesReferences: OrderLineReference[];
+    @OneToMany(type => Sale, sale => sale.orderLine)
+    sales: Sale[];
     @Column()
     quantity: number;
     @Column({ default: 0 })
@@ -57,8 +66,10 @@ class OrderLine extends VendureEntity implements HasCustomFields {
     adjustments: Adjustment[];
     @Column('simple-json')
     taxLines: TaxLine[];
-    @OneToOne(type => Cancellation, cancellation => cancellation.orderLine)
-    cancellation: Cancellation;
+    @OneToMany(type => Cancellation, cancellation => cancellation.orderLine)
+    cancellations: Cancellation[];
+    @OneToMany(type => Allocation, allocation => allocation.orderLine)
+    allocations: Allocation[];
     @Column(type => CustomOrderLineFields)
     customFields: CustomOrderLineFields;
     unitPrice: number
@@ -135,6 +146,11 @@ The <a href='/reference/typescript-api/entities/product-variant#productvariant'>
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>`}   />
 
 
+### taxCategoryId
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
+
+
 ### featuredAsset
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>`}   />
@@ -143,6 +159,16 @@ The <a href='/reference/typescript-api/entities/product-variant#productvariant'>
 ### order
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order#order'>Order</a>`}   />
+
+
+### linesReferences
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order-line-reference#orderlinereference'>OrderLineReference</a>[]`}   />
+
+
+### sales
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/stock-movement#sale'>Sale</a>[]`}   />
 
 
 ### quantity
@@ -183,9 +209,14 @@ Whether the listPrice includes tax, which depends on the settings of the current
 <MemberInfo kind="property" type={`TaxLine[]`}   />
 
 
-### cancellation
+### cancellations
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/stock-movement#cancellation'>Cancellation</a>`}   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/stock-movement#cancellation'>Cancellation</a>[]`}   />
+
+
+### allocations
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/stock-movement#allocation'>Allocation</a>[]`}   />
 
 
 ### customFields

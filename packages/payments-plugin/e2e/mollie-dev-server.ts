@@ -1,14 +1,6 @@
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
-import {
-    ChannelService,
-    DefaultLogger,
-    DefaultSearchPlugin,
-    LogLevel,
-    mergeConfig,
-    RequestContext,
-} from '@vendure/core';
+import { DefaultLogger, DefaultSearchPlugin, LogLevel, mergeConfig } from '@vendure/core';
 import { createTestEnvironment, registerInitializer, SqljsInitializer, testConfig } from '@vendure/testing';
-import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
 import gql from 'graphql-tag';
 import localtunnel from 'localtunnel';
 import path from 'path';
@@ -23,13 +15,16 @@ import {
     CreatePaymentMethodMutationVariables,
     LanguageCode,
 } from './graphql/generated-admin-types';
-import { AddItemToOrderMutation, AddItemToOrderMutationVariables } from './graphql/generated-shop-types';
-import { ADD_ITEM_TO_ORDER, ADJUST_ORDER_LINE } from './graphql/shop-queries';
-import { CREATE_MOLLIE_PAYMENT_INTENT, setShipping } from './payment-helpers';
+import { ADD_ITEM_TO_ORDER, APPLY_COUPON_CODE } from './graphql/shop-queries';
+import {
+    CREATE_MOLLIE_PAYMENT_INTENT,
+    createFixedDiscountCoupon,
+    createFreeShippingCoupon,
+    setShipping,
+} from './payment-helpers';
 
 /**
  * This should only be used to locally test the Mollie payment plugin
- * Make sure you have `MOLLIE_APIKEY=test_xxxx` in your .env file
  * Make sure you have `MOLLIE_APIKEY=test_xxxx` in your .env file
  */
 /* eslint-disable @typescript-eslint/no-floating-promises */
@@ -99,50 +94,24 @@ async function runMollieDevServer() {
             },
         },
     );
-    // Prepare order with 2 items
+    // Prepare a test order where the total is 0
     await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
-    // Add another item to the order
-    await shopClient.query<AddItemToOrderMutation, AddItemToOrderMutationVariables>(ADD_ITEM_TO_ORDER, {
-        productVariantId: 'T_4',
-        quantity: 1,
-    });
-    await shopClient.query<AddItemToOrderMutation, AddItemToOrderMutationVariables>(ADD_ITEM_TO_ORDER, {
-        productVariantId: 'T_5',
+    await shopClient.query(ADD_ITEM_TO_ORDER, {
+        productVariantId: 'T_1',
         quantity: 1,
     });
     await setShipping(shopClient);
-    // Create payment intent
-    // Create payment intent
-    const { createMolliePaymentIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
-        input: {
-            redirectUrl: `${tunnel.url}/admin/orders?filter=open&page=1`,
-            paymentMethodCode: 'mollie',
-            //            molliePaymentMethodCode: 'klarnapaylater'
-        },
-    });
-    if (createMolliePaymentIntent.errorCode) {
-        throw createMolliePaymentIntent;
-    }
-    // eslint-disable-next-line no-console
-    console.log('\x1b[41m', `Mollie payment link: ${createMolliePaymentIntent.url as string}`, '\x1b[0m');
+    await shopClient.query(APPLY_COUPON_CODE, { couponCode: 'FREE_SHIPPING' });
 
-    // Remove first orderLine
-    await shopClient.query(ADJUST_ORDER_LINE, {
-        orderLineId: 'T_1',
-        quantity: 0,
-    });
-    await setShipping(shopClient);
-
-    // Create another intent after Xs, should update the mollie order
-    await new Promise(resolve => setTimeout(resolve, 5000));
-    const { createMolliePaymentIntent: secondIntent } = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
-        input: {
-            redirectUrl: `${tunnel.url}/admin/orders?filter=open&page=1&dynamicRedirectUrl=true`,
-            paymentMethodCode: 'mollie',
-        },
-    });
+    // Create Payment Intent
+    const result = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, { input: {} });
     // eslint-disable-next-line no-console
-    console.log('\x1b[41m', `Second payment link: ${secondIntent.url as string}`, '\x1b[0m');
+    console.log('Payment intent result', result);
+
+    // Create another Payment Intent to test duplicate paymnets
+    const result2 = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, { input: {} });
+    // eslint-disable-next-line no-console
+    console.log('Second payment intent result', result2);
 }
 
 (async () => {

@@ -12,19 +12,20 @@ import { provideExtensionPaths } from './tailwind';
 import { getAllTranslationFiles, mergeExtensionTranslations } from './translations';
 import {
     StaticAssetDefinition,
+    UiExtensionBuildCommand,
     UiExtensionCompilerOptions,
     UiExtensionCompilerProcessArgument,
 } from './types';
 import {
     copyStaticAsset,
     copyUiDevkit,
+    determinePackageManager,
     getStaticAssetPath,
     isAdminUiExtension,
     isGlobalStylesExtension,
     isStaticAssetExtension,
     isTranslationExtension,
     normalizeExtensions,
-    shouldUseYarn,
 } from './utils';
 
 /**
@@ -36,21 +37,25 @@ import {
 export function compileUiExtensions(
     options: UiExtensionCompilerOptions,
 ): AdminUiAppConfig | AdminUiAppDevModeConfig {
-    const { devMode, watchPort, command } = options;
-    const usingYarn = command && command === 'npm' ? false : shouldUseYarn();
+    const { devMode, watchPort } = options;
+
+    const command: UiExtensionBuildCommand =
+        options.command && ['npm', 'pnpm'].includes(options.command)
+            ? options.command
+            : determinePackageManager();
 
     provideExtensionPaths(options.extensions);
 
     if (devMode) {
         return runWatchMode({
             watchPort: watchPort || 4200,
-            usingYarn,
             ...options,
+            command,
         });
     } else {
         return runCompileMode({
-            usingYarn,
             ...options,
+            command,
         });
     }
 }
@@ -59,10 +64,10 @@ function runCompileMode({
     outputPath,
     baseHref,
     extensions,
-    usingYarn,
+    command,
     additionalProcessArguments,
     ngCompilerPath,
-}: UiExtensionCompilerOptions & { usingYarn: boolean }): AdminUiAppConfig {
+}: UiExtensionCompilerOptions & { command: UiExtensionBuildCommand }): AdminUiAppConfig {
     const distPath = path.join(outputPath, 'dist');
 
     const compile = () =>
@@ -70,13 +75,13 @@ function runCompileMode({
             await setupScaffold(outputPath, extensions);
             await setBaseHref(outputPath, baseHref || DEFAULT_BASE_HREF);
 
-            let cmd = usingYarn ? 'yarn' : 'npm';
+            let cmd: UiExtensionBuildCommand | 'node' = command;
             let commandArgs = ['run', 'build'];
             if (ngCompilerPath) {
                 cmd = 'node';
                 commandArgs = [ngCompilerPath, 'build', '--configuration production'];
             } else {
-                if (!usingYarn) {
+                if (cmd === 'npm') {
                     // npm requires `--` before any command line args being passed to a script
                     commandArgs.splice(2, 0, '--');
                 }
@@ -113,10 +118,10 @@ function runWatchMode({
     baseHref,
     watchPort,
     extensions,
-    usingYarn,
+    command,
     additionalProcessArguments,
     ngCompilerPath,
-}: UiExtensionCompilerOptions & { usingYarn: boolean }): AdminUiAppDevModeConfig {
+}: UiExtensionCompilerOptions & { command: UiExtensionBuildCommand }): AdminUiAppDevModeConfig {
     const devkitPath = require.resolve('@vendure/ui-devkit');
     let buildProcess: ChildProcess;
     let watcher: FSWatcher | undefined;
@@ -132,7 +137,7 @@ function runWatchMode({
             const globalStylesExtensions = extensions.filter(isGlobalStylesExtension);
             const staticAssetExtensions = extensions.filter(isStaticAssetExtension);
             const allTranslationFiles = getAllTranslationFiles(extensions.filter(isTranslationExtension));
-            let cmd = usingYarn ? 'yarn' : 'npm';
+            let cmd: UiExtensionBuildCommand | 'node' = command;
             let commandArgs = ['run', 'start'];
             if (ngCompilerPath) {
                 cmd = 'node';

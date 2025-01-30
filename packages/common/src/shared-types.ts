@@ -12,8 +12,8 @@ export type DeepPartial<T> = {
         | (T[P] extends Array<infer U>
               ? Array<DeepPartial<U>>
               : T[P] extends ReadonlyArray<infer U>
-              ? ReadonlyArray<DeepPartial<U>>
-              : DeepPartial<T[P]>);
+                ? ReadonlyArray<DeepPartial<U>>
+                : DeepPartial<T[P]>);
 };
 /* eslint-enable no-shadow, @typescript-eslint/no-shadow */
 
@@ -53,8 +53,8 @@ export type JsonCompatible<T> = {
     [P in keyof T]: T[P] extends Json
         ? T[P]
         : Pick<T, P> extends Required<Pick<T, P>>
-        ? never
-        : JsonCompatible<T[P]>;
+          ? never
+          : JsonCompatible<T[P]>;
 };
 
 /**
@@ -88,14 +88,15 @@ export type ID = string | number;
  * string       | varchar                               | String
  * localeString | varchar                               | String
  * text         | longtext(m), text(p,s)                | String
- * localeText    | longtext(m), text(p,s)                | String
+ * localeText   | longtext(m), text(p,s)                | String
  * int          | int                                   | Int
  * float        | double precision                      | Float
  * boolean      | tinyint (m), bool (p), boolean (s)    | Boolean
  * datetime     | datetime (m,s), timestamp (p)         | DateTime
+ * struct       | json (m), jsonb (p), text (s)         | JSON
  * relation     | many-to-one / many-to-many relation   | As specified in config
  *
- * Additionally, the CustomFieldType also dictates which [configuration options](/reference/typescript-api/custom-fields/#configuration-options)
+ * Additionally, the CustomFieldType also dictates which [configuration options](/guides/developer-guide/custom-fields/#custom-field-config-properties)
  * are available for that custom field.
  *
  * @docsCategory custom-fields
@@ -109,7 +110,10 @@ export type CustomFieldType =
     | 'datetime'
     | 'relation'
     | 'text'
-    | 'localeText';
+    | 'localeText'
+    | 'struct';
+
+export type StructFieldType = 'string' | 'int' | 'float' | 'boolean' | 'datetime' | 'text';
 
 /**
  * @description
@@ -149,7 +153,8 @@ export type DefaultFormComponentId =
     | 'text-form-input'
     | 'textarea-form-input'
     | 'product-multi-form-input'
-    | 'combination-mode-form-input';
+    | 'combination-mode-form-input'
+    | 'struct-form-input';
 
 /**
  * @description
@@ -181,6 +186,7 @@ type DefaultFormConfigHash = {
         selectionMode?: 'product' | 'variant';
     };
     'combination-mode-form-input': Record<string, never>;
+    'struct-form-input': Record<string, never>;
 };
 
 export type DefaultFormComponentUiConfig<T extends DefaultFormComponentId | string> =
@@ -219,7 +225,7 @@ export interface AdminUiConfig {
      * to. If set to "auto", the Admin UI app will determine the hostname from the
      * current location (i.e. `window.location.hostname`).
      *
-     * @default 'http://localhost'
+     * @default 'auto'
      */
     apiHost: string | 'auto';
     /**
@@ -228,7 +234,7 @@ export interface AdminUiConfig {
      * to. If set to "auto", the Admin UI app will determine the port from the
      * current location (i.e. `window.location.port`).
      *
-     * @default 3000
+     * @default 'auto'
      */
     apiPort: number | 'auto';
     /**

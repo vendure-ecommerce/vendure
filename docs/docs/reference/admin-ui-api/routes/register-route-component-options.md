@@ -19,6 +19,8 @@ Configuration for a route component.
 type RegisterRouteComponentOptions<Component extends any | BaseDetailComponent<Entity>, Entity extends { id: string; updatedAt?: string }, T extends DocumentNode | TypedDocumentNode<any, { id: string }>, Field extends keyof ResultOf<T>, R extends Field> = {
     component: Type<Component> | Component;
     title?: string;
+    locationId?: string;
+    description?: string;
     breadcrumb?: BreadcrumbValue;
     path?: string;
     query?: T;

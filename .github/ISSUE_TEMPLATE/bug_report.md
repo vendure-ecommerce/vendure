@@ -3,7 +3,7 @@ name: Bug report
 about: Something not working as it should
 title: ''
 labels: "type: bug \U0001F41B"
-assignees: michaelbromley
+assignees: ''
 
 ---
 

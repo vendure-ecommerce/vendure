@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TaxRate
 
-<GenerationInfo sourceFile="packages/core/src/entity/tax-rate/tax-rate.entity.ts" sourceLine="25" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/tax-rate/tax-rate.entity.ts" sourceLine="26" packageName="@vendure/core" />
 
 A TaxRate defines the rate of tax to apply to a <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> based on three factors:
 
@@ -26,13 +26,17 @@ class TaxRate extends VendureEntity implements HasCustomFields {
     @Column() enabled: boolean;
     @Column({ type: 'decimal', precision: 5, scale: 2, transformer: new DecimalTransformer() }) value: number;
     @Index()
-    @ManyToOne(type => TaxCategory)
+    @ManyToOne(type => TaxCategory, taxCategory => taxCategory.taxRates)
     category: TaxCategory;
+    @EntityId({ nullable: true })
+    categoryId: ID;
     @Index()
-    @ManyToOne(type => Zone)
+    @ManyToOne(type => Zone, zone => zone.taxRates)
     zone: Zone;
+    @EntityId({ nullable: true })
+    zoneId: ID;
     @Index()
-    @ManyToOne(type => CustomerGroup, { nullable: true })
+    @ManyToOne(type => CustomerGroup, customerGroup => customerGroup.taxRates, { nullable: true })
     customerGroup?: CustomerGroup;
     @Column(type => CustomTaxRateFields)
     customFields: CustomTaxRateFields;
@@ -41,7 +45,7 @@ class TaxRate extends VendureEntity implements HasCustomFields {
     taxPayableOn(netPrice: number) => number;
     grossPriceOf(netPrice: number) => number;
     apply(price: number) => TaxLine;
-    test(zone: Zone, taxCategory: TaxCategory) => boolean;
+    test(zone: Zone | ID, taxCategory: TaxCategory | ID) => boolean;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
@@ -78,9 +82,19 @@ class TaxRate extends VendureEntity implements HasCustomFields {
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>`}   />
 
 
+### categoryId
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
+
+
 ### zone
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/zone#zone'>Zone</a>`}   />
+
+
+### zoneId
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 ### customerGroup
@@ -120,7 +134,7 @@ class TaxRate extends VendureEntity implements HasCustomFields {
 
 ### test
 
-<MemberInfo kind="method" type={`(zone: <a href='/reference/typescript-api/entities/zone#zone'>Zone</a>, taxCategory: <a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>) => boolean`}   />
+<MemberInfo kind="method" type={`(zone: <a href='/reference/typescript-api/entities/zone#zone'>Zone</a> | <a href='/reference/typescript-api/common/id#id'>ID</a>, taxCategory: <a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a> | <a href='/reference/typescript-api/common/id#id'>ID</a>) => boolean`}   />
 
 
 

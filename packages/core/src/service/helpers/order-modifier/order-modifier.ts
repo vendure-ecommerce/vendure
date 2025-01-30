@@ -10,6 +10,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { getGraphQlInputName, summate } from '@vendure/common/lib/shared-utils';
+import { IsNull } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { isGraphQlErrorResult, JustErrorResults } from '../../../common/error/error-result';
@@ -140,7 +141,7 @@ export class OrderModifier {
     ): Promise<OrderLine | undefined> {
         for (const line of order.lines) {
             const match =
-                idsAreEqual(line.productVariant.id, productVariantId) &&
+                idsAreEqual(line.productVariantId, productVariantId) &&
                 (await this.customFieldsAreEqual(ctx, line, customFields, line.customFields));
             if (match) {
                 return line;
@@ -164,12 +165,13 @@ export class OrderModifier {
             return existingOrderLine;
         }
 
-        const productVariant = await this.getProductVariantOrThrow(ctx, productVariantId);
+        const productVariant = await this.getProductVariantOrThrow(ctx, productVariantId, order);
+        const featuredAssetId = productVariant.featuredAssetId ?? productVariant.product.featuredAssetId;
         const orderLine = await this.connection.getRepository(ctx, OrderLine).save(
             new OrderLine({
                 productVariant,
                 taxCategory: productVariant.taxCategory,
-                featuredAsset: productVariant.featuredAsset ?? productVariant.product.featuredAsset,
+                featuredAsset: featuredAssetId ? { id: featuredAssetId } : undefined,
                 listPrice: productVariant.listPrice,
                 listPriceIncludesTax: productVariant.listPriceIncludesTax,
                 adjustments: [],
@@ -189,26 +191,15 @@ export class OrderModifier {
                 .set(orderLine.sellerChannel);
         }
         await this.customFieldRelationService.updateRelations(ctx, OrderLine, { customFields }, orderLine);
-        const lineWithRelations = await this.connection.getEntityOrThrow(ctx, OrderLine, orderLine.id, {
-            relations: [
-                'taxCategory',
-                'productVariant',
-                'productVariant.productVariantPrices',
-                'productVariant.taxCategory',
-            ],
-        });
-        lineWithRelations.productVariant = this.translator.translate(
-            await this.productVariantService.applyChannelPriceAndTax(
-                lineWithRelations.productVariant,
-                ctx,
-                order,
-            ),
-            ctx,
-        );
-        order.lines.push(lineWithRelations);
-        await this.connection.getRepository(ctx, Order).save(order, { reload: false });
-        await this.eventBus.publish(new OrderLineEvent(ctx, order, lineWithRelations, 'created'));
-        return lineWithRelations;
+        order.lines.push(orderLine);
+        await this.connection
+            .getRepository(ctx, Order)
+            .createQueryBuilder()
+            .relation('lines')
+            .of(order)
+            .add(orderLine);
+        await this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'created'));
+        return orderLine;
     }
 
     /**
@@ -341,6 +332,8 @@ export class OrderModifier {
                 await this.connection.getRepository(ctx, OrderLine).update(line.orderLineId, {
                     quantity: orderLine.quantity - line.quantity,
                 });
+
+                await this.eventBus.publish(new OrderLineEvent(ctx, order, orderLine, 'cancelled'));
             }
         }
 
@@ -498,7 +491,7 @@ export class OrderModifier {
                     const qtyDelta = initialLineQuantity - correctedQuantity;
 
                     refundInputs.forEach(ri => {
-                        ri.lines.push({
+                        ri.lines?.push({
                             orderLineId: orderLine.id,
                             quantity: qtyDelta,
                         });
@@ -531,7 +524,11 @@ export class OrderModifier {
             order.surcharges.push(surcharge);
             modification.surcharges.push(surcharge);
             if (surcharge.priceWithTax < 0) {
-                refundInputs.forEach(ri => (ri.adjustment += Math.abs(surcharge.priceWithTax)));
+                refundInputs.forEach(ri => {
+                    if (ri.adjustment != null) {
+                        ri.adjustment += Math.abs(surcharge.priceWithTax);
+                    }
+                });
             }
         }
         if (input.surcharges?.length) {
@@ -616,6 +613,24 @@ export class OrderModifier {
                 return result;
             }
         }
+        const { orderItemPriceCalculationStrategy } = this.configService.orderOptions;
+        for (const orderLine of updatedOrderLines) {
+            const variant = await this.productVariantService.applyChannelPriceAndTax(
+                orderLine.productVariant,
+                ctx,
+                order,
+            );
+            const priceResult = await orderItemPriceCalculationStrategy.calculateUnitPrice(
+                ctx,
+                variant,
+                orderLine.customFields || {},
+                order,
+                orderLine.quantity,
+            );
+            orderLine.listPrice = priceResult.price;
+            orderLine.listPriceIncludesTax = priceResult.priceIncludesTax;
+        }
+
         await this.orderCalculator.applyPriceAdjustments(ctx, order, promotions, updatedOrderLines, {
             recalculateShipping: input.options?.recalculateShipping,
         });
@@ -648,7 +663,9 @@ export class OrderModifier {
             if (shippingDelta < 0) {
                 primaryRefund.shipping = shippingDelta * -1;
             }
-            primaryRefund.adjustment += await this.calculateRefundAdjustment(ctx, delta, primaryRefund);
+            if (primaryRefund.adjustment != null) {
+                primaryRefund.adjustment += await this.calculateRefundAdjustment(ctx, delta, primaryRefund);
+            }
             // end
 
             for (const refundInput of refundInputs) {
@@ -766,14 +783,14 @@ export class OrderModifier {
         delta: number,
         refundInput: RefundOrderInput,
     ): Promise<number> {
-        const existingAdjustment = refundInput.adjustment;
+        const existingAdjustment = refundInput.adjustment ?? 0;
 
         let itemAmount = 0; // TODO: figure out what this should be
-        for (const lineInput of refundInput.lines) {
+        for (const lineInput of refundInput.lines ?? []) {
             const orderLine = await this.connection.getEntityOrThrow(ctx, OrderLine, lineInput.orderLineId);
             itemAmount += orderLine.proratedUnitPriceWithTax * lineInput.quantity;
         }
-        const calculatedDelta = itemAmount + refundInput.shipping + existingAdjustment;
+        const calculatedDelta = itemAmount + (refundInput.shipping ?? 0) + existingAdjustment;
         const absDelta = Math.abs(delta);
         return absDelta !== calculatedDelta ? absDelta - calculatedDelta : 0;
     }
@@ -876,11 +893,24 @@ export class OrderModifier {
     private async getProductVariantOrThrow(
         ctx: RequestContext,
         productVariantId: ID,
+        order: Order,
     ): Promise<ProductVariant> {
-        const productVariant = await this.productVariantService.findOne(ctx, productVariantId);
-        if (!productVariant) {
+        const variant = await this.connection.findOneInChannel(
+            ctx,
+            ProductVariant,
+            productVariantId,
+            ctx.channelId,
+            {
+                relations: ['product', 'productVariantPrices', 'taxCategory'],
+                loadEagerRelations: false,
+                where: { deletedAt: IsNull() },
+            },
+        );
+
+        if (variant) {
+            return await this.productVariantService.applyChannelPriceAndTax(variant, ctx, order);
+        } else {
             throw new EntityNotFoundError('ProductVariant', productVariantId);
         }
-        return productVariant;
     }
 }

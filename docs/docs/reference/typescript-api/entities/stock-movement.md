@@ -11,28 +11,33 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## StockMovement
 
-<GenerationInfo sourceFile="packages/core/src/entity/stock-movement/stock-movement.entity.ts" sourceLine="19" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/stock-movement/stock-movement.entity.ts" sourceLine="21" packageName="@vendure/core" />
 
 A StockMovement is created whenever stock of a particular ProductVariant goes in
 or out.
 
 ```ts title="Signature"
-class StockMovement extends VendureEntity {
+class StockMovement extends VendureEntity implements HasCustomFields {
     @Column({ nullable: false, type: 'varchar' })
     readonly type: StockMovementType;
     @Index()
     @ManyToOne(type => ProductVariant, variant => variant.stockMovements)
     productVariant: ProductVariant;
     @Index()
-    @ManyToOne(type => StockLocation, { onDelete: 'CASCADE' })
+    @ManyToOne(type => StockLocation, stockLocation => stockLocation.stockMovements, { onDelete: 'CASCADE' })
     stockLocation: StockLocation;
     @EntityId()
     stockLocationId: ID;
     @Column()
     quantity: number;
+    @Column(type => CustomStockMovementFields)
+    customFields: CustomStockMovementFields;
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
+
+
+* Implements: <code>HasCustomFields</code>
 
 
 
@@ -63,6 +68,11 @@ class StockMovement extends VendureEntity {
 <MemberInfo kind="property" type={`number`}   />
 
 
+### customFields
+
+<MemberInfo kind="property" type={`CustomStockMovementFields`}   />
+
+
 
 
 </div>
@@ -80,7 +90,7 @@ class Allocation extends StockMovement {
     readonly type = StockMovementType.ALLOCATION;
     constructor(input: DeepPartial<Allocation>)
     @Index()
-    @ManyToOne(type => OrderLine)
+    @ManyToOne(type => OrderLine, orderLine => orderLine.allocations)
     orderLine: OrderLine;
 }
 ```
@@ -120,7 +130,7 @@ A Cancellation is created when OrderItems from a fulfilled Order are cancelled.
 class Cancellation extends StockMovement {
     readonly type = StockMovementType.CANCELLATION;
     constructor(input: DeepPartial<Cancellation>)
-    @ManyToOne(type => OrderLine)
+    @ManyToOne(type => OrderLine, orderLine => orderLine.cancellations)
     orderLine: OrderLine;
 }
 ```
@@ -201,7 +211,7 @@ A Sale is created when OrderItems are fulfilled.
 class Sale extends StockMovement {
     readonly type = StockMovementType.SALE;
     constructor(input: DeepPartial<Sale>)
-    @ManyToOne(type => OrderLine)
+    @ManyToOne(type => OrderLine, line => line.sales)
     orderLine: OrderLine;
 }
 ```

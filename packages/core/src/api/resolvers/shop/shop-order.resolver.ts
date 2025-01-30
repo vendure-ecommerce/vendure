@@ -76,7 +76,8 @@ export class ShopOrderResolver {
     async order(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryOrderArgs,
-        @Relations(Order) relations: RelationPaths<Order>,
+        @Relations({ entity: Order, omit: ['aggregateOrder', 'sellerOrders'] })
+        relations: RelationPaths<Order>,
     ): Promise<Order | undefined> {
         const requiredRelations: RelationPaths<Order> = ['customer', 'customer.user'];
         const order = await this.orderService.findOne(
@@ -98,7 +99,8 @@ export class ShopOrderResolver {
     @Allow(Permission.Owner)
     async activeOrder(
         @Ctx() ctx: RequestContext,
-        @Relations(Order) relations: RelationPaths<Order>,
+        @Relations({ entity: Order, omit: ['aggregateOrder', 'sellerOrders'] })
+        relations: RelationPaths<Order>,
         @Args() args: ActiveOrderArgs,
     ): Promise<Order | undefined> {
         if (ctx.authorizedAsOwnerOnly) {
@@ -107,7 +109,7 @@ export class ShopOrderResolver {
                 args[ACTIVE_ORDER_INPUT_FIELD_NAME],
             );
             if (sessionOrder) {
-                return this.orderService.findOne(ctx, sessionOrder.id);
+                return this.orderService.findOne(ctx, sessionOrder.id, relations);
             } else {
                 return;
             }
@@ -119,7 +121,8 @@ export class ShopOrderResolver {
     async orderByCode(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryOrderByCodeArgs,
-        @Relations(Order) relations: RelationPaths<Order>,
+        @Relations({ entity: Order, omit: ['aggregateOrder', 'sellerOrders'] })
+        relations: RelationPaths<Order>,
     ): Promise<Order | undefined> {
         if (ctx.authorizedAsOwnerOnly) {
             const requiredRelations: RelationPaths<Order> = ['customer', 'customer.user'];
@@ -174,6 +177,44 @@ export class ShopOrderResolver {
             );
             if (sessionOrder) {
                 return this.orderService.setBillingAddress(ctx, sessionOrder.id, args.input);
+            }
+        }
+        return new NoActiveOrderError();
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.Owner)
+    async unsetOrderShippingAddress(
+        @Ctx() ctx: RequestContext,
+        @Args() args: ActiveOrderArgs,
+    ): Promise<ErrorResultUnion<ActiveOrderResult, Order>> {
+        if (ctx.authorizedAsOwnerOnly) {
+            const sessionOrder = await this.activeOrderService.getActiveOrder(
+                ctx,
+                args[ACTIVE_ORDER_INPUT_FIELD_NAME],
+            );
+            if (sessionOrder) {
+                return this.orderService.unsetShippingAddress(ctx, sessionOrder.id);
+            }
+        }
+        return new NoActiveOrderError();
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.Owner)
+    async unsetOrderBillingAddress(
+        @Ctx() ctx: RequestContext,
+        @Args() args: ActiveOrderArgs,
+    ): Promise<ErrorResultUnion<ActiveOrderResult, Order>> {
+        if (ctx.authorizedAsOwnerOnly) {
+            const sessionOrder = await this.activeOrderService.getActiveOrder(
+                ctx,
+                args[ACTIVE_ORDER_INPUT_FIELD_NAME],
+            );
+            if (sessionOrder) {
+                return this.orderService.unsetBillingAddress(ctx, sessionOrder.id);
             }
         }
         return new NoActiveOrderError();
@@ -294,6 +335,8 @@ export class ShopOrderResolver {
     async addItemToOrder(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationAddItemToOrderArgs & ActiveOrderArgs,
+        @Relations({ entity: Order, omit: ['aggregateOrder', 'sellerOrders'] })
+        relations: RelationPaths<Order>,
     ): Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>> {
         const order = await this.activeOrderService.getActiveOrder(
             ctx,
@@ -306,6 +349,7 @@ export class ShopOrderResolver {
             args.productVariantId,
             args.quantity,
             (args as any).customFields,
+            relations,
         );
     }
 
@@ -315,6 +359,8 @@ export class ShopOrderResolver {
     async adjustOrderLine(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationAdjustOrderLineArgs & ActiveOrderArgs,
+        @Relations({ entity: Order, omit: ['aggregateOrder', 'sellerOrders'] })
+        relations: RelationPaths<Order>,
     ): Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>> {
         if (args.quantity === 0) {
             return this.removeOrderLine(ctx, { orderLineId: args.orderLineId });
@@ -330,6 +376,7 @@ export class ShopOrderResolver {
             args.orderLineId,
             args.quantity,
             (args as any).customFields,
+            relations,
         );
     }
 

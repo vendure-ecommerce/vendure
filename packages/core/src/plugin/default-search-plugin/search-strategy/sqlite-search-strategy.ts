@@ -20,8 +20,12 @@ import {
 } from './search-strategy-utils';
 
 /**
+ *
+ * @description
  * A rather naive search for SQLite / SQL.js. Rather than proper
  * full-text searching, it uses a weighted `LIKE "%term%"` operator instead.
+ *
+ * @docsCategory DefaultSearchPlugin
  */
 export class SqliteSearchStrategy implements SearchStrategy {
     private readonly minTermLength = 2;

@@ -10,8 +10,8 @@ import {
 import {
     CustomFieldConfig,
     CustomFields,
-    EntityCustomFields,
     RelationCustomFieldFragment,
+    StructCustomFieldFragment,
 } from '../../common/generated-types';
 
 /**
@@ -21,8 +21,10 @@ import {
 export function addCustomFields(
     documentNode: DocumentNode,
     customFields: Map<string, CustomFieldConfig[]>,
+    includeCustomFields?: string[],
 ): DocumentNode {
-    const fragmentDefs = documentNode.definitions.filter(isFragmentDefinition);
+    const clone = JSON.parse(JSON.stringify(documentNode)) as DocumentNode;
+    const fragmentDefs = clone.definitions.filter(isFragmentDefinition);
 
     for (const fragmentDef of fragmentDefs) {
         let entityType = fragmentDef.typeCondition.name.value as keyof Pick<
@@ -43,41 +45,72 @@ export function addCustomFields(
 
         const customFieldsForType = customFields.get(entityType);
         if (customFieldsForType && customFieldsForType.length) {
-            (fragmentDef.selectionSet.selections as SelectionNode[]).push({
-                name: {
-                    kind: Kind.NAME,
-                    value: 'customFields',
-                },
-                kind: Kind.FIELD,
-                selectionSet: {
-                    kind: Kind.SELECTION_SET,
-                    selections: customFieldsForType.map(
-                        customField =>
-                            ({
-                                kind: Kind.FIELD,
-                                name: {
-                                    kind: Kind.NAME,
-                                    value: customField.name,
-                                },
-                                // For "relation" custom fields, we need to also select
-                                // all the scalar fields of the related type
-                                ...(customField.type === 'relation'
-                                    ? {
-                                          selectionSet: {
-                                              kind: Kind.SELECTION_SET,
-                                              selections: (
-                                                  customField as RelationCustomFieldFragment
-                                              ).scalarFields.map(f => ({
+            // Check if there is already a customFields field in the fragment
+            // to avoid duplication
+            const existingCustomFieldsField = fragmentDef.selectionSet.selections.find(
+                selection => isFieldNode(selection) && selection.name.value === 'customFields',
+            ) as FieldNode | undefined;
+            const selectionNodes: SelectionNode[] = customFieldsForType
+                .filter(field => !includeCustomFields || includeCustomFields.includes(field.name))
+                .map(
+                    customField =>
+                        ({
+                            kind: Kind.FIELD,
+                            name: {
+                                kind: Kind.NAME,
+                                value: customField.name,
+                            },
+                            // For "relation" custom fields, we need to also select
+                            // all the scalar fields of the related type
+                            ...(customField.type === 'relation'
+                                ? {
+                                      selectionSet: {
+                                          kind: Kind.SELECTION_SET,
+                                          selections: (
+                                              customField as RelationCustomFieldFragment
+                                          ).scalarFields.map(f => ({
+                                              kind: Kind.FIELD,
+                                              name: { kind: Kind.NAME, value: f },
+                                          })),
+                                      },
+                                  }
+                                : {}),
+                            ...(customField.type === 'struct'
+                                ? {
+                                      selectionSet: {
+                                          kind: Kind.SELECTION_SET,
+                                          selections: (customField as StructCustomFieldFragment).fields.map(
+                                              f => ({
                                                   kind: Kind.FIELD,
-                                                  name: { kind: Kind.NAME, value: f },
-                                              })),
-                                          },
-                                      }
-                                    : {}),
-                            } as FieldNode),
-                    ),
-                },
-            });
+                                                  name: { kind: Kind.NAME, value: f.name },
+                                              }),
+                                          ),
+                                      },
+                                  }
+                                : {}),
+                        }) as FieldNode,
+                );
+            if (!existingCustomFieldsField) {
+                // If no customFields field exists, add one
+                (fragmentDef.selectionSet.selections as SelectionNode[]).push({
+                    kind: Kind.FIELD,
+                    name: {
+                        kind: Kind.NAME,
+                        value: 'customFields',
+                    },
+                    selectionSet: {
+                        kind: Kind.SELECTION_SET,
+                        selections: selectionNodes,
+                    },
+                });
+            } else {
+                // If a customFields field already exists, add the custom fields
+                // to the existing selection set
+                (existingCustomFieldsField.selectionSet as any) = {
+                    kind: Kind.SELECTION_SET,
+                    selections: selectionNodes,
+                };
+            }
 
             const localizedFields = customFieldsForType.filter(
                 field => field.type === 'localeString' || field.type === 'localeText',
@@ -104,7 +137,7 @@ export function addCustomFields(
                                         kind: Kind.NAME,
                                         value: customField.name,
                                     },
-                                } as FieldNode),
+                                }) as FieldNode,
                         ),
                     },
                 });
@@ -112,7 +145,7 @@ export function addCustomFields(
         }
     }
 
-    return documentNode;
+    return clone;
 }
 
 function isFragmentDefinition(value: DefinitionNode): value is FragmentDefinitionNode {

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CookieOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="224" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="227" packageName="@vendure/core" />
 
 Options for the handling of the cookies used to track sessions (only applicable if
 `authOptions.tokenMethod` is set to `'cookie'`). These options are passed directly
@@ -38,14 +38,14 @@ interface CookieOptions {
 
 ### name
 
-<MemberInfo kind="property" type={`string | { shop: string; admin: string }`} default="'session'"   />
+<MemberInfo kind="property" type={`string | { shop: string; admin: string }`} default={`'session'`}   />
 
 The name of the cookies to set.
 If set to a string, both cookies for the Admin API and Shop API will have the same name.
 If set as an object, it makes it possible to give different names to the Admin API and the Shop API cookies
 ### secret
 
-<MemberInfo kind="property" type={`string`} default="(random character string)"   />
+<MemberInfo kind="property" type={`string`} default={`(random character string)`}   />
 
 The secret used for signing the session cookies for authenticated users. Only applies
 tokenMethod is set to 'cookie'.
@@ -55,7 +55,7 @@ source control for security reasons, but may be loaded from an external
 file not under source control, or from an environment variable, for example.
 ### path
 
-<MemberInfo kind="property" type={`string`} default="'/'"   />
+<MemberInfo kind="property" type={`string`} default={`'/'`}   />
 
 a string indicating the path of the cookie.
 ### domain
@@ -65,7 +65,7 @@ a string indicating the path of the cookie.
 a string indicating the domain of the cookie (no default).
 ### sameSite
 
-<MemberInfo kind="property" type={`'strict' | 'lax' | 'none' | boolean`} default="false"   />
+<MemberInfo kind="property" type={`'strict' | 'lax' | 'none' | boolean`} default={`false`}   />
 
 a boolean or string indicating whether the cookie is a "same site" cookie (false by default). This can be set to 'strict',
 'lax', 'none', or true (which maps to 'strict').
@@ -81,7 +81,7 @@ a boolean indicating whether the cookie is only to be sent over HTTPS (false by 
 a boolean indicating whether the cookie is only to be sent over HTTPS (use this if you handle SSL not in your node process).
 ### httpOnly
 
-<MemberInfo kind="property" type={`boolean`} default="true"   />
+<MemberInfo kind="property" type={`boolean`} default={`true`}   />
 
 a boolean indicating whether the cookie is only to be sent over HTTP(S), and not made available to client JavaScript (true by default).
 ### signed

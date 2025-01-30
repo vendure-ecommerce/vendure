@@ -87,6 +87,9 @@ export const UPDATED_ORDER_FRAGMENT = gql`
             unitPriceWithTax
             linePrice
             linePriceWithTax
+            featuredAsset {
+                id
+            }
             discounts {
                 adjustmentSource
                 amount
@@ -118,6 +121,9 @@ export const ADD_ITEM_TO_ORDER = gql`
                 order {
                     ...UpdatedOrder
                 }
+            }
+            ... on OrderInterceptorError {
+                interceptorError
             }
         }
     }
@@ -369,6 +375,9 @@ export const ADJUST_ITEM_QUANTITY = gql`
                 errorCode
                 message
             }
+            ... on OrderInterceptorError {
+                interceptorError
+            }
         }
     }
     ${TEST_ORDER_FRAGMENT}
@@ -381,6 +390,9 @@ export const REMOVE_ITEM_FROM_ORDER = gql`
             ... on ErrorResult {
                 errorCode
                 message
+            }
+            ... on OrderInterceptorError {
+                interceptorError
             }
         }
     }
@@ -499,52 +511,85 @@ export const TRANSITION_TO_STATE = gql`
     ${TEST_ORDER_FRAGMENT}
 `;
 
+export const ORDER_WITH_ADDRESSES_FRAGMENT = gql`
+    fragment OrderWithAddresses on Order {
+        lines {
+            id
+        }
+        shippingAddress {
+            fullName
+            company
+            streetLine1
+            streetLine2
+            city
+            province
+            postalCode
+            country
+            phoneNumber
+        }
+        billingAddress {
+            fullName
+            company
+            streetLine1
+            streetLine2
+            city
+            province
+            postalCode
+            country
+            phoneNumber
+        }
+    }
+`;
+
 export const SET_SHIPPING_ADDRESS = gql`
     mutation SetShippingAddress($input: CreateAddressInput!) {
         setOrderShippingAddress(input: $input) {
-            ... on Order {
-                shippingAddress {
-                    fullName
-                    company
-                    streetLine1
-                    streetLine2
-                    city
-                    province
-                    postalCode
-                    country
-                    phoneNumber
-                }
-            }
+            ...OrderWithAddresses
             ... on ErrorResult {
                 errorCode
                 message
             }
         }
     }
+    ${ORDER_WITH_ADDRESSES_FRAGMENT}
 `;
 
 export const SET_BILLING_ADDRESS = gql`
     mutation SetBillingAddress($input: CreateAddressInput!) {
         setOrderBillingAddress(input: $input) {
-            ... on Order {
-                billingAddress {
-                    fullName
-                    company
-                    streetLine1
-                    streetLine2
-                    city
-                    province
-                    postalCode
-                    country
-                    phoneNumber
-                }
-            }
+            ...OrderWithAddresses
             ... on ErrorResult {
                 errorCode
                 message
             }
         }
     }
+    ${ORDER_WITH_ADDRESSES_FRAGMENT}
+`;
+
+export const UNSET_SHIPPING_ADDRESS = gql`
+    mutation UnsetShippingAddress {
+        unsetOrderShippingAddress {
+            ...OrderWithAddresses
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+        }
+    }
+    ${ORDER_WITH_ADDRESSES_FRAGMENT}
+`;
+export const UNSET_BILLING_ADDRESS = gql`
+    mutation UnsetBillingAddress {
+        unsetOrderBillingAddress {
+            ...OrderWithAddresses
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+        }
+    }
+    ${ORDER_WITH_ADDRESSES_FRAGMENT}
 `;
 
 export const TEST_ORDER_WITH_PAYMENTS_FRAGMENT = gql`

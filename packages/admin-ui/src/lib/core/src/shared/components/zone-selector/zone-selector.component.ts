@@ -63,10 +63,13 @@ export class ZoneSelectorComponent implements ControlValueAccessor {
     disabled = false;
     value: string | Zone;
     zones$ = this.dataService
-        .query(GetZoneSelectorListDocument, { options: { take: 999 } }, 'cache-first')
+        .query(GetZoneSelectorListDocument, { options: { take: 999 } })
         .mapSingle(result => result.zones.items);
 
-    constructor(private dataService: DataService, private changeDetectorRef: ChangeDetectorRef) {}
+    constructor(
+        private dataService: DataService,
+        private changeDetectorRef: ChangeDetectorRef,
+    ) {}
 
     onChange(selected: Zone) {
         if (this.readonly) {

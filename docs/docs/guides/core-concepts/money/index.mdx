@@ -8,6 +8,8 @@ This is a common practice in financial applications, as it avoids the rounding e
 
 For example, here's the response from a query for a product's variant prices:
 
+
+
 ```json
 {
   "data": {
@@ -120,7 +122,7 @@ then you should also use the `Money` scalar for any monetary values.
 
 ## The `@Money()` decorator
 
-When [defining new database entities](/guides/developer-guide/database-entity//), if you need to store a monetary value, then rather than using the TypeORM `@Column()`
+When [defining new database entities](/guides/developer-guide/database-entity), if you need to store a monetary value, then rather than using the TypeORM `@Column()`
 decorator, you should use Vendure's [`@Money()` decorator](/reference/typescript-api/money/money-decorator).
 
 Using this decorator allows Vendure to correctly store the value in the database according to the configured `MoneyStrategy` (see below).

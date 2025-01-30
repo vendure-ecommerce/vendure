@@ -8,12 +8,13 @@ import {
     DefaultLogger,
     DefaultSearchPlugin,
     dummyPaymentHandler,
+    FacetValue,
     LanguageCode,
     LogLevel,
     VendureConfig,
 } from '@vendure/core';
 import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
-import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
+import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
 import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
 import 'dotenv/config';
 import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
@@ -63,7 +64,7 @@ export const devConfig: VendureConfig = {
     },
 
     customFields: {},
-    logger: new DefaultLogger({ level: LogLevel.Verbose }),
+    logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
@@ -77,6 +78,7 @@ export const devConfig: VendureConfig = {
             assetUploadDir: path.join(__dirname, 'assets'),
         }),
         DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: false }),
+        // Enable if you need to debug the job queue
         // BullMQJobQueuePlugin.init({}),
         DefaultJobQueuePlugin.init({}),
         // JobQueueTestPlugin.init({ queueCount: 10 }),
@@ -89,7 +91,7 @@ export const devConfig: VendureConfig = {
             devMode: true,
             route: 'mailbox',
             handlers: defaultEmailHandlers,
-            templatePath: path.join(__dirname, '../email-plugin/templates'),
+            templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../email-plugin/templates')),
             outputPath: path.join(__dirname, 'test-emails'),
             globalTemplateVars: {
                 verifyEmailAddressUrl: 'http://localhost:4201/verify',
@@ -129,19 +131,19 @@ function getDbConfig(): DataSourceOptions {
         case 'postgres':
             console.log('Using postgres connection');
             return {
-                synchronize: false,
+                synchronize: true,
                 type: 'postgres',
                 host: process.env.DB_HOST || 'localhost',
                 port: Number(process.env.DB_PORT) || 5432,
-                username: process.env.DB_USERNAME || 'postgres',
-                password: process.env.DB_PASSWORD || 'postgres',
-                database: process.env.DB_NAME || 'vendure',
+                username: process.env.DB_USERNAME || 'vendure',
+                password: process.env.DB_PASSWORD || 'password',
+                database: process.env.DB_NAME || 'vendure-dev',
                 schema: process.env.DB_SCHEMA || 'public',
             };
         case 'sqlite':
             console.log('Using sqlite connection');
             return {
-                synchronize: false,
+                synchronize: true,
                 type: 'better-sqlite3',
                 database: path.join(__dirname, 'vendure.sqlite'),
             };
@@ -154,6 +156,7 @@ function getDbConfig(): DataSourceOptions {
                 location: path.join(__dirname, 'vendure.sqlite'),
             };
         case 'mysql':
+        case 'mariadb':
         default:
             console.log('Using mysql connection');
             return {
@@ -161,8 +164,8 @@ function getDbConfig(): DataSourceOptions {
                 type: 'mariadb',
                 host: '127.0.0.1',
                 port: 3306,
-                username: 'root',
-                password: '',
+                username: 'vendure',
+                password: 'password',
                 database: 'vendure-dev',
             };
     }

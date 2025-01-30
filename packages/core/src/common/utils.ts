@@ -35,8 +35,8 @@ export function assertFound<T>(promise: Promise<T | undefined | null>): Promise<
  * Compare ID values for equality, taking into account the fact that they may not be of matching types
  * (string or number).
  */
-export function idsAreEqual(id1?: ID, id2?: ID): boolean {
-    if (id1 === undefined || id2 === undefined) {
+export function idsAreEqual(id1?: ID | null, id2?: ID | null): boolean {
+    if (id1 == null || id2 == null) {
         return false;
     }
     return id1.toString() === id2.toString();
@@ -76,6 +76,11 @@ export function normalizeEmailAddress(input: string): string {
  * identifiers for other authentication methods.
  */
 export function isEmailAddressLike(input: string): boolean {
+    if (input.length > 1000) {
+        // This limit is in place to prevent abuse via a polynomial-time regex attack
+        // See https://github.com/vendure-ecommerce/vendure/security/code-scanning/43
+        throw new Error('Input too long');
+    }
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.trim());
 }
 

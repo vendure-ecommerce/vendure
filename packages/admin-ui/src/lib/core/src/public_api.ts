@@ -106,6 +106,7 @@ export * from './providers/custom-history-entry-component/history-entry-componen
 export * from './providers/custom-history-entry-component/history-entry-component.service';
 export * from './providers/dashboard-widget/dashboard-widget-types';
 export * from './providers/dashboard-widget/dashboard-widget.service';
+export * from './providers/data-table/data-table-config.service';
 export * from './providers/data-table/data-table-filter-collection';
 export * from './providers/data-table/data-table-filter';
 export * from './providers/data-table/data-table-sort-collection';
@@ -289,6 +290,7 @@ export * from './shared/dynamic-form-inputs/relation-form-input/relation-form-in
 export * from './shared/dynamic-form-inputs/relation-form-input/relation-selector-dialog/relation-selector-dialog.component';
 export * from './shared/dynamic-form-inputs/rich-text-form-input/rich-text-form-input.component';
 export * from './shared/dynamic-form-inputs/select-form-input/select-form-input.component';
+export * from './shared/dynamic-form-inputs/struct-form-input/struct-form-input.component';
 export * from './shared/dynamic-form-inputs/text-form-input/text-form-input.component';
 export * from './shared/dynamic-form-inputs/textarea-form-input/textarea-form-input.component';
 export * from './shared/pipes/asset-preview.pipe';

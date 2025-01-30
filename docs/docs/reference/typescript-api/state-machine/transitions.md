@@ -35,7 +35,7 @@ const trafficLightTransitions: Transitions<LightColor> = {
 ```
 
 The `mergeStrategy` property defines how to handle the merging of states when one set of
-transitions is being merged with another (as in the case of defining a {@link CustomerOrderProcess})
+transitions is being merged with another (as in the case of defining a <a href='/reference/typescript-api/orders/order-process#orderprocess'>OrderProcess</a>)
 
 ```ts title="Signature"
 type Transitions<State extends string, Target extends string = State> = {

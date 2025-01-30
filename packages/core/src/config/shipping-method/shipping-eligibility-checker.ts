@@ -3,14 +3,15 @@ import { Json } from '@vendure/common/lib/shared-types';
 import { createHash } from 'crypto';
 
 import { RequestContext } from '../../api/common/request-context';
+import { CacheService } from '../../cache/index';
 import {
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
     ConfigurableOperationDefOptions,
 } from '../../common/configurable-operation';
-import { TtlCache } from '../../common/ttl-cache';
-import { ShippingMethod, Order } from '../../entity';
+import { Injector } from '../../common/index';
+import { Order, ShippingMethod } from '../../entity';
 
 /**
  * @description
@@ -51,12 +52,17 @@ export class ShippingEligibilityChecker<
 > extends ConfigurableOperationDef<T> {
     private readonly checkFn: CheckShippingEligibilityCheckerFn<T>;
     private readonly shouldRunCheckFn?: ShouldRunCheckFn<T>;
-    private shouldRunCheckCache = new TtlCache({ cacheSize: 5000, ttl: 1000 * 60 * 60 * 5 });
+    private cacheService: CacheService;
 
     constructor(config: ShippingEligibilityCheckerConfig<T>) {
         super(config);
         this.checkFn = config.check;
         this.shouldRunCheckFn = config.shouldRunCheck;
+    }
+
+    async init(injector: Injector) {
+        await super.init(injector);
+        this.cacheService = injector.get(CacheService);
     }
 
     /**
@@ -86,7 +92,8 @@ export class ShippingEligibilityChecker<
         method: ShippingMethod,
     ): Promise<boolean> {
         if (typeof this.shouldRunCheckFn === 'function') {
-            const cacheKey = ctx.session?.id;
+            const cacheKey =
+                ctx.session?.id && `ShippingEligibilityChecker:shouldRunCheck:${this.code}:${ctx.session.id}`;
             if (cacheKey) {
                 const checkResult = await this.shouldRunCheckFn(
                     ctx,
@@ -97,14 +104,22 @@ export class ShippingEligibilityChecker<
                 const checkResultHash = createHash('sha1')
                     .update(JSON.stringify(checkResult))
                     .digest('base64');
-                const lastResultHash = this.shouldRunCheckCache.get(cacheKey);
-                this.shouldRunCheckCache.set(cacheKey, checkResultHash);
+                const lastResultHash = await this.cacheService.get(cacheKey);
+                await this.cacheService.set(cacheKey, checkResultHash, { ttl: 1000 * 60 * 60 * 5 });
                 if (checkResultHash === lastResultHash) {
                     return false;
                 }
             }
         }
         return true;
+    }
+
+    /**
+     * This is a precaution against attempting to JSON.stringify() a reference to
+     * this class, which can lead to a circular reference error.
+     */
+    protected toJSON() {
+        return {};
     }
 }
 

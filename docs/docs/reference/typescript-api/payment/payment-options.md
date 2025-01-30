@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PaymentOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="825" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="837" packageName="@vendure/core" />
 
 Defines payment-related options in the <a href='/reference/typescript-api/configuration/vendure-config#vendureconfig'>VendureConfig</a>.
 
@@ -21,6 +21,7 @@ interface PaymentOptions {
     paymentMethodEligibilityCheckers?: PaymentMethodEligibilityChecker[];
     customPaymentProcess?: Array<PaymentProcess<any>>;
     process?: Array<PaymentProcess<any>>;
+    refundProcess?: Array<RefundProcess<any>>;
 }
 ```
 
@@ -45,10 +46,16 @@ Defines which <a href='/reference/typescript-api/payment/payment-method-eligibil
 
 ### process
 
-<MemberInfo kind="property" type={`Array&#60;<a href='/reference/typescript-api/payment/payment-process#paymentprocess'>PaymentProcess</a>&#60;any&#62;&#62;`} default="<a href='/reference/typescript-api/payment/default-payment-process#defaultpaymentprocess'>defaultPaymentProcess</a>"  since="2.0.0"  />
+<MemberInfo kind="property" type={`Array&#60;<a href='/reference/typescript-api/payment/payment-process#paymentprocess'>PaymentProcess</a>&#60;any&#62;&#62;`} default={`<a href='/reference/typescript-api/payment/default-payment-process#defaultpaymentprocess'>defaultPaymentProcess</a>`}  since="2.0.0"  />
 
 Allows the definition of custom states and transition logic for the payment process state machine.
 Takes an array of objects implementing the <a href='/reference/typescript-api/payment/payment-process#paymentprocess'>PaymentProcess</a> interface.
+### refundProcess
+
+<MemberInfo kind="property" type={`Array&#60;<a href='/reference/typescript-api/payment/refund-process#refundprocess'>RefundProcess</a>&#60;any&#62;&#62;`} default={`<a href='/reference/typescript-api/payment/default-refund-process#defaultrefundprocess'>defaultRefundProcess</a>`}   />
+
+Allows the definition of custom states and transition logic for the refund process state machine.
+Takes an array of objects implementing the <a href='/reference/typescript-api/payment/refund-process#refundprocess'>RefundProcess</a> interface.
 
 
 </div>

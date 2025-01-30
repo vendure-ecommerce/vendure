@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, ContentChildren, Input, QueryList } from '@angular/core';
-import { DataTable2ColumnComponent, DataTable2Component, OrderDetailFragment } from '@vendure/admin-ui/core';
+import { DataTable2Component, OrderDetailFragment } from '@vendure/admin-ui/core';
 import { OrderTotalColumnComponent } from './order-total-column.component';
 
 @Component({
@@ -17,20 +17,6 @@ export class OrderDataTableComponent extends DataTable2Component<OrderDetailFrag
 
     get allColumns() {
         return [...(this.columns ?? []), ...(this.customFieldColumns ?? []), ...(this.totalColumns ?? [])];
-    }
-
-    get sortedColumns() {
-        const columns = this.allColumns;
-        const dataTableConfig = this.getDataTableConfig();
-        for (const [id, index] of Object.entries(dataTableConfig[this.id].order)) {
-            const column = columns.find(c => c.id === id);
-            const currentIndex = columns.findIndex(c => c.id === id);
-            if (currentIndex !== -1 && column) {
-                columns.splice(currentIndex, 1);
-                columns.splice(index, 0, column);
-            }
-        }
-        return columns;
     }
 
     getPromotionLink(promotion: OrderDetailFragment['discounts'][number]): any[] {

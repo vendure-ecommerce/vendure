@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ProductPriceApplicator
 
-<GenerationInfo sourceFile="packages/core/src/service/helpers/product-price-applicator/product-price-applicator.ts" sourceLine="40" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/helpers/product-price-applicator/product-price-applicator.ts" sourceLine="41" packageName="@vendure/core" />
 
 This helper is used to apply the correct price to a ProductVariant based on the current context
 including active Channel, any current Order, etc. If you use the <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a> to
@@ -49,7 +49,7 @@ class ProductPriceApplicator {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(configService: ConfigService, taxRateService: <a href='/reference/typescript-api/services/tax-rate-service#taxrateservice'>TaxRateService</a>, zoneService: <a href='/reference/typescript-api/services/zone-service#zoneservice'>ZoneService</a>, requestCache: RequestContextCacheService) => ProductPriceApplicator`}   />
+<MemberInfo kind="method" type={`(configService: ConfigService, taxRateService: <a href='/reference/typescript-api/services/tax-rate-service#taxrateservice'>TaxRateService</a>, zoneService: <a href='/reference/typescript-api/services/zone-service#zoneservice'>ZoneService</a>, requestCache: <a href='/reference/typescript-api/cache/request-context-cache-service#requestcontextcacheservice'>RequestContextCacheService</a>) => ProductPriceApplicator`}   />
 
 
 ### applyChannelPriceAndTax

@@ -268,7 +268,7 @@ import { BraintreePluginOptions } from './types';
         `,
         resolvers: [BraintreeResolver],
     },
-    compatibility: '^2.0.0',
+    compatibility: '^3.0.0',
 })
 export class BraintreePlugin {
     static options: BraintreePluginOptions = {};

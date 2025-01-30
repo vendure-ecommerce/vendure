@@ -183,7 +183,27 @@ const customConfig = mergeConfig(testConfig(), {
                 readonly: true,
             },
         ],
+        Collection: [
+            { name: 'secretKey1', type: 'string', defaultValue: '', public: false, internal: true },
+            { name: 'secretKey2', type: 'string', defaultValue: '', public: false, internal: false },
+        ],
         OrderLine: [{ name: 'validateInt', type: 'int', min: 0, max: 10 }],
+        ProductVariantPrice: [
+            {
+                name: 'costPrice',
+                type: 'int',
+            }
+        ],  
+        // Single readonly Address custom field to test
+        // https://github.com/vendure-ecommerce/vendure/issues/3326
+        Address: [
+            {
+                name: 'hereId',
+                type: 'string',
+                readonly: true,
+                nullable: true,
+            },
+        ],
     } as CustomFields,
 });
 
@@ -942,6 +962,20 @@ describe('Custom fields', () => {
                 `);
             }, 'Cannot query field "internalString" on type "ProductCustomFields"'),
         );
+
+        // https://github.com/vendure-ecommerce/vendure/issues/3049
+        it('does not leak private fields via JSON type', async () => {
+            const { collection } = await shopClient.query(gql`
+                query {
+                    collection(id: "T_1") {
+                        id
+                        customFields
+                    }
+                }
+            `);
+
+            expect(collection.customFields).toBe(null);
+        });
     });
 
     describe('sort & filter', () => {
@@ -1087,18 +1121,16 @@ describe('Custom fields', () => {
 
     describe('unique constraint', () => {
         it('setting unique value works', async () => {
-            const result = await adminClient.query(
-                gql`
-                    mutation {
-                        updateProduct(input: { id: "T_1", customFields: { uniqueString: "foo" } }) {
-                            id
-                            customFields {
-                                uniqueString
-                            }
+            const result = await adminClient.query(gql`
+                mutation {
+                    updateProduct(input: { id: "T_1", customFields: { uniqueString: "foo" } }) {
+                        id
+                        customFields {
+                            uniqueString
                         }
                     }
-                `,
-            );
+                }
+            `);
 
             expect(result.updateProduct.customFields.uniqueString).toBe('foo');
         });
@@ -1138,5 +1170,50 @@ describe('Custom fields', () => {
                 expect(e.message).toContain(duplicateKeyErrMessage);
             }
         });
+    });
+
+    it('on ProductVariantPrice', async () => {
+        const { updateProductVariants } = await adminClient.query(
+            gql`
+                mutation UpdateProductVariants($input: [UpdateProductVariantInput!]!) {
+                    updateProductVariants(input: $input) {
+                        id
+                        prices {
+                            currencyCode
+                            price
+                            customFields {
+                                costPrice
+                            }
+                        }
+                    }
+                }
+            `,
+            {
+                input: [
+                    {
+                        id: 'T_1',
+                        prices: [
+                            {
+                                price: 129900,
+                                currencyCode: 'USD',
+                                customFields: {
+                                    costPrice: 100,
+                                },
+                            },
+                        ],
+                    },
+                ],
+            },
+        );
+
+        expect(updateProductVariants[0].prices).toEqual([
+            {
+                currencyCode: 'USD',
+                price: 129900,
+                customFields: {
+                    costPrice: 100,
+                },
+            },
+        ]);
     });
 });

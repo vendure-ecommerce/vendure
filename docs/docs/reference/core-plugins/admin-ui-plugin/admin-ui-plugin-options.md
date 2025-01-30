@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AdminUiPluginOptions
 
-<GenerationInfo sourceFile="packages/admin-ui-plugin/src/plugin.ts" sourceLine="43" packageName="@vendure/admin-ui-plugin" />
+<GenerationInfo sourceFile="packages/admin-ui-plugin/src/plugin.ts" sourceLine="44" packageName="@vendure/admin-ui-plugin" />
 
 Configuration options for the <a href='/reference/core-plugins/admin-ui-plugin/#adminuiplugin'>AdminUiPlugin</a>.
 
@@ -33,7 +33,7 @@ interface AdminUiPluginOptions {
 
 The route to the Admin UI.
 
-Note: If you are using the {@link compileUiExtensions} function to compile a custom version of the Admin UI, then
+Note: If you are using the `compileUiExtensions` function to compile a custom version of the Admin UI, then
 the route should match the `baseHref` option passed to that function. The default value of `baseHref` is `/admin/`,
 so it only needs to be changed if you set this `route` option to something other than `"admin"`.
 ### port
@@ -44,7 +44,7 @@ The port on which the server will listen. This port will be proxied by the Admin
 the Vendure server is running on.
 ### hostname
 
-<MemberInfo kind="property" type={`string`} default="'localhost'"   />
+<MemberInfo kind="property" type={`string`} default={`'localhost'`}   />
 
 The hostname of the server serving the static admin ui files.
 ### app

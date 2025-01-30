@@ -8,6 +8,7 @@ import {
     Observable,
     of,
     Subject,
+    Subscription,
     switchMap,
 } from 'rxjs';
 import { filter, map, startWith, take } from 'rxjs/operators';
@@ -132,14 +133,15 @@ export class Alert<T> {
     activeAlert$: Observable<ActiveAlert | undefined>;
     private hasRun$ = new BehaviorSubject(false);
     private data$ = new BehaviorSubject<T | undefined>(undefined);
+    private readonly subscription: Subscription;
     constructor(
         private config: AlertConfig<T>,
         private context: AlertContext,
     ) {
         if (this.config.recheck) {
-            this.config.recheck(this.context).subscribe(() => this.runCheck());
+            this.subscription = this.config.recheck(this.context).subscribe(() => this.runCheck());
         }
-        this.activeAlert$ = combineLatest(this.data$, this.hasRun$).pipe(
+        this.activeAlert$ = combineLatest([this.data$, this.hasRun$]).pipe(
             map(([data, hasRun]) => {
                 if (!data) {
                     return;
@@ -175,6 +177,12 @@ export class Alert<T> {
             this.data$.next(result);
         }
         this.hasRun$.next(false);
+    }
+
+    destroy() {
+        if (this.subscription) {
+            this.subscription.unsubscribe();
+        }
     }
 }
 
@@ -235,6 +243,12 @@ export class AlertsService {
         } else {
             this.alertsMap.forEach(config => config.runCheck());
         }
+    }
+
+    clearAlerts() {
+        this.alertsMap.forEach(alert => alert.destroy());
+        this.alertsMap.clear();
+        this.configUpdated.next();
     }
 
     protected createContext(): AlertContext {

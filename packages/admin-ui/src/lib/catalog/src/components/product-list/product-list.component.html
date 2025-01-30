@@ -8,7 +8,7 @@
             ></vdr-language-selector>
         </vdr-ab-left>
         <vdr-ab-right>
-            <vdr-action-bar-items locationId="product-list"></vdr-action-bar-items>
+            <vdr-action-bar-items [locationId]="pageLocationId"></vdr-action-bar-items>
             <a
                 class="button primary mr-1"
                 [routerLink]="['./create']"
@@ -17,7 +17,7 @@
                 <clr-icon shape="plus"></clr-icon>
                 {{ 'catalog.create-new-product' | translate }}
             </a>
-            <vdr-action-bar-dropdown-menu [alwaysShow]="true" locationId="product-list">
+            <vdr-action-bar-dropdown-menu [alwaysShow]="true" [locationId]="pageLocationId">
                 <button type="button" vdrDropdownItem (click)="rebuildSearchIndex()">
                     <clr-icon shape="refresh" class=""></clr-icon>
                     {{ 'catalog.rebuild-search-index' | translate }}
@@ -28,7 +28,7 @@
 </vdr-page-block>
 <vdr-data-table-2
     class="mt-2"
-    id="product-list"
+    [id]="dataTableListId"
     [items]="items$ | async"
     [itemsPerPage]="itemsPerPage$ | async"
     [totalItems]="totalItems$ | async"
@@ -36,9 +36,10 @@
     [filters]="filters"
     (pageChange)="setPageNumber($event)"
     (itemsPerPageChange)="setItemsPerPage($event)"
+    (visibleColumnsChange)="setVisibleColumns($event)"
 >
     <vdr-bulk-action-menu
-        locationId="product-list"
+        [locationId]="dataTableListId"
         [hostComponent]="this"
         [selectionManager]="selectionManager"
     ></vdr-bulk-action-menu>

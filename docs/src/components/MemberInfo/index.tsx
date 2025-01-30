@@ -33,7 +33,10 @@ export default function MemberInfo(props: {
             {props.default && (
                 <div className={styles.default}>
                     <div className="label">default:</div>
-                    <code>{props.default}</code>
+                    <code
+                        dangerouslySetInnerHTML={{ __html: props.default }}
+                        className="margin-horiz--sm padding-horiz--sm"
+                    ></code>
                 </div>
             )}
         </div>

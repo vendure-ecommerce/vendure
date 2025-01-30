@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## EmailPlugin
 
-<GenerationInfo sourceFile="packages/email-plugin/src/plugin.ts" sourceLine="272" packageName="@vendure/email-plugin" />
+<GenerationInfo sourceFile="packages/email-plugin/src/plugin.ts" sourceLine="304" packageName="@vendure/email-plugin" />
 
 The EmailPlugin creates and sends transactional emails based on Vendure events. By default, it uses an [MJML](https://mjml.io/)-based
 email generator to generate the email body and [Nodemailer](https://nodemailer.com/about/) to send the emails.
@@ -39,14 +39,14 @@ or
 *Example*
 
 ```ts
-import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
+import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
 
 const config: VendureConfig = {
   // Add an instance of the plugin to the plugins array
   plugins: [
     EmailPlugin.init({
       handler: defaultEmailHandlers,
-      templatePath: path.join(__dirname, 'static/email/templates'),
+      templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/email/templates')),
       transport: {
         type: 'smtp',
         host: 'smtp.example.com',
@@ -103,6 +103,39 @@ Dynamic data such as the recipient's name or order items are specified using [Ha
 </mj-table>
 ```
 
+### Setting global variables using `globalTemplateVars`
+
+`globalTemplateVars` is an object that can be passed to the configuration of the Email Plugin with static object variables.
+You can also pass an async function that will be called with the `RequestContext` and the `Injector` so you can access services
+and e.g. load channel specific theme configurations.
+
+*Example*
+
+```ts
+EmailPlugin.init({
+   globalTemplateVars: {
+     primaryColor: '#FF0000',
+     fromAddress: 'no-reply@ourstore.com'
+   }
+})
+```
+or
+```ts
+EmailPlugin.init({
+   globalTemplateVars: async (ctx, injector) => {
+     const myAsyncService = injector.get(MyAsyncService);
+     const asyncValue = await myAsyncService.get(ctx);
+     const channel = ctx.channel;
+     const { primaryColor } = channel.customFields.theme;
+     const theme = {
+        primaryColor,
+        asyncValue,
+     };
+     return theme;
+   }
+})
+```
+
 ### Handlebars helpers
 
 The following helper functions are available for use in email templates:
@@ -117,7 +150,7 @@ etc. These defaults can be extended by adding custom templates for languages oth
 which respond to any of the available [VendureEvents](/reference/typescript-api/events/).
 
 A good way to learn how to create your own email handler is to take a look at the
-[source code of the default handler](https://github.com/vendure-ecommerce/vendure/blob/master/packages/email-plugin/src/default-email-handlers.ts).
+[source code of the default handler](https://github.com/vendure-ecommerce/vendure/blob/master/packages/email-plugin/src/handler/default-email-handlers.ts).
 New handler are defined in exactly the same way.
 
 It is also possible to modify the default handler:
@@ -174,13 +207,13 @@ channel aware transport settings.
 *Example*
 
 ```ts
-import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
+import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
 import { MyTransportService } from './transport.services.ts';
 const config: VendureConfig = {
   plugins: [
     EmailPlugin.init({
       handler: defaultEmailHandlers,
-      templatePath: path.join(__dirname, 'static/email/templates'),
+      templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/email/templates')),
       transport: (injector, ctx) => {
         if (ctx) {
           return injector.get(MyTransportService).getSettings(ctx);
@@ -208,7 +241,7 @@ EmailPlugin.init({
   devMode: true,
   route: 'mailbox',
   handler: defaultEmailHandlers,
-  templatePath: path.join(__dirname, 'vendure/email/templates'),
+  templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/email/templates')),
   outputPath: path.join(__dirname, 'test-emails'),
 })
 ```

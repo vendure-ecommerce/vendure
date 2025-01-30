@@ -141,19 +141,19 @@ interface DefaultJobQueueOptions {
 
 ### pollInterval
 
-<MemberInfo kind="property" type={`number | ((queueName: string) =&#62; number)`} default="200"   />
+<MemberInfo kind="property" type={`number | ((queueName: string) =&#62; number)`} default={`200`}   />
 
 The interval in ms between polling the database for new jobs. If many job queues
 are active, the polling may cause undue load on the database, in which case this value
 should be increased to e.g. 1000.
 ### concurrency
 
-<MemberInfo kind="property" type={`number`} default="1"   />
+<MemberInfo kind="property" type={`number`} default={`1`}   />
 
 How many jobs from a given queue to process concurrently.
 ### backoffStrategy
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/job-queue/types#backoffstrategy'>BackoffStrategy</a>`} default="() =&#62; 1000"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/job-queue/types#backoffstrategy'>BackoffStrategy</a>`} default={`() =&#62; 1000`}   />
 
 The strategy used to decide how long to wait before retrying a failed job.
 ### setRetries
@@ -189,7 +189,7 @@ When enabled, a new `JobRecordBuffer` database entity will be defined which will
 require a migration when first enabling this option.
 ### gracefulShutdownTimeout
 
-<MemberInfo kind="property" type={`number`} default="20_000"  since="2.2.0"  />
+<MemberInfo kind="property" type={`number`} default={`20_000`}  since="2.2.0"  />
 
 The timeout in ms which the queue will use when attempting a graceful shutdown.
 That means when the server is shut down but a job is running, the job queue will

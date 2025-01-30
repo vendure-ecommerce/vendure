@@ -4,10 +4,7 @@
  * work well for content-centric websites.
  */
 
-@font-face {
-  font-family: "Inter";
-  src: url('/static/inter.woff') format('woff');
-}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
 
 :root {
   --ifm-font-family-base: "Inter"
@@ -15,15 +12,17 @@
 
 /* You can override the default Infima variables here. */
 :root {
-    --ifm-color-primary: hsl(196 100% 35%);
-    --ifm-color-primary-dark: hsl(196 100% 25%);
-    --ifm-color-primary-darker: hsl(196 100% 15%);
-    --ifm-color-primary-darkest: hsl(196 100% 7%);
-    --ifm-color-primary-light: hsl(196 100% 65%);
-    --ifm-color-primary-lighter: hsl(196 100% 75%);
-    --ifm-color-primary-lightest: hsl(196 100% 90%);
+    /* Colors */
+    --ifm-color-primary: #17c1ff;
+    --ifm-color-primary-dark: #008ece;
+    --ifm-color-primary-darker: #0072a7;
+    --ifm-color-primary-darkest: #084f72;
+    --ifm-color-primary-light: #78daff;
+    --ifm-color-primary-lighter: #b8eaff;
+    --ifm-color-primary-lightest: #dff3ff;
     --ifm-navbar-background-color: #ffffff11;
     --navbar-background-color-mobile: #ffffffee;
+    --ifm-heading-color: #000212;
     --ifm-color-content: var(--ifm-color-emphasis-800);
     --ifm-code-font-size: 95%;
     --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
@@ -35,36 +34,39 @@
     --body-background: white;
     --ifm-footer-background-color: #edf2f5;
     --color-docsearch-border: #b7b7c3;
+
+    /* Fonts */
+    --ifm-heading-font-family: 'Plus Jakarta Sans', var(--ifm-font-family-base);
+    --ifm-heading-font-weight: 700;
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
-[data-theme='dark'] {
-    --ifm-color-primary: hsl(196 100% 45%);
-    --ifm-color-primary-dark: hsl(196 100% 35%);
-    --ifm-color-primary-darker: hsl(196 100% 25%);
-    --ifm-color-primary-darkest: hsl(196 100% 15%);
-    --ifm-color-primary-light: hsl(196 100% 65%);
-    --ifm-color-primary-lighter: hsl(196 100% 75%);
-    --ifm-color-primary-lightest: hsl(196 100% 90%);
-    --ifm-navbar-background-color: #00021211;
-    --navbar-background-color-mobile: #000212ee;
+html[data-theme='dark']{
+    --ifm-background-color: #000212;
+    --ifm-heading-color: #ffffff;
+    --ifm-navbar-background-color: transparent;
+    --navbar-background-color-mobile: transparent;
     --ifm-card-background-color: transparent;
+    --ifm-color-content: hsla(0,0%,100%,.7);
     --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
     --color-graphql-comment: #6ea372;
+
     --color-graphql-identifier: rgb(255, 121, 198);
     --color-members-border: #333;
     --docusaurus-highlighted-code-line-bg: rgba(15, 71, 117, 0.5);
     --body-background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(79, 208, 255, 0.3), transparent);
-    --ifm-footer-background-color: #1a1f27;
+    --ifm-footer-background-color: var(--ifm-background-color);
     --color-docsearch-border: #232347;
+    --ifm-footer-title-color: #ffffff;
 }
 
 html[data-theme='light'] {
     --ifm-background-color: #ffffff;
 }
 
-html[data-theme='dark'] {
-    --ifm-background-color: #000212;
+
+h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.05rem;
 }
 
 .markdown h2:not(:first-of-type) {

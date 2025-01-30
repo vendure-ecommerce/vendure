@@ -17,7 +17,7 @@ Useful links:
 ## Development
 
 ```
-{{#if useYarn}}yarn dev{{else}}npm run dev{{/if}}
+npm run dev
 ```
 
 will start the Vendure server and [worker](https://www.vendure.io/docs/developer-guide/vendure-worker/) processes from
@@ -26,7 +26,7 @@ the `src` directory.
 ## Build
 
 ```
-{{#if useYarn}}yarn build{{else}}npm run build{{/if}}
+npm run build
 ```
 
 will compile the TypeScript sources into the `/dist` directory.
@@ -41,7 +41,7 @@ hosting environment.
 You can run the built files directly with the `start` script:
 
 ```
-{{#if useYarn}}yarn start{{else}}npm run start{{/if}}
+npm run start
 ```
 
 You could also consider using a process manager like [pm2](https://pm2.keymetrics.io/) to run and manage
@@ -79,10 +79,24 @@ used in development.
 - `vendure` - we are referencing the tag we set up during the build.
 - `npm run start:server` - this last part is the actual command that should be run inside the container.
 
-### Docker compose
+### Docker Compose
 
-We've included a sample [docker-compose.yml](./docker-compose.yml) file which demonstrates how the server, worker, and
-database may be orchestrated with Docker Compose.
+We've included a [docker-compose.yml](./docker-compose.yml) file which includes configuration for commonly-used
+services such as PostgreSQL, MySQL, MariaDB, Elasticsearch and Redis.
+
+To use Docker Compose, you will need to have Docker installed on your machine. Here are installation
+instructions for [Mac](https://docs.docker.com/desktop/install/mac-install/), [Windows](https://docs.docker.com/desktop/install/windows-install/),
+and [Linux](https://docs.docker.com/desktop/install/linux/).
+
+You can start the services with:
+
+```shell
+docker-compose up <service>
+
+# examples:
+docker-compose up postgres_db
+docker-compose up redis
+```
 
 ## Plugins
 
@@ -92,7 +106,7 @@ These should be located in the `./src/plugins` directory.
 To create a new plugin run:
 
 ```
-{{#if useYarn}}yarn{{else}}npx{{/if}} vendure add
+npx vendure add
 ```
 
 and select `[Plugin] Create a new Vendure plugin`.
@@ -105,7 +119,7 @@ will be required whenever you make changes to the `customFields` config or defin
 To generate a new migration, run:
 
 ```
-{{#if useYarn}}yarn{{else}}npx{{/if}} vendure migrate
+npx vendure migrate
 ```
 
 The generated migration file will be found in the `./src/migrations/` directory, and should be committed to source control.
@@ -120,3 +134,14 @@ data that you cannot lose.
 ---
 
 You can also run any pending migrations manually, without starting the server via the "vendure migrate" command.
+
+---
+
+## Troubleshooting
+
+### Error: Could not load the "sharp" module using the \[OS\]-x\[Architecture\] runtime when running Vendure server.
+
+- Make sure your Node version is ^18.17.0 || ^20.3.0 || >=21.0.0 to support the Sharp library.
+- Make sure your package manager is up to date.
+- **Not recommended**: if none of the above helps to resolve the issue, install sharp specifying your machines OS and Architecture. For example: `pnpm install sharp --config.platform=linux --config.architecture=x64` or `npm install sharp --os linux --cpu x64`
+

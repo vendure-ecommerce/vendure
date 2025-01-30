@@ -11,9 +11,9 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## useLazyQuery
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-hooks/use-query.ts" sourceLine="113" packageName="@vendure/admin-ui" since="2.2.0" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/react/src/react-hooks/use-query.ts" sourceLine="119" packageName="@vendure/admin-ui" since="2.2.0" />
 
-A React hook which allows you to execute a GraphQL query.
+A React hook which allows you to execute a GraphQL query lazily.
 
 *Example*
 
@@ -37,7 +37,7 @@ type ProductResponse = {
 }
 
 export const MyComponent = () => {
-    const [getProduct, { data, loading, error }] = useLazyQuery<ProductResponse>(GET_PRODUCT);
+    const [getProduct, { data, loading, error }] = useLazyQuery<ProductResponse>(GET_PRODUCT, { refetchOnChannelChange: true });
 
    const handleClick = () => {
         getProduct({
@@ -64,11 +64,15 @@ export const MyComponent = () => {
 ```
 
 ```ts title="Signature"
-function useLazyQuery<T, V extends Record<string, any> = Record<string, any>>(query: DocumentNode | TypedDocumentNode<T, V>): void
+function useLazyQuery<T, V extends Record<string, any> = Record<string, any>>(query: DocumentNode | TypedDocumentNode<T, V>, options: { refetchOnChannelChange: boolean } = { refetchOnChannelChange: false }): void
 ```
 Parameters
 
 ### query
 
 <MemberInfo kind="parameter" type={`DocumentNode | TypedDocumentNode&#60;T, V&#62;`} />
+
+### options
+
+<MemberInfo kind="parameter" type={`{ refetchOnChannelChange: boolean }`} />
 

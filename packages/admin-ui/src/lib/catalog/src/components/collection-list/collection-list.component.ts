@@ -28,6 +28,7 @@ export class CollectionListComponent
     activeCollectionTitle$: Observable<string>;
     subCollections$: Observable<Array<ItemOf<GetCollectionListQuery, 'collections'>>>;
     expandedIds: string[] = [];
+    dataTableListId = 'collection-list';
     readonly customFields = this.getCustomFieldConfig('Collection');
     readonly filters = this.createFilterCollection()
         .addIdFilter()
@@ -58,7 +59,10 @@ export class CollectionListComponent
         .addCustomFieldSorts(this.customFields)
         .connectToRoute(this.route);
 
-    constructor(protected dataService: DataService, private notificationService: NotificationService) {
+    constructor(
+        protected dataService: DataService,
+        private notificationService: NotificationService,
+    ) {
         super();
         super.configure({
             document: GetCollectionListDocument,

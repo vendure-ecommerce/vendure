@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { Type } from '@vendure/common/lib/shared-types';
-import { isObject } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
 import { SelectQueryBuilder } from 'typeorm';
 
@@ -14,6 +13,7 @@ import { TranslatorService } from '../translator/translator.service';
 import { joinTreeRelationsDynamically } from '../utils/tree-relations-qb-joiner';
 
 import { HydrateOptions } from './entity-hydrator-types';
+import { mergeDeep } from './merge-deep';
 
 /**
  * @description
@@ -134,7 +134,7 @@ export class EntityHydrator {
                 const hydrated = await hydratedQb.getOne();
                 const propertiesToAdd = unique(missingRelations.map(relation => relation.split('.')[0]));
                 for (const prop of propertiesToAdd) {
-                    (target as any)[prop] = this.mergeDeep((target as any)[prop], hydrated[prop]);
+                    (target as any)[prop] = mergeDeep((target as any)[prop], hydrated[prop]);
                 }
 
                 const relationsWithEntities = missingRelations.map(relation => ({
@@ -200,11 +200,16 @@ export class EntityHydrator {
         const missingRelations: string[] = [];
         for (const relation of options.relations.slice().sort()) {
             if (typeof relation === 'string') {
-                const parts = !relation.startsWith('customFields') ? relation.split('.') : [relation];
+                const parts = relation.split('.');
                 let entity: Record<string, any> | undefined = target;
                 const path = [];
                 for (const part of parts) {
                     path.push(part);
+                    // null = the relation has been fetched but was null in the database.
+                    // undefined = the relation has not been fetched.
+                    if (entity && entity[part] === null) {
+                        break;
+                    }
                     if (entity && entity[part]) {
                         entity = Array.isArray(entity[part]) ? entity[part][0] : entity[part];
                     } else {
@@ -305,52 +310,5 @@ export class EntityHydrator {
         return Array.isArray(input)
             ? input[0]?.hasOwnProperty('translations') ?? false
             : input?.hasOwnProperty('translations') ?? false;
-    }
-
-    /**
-     * Merges properties into a target entity. This is needed for the cases in which a
-     * property already exists on the target, but the hydrated version also contains that
-     * property with a different set of properties. This prevents the original target
-     * entity from having data overwritten.
-     */
-    private mergeDeep<T extends { [key: string]: any }>(a: T | undefined, b: T): T {
-        if (!a) {
-            return b;
-        }
-        if (Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.length > 1) {
-            if (a[0].hasOwnProperty('id')) {
-                // If the array contains entities, we can use the id to match them up
-                // so that we ensure that we don't merge properties from different entities
-                // with the same index.
-                const aIds = a.map(e => e.id);
-                const bIds = b.map(e => e.id);
-                if (JSON.stringify(aIds) !== JSON.stringify(bIds)) {
-                    // The entities in the arrays are not in the same order, so we can't
-                    // safely merge them. We need to sort the `b` array so that the entities
-                    // are in the same order as the `a` array.
-                    const idToIndexMap = new Map();
-                    a.forEach((item, index) => {
-                        idToIndexMap.set(item.id, index);
-                    });
-                    b.sort((_a, _b) => {
-                        return idToIndexMap.get(_a.id) - idToIndexMap.get(_b.id);
-                    });
-                }
-            }
-        }
-        for (const [key, value] of Object.entries(b)) {
-            if (Object.getOwnPropertyDescriptor(b, key)?.writable) {
-                if (Array.isArray(value)) {
-                    (a as any)[key] = value.map((v, index) =>
-                        this.mergeDeep(a?.[key]?.[index], b[key][index]),
-                    );
-                } else if (isObject(value)) {
-                    (a as any)[key] = this.mergeDeep(a?.[key], b[key]);
-                } else {
-                    (a as any)[key] = b[key];
-                }
-            }
-        }
-        return a ?? b;
     }
 }

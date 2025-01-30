@@ -18,6 +18,7 @@ export type RichTextEditorType = InputHTMLAttributes<HTMLInputElement> & {
      * Copied from real property description.
      */
     attributes?: Record<string, string>;
+    label?: string;
     readOnly?: boolean;
     onMount?: (editor: ProsemirrorService) => void;
 };
@@ -58,7 +59,7 @@ export type RichTextEditorType = InputHTMLAttributes<HTMLInputElement> & {
  */
 export const RichTextEditor = forwardRef((props: RichTextEditorType, ref: ForwardedRef<HTMLInputElement>) => {
     const [data, setData] = useState<string>('');
-    const { readOnly, ...rest } = props;
+    const { readOnly, label, ...rest } = props;
     const { ref: _ref, editor } = useRichTextEditor({
         attributes: props.attributes,
         isReadOnly: () => readOnly || false,
@@ -79,12 +80,20 @@ export const RichTextEditor = forwardRef((props: RichTextEditorType, ref: Forwar
             }
         },
     });
+
     useEffect(() => {
-        if (props.onMount && editor) props.onMount(editor);
+        if (props.onMount && editor) {
+            props.onMount(editor);
+        }
+        if (typeof props.defaultValue === 'string') {
+            editor.update(props.defaultValue);
+        }
     }, []);
     return (
         <>
-            <div ref={_ref} {...rest} />
+            <div ref={_ref} {...rest}>
+                {label && <label className="rich-text-label">{label}</label>}
+            </div>
             <input type="hidden" value={data} ref={ref} />
         </>
     );

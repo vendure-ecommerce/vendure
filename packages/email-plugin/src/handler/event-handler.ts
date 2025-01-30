@@ -13,7 +13,9 @@ import {
     IntermediateEmailDetails,
     LoadDataFn,
     SetAttachmentsFn,
+    SetMetadataFn,
     SetOptionalAddressFieldsFn,
+    SetSubjectFn,
     SetTemplateVarsFn,
 } from '../types';
 
@@ -30,6 +32,7 @@ import {
  *   .on(OrderStateTransitionEvent)
  *   .filter(event => event.toState === 'PaymentSettled')
  *   .setRecipient(event => event.order.customer.emailAddress)
+ *   .setFrom('{{ fromAddress }}')
  *   .setSubject(`Order confirmation for #{{ order.code }}`)
  *   .setTemplateVars(event => ({ order: event.order }));
  * ```
@@ -78,13 +81,16 @@ import {
  *   .on(QuoteRequestedEvent)
  *   .setRecipient(event => event.customer.emailAddress)
  *   .setSubject(`Here's the quote you requested`)
+ *   .setFrom('{{ fromAddress }}')
  *   .setTemplateVars(event => ({ details: event.details }));
  * ```
  *
  * ### 2. Create the email template
  *
- * Next you need to make sure there is a template defined at `<app root>/static/email/templates/quote-requested/body.hbs`. The template
- * would look something like this:
+ * Next you need to make sure there is a template defined at `<app root>/static/email/templates/quote-requested/body.hbs`. The path
+ * segment `quote-requested` must match the string passed to the `EmailEventListener` constructor.
+ *
+ * The template would look something like this:
  *
  * ```handlebars
  * {{> header title="Here's the quote you requested" }}
@@ -119,7 +125,6 @@ import {
  *   plugins: [
  *     EmailPlugin.init({
  *       handler: [...defaultEmailHandlers, quoteRequestedHandler],
- *       templatePath: path.join(__dirname, 'vendure/email/templates'),
  *       // ... etc
  *     }),
  *   ],
@@ -131,9 +136,11 @@ import {
 export class EmailEventHandler<T extends string = string, Event extends EventWithContext = EventWithContext> {
     private setRecipientFn: (event: Event) => string;
     private setLanguageCodeFn: (event: Event) => LanguageCode | undefined;
+    private setSubjectFn?: SetSubjectFn<Event>;
     private setTemplateVarsFn: SetTemplateVarsFn<Event>;
     private setAttachmentsFn?: SetAttachmentsFn<Event>;
     private setOptionalAddressFieldsFn?: SetOptionalAddressFieldsFn<Event>;
+    private setMetadataFn?: SetMetadataFn<Event>;
     private filterFns: Array<(event: Event) => boolean> = [];
     private configurations: EmailTemplateConfig[] = [];
     private defaultSubject: string;
@@ -144,7 +151,10 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
     };
     private _mockEvent: Omit<Event, 'ctx' | 'data'> | undefined;
 
-    constructor(public listener: EmailEventListener<T>, public event: Type<Event>) {}
+    constructor(
+        public listener: EmailEventListener<T>,
+        public event: Type<Event>,
+    ) {}
 
     /** @internal */
     get type(): T {
@@ -207,8 +217,12 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      * Sets the default subject of the email. The subject string may use Handlebars variables defined by the
      * setTemplateVars() method.
      */
-    setSubject(defaultSubject: string): EmailEventHandler<T, Event> {
-        this.defaultSubject = defaultSubject;
+    setSubject(defaultSubject: string | SetSubjectFn<Event>): EmailEventHandler<T, Event> {
+        if (typeof defaultSubject === 'string') {
+            this.defaultSubject = defaultSubject;
+        } else {
+            this.setSubjectFn = defaultSubject;
+        }
         return this;
     }
 
@@ -230,6 +244,37 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      */
     setOptionalAddressFields(optionalAddressFieldsFn: SetOptionalAddressFieldsFn<Event>) {
         this.setOptionalAddressFieldsFn = optionalAddressFieldsFn;
+        return this;
+    }
+
+    /**
+     * @description
+     * A function which allows {@link EmailMetadata} to be specified for the email. This can be used
+     * to store arbitrary data about the email which can be used for tracking or other purposes.
+     *
+     * It will be exposed in the {@link EmailSendEvent} as `event.metadata`. Here's an example of usage:
+     *
+     * - An {@link OrderStateTransitionEvent} occurs, and the EmailEventListener starts processing it.
+     * - The EmailEventHandler attaches metadata to the email:
+     *    ```ts
+     *    new EmailEventListener(EventType.ORDER_CONFIRMATION)
+     *      .on(OrderStateTransitionEvent)
+     *      .setMetadata(event => ({
+     *        type: EventType.ORDER_CONFIRMATION,
+     *        orderId: event.order.id,
+     *      }));
+     *   ```
+     * - Then, the EmailPlugin tries to send the email and publishes {@link EmailSendEvent},
+     *   passing ctx, emailDetails, error or success, and this metadata.
+     * - In another part of the server, we have an eventBus that subscribes to EmailSendEvent. We can use
+     *   `metadata.type` and `metadata.orderId` to identify the related order. For example, we can indicate on the
+     *    order that the email was successfully sent, or in case of an error, send a notification confirming
+     *    the order in another available way.
+     *
+     * @since 3.1.0
+     */
+    setMetadata(optionalSetMetadataFn: SetMetadataFn<Event>) {
+        this.setMetadataFn = optionalSetMetadataFn;
         return this;
     }
 
@@ -297,7 +342,8 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      *   .setTemplateVars(event => ({
      *     order: event.order,
      *     payments: event.data,
-     *   }));
+     *   }))
+     *   // ...
      * ```
      */
     loadData<R>(
@@ -308,6 +354,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         asyncHandler.setTemplateVarsFn = this.setTemplateVarsFn;
         asyncHandler.setAttachmentsFn = this.setAttachmentsFn;
         asyncHandler.setOptionalAddressFieldsFn = this.setOptionalAddressFieldsFn;
+        asyncHandler.setMetadataFn = this.setMetadataFn;
         asyncHandler.filterFns = this.filterFns;
         asyncHandler.configurations = this.configurations;
         asyncHandler.defaultSubject = this.defaultSubject;
@@ -362,7 +409,11 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         const { ctx } = event;
         const languageCode = this.setLanguageCodeFn?.(event) || ctx.languageCode;
         const configuration = this.getBestConfiguration(ctx.channel.code, languageCode);
-        const subject = configuration ? configuration.subject : this.defaultSubject;
+        const subject = configuration
+            ? configuration.subject
+            : this.setSubjectFn
+              ? await this.setSubjectFn(event, ctx, injector)
+              : this.defaultSubject;
         if (subject == null) {
             throw new Error(
                 `No subject field has been defined. ` +
@@ -379,6 +430,8 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         }
         const attachments = await serializeAttachments(attachmentsArray);
         const optionalAddressFields = (await this.setOptionalAddressFieldsFn?.(event)) ?? {};
+        const metadata = this.setMetadataFn ? await this.setMetadataFn(event) : {};
+
         return {
             ctx: event.ctx.serialize(),
             type: this.type,
@@ -388,6 +441,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
             subject,
             templateFile: configuration ? configuration.templateFile : 'body.hbs',
             attachments,
+            metadata,
             ...optionalAddressFields,
         };
     }

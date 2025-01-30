@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrderOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="482" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="485" packageName="@vendure/core" />
 
 
 
@@ -31,6 +31,7 @@ interface OrderOptions {
     activeOrderStrategy?: ActiveOrderStrategy<any> | Array<ActiveOrderStrategy<any>>;
     orderSellerStrategy?: OrderSellerStrategy;
     guestCheckoutStrategy?: GuestCheckoutStrategy;
+    orderInterceptors?: OrderInterceptor[];
 }
 ```
 
@@ -38,7 +39,7 @@ interface OrderOptions {
 
 ### orderItemsLimit
 
-<MemberInfo kind="property" type={`number`} default="999"   />
+<MemberInfo kind="property" type={`number`} default={`999`}   />
 
 The maximum number of individual items allowed in a single order. This option exists
 to prevent excessive resource usage when dealing with very large orders. For example,
@@ -47,48 +48,48 @@ adding or removing an item) will require Vendure to loop through all million ite
 to perform price calculations against active promotions and taxes. This can have a significant
 performance impact for very large values.
 
-Attempting to exceed this limit will cause Vendure to throw a {@link OrderItemsLimitError}.
+Attempting to exceed this limit will cause Vendure to throw a `OrderLimitError`.
 ### orderLineItemsLimit
 
-<MemberInfo kind="property" type={`number`} default="999"   />
+<MemberInfo kind="property" type={`number`} default={`999`}   />
 
 The maximum number of items allowed per order line. This option is an addition
 on the `orderItemsLimit` for more granular control. Note `orderItemsLimit` is still
 important in order to prevent excessive resource usage.
 
-Attempting to exceed this limit will cause Vendure to throw a {@link OrderItemsLimitError}.
+Attempting to exceed this limit will cause Vendure to throw a OrderLimitError`.
 ### orderItemPriceCalculationStrategy
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy'>OrderItemPriceCalculationStrategy</a>`} default="DefaultPriceCalculationStrategy"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/order-item-price-calculation-strategy#orderitempricecalculationstrategy'>OrderItemPriceCalculationStrategy</a>`} default={`DefaultPriceCalculationStrategy`}   />
 
 Defines the logic used to calculate the unit price of an OrderLine when adding an
 item to an Order.
 ### process
 
-<MemberInfo kind="property" type={`Array&#60;<a href='/reference/typescript-api/orders/order-process#orderprocess'>OrderProcess</a>&#60;any&#62;&#62;`} default="[]"   />
+<MemberInfo kind="property" type={`Array&#60;<a href='/reference/typescript-api/orders/order-process#orderprocess'>OrderProcess</a>&#60;any&#62;&#62;`} default={`[]`}   />
 
 Allows the definition of custom states and transition logic for the order process state machine.
 Takes an array of objects implementing the <a href='/reference/typescript-api/orders/order-process#orderprocess'>OrderProcess</a> interface.
 ### stockAllocationStrategy
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/stock-allocation-strategy#stockallocationstrategy'>StockAllocationStrategy</a>`} default="<a href='/reference/typescript-api/orders/default-stock-allocation-strategy#defaultstockallocationstrategy'>DefaultStockAllocationStrategy</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/stock-allocation-strategy#stockallocationstrategy'>StockAllocationStrategy</a>`} default={`<a href='/reference/typescript-api/orders/default-stock-allocation-strategy#defaultstockallocationstrategy'>DefaultStockAllocationStrategy</a>`}   />
 
 Determines the point of the order process at which stock gets allocated.
 ### mergeStrategy
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/order-merge-strategy#ordermergestrategy'>OrderMergeStrategy</a>`} default="<a href='/reference/typescript-api/orders/merge-strategies#mergeordersstrategy'>MergeOrdersStrategy</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/order-merge-strategy#ordermergestrategy'>OrderMergeStrategy</a>`} default={`<a href='/reference/typescript-api/orders/merge-strategies#mergeordersstrategy'>MergeOrdersStrategy</a>`}   />
 
 Defines the strategy used to merge a guest Order and an existing Order when
 signing in.
 ### checkoutMergeStrategy
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/order-merge-strategy#ordermergestrategy'>OrderMergeStrategy</a>`} default="<a href='/reference/typescript-api/orders/merge-strategies#usegueststrategy'>UseGuestStrategy</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/order-merge-strategy#ordermergestrategy'>OrderMergeStrategy</a>`} default={`<a href='/reference/typescript-api/orders/merge-strategies#usegueststrategy'>UseGuestStrategy</a>`}   />
 
 Defines the strategy used to merge a guest Order and an existing Order when
 signing in as part of the checkout flow.
 ### orderCodeStrategy
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/order-code-strategy#ordercodestrategy'>OrderCodeStrategy</a>`} default="<a href='/reference/typescript-api/orders/order-code-strategy#defaultordercodestrategy'>DefaultOrderCodeStrategy</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/order-code-strategy#ordercodestrategy'>OrderCodeStrategy</a>`} default={`<a href='/reference/typescript-api/orders/order-code-strategy#defaultordercodestrategy'>DefaultOrderCodeStrategy</a>`}   />
 
 Allows a user-defined function to create Order codes. This can be useful when
 integrating with existing systems. By default, Vendure will generate a 16-character
@@ -99,7 +100,7 @@ for string types (e.g. 255 chars for a varchar field in MySQL), and also the nee
 for codes to be unique.
 ### orderByCodeAccessStrategy
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/order-by-code-access-strategy#orderbycodeaccessstrategy'>OrderByCodeAccessStrategy</a>`} default="<a href='/reference/typescript-api/orders/order-by-code-access-strategy#defaultorderbycodeaccessstrategy'>DefaultOrderByCodeAccessStrategy</a>"  since="1.1.0"  />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/order-by-code-access-strategy#orderbycodeaccessstrategy'>OrderByCodeAccessStrategy</a>`} default={`<a href='/reference/typescript-api/orders/order-by-code-access-strategy#defaultorderbycodeaccessstrategy'>DefaultOrderByCodeAccessStrategy</a>`}  since="1.1.0"  />
 
 Defines the strategy used to check if and how an Order may be retrieved via the orderByCode query.
 
@@ -107,7 +108,7 @@ The default strategy permits permanent access to the Customer owning the Order a
 within 2 hours after placing the Order.
 ### changedPriceHandlingStrategy
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/changed-price-handling-strategy#changedpricehandlingstrategy'>ChangedPriceHandlingStrategy</a>`} default="DefaultChangedPriceHandlingStrategy"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/changed-price-handling-strategy#changedpricehandlingstrategy'>ChangedPriceHandlingStrategy</a>`} default={`DefaultChangedPriceHandlingStrategy`}   />
 
 Defines how we handle the situation where an item exists in an Order, and
 then later on another is added but in the meantime the price of the ProductVariant has changed.
@@ -116,12 +117,12 @@ By default, the latest price will be used. Any price changes resulting from usin
 will be reflected in the GraphQL `OrderLine.unitPrice[WithTax]ChangeSinceAdded` field.
 ### orderPlacedStrategy
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/order-placed-strategy#orderplacedstrategy'>OrderPlacedStrategy</a>`} default="<a href='/reference/typescript-api/orders/default-order-placed-strategy#defaultorderplacedstrategy'>DefaultOrderPlacedStrategy</a>"   />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/order-placed-strategy#orderplacedstrategy'>OrderPlacedStrategy</a>`} default={`<a href='/reference/typescript-api/orders/default-order-placed-strategy#defaultorderplacedstrategy'>DefaultOrderPlacedStrategy</a>`}   />
 
 Defines the point of the order process at which the Order is set as "placed".
 ### activeOrderStrategy
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/active-order-strategy#activeorderstrategy'>ActiveOrderStrategy</a>&#60;any&#62; | Array&#60;<a href='/reference/typescript-api/orders/active-order-strategy#activeorderstrategy'>ActiveOrderStrategy</a>&#60;any&#62;&#62;`} default="<a href='/reference/typescript-api/orders/default-active-order-strategy#defaultactiveorderstrategy'>DefaultActiveOrderStrategy</a>"  since="1.9.0"  />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/active-order-strategy#activeorderstrategy'>ActiveOrderStrategy</a>&#60;any&#62; | Array&#60;<a href='/reference/typescript-api/orders/active-order-strategy#activeorderstrategy'>ActiveOrderStrategy</a>&#60;any&#62;&#62;`} default={`<a href='/reference/typescript-api/orders/default-active-order-strategy#defaultactiveorderstrategy'>DefaultActiveOrderStrategy</a>`}  since="1.9.0"  />
 
 Defines the strategy used to determine the active Order when interacting with Shop API operations
 such as `activeOrder` and `addItemToOrder`. By default, the strategy uses the active Session.
@@ -130,14 +131,19 @@ Note that if multiple strategies are defined, they will be checked in order and 
 returns an Order will be used.
 ### orderSellerStrategy
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/order-seller-strategy#ordersellerstrategy'>OrderSellerStrategy</a>`} default="<a href='/reference/typescript-api/orders/order-seller-strategy#defaultordersellerstrategy'>DefaultOrderSellerStrategy</a>"  since="2.0.0"  />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/order-seller-strategy#ordersellerstrategy'>OrderSellerStrategy</a>`} default={`<a href='/reference/typescript-api/orders/order-seller-strategy#defaultordersellerstrategy'>DefaultOrderSellerStrategy</a>`}  since="2.0.0"  />
 
 Defines how Orders will be split amongst multiple Channels in a multivendor scenario.
 ### guestCheckoutStrategy
 
-<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/guest-checkout-strategy#guestcheckoutstrategy'>GuestCheckoutStrategy</a>`} default="<a href='/reference/typescript-api/orders/default-guest-checkout-strategy#defaultguestcheckoutstrategy'>DefaultGuestCheckoutStrategy</a>"  since="2.0.0"  />
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/guest-checkout-strategy#guestcheckoutstrategy'>GuestCheckoutStrategy</a>`} default={`<a href='/reference/typescript-api/orders/default-guest-checkout-strategy#defaultguestcheckoutstrategy'>DefaultGuestCheckoutStrategy</a>`}   />
 
 Defines how we deal with guest checkouts.
+### orderInterceptors
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/orders/order-interceptor#orderinterceptor'>OrderInterceptor</a>[]`} default={`[]`}  since="3.1.0"  />
+
+An array of <a href='/reference/typescript-api/orders/order-interceptor#orderinterceptor'>OrderInterceptor</a>s which can be used to modify the behavior of the Order process.
 
 
 </div>

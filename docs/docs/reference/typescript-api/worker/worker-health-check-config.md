@@ -32,12 +32,12 @@ interface WorkerHealthCheckConfig {
 The port on which the worker will listen
 ### hostname
 
-<MemberInfo kind="property" type={`string`} default="'localhost'"   />
+<MemberInfo kind="property" type={`string`} default={`'localhost'`}   />
 
 The hostname
 ### route
 
-<MemberInfo kind="property" type={`string`} default="'/health'"   />
+<MemberInfo kind="property" type={`string`} default={`'/health'`}   />
 
 The route at which the health check is available.
 

@@ -1,4 +1,9 @@
-import createMollieClient, { OrderEmbed, PaymentStatus, RefundStatus } from '@mollie/api-client';
+import createMollieClient, {
+    OrderEmbed,
+    PaymentStatus,
+    RefundStatus,
+    Order as MollieOrder,
+} from '@mollie/api-client';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import {
     CreatePaymentErrorResult,
@@ -57,13 +62,13 @@ export const molliePaymentHandler = new PaymentMethodHandler({
     init(injector) {
         mollieService = injector.get(MollieService);
     },
-    createPayment: async (
+    createPayment: (
         ctx,
         order,
-        _amount, // Don't use this amount, but the amount from the metadata
+        _amount, // Don't use this amount, but the amount from the metadata, because that has the actual paid amount from Mollie
         args,
         metadata,
-    ): Promise<CreatePaymentResult | CreatePaymentErrorResult> => {
+    ): CreatePaymentResult | CreatePaymentErrorResult => {
         // Only Admins and internal calls should be allowed to settle and authorize payments
         if (ctx.apiType !== 'admin' && ctx.apiType !== 'custom') {
             throw Error(`CreatePayment is not allowed for apiType '${ctx.apiType}'`);

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ElasticsearchPlugin
 
-<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/plugin.ts" sourceLine="223" packageName="@vendure/elasticsearch-plugin" />
+<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/plugin.ts" sourceLine="225" packageName="@vendure/elasticsearch-plugin" />
 
 This plugin allows your product search to be powered by [Elasticsearch](https://github.com/elastic/elasticsearch) - a powerful Open Source search
 engine. This is a drop-in replacement for the DefaultSearchPlugin which exposes many powerful configuration options enabling your storefront
@@ -53,7 +53,7 @@ const config: VendureConfig = {
 ## Search API Extensions
 This plugin extends the default search query of the Shop API, allowing richer querying of your product data.
 
-The [SearchResponse](/reference/graphql-api/admin/object-types/#searchresponse) type is extended with information
+The [SearchResponse](/reference/graphql-api/shop/object-types/#searchresponse) type is extended with information
 about price ranges in the result set:
 ```graphql
 extend type SearchResponse {
@@ -75,6 +75,7 @@ type PriceRangeBucket {
 extend input SearchInput {
     priceRange: PriceRangeInput
     priceRangeWithTax: PriceRangeInput
+    inStock: Boolean
 }
 
 input PriceRangeInput {

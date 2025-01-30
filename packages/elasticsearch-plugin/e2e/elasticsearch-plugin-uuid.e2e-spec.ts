@@ -43,6 +43,9 @@ describe('Elasticsearch plugin with UuidIdStrategy', () => {
             customerCount: 1,
         });
         await adminClient.asSuperAdmin();
+        // We have extra time here because a lot of jobs are
+        // triggered from all the product updates
+        await awaitRunningJobs(adminClient, 10_000, 1000);
         await adminClient.query(REINDEX);
         await awaitRunningJobs(adminClient);
     }, TEST_SETUP_TIMEOUT_MS);

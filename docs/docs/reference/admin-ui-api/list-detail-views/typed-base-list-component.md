@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TypedBaseListComponent
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/base-list.component.ts" sourceLine="199" packageName="@vendure/admin-ui" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/common/base-list.component.ts" sourceLine="217" packageName="@vendure/admin-ui" />
 
 A version of the <a href='/reference/admin-ui-api/list-detail-views/base-list-component#baselistcomponent'>BaseListComponent</a> which is designed to be used with a
 [TypedDocumentNode](https://the-guild.dev/graphql/codegen/plugins/typescript/typed-document-node).
@@ -24,6 +24,8 @@ class TypedBaseListComponent<T extends TypedDocumentNode<any, Vars>, Field exten
     protected router = inject(Router);
     protected serverConfigService = inject(ServerConfigService);
     protected permissionsService = inject(PermissionsService);
+    protected dataTableConfigService = inject(DataTableConfigService);
+    protected dataTableListId: string | undefined;
     constructor()
     configure(config: {
         document: T;
@@ -75,6 +77,16 @@ class TypedBaseListComponent<T extends TypedDocumentNode<any, Vars>, Field exten
 ### permissionsService
 
 <MemberInfo kind="property" type={``}   />
+
+
+### dataTableConfigService
+
+<MemberInfo kind="property" type={``}   />
+
+
+### dataTableListId
+
+<MemberInfo kind="property" type={`string | undefined`}   />
 
 
 ### constructor

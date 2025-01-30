@@ -47,7 +47,8 @@ export class DataTableFiltersComponent implements AfterViewInit {
             if (
                 event.target.tagName === 'INPUT' ||
                 event.target.tagName === 'TEXTAREA' ||
-                event.target.classList.contains('vdr-prosemirror')
+                event.target.classList.contains('vdr-prosemirror') ||
+                event.target.classList.contains('code-editor')
             ) {
                 return;
             }
@@ -57,7 +58,10 @@ export class DataTableFiltersComponent implements AfterViewInit {
         }
     }
 
-    constructor(private i18nService: I18nService, private changeDetectorRef: ChangeDetectorRef) {}
+    constructor(
+        private i18nService: I18nService,
+        private changeDetectorRef: ChangeDetectorRef,
+    ) {}
 
     ngAfterViewInit() {
         this.dropdown.onOpenChange(isOpen => {

@@ -17,6 +17,7 @@ import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-str
 import { AuthenticationStrategy } from './auth/authentication-strategy';
 import { PasswordHashingStrategy } from './auth/password-hashing-strategy';
 import { PasswordValidationStrategy } from './auth/password-validation-strategy';
+import { VerificationTokenStrategy } from './auth/verification-token-strategy';
 import { CollectionFilter } from './catalog/collection-filter';
 import { ProductVariantPriceCalculationStrategy } from './catalog/product-variant-price-calculation-strategy';
 import { ProductVariantPriceSelectionStrategy } from './catalog/product-variant-price-selection-strategy';
@@ -37,6 +38,7 @@ import { ChangedPriceHandlingStrategy } from './order/changed-price-handling-str
 import { GuestCheckoutStrategy } from './order/guest-checkout-strategy';
 import { OrderByCodeAccessStrategy } from './order/order-by-code-access-strategy';
 import { OrderCodeStrategy } from './order/order-code-strategy';
+import { OrderInterceptor } from './order/order-interceptor';
 import { OrderItemPriceCalculationStrategy } from './order/order-item-price-calculation-strategy';
 import { OrderMergeStrategy } from './order/order-merge-strategy';
 import { OrderPlacedStrategy } from './order/order-placed-strategy';
@@ -48,10 +50,12 @@ import { PaymentMethodHandler } from './payment/payment-method-handler';
 import { PaymentProcess } from './payment/payment-process';
 import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
+import { RefundProcess } from './refund/refund-process';
 import { SessionCacheStrategy } from './session-cache/session-cache-strategy';
 import { ShippingCalculator } from './shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from './shipping-method/shipping-eligibility-checker';
 import { ShippingLineAssignmentStrategy } from './shipping-method/shipping-line-assignment-strategy';
+import { CacheStrategy } from './system/cache-strategy';
 import { ErrorHandlerStrategy } from './system/error-handler-strategy';
 import { HealthCheckStrategy } from './system/health-check-strategy';
 import { TaxLineCalculationStrategy } from './tax/tax-line-calculation-strategy';
@@ -372,7 +376,7 @@ export interface AuthOptions {
      * Session duration, i.e. the time which must elapse from the last authenticated request
      * after which the user must re-authenticate.
      *
-     * Expressed as a string describing a time span per
+     * If passed as a number should represent milliseconds and if passed as a string describes a time span per
      * [zeit/ms](https://github.com/zeit/ms.js).  Eg: `60`, `'2 days'`, `'10h'`, `'7d'`
      *
      * @default '1y'
@@ -380,29 +384,29 @@ export interface AuthOptions {
     sessionDuration?: string | number;
     /**
      * @description
-     * This strategy defines how sessions will be cached. By default, sessions are cached using a simple
-     * in-memory caching strategy which is suitable for development and low-traffic, single-instance
-     * deployments.
+     * This strategy defines how sessions will be cached. By default, since v3.1.0, sessions are cached using
+     * the underlying cache strategy defined in the {@link SystemOptions}`.cacheStrategy`.
      *
-     * @default InMemorySessionCacheStrategy
+     * @default DefaultSessionCacheStrategy
      */
     sessionCacheStrategy?: SessionCacheStrategy;
     /**
      * @description
-     * The "time to live" of a given item in the session cache. This determines the length of time (in seconds)
-     * that a cache entry is kept before being considered "stale" and being replaced with fresh data
-     * taken from the database.
+     * The "time to live" of a given item in the session cache. This determines the length of time that a cache entry
+     * is kept before being considered "stale" and being replaced with fresh data taken from the database.
+     *
+     * If passed as a number should represent seconds and if passed as a string describes a time span per
+     * [zeit/ms](https://github.com/zeit/ms.js). Eg: `60`, `'2 days'`, `'10h'`, `'7d'`
      *
      * @default 300
      */
-    sessionCacheTTL?: number;
+    sessionCacheTTL?: string | number;
     /**
      * @description
      * Determines whether new User accounts require verification of their email address.
      *
-     * If set to "true", when registering via the `registerCustomerAccount` mutation, one should *not* set the
-     * `password` property - doing so will result in an error. Instead, the password is set at a later stage
-     * (once the email with the verification token has been opened) via the `verifyCustomerAccount` mutation.
+     * If set to "true", the customer will be required to verify their email address using a verification token
+     * they receive in their email. See the `registerCustomerAccount` mutation for more details on the verification behavior.
      *
      * @default true
      */
@@ -411,7 +415,7 @@ export interface AuthOptions {
      * @description
      * Sets the length of time that a verification token is valid for, after which the verification token must be refreshed.
      *
-     * Expressed as a string describing a time span per
+     * If passed as a number should represent milliseconds and if passed as a string describes a time span per
      * [zeit/ms](https://github.com/zeit/ms.js).  Eg: `60`, `'2 days'`, `'10h'`, `'7d'`
      *
      * @default '7d'
@@ -473,6 +477,14 @@ export interface AuthOptions {
      * @default DefaultPasswordValidationStrategy
      */
     passwordValidationStrategy?: PasswordValidationStrategy;
+    /**
+     * @description
+     * Allows you to customize the way verification tokens are generated.
+     *
+     * @default DefaultVerificationTokenStrategy
+     * @since 3.2.0
+     */
+    verificationTokenStrategy?: VerificationTokenStrategy;
 }
 
 /**
@@ -489,7 +501,7 @@ export interface OrderOptions {
      * to perform price calculations against active promotions and taxes. This can have a significant
      * performance impact for very large values.
      *
-     * Attempting to exceed this limit will cause Vendure to throw a {@link OrderItemsLimitError}.
+     * Attempting to exceed this limit will cause Vendure to throw a `OrderLimitError`.
      *
      * @default 999
      */
@@ -500,7 +512,7 @@ export interface OrderOptions {
      * on the `orderItemsLimit` for more granular control. Note `orderItemsLimit` is still
      * important in order to prevent excessive resource usage.
      *
-     * Attempting to exceed this limit will cause Vendure to throw a {@link OrderItemsLimitError}.
+     * Attempting to exceed this limit will cause Vendure to throw a OrderLimitError`.
      *
      * @default 999
      */
@@ -610,10 +622,19 @@ export interface OrderOptions {
      * @description
      * Defines how we deal with guest checkouts.
      *
-     * @since 2.0.0
+     * @sinc
+     * e 2.0.0
      * @default DefaultGuestCheckoutStrategy
      */
     guestCheckoutStrategy?: GuestCheckoutStrategy;
+    /**
+     * @description
+     * An array of {@link OrderInterceptor}s which can be used to modify the behavior of the Order process.
+     *
+     * @since 3.1.0
+     * @default []
+     */
+    orderInterceptors?: OrderInterceptor[];
 }
 
 /**
@@ -848,6 +869,14 @@ export interface PaymentOptions {
      * @since 2.0.0
      */
     process?: Array<PaymentProcess<any>>;
+    /**
+     * @description
+     * Allows the definition of custom states and transition logic for the refund process state machine.
+     * Takes an array of objects implementing the {@link RefundProcess} interface.
+     *
+     * @default defaultRefundProcess
+     */
+    refundProcess?: Array<RefundProcess<any>>;
 }
 
 /**
@@ -1050,12 +1079,21 @@ export interface SystemOptions {
      * @since 2.2.0
      */
     errorHandlers?: ErrorHandlerStrategy[];
+    /**
+     * @description
+     * Defines the underlying method used to store cache key-value pairs which powers the
+     * {@link CacheService}.
+     *
+     * @since 3.1.0
+     * @default InMemoryCacheStrategy
+     */
+    cacheStrategy?: CacheStrategy;
 }
 
 /**
  * @description
  * All possible configuration options are defined by the
- * [`VendureConfig`](https://github.com/vendure-ecommerce/vendure/blob/master/server/src/config/vendure-config.ts) interface.
+ * [`VendureConfig`](https://github.com/vendure-ecommerce/vendure/blob/master/packages/core/src/config/vendure-config.ts) interface.
  *
  * @docsCategory configuration
  * */
@@ -1211,10 +1249,10 @@ type DeepPartialSimple<T> = {
         | (T[P] extends Array<infer U>
               ? Array<DeepPartialSimple<U>>
               : T[P] extends ReadonlyArray<infer X>
-              ? ReadonlyArray<DeepPartialSimple<X>>
-              : T[P] extends Type<any>
-              ? T[P]
-              : DeepPartialSimple<T[P]>);
+                ? ReadonlyArray<DeepPartialSimple<X>>
+                : T[P] extends Type<any>
+                  ? T[P]
+                  : DeepPartialSimple<T[P]>);
 };
 
 export type PartialVendureConfig = DeepPartialSimple<VendureConfig>;

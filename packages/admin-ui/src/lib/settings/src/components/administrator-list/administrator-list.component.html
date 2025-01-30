@@ -17,7 +17,7 @@
 </vdr-page-block>
 <vdr-data-table-2
     class="mt-2"
-    id="administrator-list"
+    [id]="dataTableListId"
     [items]="items$ | async"
     [itemsPerPage]="itemsPerPage$ | async"
     [totalItems]="totalItems$ | async"
@@ -25,6 +25,7 @@
     [filters]="filters"
     (pageChange)="setPageNumber($event)"
     (itemsPerPageChange)="setItemsPerPage($event)"
+    (visibleColumnsChange)="setVisibleColumns($event)"
 >
     <vdr-bulk-action-menu
         locationId="administrator-list"

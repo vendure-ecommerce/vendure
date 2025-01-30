@@ -113,6 +113,9 @@ export class MultivendorService {
         const seller = await this.sellerService.create(ctx, {
             name: input.shopName,
             customFields: {
+                // This simulates a connection to a payment provider,
+                // which would supply the connected account ID.
+                // In this case we just use a pseudo-random string
                 connectedAccountId: Math.random().toString(30).substring(3),
             },
         });

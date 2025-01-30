@@ -22,7 +22,7 @@ class Role extends VendureEntity implements ChannelAware {
     @Column() code: string;
     @Column() description: string;
     @Column('simple-array') permissions: Permission[];
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.roles)
     @JoinTable()
     channels: Channel[];
 }

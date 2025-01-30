@@ -4,9 +4,9 @@ import { Injector, RequestContext, SerializedRequestContext, VendureEvent } from
 import { Attachment } from 'nodemailer/lib/mailer';
 import SESTransport from 'nodemailer/lib/ses-transport';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { EmailEventHandler } from './handler/event-handler';
 
 import { EmailGenerator } from './generator/email-generator';
+import { EmailEventHandler } from './handler/event-handler';
 import { EmailSender } from './sender/email-sender';
 import { TemplateLoader } from './template-loader/template-loader';
 
@@ -33,10 +33,46 @@ export type EventWithAsyncData<Event extends EventWithContext, R> = Event & { da
 
 /**
  * @description
+ * Allows you to dynamically load the "globalTemplateVars" key async and access Vendure services
+ * to create the object. This is not a requirement. You can also specify a simple static object if your
+ * projects doesn't need to access async or dynamic values.
+ *
+ * @example
+ * ```ts
+ *
+ * EmailPlugin.init({
+ *    globalTemplateVars: async (ctx, injector) => {
+ *          const myAsyncService = injector.get(MyAsyncService);
+ *          const asyncValue = await myAsyncService.get(ctx);
+ *          const channel = ctx.channel;
+ *          const { primaryColor } = channel.customFields.theme;
+ *          const theme = {
+ *              primaryColor,
+ *              asyncValue,
+ *          };
+ *          return theme;
+ *      }
+ *   [...]
+ * })
+ *
+ * ```
+ *
+ * @docsCategory core plugins/EmailPlugin
+ * @docsPage EmailPluginOptions
+ * @since 2.3.0
+ */
+export type GlobalTemplateVarsFn = (
+    ctx: RequestContext,
+    injector: Injector,
+) => Promise<{ [key: string]: any }>;
+
+/**
+ * @description
  * Configuration for the EmailPlugin.
  *
  * @docsCategory core plugins/EmailPlugin
  * @docsPage EmailPluginOptions
+ * @docsWeight 0
  * */
 export interface EmailPluginOptions {
     /**
@@ -75,9 +111,10 @@ export interface EmailPluginOptions {
      * @description
      * An object containing variables which are made available to all templates. For example,
      * the storefront URL could be defined here and then used in the "email address verification"
-     * email.
+     * email. Use the GlobalTemplateVarsFn if you need to retrieve variables from Vendure or
+     * plugin services.
      */
-    globalTemplateVars?: { [key: string]: any };
+    globalTemplateVars?: { [key: string]: any } | GlobalTemplateVarsFn;
     /**
      * @description
      * An optional allowed EmailSender, used to allow custom implementations of the send functionality
@@ -97,9 +134,11 @@ export interface EmailPluginOptions {
 }
 
 /**
- * EmailPLuginOptions type after initialization, where templateLoader is no longer optional
+ * EmailPLuginOptions type after initialization, where templateLoader and themeInjector are no longer optional
  */
-export type InitializedEmailPluginOptions = EmailPluginOptions & { templateLoader: TemplateLoader };
+export type InitializedEmailPluginOptions = EmailPluginOptions & {
+    templateLoader: TemplateLoader;
+};
 
 /**
  * @description
@@ -180,7 +219,7 @@ export interface SMTPTransportOptions extends SMTPTransport.Options {
  *   plugins: [
  *     EmailPlugin.init({
  *       handler: defaultEmailHandlers,
- *       templatePath: path.join(__dirname, 'static/email/templates'),
+ *       templateLoader: new FileBasedTemplateLoader(path.join(__dirname, '../static/email/templates')),
  *       transport: {
  *         type: 'ses',
  *         SES: { ses, aws: { SendRawEmailCommand } },
@@ -317,6 +356,7 @@ export type IntermediateEmailDetails = {
     cc?: string;
     bcc?: string;
     replyTo?: string;
+    metadata?: EmailMetadata;
 };
 
 /**
@@ -352,9 +392,30 @@ export interface EmailTemplateConfig {
     subject: string;
 }
 
+/**
+ * @description
+ * The object passed to the {@link TemplateLoader} `loadTemplate()` method.
+ *
+ * @docsCategory core plugins/EmailPlugin
+ * @docsPage Email Plugin Types
+ */
 export interface LoadTemplateInput {
+    /**
+     * @description
+     * The type corresponds to the string passed to the EmailEventListener constructor.
+     */
     type: string;
+    /**
+     * @description
+     * The template name is specified by the EmailEventHander's call to
+     * the `addTemplate()` method, and will default to `body.hbs`
+     */
     templateName: string;
+    /**
+     * @description
+     * The variables defined by the globalTemplateVars as well as any variables defined in the
+     * EmailEventHandler's `setTemplateVars()` method.
+     */
     templateVars: any;
 }
 
@@ -386,6 +447,18 @@ export type SetTemplateVarsFn<Event> = (
  * @docsPage Email Plugin Types
  */
 export type SetAttachmentsFn<Event> = (event: Event) => EmailAttachment[] | Promise<EmailAttachment[]>;
+
+/**
+ * @description
+ * A function used to define the subject to be sent with the email.
+ * @docsCategory core plugins/EmailPlugin
+ * @docsPage Email Plugin Types
+ */
+export type SetSubjectFn<Event> = (
+    event: Event,
+    ctx: RequestContext,
+    injector: Injector,
+) => string | Promise<string>;
 
 /**
  * @description
@@ -424,3 +497,23 @@ export interface OptionalAddressFields {
 export type SetOptionalAddressFieldsFn<Event> = (
     event: Event,
 ) => OptionalAddressFields | Promise<OptionalAddressFields>;
+
+/**
+ * @description
+ * A function used to set the {@link EmailMetadata}.
+ *
+ * @since 3.1.0
+ * @docsCategory core plugins/EmailPlugin
+ * @docsPage Email Plugin Types
+ */
+export type SetMetadataFn<Event> = (event: Event) => EmailMetadata | Promise<EmailMetadata>;
+
+/**
+ * @description
+ * Metadata that can be attached to an email via the {@link EmailEventHandler}`.setMetadata()` method.
+ *
+ * @since 3.1.0
+ * @docsCategory core plugins/EmailPlugin
+ * @docsPage Email Plugin Types
+ */
+export type EmailMetadata = Record<string, any>;

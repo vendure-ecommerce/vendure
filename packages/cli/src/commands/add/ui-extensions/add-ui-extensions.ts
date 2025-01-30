@@ -1,4 +1,5 @@
-import { log, note, outro, spinner } from '@clack/prompts';
+import { cancel, log, note, outro, spinner } from '@clack/prompts';
+import fs from 'fs-extra';
 import path from 'path';
 
 import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
@@ -24,7 +25,7 @@ export const addUiExtensionsCommand = new CliCommand<AddUiExtensionsOptions>({
 
 async function addUiExtensions(options?: AddUiExtensionsOptions): Promise<CliCommandReturnVal> {
     const providedVendurePlugin = options?.plugin;
-    const project = await analyzeProject({ providedVendurePlugin });
+    const { project } = await analyzeProject({ providedVendurePlugin });
     const vendurePlugin =
         providedVendurePlugin ?? (await selectPlugin(project, 'Add UI extensions cancelled'));
     const packageJson = new PackageJson(project);
@@ -37,7 +38,15 @@ async function addUiExtensions(options?: AddUiExtensionsOptions): Promise<CliCom
 
     log.success('Updated the plugin class');
     const installSpinner = spinner();
-    installSpinner.start(`Installing dependencies...`);
+    const packageManager = packageJson.determinePackageManager();
+    const packageJsonFile = packageJson.locatePackageJsonWithVendureDependency();
+    log.info(`Detected package manager: ${packageManager}`);
+    if (!packageJsonFile) {
+        cancel(`Could not locate package.json file with a dependency on Vendure.`);
+        process.exit(1);
+    }
+    log.info(`Detected package.json: ${packageJsonFile}`);
+    installSpinner.start(`Installing dependencies using ${packageManager}...`);
     try {
         const version = packageJson.determineVendureVersion();
         await packageJson.installPackages([
@@ -46,6 +55,10 @@ async function addUiExtensions(options?: AddUiExtensionsOptions): Promise<CliCom
                 isDevDependency: true,
                 version,
             },
+            {
+                pkg: '@types/react',
+                isDevDependency: true,
+            },
         ]);
     } catch (e: any) {
         log.error(`Failed to install dependencies: ${e.message as string}.`);
@@ -53,10 +66,15 @@ async function addUiExtensions(options?: AddUiExtensionsOptions): Promise<CliCom
     installSpinner.stop('Dependencies installed');
 
     const pluginDir = vendurePlugin.getPluginDir().getPath();
-    const providersFile = createFile(project, path.join(__dirname, 'templates/providers.template.ts'));
-    providersFile.move(path.join(pluginDir, 'ui', 'providers.ts'));
-    const routesFile = createFile(project, path.join(__dirname, 'templates/routes.template.ts'));
-    routesFile.move(path.join(pluginDir, 'ui', 'routes.ts'));
+
+    const providersFileDest = path.join(pluginDir, 'ui', 'providers.ts');
+    if (!fs.existsSync(providersFileDest)) {
+        createFile(project, path.join(__dirname, 'templates/providers.template.ts'), providersFileDest);
+    }
+    const routesFileDest = path.join(pluginDir, 'ui', 'routes.ts');
+    if (!fs.existsSync(routesFileDest)) {
+        createFile(project, path.join(__dirname, 'templates/routes.template.ts'), routesFileDest);
+    }
 
     log.success('Created UI extension scaffold');
 

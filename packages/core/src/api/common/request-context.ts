@@ -1,9 +1,16 @@
+import { ExecutionContext } from '@nestjs/common';
 import { CurrencyCode, LanguageCode, Permission } from '@vendure/common/lib/generated-types';
 import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
 import { isObject } from '@vendure/common/lib/shared-utils';
 import { Request } from 'express';
 import { TFunction } from 'i18next';
+import { ReplicationMode, EntityManager } from 'typeorm';
 
+import {
+    REQUEST_CONTEXT_KEY,
+    REQUEST_CONTEXT_MAP_KEY,
+    TRANSACTION_MANAGER_KEY,
+} from '../../common/constants';
 import { idsAreEqual } from '../../common/utils';
 import { CachedSession } from '../../config/session-cache/session-cache-strategy';
 import { Channel } from '../../entity/channel/channel.entity';
@@ -21,6 +28,120 @@ export type SerializedRequestContext = {
 };
 
 /**
+ * This object is used to store the RequestContext on the Express Request object.
+ */
+interface RequestContextStore {
+    /**
+     * This is the default RequestContext for the handler.
+     */
+    default: RequestContext;
+    /**
+     * If a transaction is started, the resulting RequestContext is stored here.
+     * This RequestContext will have a transaction manager attached via the
+     * TRANSACTION_MANAGER_KEY symbol.
+     *
+     * When a transaction is started, the TRANSACTION_MANAGER_KEY symbol is added to the RequestContext
+     * object. This is then detected inside the {@link internal_setRequestContext} function and the
+     * RequestContext object is stored in the RequestContextStore under the withTransactionManager key.
+     */
+    withTransactionManager?: RequestContext;
+}
+
+interface RequestWithStores extends Request {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    [REQUEST_CONTEXT_MAP_KEY]?: Map<Function, RequestContextStore>;
+    [REQUEST_CONTEXT_KEY]?: RequestContextStore;
+}
+
+/**
+ * @description
+ * This function is used to set the {@link RequestContext} on the `req` object. This is the underlying
+ * mechanism by which we are able to access the `RequestContext` from different places.
+ *
+ * For example, here is a diagram to show how, in an incoming API request, we are able to store
+ * and retrieve the `RequestContext` in a resolver:
+ * ```
+ * - query { product }
+ * |
+ * - AuthGuard.canActivate()
+ * |  | creates a `RequestContext`, stores it on `req`
+ * |
+ * - product() resolver
+ *    | @Ctx() decorator fetching `RequestContext` from `req`
+ * ```
+ *
+ * We named it this way to discourage usage outside the framework internals.
+ */
+export function internal_setRequestContext(
+    req: RequestWithStores,
+    ctx: RequestContext,
+    executionContext?: ExecutionContext,
+) {
+    // If we have access to the `ExecutionContext`, it means we are able to bind
+    // the `ctx` object to the specific "handler", i.e. the resolver function (for GraphQL)
+    // or controller (for REST).
+    let item: RequestContextStore | undefined;
+    if (executionContext && typeof executionContext.getHandler === 'function') {
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        const map = req[REQUEST_CONTEXT_MAP_KEY] || new Map();
+        item = map.get(executionContext.getHandler());
+        const ctxHasTransaction = Object.getOwnPropertySymbols(ctx).includes(TRANSACTION_MANAGER_KEY);
+        if (item) {
+            item.default = item.default ?? ctx;
+            if (ctxHasTransaction) {
+                item.withTransactionManager = ctx;
+            }
+        } else {
+            item = {
+                default: ctx,
+                withTransactionManager: ctxHasTransaction ? ctx : undefined,
+            };
+        }
+        map.set(executionContext.getHandler(), item);
+
+        req[REQUEST_CONTEXT_MAP_KEY] = map;
+    }
+    // We also bind to a shared key so that we can access the `ctx` object
+    // later even if we don't have a reference to the `ExecutionContext`
+    req[REQUEST_CONTEXT_KEY] = item ?? {
+        default: ctx,
+    };
+}
+
+/**
+ * @description
+ * Gets the {@link RequestContext} from the `req` object. See {@link internal_setRequestContext}
+ * for more details on this mechanism.
+ */
+export function internal_getRequestContext(
+    req: RequestWithStores,
+    executionContext?: ExecutionContext,
+): RequestContext {
+    let item: RequestContextStore | undefined;
+    if (executionContext && typeof executionContext.getHandler === 'function') {
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        const map = req[REQUEST_CONTEXT_MAP_KEY];
+        item = map?.get(executionContext.getHandler());
+        // If we have a ctx associated with the current handler (resolver function), we
+        // return it. Otherwise, we fall back to the shared key which will be there.
+        if (item) {
+            return item.withTransactionManager || item.default;
+        }
+    }
+    if (!item) {
+        item = req[REQUEST_CONTEXT_KEY] as RequestContextStore;
+    }
+    const transactionalCtx =
+        item?.withTransactionManager &&
+        ((item.withTransactionManager as any)[TRANSACTION_MANAGER_KEY] as EntityManager | undefined)
+            ?.queryRunner?.isReleased === false
+            ? item.withTransactionManager
+            : undefined;
+
+    return transactionalCtx || item.default;
+}
+
+/**
  * @description
  * The RequestContext holds information relevant to the current request, which may be
  * required at various points of the stack.
@@ -32,10 +153,24 @@ export type SerializedRequestContext = {
  * the active Channel, and so on. In addition, the {@link TransactionalConnection} relies on the
  * presence of the RequestContext object in order to correctly handle per-request database transactions.
  *
+ * The RequestContext also provides mechanisms for managing the database replication mode via the
+ * `setReplicationMode` method and the `replicationMode` getter. This allows for finer control
+ * over whether database queries within the context should be executed against the master or a replica
+ * database, which can be particularly useful in distributed database environments.
+ *
  * @example
  * ```ts
  * \@Query()
  * myQuery(\@Ctx() ctx: RequestContext) {
+ *   return this.myService.getData(ctx);
+ * }
+ * ```
+ *
+ * @example
+ * ```ts
+ * \@Query()
+ * myMutation(\@Ctx() ctx: RequestContext) {
+ *   ctx.setReplicationMode('master');
  *   return this.myService.getData(ctx);
  * }
  * ```
@@ -51,6 +186,7 @@ export class RequestContext {
     private readonly _translationFn: TFunction;
     private readonly _apiType: ApiType;
     private readonly _req?: Request;
+    private _replicationMode?: ReplicationMode;
 
     /**
      * @internal
@@ -283,5 +419,29 @@ export class RequestContext {
             return result;
         }
         return copySimpleFieldsToDepth(req, 1);
+    }
+
+    /**
+     * @description
+     * Sets the replication mode for the current RequestContext. This mode determines whether the operations
+     * within this context should interact with the master database or a replica. Use this method to explicitly
+     * define the replication mode for the context.
+     *
+     * @param mode - The replication mode to be set (e.g., 'master' or 'replica').
+     */
+    setReplicationMode(mode: ReplicationMode): void {
+        this._replicationMode = mode;
+    }
+
+    /**
+     * @description
+     * Gets the current replication mode of the RequestContext. If no replication mode has been set,
+     * it returns `undefined`. This property indicates whether the context is configured to interact with
+     * the master database or a replica.
+     *
+     * @returns The current replication mode, or `undefined` if none is set.
+     */
+    get replicationMode(): ReplicationMode | undefined {
+        return this._replicationMode;
     }
 }

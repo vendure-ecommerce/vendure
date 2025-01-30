@@ -22,8 +22,8 @@ import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, map, takeUntil } from 'rxjs/operators';
 import { LanguageCode } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
+import { DataTableConfigService } from '../../../providers/data-table/data-table-config.service';
 import { DataTableFilterCollection } from '../../../providers/data-table/data-table-filter-collection';
-import { DataTableConfig, LocalStorageService } from '../../../providers/local-storage/local-storage.service';
 import { BulkActionMenuComponent } from '../bulk-action-menu/bulk-action-menu.component';
 
 import { FilterPresetService } from '../data-table-filter-presets/filter-preset.service';
@@ -116,6 +116,7 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
     @Input() activeIndex = -1;
     @Output() pageChange = new EventEmitter<number>();
     @Output() itemsPerPageChange = new EventEmitter<number>();
+    @Output() visibleColumnsChange = new EventEmitter<Array<DataTable2ColumnComponent<T>>>();
 
     @ContentChildren(DataTable2ColumnComponent) columns: QueryList<DataTable2ColumnComponent<T>>;
     @ContentChildren(DataTableCustomFieldColumnComponent)
@@ -129,6 +130,7 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
     route = inject(ActivatedRoute);
     filterPresetService = inject(FilterPresetService);
     dataTableCustomComponentService = inject(DataTableCustomComponentService);
+    dataTableConfigService = inject(DataTableConfigService);
     protected customComponents = new Map<string, { config: DataTableComponentConfig; injector: Injector }>();
 
     rowTemplate: TemplateRef<any>;
@@ -144,7 +146,6 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
 
     constructor(
         protected changeDetectorRef: ChangeDetectorRef,
-        protected localStorageService: LocalStorageService,
         protected dataService: DataService,
     ) {
         this.uiLanguage$ = this.dataService.client
@@ -166,8 +167,8 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
 
     get sortedColumns() {
         const columns = this.allColumns;
-        const dataTableConfig = this.getDataTableConfig();
-        for (const [id, index] of Object.entries(dataTableConfig[this.id].order)) {
+        const dataTableConfig = this.dataTableConfigService.getConfig(this.id);
+        for (const [id, index] of Object.entries(dataTableConfig.order)) {
             const column = columns.find(c => c.id === id);
             const currentIndex = columns.findIndex(c => c.id === id);
             if (currentIndex !== -1 && column) {
@@ -211,20 +212,21 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
 
     ngAfterContentInit(): void {
         this.rowTemplate = this.templateRefs.last;
-        const dataTableConfig = this.getDataTableConfig();
+        const dataTableConfig = this.dataTableConfigService.getConfig(this.id);
 
         if (!this.id) {
             console.warn(`No id was assigned to the data table component`);
         }
         const updateColumnVisibility = () => {
-            dataTableConfig[this.id].visibility = this.allColumns
+            dataTableConfig.visibility = this.allColumns
                 .filter(c => (c.visible && c.hiddenByDefault) || (!c.visible && !c.hiddenByDefault))
                 .map(c => c.id);
-            this.localStorageService.set('dataTableConfig', dataTableConfig);
+            this.dataTableConfigService.setConfig(this.id, dataTableConfig);
+            this.visibleColumnsChange.emit(this.visibleSortedColumns);
         };
 
         this.allColumns.forEach(column => {
-            if (dataTableConfig?.[this.id]?.visibility.includes(column.id)) {
+            if (dataTableConfig?.visibility.includes(column.id)) {
                 column.setVisibility(column.hiddenByDefault);
             }
             column.onColumnChange(updateColumnVisibility);
@@ -237,6 +239,7 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
                 this.customComponents.set(column.id, { config, injector });
             }
         });
+        this.visibleColumnsChange.emit(this.visibleSortedColumns);
 
         if (this.selectionManager) {
             document.addEventListener('keydown', this.shiftDownHandler, { passive: true });
@@ -247,8 +250,7 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
             this.selectionManager.setCurrentItems(this.items);
         }
         this.showSearchFilterRow =
-            !!this.filters?.activeFilters.length ||
-            (dataTableConfig?.[this.id]?.showSearchFilterRow ?? false);
+            !!this.filters?.activeFilters.length || (dataTableConfig?.showSearchFilterRow ?? false);
         this.columns.changes.subscribe(() => {
             this.changeDetectorRef.markForCheck();
         });
@@ -270,27 +272,27 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
 
     onColumnReorder(event: { column: DataTable2ColumnComponent<any>; newIndex: number }) {
         const naturalIndex = this.allColumns.findIndex(c => c.id === event.column.id);
-        const dataTableConfig = this.getDataTableConfig();
+        const dataTableConfig = this.dataTableConfigService.getConfig(this.id);
         if (naturalIndex === event.newIndex) {
-            delete dataTableConfig[this.id].order[event.column.id];
+            delete dataTableConfig.order[event.column.id];
         } else {
-            dataTableConfig[this.id].order[event.column.id] = event.newIndex;
+            dataTableConfig.order[event.column.id] = event.newIndex;
         }
-        this.localStorageService.set('dataTableConfig', dataTableConfig);
+        this.dataTableConfigService.setConfig(this.id, dataTableConfig);
     }
 
     onColumnsReset() {
-        const dataTableConfig = this.getDataTableConfig();
-        dataTableConfig[this.id].order = {};
-        dataTableConfig[this.id].visibility = [];
-        this.localStorageService.set('dataTableConfig', dataTableConfig);
+        const dataTableConfig = this.dataTableConfigService.getConfig(this.id);
+        dataTableConfig.order = {};
+        dataTableConfig.visibility = [];
+        this.dataTableConfigService.setConfig(this.id, dataTableConfig);
     }
 
     toggleSearchFilterRow() {
         this.showSearchFilterRow = !this.showSearchFilterRow;
-        const dataTableConfig = this.getDataTableConfig();
-        dataTableConfig[this.id].showSearchFilterRow = this.showSearchFilterRow;
-        this.localStorageService.set('dataTableConfig', dataTableConfig);
+        const dataTableConfig = this.dataTableConfigService.getConfig(this.id);
+        dataTableConfig.showSearchFilterRow = this.showSearchFilterRow;
+        this.dataTableConfigService.setConfig(this.id, dataTableConfig);
     }
 
     trackByFn(index: number, item: any) {
@@ -307,18 +309,5 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
 
     onRowClick(item: T, event: MouseEvent) {
         this.selectionManager?.toggleSelection(item, event);
-    }
-
-    protected getDataTableConfig(): DataTableConfig {
-        const dataTableConfig = this.localStorageService.get('dataTableConfig') ?? {};
-        if (!dataTableConfig[this.id]) {
-            dataTableConfig[this.id] = {
-                visibility: [],
-                order: {},
-                showSearchFilterRow: false,
-                filterPresets: [],
-            };
-        }
-        return dataTableConfig;
     }
 }

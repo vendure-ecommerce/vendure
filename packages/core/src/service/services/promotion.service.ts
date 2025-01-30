@@ -250,6 +250,7 @@ export class PromotionService {
                 couponCode,
                 enabled: true,
                 deletedAt: IsNull(),
+                channels: { id: ctx.channelId },
             },
             relations: ['channels'],
         });

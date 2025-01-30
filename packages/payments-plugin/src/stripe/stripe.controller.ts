@@ -1,6 +1,7 @@
-import { Controller, Headers, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { Controller, Headers, HttpStatus, Inject, Post, Req, Res } from '@nestjs/common';
 import type { PaymentMethod, RequestContext } from '@vendure/core';
 import {
+    ChannelService,
     InternalServerError,
     LanguageCode,
     Logger,
@@ -14,23 +15,27 @@ import { OrderStateTransitionError } from '@vendure/core/dist/common/error/gener
 import type { Response } from 'express';
 import type Stripe from 'stripe';
 
-import { loggerCtx } from './constants';
+import { loggerCtx, STRIPE_PLUGIN_OPTIONS } from './constants';
+import { isExpectedVendureStripeEventMetadata } from './stripe-utils';
 import { stripePaymentMethodHandler } from './stripe.handler';
 import { StripeService } from './stripe.service';
-import { RequestWithRawBody } from './types';
+import { RequestWithRawBody, StripePluginOptions } from './types';
 
 const missingHeaderErrorMessage = 'Missing stripe-signature header';
 const signatureErrorMessage = 'Error verifying Stripe webhook signature';
 const noPaymentIntentErrorMessage = 'No payment intent in the event payload';
+const ignorePaymentIntentEvent = 'Event has no Vendure metadata, skipped.';
 
 @Controller('payments')
 export class StripeController {
     constructor(
+        @Inject(STRIPE_PLUGIN_OPTIONS) private options: StripePluginOptions,
         private paymentMethodService: PaymentMethodService,
         private orderService: OrderService,
         private stripeService: StripeService,
         private requestContextService: RequestContextService,
         private connection: TransactionalConnection,
+        private channelService: ChannelService,
     ) {}
 
     @Post('stripe')
@@ -54,10 +59,23 @@ export class StripeController {
             return;
         }
 
-        const { metadata: { channelToken, orderCode, orderId } = {} } = paymentIntent;
-        const outerCtx = await this.createContext(channelToken, request);
+        const { metadata } = paymentIntent;
 
-        await this.connection.withTransaction(outerCtx, async ctx => {
+        if (!isExpectedVendureStripeEventMetadata(metadata)) {
+            if (this.options.skipPaymentIntentsWithoutExpectedMetadata) {
+                response.status(HttpStatus.OK).send(ignorePaymentIntentEvent);
+                return;
+            }
+            throw new Error(
+                `Missing expected payment intent metadata, unable to settle payment ${paymentIntent.id}!`,
+            );
+        }
+
+        const { channelToken, orderCode, orderId, languageCode } = metadata;
+
+        const outerCtx = await this.createContext(channelToken, languageCode, request);
+
+        await this.connection.withTransaction(outerCtx, async (ctx: RequestContext) => {
             const order = await this.orderService.findOneByCode(ctx, orderCode);
 
             if (!order) {
@@ -90,8 +108,13 @@ export class StripeController {
             }
 
             if (order.state !== 'ArrangingPayment') {
+                // Orders can switch channels (e.g., global to UK store), causing lookups by the original
+                // channel to fail. Using a default channel avoids "entity-with-id-not-found" errors.
+                // See https://github.com/vendure-ecommerce/vendure/issues/3072
+                const defaultChannel = await this.channelService.getDefaultChannel(ctx);
+                const ctxWithDefaultChannel = await this.createContext(defaultChannel.token, languageCode, request);
                 const transitionToStateResult = await this.orderService.transitionToState(
-                    ctx,
+                    ctxWithDefaultChannel,
                     orderId,
                     'ArrangingPayment',
                 );
@@ -136,12 +159,12 @@ export class StripeController {
         }
     }
 
-    private async createContext(channelToken: string, req: RequestWithRawBody): Promise<RequestContext> {
+    private async createContext(channelToken: string, languageCode: LanguageCode, req: RequestWithRawBody): Promise<RequestContext> {
         return this.requestContextService.create({
             apiType: 'admin',
             channelOrToken: channelToken,
             req,
-            languageCode: LanguageCode.en,
+            languageCode,
         });
     }
 

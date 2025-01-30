@@ -23,7 +23,6 @@ import {
     unicodePatternValidator,
     UpdateProductInput,
     UpdateProductMutation,
-    UpdateProductOptionInput,
     UpdateProductVariantInput,
     UpdateProductVariantsMutation,
 } from '@vendure/admin-ui/core';
@@ -245,46 +244,19 @@ export class ProductDetailComponent
     selectProductFacetValue() {
         this.displayFacetValueModal().subscribe(facetValueIds => {
             if (facetValueIds) {
-                const productGroup = this.detailForm;
-                const currentFacetValueIds = productGroup.value.facetValueIds ?? [];
-                productGroup.patchValue({
-                    facetValueIds: unique([...currentFacetValueIds, ...facetValueIds]),
-                });
-                productGroup.markAsDirty();
-                this.changeDetector.markForCheck();
+                const facetValueIdsControl = this.detailForm.controls.facetValueIds;
+                const currentFacetValueIds = facetValueIdsControl.value ?? [];
+                facetValueIdsControl.setValue(unique([...currentFacetValueIds, ...facetValueIds]));
+                facetValueIdsControl.markAsDirty();
             }
         });
     }
 
-    updateProductOption(input: UpdateProductOptionInput & { autoUpdate: boolean }) {
-        combineLatest(this.entity$, this.languageCode$)
-            .pipe(
-                take(1),
-                mergeMap(([product, languageCode]) =>
-                    this.productDetailService.updateProductOption(input, product, languageCode),
-                ),
-            )
-            .subscribe(
-                () => {
-                    this.notificationService.success(_('common.notify-update-success'), {
-                        entity: 'ProductOption',
-                    });
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-update-error'), {
-                        entity: 'ProductOption',
-                    });
-                },
-            );
-    }
-
     removeProductFacetValue(facetValueId: string) {
-        const productGroup = this.detailForm;
-        const currentFacetValueIds = productGroup.value.facetValueIds ?? [];
-        productGroup.patchValue({
-            facetValueIds: currentFacetValueIds.filter(id => id !== facetValueId),
-        });
-        productGroup.markAsDirty();
+        const facetValueIdsControl = this.detailForm.controls.facetValueIds;
+        const currentFacetValueIds = facetValueIdsControl.value ?? [];
+        facetValueIdsControl.setValue(currentFacetValueIds.filter(id => id !== facetValueId));
+        facetValueIdsControl.markAsDirty();
     }
 
     private displayFacetValueModal(): Observable<string[] | undefined> {
@@ -442,7 +414,9 @@ export class ProductDetailComponent
             ...updatedProduct,
             assetIds: this.assetChanges.assets?.map(a => a.id),
             featuredAssetId: this.assetChanges.featuredAsset?.id,
-            facetValueIds: productFormGroup.value.facetValueIds,
+            facetValueIds: productFormGroup.controls.facetValueIds.dirty
+                ? productFormGroup.value.facetValueIds
+                : undefined,
         } as UpdateProductInput | CreateProductInput;
     }
 

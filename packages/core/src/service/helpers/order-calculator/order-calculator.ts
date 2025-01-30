@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { filterAsync } from '@vendure/common/lib/filter-async';
 import { AdjustmentType } from '@vendure/common/lib/generated-types';
+import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
@@ -8,7 +9,7 @@ import { CacheKey } from '../../../common/constants';
 import { InternalServerError } from '../../../common/error/errors';
 import { idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
-import { OrderLine, TaxCategory, TaxRate } from '../../../entity';
+import { OrderLine, TaxRate } from '../../../entity';
 import { Order } from '../../../entity/order/order.entity';
 import { Promotion } from '../../../entity/promotion/promotion.entity';
 import { Zone } from '../../../entity/zone/zone.entity';
@@ -76,7 +77,6 @@ export class OrderCalculator {
                 ctx,
                 order,
                 updatedOrderLine,
-                activeTaxZone,
                 this.createTaxRateGetter(ctx, activeTaxZone),
             );
         }
@@ -113,7 +113,7 @@ export class OrderCalculator {
     private async applyTaxes(ctx: RequestContext, order: Order, activeZone: Zone) {
         const getTaxRate = this.createTaxRateGetter(ctx, activeZone);
         for (const line of order.lines) {
-            await this.applyTaxesToOrderLine(ctx, order, line, activeZone, getTaxRate);
+            await this.applyTaxesToOrderLine(ctx, order, line, getTaxRate);
         }
         this.calculateOrderTotals(order);
     }
@@ -126,10 +126,9 @@ export class OrderCalculator {
         ctx: RequestContext,
         order: Order,
         line: OrderLine,
-        activeZone: Zone,
-        getTaxRate: (taxCategory: TaxCategory) => Promise<TaxRate>,
+        getTaxRate: (taxCategoryId: ID) => Promise<TaxRate>,
     ) {
-        const applicableTaxRate = await getTaxRate(line.taxCategory);
+        const applicableTaxRate = await getTaxRate(line.taxCategoryId);
         const { taxLineCalculationStrategy } = this.configService.taxOptions;
         line.taxLines = await taxLineCalculationStrategy.calculate({
             ctx,
@@ -147,16 +146,16 @@ export class OrderCalculator {
     private createTaxRateGetter(
         ctx: RequestContext,
         activeZone: Zone,
-    ): (taxCategory: TaxCategory) => Promise<TaxRate> {
-        const taxRateCache = new Map<TaxCategory, TaxRate>();
+    ): (taxCategoryId: ID) => Promise<TaxRate> {
+        const taxRateCache = new Map<ID, TaxRate>();
 
-        return async (taxCategory: TaxCategory): Promise<TaxRate> => {
-            const cached = taxRateCache.get(taxCategory);
+        return async (taxCategoryId: ID): Promise<TaxRate> => {
+            const cached = taxRateCache.get(taxCategoryId);
             if (cached) {
                 return cached;
             }
-            const rate = await this.taxRateService.getApplicableTaxRate(ctx, activeZone, taxCategory);
-            taxRateCache.set(taxCategory, rate);
+            const rate = await this.taxRateService.getApplicableTaxRate(ctx, activeZone, taxCategoryId);
+            taxRateCache.set(taxCategoryId, rate);
             return rate;
         };
     }
@@ -176,6 +175,8 @@ export class OrderCalculator {
      * Applies promotions to OrderItems. This is a quite complex function, due to the inherent complexity
      * of applying the promotions, and also due to added complexity in the name of performance
      * optimization. Therefore, it is heavily annotated so that the purpose of each step is clear.
+     * Additionally, this is used in both promotionItemAction and promotionLineAction,
+     * as it is difficult to separate action types at this stage.
      */
     private async applyOrderItemPromotions(
         ctx: RequestContext,
@@ -185,8 +186,8 @@ export class OrderCalculator {
         for (const line of order.lines) {
             // Must be re-calculated for each line, since the previous lines may have triggered promotions
             // which affected the order price.
-            const applicablePromotions = await filterAsync(promotions, p => p.test(ctx, order).then(Boolean));
             line.clearAdjustments();
+            const applicablePromotions = await filterAsync(promotions, p => p.test(ctx, order).then(Boolean));
 
             for (const promotion of applicablePromotions) {
                 let priceAdjusted = false;
@@ -199,7 +200,6 @@ export class OrderCalculator {
                     // for (const item of line.items) {
                     const adjustment = await promotion.apply(ctx, { orderLine: line }, state);
                     if (adjustment) {
-                        adjustment.amount = adjustment.amount * line.quantity;
                         line.addAdjustment(adjustment);
                         priceAdjusted = true;
                     }
@@ -248,9 +248,9 @@ export class OrderCalculator {
                     const adjustment = await promotion.apply(ctx, { order }, state);
                     if (adjustment && adjustment.amount !== 0) {
                         const amount = adjustment.amount;
-                        const weights = order.lines
-                            .filter(l => l.quantity !== 0)
-                            .map(l => l.proratedLinePriceWithTax);
+                        const weights = order.lines.map(l =>
+                            l.quantity !== 0 ? l.proratedLinePriceWithTax : 0,
+                        );
                         const distribution = prorate(weights, amount);
                         order.lines.forEach((line, i) => {
                             const shareOfAmount = distribution[i];

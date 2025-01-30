@@ -1,12 +1,12 @@
 {
     "name": "@vendure/asset-server-plugin",
-    "version": "2.2.0-next.8",
+    "version": "3.1.2",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "files": [
         "lib/**/*"
     ],
-    "license": "MIT",
+    "license": "GPL-3.0-or-later",
     "scripts": {
         "watch": "tsc -p ./tsconfig.build.json --watch",
         "build": "rimraf lib && tsc -p ./tsconfig.build.json && node build.js",
@@ -26,8 +26,8 @@
         "@types/express": "^4.17.21",
         "@types/fs-extra": "^11.0.4",
         "@types/node-fetch": "^2.6.11",
-        "@vendure/common": "2.2.0-next.8",
-        "@vendure/core": "2.2.0-next.8",
+        "@vendure/common": "^3.1.2",
+        "@vendure/core": "^3.1.2",
         "express": "^4.18.3",
         "node-fetch": "^2.7.0",
         "rimraf": "^5.0.5",
@@ -36,6 +36,6 @@
     "dependencies": {
         "file-type": "^19.0.0",
         "fs-extra": "^11.2.0",
-        "sharp": "~0.33.2"
+        "sharp": "~0.33.5"
     }
 }

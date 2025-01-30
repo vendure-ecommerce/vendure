@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ProductVariantService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/product-variant.service.ts" sourceLine="68" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/product-variant.service.ts" sourceLine="69" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a> entities.
 
@@ -34,7 +34,7 @@ class ProductVariantService {
     getFulfillableStockLevel(ctx: RequestContext, variant: ProductVariant) => Promise<number>;
     create(ctx: RequestContext, input: CreateProductVariantInput[]) => Promise<Array<Translated<ProductVariant>>>;
     update(ctx: RequestContext, input: UpdateProductVariantInput[]) => Promise<Array<Translated<ProductVariant>>>;
-    createOrUpdateProductVariantPrice(ctx: RequestContext, productVariantId: ID, price: number, channelId: ID, currencyCode?: CurrencyCode) => Promise<ProductVariantPrice>;
+    createOrUpdateProductVariantPrice(ctx: RequestContext, productVariantId: ID, price: number, channelId: ID, currencyCode?: CurrencyCode, customFields?: CustomFieldsObject) => Promise<ProductVariantPrice>;
     deleteProductVariantPrice(ctx: RequestContext, variantId: ID, channelId: ID, currencyCode: CurrencyCode) => ;
     softDelete(ctx: RequestContext, id: ID | ID[]) => Promise<DeletionResponse>;
     hydratePriceFields(ctx: RequestContext, variant: ProductVariant, priceField: F) => Promise<ProductVariant[F]>;
@@ -48,7 +48,7 @@ class ProductVariantService {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, taxCategoryService: <a href='/reference/typescript-api/services/tax-category-service#taxcategoryservice'>TaxCategoryService</a>, facetValueService: <a href='/reference/typescript-api/services/facet-value-service#facetvalueservice'>FacetValueService</a>, assetService: <a href='/reference/typescript-api/services/asset-service#assetservice'>AssetService</a>, translatableSaver: <a href='/reference/typescript-api/service-helpers/translatable-saver#translatablesaver'>TranslatableSaver</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, globalSettingsService: <a href='/reference/typescript-api/services/global-settings-service#globalsettingsservice'>GlobalSettingsService</a>, stockMovementService: <a href='/reference/typescript-api/services/stock-movement-service#stockmovementservice'>StockMovementService</a>, stockLevelService: <a href='/reference/typescript-api/services/stock-level-service#stocklevelservice'>StockLevelService</a>, channelService: <a href='/reference/typescript-api/services/channel-service#channelservice'>ChannelService</a>, roleService: <a href='/reference/typescript-api/services/role-service#roleservice'>RoleService</a>, customFieldRelationService: CustomFieldRelationService, requestCache: RequestContextCacheService, productPriceApplicator: <a href='/reference/typescript-api/service-helpers/product-price-applicator#productpriceapplicator'>ProductPriceApplicator</a>, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>) => ProductVariantService`}   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, taxCategoryService: <a href='/reference/typescript-api/services/tax-category-service#taxcategoryservice'>TaxCategoryService</a>, facetValueService: <a href='/reference/typescript-api/services/facet-value-service#facetvalueservice'>FacetValueService</a>, assetService: <a href='/reference/typescript-api/services/asset-service#assetservice'>AssetService</a>, translatableSaver: <a href='/reference/typescript-api/service-helpers/translatable-saver#translatablesaver'>TranslatableSaver</a>, eventBus: <a href='/reference/typescript-api/events/event-bus#eventbus'>EventBus</a>, listQueryBuilder: <a href='/reference/typescript-api/data-access/list-query-builder#listquerybuilder'>ListQueryBuilder</a>, globalSettingsService: <a href='/reference/typescript-api/services/global-settings-service#globalsettingsservice'>GlobalSettingsService</a>, stockMovementService: <a href='/reference/typescript-api/services/stock-movement-service#stockmovementservice'>StockMovementService</a>, stockLevelService: <a href='/reference/typescript-api/services/stock-level-service#stocklevelservice'>StockLevelService</a>, channelService: <a href='/reference/typescript-api/services/channel-service#channelservice'>ChannelService</a>, roleService: <a href='/reference/typescript-api/services/role-service#roleservice'>RoleService</a>, customFieldRelationService: CustomFieldRelationService, requestCache: <a href='/reference/typescript-api/cache/request-context-cache-service#requestcontextcacheservice'>RequestContextCacheService</a>, productPriceApplicator: <a href='/reference/typescript-api/service-helpers/product-price-applicator#productpriceapplicator'>ProductPriceApplicator</a>, translator: <a href='/reference/typescript-api/service-helpers/translator-service#translatorservice'>TranslatorService</a>) => ProductVariantService`}   />
 
 
 ### findAll
@@ -139,7 +139,7 @@ for those variants which are tracking inventory.
 
 ### createOrUpdateProductVariantPrice
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>, price: number, channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>, currencyCode?: <a href='/reference/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>) => Promise&#60;<a href='/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, productVariantId: <a href='/reference/typescript-api/common/id#id'>ID</a>, price: number, channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>, currencyCode?: <a href='/reference/typescript-api/common/currency-code#currencycode'>CurrencyCode</a>, customFields?: CustomFieldsObject) => Promise&#60;<a href='/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a>&#62;`}   />
 
 Creates a <a href='/reference/typescript-api/entities/product-variant-price#productvariantprice'>ProductVariantPrice</a> for the given ProductVariant/Channel combination.
 If the `currencyCode` is not specified, the default currency of the Channel will be used.

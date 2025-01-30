@@ -94,10 +94,10 @@ export class ExternalAuthenticationService {
         config: {
             strategy: string;
             externalIdentifier: string;
-            verified: boolean;
             emailAddress: string;
-            firstName?: string;
-            lastName?: string;
+            firstName: string;
+            lastName: string;
+            verified?: boolean;
         },
     ): Promise<User> {
         let user: User;
@@ -206,7 +206,7 @@ export class ExternalAuthenticationService {
             }),
         );
 
-        return newUser;
+        return savedUser;
     }
 
     async findUser(
@@ -238,5 +238,37 @@ export class ExternalAuthenticationService {
             .getOne();
 
         return customer?.user;
+    }
+
+    /**
+     * @description
+     * Looks up a User based on their identifier from an external authentication
+     * provider. Creates the user if does not exist. Unlike `findCustomerUser` and `findAdministratorUser`,
+     * this method does not enforce that the User is associated with a Customer or
+     * Administrator account.
+     *
+     */
+    async createUser(
+        ctx: RequestContext,
+        config: {
+            strategy: string;
+            externalIdentifier: string;
+        },
+    ): Promise<User> {
+        const user = await this.findUser(ctx, config.strategy, config.externalIdentifier);
+        if (user) {
+            return user;
+        }
+        const newUser = new User();
+        const authMethod = await this.connection.getRepository(ctx, ExternalAuthenticationMethod).save(
+            new ExternalAuthenticationMethod({
+                externalIdentifier: config.externalIdentifier,
+                strategy: config.strategy,
+            }),
+        );
+        newUser.identifier = config.externalIdentifier;
+        newUser.authenticationMethods = [authMethod];
+        const savedUser = await this.connection.getRepository(ctx, User).save(newUser);
+        return savedUser;
     }
 }

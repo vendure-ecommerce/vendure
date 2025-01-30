@@ -87,7 +87,7 @@ describe('OrderCalculator', () => {
             await orderCalculator.applyPriceAdjustments(ctx, order, []);
 
             expect(order.subTotal).toBe(369);
-            expect(order.subTotalWithTax).toBe(444);
+            expect(order.subTotalWithTax).toBe(443);
         });
 
         it('resets totals when lines array is empty', async () => {
@@ -364,7 +364,7 @@ describe('OrderCalculator', () => {
                     });
                     await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], [order.lines[0]]);
 
-                    expect(order.subTotal).toBe(1173);
+                    expect(order.subTotal).toBe(1174);
                     expect(order.subTotalWithTax).toBe(1350);
                     expect(order.lines[0].adjustments.length).toBe(1);
                     expect(order.lines[0].adjustments[0].description).toBe('50% off each item');
@@ -1107,7 +1107,7 @@ describe('OrderCalculator', () => {
                     ]);
 
                     expect(order.subTotal).toBe(5719);
-                    expect(order.subTotalWithTax).toBe(6448);
+                    expect(order.subTotalWithTax).toBe(6446);
                     assertOrderTotalsAddUp(order);
                 });
 
@@ -1178,9 +1178,74 @@ describe('OrderCalculator', () => {
                     // ```
                     // However, there is always a tradeoff when using integer precision with compounding
                     // fractional multiplication.
-                    expect(order.subTotal).toBe(5079);
-                    expect(order.subTotalWithTax).toBe(5722);
+                    expect(order.subTotal).toBe(5081);
+                    expect(order.subTotalWithTax).toBe(5719);
                 });
+            });
+
+            it(`clear previous promotion state before testing`, async () => {
+                const noLineDiscountsCondition = new PromotionCondition({
+                    args: {},
+                    code: 'no_other_discounts_condition',
+                    description: [{ languageCode: LanguageCode.en, value: '' }],
+                    check(_ctx, _order) {
+                        const linesToDiscount = _order.lines
+                            .filter(line => !line.adjustments.length)
+                            .map(line => line.id);
+                        return linesToDiscount.length ? { lines: linesToDiscount } : false;
+                    },
+                });
+                const discountMatchedLinesAction = new PromotionItemAction({
+                    code: 'discount_matched_lines_action',
+                    conditions: [noLineDiscountsCondition],
+                    description: [{ languageCode: LanguageCode.en, value: '' }],
+                    args: { discount: { type: 'int' } },
+                    execute(_ctx, orderLine, args, state) {
+                        if (state.no_other_discounts_condition.lines.includes(orderLine.id)) {
+                            return -args.discount;
+                        }
+                        return 0;
+                    },
+                });
+
+                const discountAllUndiscountedItems = new Promotion({
+                    id: 1,
+                    name: 'Discount all undiscounted items',
+                    conditions: [
+                        {
+                            code: noLineDiscountsCondition.code,
+                            args: [],
+                        },
+                    ],
+                    promotionConditions: [noLineDiscountsCondition],
+                    actions: [
+                        {
+                            code: discountMatchedLinesAction.code,
+                            args: [{ name: 'discount', value: '50' }],
+                        },
+                    ],
+                    promotionActions: [discountMatchedLinesAction],
+                });
+
+                const ctx = createRequestContext({ pricesIncludeTax: false });
+                const order = createOrder({
+                    ctx,
+                    lines: [
+                        {
+                            listPrice: 500,
+                            taxCategory: taxCategoryStandard,
+                            quantity: 2,
+                        },
+                    ],
+                });
+
+                await orderCalculator.applyPriceAdjustments(ctx, order, [discountAllUndiscountedItems]);
+                // everything gets discounted by 50
+                expect(order.subTotal).toBe(900);
+                // should still be discounted after changing quantity
+                order.lines[0].quantity = 3;
+                await orderCalculator.applyPriceAdjustments(ctx, order, [discountAllUndiscountedItems]);
+                expect(order.subTotal).toBe(1350);
             });
         });
     });
@@ -1250,7 +1315,7 @@ describe('OrderCalculator', () => {
 
                 await orderCalculator.applyPriceAdjustments(ctx, order, []);
 
-                expect(order.subTotal).toBe(5087);
+                expect(order.subTotal).toBe(5088);
                 expect(order.subTotalWithTax).toBe(5739);
                 assertOrderTotalsAddUp(order);
             });

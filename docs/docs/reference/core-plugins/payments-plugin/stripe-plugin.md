@@ -182,7 +182,7 @@ Initialize the Stripe payment plugin
 
 ## StripePluginOptions
 
-<GenerationInfo sourceFile="packages/payments-plugin/src/stripe/types.ts" sourceLine="27" packageName="@vendure/payments-plugin" />
+<GenerationInfo sourceFile="packages/payments-plugin/src/stripe/types.ts" sourceLine="29" packageName="@vendure/payments-plugin" />
 
 Configuration options for the Stripe payments plugin.
 
@@ -199,11 +199,17 @@ interface StripePluginOptions {
         ctx: RequestContext,
         order: Order,
     ) => AdditionalPaymentIntentCreateParams | Promise<AdditionalPaymentIntentCreateParams>;
+    requestOptions?: (
+        injector: Injector,
+        ctx: RequestContext,
+        order: Order,
+    ) => AdditionalRequestOptions | Promise<AdditionalRequestOptions>;
     customerCreateParams?: (
         injector: Injector,
         ctx: RequestContext,
         order: Order,
     ) => AdditionalCustomerCreateParams | Promise<AdditionalCustomerCreateParams>;
+    skipPaymentIntentsWithoutExpectedMetadata?: boolean;
 }
 ```
 
@@ -211,7 +217,7 @@ interface StripePluginOptions {
 
 ### storeCustomersInStripe
 
-<MemberInfo kind="property" type={`boolean`} default="false"   />
+<MemberInfo kind="property" type={`boolean`} default={`false`}   />
 
 If set to `true`, a [Customer](https://stripe.com/docs/api/customers) object will be created in Stripe - if
 it doesn't already exist - for authenticated users, which prevents payment methods attached to other Customers
@@ -275,6 +281,34 @@ export const config: VendureConfig = {
   ],
 };
 ```
+### requestOptions
+
+<MemberInfo kind="property" type={`(         injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>,         ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>,         order: <a href='/reference/typescript-api/entities/order#order'>Order</a>,     ) =&#62; AdditionalRequestOptions | Promise&#60;AdditionalRequestOptions&#62;`}  since="3.1.0"  />
+
+Provide additional options to the Stripe payment intent creation. By default,
+the plugin will already pass the `idempotencyKey` parameter.
+
+For example, if you want to provide a `stripeAccount` for the payment intent, you can do so like this:
+
+*Example*
+
+```ts
+import { VendureConfig } from '@vendure/core';
+import { StripePlugin } from '@vendure/payments-plugin/package/stripe';
+
+export const config: VendureConfig = {
+  // ...
+  plugins: [
+    StripePlugin.init({
+      requestOptions: (injector, ctx, order) => {
+        return {
+          stripeAccount: ctx.channel.seller?.customFields.connectedAccountId
+        },
+      }
+    }),
+  ],
+};
+```
 ### customerCreateParams
 
 <MemberInfo kind="property" type={`(         injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>,         ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>,         order: <a href='/reference/typescript-api/entities/order#order'>Order</a>,     ) =&#62; AdditionalCustomerCreateParams | Promise&#60;AdditionalCustomerCreateParams&#62;`}  since="2.1.0"  />
@@ -314,6 +348,12 @@ export const config: VendureConfig = {
   ],
 };
 ```
+### skipPaymentIntentsWithoutExpectedMetadata
+
+<MemberInfo kind="property" type={`boolean`}   />
+
+If your Stripe account also generates payment intents which are independent of Vendure orders, you can set this
+to `true` to skip processing those payment intents.
 
 
 </div>

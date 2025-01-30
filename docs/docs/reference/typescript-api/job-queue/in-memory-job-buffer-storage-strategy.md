@@ -18,7 +18,7 @@ _not_ be used in production, since it will lose data in the event of the server
 stopping.
 
 Instead, use the <a href='/reference/typescript-api/job-queue/default-job-queue-plugin#defaultjobqueueplugin'>DefaultJobQueuePlugin</a> with the `useDatabaseForBuffer: true` option set,
-or the {@link BullMQJobQueuePlugin} or another custom strategy with persistent storage.
+or the <a href='/reference/core-plugins/job-queue-plugin/bull-mqjob-queue-plugin#bullmqjobqueueplugin'>BullMQJobQueuePlugin</a> or another custom strategy with persistent storage.
 
 ```ts title="Signature"
 class InMemoryJobBufferStorageStrategy implements JobBufferStorageStrategy {

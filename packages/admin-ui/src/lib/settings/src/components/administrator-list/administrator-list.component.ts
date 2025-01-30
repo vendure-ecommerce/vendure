@@ -48,6 +48,7 @@ export class AdministratorListComponent extends TypedBaseListComponent<
     typeof GetAdministratorListDocument,
     'administrators'
 > {
+    dataTableListId = 'administrator-list';
     readonly customFields = this.getCustomFieldConfig('Administrator');
     readonly filters = this.createFilterCollection()
         .addIdFilter()

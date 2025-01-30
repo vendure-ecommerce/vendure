@@ -11,13 +11,13 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Promotion
 
-<GenerationInfo sourceFile="packages/core/src/entity/promotion/promotion.entity.ts" sourceLine="57" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/promotion/promotion.entity.ts" sourceLine="61" packageName="@vendure/core" />
 
 A Promotion is used to define a set of conditions under which promotions actions (typically discounts)
 will be applied to an Order.
 
 Each assigned <a href='/reference/typescript-api/promotions/promotion-condition#promotioncondition'>PromotionCondition</a> is checked against the Order, and if they all return `true`,
-then each assign <a href='/reference/typescript-api/promotions/promotion-action#promotionitemaction'>PromotionItemAction</a> / <a href='/reference/typescript-api/promotions/promotion-action#promotionorderaction'>PromotionOrderAction</a> is applied to the Order.
+then each assign <a href='/reference/typescript-api/promotions/promotion-action#promotionitemaction'>PromotionItemAction</a> / <a href='/reference/typescript-api/promotions/promotion-action#promotionlineaction'>PromotionLineAction</a> / <a href='/reference/typescript-api/promotions/promotion-action#promotionorderaction'>PromotionOrderAction</a> / <a href='/reference/typescript-api/promotions/promotion-action#promotionshippingaction'>PromotionShippingAction</a> is applied to the Order.
 
 ```ts title="Signature"
 class Promotion extends AdjustmentSource implements ChannelAware, SoftDeletable, HasCustomFields, Translatable {
@@ -43,7 +43,7 @@ class Promotion extends AdjustmentSource implements ChannelAware, SoftDeletable,
     @OneToMany(type => PromotionTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<Promotion>>;
     @Column() enabled: boolean;
-    @ManyToMany(type => Channel)
+    @ManyToMany(type => Channel, channel => channel.promotions)
     @JoinTable()
     channels: Channel[];
     @ManyToMany(type => Order, order => order.promotions)

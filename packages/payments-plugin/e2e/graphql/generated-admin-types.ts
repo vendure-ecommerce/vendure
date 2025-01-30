@@ -14,9 +14,13 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   DateTime: { input: any; output: any; }
+  /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
   JSON: { input: any; output: any; }
+  /** The `Money` scalar type represents monetary values and supports signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point). */
   Money: { input: number; output: number; }
+  /** The `Upload` scalar type represents a file upload. */
   Upload: { input: any; output: any; }
 };
 
@@ -150,6 +154,7 @@ export type AdministratorSortParameter = {
 
 export type Allocation = Node & StockMovement & {
   createdAt: Scalars['DateTime']['output'];
+  customFields?: Maybe<Scalars['JSON']['output']>;
   id: Scalars['ID']['output'];
   orderLine: OrderLine;
   productVariant: ProductVariant;
@@ -323,6 +328,15 @@ export type BooleanOperators = {
   isNull?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type BooleanStructFieldConfig = StructField & {
+  description?: Maybe<Array<LocalizedString>>;
+  label?: Maybe<Array<LocalizedString>>;
+  list: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+  ui?: Maybe<Scalars['JSON']['output']>;
+};
+
 /** Returned if an attempting to cancel lines from an Order which is still active */
 export type CancelActiveOrderError = ErrorResult & {
   errorCode: ErrorCode;
@@ -353,6 +367,7 @@ export type CancelPaymentResult = CancelPaymentError | Payment | PaymentStateTra
 
 export type Cancellation = Node & StockMovement & {
   createdAt: Scalars['DateTime']['output'];
+  customFields?: Maybe<Scalars['JSON']['output']>;
   id: Scalars['ID']['output'];
   orderLine: OrderLine;
   productVariant: ProductVariant;
@@ -585,6 +600,12 @@ export type CoordinateInput = {
   y: Scalars['Float']['input'];
 };
 
+/**
+ * A Country of the world which your shop operates in.
+ *
+ * The `code` field is typically a 2-character ISO code such as "GB", "US", "DE" etc. This code is used in certain inputs such as
+ * `UpdateAddressInput` and `CreateAddressInput` to specify the country.
+ */
 export type Country = Node & Region & {
   code: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
@@ -671,6 +692,13 @@ export type CouponCodeLimitError = ErrorResult & {
   message: Scalars['String']['output'];
 };
 
+/**
+ * Input used to create an Address.
+ *
+ * The countryCode must correspond to a `code` property of a Country that has been defined in the
+ * Vendure server. The `code` property is typically a 2-character ISO code such as "GB", "US", "DE" etc.
+ * If an invalid code is passed, the mutation will fail.
+ */
 export type CreateAddressInput = {
   city?: InputMaybe<Scalars['String']['input']>;
   company?: InputMaybe<Scalars['String']['input']>;
@@ -838,6 +866,7 @@ export type CreateProductVariantInput = {
   optionIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   outOfStockThreshold?: InputMaybe<Scalars['Int']['input']>;
   price?: InputMaybe<Scalars['Money']['input']>;
+  prices?: InputMaybe<Array<InputMaybe<CreateProductVariantPriceInput>>>;
   productId: Scalars['ID']['input'];
   sku: Scalars['String']['input'];
   stockLevels?: InputMaybe<Array<StockLevelInput>>;
@@ -852,6 +881,12 @@ export type CreateProductVariantOptionInput = {
   code: Scalars['String']['input'];
   optionGroupId: Scalars['ID']['input'];
   translations: Array<ProductOptionTranslationInput>;
+};
+
+export type CreateProductVariantPriceInput = {
+  currencyCode: CurrencyCode;
+  customFields?: InputMaybe<Scalars['JSON']['input']>;
+  price: Scalars['Money']['input'];
 };
 
 export type CreatePromotionInput = {
@@ -1278,11 +1313,11 @@ export type CustomField = {
   ui?: Maybe<Scalars['JSON']['output']>;
 };
 
-export type CustomFieldConfig = BooleanCustomFieldConfig | DateTimeCustomFieldConfig | FloatCustomFieldConfig | IntCustomFieldConfig | LocaleStringCustomFieldConfig | LocaleTextCustomFieldConfig | RelationCustomFieldConfig | StringCustomFieldConfig | TextCustomFieldConfig;
+export type CustomFieldConfig = BooleanCustomFieldConfig | DateTimeCustomFieldConfig | FloatCustomFieldConfig | IntCustomFieldConfig | LocaleStringCustomFieldConfig | LocaleTextCustomFieldConfig | RelationCustomFieldConfig | StringCustomFieldConfig | StructCustomFieldConfig | TextCustomFieldConfig;
 
 /**
  * This type is deprecated in v2.2 in favor of the EntityCustomFields type,
- * which allows custom fields to be defined on user-supplies entities.
+ * which allows custom fields to be defined on user-supplied entities.
  */
 export type CustomFields = {
   Address: Array<CustomFieldConfig>;
@@ -1296,8 +1331,10 @@ export type CustomFields = {
   FacetValue: Array<CustomFieldConfig>;
   Fulfillment: Array<CustomFieldConfig>;
   GlobalSettings: Array<CustomFieldConfig>;
+  HistoryEntry: Array<CustomFieldConfig>;
   Order: Array<CustomFieldConfig>;
   OrderLine: Array<CustomFieldConfig>;
+  Payment: Array<CustomFieldConfig>;
   PaymentMethod: Array<CustomFieldConfig>;
   Product: Array<CustomFieldConfig>;
   ProductOption: Array<CustomFieldConfig>;
@@ -1305,10 +1342,15 @@ export type CustomFields = {
   ProductVariant: Array<CustomFieldConfig>;
   ProductVariantPrice: Array<CustomFieldConfig>;
   Promotion: Array<CustomFieldConfig>;
+  Refund: Array<CustomFieldConfig>;
   Region: Array<CustomFieldConfig>;
   Seller: Array<CustomFieldConfig>;
+  Session: Array<CustomFieldConfig>;
+  ShippingLine: Array<CustomFieldConfig>;
   ShippingMethod: Array<CustomFieldConfig>;
+  StockLevel: Array<CustomFieldConfig>;
   StockLocation: Array<CustomFieldConfig>;
+  StockMovement: Array<CustomFieldConfig>;
   TaxCategory: Array<CustomFieldConfig>;
   TaxRate: Array<CustomFieldConfig>;
   User: Array<CustomFieldConfig>;
@@ -1472,6 +1514,22 @@ export type DateTimeCustomFieldConfig = CustomField & {
   ui?: Maybe<Scalars['JSON']['output']>;
 };
 
+/**
+ * Expects the same validation formats as the `<input type="datetime-local">` HTML element.
+ * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
+ */
+export type DateTimeStructFieldConfig = StructField & {
+  description?: Maybe<Array<LocalizedString>>;
+  label?: Maybe<Array<LocalizedString>>;
+  list: Scalars['Boolean']['output'];
+  max?: Maybe<Scalars['String']['output']>;
+  min?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  step?: Maybe<Scalars['Int']['output']>;
+  type: Scalars['String']['output'];
+  ui?: Maybe<Scalars['JSON']['output']>;
+};
+
 export type DeleteAssetInput = {
   assetId: Scalars['ID']['input'];
   deleteFromAllChannels?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1583,9 +1641,11 @@ export enum ErrorCode {
   NOTHING_TO_REFUND_ERROR = 'NOTHING_TO_REFUND_ERROR',
   NO_ACTIVE_ORDER_ERROR = 'NO_ACTIVE_ORDER_ERROR',
   NO_CHANGES_SPECIFIED_ERROR = 'NO_CHANGES_SPECIFIED_ERROR',
+  ORDER_INTERCEPTOR_ERROR = 'ORDER_INTERCEPTOR_ERROR',
   ORDER_LIMIT_ERROR = 'ORDER_LIMIT_ERROR',
   ORDER_MODIFICATION_ERROR = 'ORDER_MODIFICATION_ERROR',
   ORDER_MODIFICATION_STATE_ERROR = 'ORDER_MODIFICATION_STATE_ERROR',
+  ORDER_PAYMENT_STATE_ERROR = 'ORDER_PAYMENT_STATE_ERROR',
   ORDER_STATE_TRANSITION_ERROR = 'ORDER_STATE_TRANSITION_ERROR',
   PAYMENT_METHOD_MISSING_ERROR = 'PAYMENT_METHOD_MISSING_ERROR',
   PAYMENT_ORDER_MISMATCH_ERROR = 'PAYMENT_ORDER_MISMATCH_ERROR',
@@ -1791,6 +1851,18 @@ export type FloatCustomFieldConfig = CustomField & {
   ui?: Maybe<Scalars['JSON']['output']>;
 };
 
+export type FloatStructFieldConfig = StructField & {
+  description?: Maybe<Array<LocalizedString>>;
+  label?: Maybe<Array<LocalizedString>>;
+  list: Scalars['Boolean']['output'];
+  max?: Maybe<Scalars['Float']['output']>;
+  min?: Maybe<Scalars['Float']['output']>;
+  name: Scalars['String']['output'];
+  step?: Maybe<Scalars['Float']['output']>;
+  type: Scalars['String']['output'];
+  ui?: Maybe<Scalars['JSON']['output']>;
+};
+
 export type FulfillOrderInput = {
   handler: ConfigurableOperationInput;
   lines: Array<OrderLineInput>;
@@ -1854,6 +1926,7 @@ export type GuestCheckoutError = ErrorResult & {
 export type HistoryEntry = Node & {
   administrator?: Maybe<Administrator>;
   createdAt: Scalars['DateTime']['output'];
+  customFields?: Maybe<Scalars['JSON']['output']>;
   data: Scalars['JSON']['output'];
   id: Scalars['ID']['output'];
   isPublic: Scalars['Boolean']['output'];
@@ -1980,6 +2053,18 @@ export type IntCustomFieldConfig = CustomField & {
   nullable?: Maybe<Scalars['Boolean']['output']>;
   readonly?: Maybe<Scalars['Boolean']['output']>;
   requiresPermission?: Maybe<Array<Permission>>;
+  step?: Maybe<Scalars['Int']['output']>;
+  type: Scalars['String']['output'];
+  ui?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type IntStructFieldConfig = StructField & {
+  description?: Maybe<Array<LocalizedString>>;
+  label?: Maybe<Array<LocalizedString>>;
+  list: Scalars['Boolean']['output'];
+  max?: Maybe<Scalars['Int']['output']>;
+  min?: Maybe<Scalars['Int']['output']>;
+  name: Scalars['String']['output'];
   step?: Maybe<Scalars['Int']['output']>;
   type: Scalars['String']['output'];
   ui?: Maybe<Scalars['JSON']['output']>;
@@ -2548,6 +2633,66 @@ export type ModifyOrderOptions = {
 
 export type ModifyOrderResult = CouponCodeExpiredError | CouponCodeInvalidError | CouponCodeLimitError | IneligibleShippingMethodError | InsufficientStockError | NegativeQuantityError | NoChangesSpecifiedError | Order | OrderLimitError | OrderModificationStateError | PaymentMethodMissingError | RefundPaymentIdMissingError;
 
+export type MollieAmount = {
+  currency?: Maybe<Scalars['String']['output']>;
+  value?: Maybe<Scalars['String']['output']>;
+};
+
+export type MolliePaymentIntent = {
+  url: Scalars['String']['output'];
+};
+
+export type MolliePaymentIntentError = ErrorResult & {
+  errorCode: ErrorCode;
+  message: Scalars['String']['output'];
+};
+
+export type MolliePaymentIntentInput = {
+  /**
+   * Optional preselected Mollie payment method. When this is passed
+   * the payment selection step will be skipped.
+   */
+  molliePaymentMethodCode?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Use this to create a payment intent for a specific order. This allows you to create intents for
+   * orders that are not active orders.
+   */
+  orderId?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * The code of the Vendure payment method to use for the payment.
+   * Must have Mollie as payment method handler.
+   * Without this, the first method with Mollie as handler will be used.
+   */
+  paymentMethodCode?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * The redirect url to which the customer will be redirected after the payment is completed.
+   * The configured fallback redirect will be used if this is not provided.
+   */
+  redirectUrl?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type MolliePaymentIntentResult = MolliePaymentIntent | MolliePaymentIntentError;
+
+export type MolliePaymentMethod = {
+  code: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  image?: Maybe<MolliePaymentMethodImages>;
+  maximumAmount?: Maybe<MollieAmount>;
+  minimumAmount?: Maybe<MollieAmount>;
+  status?: Maybe<Scalars['String']['output']>;
+};
+
+export type MolliePaymentMethodImages = {
+  size1x?: Maybe<Scalars['String']['output']>;
+  size2x?: Maybe<Scalars['String']['output']>;
+  svg?: Maybe<Scalars['String']['output']>;
+};
+
+export type MolliePaymentMethodsInput = {
+  paymentMethodCode: Scalars['String']['input'];
+};
+
 export type MoveCollectionInput = {
   collectionId: Scalars['ID']['input'];
   index: Scalars['Int']['input'];
@@ -2633,6 +2778,7 @@ export type Mutation = {
   createFacet: Facet;
   /** Create one or more FacetValues */
   createFacetValues: Array<FacetValue>;
+  createMolliePaymentIntent: MolliePaymentIntentResult;
   /** Create existing PaymentMethod */
   createPaymentMethod: PaymentMethod;
   /** Create a new Product */
@@ -2747,10 +2893,19 @@ export type Mutation = {
   deleteZone: DeletionResponse;
   /** Delete a Zone */
   deleteZones: Array<DeletionResponse>;
+  /**
+   * Duplicate an existing entity using a specific EntityDuplicator.
+   * Since v2.2.0.
+   */
   duplicateEntity: DuplicateEntityResult;
   flushBufferedJobs: Success;
   importProducts?: Maybe<ImportInfo>;
-  /** Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})` */
+  /**
+   * Authenticates the user using the native authentication strategy. This mutation is an alias for authenticate({ native: { ... }})
+   *
+   * The `rememberMe` option applies when using cookie-based sessions, and if `true` it will set the maxAge of the session cookie
+   * to 1 year.
+   */
   login: NativeAuthenticationResult;
   logout: Success;
   /**
@@ -2813,6 +2968,10 @@ export type Mutation = {
   transitionFulfillmentToState: TransitionFulfillmentToStateResult;
   transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
   transitionPaymentToState: TransitionPaymentToStateResult;
+  /** Unsets the billing address for a draft Order */
+  unsetDraftOrderBillingAddress: Order;
+  /** Unsets the shipping address for a draft Order */
+  unsetDraftOrderShippingAddress: Order;
   /** Update the active (currently logged-in) Administrator */
   updateActiveAdministrator: Administrator;
   /** Update an existing Administrator */
@@ -3048,6 +3207,11 @@ export type MutationCreateFacetArgs = {
 
 export type MutationCreateFacetValuesArgs = {
   input: Array<CreateFacetValueInput>;
+};
+
+
+export type MutationCreateMolliePaymentIntentArgs = {
+  input: MolliePaymentIntentInput;
 };
 
 
@@ -3544,6 +3708,16 @@ export type MutationTransitionPaymentToStateArgs = {
 };
 
 
+export type MutationUnsetDraftOrderBillingAddressArgs = {
+  orderId: Scalars['ID']['input'];
+};
+
+
+export type MutationUnsetDraftOrderShippingAddressArgs = {
+  orderId: Scalars['ID']['input'];
+};
+
+
 export type MutationUpdateActiveAdministratorArgs = {
   input: UpdateActiveAdministratorInput;
 };
@@ -3864,6 +4038,13 @@ export type OrderFilterParameter = {
   updatedAt?: InputMaybe<DateOperators>;
 };
 
+/** Returned when an order operation is rejected by an OrderInterceptor method. */
+export type OrderInterceptorError = ErrorResult & {
+  errorCode: ErrorCode;
+  interceptorError: Scalars['String']['output'];
+  message: Scalars['String']['output'];
+};
+
 /** Returned when the maximum order size limit has been reached. */
 export type OrderLimitError = ErrorResult & {
   errorCode: ErrorCode;
@@ -4052,6 +4233,7 @@ export type PaginatedList = {
 export type Payment = Node & {
   amount: Scalars['Money']['output'];
   createdAt: Scalars['DateTime']['output'];
+  customFields?: Maybe<Scalars['JSON']['output']>;
   errorMessage?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   metadata?: Maybe<Scalars['JSON']['output']>;
@@ -4644,16 +4826,6 @@ export type ProductVariantPrice = {
   price: Scalars['Money']['output'];
 };
 
-/**
- * Used to set up update the price of a ProductVariant in a particular Channel.
- * If the `delete` flag is `true`, the price will be deleted for the given Channel.
- */
-export type ProductVariantPriceInput = {
-  currencyCode: CurrencyCode;
-  delete?: InputMaybe<Scalars['Boolean']['input']>;
-  price: Scalars['Money']['input'];
-};
-
 export type ProductVariantSortParameter = {
   createdAt?: InputMaybe<SortOrder>;
   id?: InputMaybe<SortOrder>;
@@ -4859,6 +5031,7 @@ export type Query = {
   customers: CustomerList;
   /** Returns a list of eligible shipping methods for the draft Order */
   eligibleShippingMethodsForDraftOrder: Array<ShippingMethodQuote>;
+  /** Returns all configured EntityDuplicators. */
   entityDuplicators: Array<EntityDuplicatorDefinition>;
   facet?: Maybe<Facet>;
   facetValues: FacetValueList;
@@ -4873,6 +5046,7 @@ export type Query = {
   me?: Maybe<CurrentUser>;
   /** Get metrics for the given interval and metric types. */
   metricSummary: Array<MetricSummary>;
+  molliePaymentMethods: Array<MolliePaymentMethod>;
   order?: Maybe<Order>;
   orders: OrderList;
   paymentMethod?: Maybe<PaymentMethod>;
@@ -5035,6 +5209,11 @@ export type QueryJobsByIdArgs = {
 
 export type QueryMetricSummaryArgs = {
   input?: InputMaybe<MetricSummaryInput>;
+};
+
+
+export type QueryMolliePaymentMethodsArgs = {
+  input: MolliePaymentMethodsInput;
 };
 
 
@@ -5213,6 +5392,7 @@ export type QueryZonesArgs = {
 export type Refund = Node & {
   adjustment: Scalars['Money']['output'];
   createdAt: Scalars['DateTime']['output'];
+  customFields?: Maybe<Scalars['JSON']['output']>;
   id: Scalars['ID']['output'];
   items: Scalars['Money']['output'];
   lines: Array<RefundLine>;
@@ -5243,18 +5423,19 @@ export type RefundLine = {
 };
 
 export type RefundOrderInput = {
-  adjustment: Scalars['Money']['input'];
+  /** @deprecated Use the `amount` field instead */
+  adjustment?: InputMaybe<Scalars['Money']['input']>;
   /**
-   * If an amount is specified, this value will be used to create a Refund rather than calculating the
-   * amount automatically. This was added in v2.2 and will be the preferred way to specify the refund
-   * amount in the future. The `lines`, `shipping` and `adjustment` fields will likely be removed in a future
-   * version.
+   * The amount to be refunded to this particular payment. This was introduced in v2.2.0 as the preferred way to specify the refund amount.
+   * Can be as much as the total amount of the payment minus the sum of all previous refunds.
    */
   amount?: InputMaybe<Scalars['Money']['input']>;
-  lines: Array<OrderLineInput>;
+  /** @deprecated Use the `amount` field instead */
+  lines?: InputMaybe<Array<OrderLineInput>>;
   paymentId: Scalars['ID']['input'];
   reason?: InputMaybe<Scalars['String']['input']>;
-  shipping: Scalars['Money']['input'];
+  /** @deprecated Use the `amount` field instead */
+  shipping?: InputMaybe<Scalars['Money']['input']>;
 };
 
 export type RefundOrderResult = AlreadyRefundedError | MultipleOrderError | NothingToRefundError | OrderStateTransitionError | PaymentOrderMismatchError | QuantityTooGreatError | Refund | RefundAmountError | RefundOrderStateError | RefundStateTransitionError;
@@ -5323,6 +5504,7 @@ export type RelationCustomFieldConfig = CustomField & {
 
 export type Release = Node & StockMovement & {
   createdAt: Scalars['DateTime']['output'];
+  customFields?: Maybe<Scalars['JSON']['output']>;
   id: Scalars['ID']['output'];
   productVariant: ProductVariant;
   quantity: Scalars['Int']['output'];
@@ -5345,7 +5527,7 @@ export type RemoveFacetsFromChannelInput = {
 
 export type RemoveOptionGroupFromProductResult = Product | ProductOptionInUseError;
 
-export type RemoveOrderItemsResult = Order | OrderModificationError;
+export type RemoveOrderItemsResult = Order | OrderInterceptorError | OrderModificationError;
 
 export type RemovePaymentMethodsFromChannelInput = {
   channelId: Scalars['ID']['input'];
@@ -5379,6 +5561,7 @@ export type RemoveStockLocationsFromChannelInput = {
 
 export type Return = Node & StockMovement & {
   createdAt: Scalars['DateTime']['output'];
+  customFields?: Maybe<Scalars['JSON']['output']>;
   id: Scalars['ID']['output'];
   productVariant: ProductVariant;
   quantity: Scalars['Int']['output'];
@@ -5434,6 +5617,7 @@ export type RoleSortParameter = {
 
 export type Sale = Node & StockMovement & {
   createdAt: Scalars['DateTime']['output'];
+  customFields?: Maybe<Scalars['JSON']['output']>;
   id: Scalars['ID']['output'];
   productVariant: ProductVariant;
   quantity: Scalars['Int']['output'];
@@ -5587,6 +5771,7 @@ export type SettleRefundInput = {
 export type SettleRefundResult = Refund | RefundStateTransitionError;
 
 export type ShippingLine = {
+  customFields?: Maybe<Scalars['JSON']['output']>;
   discountedPrice: Scalars['Money']['output'];
   discountedPriceWithTax: Scalars['Money']['output'];
   discounts: Array<Discount>;
@@ -5693,6 +5878,7 @@ export enum SortOrder {
 
 export type StockAdjustment = Node & StockMovement & {
   createdAt: Scalars['DateTime']['output'];
+  customFields?: Maybe<Scalars['JSON']['output']>;
   id: Scalars['ID']['output'];
   productVariant: ProductVariant;
   quantity: Scalars['Int']['output'];
@@ -5702,6 +5888,7 @@ export type StockAdjustment = Node & StockMovement & {
 
 export type StockLevel = Node & {
   createdAt: Scalars['DateTime']['output'];
+  customFields?: Maybe<Scalars['JSON']['output']>;
   id: Scalars['ID']['output'];
   stockAllocated: Scalars['Int']['output'];
   stockLocation: StockLocation;
@@ -5828,6 +6015,43 @@ export type StringOperators = {
   notIn?: InputMaybe<Array<Scalars['String']['input']>>;
   regex?: InputMaybe<Scalars['String']['input']>;
 };
+
+export type StringStructFieldConfig = StructField & {
+  description?: Maybe<Array<LocalizedString>>;
+  label?: Maybe<Array<LocalizedString>>;
+  length?: Maybe<Scalars['Int']['output']>;
+  list: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  options?: Maybe<Array<StringFieldOption>>;
+  pattern?: Maybe<Scalars['String']['output']>;
+  type: Scalars['String']['output'];
+  ui?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type StructCustomFieldConfig = CustomField & {
+  description?: Maybe<Array<LocalizedString>>;
+  fields: Array<StructFieldConfig>;
+  internal?: Maybe<Scalars['Boolean']['output']>;
+  label?: Maybe<Array<LocalizedString>>;
+  list: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  nullable?: Maybe<Scalars['Boolean']['output']>;
+  readonly?: Maybe<Scalars['Boolean']['output']>;
+  requiresPermission?: Maybe<Array<Permission>>;
+  type: Scalars['String']['output'];
+  ui?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type StructField = {
+  description?: Maybe<Array<LocalizedString>>;
+  label?: Maybe<Array<LocalizedString>>;
+  list?: Maybe<Scalars['Boolean']['output']>;
+  name: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+  ui?: Maybe<Scalars['JSON']['output']>;
+};
+
+export type StructFieldConfig = BooleanStructFieldConfig | DateTimeStructFieldConfig | FloatStructFieldConfig | IntStructFieldConfig | StringStructFieldConfig | TextStructFieldConfig;
 
 /** Indicates that an operation succeeded, where we do not want to return any more specific information. */
 export type Success = {
@@ -6036,6 +6260,15 @@ export type TextCustomFieldConfig = CustomField & {
   ui?: Maybe<Scalars['JSON']['output']>;
 };
 
+export type TextStructFieldConfig = StructField & {
+  description?: Maybe<Array<LocalizedString>>;
+  label?: Maybe<Array<LocalizedString>>;
+  list: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+  ui?: Maybe<Scalars['JSON']['output']>;
+};
+
 export type TransitionFulfillmentToStateResult = Fulfillment | FulfillmentStateTransitionError;
 
 export type TransitionOrderToStateResult = Order | OrderStateTransitionError;
@@ -6050,6 +6283,13 @@ export type UpdateActiveAdministratorInput = {
   password?: InputMaybe<Scalars['String']['input']>;
 };
 
+/**
+ * Input used to update an Address.
+ *
+ * The countryCode must correspond to a `code` property of a Country that has been defined in the
+ * Vendure server. The `code` property is typically a 2-character ISO code such as "GB", "US", "DE" etc.
+ * If an invalid code is passed, the mutation will fail.
+ */
 export type UpdateAddressInput = {
   city?: InputMaybe<Scalars['String']['input']>;
   company?: InputMaybe<Scalars['String']['input']>;
@@ -6198,7 +6438,7 @@ export type UpdateOrderInput = {
   id: Scalars['ID']['input'];
 };
 
-export type UpdateOrderItemsResult = InsufficientStockError | NegativeQuantityError | Order | OrderLimitError | OrderModificationError;
+export type UpdateOrderItemsResult = InsufficientStockError | NegativeQuantityError | Order | OrderInterceptorError | OrderLimitError | OrderModificationError;
 
 export type UpdateOrderNoteInput = {
   isPublic?: InputMaybe<Scalars['Boolean']['input']>;
@@ -6252,7 +6492,7 @@ export type UpdateProductVariantInput = {
   /** Sets the price for the ProductVariant in the Channel's default currency */
   price?: InputMaybe<Scalars['Money']['input']>;
   /** Allows multiple prices to be set for the ProductVariant in different currencies. */
-  prices?: InputMaybe<Array<ProductVariantPriceInput>>;
+  prices?: InputMaybe<Array<UpdateProductVariantPriceInput>>;
   sku?: InputMaybe<Scalars['String']['input']>;
   stockLevels?: InputMaybe<Array<StockLevelInput>>;
   stockOnHand?: InputMaybe<Scalars['Int']['input']>;
@@ -6260,6 +6500,17 @@ export type UpdateProductVariantInput = {
   trackInventory?: InputMaybe<GlobalFlag>;
   translations?: InputMaybe<Array<ProductVariantTranslationInput>>;
   useGlobalOutOfStockThreshold?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/**
+ * Used to set up update the price of a ProductVariant in a particular Channel.
+ * If the `delete` flag is `true`, the price will be deleted for the given Channel.
+ */
+export type UpdateProductVariantPriceInput = {
+  currencyCode: CurrencyCode;
+  customFields?: InputMaybe<Scalars['JSON']['input']>;
+  delete?: InputMaybe<Scalars['Boolean']['input']>;
+  price: Scalars['Money']['input'];
 };
 
 export type UpdatePromotionInput = {
@@ -6440,6 +6691,13 @@ export type CreateChannelMutationVariables = Exact<{
 
 export type CreateChannelMutation = { createChannel: { id: string, code: string, token: string, currencyCode: CurrencyCode } | { errorCode: ErrorCode, message: string } };
 
+export type CreatePromotionMutationVariables = Exact<{
+  input: CreatePromotionInput;
+}>;
+
+
+export type CreatePromotionMutation = { createPromotion: { __typename: 'MissingConditionsError', errorCode: ErrorCode } | { __typename: 'Promotion' } };
+
 export const PaymentMethodFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PaymentMethod"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PaymentMethod"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"enabled"}},{"kind":"Field","name":{"kind":"Name","value":"checker"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"args"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"handler"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"args"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}}]}}]} as unknown as DocumentNode<PaymentMethodFragment, unknown>;
 export const RefundFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"Refund"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Refund"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"items"}},{"kind":"Field","name":{"kind":"Name","value":"transactionId"}},{"kind":"Field","name":{"kind":"Name","value":"shipping"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}}]}}]} as unknown as DocumentNode<RefundFragment, unknown>;
 export const CreatePaymentMethodDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreatePaymentMethod"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreatePaymentMethodInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createPaymentMethod"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"PaymentMethod"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"PaymentMethod"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"PaymentMethod"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"enabled"}},{"kind":"Field","name":{"kind":"Name","value":"checker"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"args"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"handler"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"args"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"value"}}]}}]}}]}}]} as unknown as DocumentNode<CreatePaymentMethodMutation, CreatePaymentMethodMutationVariables>;
@@ -6447,3 +6705,4 @@ export const GetCustomerListDocument = {"kind":"Document","definitions":[{"kind"
 export const RefundOrderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RefundOrder"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RefundOrderInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"refundOrder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"Refund"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ErrorResult"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"errorCode"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"Refund"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Refund"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"items"}},{"kind":"Field","name":{"kind":"Name","value":"transactionId"}},{"kind":"Field","name":{"kind":"Name","value":"shipping"}},{"kind":"Field","name":{"kind":"Name","value":"total"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}}]}}]} as unknown as DocumentNode<RefundOrderMutation, RefundOrderMutationVariables>;
 export const OrderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"order"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"order"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"totalWithTax"}},{"kind":"Field","name":{"kind":"Name","value":"payments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"transactionId"}},{"kind":"Field","name":{"kind":"Name","value":"method"}},{"kind":"Field","name":{"kind":"Name","value":"amount"}},{"kind":"Field","name":{"kind":"Name","value":"state"}},{"kind":"Field","name":{"kind":"Name","value":"errorMessage"}},{"kind":"Field","name":{"kind":"Name","value":"metadata"}}]}}]}}]}}]} as unknown as DocumentNode<OrderQuery, OrderQueryVariables>;
 export const CreateChannelDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreateChannel"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateChannelInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createChannel"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Channel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ErrorResult"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"errorCode"}},{"kind":"Field","name":{"kind":"Name","value":"message"}}]}}]}}]}}]} as unknown as DocumentNode<CreateChannelMutation, CreateChannelMutationVariables>;
+export const CreatePromotionDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CreatePromotion"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreatePromotionInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createPromotion"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ErrorResult"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"errorCode"}}]}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}}]}}]} as unknown as DocumentNode<CreatePromotionMutation, CreatePromotionMutationVariables>;

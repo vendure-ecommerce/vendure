@@ -40,8 +40,8 @@ export class MarketingModule {
             return;
         }
         bulkActionRegistryService.registerBulkAction(assignPromotionsToChannelBulkAction);
-        bulkActionRegistryService.registerBulkAction(removePromotionsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(duplicatePromotionsBulkAction);
+        bulkActionRegistryService.registerBulkAction(removePromotionsFromChannelBulkAction);
         bulkActionRegistryService.registerBulkAction(deletePromotionsBulkAction);
 
         pageService.registerPageTab({

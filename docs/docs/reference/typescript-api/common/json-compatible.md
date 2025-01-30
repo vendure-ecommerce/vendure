@@ -21,7 +21,7 @@ type JsonCompatible<T> = {
     [P in keyof T]: T[P] extends Json
         ? T[P]
         : Pick<T, P> extends Required<Pick<T, P>>
-        ? never
-        : JsonCompatible<T[P]>;
+          ? never
+          : JsonCompatible<T[P]>;
 }
 ```

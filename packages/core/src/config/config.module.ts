@@ -14,7 +14,10 @@ import { ConfigService } from './config.service';
     exports: [ConfigService],
 })
 export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdown {
-    constructor(private configService: ConfigService, private moduleRef: ModuleRef) {}
+    constructor(
+        private configService: ConfigService,
+        private moduleRef: ModuleRef,
+    ) {}
 
     async onApplicationBootstrap() {
         await this.initInjectableStrategies();
@@ -80,6 +83,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             sessionCacheStrategy,
             passwordHashingStrategy,
             passwordValidationStrategy,
+            verificationTokenStrategy,
         } = this.configService.authOptions;
         const { taxZoneStrategy, taxLineCalculationStrategy } = this.configService.taxOptions;
         const { jobQueueStrategy, jobBufferStorageStrategy } = this.configService.jobQueueOptions;
@@ -95,6 +99,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             changedPriceHandlingStrategy,
             orderSellerStrategy,
             guestCheckoutStrategy,
+            orderInterceptors,
         } = this.configService.orderOptions;
         const {
             customFulfillmentProcess,
@@ -103,15 +108,19 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
         } = this.configService.shippingOptions;
         const { customPaymentProcess, process: paymentProcess } = this.configService.paymentOptions;
         const { entityIdStrategy: entityIdStrategyDeprecated } = this.configService;
-        const { entityIdStrategy } = this.configService.entityOptions;
+        const { entityIdStrategy: entityIdStrategyCurrent } = this.configService.entityOptions;
         const { healthChecks, errorHandlers } = this.configService.systemOptions;
         const { assetImportStrategy } = this.configService.importExportOptions;
+        const { refundProcess: refundProcess } = this.configService.paymentOptions;
+        const { cacheStrategy } = this.configService.systemOptions;
+        const entityIdStrategy = entityIdStrategyCurrent ?? entityIdStrategyDeprecated;
         return [
             ...adminAuthenticationStrategy,
             ...shopAuthenticationStrategy,
             sessionCacheStrategy,
             passwordHashingStrategy,
             passwordValidationStrategy,
+            verificationTokenStrategy,
             assetNamingStrategy,
             assetPreviewStrategy,
             assetStorageStrategy,
@@ -123,8 +132,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             checkoutMergeStrategy,
             orderCodeStrategy,
             orderByCodeAccessStrategy,
-            entityIdStrategyDeprecated,
-            ...[entityIdStrategy].filter(notNullOrUndefined),
+            entityIdStrategy,
             productVariantPriceCalculationStrategy,
             productVariantPriceUpdateStrategy,
             orderItemPriceCalculationStrategy,
@@ -145,6 +153,9 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             stockLocationStrategy,
             productVariantPriceSelectionStrategy,
             guestCheckoutStrategy,
+            ...refundProcess,
+            cacheStrategy,
+            ...orderInterceptors,
         ];
     }
 

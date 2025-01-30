@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ProductVariant
 
-<GenerationInfo sourceFile="packages/core/src/entity/product-variant/product-variant.entity.ts" sourceLine="37" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/entity/product-variant/product-variant.entity.ts" sourceLine="38" packageName="@vendure/core" />
 
 A ProductVariant represents a single stock keeping unit (SKU) in the store's inventory.
 Whereas a <a href='/reference/typescript-api/entities/product#product'>Product</a> is a "container" of variants, the variant itself holds the
@@ -37,6 +37,8 @@ class ProductVariant extends VendureEntity implements Translatable, HasCustomFie
     @Index()
     @ManyToOne(type => Asset, asset => asset.featuredInVariants, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
+    @EntityId({ nullable: true })
+    featuredAssetId: ID;
     @OneToMany(type => ProductVariantAsset, productVariantAsset => productVariantAsset.productVariant, {
         onDelete: 'SET NULL',
     })
@@ -44,6 +46,8 @@ class ProductVariant extends VendureEntity implements Translatable, HasCustomFie
     @Index()
     @ManyToOne(type => TaxCategory, taxCategory => taxCategory.productVariants)
     taxCategory: TaxCategory;
+    @EntityId({ nullable: true })
+    taxCategoryId: ID;
     @OneToMany(type => ProductVariantPrice, price => price.variant, { eager: true })
     productVariantPrices: ProductVariantPrice[];
     @OneToMany(type => ProductVariantTranslation, translation => translation.base, { eager: true })
@@ -76,6 +80,8 @@ class ProductVariant extends VendureEntity implements Translatable, HasCustomFie
     @ManyToMany(type => Channel, channel => channel.productVariants)
     @JoinTable()
     channels: Channel[];
+    @OneToMany(type => OrderLine, orderLine => orderLine.productVariant)
+    lines: OrderLine[];
 }
 ```
 * Extends: <code><a href='/reference/typescript-api/entities/vendure-entity#vendureentity'>VendureEntity</a></code>
@@ -147,6 +153,11 @@ class ProductVariant extends VendureEntity implements Translatable, HasCustomFie
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/asset#asset'>Asset</a>`}   />
 
 
+### featuredAssetId
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
+
+
 ### assets
 
 <MemberInfo kind="property" type={`ProductVariantAsset[]`}   />
@@ -155,6 +166,11 @@ class ProductVariant extends VendureEntity implements Translatable, HasCustomFie
 ### taxCategory
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/tax-category#taxcategory'>TaxCategory</a>`}   />
+
+
+### taxCategoryId
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/id#id'>ID</a>`}   />
 
 
 ### productVariantPrices
@@ -227,6 +243,11 @@ value set on this ProductVariant will be ignored.
 ### channels
 
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/channel#channel'>Channel</a>[]`}   />
+
+
+### lines
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/entities/order-line#orderline'>OrderLine</a>[]`}   />
 
 
 

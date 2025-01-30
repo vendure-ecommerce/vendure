@@ -1,5 +1,8 @@
-import { cancel, isCancel, log, spinner, text } from '@clack/prompts';
-import { generateMigration } from '@vendure/core';
+import { cancel, isCancel, log, multiselect, select, spinner, text } from '@clack/prompts';
+import { unique } from '@vendure/common/lib/unique';
+import { generateMigration, VendureConfig } from '@vendure/core';
+import * as fs from 'fs-extra';
+import path from 'path';
 
 import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
 import { analyzeProject } from '../../../shared/shared-prompts';
@@ -16,7 +19,7 @@ export const generateMigrationCommand = new CliCommand({
 });
 
 async function runGenerateMigration(): Promise<CliCommandReturnVal> {
-    const project = await analyzeProject({ cancelledMessage });
+    const { project, tsConfigPath } = await analyzeProject({ cancelledMessage });
     const vendureConfig = new VendureConfigRef(project);
     log.info('Using VendureConfig from ' + vendureConfig.getPathRelativeToProjectRoot());
 
@@ -34,10 +37,47 @@ async function runGenerateMigration(): Promise<CliCommandReturnVal> {
         cancel(cancelledMessage);
         process.exit(0);
     }
-    const config = loadVendureConfigFile(vendureConfig);
+    const config = await loadVendureConfigFile(vendureConfig, tsConfigPath);
+
+    const migrationsDirs = getMigrationsDir(vendureConfig, config);
+    let migrationDir = migrationsDirs[0];
+
+    if (migrationsDirs.length > 1) {
+        const migrationDirSelect = await select({
+            message: 'Migration file location',
+            options: migrationsDirs
+                .map(c => ({
+                    value: c,
+                    label: c,
+                }))
+                .concat({
+                    value: 'other',
+                    label: 'Other',
+                }),
+        });
+        if (isCancel(migrationDirSelect)) {
+            cancel(cancelledMessage);
+            process.exit(0);
+        }
+        migrationDir = migrationDirSelect as string;
+    }
+
+    if (migrationsDirs.length === 1 || migrationDir === 'other') {
+        const confirmation = await text({
+            message: 'Migration file location',
+            initialValue: migrationsDirs[0],
+            placeholder: '',
+        });
+        if (isCancel(confirmation)) {
+            cancel(cancelledMessage);
+            process.exit(0);
+        }
+        migrationDir = confirmation;
+    }
+
     const migrationSpinner = spinner();
     migrationSpinner.start('Generating migration...');
-    const migrationName = await generateMigration(config, { name, outputDir: './src/migrations' });
+    const migrationName = await generateMigration(config, { name, outputDir: migrationDir });
     const report =
         typeof migrationName === 'string'
             ? `New migration generated: ${migrationName}`
@@ -47,4 +87,30 @@ async function runGenerateMigration(): Promise<CliCommandReturnVal> {
         project,
         modifiedSourceFiles: [],
     };
+}
+
+function getMigrationsDir(vendureConfigRef: VendureConfigRef, config: VendureConfig): string[] {
+    const options: string[] = [];
+    if (
+        Array.isArray(config.dbConnectionOptions.migrations) &&
+        config.dbConnectionOptions.migrations.length
+    ) {
+        const firstEntry = config.dbConnectionOptions.migrations[0];
+        if (typeof firstEntry === 'string') {
+            options.push(path.dirname(firstEntry));
+        }
+    }
+    const migrationFile = vendureConfigRef.sourceFile
+        .getProject()
+        .getSourceFiles()
+        .find(sf => {
+            return sf
+                .getClasses()
+                .find(c => c.getImplements().find(i => i.getText() === 'MigrationInterface'));
+        });
+    if (migrationFile) {
+        options.push(migrationFile.getDirectory().getPath());
+    }
+    options.push(path.join(vendureConfigRef.sourceFile.getDirectory().getPath(), '../migrations'));
+    return unique(options.map(p => path.normalize(p)));
 }

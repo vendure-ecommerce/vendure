@@ -1,5 +1,5 @@
 import { generate } from '@graphql-codegen/cli';
-import { Types } from '@graphql-codegen/plugin-helpers/typings';
+import { Types } from '@graphql-codegen/plugin-helpers';
 import fs from 'fs';
 import { buildClientSchema } from 'graphql';
 import path from 'path';
@@ -19,6 +19,7 @@ const specFileToIgnore = [
     'shop-definitions',
     'custom-fields.e2e-spec',
     'custom-field-relations.e2e-spec',
+    'custom-field-struct.e2e-spec',
     'custom-field-permissions.e2e-spec',
     'order-item-price-calculation-strategy.e2e-spec',
     'list-query-builder.e2e-spec',
@@ -31,6 +32,8 @@ const specFileToIgnore = [
     'relations-decorator.e2e-spec',
     'active-order-strategy.e2e-spec',
     'error-handler-strategy.e2e-spec',
+    'order-multi-vendor.e2e-spec',
+    'auth.e2e-spec',
 ];
 const E2E_ADMIN_QUERY_FILES = path.join(
     __dirname,
@@ -174,7 +177,13 @@ Promise.all([
                 },
                 [path.join(__dirname, '../../packages/payments-plugin/e2e/graphql/generated-admin-types.ts')]:
                     {
-                        schema: [ADMIN_SCHEMA_OUTPUT_FILE],
+                        schema: [
+                            ADMIN_SCHEMA_OUTPUT_FILE,
+                            path.join(
+                                __dirname,
+                                '../../packages/payments-plugin/src/mollie/api-extensions.ts',
+                            ),
+                        ],
                         documents: path.join(
                             __dirname,
                             '../../packages/payments-plugin/e2e/graphql/admin-queries.ts',
@@ -184,7 +193,13 @@ Promise.all([
                     },
                 [path.join(__dirname, '../../packages/payments-plugin/e2e/graphql/generated-shop-types.ts')]:
                     {
-                        schema: [SHOP_SCHEMA_OUTPUT_FILE],
+                        schema: [
+                            SHOP_SCHEMA_OUTPUT_FILE,
+                            path.join(
+                                __dirname,
+                                '../../packages/payments-plugin/src/mollie/api-extensions.ts',
+                            ),
+                        ],
                         documents: path.join(
                             __dirname,
                             '../../packages/payments-plugin/e2e/graphql/shop-queries.ts',
@@ -198,10 +213,7 @@ Promise.all([
                 )]: {
                     schema: [
                         SHOP_SCHEMA_OUTPUT_FILE,
-                        path.join(
-                            __dirname,
-                            '../../packages/payments-plugin/src/mollie/mollie-shop-schema.ts',
-                        ),
+                        path.join(__dirname, '../../packages/payments-plugin/src/mollie/api-extensions.ts'),
                     ],
                     plugins: clientPlugins,
                     config,

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Ctx
 
-<GenerationInfo sourceFile="packages/core/src/api/decorators/request-context.decorator.ts" sourceLine="21" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/api/decorators/request-context.decorator.ts" sourceLine="23" packageName="@vendure/core" />
 
 Resolver param decorator which extracts the <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a> from the incoming
 request object.

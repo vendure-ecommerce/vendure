@@ -80,7 +80,7 @@ interface PurgeRuleConfig<Event extends VendureEvent> {
 Specifies which VendureEvent will trigger this purge rule.
 ### bufferTime
 
-<MemberInfo kind="property" type={`number`} default="5000"   />
+<MemberInfo kind="property" type={`number`} default={`5000`}   />
 
 How long to buffer events for in milliseconds before executing the handler. This allows
 us to efficiently batch calls to the Stellate Purge API.

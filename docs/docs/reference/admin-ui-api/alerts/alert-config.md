@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AlertConfig
 
-<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/alerts/alerts.service.ts" sourceLine="62" packageName="@vendure/admin-ui" since="2.2.0" />
+<GenerationInfo sourceFile="packages/admin-ui/src/lib/core/src/providers/alerts/alerts.service.ts" sourceLine="63" packageName="@vendure/admin-ui" since="2.2.0" />
 
 A configuration object for an Admin UI alert.
 
@@ -48,7 +48,7 @@ This function will be called once when the Admin UI app bootstraps, and can be a
 set to run at regular intervals by setting the `recheckIntervalMs` property.
 ### recheck
 
-<MemberInfo kind="property" type={`(context: <a href='/reference/admin-ui-api/alerts/alert-context#alertcontext'>AlertContext</a>) =&#62; Observable&#60;any&#62;`} default="undefined"   />
+<MemberInfo kind="property" type={`(context: <a href='/reference/admin-ui-api/alerts/alert-context#alertcontext'>AlertContext</a>) =&#62; Observable&#60;any&#62;`} default={`undefined`}   />
 
 A function which returns an Observable which is used to determine when to re-run the `check`
 function. Whenever the observable emits, the `check` function will be called again.

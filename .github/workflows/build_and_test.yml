@@ -14,38 +14,43 @@ on:
       - minor
 env:
   CI: true
-  node: 20.x
 jobs:
   build:
     name: build
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [ 18.x, 20.x, 22.x ]
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ env.node }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ env.node }}
-    - name: npm install
-      run: |
-        npm install
-        npm install --os=linux --cpu=x64 sharp
-    - name: Build
-      run: npm run build
-  unit-tests:
-    name: unit tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js ${{ env.node }}
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.node }}
+          node-version: ${{ matrix.node }}
       - name: npm install
         run: |
           npm install
           npm install --os=linux --cpu=x64 sharp
       - name: Build
-        run: lerna run ci
+        run: npm run build
+  unit-tests:
+    name: unit tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [ 18.x, 20.x, 22.x ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: npm install
+        run: |
+          npm install
+          npm install --os=linux --cpu=x64 sharp
+      - name: Build
+        run: npx lerna run ci
       - name: Unit tests
         run: npm run test
   e2e-tests:
@@ -55,23 +60,25 @@ jobs:
       mariadb:
         image: bitnami/mariadb:10.3
         env:
-          ALLOW_EMPTY_PASSWORD: yes
+          MARIADB_ROOT_USER: vendure
+          MARIADB_ROOT_PASSWORD: password
         ports:
           - 3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
       mysql:
         image: bitnami/mysql:8.0
         env:
-          ALLOW_EMPTY_PASSWORD: yes
           MYSQL_AUTHENTICATION_PLUGIN: mysql_native_password
+          MYSQL_ROOT_USER: vendure
+          MYSQL_ROOT_PASSWORD: password
         ports:
           - 3306
         options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=20s --health-retries=10
       postgres:
-        image: postgres:12
+        image: postgres:16
         env:
-          POSTGRES_USER: admin
-          POSTGRES_PASSWORD: secret
+          POSTGRES_USER: vendure
+          POSTGRES_PASSWORD: password
         ports:
           - 5432
         options: --health-cmd=pg_isready --health-interval=10s --health-timeout=5s --health-retries=3
@@ -91,31 +98,35 @@ jobs:
         ports:
           - 9200
         options: --health-cmd="curl --silent --fail localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=3
+      redis:
+        image: bitnami/redis:7.4.1
+        env:
+          ALLOW_EMPTY_PASSWORD: yes
+        ports:
+          - 6379
     strategy:
       fail-fast: false
       matrix:
-        db: [sqljs, mariadb, mysql, postgres]
+        node: [ 18.x, 20.x, 22.x ]
+        db: [ sqljs, mariadb, mysql, postgres ]
     steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js ${{ env.node }}
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.node }}
+          node-version: ${{ matrix.node }}
       - name: npm install
         run: |
           npm install
           npm install --os=linux --cpu=x64 sharp
       - name: Build
-        run: lerna run ci
-      - name: df
-        run: |
-          df -h
-          docker system df
+        run: npx lerna run ci
       - name: e2e tests
         env:
           E2E_MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
           E2E_MARIADB_PORT: ${{ job.services.mariadb.ports['3306'] }}
           E2E_POSTGRES_PORT: ${{ job.services.postgres.ports['5432'] }}
           E2E_ELASTIC_PORT: ${{ job.services.elastic.ports['9200'] }}
+          E2E_REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
           DB: ${{ matrix.db }}
         run: npm run e2e

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import {
-    DefaultLogger,
     DefaultOrderPlacedStrategy,
     mergeConfig,
     Order,
@@ -15,7 +14,7 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { singleStageRefundablePaymentMethod } from './fixtures/test-payment-methods';
 import { ORDER_WITH_LINES_FRAGMENT } from './graphql/fragments';
@@ -24,14 +23,12 @@ import {
     AddManualPaymentDocument,
     AdminTransitionDocument,
     CanceledOrderFragment,
-    GetOrderDocument,
     GetOrderPlacedAtDocument,
     OrderWithLinesFragment,
 } from './graphql/generated-e2e-admin-types';
 import {
     GetActiveCustomerOrdersQuery,
     TestOrderFragmentFragment,
-    TransitionToStateDocument,
     UpdatedOrderFragment,
 } from './graphql/generated-e2e-shop-types';
 import { CREATE_PROMOTION, GET_CUSTOMER_LIST } from './graphql/shared-definitions';
@@ -53,7 +50,6 @@ class TestOrderPlacedStrategy extends DefaultOrderPlacedStrategy {
 describe('Draft Orders resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig(), {
-            logger: new DefaultLogger(),
             paymentOptions: {
                 paymentMethodHandlers: [singleStageRefundablePaymentMethod],
             },
@@ -125,9 +121,8 @@ describe('Draft Orders resolver', () => {
     });
 
     it('create draft order', async () => {
-        const { createDraftOrder } = await adminClient.query<Codegen.CreateDraftOrderMutation>(
-            CREATE_DRAFT_ORDER,
-        );
+        const { createDraftOrder } =
+            await adminClient.query<Codegen.CreateDraftOrderMutation>(CREATE_DRAFT_ORDER);
 
         expect(createDraftOrder.state).toBe('Draft');
         expect(createDraftOrder.active).toBe(false);
@@ -213,9 +208,8 @@ describe('Draft Orders resolver', () => {
     it('custom does not see draft orders in history', async () => {
         await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
 
-        const { activeCustomer } = await shopClient.query<GetActiveCustomerOrdersQuery>(
-            GET_ACTIVE_CUSTOMER_ORDERS,
-        );
+        const { activeCustomer } =
+            await shopClient.query<GetActiveCustomerOrdersQuery>(GET_ACTIVE_CUSTOMER_ORDERS);
 
         expect(activeCustomer?.orders.totalItems).toBe(0);
         expect(activeCustomer?.orders.items.length).toBe(0);
@@ -274,6 +268,48 @@ describe('Draft Orders resolver', () => {
             country: 'United Kingdom',
             postalCode: 'WN8 3QW',
             streetLine1: 'Billing Street',
+        });
+    });
+
+    it('unsetDraftOrderShippingAddress', async () => {
+        const { unsetDraftOrderShippingAddress } = await adminClient.query<
+            Codegen.UnsetDraftOrderShippingAddressMutation,
+            Codegen.UnsetDraftOrderShippingAddressMutationVariables
+        >(UNSET_SHIPPING_ADDRESS_FOR_DRAFT_ORDER, {
+            orderId: draftOrder.id,
+        });
+
+        expect(unsetDraftOrderShippingAddress.shippingAddress).toEqual({
+            company: null,
+            fullName: null,
+            phoneNumber: null,
+            streetLine2: null,
+            province: null,
+            city: null,
+            country: null,
+            postalCode: null,
+            streetLine1: null,
+        });
+    });
+
+    it('unsetDraftOrderBillingAddress', async () => {
+        const { unsetDraftOrderBillingAddress } = await adminClient.query<
+            Codegen.UnsetDraftOrderBillingAddressMutation,
+            Codegen.UnsetDraftOrderBillingAddressMutationVariables
+        >(UNSET_BILLING_ADDRESS_FOR_DRAFT_ORDER, {
+            orderId: draftOrder.id,
+        });
+
+        expect(unsetDraftOrderBillingAddress.billingAddress).toEqual({
+            company: null,
+            fullName: null,
+            phoneNumber: null,
+            streetLine2: null,
+            province: null,
+            city: null,
+            country: null,
+            postalCode: null,
+            streetLine1: null,
         });
     });
 
@@ -472,6 +508,30 @@ export const SET_SHIPPING_ADDRESS_FOR_DRAFT_ORDER = gql`
 export const SET_BILLING_ADDRESS_FOR_DRAFT_ORDER = gql`
     mutation SetDraftOrderBillingAddress($orderId: ID!, $input: CreateAddressInput!) {
         setDraftOrderBillingAddress(orderId: $orderId, input: $input) {
+            ...OrderWithLines
+            billingAddress {
+                ...ShippingAddress
+            }
+        }
+    }
+    ${ORDER_WITH_LINES_FRAGMENT}
+`;
+
+export const UNSET_SHIPPING_ADDRESS_FOR_DRAFT_ORDER = gql`
+    mutation UnsetDraftOrderShippingAddress($orderId: ID!) {
+        unsetDraftOrderShippingAddress(orderId: $orderId) {
+            ...OrderWithLines
+            shippingAddress {
+                ...ShippingAddress
+            }
+        }
+    }
+    ${ORDER_WITH_LINES_FRAGMENT}
+`;
+
+export const UNSET_BILLING_ADDRESS_FOR_DRAFT_ORDER = gql`
+    mutation UnsetDraftOrderBillingAddress($orderId: ID!) {
+        unsetDraftOrderBillingAddress(orderId: $orderId) {
             ...OrderWithLines
             billingAddress {
                 ...ShippingAddress

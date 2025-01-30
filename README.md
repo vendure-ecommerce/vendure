@@ -3,24 +3,24 @@
 An open-source headless commerce platform built on [Node.js](https://nodejs.org) with [GraphQL](https://graphql.org/), [Nest](https://nestjs.com/) & [TypeScript](http://www.typescriptlang.org/), with a focus on developer productivity and ease of customization.
 
 [![Build Status](https://github.com/vendure-ecommerce/vendure/workflows/Build%20&%20Test/badge.svg)](https://github.com/vendure-ecommerce/vendure/actions) 
-![Publish & Install](https://github.com/vendure-ecommerce/vendure/workflows/Publish%20&%20Install/badge.svg)
-[![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
+[![Publish & Install](https://github.com/vendure-ecommerce/vendure/workflows/Publish%20&%20Install/badge.svg)](https://github.com/vendure-ecommerce/vendure/actions/workflows/publish_and_install.yml)
+[![Lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
 
-![vendure_github_banner (1)](https://github.com/vendure-ecommerce/vendure/assets/6275952/0e25b1c7-a648-44a1-ba00-60012f0e7aaa)
+![vendure-github-social-banner](https://github.com/vendure-ecommerce/vendure/assets/24294584/ada25fa3-185d-45ce-896d-bece3685a829)
 
 
 ### [www.vendure.io](https://www.vendure.io/)
 
-* [Getting Started](https://docs.vendure.io/getting-started/): Get Vendure up and running locally in a matter of minutes with a single command
-* [Live Demo](https://demo.vendure.io/)
-* [Vendure Discord](https://www.vendure.io/community) Join us on Discord for support and answers to your questions
+* [Getting Started](https://docs.vendure.io/guides/getting-started/installation/): Get Vendure up and running locally in a matter of minutes with a single command
+* [Request Demo](https://vendure.io/demo)
+* [Vendure Discord](https://www.vendure.io/community): Join us on Discord for support and answers to your questions
 
 ## Branches
 
-- `master` - The latest stable release, currently the 2.x series.
-- `minor` - The next patch release, including new features
-- `major` - The next major release (v3.0)
-- `v1` - The 1.x series, which is no longer actively developed but may still receive critical fixes.
+- `master` - The latest stable release, currently the 3.x series.
+- `minor` - The next minor release, including new features
+- `major` - The next major release (v4.0)
+- `v2.x` - The 2.x line, which will receive critical fixes until the end-of-life on 31.12.2024. The code in this branch is under the MIT license.
 
 ## Structure
 
@@ -30,7 +30,8 @@ This project is a monorepo managed with [Lerna](https://github.com/lerna/lerna).
 vendure/
 ├── docs/           # Documentation source
 ├── e2e-common/     # Shared config for package e2e tests
-├── packages/       # Source for the Vendure server, admin-ui & plugin packages
+├── license/        # License information & CLA signature log
+├── packages/       # Source for the Vendure server, admin-ui & core plugin packages
 ├── scripts/
     ├── changelog/  # Scripts used to generate the changelog based on the git history
     ├── codegen/    # Scripts used to generate TypeScript code from the GraphQL APIs
@@ -39,7 +40,9 @@ vendure/
 
 ## Development
 
-The following instructions are for those who want to develop the Vendure core framework or plugins (e.g. if you intend to make a pull request). For instructions on how to build a project *using* Vendure, please see the [Getting Started guide](https://www.vendure.io/docs/getting-started/).
+> [!IMPORTANT]
+> The following instructions are for those who want to develop the Vendure core framework or plugins (e.g. if you intend to make a pull request). For instructions on how to build a project *using* Vendure, please see the [Getting Started guide](https://docs.vendure.io/guides/getting-started/installation/).
+
 
 ### 1. Install top-level dependencies
 
@@ -59,32 +62,44 @@ Packages must be built (i.e. TypeScript compiled, admin ui app built, certain as
 
 Note that this can take a few minutes.
 
-### 3. Set up the server
+### 3. Start the docker containers
 
-The server requires an SQL database to be available. The simplest option is to use SQLite, but if you have Docker available you can use the [dev-server docker-compose file](./packages/dev-server/docker-compose.yml) which will start up both MariaDB and Postgres as well as their GUI management tools.
+All the necessary infrastructure is defined in the root [docker-compose.yml](./docker-compose.yml) file. At a minimum,
+you will need to start a database, for example:
 
-Vendure uses [TypeORM](http://typeorm.io), and officially supports **MySQL**, **PostgreSQL** and **SQLite**, though other TypeORM-supported databases may work.
+```bash
+docker-compose up -d mariadb
+```
 
-1. Configure the [dev config](./packages/dev-server/dev-config.ts), making sure the connection settings in the `getDbConfig()` function are correct for the database type you will be using.
-2. Create the database using your DB admin tool of choice (e.g. phpMyAdmin if you are using the docker image suggested above). Name it according to the `getDbConfig()` settings. If you are using SQLite, you can skip this step.
-3. Populate mock data: 
-   ```bash
-    cd packages/dev-server
-    DB=<mysql|postgres|sqlite> npm run populate
-    ```
-   If you do not specify the `DB` variable, it will default to "mysql".
+MariaDB/MySQL is the default that will be used by the dev server if you don't explicitly set the `DB` environment variable.
 
-### 4. Run the dev server
+If for example you are doing development on the Elasticsearch plugin, you will also need to start the Elasticsearch container:
+
+```bash
+docker-compose up -d elasticsearch
+```
+
+### 4. Populate test data
+
+Vendure uses [TypeORM](http://typeorm.io), and officially supports **MySQL**, **MariaDB**, **PostgreSQL** and **SQLite**.
+
+The first step is to populate the dev server with some test data:
+
+```bash
+cd packages/dev-server
+
+[DB=mysql|postres|sqlite] npm run populate
+ ```
+
+If you do not specify the `DB` variable, it will default to "mysql". If you specifically want to develop against Postgres,
+you need to run the `postgres_16` container and then run `DB=postgres npm run populate`. 
+
+### 5. Run the dev server
 
 ```
 cd packages/dev-server
-DB=<mysql|postgres|sqlite> npm run start
+[DB=mysql|postgres|sqlite] npm run dev
 ```
-Or if you are in the root package 
-```
-DB=<mysql|postgres|sqlite> npm run dev-server:start
-```
-If you do not specify the `DB` argument, it will default to "mysql".
 
 ### Testing admin ui changes locally
 
@@ -122,10 +137,14 @@ npm run watch:core-common
 ```shell
 # Terminal 2
 cd packages/dev-server
-DB=sqlite npm run start
+DB=sqlite npm run dev
 ```
 
 3. The dev-server will now have your local changes from the changed package.
+
+### Interactive debugging
+
+To debug the dev server with VS Code use the include [launch.json](/.vscode/launch.json) configuration.
 
 ### Code generation
 
@@ -147,17 +166,19 @@ The core and several other packages have unit tests which are can be run all tog
 
 Unit tests are co-located with the files which they test, and have the suffix `.spec.ts`.
 
+If you're getting `Error: Bindings not found.`, please run `npm rebuild @swc/core`.
+
 #### End-to-end Tests
 
 Certain packages have e2e tests, which are located at `/packages/<name>/e2e/`. All e2e tests can be run by running `npm run e2e` from the root directory, or individually by running it from the package directory.
 
-e2e tests use the `@vendure/testing` package. For details of how the setup works, see the [Testing docs](https://www.vendure.io/docs/developer-guide/testing/)
+e2e tests use the `@vendure/testing` package. For details of how the setup works, see the [Testing docs](https://docs.vendure.io/guides/developer-guide/testing/).
 
 When **debugging e2e tests**, set an environment variable `E2E_DEBUG=true` which will increase the global Jest timeout and allow you to step through the e2e tests without the tests automatically failing due to timeout.
 
 ### Release Process
 
-All packages in this repo are released at every version change (using [Lerna's fixed mode](https://github.com/lerna/lerna#fixedlocked-mode-default)). This simplifies both the development (tracking multiple disparate versions is tough) and also the developer experience for users of the framework (it is simple to see that all packages are up-to-date and compatible).
+All packages in this repo are released at every version change (using [Lerna's fixed mode](https://lerna.js.org/docs/features/version-and-publish#fixedlocked-mode-default)). This simplifies both the development (tracking multiple disparate versions is tough) and also the developer experience for users of the framework (it is simple to see that all packages are up-to-date and compatible).
 
 To make a release:
 
@@ -167,7 +188,7 @@ It will run `lerna publish` which will prompt for which version to update to. Al
 
 Next it will build all packages to ensure the distributed files are up to date.
 
-Finally the command will create changelog entries for this release.
+Finally, the command will create changelog entries for this release.
 
 ##### 2. `git push origin master --follow-tags`
 
@@ -175,4 +196,4 @@ The reason we do not rely on Lerna to push the release to Git is that this repo 
 
 ## License
 
-MIT
+See [LICENSE.md](./LICENSE.md).

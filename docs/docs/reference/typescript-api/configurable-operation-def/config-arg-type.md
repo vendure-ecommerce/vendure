@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ConfigArgType
 
-<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="126" packageName="@vendure/common" />
+<GenerationInfo sourceFile="packages/common/src/shared-types.ts" sourceLine="130" packageName="@vendure/common" />
 
 Certain entities (those which implement <a href='/reference/typescript-api/configurable-operation-def/#configurableoperationdef'>ConfigurableOperationDef</a>) allow arbitrary
 configuration arguments to be specified which can then be set in the admin-ui and used in
