@@ -5,9 +5,6 @@ import { CommonModule } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { ClarityModule } from '@clr/angular';
-import '@clr/icons';
-import '@clr/icons/shapes/all-shapes';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
 import '@webcomponents/custom-elements/custom-elements.min.js';
@@ -177,9 +174,9 @@ import { AddFilterPresetButtonComponent } from './components/data-table-filter-p
 import { RenameFilterPresetDialogComponent } from './components/data-table-filter-presets/rename-filter-preset-dialog.component';
 import { ActionBarDropdownMenuComponent } from './components/action-bar-dropdown-menu/action-bar-dropdown-menu.component';
 import { DuplicateEntityDialogComponent } from './components/duplicate-entity-dialog/duplicate-entity-dialog.component';
+import { HlmIconModule } from '@spartan-ng/ui-icon-helm';
 
 const IMPORTS = [
-    ClarityModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -190,6 +187,7 @@ const IMPORTS = [
     OverlayModule,
     DragDropModule,
     A11yModule,
+    HlmIconModule,
 ];
 
 const DECLARATIONS = [

@@ -38,7 +38,7 @@
                         </vdr-ui-extension-point>
                         <div *ngIf="column.sort as sort" class="sort-toggle">
                             <button (click)="sort.toggleSortOrder()" [class.active]="sort.sortOrder">
-                                <clr-icon *ngIf="!sort.sortOrder" shape="two-way-arrows left"></clr-icon>
+                                <hlm *ngIf="!sort.sortOrder" shape="two-way-arrows left"></hlm>
                                 <clr-icon *ngIf="sort.sortOrder === 'ASC'" shape="arrow up"></clr-icon>
                                 <clr-icon *ngIf="sort.sortOrder === 'DESC'" shape="arrow down"></clr-icon>
                             </button>

@@ -1,21 +1,7 @@
-<div class="flex h-screen justify-center items-center bg-slate-100" [dir]="direction$ | async">
-    <div class="rounded-lg overflow-hidden w-[1120px] h-[590px] flex bg-white items-start relative justify-start border border-slate-200 shadow-lg hover:shadow-2xl transition-all">
-        <div class="relative h-full grow">
-            <div class="absolute p-10 left-0 bottom-0 w-full z-20 text-white bg-gradient-to-b from-black/0 to-black/50">
-                <div class="text-2xl text-white font-bold">
-                    {{ 'common.login-image-title' | translate }}
-                </div>
-                <div class="text-sm text-white/80">
-                    <p *ngIf="imageCreator" class="creator">
-                        Photo by <a [href]="imageCreatorUrl" target="_blank">{{ imageCreator }}</a> on
-                        <a [href]="imageUnsplashUrl" target="_blank">Unsplash</a>
-                    </p>
-                    <p *ngIf="imageLocation" class="location">{{ imageLocation }}</p>
-                </div>
-            </div>
-            <img class="absolute z-10 left-0 right-0 h-full w-full object-cover object-center top-0 bottom-0" *ngIf="imageUrl" [src]="imageUrl" [alt]="imageUrl" />
-        </div>
-        <div class="flex h-full p-10 flex-col items-stretch justify-center min-w-[400px]">
+<div class="grid grid-cols-2 h-dvh w-full bg-neutral-100" [dir]="direction$ | async">
+    <!-- Form Area -->
+    <div class="h-full flex flex-col items-center justify-center">
+        <div class="flex p-10 flex-col items-stretch justify-center max-w-[400px]">
             <p class="text-2xl text-slate-800 font-bold mb-4">
                 {{ 'common.login-title' | translate : { brand: hideVendureBranding ? brand : 'Vendure' } }}
             </p>
@@ -74,4 +60,21 @@
         </div>
         <img class="absolute right-5 top-5 h-16 " src="assets/logo-login.webp" *ngIf="!hideVendureBranding" />
     </div>
+
+    <!-- Image Area -->
+    <div class="h-full p-8">
+        <div class="rounded-md overflow-hidden relative h-full">
+            <div class="absolute bottom-10 left-10">
+                <p *ngIf="imageCreator" class="text-lg font-semibold text-white">
+                    Photo by <a [href]="imageCreatorUrl" class="underline" target="_blank">{{ imageCreator }}</a> on
+                    <a [href]="imageUnsplashUrl" class="underline" target="_blank">Unsplash</a>
+                </p>
+                <span *ngIf="imageLocation" class="text-md text-white/80">{{ imageLocation }}</span>
+            </div>
+            <img class="left-0 right-0 bottom-0 h-full w-full object-cover object-center top-0"
+                 *ngIf="imageUrl" [src]="imageUrl" [alt]="imageUrl" />
+        </div>
+    </div>
+
+
 </div>

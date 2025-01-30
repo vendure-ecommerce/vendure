@@ -59,6 +59,9 @@
       ],
       "@vendure/admin-ui/system": [
         "./src/lib/system/src/public_api"
+      ],
+      "@spartan-ng/ui-icon-helm": [
+        "./src/lib/ui/ui-icon-helm/src/index.ts"
       ]
     },
     "useDefineForClassFields": false
