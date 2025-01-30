@@ -91,5 +91,5 @@ export interface HardenPluginOptions {
      * }),
      * ```
      */
-    skip?: (ctx: GraphQLRequestContext<any>) => boolean;
+    skip?: (ctx: GraphQLRequestContext<any>) => Promise<boolean> | boolean;
 }

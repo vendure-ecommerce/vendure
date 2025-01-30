@@ -24,7 +24,7 @@ export class QueryComplexityPlugin implements ApolloServerPlugin {
         const maxQueryComplexity = this.options.maxQueryComplexity ?? 1000;
         return {
             didResolveOperation: async ({ request, document }) => {
-                if (this.options.skip?.(ctx)) {
+                if (await this.options.skip?.(ctx)) {
                     // Given skip function tells use we should not check this request for complexity
                     return;
                 }
