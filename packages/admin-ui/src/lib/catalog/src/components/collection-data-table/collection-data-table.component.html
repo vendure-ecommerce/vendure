@@ -9,93 +9,93 @@
     </div>
     <table class="" [class.no-select]="disableSelect">
         <thead [class.items-selected]="selectionManager?.selection.length">
-            <tr class="heading-row">
-                <th *ngIf="selectionManager" class="selection-col">
-                    <div class="flex">
-                        <div class="drag-handle-spacer"></div>
-                        <input
-                            type="checkbox"
-                            clrCheckbox
-                            [checked]="selectionManager?.areAllCurrentItemsSelected()"
-                            (change)="onToggleAllClick()"
-                        />
-                    </div>
-                </th>
-                <th
-                    *ngFor="let column of visibleSortedColumns; last as isLast"
-                    [class.expand]="column.expand"
-                >
-                    <div class="cell-content" [ngClass]="column.align">
-                        <vdr-ui-extension-point
-                            [locationId]="id"
-                            [metadata]="column.id"
-                            api="dataTable"
-                            [topPx]="-6"
-                            [leftPx]="-24"
-                            display="block"
-                        >
-                            <span>{{ column.heading }}</span>
-                        </vdr-ui-extension-point>
-                        <div *ngIf="column.sort as sort" class="sort-toggle">
-                            <button (click)="sort.toggleSortOrder()" [class.active]="sort.sortOrder">
-                                <hlm *ngIf="!sort.sortOrder" shape="two-way-arrows left"></hlm>
-                                <clr-icon *ngIf="sort.sortOrder === 'ASC'" shape="arrow up"></clr-icon>
-                                <clr-icon *ngIf="sort.sortOrder === 'DESC'" shape="arrow down"></clr-icon>
-                            </button>
-                            <div class="sort-label" *ngIf="sort.sortOrder">{{ sort.sortOrder }}</div>
-                        </div>
-                    </div>
-                </th>
-                <th>
-                    <div class="column-picker">
-                        <vdr-data-table-colum-picker
-                            [uiLanguage]="uiLanguage$ | async"
-                            [columns]="sortedColumns"
-                            (reorder)="onColumnReorder($event)"
-                            (resetColumns)="onColumnsReset()"
-                        ></vdr-data-table-colum-picker>
-                    </div>
-                </th>
-            </tr>
-            <tr *ngIf="searchComponent || customSearchTemplate || filters?.length">
-                <th
-                    [attr.colspan]="visibleSortedColumns.length + (selectionManager ? 2 : 1)"
-                    class="filter-row"
-                    [class.active]="showSearchFilterRow"
-                >
-                    <button
-                        class="button-ghost toggle-search-filter-row"
-                        [class.active]="showSearchFilterRow"
-                        (click)="toggleSearchFilterRow()"
-                        [title]="'common.search-and-filter-list' | translate"
+        <tr class="heading-row">
+            <th *ngIf="selectionManager" class="selection-col">
+                <div class="flex">
+                    <div class="drag-handle-spacer"></div>
+                    <input
+                        type="checkbox"
+                        clrCheckbox
+                        [checked]="selectionManager?.areAllCurrentItemsSelected()"
+                        (change)="onToggleAllClick()"
+                    />
+                </div>
+            </th>
+            <th
+                *ngFor="let column of visibleSortedColumns; last as isLast"
+                [class.expand]="column.expand"
+            >
+                <div class="cell-content" [ngClass]="column.align">
+                    <vdr-ui-extension-point
+                        [locationId]="id"
+                        [metadata]="column.id"
+                        api="dataTable"
+                        [topPx]="-6"
+                        [leftPx]="-24"
+                        display="block"
                     >
-                        <clr-icon shape="search"></clr-icon>
-                    </button>
-                    <div class="filter-row-wrapper" [class.hidden]="!showSearchFilterRow">
-                        <ng-container *ngTemplateOutlet="searchComponent?.template"></ng-container>
-                        <ng-container *ngTemplateOutlet="customSearchTemplate"></ng-container>
-                        <ng-container *ngIf="filters">
-                            <div class="filters">
-                                <vdr-data-table-filters
-                                    *ngFor="let activeFilter of filters.activeFilters"
-                                    [filterWithValue]="activeFilter"
-                                    [filters]="filters"
-                                    class="mt-1"
-                                ></vdr-data-table-filters>
-                                <vdr-data-table-filters
-                                    *ngIf="filters.length"
-                                    [filters]="filters"
-                                    class="mt-1"
-                                ></vdr-data-table-filters>
-                                <vdr-add-filter-preset-button
-                                    [filters]="filters"
-                                    [dataTableId]="id"
-                                ></vdr-add-filter-preset-button>
-                            </div>
-                        </ng-container>
+                        <span>{{ column.heading }}</span>
+                    </vdr-ui-extension-point>
+                    <div *ngIf="column.sort as sort" class="sort-toggle">
+                        <button (click)="sort.toggleSortOrder()" [class.active]="sort.sortOrder">
+                            <hlm-icon *ngIf="!sort.sortOrder" name="lucideArrowDownUp"></hlm-icon>
+                            <hlm-icon *ngIf="sort.sortOrder === 'ASC'" name="lucideArrowDownUp"></hlm-icon>
+                            <hlm-icon *ngIf="sort.sortOrder === 'DESC'" name="lucideArrowDown"></hlm-icon>
+                        </button>
+                        <div class="sort-label" *ngIf="sort.sortOrder">{{ sort.sortOrder }}</div>
                     </div>
-                </th>
-            </tr>
+                </div>
+            </th>
+            <th>
+                <div class="column-picker">
+                    <vdr-data-table-colum-picker
+                        [uiLanguage]="uiLanguage$ | async"
+                        [columns]="sortedColumns"
+                        (reorder)="onColumnReorder($event)"
+                        (resetColumns)="onColumnsReset()"
+                    ></vdr-data-table-colum-picker>
+                </div>
+            </th>
+        </tr>
+        <tr *ngIf="searchComponent || customSearchTemplate || filters?.length">
+            <th
+                [attr.colspan]="visibleSortedColumns.length + (selectionManager ? 2 : 1)"
+                class="filter-row"
+                [class.active]="showSearchFilterRow"
+            >
+                <button
+                    class="button-ghost toggle-search-filter-row"
+                    [class.active]="showSearchFilterRow"
+                    (click)="toggleSearchFilterRow()"
+                    [title]="'common.search-and-filter-list' | translate"
+                >
+                    <clr-icon shape="search"></clr-icon>
+                </button>
+                <div class="filter-row-wrapper" [class.hidden]="!showSearchFilterRow">
+                    <ng-container *ngTemplateOutlet="searchComponent?.template"></ng-container>
+                    <ng-container *ngTemplateOutlet="customSearchTemplate"></ng-container>
+                    <ng-container *ngIf="filters">
+                        <div class="filters">
+                            <vdr-data-table-filters
+                                *ngFor="let activeFilter of filters.activeFilters"
+                                [filterWithValue]="activeFilter"
+                                [filters]="filters"
+                                class="mt-1"
+                            ></vdr-data-table-filters>
+                            <vdr-data-table-filters
+                                *ngIf="filters.length"
+                                [filters]="filters"
+                                class="mt-1"
+                            ></vdr-data-table-filters>
+                            <vdr-add-filter-preset-button
+                                [filters]="filters"
+                                [dataTableId]="id"
+                            ></vdr-add-filter-preset-button>
+                        </div>
+                    </ng-container>
+                </div>
+            </th>
+        </tr>
         </thead>
         <tbody
             cdkDropList
@@ -103,8 +103,8 @@
             (cdkDropListDropped)="onDrop($event)"
             [cdkDropListSortPredicate]="sortPredicate"
         >
-            <ng-container
-                *ngFor="
+        <ng-container
+            *ngFor="
                 let item of items
                     | paginate
                         : {
@@ -116,19 +116,19 @@
                 index as i;
                 trackBy: trackByFn
             "
-            >
-                <ng-container
-                    [ngTemplateOutlet]="collectionRowTmp"
-                    [ngTemplateOutletContext]="{ item: item, i: i, depth: 0 }"
-                ></ng-container>
-            </ng-container>
-            <ng-container>
-                <tr *ngIf="!items?.length">
-                    <td [attr.colspan]="visibleSortedColumns.length + (selectionManager ? 2 : 1)">
-                        <vdr-empty-placeholder [emptyStateLabel]="emptyStateLabel"></vdr-empty-placeholder>
-                    </td>
-                </tr>
-            </ng-container>
+        >
+            <ng-container
+                [ngTemplateOutlet]="collectionRowTmp"
+                [ngTemplateOutletContext]="{ item: item, i: i, depth: 0 }"
+            ></ng-container>
+        </ng-container>
+        <ng-container>
+            <tr *ngIf="!items?.length">
+                <td [attr.colspan]="visibleSortedColumns.length + (selectionManager ? 2 : 1)">
+                    <vdr-empty-placeholder [emptyStateLabel]="emptyStateLabel"></vdr-empty-placeholder>
+                </td>
+            </tr>
+        </ng-container>
         </tbody>
     </table>
 </div>

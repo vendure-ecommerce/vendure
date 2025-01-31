@@ -6,21 +6,20 @@
 </ng-template>
 
 <div class="flex">
-    <clr-input-container>
+    <hlm-form-field>
         <label>{{ 'common.channel' | translate }}</label>
         <vdr-channel-assignment-control
-            clrInput
             [multiple]="false"
             [includeDefaultChannel]="false"
             [disableChannelIds]="currentChannelIds"
             [formControl]="selectedChannelIdControl"
         ></vdr-channel-assignment-control>
-    </clr-input-container>
+    </hlm-form-field>
     <div class="flex-spacer"></div>
-    <clr-input-container>
+    <hlm-form-field>
         <label>{{ 'catalog.price-conversion-factor' | translate }}</label>
-        <input clrInput type="number" min="0" max="99999" [formControl]="priceFactorControl" />
-    </clr-input-container>
+        <input type="number" min="0" max="99999" [formControl]="priceFactorControl" />
+    </hlm-form-field>
 </div>
 
 <div class="channel-price-preview">

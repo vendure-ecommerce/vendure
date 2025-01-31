@@ -45,8 +45,6 @@
               "lodash",
               "dayjs",
               "apollo-upload-client",
-              "@clr/icons",
-              "@clr/icons/shapes/all-shapes",
               "@vendure/common/lib/generated-types",
               "@vendure/common/lib/simple-deep-clone",
               "@vendure/common/lib/shared-constants",

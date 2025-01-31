@@ -37,9 +37,10 @@
         <vdr-dt2-column [heading]="'common.name' | translate" id="name" [optional]="false">
             <ng-template let-variant="item">
                 <a class="button-ghost" [routerLink]="['/catalog/products', variant.productId]"
-                    ><span>{{ variant.name }}</span
-                    ><clr-icon shape="arrow right"
-                /></a>
+                >
+                    <span>{{ variant.name }}</span>
+                    <hlm-icon name="lucideArrowRight" />
+                </a>
             </ng-template>
         </vdr-dt2-column>
         <vdr-dt2-column [heading]="'catalog.sku' | translate" id="sku" [optional]="false">

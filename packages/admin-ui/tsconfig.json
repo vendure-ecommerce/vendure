@@ -62,6 +62,15 @@
       ],
       "@spartan-ng/ui-icon-helm": [
         "./src/lib/ui/ui-icon-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-formfield-helm": [
+        "./src/lib/ui/ui-formfield-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-checkbox-helm": [
+        "./src/lib/ui/ui-checkbox-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-label-helm": [
+        "./src/lib/ui/ui-label-helm/src/index.ts"
       ]
     },
     "useDefineForClassFields": false

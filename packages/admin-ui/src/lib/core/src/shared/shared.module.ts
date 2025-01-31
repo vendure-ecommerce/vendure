@@ -9,7 +9,11 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
 import '@webcomponents/custom-elements/custom-elements.min.js';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { HlmIconDirective, HlmIconModule } from '@spartan-ng/ui-icon-helm';
+import { HlmFormFieldModule } from '@spartan-ng/ui-formfield-helm';
 
+import { HlmCheckboxModule } from '@spartan-ng/ui-checkbox-helm';
+import { HlmLabelModule } from '@spartan-ng/ui-label-helm';
 import { ModalService } from '../providers/modal/modal.service';
 
 import { ActionBarItemsComponent } from './components/action-bar-items/action-bar-items.component';
@@ -174,7 +178,6 @@ import { AddFilterPresetButtonComponent } from './components/data-table-filter-p
 import { RenameFilterPresetDialogComponent } from './components/data-table-filter-presets/rename-filter-preset-dialog.component';
 import { ActionBarDropdownMenuComponent } from './components/action-bar-dropdown-menu/action-bar-dropdown-menu.component';
 import { DuplicateEntityDialogComponent } from './components/duplicate-entity-dialog/duplicate-entity-dialog.component';
-import { HlmIconModule } from '@spartan-ng/ui-icon-helm';
 
 const IMPORTS = [
     CommonModule,
@@ -188,6 +191,9 @@ const IMPORTS = [
     DragDropModule,
     A11yModule,
     HlmIconModule,
+    HlmFormFieldModule,
+    HlmCheckboxModule,
+    HlmLabelModule,
 ];
 
 const DECLARATIONS = [

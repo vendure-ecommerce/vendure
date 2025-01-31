@@ -5,10 +5,10 @@
     <vdr-page-block>
         <vdr-action-bar>
             <vdr-ab-left>
-                <clr-checkbox-wrapper class="mr-2">
-                    <input type="checkbox" clrCheckbox [formControl]="liveUpdate" name="live-update" />
-                    <label>{{ 'common.live-update' | translate }}</label>
-                </clr-checkbox-wrapper>
+                <label class="flex items-center" hlmLabel>
+                    <hlm-checkbox class="mr-2" [formControl]="liveUpdate" checkIconName="lucideMoon" />
+                    {{ 'common.live-update' | translate }}
+                </label>
             </vdr-ab-left>
             <vdr-ab-right>
                 <vdr-action-bar-items locationId="job-list"></vdr-action-bar-items>
@@ -99,7 +99,7 @@
                         vdrDropdownTrigger
                         [title]="'system.job-data' | translate"
                     >
-                        <clr-icon shape="details"></clr-icon>
+                        <ng-icon hlm name="lucideEllipsisVertical"></ng-icon>
                     </button>
                     <vdr-dropdown-menu>
                         <div class="result-detail">
@@ -127,7 +127,7 @@
             <ng-template let-job="item">
                 <vdr-dropdown *ngIf="hasResult(job)">
                     <button class="button-small mr-1" vdrDropdownTrigger>
-                        <clr-icon shape="details"></clr-icon>
+                        <ng-icon name="lucideEllipsisVertical"></ng-icon>
                         {{ 'system.job-result' | translate }}
                     </button>
                     <vdr-dropdown-menu>
@@ -138,7 +138,7 @@
                 </vdr-dropdown>
                 <vdr-dropdown *ngIf="job.error">
                     <button class="button-small" vdrDropdownTrigger>
-                        <clr-icon shape="exclamation-circle"></clr-icon>
+                        <ng-icon name="lucideMessageCircleWarning"></ng-icon>
                         {{ 'system.job-error' | translate }}
                     </button>
                     <vdr-dropdown-menu>
@@ -149,7 +149,7 @@
                 </vdr-dropdown>
                 <vdr-dropdown *ngIf="!job.isSettled && job.state !== 'FAILED'">
                     <button class="icon-button" vdrDropdownTrigger>
-                        <clr-icon shape="ellipsis-vertical" size="12"></clr-icon>
+                        <ng-icon shape="ellipsis-vertical" size="12"></ng-icon>
                     </button>
                     <vdr-dropdown-menu vdrPosition="bottom-right">
                         <button
@@ -159,7 +159,7 @@
                             [disabled]="!(['DeleteSettings', 'DeleteSystem'] | hasPermission)"
                             vdrDropdownItem
                         >
-                            <clr-icon shape="ban" class="is-danger"></clr-icon>
+                            <ng-icon name="lucideMessageCircleWarning" class="is-danger"></ng-icon>
                             {{ 'common.cancel' | translate }}
                         </button>
                     </vdr-dropdown-menu>
