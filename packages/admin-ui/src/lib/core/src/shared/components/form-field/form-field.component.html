@@ -3,7 +3,7 @@
     [class.no-label]="!label"
     [class.clr-error]="formFieldControl?.formControlName?.invalid"
 >
-    <label *ngIf="label" [for]="for" class="">
+    <label *ngIf="label" [for]="for" hlmLabel>
         {{ label }}
     </label>
     <div *ngIf="tooltip" class="tooltip-text">
@@ -24,7 +24,7 @@
             [class.enabled]="!isReadOnly"
             (click)="setReadOnly(!isReadOnly)"
         >
-            <clr-icon shape="edit"></clr-icon>
+            <ng-icon hlm name="lucidePencil"></ng-icon>
         </button>
     </div>
     <div class="error-message" *ngIf="getErrorMessage()">{{ getErrorMessage() }}</div>

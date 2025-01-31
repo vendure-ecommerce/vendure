@@ -1,8 +1,8 @@
 <vdr-dropdown [manualToggle]="true" #dropdown>
     <div class="filter-button" [ngClass]="state">
-        <clr-icon shape="plus" size="12" *ngIf="state === 'new'"></clr-icon>
+        <ng-icon hlm shape="plus" size="12" *ngIf="state === 'new'"></ng-icon>
         <button *ngIf="state === 'active'" class="remove" (click)="deactivate()">
-            <clr-icon shape="times" size="12"></clr-icon>
+            <ng-icon hlm shape="times" size="12"></ng-icon>
         </button>
         <button vdrDropdownTrigger class="">
             <span *ngIf="state === 'new'"
@@ -13,7 +13,7 @@
                     [filterWithValue]="filterWithValue"
                 ></vdr-data-table-filter-label>
             </span>
-            <clr-icon shape="ellipsis-vertical" size="12"></clr-icon>
+            <ng-icon hlm name="lucideEllipsisVertical"></ng-icon>
         </button>
     </div>
     <vdr-dropdown-menu vdrPosition="bottom-left">
@@ -140,7 +140,7 @@
             <div class="apply-wrapper mt-2">
                 <button class="button" (click)="activate($event)" [disabled]="!formControl?.valid">
                     <span>{{ 'common.apply' | translate }}</span>
-                    <clr-icon shape="check"></clr-icon>
+                    <ng-icon hlm shape="check"></ng-icon>
                 </button>
             </div>
         </form>

@@ -14,7 +14,7 @@
                 *vdrIfPermissions="['CreateCatalog', 'CreateCollection']"
                 [routerLink]="['./create']"
             >
-                <clr-icon shape="plus"></clr-icon>
+                <ng-icon hlm name="lucidePlus"></ng-icon>
                 {{ 'catalog.create-new-collection' | translate }}
             </a>
             <vdr-action-bar-dropdown-menu locationId="collection-list" />
@@ -53,25 +53,28 @@
                 </ng-template>
             </vdr-dt2-column>
             <vdr-dt2-column
-                [heading]="'common.created-at' | translate" id="created-at"
+                [heading]="'common.created-at' | translate"
+                id="created-at"
                 [hiddenByDefault]="true"
                 [sort]="sorts.get('createdAt')"
             >
                 <ng-template let-collection="item">
-                    {{ collection.createdAt | localeDate : 'short' }}
+                    {{ collection.createdAt | localeDate: 'short' }}
                 </ng-template>
             </vdr-dt2-column>
             <vdr-dt2-column
-                [heading]="'common.updated-at' | translate" id="updated-at"
+                [heading]="'common.updated-at' | translate"
+                id="updated-at"
                 [hiddenByDefault]="true"
                 [sort]="sorts.get('updatedAt')"
             >
                 <ng-template let-collection="item">
-                    {{ collection.updatedAt | localeDate : 'short' }}
+                    {{ collection.updatedAt | localeDate: 'short' }}
                 </ng-template>
             </vdr-dt2-column>
             <vdr-dt2-column
-                [heading]="'common.position' | translate" id="position"
+                [heading]="'common.position' | translate"
+                id="position"
                 [hiddenByDefault]="true"
                 [sort]="sorts.get('position')"
             >
@@ -80,29 +83,39 @@
                 </ng-template>
             </vdr-dt2-column>
             <vdr-dt2-column
-                [heading]="'common.name' | translate" id="name"
+                [heading]="'common.name' | translate"
+                id="name"
                 [optional]="false"
                 [sort]="sorts.get('name')"
             >
                 <ng-template let-collection="item" let-depth="depth">
                     <div [ngClass]="'indent-' + depth"></div>
-                    <clr-icon
+                    <ng-icon
+                        hlm
                         class="child-arrow"
                         [class.transparent]="depth === 0"
                         shape="child-arrow"
                         *ngIf="!collection.children?.length"
-                    ></clr-icon>
+                    ></ng-icon>
                     <button
                         class="icon-button folder-button"
                         *ngIf="collection.children?.length"
                         (click)="toggleExpanded(collection)"
                     >
-                        <clr-icon shape="folder" *ngIf="!expandedIds.includes(collection.id)"></clr-icon>
-                        <clr-icon shape="folder-open" *ngIf="expandedIds.includes(collection.id)"></clr-icon>
+                        <ng-icon
+                            hlm
+                            name="lucideFolder"
+                            *ngIf="!expandedIds.includes(collection.id)"
+                        ></ng-icon>
+                        <ng-icon
+                            hlm
+                            name="lucideFolderOpen"
+                            *ngIf="expandedIds.includes(collection.id)"
+                        ></ng-icon>
                     </button>
                     <a class="button-ghost" [routerLink]="['./', collection.id]"
                         ><span>{{ collection.name }}</span>
-                        <clr-icon shape="arrow right"></clr-icon>
+                        <ng-icon hlm name="lucideArrowRight"></ng-icon>
                     </a>
                 </ng-template>
             </vdr-dt2-column>
@@ -129,13 +142,17 @@
                 <ng-template let-collection="item">
                     <vdr-chip *ngIf="collection.isPrivate" colorType="warning">{{
                         'common.private' | translate
-                        }}</vdr-chip>
+                    }}</vdr-chip>
                     <vdr-chip *ngIf="!collection.isPrivate" colorType="success">{{
                         'common.public' | translate
-                        }}</vdr-chip>
+                    }}</vdr-chip>
                 </ng-template>
             </vdr-dt2-column>
-            <vdr-dt2-column [heading]="'common.view-contents' | translate" id="view-contents" [optional]="false">
+            <vdr-dt2-column
+                [heading]="'common.view-contents' | translate"
+                id="view-contents"
+                [optional]="false"
+            >
                 <ng-template let-collection="item">
                     <a
                         class="button-small bg-weight-150"
@@ -144,7 +161,7 @@
                         queryParamsHandling="merge"
                     >
                         <span>{{ 'common.view-contents' | translate }}</span>
-                        <clr-icon shape="file-group"></clr-icon>
+                        <ng-icon hlm name="lucideFiles"></ng-icon>
                     </a>
                 </ng-template>
             </vdr-dt2-column>

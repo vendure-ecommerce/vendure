@@ -33,8 +33,8 @@
                     *ngIf="collection.children?.length; else folderSpacer"
                     (click)="toggleExpanded(collection)"
                 >
-                    <clr-icon shape="folder" *ngIf="!collection.expanded && !expandAll"></clr-icon>
-                    <clr-icon shape="folder-open" *ngIf="collection.expanded || expandAll"></clr-icon>
+                    <ng-icon hlm name="lucideFolder" *ngIf="!collection.expanded && !expandAll"></ng-icon>
+                    <ng-icon hlm name="lucideFolderOpen" *ngIf="collection.expanded || expandAll"></ng-icon>
                 </button>
                 <ng-template #folderSpacer>
                     <div class="folder-button-spacer"></div>
@@ -48,19 +48,19 @@
                 [routerLink]="['./', { contents: collection.id }]"
                 queryParamsHandling="preserve"
             >
-                <clr-icon shape="view-list"></clr-icon>
+                <ng-icon hlm name="lucideList"></ng-icon>
                 {{ 'catalog.view-contents' | translate }}
             </a>
             <a class="btn btn-link btn-sm" [routerLink]="['/catalog/collections/', collection.id]">
-                <clr-icon shape="edit"></clr-icon>
+                <ng-icon hlm name="lucidePencil"></ng-icon>
                 {{ 'common.edit' | translate }}
             </a>
             <div class="drag-handle" cdkDragHandle *vdrIfPermissions="['UpdateCatalog', 'UpdateCollection']">
-                <clr-icon shape="drag-handle" size="24"></clr-icon>
+                <ng-icon hlm name="lucideGripHorizontal"></ng-icon>
             </div>
             <vdr-dropdown>
                 <button class="icon-button" vdrDropdownTrigger (click)="getMoveListItems(collection)">
-                    <clr-icon shape="ellipsis-vertical"></clr-icon>
+                    <ng-icon hlm name="lucideEllipsisVertical"></ng-icon>
                 </button>
                 <vdr-dropdown-menu vdrPosition="bottom-right">
                     <a
@@ -68,7 +68,7 @@
                         [routerLink]="['./', 'create', { parentId: collection.id }]"
                         *vdrIfPermissions="['CreateCatalog', 'CreateCollection']"
                     >
-                        <clr-icon shape="plus"></clr-icon>
+                        <ng-icon hlm name="lucidePlus"></ng-icon>
                         {{ 'catalog.create-new-collection' | translate }}
                     </a>
                     <div class="dropdown-divider"></div>
@@ -78,7 +78,7 @@
                         [disabled]="i === 0 || !(hasUpdatePermission$ | async)"
                         (click)="moveUp(collection, i)"
                     >
-                        <clr-icon shape="caret up"></clr-icon>
+                        <ng-icon hlm name="lucideChevronUp"></ng-icon>
                         {{ 'catalog.move-up' | translate }}
                     </button>
                     <button
@@ -89,7 +89,7 @@
                         "
                         (click)="moveDown(collection, i)"
                     >
-                        <clr-icon shape="caret down"></clr-icon>
+                        <ng-icon hlm name="lucideChevronDown"></ng-icon>
                         {{ 'catalog.move-down' | translate }}
                     </button>
                     <h4 class="dropdown-header">{{ 'catalog.move-to' | translate }}</h4>
@@ -102,7 +102,7 @@
                     >
                         <div class="move-to-item">
                             <div class="move-icon">
-                                <clr-icon shape="child-arrow"></clr-icon>
+                                <ng-icon hlm name="lucideCornerDownRight"></ng-icon>
                             </div>
                             <div class="path">
                                 {{ item.path }}
@@ -116,7 +116,7 @@
                         (click)="delete(collection.id)"
                         [disabled]="!(hasDeletePermission$ | async)"
                     >
-                        <clr-icon shape="trash" class="is-danger"></clr-icon>
+                        <ng-icon hlm name="lucideTrash" class="is-danger"></ng-icon>
                         {{ 'common.delete' | translate }}
                     </button>
                 </vdr-dropdown-menu>

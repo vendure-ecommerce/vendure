@@ -8,7 +8,7 @@
                 *vdrIfPermissions="['CreateSettings', 'CreateTaxCategory']"
                 [routerLink]="['./', 'create']"
             >
-                <clr-icon shape="plus"></clr-icon>
+                <ng-icon hlm name="lucidePlus"></ng-icon>
                 {{ 'settings.create-new-tax-category' | translate }}
             </a>
             <vdr-action-bar-dropdown-menu locationId="tax-category-list" />
@@ -41,28 +41,35 @@
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.created-at' | translate" id="created-at"
+        [heading]="'common.created-at' | translate"
+        id="created-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('createdAt')"
     >
         <ng-template let-taxCategory="item">
-            {{ taxCategory.createdAt | localeDate : 'short' }}
+            {{ taxCategory.createdAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.updated-at' | translate" id="updated-at"
+        [heading]="'common.updated-at' | translate"
+        id="updated-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('updatedAt')"
     >
         <ng-template let-taxCategory="item">
-            {{ taxCategory.updatedAt | localeDate : 'short' }}
+            {{ taxCategory.updatedAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.name' | translate" id="name" [optional]="false" [sort]="sorts.get('name')">
+    <vdr-dt2-column
+        [heading]="'common.name' | translate"
+        id="name"
+        [optional]="false"
+        [sort]="sorts.get('name')"
+    >
         <ng-template let-taxCategory="item">
             <a class="button-ghost" [routerLink]="['./', taxCategory.id]"
                 ><span>{{ taxCategory.name }}</span>
-                <clr-icon shape="arrow right"></clr-icon>
+                <ng-icon hlm name="lucideArrowRight"></ng-icon>
             </a>
         </ng-template>
     </vdr-dt2-column>
@@ -71,5 +78,9 @@
             <vdr-chip *ngIf="taxCategory.isDefault">{{ 'common.default-tax-category' | translate }}</vdr-chip>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-custom-field-column *ngFor="let customField of customFields" [customField]="customField" [sorts]="sorts" />
+    <vdr-dt2-custom-field-column
+        *ngFor="let customField of customFields"
+        [customField]="customField"
+        [sorts]="sorts"
+    />
 </vdr-data-table-2>

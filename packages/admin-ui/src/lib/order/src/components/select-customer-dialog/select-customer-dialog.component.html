@@ -7,44 +7,34 @@
     </vdr-form-field>
 </ng-container>
 
-<clr-tabs *ngIf="canCreateNew" class="pt-1">
-    <clr-tab>
-        <button clrTabLink>{{ 'order.existing-customer' | translate }}</button>
-
-        <ng-template [(clrIfActive)]="useExisting">
-            <clr-tab-content>
-                <div class="mt-4">
-                    <ng-container *ngTemplateOutlet="customerSelect"></ng-container>
-                </div>
-            </clr-tab-content>
-        </ng-template>
-    </clr-tab>
-    <clr-tab *ngIf="canCreateNew">
-        <button clrTabLink>{{ 'customer.create-new-customer' | translate }}</button>
-
-        <ng-template [(clrIfActive)]="createNew">
-            <clr-tab-content>
-                <form [formGroup]="customerForm">
-                    <vdr-form-field [label]="'customer.title' | translate" for="title">
-                        <input id="title" type="text" formControlName="title" />
-                    </vdr-form-field>
-                    <vdr-form-field [label]="'customer.first-name' | translate" for="firstName">
-                        <input id="firstName" type="text" formControlName="firstName" />
-                    </vdr-form-field>
-                    <vdr-form-field [label]="'customer.last-name' | translate" for="lastName">
-                        <input id="lastName" type="text" formControlName="lastName" />
-                    </vdr-form-field>
-                    <vdr-form-field [label]="'customer.email-address' | translate" for="emailAddress">
-                        <input id="emailAddress" type="text" formControlName="emailAddress" />
-                    </vdr-form-field>
-                    <vdr-form-field [label]="'customer.phone-number' | translate" for="phoneNumber">
-                        <input id="phoneNumber" type="text" formControlName="phoneNumber" />
-                    </vdr-form-field>
-                </form>
-            </clr-tab-content>
-        </ng-template>
-    </clr-tab>
-</clr-tabs>
+<hlm-tabs tab="useExisting" *ngIf="canCreateNew" class="pt-1">
+    <hlm-tabs-list class="w-full grid grid-cols-2">
+        <button hlmTabsTrigger="useExisting">{{ 'order.existing-customer' | translate }}</button>
+        <button hlmTabsTrigger="createNew">{{ 'customer.create-new-customer' | translate }}</button>
+    </hlm-tabs-list>
+    <div hlmTabsContent="useExisting">
+        <ng-container *ngTemplateOutlet="customerSelect"></ng-container>
+    </div>
+    <div hlmTabsContent="createNew" *ngIf="canCreateNew">
+        <form [formGroup]="customerForm">
+            <vdr-form-field [label]="'customer.title' | translate" for="title">
+                <input id="title" type="text" formControlName="title" />
+            </vdr-form-field>
+            <vdr-form-field [label]="'customer.first-name' | translate" for="firstName">
+                <input id="firstName" type="text" formControlName="firstName" />
+            </vdr-form-field>
+            <vdr-form-field [label]="'customer.last-name' | translate" for="lastName">
+                <input id="lastName" type="text" formControlName="lastName" />
+            </vdr-form-field>
+            <vdr-form-field [label]="'customer.email-address' | translate" for="emailAddress">
+                <input id="emailAddress" type="text" formControlName="emailAddress" />
+            </vdr-form-field>
+            <vdr-form-field [label]="'customer.phone-number' | translate" for="phoneNumber">
+                <input id="phoneNumber" type="text" formControlName="phoneNumber" />
+            </vdr-form-field>
+        </form>
+    </div>
+</hlm-tabs>
 
 <ng-template #customerSelect>
     <ng-select
@@ -62,14 +52,14 @@
     >
         <ng-template ng-label-tmp let-item="item" let-clear="clear">
             <span class="item-row">
-                <clr-icon shape="user" class="is-solid"></clr-icon
+                <ng-icon hlm name="lucideUser"></ng-icon
                 ><span class="mx-1">{{ item.firstName }} {{ item.lastName }}</span>
                 <vdr-chip>{{ item.emailAddress }}</vdr-chip>
             </span>
         </ng-template>
         <ng-template ng-option-tmp let-item="item">
             <span class="item-row">
-                <clr-icon shape="user" class="is-solid"></clr-icon
+                <ng-icon hlm name="lucideUser"></ng-icon
                 ><span class="mx-1">{{ item.firstName }} {{ item.lastName }}</span>
                 <vdr-chip>{{ item.emailAddress }}</vdr-chip>
             </span>

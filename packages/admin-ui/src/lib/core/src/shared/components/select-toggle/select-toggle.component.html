@@ -9,11 +9,12 @@
     (keydown.space)="$event.preventDefault(); selectedChange.emit(!selected)"
     (click)="selectedChange.emit(!selected)"
 >
-    <clr-icon
+    <ng-icon
+        hlm
         shape="check-circle"
         [class.is-solid]="selected"
         [attr.size]="size === 'small' ? 24 : 32"
-    ></clr-icon>
+    ></ng-icon>
 </div>
 <div
     class="toggle-label"

@@ -41,21 +41,20 @@
         <vdr-page-detail-sidebar
             ><vdr-card>
                 <vdr-form-field [label]="'catalog.visibility' | translate" for="visibility">
-                    <clr-toggle-wrapper *vdrIfPermissions="['UpdateCatalog', 'UpdateProduct']">
-                        <input
-                            type="checkbox"
-                            clrToggle
-                            name="enabled"
-                            [formControl]="detailForm.get(['enabled'])"
-                        />
-                        <label>{{ 'common.enabled' | translate }}</label>
-                    </clr-toggle-wrapper>
+                    <label
+                        class="flex items-center"
+                        hlmLabel
+                        *vdrIfPermissions="['UpdateCatalog', 'UpdateProduct']"
+                    >
+                        <hlm-switch name="enabled" [formControl]="detailForm.get(['enabled'])" />
+                        {{ 'common.enabled' | translate }}
+                    </label>
                 </vdr-form-field>
             </vdr-card>
             <vdr-card *ngIf="variant.options.length" [title]="'catalog.product-options' | translate">
                 <div class="options">
                     <vdr-chip
-                        *ngFor="let option of variant.options | sort : 'groupId'"
+                        *ngFor="let option of variant.options | sort: 'groupId'"
                         [colorFrom]="optionGroupCode(option.groupId)"
                         [invert]="true"
                     >
@@ -69,7 +68,7 @@
                         class="button-small mt-2"
                         *vdrIfPermissions="updatePermissions"
                     >
-                        <clr-icon shape="pencil"></clr-icon>
+                        <ng-icon hlm name="lucidePencil"></ng-icon>
                         {{ 'catalog.edit-options' | translate }}
                     </a>
                 </div>
@@ -89,7 +88,7 @@
                         *vdrIfPermissions="updatePermissions"
                         (click)="selectFacetValue()"
                     >
-                        <clr-icon shape="plus"></clr-icon>
+                        <ng-icon hlm name="lucidePlus"></ng-icon>
                         {{ 'catalog.add-facets' | translate }}
                     </button>
                 </div>
@@ -184,7 +183,7 @@
                                     [disabled]="price.value.currencyCode === channelDefaultCurrencyCode"
                                     (click)="toggleDeletePrice(price.get('delete'))"
                                 >
-                                    <clr-icon shape="trash"></clr-icon>
+                                    <ng-icon hlm name="lucideTrash"></ng-icon>
                                 </button>
                             </div>
                         </div>
@@ -219,9 +218,9 @@
                     <div *ngIf="unusedCurrencyCodes.length">
                         <vdr-dropdown>
                             <button class="button mt-2" vdrDropdownTrigger>
-                                <clr-icon shape="plus"></clr-icon>
+                                <ng-icon hlm name="lucidePlus"></ng-icon>
                                 {{ 'catalog.add-price-in-another-currency' | translate }}
-                                <clr-icon shape="ellipsis-vertical"></clr-icon>
+                                <ng-icon hlm name="lucideEllipsisVertical"></ng-icon>
                             </button>
                             <vdr-dropdown-menu>
                                 <button
@@ -273,22 +272,17 @@
                                 inventoryIsNotTracked(detailForm)
                             "
                         />
-                        <clr-toggle-wrapper>
-                            <input
-                                type="checkbox"
-                                clrToggle
+                        <label class="flex items-center" hlmLabel>
+                            <hlm-switch
+                                class="mr-2"
                                 name="useGlobalOutOfStockThreshold"
                                 formControlName="useGlobalOutOfStockThreshold"
-                                [vdrDisabled]="
+                                [disabled]="
                                     !(updatePermissions | hasPermission) || inventoryIsNotTracked(detailForm)
                                 "
                             />
-                            <label
-                                >{{ 'catalog.use-global-value' | translate }} ({{
-                                    globalOutOfStockThreshold
-                                }})</label
-                            >
-                        </clr-toggle-wrapper>
+                            >{{ 'catalog.use-global-value' | translate }} ({{ globalOutOfStockThreshold }})
+                        </label>
                     </vdr-form-item>
                 </div>
                 <div
@@ -325,9 +319,9 @@
                     <div *ngIf="unusedStockLocations.length">
                         <vdr-dropdown>
                             <button class="button mt-2" vdrDropdownTrigger>
-                                <clr-icon shape="plus"></clr-icon>
+                                <ng-icon hlm name="lucidePlus"></ng-icon>
                                 {{ 'catalog.add-stock-location' | translate }}
-                                <clr-icon shape="ellipsis-vertical"></clr-icon>
+                                <ng-icon hlm name="lucideEllipsisVertical"></ng-icon>
                             </button>
                             <vdr-dropdown-menu>
                                 <button
@@ -335,7 +329,7 @@
                                     *ngFor="let stockLocation of unusedStockLocations"
                                     (click)="addStockLocation(stockLocation)"
                                 >
-                                    <clr-icon shape="map-marker"></clr-icon> {{ stockLocation.name }}
+                                    <ng-icon hlm name="lucideMapPin"></ng-icon> {{ stockLocation.name }}
                                 </button>
                             </vdr-dropdown-menu>
                         </vdr-dropdown>

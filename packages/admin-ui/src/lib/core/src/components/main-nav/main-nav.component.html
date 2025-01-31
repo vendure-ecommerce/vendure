@@ -17,9 +17,7 @@
                 display="block"
             >
                 <div class="section-header">
-                    <ng-container
-                        *ngIf="navBuilderService.sectionBadges[section.id] | async as sectionBadge"
-                    >
+                    <ng-container *ngIf="navBuilderService.sectionBadges[section.id] | async as sectionBadge">
                         <vdr-status-badge
                             *ngIf="sectionBadge !== 'none'"
                             [type]="sectionBadge"
@@ -28,21 +26,22 @@
                     <label class="nav-group-header mx-4" [for]="section.id">{{
                         section.label | translate
                     }}</label>
-                    <button *ngIf="section.collapsible" class="rounded-full bg-gray-200 h-5 w-5 flex items-center justify-center" (click)="toggleExpand(section)">
-                        <clr-icon
+                    <button
+                        *ngIf="section.collapsible"
+                        class="rounded-full bg-gray-200 h-5 w-5 flex items-center justify-center"
+                        (click)="toggleExpand(section)"
+                    >
+                        <ng-icon
+                            hlm
                             [attr.shape]="expandedSections.includes(section.id) ? 'caret up' : 'caret down'"
                             class="h-3 w-3"
                             [title]="'common.expand-entries' | translate"
-                        ></clr-icon>
+                        ></ng-icon>
                     </button>
                 </div>
                 <div class="nav-list" [ngStyle]="getStyleForSection(section)">
                     <ng-container *ngFor="let item of section.items">
-                        <div
-                            *ngIf="shouldDisplayLink(item)"
-                            class="nav-link"
-                            routerLinkActive="active"
-                        >
+                        <div *ngIf="shouldDisplayLink(item)" class="nav-link" routerLinkActive="active">
                             <a
                                 [attr.data-item-id]="section.id"
                                 [routerLink]="getRouterLink(item)"
@@ -54,11 +53,12 @@
                                         [type]="itemBadge.type"
                                     ></vdr-status-badge>
                                 </ng-container>
-                                <clr-icon
+                                <ng-icon
+                                    hlm
                                     [attr.shape]="item.icon || 'block'"
                                     class="h-4 w-4 nav-link-icon"
                                     [title]="item.label | translate"
-                                ></clr-icon>
+                                ></ng-icon>
                                 <span class="">{{ item.label | translate }}</span>
                             </a>
                         </div>

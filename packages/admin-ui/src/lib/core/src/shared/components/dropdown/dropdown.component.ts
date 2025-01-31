@@ -8,7 +8,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, Input } from '@angular/
  * ```HTML
  * <vdr-dropdown>
  *   <button class="btn btn-outline" vdrDropdownTrigger>
- *       <clr-icon shape="plus"></clr-icon>
+ *       <ng-icon hlm name="lucidePlus"></ng-icon>
  *       Select type
  *   </button>
  *   <vdr-dropdown-menu vdrPosition="bottom-left">

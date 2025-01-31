@@ -5,9 +5,9 @@
             [title]="breadcrumb.label | translate"
         >
             <a [routerLink]="breadcrumb.link" *ngIf="!isLast">{{ breadcrumb.label | translate }}</a>
-            <ng-container *ngIf="!isLast"
-                ><clr-icon shape="caret right" class="h-2 w-2 text-gray-300 mx-1"></clr-icon
-            ></ng-container>
+            <ng-container *ngIf="!isLast">
+                <ng-icon hlm shape="caret right" class="h-2 w-2 text-gray-300 mx-1"></ng-icon>
+            </ng-container>
             <ng-container *ngIf="isLast">
                 <span class="text-gray-600 font-semibold">{{ breadcrumb.label | translate }}</span>
             </ng-container>
@@ -15,7 +15,7 @@
     </ul>
     <ul class="breadcrumbs mobile" *ngIf="parentBreadcrumb$ | async as parentBreadcrumb">
         <li>
-            <clr-icon shape="caret left" class="color-weight-400 mr-1"></clr-icon>
+            <ng-icon hlm shape="caret left" class="color-weight-400 mr-1"></ng-icon>
             <a [routerLink]="parentBreadcrumb.link">{{ parentBreadcrumb.label | translate }}</a>
         </li>
     </ul>

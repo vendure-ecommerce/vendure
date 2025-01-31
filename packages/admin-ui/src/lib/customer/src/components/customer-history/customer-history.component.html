@@ -1,6 +1,11 @@
 <div class="entry-list">
-    <vdr-timeline-entry iconShape="note" displayType="muted" [featured]="true" *vdrIfPermissions="'UpdateCustomer'"
-                        [isFirst]="true">
+    <vdr-timeline-entry
+        iconShape="note"
+        displayType="muted"
+        [featured]="true"
+        *vdrIfPermissions="'UpdateCustomer'"
+        [isFirst]="true"
+    >
         <div class="note-entry">
             <textarea [(ngModel)]="note" name="note" class="note"></textarea>
             <button class="btn btn-secondary" [disabled]="!note" (click)="addNoteToCustomer()">
@@ -105,13 +110,11 @@
                         <div class="flex">
                             {{ 'customer.history-customer-email-update-requested' | translate }}
                             <vdr-history-entry-detail>
-                                <vdr-labeled-data [label]="'customer.old-email-address' | translate">{{
-                                        entry.data.oldEmailAddress
-                                    }}
+                                <vdr-labeled-data [label]="'customer.old-email-address' | translate"
+                                    >{{ entry.data.oldEmailAddress }}
                                 </vdr-labeled-data>
-                                <vdr-labeled-data [label]="'customer.new-email-address' | translate">{{
-                                        entry.data.newEmailAddress
-                                    }}
+                                <vdr-labeled-data [label]="'customer.new-email-address' | translate"
+                                    >{{ entry.data.newEmailAddress }}
                                 </vdr-labeled-data>
                             </vdr-history-entry-detail>
                         </div>
@@ -120,13 +123,11 @@
                         <div class="flex">
                             {{ 'customer.history-customer-email-update-verified' | translate }}
                             <vdr-history-entry-detail>
-                                <vdr-labeled-data [label]="'customer.old-email-address' | translate">{{
-                                        entry.data.oldEmailAddress
-                                    }}
+                                <vdr-labeled-data [label]="'customer.old-email-address' | translate"
+                                    >{{ entry.data.oldEmailAddress }}
                                 </vdr-labeled-data>
-                                <vdr-labeled-data [label]="'customer.new-email-address' | translate">{{
-                                        entry.data.newEmailAddress
-                                    }}
+                                <vdr-labeled-data [label]="'customer.new-email-address' | translate"
+                                    >{{ entry.data.newEmailAddress }}
                                 </vdr-labeled-data>
                             </vdr-history-entry-detail>
                         </div>
@@ -139,7 +140,7 @@
                             <div class="flex-spacer"></div>
                             <vdr-dropdown>
                                 <button class="button-small ml-1" vdrDropdownTrigger>
-                                    <clr-icon shape="ellipsis-vertical" size="12"></clr-icon>
+                                    <ng-icon hlm name="lucideEllipsisVertical"></ng-icon>
                                 </button>
                                 <vdr-dropdown-menu vdrPosition="bottom-right">
                                     <button
@@ -147,7 +148,7 @@
                                         (click)="updateNote.emit(entry)"
                                         [disabled]="!('UpdateCustomer' | hasPermission)"
                                     >
-                                        <clr-icon shape="edit"></clr-icon>
+                                        <ng-icon hlm name="lucidePencil"></ng-icon>
                                         {{ 'common.edit' | translate }}
                                     </button>
                                     <div class="dropdown-divider"></div>
@@ -156,7 +157,7 @@
                                         (click)="deleteNote.emit(entry)"
                                         [disabled]="!('UpdateCustomer' | hasPermission)"
                                     >
-                                        <clr-icon shape="trash" class="is-danger"></clr-icon>
+                                        <ng-icon hlm name="lucideTrash" class="is-danger"></ng-icon>
                                         {{ 'common.delete' | translate }}
                                     </button>
                                 </vdr-dropdown-menu>

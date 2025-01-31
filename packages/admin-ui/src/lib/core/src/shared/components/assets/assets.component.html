@@ -2,22 +2,22 @@
     <div class="featured-asset">
         <img
             *ngIf="featuredAsset"
-            [src]="featuredAsset | assetPreview : 'small'"
+            [src]="featuredAsset | assetPreview: 'small'"
             (click)="previewAsset(featuredAsset)"
         />
         <div class="placeholder" *ngIf="!featuredAsset" (click)="selectAssets()">
-            <clr-icon shape="image" size="128"></clr-icon>
+            <ng-icon hlm shape="image" size="128"></ng-icon>
             <div>{{ 'catalog.no-featured-asset' | translate }}</div>
         </div>
     </div>
     <div class="all-assets-container">
-    <ng-container *ngTemplateOutlet="assetList"></ng-container>
-    <div *vdrIfPermissions="updatePermissions">
-        <button class="btn" (click)="selectAssets()">
-            <clr-icon shape="attachment"></clr-icon>
-            {{ 'asset.add-asset' | translate }}
-        </button>
-    </div>
+        <ng-container *ngTemplateOutlet="assetList"></ng-container>
+        <div *vdrIfPermissions="updatePermissions">
+            <button class="btn" (click)="selectAssets()">
+                <ng-icon hlm name="lucidePaperclip"></ng-icon>
+                {{ 'asset.add-asset' | translate }}
+            </button>
+        </div>
     </div>
 </div>
 
@@ -25,12 +25,12 @@
     <div class="featured-asset compact">
         <img
             *ngIf="featuredAsset"
-            [src]="featuredAsset | assetPreview : 'thumb'"
+            [src]="featuredAsset | assetPreview: 'thumb'"
             (click)="previewAsset(featuredAsset)"
         />
 
         <div class="placeholder" *ngIf="!featuredAsset" (click)="selectAssets()">
-            <clr-icon shape="image" size="150"></clr-icon>
+            <ng-icon hlm shape="image" size="150"></ng-icon>
         </div>
     </div>
     <ng-container *ngTemplateOutlet="assetList"></ng-container>
@@ -40,7 +40,7 @@
         [title]="'asset.add-asset' | translate"
         (click)="selectAssets()"
     >
-        <clr-icon shape="attachment"></clr-icon>
+        <ng-icon hlm name="lucidePaperclip"></ng-icon>
         {{ 'asset.add-asset' | translate }}
     </button>
 </ng-template>
@@ -64,7 +64,7 @@
                     [title]=""
                     tabindex="0"
                 >
-                    <img [src]="asset | assetPreview : 'tiny'" />
+                    <img [src]="asset | assetPreview: 'tiny'" />
                 </div>
                 <vdr-dropdown-menu vdrPosition="bottom-right">
                     <button type="button" vdrDropdownItem (click)="previewAsset(asset)">

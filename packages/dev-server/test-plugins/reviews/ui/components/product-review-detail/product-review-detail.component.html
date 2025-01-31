@@ -13,7 +13,7 @@
                     (click)="approve()"
                     [disabled]="detailForm.invalid"
                 >
-                    <clr-icon shape="check"></clr-icon>
+                    <ng-icon hlm shape="check"></ng-icon>
                     Approve
                 </button>
                 <button
@@ -22,7 +22,7 @@
                     (click)="reject()"
                     [disabled]="detailForm.invalid"
                 >
-                    <clr-icon shape="times"></clr-icon>
+                    <ng-icon hlm name="lucideX"></ng-icon>
                     Reject
                 </button>
             </ng-container>
@@ -50,7 +50,7 @@
                 />
                 <a class="button-ghost mt-2" [routerLink]="['/catalog', 'inventory', entity?.product.id]"
                     >{{ entity?.product.name }}
-                    <clr-icon shape="arrow right"></clr-icon>
+                    <ng-icon hlm name="lucideArrowRight"></ng-icon>
                 </a>
             </vdr-card>
             <vdr-card *ngIf="entity$ | async as entity">

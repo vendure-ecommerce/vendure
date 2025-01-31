@@ -40,25 +40,25 @@
 <ng-template vdrDialogButtons>
     <div>
         <div class="errors">
-            <clr-alert
+            <div
+                hlmAlert
                 class="mb-1"
                 *ngIf="priceDifference < 0 && !refundsCoverDifference()"
-                [clrAlertType]="'danger'"
-                [clrAlertClosable]="false"
+                variant="destructive"
             >
-                <clr-alert-item>
+                <span hlmAlertDesc>
                     {{ 'order.refund-total-warning' | translate }}
-                </clr-alert-item>
-            </clr-alert>
+                </span>
+            </div>
         </div>
         <div class="modal-buttons">
-            <clr-alert class="" [clrAlertType]="'primary'" [clrAlertClosable]="false">
-                <clr-alert-item>
+            <div hlmAlert variant="default">
+                <span hlmAlertDesc>
                     {{ 'order.modify-order-price-difference' | translate }}
                     {{ 0 < priceDifference ? '+' : ''
-                    }}{{ priceDifference | localeCurrency : order.currencyCode }}
-                </clr-alert-item>
-            </clr-alert>
+                    }}{{ priceDifference | localeCurrency: order.currencyCode }}
+                </span>
+            </div>
             <button type="button" class="btn" (click)="cancel()">
                 {{ 'common.cancel' | translate }}
             </button>

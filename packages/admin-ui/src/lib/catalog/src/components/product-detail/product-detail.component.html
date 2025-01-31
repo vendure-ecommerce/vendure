@@ -16,7 +16,9 @@
                 class="btn btn-primary"
                 *ngIf="isNew$ | async; else updateButton"
                 (click)="create()"
-                [disabled]="detailForm.invalid || detailForm.pristine || createVariantsConfig.variants.length === 0"
+                [disabled]="
+                    detailForm.invalid || detailForm.pristine || createVariantsConfig.variants.length === 0
+                "
             >
                 {{ 'common.create' | translate }}
             </button>
@@ -40,7 +42,10 @@
         <vdr-page-detail-sidebar>
             <vdr-card>
                 <vdr-form-field [label]="'catalog.visibility' | translate" for="visibility">
-                    <label class="relative inline-flex cursor-pointer items-center gap-2" *vdrIfPermissions="updatePermissions">
+                    <label
+                        class="relative inline-flex cursor-pointer items-center gap-2"
+                        *vdrIfPermissions="updatePermissions"
+                    >
                         <input
                             id="enabled"
                             type="checkbox"
@@ -49,10 +54,10 @@
                             [formControl]="detailForm.get(['enabled'])"
                         />
                         <label for="enabled" class="hidden"></label>
-                            <div class="peer h-6 w-11 rounded-full border bg-slate-200 after:absolute after:left-[2px] after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-accent-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-green-300">
-                            </div>
-                            <span>{{ 'common.enabled' | translate }}</span>
-
+                        <div
+                            class="peer h-6 w-11 rounded-full border bg-slate-200 after:absolute after:left-[2px] after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-accent-400 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-green-300"
+                        ></div>
+                        <span>{{ 'common.enabled' | translate }}</span>
                     </label>
                 </vdr-form-field>
             </vdr-card>
@@ -73,7 +78,7 @@
                                 </ng-container>
                             </div>
                             <button class="button-small" (click)="assignToChannel()">
-                                <clr-icon shape="layers"></clr-icon>
+                                <ng-icon hlm name="lucideLayers"></ng-icon>
                                 {{ 'common.assign-to-channel' | translate }}
                             </button>
                         </div>
@@ -83,7 +88,7 @@
             <vdr-card *ngIf="entity?.optionGroups.length" [title]="'catalog.product-options' | translate">
                 <div class="options">
                     <vdr-chip
-                        *ngFor="let optionGroup of entity?.optionGroups | sort : 'id'"
+                        *ngFor="let optionGroup of entity?.optionGroups | sort: 'id'"
                         [colorFrom]="optionGroup.code"
                         [invert]="true"
                     >
@@ -91,8 +96,12 @@
                     </vdr-chip>
                 </div>
                 <div>
-                    <a [routerLink]="['options']" class="button-small mt-2" *vdrIfPermissions="updatePermissions">
-                        <clr-icon shape="pencil"></clr-icon>
+                    <a
+                        [routerLink]="['options']"
+                        class="button-small mt-2"
+                        *vdrIfPermissions="updatePermissions"
+                    >
+                        <ng-icon hlm name="lucidePencil"></ng-icon>
                         {{ 'catalog.edit-options' | translate }}
                     </a>
                 </div>
@@ -112,7 +121,7 @@
                         *vdrIfPermissions="updatePermissions"
                         (click)="selectProductFacetValue()"
                     >
-                        <clr-icon shape="plus"></clr-icon>
+                        <ng-icon hlm name="lucidePlus"></ng-icon>
                         {{ 'catalog.add-facets' | translate }}
                     </button>
                 </div>
@@ -136,17 +145,14 @@
                                 (input)="updateSlug($event.target.value)"
                             />
                         </vdr-form-field>
-                        <div *ngIf="(isNew$ | async) === false && detailForm.get(['name'])?.dirty">
-                            <clr-checkbox-wrapper>
-                                <input
-                                    clrCheckbox
-                                    type="checkbox"
-                                    id="auto-update"
-                                    formControlName="autoUpdateVariantNames"
-                                />
-                                <label>{{ 'catalog.auto-update-product-variant-name' | translate }}</label>
-                            </clr-checkbox-wrapper>
-                        </div>
+                        <label
+                            *ngIf="(isNew$ | async) === false && detailForm.get(['name'])?.dirty"
+                            hlmLabel
+                            class="flex items-center"
+                        >
+                            <hlm-checkbox id="auto-update" formControlName="autoUpdateVariantNames" />
+                            {{ 'catalog.auto-update-product-variant-name' | translate }}</label
+                        >
                     </div>
                     <vdr-form-field
                         [label]="'catalog.slug' | translate"
@@ -210,7 +216,7 @@
                 </ng-template>
                 <div class="mx-3" *ngIf="(isNew$ | async) === false">
                     <a class="button" [routerLink]="['manage-variants']">
-                        <clr-icon shape="add-text"></clr-icon>
+                        <ng-icon hlm name="lucideListPlus"></ng-icon>
                         {{ 'catalog.manage-variants' | translate }}</a
                     >
                 </div>

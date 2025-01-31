@@ -10,12 +10,12 @@
         </vdr-dt2-column>
         <vdr-dt2-column id="created-at" [heading]="'common.created-at' | translate" [hiddenByDefault]="true">
             <ng-template let-line="item">
-                {{ line.createdAt | localeDate : 'short' }}
+                {{ line.createdAt | localeDate: 'short' }}
             </ng-template>
         </vdr-dt2-column>
         <vdr-dt2-column id="updated-at" [heading]="'common.updated-at' | translate" [hiddenByDefault]="true">
             <ng-template let-line="item">
-                {{ line.updatedAt | localeDate : 'short' }}
+                {{ line.updatedAt | localeDate: 'short' }}
             </ng-template>
         </vdr-dt2-column>
         <vdr-dt2-column [heading]="'common.image' | translate" id="image">
@@ -23,11 +23,11 @@
                 <div class="image-placeholder">
                     <img
                         *ngIf="line.featuredAsset as asset; else imagePlaceholder"
-                        [src]="asset | assetPreview : 'tiny'"
+                        [src]="asset | assetPreview: 'tiny'"
                     />
                     <ng-template #imagePlaceholder>
                         <div class="placeholder">
-                            <clr-icon shape="image" size="48"></clr-icon>
+                            <ng-icon hlm name="lucideImage" size="xl"></ng-icon>
                         </div>
                     </ng-template>
                 </div>
@@ -45,16 +45,16 @@
         </vdr-dt2-column>
         <vdr-dt2-column id="unit-price" [heading]="'order.unit-price' | translate" [hiddenByDefault]="true">
             <ng-template let-line="item">
-                {{ line.unitPriceWithTax | localeCurrency : order.currencyCode }}
+                {{ line.unitPriceWithTax | localeCurrency: order.currencyCode }}
             </ng-template>
         </vdr-dt2-column>
         <vdr-dt2-column id="prorated-unit-price" [heading]="'order.prorated-unit-price' | translate">
             <ng-template let-line="item">
-                {{ line.proratedUnitPriceWithTax | localeCurrency : order.currencyCode }}
+                {{ line.proratedUnitPriceWithTax | localeCurrency: order.currencyCode }}
                 <ng-container *ngIf="line.discounts as discounts">
                     <vdr-dropdown *ngIf="discounts.length">
                         <div class="promotions-label" vdrDropdownTrigger>
-                            <button class="icon-button"><clr-icon shape="info"></clr-icon></button>
+                            <button class="icon-button"><ng-icon hlm shape="info"></ng-icon></button>
                         </div>
                         <vdr-dropdown-menu>
                             <div class="line-promotion" *ngFor="let discount of discounts">
@@ -62,8 +62,8 @@
                                 <div class="promotion-amount">
                                     {{
                                         discount.amount / 100 / line.quantity
-                                            | number : '1.0-2'
-                                            | currency : order.currencyCode
+                                            | number: '1.0-2'
+                                            | currency: order.currencyCode
                                     }}
                                 </div>
                             </div>
@@ -117,7 +117,7 @@
                         {{ 'order.refund-shipping' | translate }}
                         <span>{{ shippingLine.shippingMethod.name }}:</span>
                         <span class="ml-1"
-                            >{{ shippingLine.discountedPriceWithTax | localeCurrency : order.currencyCode }}
+                            >{{ shippingLine.discountedPriceWithTax | localeCurrency: order.currencyCode }}
                         </span>
                     </div></label
                 >
@@ -159,47 +159,43 @@
 <ng-template vdrDialogButtons>
     <div>
         <div class="errors">
-            <clr-alert
+            <div
+                hlmAlert
                 *ngIf="refundTotal < 0 || totalRefundableAmount < refundTotal"
-                [clrAlertType]="'danger'"
-                [clrAlertClosable]="false"
+                variant="destructive"
             >
-                <clr-alert-item>
+                <p hlmAlertDesc>
                     {{
                         'order.refund-total-error'
                             | translate
                                 : {
-                                      min: 0 | currency : order.currencyCode,
-                                      max: totalRefundableAmount | localeCurrency : order.currencyCode
+                                      min: 0 | currency: order.currencyCode,
+                                      max: totalRefundableAmount | localeCurrency: order.currencyCode,
                                   }
                     }}
-                </clr-alert-item>
-            </clr-alert>
-            <clr-alert
+                </p>
+            </div>
+            <div
+                hlmAlert
                 *ngIf="amountToRefundTotal < refundTotal || refundTotal < amountToRefundTotal"
-                [clrAlertType]="'danger'"
-                [clrAlertClosable]="false"
+                variant="destructive"
             >
-                <clr-alert-item>
+                <p hlmAlertDesc>
                     {{ 'order.refund-total-warning' | translate }}
-                </clr-alert-item>
-            </clr-alert>
-            <clr-alert
-                *ngIf="amountToRefundTotal && !reason"
-                [clrAlertType]="'danger'"
-                [clrAlertClosable]="false"
-            >
-                <clr-alert-item>
+                </p>
+            </div>
+            <div hlmAlert *ngIf="amountToRefundTotal && !reason" variant="destructive">
+                <p hlmAlertDesc>
                     {{ 'order.refund-cancellation-reason-required' | translate }}
-                </clr-alert-item>
-            </clr-alert>
+                </p>
+            </div>
         </div>
         <div class="modal-buttons">
             <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
             <button type="submit" (click)="select()" [disabled]="!canSubmit()" class="btn btn-primary">
                 {{
                     'order.refund-with-amount'
-                        | translate : { amount: amountToRefundTotal | localeCurrency : order.currencyCode }
+                        | translate: { amount: amountToRefundTotal | localeCurrency: order.currencyCode }
                 }}
             </button>
         </div>

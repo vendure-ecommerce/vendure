@@ -4,7 +4,7 @@
         <vdr-ab-right>
             <vdr-action-bar-items locationId="customer-list"></vdr-action-bar-items>
             <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="'CreateCustomer'">
-                <clr-icon shape="plus"></clr-icon>
+                <ng-icon hlm name="lucidePlus"></ng-icon>
                 {{ 'customer.create-new-customer' | translate }}
             </a>
             <vdr-action-bar-dropdown-menu locationId="customer-list" />
@@ -39,28 +39,35 @@
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.created-at' | translate" id="created-at"
+        [heading]="'common.created-at' | translate"
+        id="created-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('createdAt')"
     >
         <ng-template let-customer="item">
-            {{ customer.createdAt | localeDate : 'short' }}
+            {{ customer.createdAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.updated-at' | translate" id="updated-at"
+        [heading]="'common.updated-at' | translate"
+        id="updated-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('updatedAt')"
     >
         <ng-template let-customer="item">
-            {{ customer.updatedAt | localeDate : 'short' }}
+            {{ customer.updatedAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'customer.name' | translate" id="name" [optional]="false" [sort]="sorts.get('lastName')">
+    <vdr-dt2-column
+        [heading]="'customer.name' | translate"
+        id="name"
+        [optional]="false"
+        [sort]="sorts.get('lastName')"
+    >
         <ng-template let-customer="item">
             <a class="button-ghost" [routerLink]="['./', customer.id]"
                 ><span> {{ customer.title }} {{ customer.firstName }} {{ customer.lastName }} </span>
-                <clr-icon shape="arrow right"></clr-icon>
+                <ng-icon hlm name="lucideArrowRight"></ng-icon>
             </a>
         </ng-template>
     </vdr-dt2-column>
@@ -69,7 +76,11 @@
             <vdr-customer-status-label [customer]="customer" />
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'customer.email-address' | translate" id="email-address" [sort]="sorts.get('emailAddress')">
+    <vdr-dt2-column
+        [heading]="'customer.email-address' | translate"
+        id="email-address"
+        [sort]="sorts.get('emailAddress')"
+    >
         <ng-template let-customer="item">
             {{ customer.emailAddress }}
         </ng-template>

@@ -15,7 +15,7 @@
     </div>
     <div class="card-footer">
         <button class="btn btn-sm btn-secondary" (click)="editable = true" *ngIf="!editable">
-            <clr-icon shape="pencil"></clr-icon>
+            <ng-icon hlm name="lucidePencil"></ng-icon>
             {{ 'common.edit' | translate }}
         </button>
         <button
@@ -24,15 +24,11 @@
             *ngIf="editable"
             [disabled]="customFieldForm.pristine || customFieldForm.invalid"
         >
-            <clr-icon shape="check"></clr-icon>
+            <ng-icon hlm shape="check"></ng-icon>
             {{ 'common.update' | translate }}
         </button>
-        <button
-            class="btn btn-sm btn-secondary"
-            (click)="onCancelClick()"
-            *ngIf="editable"
-        >
-            <clr-icon shape="times"></clr-icon>
+        <button class="btn btn-sm btn-secondary" (click)="onCancelClick()" *ngIf="editable">
+            <ng-icon hlm name="lucideX"></ng-icon>
             {{ 'common.cancel' | translate }}
         </button>
     </div>

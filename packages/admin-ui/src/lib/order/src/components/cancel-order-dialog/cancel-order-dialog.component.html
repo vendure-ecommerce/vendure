@@ -45,28 +45,16 @@
     </div>
     <div class="cancellation-details">
         <ng-container *ngIf="order.active !== true">
-            <clr-radio-wrapper>
-                <input
-                    type="radio"
-                    clrRadio
-                    [value]="true"
-                    [(ngModel)]="cancelAll"
-                    name="options"
-                    (ngModelChange)="radioChanged()"
-                />
-                <label>{{ 'order.cancel-entire-order' | translate }}</label>
-            </clr-radio-wrapper>
-            <clr-radio-wrapper>
-                <input
-                    type="radio"
-                    clrRadio
-                    [value]="false"
-                    [(ngModel)]="cancelAll"
-                    name="options"
-                    (ngModelChange)="radioChanged()"
-                />
-                <label>{{ 'order.cancel-specified-items' | translate }}</label>
-            </clr-radio-wrapper>
+            <hlm-radio-group [(ngModel)]="cancelAll">
+                <brn-radio hlm [value]="true">
+                    <hlm-radio-indicator indicator />
+                    {{ 'order.cancel-entire-order' | translate }}
+                </brn-radio>
+                <brn-radio hlm [value]="false">
+                    <hlm-radio-indicator indicator />
+                    {{ 'order.cancel-specified-items' | translate }}
+                </brn-radio>
+            </hlm-radio-group>
         </ng-container>
         <label class="clr-control-label">{{ 'order.cancellation-reason' | translate }}</label>
         <ng-select

@@ -46,15 +46,11 @@
                     for="enabled"
                     [tooltip]="'catalog.track-inventory-tooltip' | translate"
                 >
-                    <clr-toggle-wrapper>
-                        <input
-                            type="checkbox"
-                            clrToggle
-                            name="enabled"
-                            formControlName="trackInventory"
-                            [vdrDisabled]="!(updatePermission | hasPermission)"
-                        />
-                    </clr-toggle-wrapper>
+                    <hlm-switch
+                        name="enabled"
+                        formControlName="trackInventory"
+                        [vdrDisabled]="!(updatePermission | hasPermission)"
+                    />
                 </vdr-form-field>
             </div>
         </vdr-card>

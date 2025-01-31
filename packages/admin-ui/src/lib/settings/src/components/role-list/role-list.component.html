@@ -8,7 +8,7 @@
                 *vdrIfPermissions="['CreateAdministrator']"
                 [routerLink]="['./', 'create']"
             >
-                <clr-icon shape="plus"></clr-icon>
+                <ng-icon hlm name="lucidePlus"></ng-icon>
                 {{ 'settings.create-new-role' | translate }}
             </a>
             <vdr-action-bar-dropdown-menu locationId="role-list" />
@@ -41,25 +41,28 @@
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.created-at' | translate" id="created-at"
+        [heading]="'common.created-at' | translate"
+        id="created-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('createdAt')"
     >
         <ng-template let-role="item">
-            {{ role.createdAt | localeDate : 'short' }}
+            {{ role.createdAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.updated-at' | translate" id="updated-at"
+        [heading]="'common.updated-at' | translate"
+        id="updated-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('updatedAt')"
     >
         <ng-template let-role="item">
-            {{ role.updatedAt | localeDate : 'short' }}
+            {{ role.updatedAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.description' | translate" id="description"
+        [heading]="'common.description' | translate"
+        id="description"
         [optional]="false"
         [sort]="sorts.get('description')"
     >
@@ -69,7 +72,7 @@
                 class="button-ghost"
                 [routerLink]="['./', role.id]"
                 ><span>{{ role.description }}</span>
-                <clr-icon shape="arrow right"></clr-icon>
+                <ng-icon hlm name="lucideArrowRight"></ng-icon>
             </a>
             <ng-template #defaultRole>
                 {{ role.description }}
@@ -96,7 +99,7 @@
             <ng-container *ngIf="!isDefaultRole(role); else defaultRole">
                 <div class="permissions-list">
                     <vdr-chip
-                        *ngFor="let permission of role.permissions | slice : 0 : displayLimit[role.id] || 3"
+                        *ngFor="let permission of role.permissions | slice: 0 : displayLimit[role.id] || 3"
                         >{{ permission }}</vdr-chip
                     >
                     <button
@@ -107,11 +110,11 @@
                         <ng-container
                             *ngIf="(displayLimit[role.id] || 0) < role.permissions.length; else collapse"
                         >
-                            <clr-icon shape="plus"></clr-icon>
+                            <ng-icon hlm name="lucidePlus"></ng-icon>
                             {{ role.permissions.length - initialLimit }}
                         </ng-container>
                         <ng-template #collapse>
-                            <clr-icon shape="minus"></clr-icon>
+                            <ng-icon hlm name="lucideMinus"></ng-icon>
                         </ng-template>
                     </button>
                 </div>

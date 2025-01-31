@@ -14,7 +14,7 @@
                 *vdrIfPermissions="['CreateSettings', 'CreateCountry']"
                 [routerLink]="['./', 'create']"
             >
-                <clr-icon shape="plus"></clr-icon>
+                <ng-icon hlm name="lucidePlus"></ng-icon>
                 {{ 'settings.create-new-country' | translate }}
             </a>
             <vdr-action-bar-dropdown-menu locationId="country-list" />
@@ -54,7 +54,7 @@
         [sort]="sorts.get('createdAt')"
     >
         <ng-template let-country="item">
-            {{ country.createdAt | localeDate : 'short' }}
+            {{ country.createdAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
@@ -64,7 +64,7 @@
         [sort]="sorts.get('updatedAt')"
     >
         <ng-template let-country="item">
-            {{ country.updatedAt | localeDate : 'short' }}
+            {{ country.updatedAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
@@ -76,7 +76,7 @@
         <ng-template let-country="item">
             <a class="button-ghost" [routerLink]="['./', country.id]"
                 ><span>{{ country.name }}</span>
-                <clr-icon shape="arrow right"></clr-icon>
+                <ng-icon hlm name="lucideArrowRight"></ng-icon>
             </a>
         </ng-template>
     </vdr-dt2-column>

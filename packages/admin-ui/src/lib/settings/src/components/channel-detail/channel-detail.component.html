@@ -137,17 +137,15 @@
                                 [vdrDisabled]="!(updatePermission | hasPermission)"
                             ></vdr-zone-selector>
                         </vdr-form-field>
-                        <clr-alert
+                        <div
+                            hlmAlert
                             *ngIf="detailForm.value.code && !detailForm.value.defaultTaxZoneId"
-                            clrAlertType="danger"
-                            [clrAlertClosable]="false"
+                            variant="destructive"
                         >
-                            <clr-alert-item>
-                                <span class="alert-text">
-                                    {{ 'error.no-default-tax-zone-set' | translate }}
-                                </span>
-                            </clr-alert-item>
-                        </clr-alert>
+                            <span hlmAlertDesc>
+                                {{ 'error.no-default-tax-zone-set' | translate }}
+                            </span>
+                        </div>
                     </div>
 
                     <div>
@@ -161,31 +159,25 @@
                                 [vdrDisabled]="!(updatePermission | hasPermission)"
                             ></vdr-zone-selector>
                         </vdr-form-field>
-                        <clr-alert
+                        <div
+                            hlmAlert
                             *ngIf="detailForm.value.code && !detailForm.value.defaultShippingZoneId"
-                            clrAlertType="danger"
-                            [clrAlertClosable]="false"
+                            variant="destructive"
                         >
-                            <clr-alert-item>
-                                <span class="alert-text">
-                                    {{ 'error.no-default-shipping-zone-set' | translate }}
-                                </span>
-                            </clr-alert-item>
-                        </clr-alert>
+                            <span hlmAlertDesc>
+                                {{ 'error.no-default-shipping-zone-set' | translate }}
+                            </span>
+                        </div>
                     </div>
                     <vdr-form-field
                         [label]="'settings.prices-include-tax' | translate"
                         for="pricesIncludeTax"
                     >
-                        <clr-toggle-wrapper>
-                            <input
-                                type="checkbox"
-                                clrToggle
-                                id="pricesIncludeTax"
-                                formControlName="pricesIncludeTax"
-                                [vdrDisabled]="!(updatePermission | hasPermission)"
-                            />
-                        </clr-toggle-wrapper>
+                        <hlm-switch
+                            id="pricesIncludeTax"
+                            formControlName="pricesIncludeTax"
+                            [vdrDisabled]="!(updatePermission | hasPermission)"
+                        />
                     </vdr-form-field>
                 </div>
             </vdr-card>

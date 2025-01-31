@@ -5,14 +5,10 @@
         [class.visible]="filters.activeFilters.length > 0 && !selectedFilterPreset"
         [disabled]="filters.activeFilters.length === 0 || !!selectedFilterPreset"
     >
-        <clr-icon shape="floppy"/>
+        <ng-icon hlm shape="floppy" />
         <div>{{ 'common.save-filter-preset' | translate }}</div>
     </button>
-    <vdr-dropdown-menu
-        vdrPosition="bottom-left"
-        [cdkTrapFocus]="true"
-        [cdkTrapFocusAutoCapture]="true"
-    >
+    <vdr-dropdown-menu vdrPosition="bottom-left" [cdkTrapFocus]="true" [cdkTrapFocusAutoCapture]="true">
         <form class="mx-1">
             <div>
                 <input

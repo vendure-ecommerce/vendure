@@ -23,19 +23,19 @@
     </vdr-dt2-column>
     <vdr-dt2-column [heading]="'common.created-at' | translate" id="created-at" [hiddenByDefault]="true">
         <ng-template let-customer="item">
-            {{ customer.createdAt | localeDate : 'short' }}
+            {{ customer.createdAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column [heading]="'common.updated-at' | translate" id="updated-at" [hiddenByDefault]="true">
         <ng-template let-customer="item">
-            {{ customer.createdAt | localeDate : 'short' }}
+            {{ customer.createdAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column [heading]="'customer.name' | translate" id="name" [optional]="false">
         <ng-template let-customer="item">
             <a class="button-ghost" [routerLink]="['/customer/customers', customer.id]"
                 ><span> {{ customer.title }} {{ customer.firstName }} {{ customer.lastName }} </span>
-                <clr-icon shape="arrow right"></clr-icon>
+                <ng-icon hlm name="lucideArrowRight"></ng-icon>
             </a>
         </ng-template>
     </vdr-dt2-column>

@@ -2,7 +2,9 @@
     <vdr-action-bar>
         <vdr-ab-left>Action bar left contents</vdr-ab-left>
         <vdr-ab-right>
-            <button class="button primary" (click)="updateTitle()" [disabled]="pageTitleControl.pristine">Update page title</button>
+            <button class="button primary" (click)="updateTitle()" [disabled]="pageTitleControl.pristine">
+                Update page title
+            </button>
         </vdr-ab-right>
     </vdr-action-bar>
 </vdr-page-block>
@@ -13,7 +15,7 @@
     <vdr-page-block>
         <vdr-card title="Card">
             <div class="bg-black">
-            This is a card. On a detail page, content should usually be placed inside a card.
+                This is a card. On a detail page, content should usually be placed inside a card.
             </div>
         </vdr-card>
         <vdr-card title="Form inputs">
@@ -39,35 +41,32 @@
                 <vdr-form-field label="Invalid with error">
                     <input type="text" [formControl]="invalidFormControl" />
                 </vdr-form-field>
-                <vdr-rich-text-editor
-                    class="form-grid-span"
-                    label="Description"
-                ></vdr-rich-text-editor>
+                <vdr-rich-text-editor class="form-grid-span" label="Description"></vdr-rich-text-editor>
             </div>
         </vdr-card>
 
         <vdr-card title="Icons">
             <demo-block label="Sizes">
-                <clr-icon shape="star" size="8"></clr-icon>
-                <clr-icon shape="star" size="16"></clr-icon>
-                <clr-icon shape="star" size="24"></clr-icon>
-                <clr-icon shape="star" size="36"></clr-icon>
-                <clr-icon shape="star" size="48"></clr-icon>
-                <clr-icon shape="star" size="56"></clr-icon>
+                <ng-icon hlm shape="star" size="8"></ng-icon>
+                <ng-icon hlm shape="star" size="16"></ng-icon>
+                <ng-icon hlm shape="star" size="24"></ng-icon>
+                <ng-icon hlm shape="star" size="36"></ng-icon>
+                <ng-icon hlm shape="star" size="48"></ng-icon>
+                <ng-icon hlm shape="star" size="56"></ng-icon>
             </demo-block>
 
             <demo-block label="Badges">
-                <clr-icon shape="user" class="has-badge--success"></clr-icon>
-                <clr-icon shape="user" class="has-alert"></clr-icon>
-                <clr-icon shape="user" class="has-badge--info"></clr-icon>
-                <clr-icon shape="user" class="has-badge--error"></clr-icon>
+                <ng-icon hlm shape="user" class="has-badge--success"></ng-icon>
+                <ng-icon hlm shape="user" class="has-alert"></ng-icon>
+                <ng-icon hlm shape="user" class="has-badge--info"></ng-icon>
+                <ng-icon hlm shape="user" class="has-badge--error"></ng-icon>
             </demo-block>
 
             <demo-block label="Status colors">
-                <clr-icon shape="user" class="is-success"></clr-icon>
-                <clr-icon shape="user" class="is-info"></clr-icon>
-                <clr-icon shape="user" class="is-warning"></clr-icon>
-                <clr-icon shape="user" class="is-error"></clr-icon>
+                <ng-icon hlm shape="user" class="is-success"></ng-icon>
+                <ng-icon hlm shape="user" class="is-info"></ng-icon>
+                <ng-icon hlm shape="user" class="is-warning"></ng-icon>
+                <ng-icon hlm shape="user" class="is-error"></ng-icon>
             </demo-block>
         </vdr-card>
 
@@ -82,14 +81,14 @@
             <demo-block label="Ghost">
                 <button class="button-ghost">Ghost</button>
                 <a class="button-ghost" [routerLink]="['/extensions/ui-library/angular-ui']">
-                    <clr-icon shape="arrow" dir="right"></clr-icon>
+                    <ng-icon hlm shape="arrow" dir="right"></ng-icon>
                     John Smith
                 </a>
             </demo-block>
             <demo-block label="Small">
                 <button class="button-small">Small</button>
                 <button class="button-small">
-                    <clr-icon shape="layers"></clr-icon>
+                    <ng-icon hlm name="lucideLayers"></ng-icon>
                     Assign to channel
                 </button>
             </demo-block>

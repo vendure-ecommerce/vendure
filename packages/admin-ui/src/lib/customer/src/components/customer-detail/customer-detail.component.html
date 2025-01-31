@@ -62,7 +62,7 @@
                     (click)="addToGroup()"
                     *vdrIfPermissions="'UpdateCustomerGroup'"
                 >
-                    <clr-icon shape="plus"></clr-icon>
+                    <ng-icon hlm name="lucidePlus"></ng-icon>
                     {{ 'customer.add-customer-to-group' | translate }}
                 </button>
             </div>
@@ -162,7 +162,7 @@
                     (click)="addAddress()"
                     *vdrIfPermissions="'UpdateCustomer'"
                 >
-                    <clr-icon shape="plus"></clr-icon>
+                    <ng-icon hlm name="lucidePlus"></ng-icon>
                     {{ 'customer.create-new-address' | translate }}
                 </button>
             </vdr-card>
@@ -188,14 +188,14 @@
                         [hiddenByDefault]="true"
                     >
                         <ng-template let-order="item">
-                            {{ order.createdAt | localeDate : 'short' }}
+                            {{ order.createdAt | localeDate: 'short' }}
                         </ng-template>
                     </vdr-dt2-column>
                     <vdr-dt2-column [heading]="'common.code' | translate" id="code" [optional]="false">
                         <ng-template let-order="item">
                             <a class="button-ghost" [routerLink]="['/orders', order.id]"
                                 ><span>{{ order.code }}</span>
-                                <clr-icon shape="arrow right"></clr-icon>
+                                <ng-icon hlm name="lucideArrowRight"></ng-icon>
                             </a>
                         </ng-template>
                     </vdr-dt2-column>
@@ -215,7 +215,7 @@
                     </vdr-dt2-column>
                     <vdr-dt2-column [heading]="'order.total' | translate" id="total">
                         <ng-template let-order="item">
-                            {{ order.totalWithTax | localeCurrency : order.currencyCode }}
+                            {{ order.totalWithTax | localeCurrency: order.currencyCode }}
                         </ng-template>
                     </vdr-dt2-column>
                     <vdr-dt2-column [heading]="'common.updated-at' | translate" id="updated-at">
@@ -225,7 +225,7 @@
                     </vdr-dt2-column>
                     <vdr-dt2-column [heading]="'order.placed-at' | translate" id="placed-at">
                         <ng-template let-order="item">
-                            {{ order.orderPlacedAt | localeDate : 'short' }}
+                            {{ order.orderPlacedAt | localeDate: 'short' }}
                         </ng-template>
                     </vdr-dt2-column>
                     <vdr-dt2-custom-field-column

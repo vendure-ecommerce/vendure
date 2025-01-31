@@ -3,8 +3,12 @@
         <vdr-ab-left> </vdr-ab-left>
         <vdr-ab-right>
             <vdr-action-bar-items locationId="seller-list" />
-            <a class="btn btn-primary" *vdrIfPermissions="['SuperAdmin', 'CreateSeller']" [routerLink]="['./', 'create']">
-                <clr-icon shape="plus"></clr-icon>
+            <a
+                class="btn btn-primary"
+                *vdrIfPermissions="['SuperAdmin', 'CreateSeller']"
+                [routerLink]="['./', 'create']"
+            >
+                <ng-icon hlm name="lucidePlus"></ng-icon>
                 {{ 'settings.create-new-seller' | translate }}
             </a>
             <vdr-action-bar-dropdown-menu locationId="seller-list" />
@@ -35,30 +39,41 @@
         <ng-template let-seller="item">{{ seller.id }}</ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.created-at' | translate" id="created-at"
+        [heading]="'common.created-at' | translate"
+        id="created-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('createdAt')"
     >
         <ng-template let-seller="item">
-            {{ seller.createdAt | localeDate : 'short' }}
+            {{ seller.createdAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.updated-at' | translate" id="updated-at"
+        [heading]="'common.updated-at' | translate"
+        id="updated-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('updatedAt')"
     >
         <ng-template let-seller="item">
-            {{ seller.updatedAt | localeDate : 'short' }}
+            {{ seller.updatedAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.name' | translate" id="name" [optional]="false" [sort]="sorts.get('name')">
+    <vdr-dt2-column
+        [heading]="'common.name' | translate"
+        id="name"
+        [optional]="false"
+        [sort]="sorts.get('name')"
+    >
         <ng-template let-seller="item">
             <a class="button-ghost" [routerLink]="['./', seller.id]"
                 ><span>{{ seller.name }}</span>
-                <clr-icon shape="arrow right"></clr-icon>
+                <ng-icon hlm name="lucideArrowRight"></ng-icon>
             </a>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-custom-field-column *ngFor="let customField of customFields" [customField]="customField" [sorts]="sorts" />
+    <vdr-dt2-custom-field-column
+        *ngFor="let customField of customFields"
+        [customField]="customField"
+        [sorts]="sorts"
+    />
 </vdr-data-table-2>

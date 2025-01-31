@@ -9,11 +9,12 @@
     <div class="me-2"><ng-content></ng-content></div>
     <div class="chip-icon" *ngIf="icon">
         <button (click)="iconClick.emit($event)">
-            <clr-icon
+            <ng-icon
+                hlm
                 [attr.shape]="icon"
                 [style.color]="invert && (colorFrom | stringToColor)"
                 [class.is-inverse]="!invert && colorFrom"
-            ></clr-icon>
+            ></ng-icon>
         </button>
     </div>
 </div>

@@ -1,9 +1,9 @@
 <button *ngIf="activeTheme$ | async as activeTheme" class="theme-toggle">
     <span>{{ 'common.theme' | translate }}</span>
     <div class="theme-icon default" [class.active]="activeTheme === 'default'">
-        <clr-icon shape="sun" class="is-solid"></clr-icon>
+        <ng-icon hlm shape="sun" class="is-solid"></ng-icon>
     </div>
     <div class="theme-icon dark" [class.active]="activeTheme === 'dark'">
-        <clr-icon shape="moon" class="is-solid"></clr-icon>
+        <ng-icon hlm shape="moon" class="is-solid"></ng-icon>
     </div>
 </button>

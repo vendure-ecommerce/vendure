@@ -14,6 +14,12 @@ import { HlmFormFieldModule } from '@spartan-ng/ui-formfield-helm';
 
 import { HlmCheckboxModule } from '@spartan-ng/ui-checkbox-helm';
 import { HlmLabelModule } from '@spartan-ng/ui-label-helm';
+import { HlmSpinnerModule } from '@spartan-ng/ui-spinner-helm';
+import { HlmAlertModule } from '@spartan-ng/ui-alert-helm';
+import { HlmInputModule } from '@spartan-ng/ui-input-helm';
+import { HlmTabsModule } from '@spartan-ng/ui-tabs-helm';
+import { HlmRadioGroupModule } from '@spartan-ng/ui-radiogroup-helm';
+import { BrnRadioGroupModule } from '@spartan-ng/brain/radio-group';
 import { ModalService } from '../providers/modal/modal.service';
 
 import { ActionBarItemsComponent } from './components/action-bar-items/action-bar-items.component';
@@ -194,6 +200,12 @@ const IMPORTS = [
     HlmFormFieldModule,
     HlmCheckboxModule,
     HlmLabelModule,
+    HlmSpinnerModule,
+    HlmAlertModule,
+    HlmInputModule,
+    HlmTabsModule,
+    HlmRadioGroupModule,
+    BrnRadioGroupModule,
 ];
 
 const DECLARATIONS = [

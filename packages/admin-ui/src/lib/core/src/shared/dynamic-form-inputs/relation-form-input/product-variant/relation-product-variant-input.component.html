@@ -12,12 +12,12 @@
             <img
                 class="thumb"
                 *ngIf="variant.featuredAsset || variant.product.featuredAsset as asset; else placeholder"
-                [src]="asset | assetPreview : 'tiny'"
+                [src]="asset | assetPreview: 'tiny'"
             />
         </div>
         <ng-template #placeholder>
             <div class="placeholder" *ngIf="!variant.featuredAsset">
-                <clr-icon shape="image" size="50"></clr-icon>
+                <ng-icon hlm shape="image" size="50"></ng-icon>
             </div>
         </ng-template>
     </ng-template>
@@ -34,7 +34,7 @@
         <ng-template ng-option-tmp let-item="item">
             <img
                 *ngIf="item.featuredAsset || item.product.featuredAsset as asset"
-                [src]="asset | assetPreview : 32"
+                [src]="asset | assetPreview: 32"
             />
             {{ item.name }}
         </ng-template>

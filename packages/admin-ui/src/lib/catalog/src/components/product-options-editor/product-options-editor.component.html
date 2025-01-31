@@ -1,6 +1,8 @@
 <vdr-page-header>
     <vdr-page-title></vdr-page-title>
-    <vdr-page-header-description>{{ 'catalog.page-description-options-editor' | translate }}</vdr-page-header-description>
+    <vdr-page-header-description>{{
+        'catalog.page-description-options-editor' | translate
+    }}</vdr-page-header-description>
 </vdr-page-header>
 <vdr-page-body>
     <vdr-page-block>
@@ -16,15 +18,10 @@
             <vdr-ab-right>
                 <div class="flex center">
                     <div class="mr-2">
-                        <clr-checkbox-wrapper>
-                            <input
-                                clrCheckbox
-                                type="checkbox"
-                                id="auto-update"
-                                [(ngModel)]="autoUpdateVariantNames"
-                            />
-                            <label>{{ 'catalog.auto-update-product-variant-name' | translate }}</label>
-                        </clr-checkbox-wrapper>
+                        <label class="flex items-center" hlmLabel>
+                            <hlm-checkbox id="auto-update" [(ngModel)]="autoUpdateVariantNames" />
+                            {{ 'catalog.auto-update-product-variant-name' | translate }}
+                        </label>
                     </div>
                     <button
                         *vdrIfPermissions="updatePermission"
@@ -88,14 +85,22 @@
                                 {{ optionControl.value.id }}
                             </ng-template>
                         </vdr-dt2-column>
-                        <vdr-dt2-column [heading]="'common.created-at' | translate" id="created-at" [hiddenByDefault]="true">
+                        <vdr-dt2-column
+                            [heading]="'common.created-at' | translate"
+                            id="created-at"
+                            [hiddenByDefault]="true"
+                        >
                             <ng-template let-optionControl="item">
-                                {{ optionControl.value.createdAt | localeDate : 'short' }}
+                                {{ optionControl.value.createdAt | localeDate: 'short' }}
                             </ng-template>
                         </vdr-dt2-column>
-                        <vdr-dt2-column [heading]="'common.updated-at' | translate" id="updated-at" [hiddenByDefault]="true">
+                        <vdr-dt2-column
+                            [heading]="'common.updated-at' | translate"
+                            id="updated-at"
+                            [hiddenByDefault]="true"
+                        >
                             <ng-template let-optionControl="item">
-                                {{ optionControl.value.updatedAt | localeDate : 'short' }}
+                                {{ optionControl.value.updatedAt | localeDate: 'short' }}
                             </ng-template>
                         </vdr-dt2-column>
                         <vdr-dt2-column [heading]="'common.name' | translate" id="name" [optional]="false">
@@ -113,7 +118,8 @@
                             </ng-template>
                         </vdr-dt2-column>
                         <vdr-dt2-column
-                            [heading]="'common.custom-fields' | translate" id="custom-fields"
+                            [heading]="'common.custom-fields' | translate"
+                            id="custom-fields"
                             [hiddenByDefault]="optionCustomFields.length === 0"
                         >
                             <ng-template let-optionControl="item">

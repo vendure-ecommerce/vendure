@@ -2,16 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-@import 'global/sass-overrides';
 @import '@ng-select/ng-select/themes/default.theme.css';
 @import '@angular/cdk/overlay-prebuilt.css';
-@import 'global/buttons';
-@import 'global/forms';
-@import 'global/overrides';
-@import 'global/utilities';
+// @import 'global/buttons';
+// @import 'global/forms';
+// @import 'global/overrides';
+// @import 'global/utilities';
 @import 'fonts';
-@import 'global/global';
-@import 'global/clarity-bc';
+// @import 'global/global';
+// @import 'global/clarity-bc';
 
 @import "component/prosemirror";
 

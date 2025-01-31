@@ -40,10 +40,10 @@
     <vdr-page-detail-layout>
         <vdr-page-detail-sidebar>
             <vdr-card *vdrIfPermissions="'UpdatePromotion'">
-                <clr-toggle-wrapper>
-                    <input type="checkbox" clrToggle name="enabled" formControlName="enabled" />
-                    <label>{{ 'common.enabled' | translate }}</label>
-                </clr-toggle-wrapper>
+                <label hlmLabel class="flex items-center">
+                    <hlm-checkbox name="enabled" formControlName="enabled" />
+                    {{ 'common.enabled' | translate }}
+                </label>
             </vdr-card>
             <vdr-card *ngIf="entity$ | async as entity">
                 <vdr-page-entity-info [entity]="entity" />
@@ -143,7 +143,7 @@
                 <div>
                     <vdr-dropdown *vdrIfPermissions="'UpdatePromotion'">
                         <button class="btn btn-outline" vdrDropdownTrigger>
-                            <clr-icon shape="plus"></clr-icon>
+                            <ng-icon hlm name="lucidePlus"></ng-icon>
                             {{ 'marketing.add-condition' | translate }}
                         </button>
                         <vdr-dropdown-menu vdrPosition="bottom-left">
@@ -174,7 +174,7 @@
                 <div>
                     <vdr-dropdown *vdrIfPermissions="'UpdatePromotion'">
                         <button class="btn btn-outline" vdrDropdownTrigger>
-                            <clr-icon shape="plus"></clr-icon>
+                            <ng-icon hlm name="lucidePlus"></ng-icon>
                             {{ 'marketing.add-action' | translate }}
                         </button>
                         <vdr-dropdown-menu vdrPosition="bottom-left">

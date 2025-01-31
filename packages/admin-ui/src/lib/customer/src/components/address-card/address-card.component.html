@@ -6,11 +6,11 @@
         </div>
         <div class="default-controls">
             <vdr-chip class="is-default p8" *ngIf="isDefaultShipping">
-                <clr-icon shape="truck"></clr-icon>
+                <ng-icon hlm shape="truck"></ng-icon>
                 {{ 'customer.default-shipping-address' | translate }}
             </vdr-chip>
             <vdr-chip class="is-default p8" *ngIf="isDefaultBilling">
-                <clr-icon shape="credit-card"></clr-icon>
+                <ng-icon hlm shape="credit-card"></ng-icon>
                 {{ 'customer.default-billing-address' | translate }}
             </vdr-chip>
         </div>
@@ -30,7 +30,7 @@
                 <vdr-dropdown>
                     <button type="button" class="button-small" vdrDropdownTrigger>
                         {{ 'common.more' | translate }}
-                        <clr-icon shape="ellipsis-vertical" size="12"></clr-icon>
+                        <ng-icon hlm name="lucideEllipsisVertical"></ng-icon>
                     </button>
                     <vdr-dropdown-menu>
                         <button
@@ -49,7 +49,7 @@
                         </button>
                         <div class="dropdown-divider"></div>
                         <button type="button" (click)="delete()" vdrDropdownItem>
-                            <clr-icon shape="trash" class="is-danger"></clr-icon>
+                            <ng-icon hlm name="lucideTrash" class="is-danger"></ng-icon>
                             {{ 'common.delete' | translate }}
                         </button>
                     </vdr-dropdown-menu>

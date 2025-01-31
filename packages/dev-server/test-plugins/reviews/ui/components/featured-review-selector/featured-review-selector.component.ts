@@ -14,7 +14,7 @@ import { GetReviewForProductDocument, ProductReviewFragment } from '../../genera
             <vdr-chip>{{ review.rating }} / 5</vdr-chip>
             {{ review.summary }}
             <a [routerLink]="['/extensions', 'product-reviews', review.id]">
-                <clr-icon shape="link"></clr-icon>
+                <ng-icon hlm shape="link"></ng-icon>
             </a>
         </div>
         <select class="mt-1" [formControl]="formControl">
@@ -36,7 +36,10 @@ export class RelationReviewInputComponent implements OnInit, CustomFieldControl 
 
     reviews$: Observable<ProductReviewFragment[]>;
 
-    constructor(private dataService: DataService, private route: ActivatedRoute) {}
+    constructor(
+        private dataService: DataService,
+        private route: ActivatedRoute,
+    ) {}
 
     ngOnInit() {
         this.reviews$ = this.route.data.pipe(

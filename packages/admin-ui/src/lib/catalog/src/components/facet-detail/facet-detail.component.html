@@ -38,21 +38,18 @@
         <vdr-page-detail-sidebar formGroupName="facet">
             <vdr-card>
                 <vdr-form-field [label]="'catalog.visibility' | translate" for="visibility">
-                    <clr-toggle-wrapper>
-                        <input
-                            type="checkbox"
-                            clrToggle
-                            [vdrDisabled]="!(updatePermission | hasPermission)"
+                    <label class="flex items-center" hlmLabel>
+                        <hlm-switch
+                            [disabled]="!(updatePermission | hasPermission)"
                             formControlName="visible"
                             id="visibility"
                         />
-                        <label class="visible-toggle">
-                            <ng-container *ngIf="detailForm.value.facet?.visible; else private">{{
-                                'catalog.public' | translate
-                            }}</ng-container>
-                            <ng-template #private>{{ 'catalog.private' | translate }}</ng-template>
-                        </label>
-                    </clr-toggle-wrapper>
+
+                        <ng-container *ngIf="detailForm.value.facet?.visible; else private">{{
+                            'catalog.public' | translate
+                        }}</ng-container>
+                        <ng-template #private>{{ 'catalog.private' | translate }}</ng-template>
+                    </label>
                 </vdr-form-field>
             </vdr-card>
             <vdr-card>
@@ -165,7 +162,7 @@
                                 <td class="align-middle">
                                     <vdr-dropdown>
                                         <button type="button" class="icon-button" vdrDropdownTrigger>
-                                            <clr-icon shape="ellipsis-vertical"></clr-icon>
+                                            <ng-icon hlm name="lucideEllipsisVertical"></ng-icon>
                                         </button>
                                         <vdr-dropdown-menu vdrPosition="bottom-right">
                                             <button
@@ -175,7 +172,7 @@
                                                 [disabled]="!(updatePermission | hasPermission)"
                                                 vdrDropdownItem
                                             >
-                                                <clr-icon shape="trash" class="is-danger"></clr-icon>
+                                                <ng-icon hlm name="lucideTrash" class="is-danger"></ng-icon>
                                                 {{ 'common.delete' | translate }}
                                             </button>
                                         </vdr-dropdown-menu>
@@ -204,7 +201,7 @@
                         *vdrIfPermissions="['CreateCatalog', 'CreateFacet']"
                         (click)="addFacetValue()"
                     >
-                        <clr-icon shape="add"></clr-icon>
+                        <ng-icon hlm name="lucidePlus"></ng-icon>
                         {{ 'catalog.add-facet-value' | translate }}
                     </button>
                 </div>

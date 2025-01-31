@@ -19,14 +19,17 @@
                                     [type]="sectionBadge"
                                 ></vdr-status-badge>
                             </ng-container>
-                            <clr-icon
+                            <ng-icon
+                                hlm
                                 *ngIf="section.icon"
                                 [attr.shape]="section.icon || 'block'"
                                 size="20"
-                            ></clr-icon>
-                            <label class="md:hidden" [for]="section.id">{{ section.label | translate }}</label>
+                            ></ng-icon>
+                            <label class="md:hidden" [for]="section.id">{{
+                                section.label | translate
+                            }}</label>
                         </div>
-                        <clr-icon class="md:hidden" shape="caret right"></clr-icon>
+                        <ng-icon hlm class="md:hidden" shape="caret right"></ng-icon>
                     </button>
                     <vdr-dropdown-menu vdrPosition="top-right">
                         <ng-container *ngFor="let item of section.items">
@@ -44,7 +47,7 @@
                                             [type]="itemBadge.type"
                                         ></vdr-status-badge>
                                     </ng-container>
-                                    <clr-icon [attr.shape]="item.icon || 'block'" size="20"></clr-icon>
+                                    <ng-icon hlm [attr.shape]="item.icon || 'block'" size="20"></ng-icon>
                                     <div class="">{{ item.label | translate }}</div>
                                 </a>
                             </div>

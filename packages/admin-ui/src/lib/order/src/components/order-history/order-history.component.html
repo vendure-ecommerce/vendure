@@ -7,10 +7,10 @@
             </button>
         </div>
         <div class="visibility-select">
-            <clr-checkbox-wrapper>
-                <input type="checkbox" clrCheckbox [(ngModel)]="noteIsPrivate" />
-                <label>{{ 'order.note-is-private' | translate }}</label>
-            </clr-checkbox-wrapper>
+            <label class="flex items-center">
+                <hlm-checkbox class="mr-2" [(ngModel)]="noteIsPrivate" />
+                {{ 'order.note-is-private' | translate }}</label
+            >
             <span *ngIf="noteIsPrivate" class="private">
                 {{ 'order.note-only-visible-to-administrators' | translate }}
             </span>
@@ -48,7 +48,7 @@
                         <ng-template [ngIf]="entry.data.to !== 'Cancelled' && entry.data.to !== 'Delivered'">
                             {{
                                 'order.history-order-transition'
-                                    | translate : { from: entry.data.from, to: entry.data.to }
+                                    | translate: { from: entry.data.from, to: entry.data.to }
                             }}
                         </ng-template>
                     </ng-container>
@@ -62,7 +62,7 @@
                         >
                             {{ 'order.modify-order-price-difference' | translate }}:
                             <strong>{{
-                                modification.priceChange | localeCurrency : order.currencyCode
+                                modification.priceChange | localeCurrency: order.currencyCode
                             }}</strong>
                             <vdr-chip colorType="success" class="mx-1" *ngIf="modification.isSettled">{{
                                 'order.modification-settled' | translate
@@ -85,7 +85,7 @@
                             </div>
                             <div class="flex items-center">
                                 <vdr-chip *ngIf="getPayment(entry) as payment" class="mr-1">{{
-                                    payment.amount | localeCurrency : order.currencyCode
+                                    payment.amount | localeCurrency: order.currencyCode
                                 }}</vdr-chip>
                                 <vdr-history-entry-detail *ngIf="getPayment(entry) as payment">
                                     <vdr-payment-detail
@@ -102,7 +102,7 @@
                                         : {
                                               from: entry.data.from,
                                               to: entry.data.to,
-                                              id: getPayment(entry)?.transactionId
+                                              id: getPayment(entry)?.transactionId,
                                           }
                             }}
                         </ng-template>
@@ -113,7 +113,7 @@
                                 <div class="title">{{ 'order.refund' | translate }} #{{ refund.id }}</div>
                                 <div class="flex items-center">
                                     <vdr-chip colorType="warning" class="mr-1">{{
-                                        refund.total | localeCurrency : order.currencyCode
+                                        refund.total | localeCurrency: order.currencyCode
                                     }}</vdr-chip>
                                     <vdr-history-entry-detail>
                                         <vdr-labeled-data [label]="'order.cancellation-reason' | translate">
@@ -135,7 +135,7 @@
                                         : {
                                               from: entry.data.from,
                                               to: entry.data.to,
-                                              id: entry.data.refundId
+                                              id: entry.data.refundId,
                                           }
                             }}
                         </ng-template>
@@ -143,7 +143,7 @@
                     <ng-container *ngSwitchCase="type.ORDER_CANCELLATION">
                         {{
                             'order.history-items-cancelled'
-                                | translate : { count: getCancelledQuantity(entry) }
+                                | translate: { count: getCancelledQuantity(entry) }
                         }}
                         <vdr-history-entry-detail *ngIf="getCancelledItems(entry.data.lines) as items">
                             <vdr-labeled-data [label]="'order.cancellation-reason' | translate">
@@ -182,7 +182,7 @@
                         <ng-container *ngIf="entry.data.to !== 'Delivered' && entry.data.to !== 'Shipped'">
                             {{
                                 'order.history-fulfillment-transition'
-                                    | translate : { from: entry.data.from, to: entry.data.to }
+                                    | translate: { from: entry.data.from, to: entry.data.to }
                             }}
                         </ng-container>
                         <vdr-history-entry-detail *ngIf="getFulfillment(entry) as fulfillment">
@@ -206,7 +206,7 @@
                             <div class="flex-spacer"></div>
                             <vdr-dropdown>
                                 <button class="button-small ml-1" vdrDropdownTrigger>
-                                    <clr-icon shape="ellipsis-vertical" size="12"></clr-icon>
+                                    <ng-icon hlm name="lucideEllipsisVertical"></ng-icon>
                                 </button>
                                 <vdr-dropdown-menu vdrPosition="bottom-right">
                                     <button
@@ -214,7 +214,7 @@
                                         (click)="updateNote.emit(entry)"
                                         [disabled]="!('UpdateOrder' | hasPermission)"
                                     >
-                                        <clr-icon shape="edit"></clr-icon>
+                                        <ng-icon hlm name="lucidePencil"></ng-icon>
                                         {{ 'common.edit' | translate }}
                                     </button>
                                     <div class="dropdown-divider"></div>
@@ -223,7 +223,7 @@
                                         (click)="deleteNote.emit(entry)"
                                         [disabled]="!('UpdateOrder' | hasPermission)"
                                     >
-                                        <clr-icon shape="trash" class="is-danger"></clr-icon>
+                                        <ng-icon hlm name="lucideTrash" class="is-danger"></ng-icon>
                                         {{ 'common.delete' | translate }}
                                     </button>
                                 </vdr-dropdown-menu>
@@ -248,7 +248,7 @@
                         <div class="title">
                             {{
                                 'order.history-customer-updated'
-                                    | translate : { newCustomerName: entry.data.newCustomerName }
+                                    | translate: { newCustomerName: entry.data.newCustomerName }
                             }}
                         </div>
                         <div class="flex">
@@ -264,12 +264,12 @@
                                         [routerLink]="[
                                             '/customer',
                                             'customers',
-                                            entry.data.previousCustomerId
+                                            entry.data.previousCustomerId,
                                         ]"
                                     >
-                                        <clr-icon shape="user" class="is-solid"></clr-icon>
+                                        <ng-icon hlm name="lucideUser"></ng-icon>
                                         <span>{{ entry.data.previousCustomerName }}</span>
-                                        <clr-icon shape="arrow right"></clr-icon>
+                                        <ng-icon hlm name="lucideArrowRight"></ng-icon>
                                     </a>
                                 </vdr-labeled-data>
                                 <vdr-labeled-data [label]="'order.new-customer' | translate">
@@ -278,9 +278,9 @@
                                         class="button-ghost"
                                         [routerLink]="['/customer', 'customers', entry.data.newCustomerId]"
                                     >
-                                        <clr-icon shape="user" class="is-solid"></clr-icon>
+                                        <ng-icon hlm name="lucideUser"></ng-icon>
                                         <span>{{ entry.data.newCustomerName }}</span>
-                                        <clr-icon shape="arrow right"></clr-icon>
+                                        <ng-icon hlm name="lucideArrowRight"></ng-icon>
                                     </a>
                                 </vdr-labeled-data>
                             </vdr-history-entry-detail>

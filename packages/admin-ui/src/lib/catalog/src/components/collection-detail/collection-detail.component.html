@@ -37,21 +37,18 @@
         <vdr-page-detail-sidebar>
             <vdr-card>
                 <vdr-form-field [label]="'catalog.visibility' | translate" for="visibility">
-                    <clr-toggle-wrapper>
-                        <input
-                            type="checkbox"
-                            clrToggle
+                    <label hlmLabel class="flex items-center">
+                        <hlm-switch
                             formControlName="visible"
                             id="visibility"
-                            [vdrDisabled]="!(updatePermission | hasPermission)"
+                            [disabled]="!(updatePermission | hasPermission)"
                         />
-                        <label class="visible-toggle">
-                            <ng-container *ngIf="detailForm.value.visible; else private">{{
-                                'catalog.public' | translate
-                            }}</ng-container>
-                            <ng-template #private>{{ 'catalog.private' | translate }}</ng-template>
-                        </label>
-                    </clr-toggle-wrapper>
+
+                        <ng-container *ngIf="detailForm.value.visible; else private">{{
+                            'catalog.public' | translate
+                        }}</ng-container>
+                        <ng-template #private>{{ 'catalog.private' | translate }}</ng-template>
+                    </label>
                 </vdr-form-field>
             </vdr-card>
             <vdr-card *ngIf="entity$ | async as entity">
@@ -140,23 +137,20 @@
             </vdr-card>
             <vdr-card [title]="'catalog.filters' | translate">
                 <vdr-form-field [label]="'catalog.filter-inheritance' | translate" for="inheritFilters">
-                    <clr-toggle-wrapper>
-                        <input
-                            type="checkbox"
-                            clrToggle
+                    <label class="flex items-center" hlmLabel>
+                        <hlm-switch
                             formControlName="inheritFilters"
                             id="inheritFilters"
-                            [vdrDisabled]="!(updatePermission | hasPermission)"
+                            [disabled]="!(updatePermission | hasPermission)"
                         />
-                        <label class="visible-toggle">
-                            <ng-container *ngIf="detailForm.value.inheritFilters; else noInherit">{{
-                                'catalog.inherit-filters-from-parent' | translate
-                            }}</ng-container>
-                            <ng-template #noInherit>{{
-                                'catalog.do-not-inherit-filters' | translate
-                            }}</ng-template>
-                        </label>
-                    </clr-toggle-wrapper>
+
+                        <ng-container *ngIf="detailForm.value.inheritFilters; else noInherit">{{
+                            'catalog.inherit-filters-from-parent' | translate
+                        }}</ng-container>
+                        <ng-template #noInherit>{{
+                            'catalog.do-not-inherit-filters' | translate
+                        }}</ng-template>
+                    </label>
                 </vdr-form-field>
                 <div formArrayName="filters">
                     <ng-container *ngFor="let filter of filters; index as i; trackBy: trackByFn">
@@ -173,9 +167,9 @@
                 <div *vdrIfPermissions="updatePermission">
                     <vdr-dropdown>
                         <button class="btn btn-outline" vdrDropdownTrigger>
-                            <clr-icon shape="plus"></clr-icon>
+                            <ng-icon hlm name="lucidePlus"></ng-icon>
                             <span>{{ 'marketing.add-condition' | translate }}</span>
-                            <clr-icon shape="ellipsis-vertical"></clr-icon>
+                            <ng-icon hlm name="lucideEllipsisVertical"></ng-icon>
                         </button>
                         <vdr-dropdown-menu vdrPosition="bottom-left">
                             <button
@@ -204,20 +198,21 @@
                         <div class="ml-3">
                             <div class="contents-title">
                                 {{ 'catalog.collection-contents' | translate }} ({{
-                                    'common.results-count' | translate : { count: count }
+                                    'common.results-count' | translate: { count: count }
                                 }})
                             </div>
-                            <clr-checkbox-wrapper [class.disabled]="detailForm.get('filters')?.pristine">
-                                <input
-                                    type="checkbox"
-                                    clrCheckbox
+                            <label
+                                class="flex items-center"
+                                [class.disabled]="detailForm.get('filters')?.pristine"
+                            >
+                                <hlm-checkbox
                                     [ngModelOptions]="{ standalone: true }"
                                     [disabled]="detailForm.get('filters')?.pristine"
                                     [ngModel]="livePreview"
                                     (ngModelChange)="toggleLivePreview()"
                                 />
-                                <label>{{ 'catalog.live-preview-contents' | translate }}</label>
-                            </clr-checkbox-wrapper>
+                                {{ 'catalog.live-preview-contents' | translate }}
+                            </label>
                         </div>
                     </ng-template>
                 </vdr-collection-contents>

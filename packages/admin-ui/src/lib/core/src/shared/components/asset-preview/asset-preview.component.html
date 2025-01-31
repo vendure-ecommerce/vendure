@@ -7,9 +7,9 @@
                     [routerLink]="['/catalog', 'assets', asset.id]"
                     (click)="editClick.emit()"
                 >
-                    <clr-icon shape="edit"></clr-icon>
+                    <ng-icon hlm name="lucidePencil"></ng-icon>
                     {{ 'common.edit' | translate }}
-                    <clr-icon shape="arrow right"></clr-icon>
+                    <ng-icon hlm name="lucideArrowRight"></ng-icon>
                 </a>
             </div>
             <vdr-form-field *ngIf="editable" [label]="'common.name' | translate" class="mb-2">
@@ -40,8 +40,8 @@
 
             <vdr-labeled-data [label]="'asset.focal-point' | translate">
                 <span *ngIf="fpx"
-                    ><clr-icon shape="crosshairs"></clr-icon> x: {{ fpx | number : '1.2-2' }}, y:
-                    {{ fpy | number : '1.2-2' }}</span
+                    ><ng-icon hlm shape="crosshairs"></ng-icon> x: {{ fpx | number: '1.2-2' }}, y:
+                    {{ fpy | number: '1.2-2' }}</span
                 >
                 <span *ngIf="!fpx">{{ 'common.not-set' | translate }}</span>
                 <div class="flex mt-1">
@@ -67,13 +67,13 @@
                 <ng-container *ngIf="editable">
                     <vdr-tag-selector [formControl]="form.get('tags')"></vdr-tag-selector>
                     <button class="button-small mt-1" (click)="manageTags()">
-                        <clr-icon shape="tags"></clr-icon>
+                        <ng-icon hlm shape="tags"></ng-icon>
                         {{ 'common.manage-tags' | translate }}
                     </button>
                 </ng-container>
                 <div *ngIf="!editable">
                     <vdr-chip *ngFor="let tag of asset.tags" [colorFrom]="tag.value">
-                        <clr-icon shape="tag" class="mr2"></clr-icon>
+                        <ng-icon hlm shape="tag" class="mr2"></ng-icon>
                         {{ tag.value }}</vdr-chip
                     >
                 </div>
@@ -107,8 +107,13 @@
         </vdr-card>
     </vdr-page-detail-sidebar>
     <div class="carousel-container">
-        <button *ngIf="showSlideButtons" (click)="previousImage()" class="carousel-button" [class.disabled]="disablePreviousButton">
-            <clr-icon shape="caret left" class="color-weight-800"></clr-icon>
+        <button
+            *ngIf="showSlideButtons"
+            (click)="previousImage()"
+            class="carousel-button"
+            [class.disabled]="disablePreviousButton"
+        >
+            <ng-icon hlm shape="caret left" class="color-weight-800"></ng-icon>
         </button>
         <div class="preview-image" #previewDiv [class.centered]="centered">
             <div class="image-wrapper">
@@ -122,7 +127,7 @@
                 >
                     <img
                         class="asset-image"
-                        [src]="asset | assetPreview : size"
+                        [src]="asset | assetPreview: size"
                         [ngClass]="size"
                         #imageElement
                         (load)="onImageLoad()"
@@ -130,21 +135,26 @@
                 </vdr-focal-point-control>
                 <div class="focal-point-info" *ngIf="settingFocalPoint">
                     <button class="icon-button" (click)="setFocalPointCancel()">
-                        <clr-icon shape="times"></clr-icon>
+                        <ng-icon hlm name="lucideX"></ng-icon>
                     </button>
                     <button
                         class="btn btn-primary btn-sm"
                         (click)="setFocalPointEnd()"
                         [disabled]="!lastFocalPoint"
                     >
-                        <clr-icon shape="crosshairs"></clr-icon>
+                        <ng-icon hlm shape="crosshairs"></ng-icon>
                         {{ 'asset.set-focal-point' | translate }}
                     </button>
                 </div>
             </div>
         </div>
-        <button *ngIf="showSlideButtons" (click)="nextImage()" class="carousel-button" [class.disabled]="disableNextButton">
-            <clr-icon shape="caret right" class="color-weight-800"></clr-icon>
+        <button
+            *ngIf="showSlideButtons"
+            (click)="nextImage()"
+            class="carousel-button"
+            [class.disabled]="disableNextButton"
+        >
+            <ng-icon hlm shape="caret right" class="color-weight-800"></ng-icon>
         </button>
     </div>
 </vdr-page-detail-layout>

@@ -2,9 +2,9 @@
     <div class="widget-header mb-1">
         <vdr-dropdown>
             <button class="btn btn-secondary btn-sm" vdrDropdownTrigger>
-                <clr-icon shape="plus"></clr-icon>
+                <ng-icon hlm name="lucidePlus"></ng-icon>
                 {{ 'dashboard.add-widget' | translate }}
-                <clr-icon shape="ellipsis-vertical"></clr-icon>
+                <ng-icon hlm name="lucideEllipsisVertical"></ng-icon>
             </button>
             <vdr-dropdown-menu vdrPosition="bottom-right">
                 <button
@@ -12,7 +12,7 @@
                     *ngFor="let widget of availableWidgets$ | async"
                     (click)="addWidget(widget.id)"
                 >
-                    {{ (widget.config.title ?? widget.id) | translate }}
+                    {{ widget.config.title ?? widget.id | translate }}
                 </button>
             </vdr-dropdown-menu>
         </vdr-dropdown>
@@ -39,11 +39,11 @@
                 >
                     <div class="flex">
                         <div class="drag-handle" cdkDragHandle>
-                            <clr-icon shape="drag-handle" size="24"></clr-icon>
+                            <ng-icon hlm name="lucideGripHorizontal"></ng-icon>
                         </div>
                         <vdr-dropdown>
                             <button class="icon-button" vdrDropdownTrigger>
-                                <clr-icon shape="ellipsis-vertical"></clr-icon>
+                                <ng-icon hlm name="lucideEllipsisVertical"></ng-icon>
                             </button>
                             <vdr-dropdown-menu vdrPosition="bottom-right">
                                 <h4 class="dropdown-header">{{ 'dashboard.widget-resize' | translate }}</h4>
@@ -53,11 +53,11 @@
                                     *ngFor="let width of getSupportedWidths(widget.config)"
                                     (click)="setWidgetWidth(widget, width)"
                                 >
-                                    {{ 'dashboard.widget-width' | translate : { width: width } }}
+                                    {{ 'dashboard.widget-width' | translate: { width: width } }}
                                 </button>
                                 <div class="dropdown-divider" role="separator"></div>
                                 <button vdrDropdownItem (click)="removeWidget(widget)">
-                                    <clr-icon shape="trash" class="is-danger"></clr-icon>
+                                    <ng-icon hlm name="lucideTrash" class="is-danger"></ng-icon>
                                     {{ 'dashboard.remove-widget' | translate }}
                                 </button>
                             </vdr-dropdown-menu>

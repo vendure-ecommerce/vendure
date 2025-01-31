@@ -14,7 +14,7 @@
                 (click)="addManualPayment(order)"
             >
                 {{ 'order.add-payment-to-order' | translate }}
-                ({{ outstandingPaymentAmount(order) | localeCurrency : order.currencyCode }})
+                ({{ outstandingPaymentAmount(order) | localeCurrency: order.currencyCode }})
             </button>
             <button
                 class="button primary mr-1"
@@ -40,7 +40,7 @@
             <vdr-action-bar-dropdown-menu [alwaysShow]="true" locationId="order-detail">
                 <ng-container *ngIf="order.type !== 'Aggregate' && order.nextStates.includes('Modifying')">
                     <button type="button" vdrDropdownItem (click)="transitionToModifying()">
-                        <clr-icon shape="pencil"></clr-icon>
+                        <ng-icon hlm name="lucidePencil"></ng-icon>
                         {{ 'order.modify-order' | translate }}
                     </button>
                     <div class="dropdown-divider"></div>
@@ -51,7 +51,7 @@
                     *ngIf="order.type !== 'Aggregate' && order.nextStates.includes('Cancelled')"
                     (click)="cancelOrRefund(order)"
                 >
-                    <clr-icon shape="error-standard" class="is-error"></clr-icon>
+                    <ng-icon hlm shape="error-standard" class="is-error"></ng-icon>
                     <ng-container *ngIf="orderHasSettledPayments(order); else cancelOnly">
                         {{ 'order.refund-and-cancel-order' | translate }}
                     </ng-container>
@@ -68,16 +68,16 @@
                         vdrDropdownItem
                         (click)="transitionToState(nextState)"
                     >
-                        <clr-icon shape="step-forward-2"></clr-icon>
+                        <ng-icon hlm name="lucideRedoDot"></ng-icon>
                         {{
                             'order.transition-to-state'
-                                | translate : { state: (nextState | stateI18nToken | translate) }
+                                | translate: { state: (nextState | stateI18nToken | translate) }
                         }}
                     </button>
                 </ng-container>
                 <div class="dropdown-divider"></div>
                 <button type="button" vdrDropdownItem (click)="manuallyTransitionToState(order)">
-                    <clr-icon shape="step-forward-2" class="is-warning"></clr-icon>
+                    <ng-icon hlm shape="step-forward-2" class="is-warning"></ng-icon>
                     {{ 'order.manually-transition-to-state' | translate }}
                 </button>
             </vdr-action-bar-dropdown-menu>
@@ -94,7 +94,7 @@
                     (click)="openStateDiagram()"
                     [title]="'order.order-state-diagram' | translate"
                 >
-                    <clr-icon shape="list"></clr-icon>
+                    <ng-icon hlm shape="list"></ng-icon>
                 </button>
             </ng-template>
             <vdr-order-state-label [state]="order.state"></vdr-order-state-label>
@@ -107,7 +107,7 @@
                     (click)="setOrderCustomer()"
                     [title]="'order.assign-order-to-another-customer' | translate"
                 >
-                    <clr-icon shape="switch"></clr-icon>
+                    <ng-icon hlm shape="switch"></ng-icon>
                 </button>
             </ng-template>
             <vdr-customer-label [customer]="order.customer"></vdr-customer-label>
@@ -173,9 +173,9 @@
                 <tbody>
                     <tr *ngFor="let row of order.taxSummary">
                         <td>{{ row.description }}</td>
-                        <td>{{ row.taxRate / 100 | percent : '0.0-3' }}</td>
-                        <td>{{ row.taxBase | localeCurrency : order.currencyCode }}</td>
-                        <td>{{ row.taxTotal | localeCurrency : order.currencyCode }}</td>
+                        <td>{{ row.taxRate / 100 | percent: '0.0-3' }}</td>
+                        <td>{{ row.taxBase | localeCurrency: order.currencyCode }}</td>
+                        <td>{{ row.taxTotal | localeCurrency: order.currencyCode }}</td>
                     </tr>
                 </tbody>
             </table>

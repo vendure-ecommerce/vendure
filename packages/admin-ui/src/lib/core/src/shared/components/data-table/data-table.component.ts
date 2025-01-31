@@ -60,7 +60,7 @@ import { DataTableColumnComponent } from './data-table-column.component';
  *       <vdr-dropdown>
  *         <button type="button" class="btn btn-link btn-sm" vdrDropdownTrigger>
  *           {{ 'common.actions' | translate }}
- *           <clr-icon shape="caret down"></clr-icon>
+ *           <ng-icon hlm name="lucideChevronDown"></ng-icon>
  *         </button>
  *         <vdr-dropdown-menu vdrPosition="bottom-right">
  *           <button
@@ -70,7 +70,7 @@ import { DataTableColumnComponent } from './data-table-column.component';
  *               [disabled]="!(['DeleteSettings', 'DeleteTaxRate'] | hasPermission)"
  *               vdrDropdownItem
  *           >
- *               <clr-icon shape="trash" class="is-danger"></clr-icon>
+ *               <ng-icon hlm name="lucideTrash" class="is-danger"></ng-icon>
  *               {{ 'common.delete' | translate }}
  *           </button>
  *         </vdr-dropdown-menu>

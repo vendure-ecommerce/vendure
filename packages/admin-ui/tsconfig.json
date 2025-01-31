@@ -71,6 +71,27 @@
       ],
       "@spartan-ng/ui-label-helm": [
         "./src/lib/ui/ui-label-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-spinner-helm": [
+        "./src/lib/ui/ui-spinner-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-alert-helm": [
+        "./src/lib/ui/ui-alert-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-switch-helm": [
+        "./src/lib/ui/ui-switch-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-input-helm": [
+        "./src/lib/ui/ui-input-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-tabs-helm": [
+        "./src/lib/ui/ui-tabs-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-button-helm": [
+        "./src/lib/ui/ui-button-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-radiogroup-helm": [
+        "./src/lib/ui/ui-radiogroup-helm/src/index.ts"
       ]
     },
     "useDefineForClassFields": false

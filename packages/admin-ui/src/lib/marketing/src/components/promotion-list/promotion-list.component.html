@@ -10,7 +10,7 @@
         <vdr-ab-right>
             <vdr-action-bar-items locationId="promotion-list" />
             <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="'CreatePromotion'">
-                <clr-icon shape="plus"></clr-icon>
+                <ng-icon hlm name="lucidePlus"></ng-icon>
                 {{ 'marketing.create-new-promotion' | translate }}
             </a>
             <vdr-action-bar-dropdown-menu locationId="promotion-list" />
@@ -48,7 +48,7 @@
         [sort]="sorts.get('createdAt')"
     >
         <ng-template let-promotion="item">
-            {{ promotion.createdAt | localeDate : 'short' }}
+            {{ promotion.createdAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
@@ -58,7 +58,7 @@
         [sort]="sorts.get('updatedAt')"
     >
         <ng-template let-promotion="item">
-            {{ promotion.updatedAt | localeDate : 'short' }}
+            {{ promotion.updatedAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
@@ -70,7 +70,7 @@
         <ng-template let-promotion="item">
             <a class="button-ghost" [routerLink]="['./', promotion.id]"
                 ><span> {{ promotion.name }}</span>
-                <clr-icon shape="arrow right"></clr-icon>
+                <ng-icon hlm name="lucideArrowRight"></ng-icon>
             </a>
         </ng-template>
     </vdr-dt2-column>
@@ -99,12 +99,12 @@
         [sort]="sorts.get('startsAt')"
     >
         <ng-template let-promotion="item">
-            {{ promotion.startsAt | localeDate : 'short' }}
+            {{ promotion.startsAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column [heading]="'marketing.ends-at' | translate" id="ends-at" [sort]="sorts.get('endsAt')">
         <ng-template let-promotion="item">
-            {{ promotion.endsAt | localeDate : 'short' }}
+            {{ promotion.endsAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column

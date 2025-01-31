@@ -1,36 +1,29 @@
 <ng-template vdrDialogTitle>{{ 'order.select-address' | translate }}</ng-template>
 
-<clr-tabs *ngIf="addresses$ | async as addresses">
-    <clr-tab *ngIf="customerId && addresses.length">
-        <button clrTabLink>{{ 'order.existing-address' | translate }}</button>
-        <ng-template [(clrIfActive)]="useExisting">
-            <clr-tab-content>
-                <vdr-radio-card-fieldset
-                    class="block mt-4"
-                    [idFn]="addressIdFn"
-                    [selectedItemId]="selectedAddress && addressIdFn(selectedAddress)"
-                    (selectItem)="selectedAddress = $event"
-                >
-                    <vdr-radio-card *ngFor="let address of addresses" [item]="address">
-                        <vdr-formatted-address [address]="address"></vdr-formatted-address>
-                    </vdr-radio-card>
-                </vdr-radio-card-fieldset>
-            </clr-tab-content>
-        </ng-template>
-    </clr-tab>
-    <clr-tab>
-        <button clrTabLink>{{ 'customer.create-new-address' | translate }}</button>
-
-        <ng-template [(clrIfActive)]="createNew">
-            <clr-tab-content>
-                <vdr-address-form
-                    [formGroup]="addressForm"
-                    [availableCountries]="availableCountries$ | async"
-                ></vdr-address-form>
-            </clr-tab-content>
-        </ng-template>
-    </clr-tab>
-</clr-tabs>
+<hlm-tabs tab="" *ngIf="addresses$ | async as addresses">
+    <hlm-tabs-list class="w-full grid grid-cols-2">
+        <button hlmTabsTrigger="existingAddress">{{ 'order.existing-address' | translate }}</button>
+        <button hlmTabsTrigger="createNewAddress">{{ 'customer.create-new-address' | translate }}</button>
+    </hlm-tabs-list>
+    <div hlmTabsContent="existingAddress" *ngIf="customerId && addresses.length">
+        <vdr-radio-card-fieldset
+            class="block mt-4"
+            [idFn]="addressIdFn"
+            [selectedItemId]="selectedAddress && addressIdFn(selectedAddress)"
+            (selectItem)="selectedAddress = $event"
+        >
+            <vdr-radio-card *ngFor="let address of addresses" [item]="address">
+                <vdr-formatted-address [address]="address"></vdr-formatted-address>
+            </vdr-radio-card>
+        </vdr-radio-card-fieldset>
+    </div>
+    <div hlmTabsContent="createNewAddress">
+        <vdr-address-form
+            [formGroup]="addressForm"
+            [availableCountries]="availableCountries$ | async"
+        ></vdr-address-form>
+    </div>
+</hlm-tabs>
 
 <ng-template vdrDialogButtons>
     <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>

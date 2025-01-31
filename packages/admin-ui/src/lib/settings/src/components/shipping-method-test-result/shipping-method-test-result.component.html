@@ -3,7 +3,7 @@
     [ngClass]="{
         success: testResult?.eligible === true,
         error: testResult?.eligible === false,
-        unknown: !testResult
+        unknown: !testResult,
     }"
 >
     <div class="card-header">
@@ -13,17 +13,19 @@
         <div class="result-details" [class.stale]="testDataUpdated">
             <vdr-labeled-data [label]="'settings.eligible' | translate">
                 <div class="eligible-icon">
-                    <clr-icon
+                    <ng-icon
+                        hlm
                         shape="success-standard"
                         class="is-solid success"
                         *ngIf="testResult?.eligible"
-                    ></clr-icon>
-                    <clr-icon
+                    ></ng-icon>
+                    <ng-icon
+                        hlm
                         shape="ban"
                         class="is-solid error"
                         *ngIf="testResult?.eligible === false"
-                    ></clr-icon>
-                    <clr-icon shape="unknown-status" *ngIf="!testResult"></clr-icon>
+                    ></ng-icon>
+                    <ng-icon hlm shape="unknown-status" *ngIf="!testResult"></ng-icon>
                 </div>
                 {{ testResult?.eligible }}
             </vdr-labeled-data>

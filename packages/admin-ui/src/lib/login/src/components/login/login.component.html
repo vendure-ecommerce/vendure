@@ -3,48 +3,34 @@
     <div class="h-full flex flex-col items-center justify-center">
         <div class="flex p-10 flex-col items-stretch justify-center max-w-[400px]">
             <p class="text-2xl text-slate-800 font-bold mb-4">
-                {{ 'common.login-title' | translate : { brand: hideVendureBranding ? brand : 'Vendure' } }}
+                {{ 'common.login-title' | translate: { brand: hideVendureBranding ? brand : 'Vendure' } }}
             </p>
             <form class="login-form">
                 <div class="flex flex-col gap-2">
                     <input
-                        class="username"
-                        type="text"
+                        hlmInput
                         name="username"
                         id="login_username"
                         [(ngModel)]="username"
                         [placeholder]="'common.username' | translate"
                     />
                     <input
-                        class="password"
+                        hlmInput
                         name="password"
                         type="password"
                         id="login_password"
                         [(ngModel)]="password"
                         [placeholder]="'common.password' | translate"
                     />
-                    <clr-alert
-                        [clrAlertType]="'danger'"
-                        [clrAlertClosable]="false"
-                        [class.visible]="errorMessage"
-                        class="login-error"
+                    <div hlmAlert variant="destructive" [class.visible]="errorMessage">
+                        <span hlmAlertDesc>
+                            {{ errorMessage }}
+                        </span>
+                    </div>
+                    <label hlmLabel class="flex items-center">
+                        <hlm-checkbox id="rememberme" name="rememberme" [(ngModel)]="rememberMe" />
+                        {{ 'common.remember-me' | translate }}</label
                     >
-                        <clr-alert-item>
-                            <span class="alert-text">
-                                {{ errorMessage }}
-                            </span>
-                        </clr-alert-item>
-                    </clr-alert>
-                    <clr-checkbox-wrapper>
-                        <input
-                            type="checkbox"
-                            clrCheckbox
-                            id="rememberme"
-                            name="rememberme"
-                            [(ngModel)]="rememberMe"
-                        />
-                        <label class="ml-2 text-slate-600">{{ 'common.remember-me' | translate }}</label>
-                    </clr-checkbox-wrapper>
                     <div>
                         <button
                             type="submit"
@@ -58,7 +44,7 @@
                 </div>
             </form>
         </div>
-        <img class="absolute right-5 top-5 h-16 " src="assets/logo-login.webp" *ngIf="!hideVendureBranding" />
+        <img class="absolute right-5 top-5 h-16" src="assets/logo-login.webp" *ngIf="!hideVendureBranding" />
     </div>
 
     <!-- Image Area -->
@@ -66,15 +52,18 @@
         <div class="rounded-md overflow-hidden relative h-full">
             <div class="absolute bottom-10 left-10">
                 <p *ngIf="imageCreator" class="text-lg font-semibold text-white">
-                    Photo by <a [href]="imageCreatorUrl" class="underline" target="_blank">{{ imageCreator }}</a> on
+                    Photo by
+                    <a [href]="imageCreatorUrl" class="underline" target="_blank">{{ imageCreator }}</a> on
                     <a [href]="imageUnsplashUrl" class="underline" target="_blank">Unsplash</a>
                 </p>
                 <span *ngIf="imageLocation" class="text-md text-white/80">{{ imageLocation }}</span>
             </div>
-            <img class="left-0 right-0 bottom-0 h-full w-full object-cover object-center top-0"
-                 *ngIf="imageUrl" [src]="imageUrl" [alt]="imageUrl" />
+            <img
+                class="left-0 right-0 bottom-0 h-full w-full object-cover object-center top-0"
+                *ngIf="imageUrl"
+                [src]="imageUrl"
+                [alt]="imageUrl"
+            />
         </div>
     </div>
-
-
 </div>
