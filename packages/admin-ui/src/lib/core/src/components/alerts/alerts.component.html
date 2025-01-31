@@ -1,9 +1,7 @@
 <vdr-dropdown>
-    <button class="alerts-button" vdrDropdownTrigger>
+    <button hlmBtn variant="secondary" size="icon" vdrDropdownTrigger>
         <vdr-status-badge *ngIf="hasAlerts$ | async" [type]="'warning'"></vdr-status-badge>
-        <div class="user-circle">
-            <ng-icon hlm shape="bell" size="16"></ng-icon>
-        </div>
+        <ng-icon hlm name="lucideBell" size="sm"></ng-icon>
     </button>
     <vdr-dropdown-menu vdrPosition="bottom-right">
         <ng-container *ngIf="activeAlerts$ | async as activeAlerts">

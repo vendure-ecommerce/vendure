@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+
 import { NavMenuItem, NavMenuSection } from '../../providers/nav-builder/nav-builder-types';
 import { BaseNavComponent } from '../base-nav/base-nav.component';
 

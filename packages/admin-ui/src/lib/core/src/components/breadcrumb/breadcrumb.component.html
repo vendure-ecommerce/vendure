@@ -1,18 +1,17 @@
-<nav role="navigation">
-    <ul class="flex items-center justify-start text-xs">
-        <li
-            *ngFor="let breadcrumb of breadcrumbs$ | async; let isLast = last"
-            [title]="breadcrumb.label | translate"
-        >
-            <a [routerLink]="breadcrumb.link" *ngIf="!isLast">{{ breadcrumb.label | translate }}</a>
-            <ng-container *ngIf="!isLast">
-                <ng-icon hlm shape="caret right" class="h-2 w-2 text-gray-300 mx-1"></ng-icon>
-            </ng-container>
-            <ng-container *ngIf="isLast">
-                <span class="text-gray-600 font-semibold">{{ breadcrumb.label | translate }}</span>
-            </ng-container>
-        </li>
-    </ul>
+<nav role="navigation" hlmBreadcrumb>
+    <ol hlmBreadcrumbList>
+        <ng-container *ngFor="let breadcrumb of breadcrumbs$ | async; let isLast = last">
+            <li hlmBreadcrumbItem [title]="breadcrumb.label | translate">
+                <a hlmBreadcrumbLink [link]="breadcrumb.link" *ngIf="!isLast">
+                    {{ breadcrumb.label | translate }}
+                </a>
+                <span *ngIf="isLast" hlmBreadcrumbPage>
+                    {{ breadcrumb.label | translate }}
+                </span>
+            </li>
+            <li hlmBreadcrumbSeparator *ngIf="!isLast"></li>
+        </ng-container>
+    </ol>
     <ul class="breadcrumbs mobile" *ngIf="parentBreadcrumb$ | async as parentBreadcrumb">
         <li>
             <ng-icon hlm shape="caret left" class="color-weight-400 mr-1"></ng-icon>

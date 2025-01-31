@@ -1,29 +1,31 @@
-<vdr-dropdown>
-    <button class="trigger user-menu-btn" vdrDropdownTrigger>
-        <div class="user-circle">
-            <ng-icon hlm shape="user" size="16"></ng-icon>
-        </div>
-        <span class="user-name">{{ userName }}</span>
-        <ng-icon hlm class="md:hidden" shape="caret down"></ng-icon>
-    </button>
-    <vdr-dropdown-menu vdrPosition="bottom-right">
-        <a [routerLink]="['/settings', 'profile']" vdrDropdownItem tabindex="0">
-            <ng-icon hlm name="lucideUser"></ng-icon> {{ 'settings.profile' | translate }}
+<button hlmBtn variant="secondary" [brnMenuTriggerFor]="userMenu">
+    <div class="h-7 w-7 bg-white border border-border rounded flex justify-center items-center mr-2">
+        <ng-icon hlm name="lucideUser" size="sm"></ng-icon>
+    </div>
+    <span class="user-name">{{ userName }}</span>
+</button>
+<ng-template #userMenu>
+    <hlm-menu>
+        <a [routerLink]="['/settings', 'profile']" hlmMenuItem tabindex="0">
+            <ng-icon hlm name="lucideUserCog" hlmMenuIcon></ng-icon>
+            {{ 'settings.profile' | translate }}
         </a>
         <ng-container *ngIf="1 < availableLanguages.length">
             <button
                 type="button"
-                vdrDropdownItem
+                hlmMenuItem
                 (click)="selectUiLanguage.emit()"
                 [title]="'common.select-display-language' | translate"
             >
-                <ng-icon hlm shape="language"></ng-icon> {{ uiLanguageAndLocale?.[0] | localeLanguageName }}
+                <ng-icon hlm name="lucideLanguages" hlmMenuIcon></ng-icon>
+                {{ 'common.language' | translate }}
             </button>
         </ng-container>
-        <vdr-theme-switcher vdrDropdownItem tabindex="0"></vdr-theme-switcher>
-        <div class="dropdown-divider"></div>
-        <button type="button" vdrDropdownItem (click)="logOut.emit()">
-            <ng-icon hlm shape="logout"></ng-icon> {{ 'common.log-out' | translate }}
+        <vdr-theme-switcher hlmMenuItem tabindex="0"></vdr-theme-switcher>
+        <hlm-menu-separator />
+        <button hlmMenuItem (click)="logOut.emit()">
+            <ng-icon hlm name="lucideLogOut" hlmMenuIcon></ng-icon>
+            {{ 'common.log-out' | translate }}
         </button>
-    </vdr-dropdown-menu>
-</vdr-dropdown>
+    </hlm-menu>
+</ng-template>

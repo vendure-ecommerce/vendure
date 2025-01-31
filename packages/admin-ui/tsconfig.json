@@ -92,6 +92,12 @@
       ],
       "@spartan-ng/ui-radiogroup-helm": [
         "./src/lib/ui/ui-radiogroup-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-menu-helm": [
+        "./src/lib/ui/ui-menu-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-breadcrumb-helm": [
+        "./src/lib/ui/ui-breadcrumb-helm/src/index.ts"
       ]
     },
     "useDefineForClassFields": false

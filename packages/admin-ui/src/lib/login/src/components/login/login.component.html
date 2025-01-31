@@ -1,40 +1,56 @@
 <div class="grid grid-cols-2 h-dvh w-full bg-neutral-100" [dir]="direction$ | async">
     <!-- Form Area -->
     <div class="h-full flex flex-col items-center justify-center">
-        <div class="flex p-10 flex-col items-stretch justify-center max-w-[400px]">
-            <p class="text-2xl text-slate-800 font-bold mb-4">
+        <div class="flex p-10 flex-col items-stretch justify-center w-full max-w-[400px]">
+            <vdr-logo-full
+                class="w-auto text-accent-400 h-8 mb-6"
+                *ngIf="!hideVendureBranding"
+            ></vdr-logo-full>
+            <p class="text-xl font-semibold mb-4">
                 {{ 'common.login-title' | translate: { brand: hideVendureBranding ? brand : 'Vendure' } }}
             </p>
             <form class="login-form">
-                <div class="flex flex-col gap-2">
+                <div hlmAlert variant="destructive" *ngIf="errorMessage" class="mb-4">
+                    <span hlmAlertDesc>
+                        {{ errorMessage }}
+                    </span>
+                </div>
+                <div class="space-y-4">
                     <input
                         hlmInput
+                        class="w-full"
                         name="username"
                         id="login_username"
                         [(ngModel)]="username"
                         [placeholder]="'common.username' | translate"
                     />
-                    <input
-                        hlmInput
-                        name="password"
-                        type="password"
-                        id="login_password"
-                        [(ngModel)]="password"
-                        [placeholder]="'common.password' | translate"
-                    />
-                    <div hlmAlert variant="destructive" [class.visible]="errorMessage">
-                        <span hlmAlertDesc>
-                            {{ errorMessage }}
-                        </span>
+                    <div class="flex flex-col gap-1 items-end">
+                        <input
+                            hlmInput
+                            class="w-full"
+                            name="password"
+                            type="password"
+                            id="login_password"
+                            [(ngModel)]="password"
+                            [placeholder]="'common.password' | translate"
+                        />
+                        <span class="text-accent-400 underline font-medium text-sm">Forgot password?</span>
                     </div>
-                    <label hlmLabel class="flex items-center">
-                        <hlm-checkbox id="rememberme" name="rememberme" [(ngModel)]="rememberMe" />
+                    <label hlmLabel class="flex items-center text-muted-foreground">
+                        <hlm-checkbox
+                            class="mr-2"
+                            id="rememberme"
+                            name="rememberme"
+                            [(ngModel)]="rememberMe"
+                        />
                         {{ 'common.remember-me' | translate }}</label
                     >
                     <div>
                         <button
+                            hlmBtn
                             type="submit"
-                            class="button primary login-button"
+                            class="w-full"
+                            variant="accent"
                             (click)="logIn()"
                             [disabled]="!username || !password"
                         >
@@ -44,14 +60,16 @@
                 </div>
             </form>
         </div>
-        <img class="absolute right-5 top-5 h-16" src="assets/logo-login.webp" *ngIf="!hideVendureBranding" />
     </div>
 
     <!-- Image Area -->
     <div class="h-full p-8">
         <div class="rounded-md overflow-hidden relative h-full">
-            <div class="absolute bottom-10 left-10">
-                <p *ngIf="imageCreator" class="text-lg font-semibold text-white">
+            <div
+                class="z-10 bg-gradient-to-b from-transparent to-black/60 absolute top-0 left-0 bottom-0 right-0"
+            ></div>
+            <div class="z-20 absolute bottom-10 left-10" *ngIf="imageCreator">
+                <p class="font-semibold text-white">
                     Photo by
                     <a [href]="imageCreatorUrl" class="underline" target="_blank">{{ imageCreator }}</a> on
                     <a [href]="imageUnsplashUrl" class="underline" target="_blank">Unsplash</a>

@@ -184,6 +184,38 @@ import { AddFilterPresetButtonComponent } from './components/data-table-filter-p
 import { RenameFilterPresetDialogComponent } from './components/data-table-filter-presets/rename-filter-preset-dialog.component';
 import { ActionBarDropdownMenuComponent } from './components/action-bar-dropdown-menu/action-bar-dropdown-menu.component';
 import { DuplicateEntityDialogComponent } from './components/duplicate-entity-dialog/duplicate-entity-dialog.component';
+import { HlmButtonModule } from '@spartan-ng/ui-button-helm';
+import { LogoFullComponent } from './components/logo-full/logo-full.component';
+import { NgIcon, NgIconComponent, NgIconsModule, provideIcons } from '@ng-icons/core';
+import {
+    lucideBell,
+    lucideChevronDown,
+    lucideChevronUp,
+    lucideCode,
+    lucideCombine,
+    lucideEllipsisVertical,
+    lucideFilter,
+    lucideGripHorizontal,
+    lucideImages,
+    lucideLanguages,
+    lucideLayers,
+    lucideLogOut,
+    lucideMoon,
+    lucidePanelLeftClose,
+    lucidePanelLeftOpen,
+    lucidePanelRightOpen,
+    lucideShoppingCart,
+    lucideSun,
+    lucideTag,
+    lucideTicketPercent,
+    lucideUser,
+    lucideUserCog,
+    lucideUsers,
+    lucideX,
+} from '@ng-icons/lucide';
+import { HlmMenuModule } from '@spartan-ng/ui-menu-helm';
+import { BrnMenuModule } from '@spartan-ng/brain/menu';
+import { HlmBreadCrumbModule } from '@spartan-ng/ui-breadcrumb-helm';
 
 const IMPORTS = [
     CommonModule,
@@ -206,6 +238,11 @@ const IMPORTS = [
     HlmTabsModule,
     HlmRadioGroupModule,
     BrnRadioGroupModule,
+    HlmButtonModule,
+    NgIconComponent,
+    HlmMenuModule,
+    BrnMenuModule,
+    HlmBreadCrumbModule,
 ];
 
 const DECLARATIONS = [
@@ -341,6 +378,7 @@ const DECLARATIONS = [
     AddFilterPresetButtonComponent,
     RenameFilterPresetDialogComponent,
     DuplicateEntityDialogComponent,
+    LogoFullComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [
@@ -382,6 +420,31 @@ const DYNAMIC_FORM_INPUTS = [
         // See https://github.com/angular/angular/issues/14324#issuecomment-305650763
         ModalService,
         CanDeactivateDetailGuard,
+        provideIcons({
+            lucideChevronDown,
+            lucideChevronUp,
+            lucideGripHorizontal,
+            lucideX,
+            lucideUser,
+            lucideEllipsisVertical,
+            lucideBell,
+            lucideCombine,
+            lucideTag,
+            lucideFilter,
+            lucideImages,
+            lucideShoppingCart,
+            lucideUsers,
+            lucideTicketPercent,
+            lucideLayers,
+            lucideCode,
+            lucidePanelLeftClose,
+            lucidePanelLeftOpen,
+            lucideLogOut,
+            lucideUserCog,
+            lucideLanguages,
+            lucideMoon,
+            lucideSun,
+        }),
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

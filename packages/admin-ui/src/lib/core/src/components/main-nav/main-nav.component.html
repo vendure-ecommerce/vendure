@@ -1,7 +1,7 @@
 <nav class="main-nav pr-6 pl-4">
     <ng-container *ngFor="let section of mainMenuConfig$ | async">
         <div
-            class="overflow-hidden transition-all pb-2 nav-group first:pt-4"
+            class="overflow-hidden transition-all pb-2 nav-group"
             [attr.data-section-id]="section.id"
             [class.collapsible]="section.collapsible"
             [class.collapsed]="section.collapsible && !expandedSections.includes(section.id)"
@@ -16,16 +16,19 @@
                 [leftPx]="8"
                 display="block"
             >
-                <div class="section-header">
+                <div class="mb-2 mt-1 flex items-center justify-between">
                     <ng-container *ngIf="navBuilderService.sectionBadges[section.id] | async as sectionBadge">
                         <vdr-status-badge
                             *ngIf="sectionBadge !== 'none'"
                             [type]="sectionBadge"
                         ></vdr-status-badge>
                     </ng-container>
-                    <label class="nav-group-header mx-4" [for]="section.id">{{
-                        section.label | translate
-                    }}</label>
+                    <label
+                        class="font-medium text-xs tracking-wide uppercase text-muted-foreground mx-2"
+                        [for]="section.id"
+                    >
+                        {{ section.label | translate }}
+                    </label>
                     <button
                         *ngIf="section.collapsible"
                         class="rounded-full bg-gray-200 h-5 w-5 flex items-center justify-center"
@@ -33,35 +36,39 @@
                     >
                         <ng-icon
                             hlm
-                            [attr.shape]="expandedSections.includes(section.id) ? 'caret up' : 'caret down'"
-                            class="h-3 w-3"
+                            name="lucideChevronUp"
+                            size="sm"
+                            class="transition-transform"
+                            [ngClass]="{ 'transform rotate-180': expandedSections.includes(section.id) }"
                             [title]="'common.expand-entries' | translate"
                         ></ng-icon>
                     </button>
                 </div>
-                <div class="nav-list" [ngStyle]="getStyleForSection(section)">
+                <div class="flex flex-col gap-1" [ngStyle]="getStyleForSection(section)">
                     <ng-container *ngFor="let item of section.items">
-                        <div *ngIf="shouldDisplayLink(item)" class="nav-link" routerLinkActive="active">
-                            <a
-                                [attr.data-item-id]="section.id"
-                                [routerLink]="getRouterLink(item)"
-                                (click)="onItemClick(item, $event)"
-                            >
-                                <ng-container *ngIf="item.statusBadge | async as itemBadge">
-                                    <vdr-status-badge
-                                        *ngIf="itemBadge.type !== 'none'"
-                                        [type]="itemBadge.type"
-                                    ></vdr-status-badge>
-                                </ng-container>
-                                <ng-icon
-                                    hlm
-                                    [attr.shape]="item.icon || 'block'"
-                                    class="h-4 w-4 nav-link-icon"
-                                    [title]="item.label | translate"
-                                ></ng-icon>
-                                <span class="">{{ item.label | translate }}</span>
-                            </a>
-                        </div>
+                        <a
+                            *ngIf="shouldDisplayLink(item)"
+                            [attr.data-item-id]="section.id"
+                            [routerLink]="getRouterLink(item)"
+                            (click)="onItemClick(item, $event)"
+                            class="rounded-md flex px-2 items-center gap-2 py-1 _hover:border-border"
+                            routerLinkActive="bg-white text-foreground border border-border inset text-foreground"
+                        >
+                            <ng-container *ngIf="item.statusBadge | async as itemBadge">
+                                <vdr-status-badge
+                                    *ngIf="itemBadge.type !== 'none'"
+                                    [type]="itemBadge.type"
+                                ></vdr-status-badge>
+                            </ng-container>
+                            <ng-icon
+                                hlm
+                                [name]="item.icon || 'block'"
+                                class="nav-link-icon"
+                                size="sm"
+                                [title]="item.label | translate"
+                            ></ng-icon>
+                            <span class="text-sm">{{ item.label | translate }}</span>
+                        </a>
                     </ng-container>
                 </div>
             </vdr-ui-extension-point>
