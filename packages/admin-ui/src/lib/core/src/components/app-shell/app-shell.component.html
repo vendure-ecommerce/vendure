@@ -3,7 +3,7 @@
         class="bg-background w-[250px] flex flex-col border-border border-e"
         [class.expanded]="mainNavExpanded$ | async"
     >
-        <div class="h-14 flex items-center px-4 border-b border-border">
+        <div class="h-14 flex items-center px-4 border-b border-border shrink-0">
             <a [routerLink]="['/']" *ngIf="!hideVendureBranding">
                 <vdr-logo-full class="h-6 w-auto text-accent-400"></vdr-logo-full>
             </a>
@@ -16,11 +16,11 @@
         <div class="mx-4 mt-4 mb-2">
             <vdr-channel-switcher *vdrIfMultichannel></vdr-channel-switcher>
         </div>
-        <div class="overflow-y-auto grow">
+        <ng-scrollbar hlm class="grow mx-4">
             <vdr-main-nav (itemClick)="collapseNav()"></vdr-main-nav>
-        </div>
+        </ng-scrollbar>
         <div
-            class="relative pt-4 border-t border-dashed border-border before:block before:-top-[1px] before:-translate-y-full before:left-0 before:absolute before:h-20 before:bg-gradient-to-t before:from-muted before:to-transparent before:w-full"
+            class="relative pt-4 border-t border-dashed border-border before:block before:-top-[1px] before:-translate-y-full before:left-0 before:absolute before:h-20 before:bg-gradient-to-t before:from-background before:to-transparent before:w-full"
         >
             <vdr-main-nav displayMode="settings" (itemClick)="collapseNav()"></vdr-main-nav>
         </div>

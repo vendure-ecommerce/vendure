@@ -204,6 +204,7 @@ import {
     lucidePanelLeftClose,
     lucidePanelLeftOpen,
     lucidePanelRightOpen,
+    lucidePencil,
     lucideShoppingCart,
     lucideSun,
     lucideTag,
@@ -216,6 +217,11 @@ import {
 import { HlmMenuModule } from '@spartan-ng/ui-menu-helm';
 import { BrnMenuModule } from '@spartan-ng/brain/menu';
 import { HlmBreadCrumbModule } from '@spartan-ng/ui-breadcrumb-helm';
+import { HlmScrollAreaModule } from '@spartan-ng/ui-scrollarea-helm';
+import { HlmDialogModule } from '@spartan-ng/ui-dialog-helm';
+import { BrnDialogModule } from '@spartan-ng/brain/dialog';
+import { HlmSelectModule } from '@spartan-ng/ui-select-helm';
+import { BrnSelectModule } from '@spartan-ng/brain/select';
 
 const IMPORTS = [
     CommonModule,
@@ -243,6 +249,11 @@ const IMPORTS = [
     HlmMenuModule,
     BrnMenuModule,
     HlmBreadCrumbModule,
+    HlmScrollAreaModule,
+    HlmDialogModule,
+    BrnDialogModule,
+    HlmSelectModule,
+    BrnSelectModule,
 ];
 
 const DECLARATIONS = [
@@ -444,6 +455,7 @@ const DYNAMIC_FORM_INPUTS = [
             lucideLanguages,
             lucideMoon,
             lucideSun,
+            lucidePencil,
         }),
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],

@@ -63,7 +63,26 @@ export const devConfig: VendureConfig = {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
 
-    customFields: {},
+    customFields: {
+        Administrator: [
+            {
+                name: 'shortCode',
+                type: 'string',
+                nullable: true,
+            },
+            {
+                name: 'birthday',
+                type: 'datetime',
+                nullable: true,
+            },
+            {
+                name: 'erpId',
+                type: 'int',
+                nullable: true,
+                ui: { tab: 'ERP System' },
+            },
+        ],
+    },
     logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),

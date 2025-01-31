@@ -1,39 +1,43 @@
 <ng-container>
-    <vdr-dropdown>
-        <button
-            class="w-full justify-between text-muted-foreground"
-            hlmBtn
-            variant="outline"
-            vdrDropdownTrigger
-            size="sm"
-        >
-            <span>
-                <vdr-channel-badge
-                    class="mr-2"
-                    size="sm"
-                    [channelCode]="activeChannelCode$ | async"
-                ></vdr-channel-badge>
-                {{ activeChannelCode$ | async | channelCodeToLabel | translate }}
-            </span>
-            <ng-icon class="ml-1" hlm name="lucideEllipsisVertical" size="sm"></ng-icon>
-        </button>
-        <vdr-dropdown-menu vdrPosition="bottom-right">
-            <input
-                *ngIf="((channelCount$ | async) || 0) >= displayFilterThreshold"
-                [formControl]="filterControl"
-                type="text"
-                class="ml2 mr2"
-                [placeholder]="'common.filter' | translate"
-            />
+    <button
+        class="w-full justify-between text-muted-foreground"
+        hlmBtn
+        variant="outline"
+        [brnMenuTriggerFor]="channelSwitcher"
+        size="sm"
+    >
+        <span class="flex items-center">
+            <vdr-channel-badge
+                class="mr-2 flex items-center"
+                size="sm"
+                [channelCode]="activeChannelCode$ | async"
+            ></vdr-channel-badge>
+            {{ activeChannelCode$ | async | channelCodeToLabel | translate }}
+        </span>
+        <ng-icon class="ml-1" hlm name="lucideEllipsisVertical" size="sm"></ng-icon>
+    </button>
+    <ng-template #channelSwitcher>
+        <hlm-menu>
+            <div hlmMenuItem *ngIf="((channelCount$ | async) || 0) >= displayFilterThreshold">
+                <input
+                    hlmInput
+                    [formControl]="filterControl"
+                    type="text"
+                    [placeholder]="'common.filter' | translate"
+                />
+            </div>
             <button
+                hlmMenuItem
                 *ngFor="let channel of channels$ | async"
-                type="button"
-                vdrDropdownItem
                 (click)="setActiveChannel(channel.id)"
             >
-                <vdr-channel-badge [channelCode]="channel.code"></vdr-channel-badge>
+                <vdr-channel-badge
+                    class="flex items-center"
+                    hlmMenuIcon
+                    [channelCode]="channel.code"
+                ></vdr-channel-badge>
                 {{ channel.code | channelCodeToLabel | translate }}
             </button>
-        </vdr-dropdown-menu>
-    </vdr-dropdown>
+        </hlm-menu>
+    </ng-template>
 </ng-container>

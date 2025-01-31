@@ -1,8 +1,4 @@
-<div
-    class="form-group"
-    [class.no-label]="!label"
-    [class.clr-error]="formFieldControl?.formControlName?.invalid"
->
+<div [class.no-label]="!label" [class.clr-error]="formFieldControl?.formControlName?.invalid">
     <label *ngIf="label" [for]="for" hlmLabel>
         {{ label }}
     </label>
@@ -18,13 +14,15 @@
         <ng-content></ng-content>
         <button
             *ngIf="readOnlyToggle"
-            type="button"
+            hlmBtn
             [title]="'common.edit-field' | translate"
-            class="btn edit-button"
+            variant="secondary"
+            size="icon"
+            class="bg-border rounded-s-none"
             [class.enabled]="!isReadOnly"
             (click)="setReadOnly(!isReadOnly)"
         >
-            <ng-icon hlm name="lucidePencil"></ng-icon>
+            <ng-icon hlm size="sm" name="lucidePencil"></ng-icon>
         </button>
     </div>
     <div class="error-message" *ngIf="getErrorMessage()">{{ getErrorMessage() }}</div>

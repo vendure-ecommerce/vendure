@@ -8,6 +8,7 @@ import { SimpleDialogComponent } from '../../shared/components/simple-dialog/sim
 import { OverlayHostService } from '../overlay-host/overlay-host.service';
 
 import { Dialog, DialogConfig, ModalOptions } from './modal.types';
+import { HlmDialogService } from '@spartan-ng/ui-dialog-helm';
 
 /**
  * @description
@@ -22,7 +23,7 @@ import { Dialog, DialogConfig, ModalOptions } from './modal.types';
     providedIn: 'root',
 })
 export class ModalService {
-    constructor(private overlayHostService: OverlayHostService) {}
+    constructor(private hlmDialogService: HlmDialogService) {}
 
     /**
      * @description
@@ -69,22 +70,34 @@ export class ModalService {
         component: Type<T> & Type<Dialog<R>>,
         options?: ModalOptions<T>,
     ): Observable<R | undefined> {
-        return from(this.overlayHostService.getHostView()).pipe(
-            mergeMap(hostView => {
-                const modalComponentRef = hostView.createComponent(ModalDialogComponent);
-                const modalInstance: ModalDialogComponent<any> = modalComponentRef.instance;
-                modalInstance.childComponentType = component;
-                modalInstance.options = options;
+        const contentClass = () => {
+            switch (options?.size) {
+                case 'sm':
+                    return 'sm:!max-w-[450px]';
+                case 'lg':
+                    return 'sm:!max-w-[750px]';
+                case 'xl':
+                    return 'sm:!max-w-[900px]';
+                default:
+                    return 'sm:!max-w-[550px]';
+            }
+        };
 
-                return new Observable<R>(subscriber => {
-                    modalInstance.closeModal = (result: R) => {
-                        modalComponentRef.destroy();
-                        subscriber.next(result);
-                        subscriber.complete();
-                    };
-                });
-            }),
-        );
+        const dialogRef = this.hlmDialogService.open(ModalDialogComponent, {
+            context: {
+                options: options,
+                childComponentType: component,
+            },
+            contentClass: contentClass(),
+        });
+
+        return new Observable<R>(subscriber => {
+            dialogRef.closed$.subscribe(res => {
+                console.log({ res });
+                subscriber.next(res);
+                subscriber.complete();
+            });
+        });
     }
 
     /**

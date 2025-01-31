@@ -98,6 +98,15 @@
       ],
       "@spartan-ng/ui-breadcrumb-helm": [
         "./src/lib/ui/ui-breadcrumb-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-scrollarea-helm": [
+        "./src/lib/ui/ui-scrollarea-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-dialog-helm": [
+        "./src/lib/ui/ui-dialog-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-select-helm": [
+        "./src/lib/ui/ui-select-helm/src/index.ts"
       ]
     },
     "useDefineForClassFields": false
