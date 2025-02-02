@@ -27,7 +27,8 @@
         "ne",
         "hr",
         "nb",
-        "sv"
+        "sv",
+        "tr"
     ],
     "availableLocales": [
         "AF",
@@ -283,8 +284,3 @@
     "brand": "",
     "hideVendureBranding": false,
     "hideVersion": false,
-    "cancellationReasons": [
-        "order.cancel-reason-customer-request",
-        "order.cancel-reason-not-available"
-    ]
-}
