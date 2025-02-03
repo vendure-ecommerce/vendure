@@ -51,7 +51,7 @@ npm install dataloader
 
 **Dataloader skeleton**
 
-```ts title="src/plugins/my-plugin/api/datalaoder.ts"
+```ts title="src/plugins/my-plugin/api/dataloader.ts"
 import DataLoader from 'dataloader'
 
 const LoggerCtx = 'SubscriptionDataloaderService'
