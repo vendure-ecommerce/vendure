@@ -24,14 +24,14 @@ export class QueryComplexityPlugin implements ApolloServerPlugin {
         const maxQueryComplexity = this.options.maxQueryComplexity ?? 1000;
         return {
             didResolveOperation: async ({ request, document }) => {
-                if (await this.options.skip?.(ctx)) {
-                    // Given skip function tells use we should not check this request for complexity
-                    return;
-                }
                 if (isAdminApi(ctx.schema)) {
                     // We don't want to apply the cost analysis on the
                     // Admin API, since any expensive operations would require
                     // an authenticated session.
+                    return;
+                }
+                if (await this.options.skip?.(ctx)) {
+                    // Given skip function tells use we should not check this request for complexity
                     return;
                 }
                 const query = request.operationName
