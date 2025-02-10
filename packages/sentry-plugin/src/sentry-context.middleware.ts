@@ -1,7 +1,7 @@
 import { Inject, Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 
-import { SENTRY_PLUGIN_OPTIONS, SENTRY_TRANSACTION_KEY } from './constants';
+import { SENTRY_START_SPAN_INACTIVE_KEY, SENTRY_PLUGIN_OPTIONS } from './constants';
 import { SentryService } from './sentry.service';
 import { SentryPluginOptions } from './types';
 
@@ -14,11 +14,9 @@ export class SentryContextMiddleware implements NestMiddleware {
 
     use(req: Request, res: Response, next: NextFunction) {
         if (this.options.enableTracing) {
-            const transaction = this.sentryService.startTransaction({
-                op: 'resolver',
-                name: `GraphQLTransaction`,
-            });
-            req[SENTRY_TRANSACTION_KEY] = transaction;
+            req[SENTRY_START_SPAN_INACTIVE_KEY] = this.sentryService.startInactiveSpan.bind(
+                this.sentryService,
+            );
         }
         next();
     }
