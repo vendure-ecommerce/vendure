@@ -87,9 +87,9 @@ export interface HardenPluginOptions {
      * @example
      * ```ts
      * HardenPlugin.init({
-     *   skip: (ctx) => ctx.request.http.headers['x-storefront-ssr-auth'] === 'some-secret-token'
+     *   skip: (context) => context.request.http.headers['x-storefront-ssr-auth'] === 'some-secret-token'
      * }),
      * ```
      */
-    skip?: (ctx: GraphQLRequestContext<any>) => Promise<boolean> | boolean;
+    skip?: (context: GraphQLRequestContext<any>) => Promise<boolean> | boolean;
 }

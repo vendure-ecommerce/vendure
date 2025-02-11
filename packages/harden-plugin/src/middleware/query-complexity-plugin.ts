@@ -20,17 +20,17 @@ import { HardenPluginOptions } from '../types';
 export class QueryComplexityPlugin implements ApolloServerPlugin {
     constructor(private options: HardenPluginOptions) {}
 
-    async requestDidStart(ctx: GraphQLRequestContext<any>): Promise<GraphQLRequestListener<any>> {
+    async requestDidStart(context: GraphQLRequestContext<any>): Promise<GraphQLRequestListener<any>> {
         const maxQueryComplexity = this.options.maxQueryComplexity ?? 1000;
         return {
             didResolveOperation: async ({ request, document }) => {
-                if (isAdminApi(ctx.schema)) {
+                if (isAdminApi(context.schema)) {
                     // We don't want to apply the cost analysis on the
                     // Admin API, since any expensive operations would require
                     // an authenticated session.
                     return;
                 }
-                if (await this.options.skip?.(ctx)) {
+                if (await this.options.skip?.(context)) {
                     // Given skip function tells use we should not check this request for complexity
                     return;
                 }
@@ -45,7 +45,7 @@ export class QueryComplexityPlugin implements ApolloServerPlugin {
                     );
                 }
                 const complexity = getComplexity({
-                    schema: ctx.schema,
+                    schema: context.schema,
                     query,
                     variables: request.variables,
                     estimators: this.options.queryComplexityEstimators ?? [
