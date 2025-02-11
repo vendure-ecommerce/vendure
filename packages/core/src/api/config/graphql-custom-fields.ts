@@ -394,10 +394,13 @@ export function addModifyOrderCustomFields(
 export function addOrderLineCustomFieldsInput(
     typeDefsOrSchema: string | GraphQLSchema,
     orderLineCustomFields: CustomFieldConfig[],
+    publicOnly: boolean,
 ): GraphQLSchema {
     const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
+    orderLineCustomFields = orderLineCustomFields.filter(f => f.internal !== true);
     const publicCustomFields = orderLineCustomFields.filter(f => f.public !== false);
-    if (!publicCustomFields || publicCustomFields.length === 0) {
+    const customFields = publicOnly ? publicCustomFields : orderLineCustomFields;
+    if (!customFields || customFields.length === 0) {
         return schema;
     }
     const schemaConfig = schema.toConfig();
@@ -428,7 +431,7 @@ export function addOrderLineCustomFieldsInput(
     }
     const input = new GraphQLInputObjectType({
         name: 'OrderLineCustomFieldsInput',
-        fields: publicCustomFields.reduce((fields, field) => {
+        fields: customFields.reduce((fields, field) => {
             const name = getGraphQlInputName(field);
             const inputTypeName = getGraphQlInputType('OrderLine')(field);
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

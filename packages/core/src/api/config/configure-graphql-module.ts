@@ -160,7 +160,7 @@ async function createGraphQLOptions(
             .forEach(documentNode => (schema = extendSchema(schema, documentNode)));
         schema = generateListOptions(schema);
         schema = addGraphQLCustomFields(schema, customFields, apiType === 'shop');
-        schema = addOrderLineCustomFieldsInput(schema, customFields.OrderLine || []);
+        schema = addOrderLineCustomFieldsInput(schema, customFields.OrderLine || [], apiType === 'shop');
         schema = addModifyOrderCustomFields(schema, customFields.Order || []);
         schema = addShippingMethodQuoteCustomFields(schema, customFields.ShippingMethod || []);
         schema = addPaymentMethodQuoteCustomFields(schema, customFields.PaymentMethod || []);
