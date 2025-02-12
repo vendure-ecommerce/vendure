@@ -19,14 +19,14 @@
                 (click)="removeListItem(item)"
                 [title]="'common.remove-item-from-list' | translate"
             >
-                <clr-icon shape="times"></clr-icon>
+                <ng-icon hlm name="lucideX"></ng-icon>
             </button>
             <div class="drag-handle" cdkDragHandle [class.hidden]="readonly">
-                <clr-icon shape="drag-handle" size="24"></clr-icon>
+                <ng-icon hlm name="lucideGripHorizontal"></ng-icon>
             </div>
         </div>
         <button class="btn btn-secondary btn-sm" (click)="addListItem()" *ngIf="!readonly">
-            <clr-icon shape="plus"></clr-icon> {{ 'common.add-item-to-list' | translate }}
+            <ng-icon hlm name="lucidePlus"></ng-icon> {{ 'common.add-item-to-list' | translate }}
         </button>
     </div>
 </ng-template>

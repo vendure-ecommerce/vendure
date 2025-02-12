@@ -9,10 +9,14 @@
 >
     <ng-template vdrRelationCardPreview let-product="entity">
         <div>
-        <img class="thumb" *ngIf="product.featuredAsset" [src]="product.featuredAsset | assetPreview: 'tiny'" />
+            <img
+                class="thumb"
+                *ngIf="product.featuredAsset"
+                [src]="product.featuredAsset | assetPreview: 'tiny'"
+            />
         </div>
         <div class="placeholder" *ngIf="!product.featuredAsset">
-            <clr-icon shape="image" size="50"></clr-icon>
+            <ng-icon hlm shape="image" size="50"></ng-icon>
         </div>
     </ng-template>
     <ng-template vdrRelationCardDetail let-product="entity">

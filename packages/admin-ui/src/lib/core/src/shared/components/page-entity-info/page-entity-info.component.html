@@ -1,12 +1,14 @@
-<div class="property">
-    <div class="prop-label">{{ 'common.ID' | translate }}:</div>
-    <div class="value">{{ entity.id }}</div>
-</div>
-<div class="property" *ngIf="entity.createdAt">
-    <div class="prop-label">{{ 'common.created-at' | translate }}:</div>
-    <div class="value">{{ entity.createdAt | localeDate : 'short' }}</div>
-</div>
-<div class="property" *ngIf="entity.updatedAt">
-    <div class="prop-label">{{ 'common.updated-at' | translate }}:</div>
-    <div class="value">{{ entity.updatedAt | localeDate : 'short' }}</div>
+<div class="flex flex-col space-y-1 text-xs text-muted-foreground">
+    <div class="flex items-center justify-between">
+        <span class="text-accent-foreground">{{ 'common.ID' | translate }}:</span>
+        <div>{{ entity.id }}</div>
+    </div>
+    <div class="flex items-center justify-between" *ngIf="entity.createdAt">
+        <span class="text-accent-foreground">{{ 'common.created-at' | translate }}:</span>
+        <div>{{ entity.createdAt | localeDate: 'short' }}</div>
+    </div>
+    <div class="flex items-center justify-between" *ngIf="entity.updatedAt">
+        <span class="text-accent-foreground">{{ 'common.updated-at' | translate }}:</span>
+        <div>{{ entity.updatedAt | localeDate: 'short' }}</div>
+    </div>
 </div>

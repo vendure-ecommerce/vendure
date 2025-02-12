@@ -1,16 +1,23 @@
 <vdr-dropdown class="search-settings-menu" *ngIf="fulfilledCount || orderState === 'PartiallyDelivered'">
     <button type="button" class="icon-button" vdrDropdownTrigger>
-        <clr-icon *ngIf="fulfillmentStatus === 'full'" class="item-fulfilled" shape="check-circle"></clr-icon>
-        <clr-icon
+        <ng-icon
+            hlm
+            *ngIf="fulfillmentStatus === 'full'"
+            class="item-fulfilled"
+            shape="check-circle"
+        ></ng-icon>
+        <ng-icon
+            hlm
             *ngIf="fulfillmentStatus === 'partial'"
             class="item-partially-fulfilled"
             shape="check-circle"
-        ></clr-icon>
-        <clr-icon
+        ></ng-icon>
+        <ng-icon
+            hlm
             *ngIf="fulfillmentStatus === 'none'"
             class="item-not-fulfilled"
             shape="exclamation-circle"
-        ></clr-icon>
+        ></ng-icon>
     </button>
     <vdr-dropdown-menu vdrPosition="bottom-right">
         <label class="dropdown-header" *ngIf="fulfillmentStatus === 'full'">

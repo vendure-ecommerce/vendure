@@ -21,7 +21,7 @@
         "@vendure/core": "^3.1.2",
         "@vendure/elasticsearch-plugin": "^3.1.2",
         "@vendure/email-plugin": "^3.1.2",
-        "typescript": "5.3.3"
+        "typescript": "~5.4.4"
     },
     "devDependencies": {
         "@vendure/testing": "^3.1.2",

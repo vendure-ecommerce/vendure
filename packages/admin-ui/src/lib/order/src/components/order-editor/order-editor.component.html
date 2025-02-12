@@ -65,7 +65,7 @@
                     [title]="'order.edit-shipping-address' | translate"
                     (click)="editingShippingAddress = !editingShippingAddress"
                 >
-                    <clr-icon shape="edit"></clr-icon>
+                    <ng-icon hlm name="lucidePencil"></ng-icon>
                 </button>
             </ng-template>
             <vdr-formatted-address
@@ -86,7 +86,7 @@
                     [title]="'order.edit-billing-address' | translate"
                     (click)="editingBillingAddress = !editingBillingAddress"
                 >
-                    <clr-icon shape="edit"></clr-icon>
+                    <ng-icon hlm name="lucidePencil"></ng-icon>
                 </button>
             </ng-template>
             <vdr-formatted-address
@@ -117,7 +117,7 @@
                     [hiddenByDefault]="true"
                 >
                     <ng-template let-line="item">
-                        {{ line.createdAt | localeDate : 'short' }}
+                        {{ line.createdAt | localeDate: 'short' }}
                     </ng-template>
                 </vdr-dt2-column>
                 <vdr-dt2-column
@@ -126,7 +126,7 @@
                     [hiddenByDefault]="true"
                 >
                     <ng-template let-line="item">
-                        {{ line.updatedAt | localeDate : 'short' }}
+                        {{ line.updatedAt | localeDate: 'short' }}
                     </ng-template>
                 </vdr-dt2-column>
                 <vdr-dt2-column [heading]="'common.image' | translate" id="image">
@@ -134,11 +134,11 @@
                         <div class="image-placeholder">
                             <img
                                 *ngIf="line.featuredAsset as asset; else imagePlaceholder"
-                                [src]="asset | assetPreview : 'tiny'"
+                                [src]="asset | assetPreview: 'tiny'"
                             />
                             <ng-template #imagePlaceholder>
                                 <div class="placeholder">
-                                    <clr-icon shape="image" size="48"></clr-icon>
+                                    <ng-icon hlm name="lucideImage" size="xl"></ng-icon>
                                 </div>
                             </ng-template>
                         </div>
@@ -161,9 +161,9 @@
                 <vdr-dt2-column id="unit-price" [heading]="'order.unit-price' | translate">
                     <ng-template let-line="item">
                         <div class="text-center">
-                            <div>{{ line.unitPriceWithTax | localeCurrency : order.currencyCode }}</div>
+                            <div>{{ line.unitPriceWithTax | localeCurrency: order.currencyCode }}</div>
                             <div class="net-price" [title]="'order.net-price' | translate">
-                                {{ line.unitPrice | localeCurrency : order.currencyCode }}
+                                {{ line.unitPrice | localeCurrency: order.currencyCode }}
                             </div>
                         </div>
                     </ng-template>
@@ -182,7 +182,7 @@
                             *ngIf="isAddedLine(line)"
                             (click)="removeAddedItem(line.id)"
                         >
-                            <clr-icon shape="trash"></clr-icon>
+                            <ng-icon hlm name="lucideTrash"></ng-icon>
                         </button>
                         <vdr-line-refunds [line]="line" [payments]="order.payments"></vdr-line-refunds>
                         <vdr-line-fulfillment
@@ -195,7 +195,7 @@
                 <vdr-dt2-column
                     *ngFor="let customField of orderLineCustomFields"
                     [id]="customField.name"
-                    [heading]="customField | customFieldLabel : (uiLanguage$ | async)"
+                    [heading]="customField | customFieldLabel: (uiLanguage$ | async)"
                     [hiddenByDefault]="true"
                 >
                     <ng-template let-line="item" let-index="index">
@@ -217,7 +217,7 @@
                     <div *ngIf="addItemSelectedVariant" class="flex mb-4">
                         <img
                             *ngIf="addItemSelectedVariant.productAsset as asset"
-                            [src]="asset | assetPreview : 'tiny'"
+                            [src]="asset | assetPreview: 'tiny'"
                             class="mr-4 add-item-thumb"
                         />
                         <div>
@@ -226,7 +226,7 @@
                             <div>
                                 {{
                                     getSelectedItemPrice(addItemSelectedVariant)
-                                        | localeCurrency : order.currencyCode
+                                        | localeCurrency: order.currencyCode
                                 }}
                             </div>
                         </div>
@@ -261,7 +261,7 @@
                 <ng-container *ngIf="getShippingLineDetails(shippingLine) as details">
                     <div>{{ details.name }}:</div>
                     <div class="mx-1">
-                        {{ details.price | localeCurrency : order.currencyCode }}
+                        {{ details.price | localeCurrency: order.currencyCode }}
                     </div>
                     <button class="button-small" (click)="setShippingMethod(shippingLine.id)">
                         {{ 'order.set-shipping-method' | translate }}
@@ -288,7 +288,7 @@
                     <vdr-form-field
                         [label]="
                             'catalog.price-includes-tax-at'
-                                | translate : { rate: surchargeForm.get('taxRate')?.value ?? 0 }
+                                | translate: { rate: surchargeForm.get('taxRate')?.value ?? 0 }
                         "
                         for="priceIncludesTax"
                         ><input

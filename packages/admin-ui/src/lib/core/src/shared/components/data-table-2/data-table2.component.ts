@@ -89,7 +89,7 @@ import { DataTable2SearchComponent } from './data-table-search.component';
  *         <ng-template let-review="item">
  *             <a class="button-ghost" [routerLink]="['./', review.id]"
  *                 ><span>{{ review.name }}</span>
- *                 <clr-icon shape="arrow right"></clr-icon>
+ *                 <ng-icon hlm name="lucideArrowRight"></ng-icon>
  *             </a>
  *         </ng-template>
  *     </vdr-dt2-column>

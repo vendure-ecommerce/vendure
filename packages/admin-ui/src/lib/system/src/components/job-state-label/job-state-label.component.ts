@@ -14,16 +14,16 @@ export class JobStateLabelComponent {
     get iconShape(): string {
         switch (this.job.state) {
             case JobState.COMPLETED:
-                return 'check-circle';
+                return 'lucideCircleCheck';
             case JobState.FAILED:
-                return 'exclamation-circle';
+                return 'lucideCircleX';
             case JobState.CANCELLED:
-                return 'ban';
+                return 'lucideCircleSlash2';
             case JobState.PENDING:
             case JobState.RETRYING:
-                return 'hourglass';
+                return 'lucideCircleDotDashed';
             case JobState.RUNNING:
-                return 'sync';
+                return 'lucideCircleDot';
         }
     }
 

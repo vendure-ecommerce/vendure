@@ -13,12 +13,12 @@
                 (click)="completeOrder()"
                 [disabled]="!order.customer || !order.lines.length || !order.shippingLines.length"
             >
-                <clr-icon shape="check"></clr-icon>
+                <ng-icon hlm shape="check"></ng-icon>
                 {{ 'order.complete-draft-order' | translate }}
             </button>
             <vdr-action-bar-dropdown-menu [alwaysShow]="true" locationId="draft-order-detail">
                 <button type="button" vdrDropdownItem (click)="deleteOrder()">
-                    <clr-icon shape="trash" class="is-danger"></clr-icon>
+                    <ng-icon hlm name="lucideTrash" class="is-danger"></ng-icon>
                     {{ 'order.delete-draft-order' | translate }}
                 </button>
             </vdr-action-bar-dropdown-menu>
@@ -30,8 +30,8 @@
     <vdr-page-detail-sidebar>
         <vdr-card [title]="'order.customer' | translate">
             <ng-template vdrCardControls>
-                <clr-icon *ngIf="!order.customer" shape="unknown-status" class="is-warning"></clr-icon>
-                <clr-icon *ngIf="order.customer" shape="check" class="is-success"></clr-icon>
+                <ng-icon hlm *ngIf="!order.customer" shape="unknown-status" class="is-warning"></ng-icon>
+                <ng-icon hlm *ngIf="order.customer" shape="check" class="is-success"></ng-icon>
             </ng-template>
             <vdr-customer-label
                 class="block mb-2"
@@ -44,16 +44,18 @@
         </vdr-card>
         <vdr-card [title]="'order.billing-address' | translate">
             <ng-template vdrCardControls>
-                <clr-icon
+                <ng-icon
+                    hlm
                     *ngIf="!order.billingAddress.streetLine1"
                     shape="unknown-status"
                     class="is-warning"
-                ></clr-icon>
-                <clr-icon
+                ></ng-icon>
+                <ng-icon
+                    hlm
                     *ngIf="order.billingAddress.streetLine1"
                     shape="check"
                     class="is-success"
-                ></clr-icon>
+                ></ng-icon>
             </ng-template>
             <vdr-formatted-address
                 class="block mb-2"
@@ -66,16 +68,18 @@
         </vdr-card>
         <vdr-card [title]="'order.shipping' | translate">
             <ng-template vdrCardControls>
-                <clr-icon
+                <ng-icon
+                    hlm
                     *ngIf="!order.shippingAddress.streetLine1 || !order.shippingLines.length"
                     shape="unknown-status"
                     class="is-warning"
-                ></clr-icon>
-                <clr-icon
+                ></ng-icon>
+                <ng-icon
+                    hlm
                     *ngIf="order.shippingAddress.streetLine1 && order.shippingLines.length"
                     shape="check"
                     class="is-success"
-                ></clr-icon>
+                ></ng-icon>
             </ng-template>
             <vdr-formatted-address
                 class="block mb-2"
@@ -144,8 +148,8 @@
                         <tr *ngFor="let row of order.taxSummary">
                             <td>{{ row.description }}</td>
                             <td>{{ row.taxRate / 100 | percent }}</td>
-                            <td>{{ row.taxBase | localeCurrency : order.currencyCode }}</td>
-                            <td>{{ row.taxTotal | localeCurrency : order.currencyCode }}</td>
+                            <td>{{ row.taxBase | localeCurrency: order.currencyCode }}</td>
+                            <td>{{ row.taxTotal | localeCurrency: order.currencyCode }}</td>
                         </tr>
                     </tbody>
                 </table>

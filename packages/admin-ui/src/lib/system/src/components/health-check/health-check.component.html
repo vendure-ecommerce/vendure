@@ -7,11 +7,12 @@
             <vdr-ab-left>
                 <div class="system-status-header" *ngIf="healthCheckService.status$ | async as status">
                     <div class="status-icon">
-                        <clr-icon
-                            [attr.shape]="status === 'ok' ? 'check-circle' : 'exclamation-circle'"
+                        <ng-icon
+                            hlm
+                            [attr.name]="status === 'ok' ? 'lucideCircleCheck' : 'lucideCircleAlert'"
                             [ngClass]="{ 'is-success': status === 'ok', 'is-danger': status !== 'ok' }"
                             size="48"
-                        ></clr-icon>
+                        ></ng-icon>
                     </div>
                     <div class="status-detail">
                         <ng-container *ngIf="status === 'ok'; else error">
@@ -22,7 +23,7 @@
                         </ng-template>
                         <div class="last-checked">
                             {{ 'system.health-last-checked' | translate }}:
-                            {{ healthCheckService.lastCheck$ | async | localeDate : 'mediumTime' }}
+                            {{ healthCheckService.lastCheck$ | async | localeDate: 'mediumTime' }}
                         </div>
                     </div>
                 </div>
@@ -30,7 +31,8 @@
             <vdr-ab-right>
                 <vdr-action-bar-items locationId="system-status"></vdr-action-bar-items>
                 <button class="btn btn-secondary" (click)="healthCheckService.refresh()">
-                    <clr-icon shape="refresh"></clr-icon> {{ 'system.health-refresh' | translate }}
+                    <ng-icon hlm name="lucideRefreshCcw"></ng-icon>
+                    {{ 'system.health-refresh' | translate }}
                 </button>
             </vdr-ab-right>
         </vdr-action-bar>
@@ -56,11 +58,11 @@
                     <td class="align-middle left">
                         <vdr-chip [colorType]="row.result.status === 'up' ? 'success' : 'error'">
                             <ng-container *ngIf="row.result.status === 'up'; else down">
-                                <clr-icon shape="check-circle"></clr-icon>
+                                <ng-icon hlm name="lucideCircleCheck"></ng-icon>
                                 {{ 'system.health-status-up' | translate }}
                             </ng-container>
                             <ng-template #down>
-                                <clr-icon shape="exclamation-circle"></clr-icon>
+                                <ng-icon name="lucideCircleAlert"></ng-icon>
                                 {{ 'system.health-status-down' | translate }}
                             </ng-template>
                         </vdr-chip>

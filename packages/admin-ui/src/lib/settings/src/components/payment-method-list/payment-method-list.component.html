@@ -14,7 +14,7 @@
                 *vdrIfPermissions="['CreateSettings', 'CreatePaymentMethod']"
                 [routerLink]="['./', 'create']"
             >
-                <clr-icon shape="plus"></clr-icon>
+                <ng-icon hlm name="lucidePlus"></ng-icon>
                 {{ 'settings.create-new-payment-method' | translate }}
             </a>
             <vdr-action-bar-dropdown-menu locationId="payment-method-list" />
@@ -58,7 +58,7 @@
         [sort]="sorts.get('createdAt')"
     >
         <ng-template let-paymentMethod="item">
-            {{ paymentMethod.createdAt | localeDate : 'short' }}
+            {{ paymentMethod.createdAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
@@ -68,7 +68,7 @@
         [sort]="sorts.get('updatedAt')"
     >
         <ng-template let-paymentMethod="item">
-            {{ paymentMethod.updatedAt | localeDate : 'short' }}
+            {{ paymentMethod.updatedAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
@@ -80,7 +80,7 @@
         <ng-template let-paymentMethod="item">
             <a class="button-ghost" [routerLink]="['./', paymentMethod.id]"
                 ><span>{{ paymentMethod.name }}</span>
-                <clr-icon shape="arrow right"></clr-icon>
+                <ng-icon hlm name="lucideArrowRight"></ng-icon>
             </a>
         </ng-template>
     </vdr-dt2-column>

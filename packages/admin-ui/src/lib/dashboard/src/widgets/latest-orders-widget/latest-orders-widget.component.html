@@ -3,7 +3,7 @@
         <ng-template let-order="item">
             <a class="button-ghost" [routerLink]="['/orders/', order.id]"
                 ><span>{{ order.code }}</span>
-                <clr-icon shape="arrow right"></clr-icon>
+                <ng-icon hlm name="lucideArrowRight"></ng-icon>
             </a>
         </ng-template>
     </vdr-dt2-column>
@@ -19,7 +19,7 @@
     </vdr-dt2-column>
     <vdr-dt2-column [heading]="'order.total' | translate" id="total">
         <ng-template let-order="item">
-            {{ order.totalWithTax | localeCurrency : order.currencyCode }}
+            {{ order.totalWithTax | localeCurrency: order.currencyCode }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column [heading]="'order.placed-at' | translate" id="placed-at">

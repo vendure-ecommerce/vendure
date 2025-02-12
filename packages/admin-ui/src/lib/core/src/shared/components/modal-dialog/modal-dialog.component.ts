@@ -1,5 +1,6 @@
-import { Component, OnInit, TemplateRef, Type } from '@angular/core';
+import { Component, inject, OnInit, TemplateRef, Type } from '@angular/core';
 import { Subject } from 'rxjs';
+import { BrnDialogRef, injectBrnDialogContext } from '@spartan-ng/brain/dialog';
 
 import {
     LocalizationDirectionType,
@@ -21,11 +22,17 @@ import { DialogButtonsDirective } from './dialog-buttons.directive';
 export class ModalDialogComponent<T extends Dialog<any>> implements OnInit {
     direction$: LocalizationDirectionType;
 
-    childComponentType: Type<T>;
-    closeModal: (result?: any) => void;
     titleTemplateRef$ = new Subject<TemplateRef<any>>();
     buttonsTemplateRef$ = new Subject<TemplateRef<any>>();
-    options?: ModalOptions<T>;
+
+    private readonly _dialogRef = inject<BrnDialogRef<T>>(BrnDialogRef);
+    private readonly _dialogContext = injectBrnDialogContext<{
+        options?: ModalOptions<T>;
+        childComponentType: Type<T>;
+    }>();
+
+    options = this._dialogContext.options;
+    childComponentType = this._dialogContext.childComponentType;
 
     /**
      *
@@ -44,7 +51,7 @@ export class ModalDialogComponent<T extends Dialog<any>> implements OnInit {
      */
     onCreate(componentInstance: T) {
         componentInstance.resolveWith = (result?: any) => {
-            this.closeModal(result);
+            this._dialogRef.close(result);
         };
         if (this.options && this.options.locals) {
             // eslint-disable-next-line
@@ -72,8 +79,6 @@ export class ModalDialogComponent<T extends Dialog<any>> implements OnInit {
      * Called when the modal is closed by clicking the X or the mask.
      */
     modalOpenChange(status: any) {
-        if (status === false) {
-            this.closeModal();
-        }
+        this._dialogRef.close();
     }
 }

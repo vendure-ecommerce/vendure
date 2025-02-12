@@ -82,58 +82,58 @@ $breakpoints: (
     'xl': var(--breakpoint-xl),
 );
 
-$breakpoint-glue: '\\:' !default;
-@each $breakName, $breakValue in $breakpoints {
-    @if $breakName != '' {
-        @media (min-width: $breakValue) {
-            @each $space in $spacings {
-                @each $prefix, $positions in $sides {
-                    .#{$breakName}\:p#{$prefix}-#{$space} {
-                        @each $pos in $positions {
-                            padding-#{$pos}: if(
-                                $space == auto,
-                                $space,
-                                calc(#{$space} * var(--space-unit))
-                            ) !important;
-                        }
-                    }
-                    .#{$breakName}\:m#{$prefix}-#{$space} {
-                        @each $pos in $positions {
-                            margin-#{$pos}: if(
-                                $space == auto,
-                                $space,
-                                calc(#{$space} * var(--space-unit))
-                            ) !important;
-                        }
-                    }
-                }
-            }
-        }
-    } @else {
-        @each $space in $spacings {
-            @each $prefix, $positions in $sides {
-                .p#{$prefix}-#{$space} {
-                    @each $pos in $positions {
-                        padding-#{$pos}: if(
-                            $space == auto,
-                            $space,
-                            calc(#{$space} * var(--space-unit))
-                        ) !important;
-                    }
-                }
-                .m#{$prefix}-#{$space} {
-                    @each $pos in $positions {
-                        margin-#{$pos}: if(
-                            $space == auto,
-                            $space,
-                            calc(#{$space} * var(--space-unit))
-                        ) !important;
-                    }
-                }
-            }
-        }
-    }
-}
+// $breakpoint-glue: '\\:' !default;
+// @each $breakName, $breakValue in $breakpoints {
+//     @if $breakName != '' {
+//         @media (min-width: $breakValue) {
+//             @each $space in $spacings {
+//                 @each $prefix, $positions in $sides {
+//                     .#{$breakName}\:p#{$prefix}-#{$space} {
+//                         @each $pos in $positions {
+//                             padding-#{$pos}: if(
+//                                 $space == auto,
+//                                 $space,
+//                                 calc(#{$space} * var(--space-unit))
+//                             ) !important;
+//                         }
+//                     }
+//                     .#{$breakName}\:m#{$prefix}-#{$space} {
+//                         @each $pos in $positions {
+//                             margin-#{$pos}: if(
+//                                 $space == auto,
+//                                 $space,
+//                                 calc(#{$space} * var(--space-unit))
+//                             ) !important;
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     } @else {
+//         @each $space in $spacings {
+//             @each $prefix, $positions in $sides {
+//                 .p#{$prefix}-#{$space} {
+//                     @each $pos in $positions {
+//                         padding-#{$pos}: if(
+//                             $space == auto,
+//                             $space,
+//                             calc(#{$space} * var(--space-unit))
+//                         ) !important;
+//                     }
+//                 }
+//                 .m#{$prefix}-#{$space} {
+//                     @each $pos in $positions {
+//                         margin-#{$pos}: if(
+//                             $space == auto,
+//                             $space,
+//                             calc(#{$space} * var(--space-unit))
+//                         ) !important;
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// }
 
 // colour classes
 $colors: ('weight', 'primary', 'secondary', 'success', 'warning', 'error');

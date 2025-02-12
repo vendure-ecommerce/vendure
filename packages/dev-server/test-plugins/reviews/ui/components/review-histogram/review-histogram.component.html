@@ -6,11 +6,13 @@
     <div class="frequency">
         {{ getFrequency(bin) }}
     </div>
-    <button class="icon-button filter-button"
-            title="Filter reviews with this rating"
-            [class.active]="filteredBin === bin"
-            (click)="toggleBinFilter(bin)"
-            [disabled]="getFrequency(bin) === 0">
-        <clr-icon shape="filter-2"></clr-icon>
+    <button
+        class="icon-button filter-button"
+        title="Filter reviews with this rating"
+        [class.active]="filteredBin === bin"
+        (click)="toggleBinFilter(bin)"
+        [disabled]="getFrequency(bin) === 0"
+    >
+        <ng-icon hlm shape="filter-2"></ng-icon>
     </button>
 </div>

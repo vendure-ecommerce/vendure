@@ -28,23 +28,21 @@
             [title]="'catalog.remove-option' | translate"
             (click)="removeOption(group.name)"
         >
-            <clr-icon shape="trash"></clr-icon>
+            <ng-icon hlm name="lucideTrash"></ng-icon>
         </button>
     </div>
 </div>
 <button class="button mb-2" (click)="addOption()">
-    <clr-icon shape="plus"></clr-icon>
+    <ng-icon hlm name="lucidePlus"></ng-icon>
     {{ 'catalog.add-option' | translate }}
 </button>
 
 <ng-container *ngIf="stockLocations$ | async as stockLocations">
-    <clr-alert *ngIf="stockLocations.length === 0" clrAlertType="warning" [clrAlertClosable]="false" class="">
-        <clr-alert-item>
-            <span class="alert-text">
-                {{ 'catalog.no-stock-locations-available-on-current-channel' | translate }}
-            </span>
-        </clr-alert-item>
-    </clr-alert>
+    <div hlmAlert *ngIf="stockLocations.length === 0" variant="warning">
+        <span hlmAlertDesc>
+            {{ 'catalog.no-stock-locations-available-on-current-channel' | translate }}
+        </span>
+    </div>
 
     <div class="form-grid mb-2">
         <vdr-form-field *ngIf="stockLocations.length" [label]="'catalog.add-stock-to-location' | translate">

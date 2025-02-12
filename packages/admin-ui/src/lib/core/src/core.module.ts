@@ -30,6 +30,7 @@ import { LocalStorageService } from './providers/local-storage/local-storage.ser
 import { Permission } from './public_api';
 import { registerDefaultFormInputs } from './shared/dynamic-form-inputs/default-form-inputs';
 import { SharedModule } from './shared/shared.module';
+import TopBarComponent from './shared/components/top-bar/top-bar.component';
 
 @NgModule({
     imports: [
@@ -62,6 +63,7 @@ import { SharedModule } from './shared/shared.module';
         ChannelSwitcherComponent,
         ThemeSwitcherComponent,
         AlertsComponent,
+        TopBarComponent,
     ],
 })
 export class CoreModule {

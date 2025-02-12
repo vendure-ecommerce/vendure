@@ -8,7 +8,7 @@
                 *vdrIfPermissions="['CreateAdministrator']"
                 [routerLink]="['./', 'create']"
             >
-                <clr-icon shape="plus"></clr-icon>
+                <ng-icon hlm name="lucidePlus"></ng-icon>
                 {{ 'admin.create-new-administrator' | translate }}
             </a>
             <vdr-action-bar-dropdown-menu locationId="administrator-list" />
@@ -42,32 +42,43 @@
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.created-at' | translate" id="created-at"
+        [heading]="'common.created-at' | translate"
+        id="created-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('createdAt')"
     >
         <ng-template let-administrator="item">
-            {{ administrator.createdAt | localeDate : 'short' }}
+            {{ administrator.createdAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.updated-at' | translate" id="updated-at"
+        [heading]="'common.updated-at' | translate"
+        id="updated-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('updatedAt')"
     >
         <ng-template let-administrator="item">
-            {{ administrator.updatedAt | localeDate : 'short' }}
+            {{ administrator.updatedAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.name' | translate" id="name" [optional]="false" [sort]="sorts.get('lastName')">
+    <vdr-dt2-column
+        [heading]="'common.name' | translate"
+        id="name"
+        [optional]="false"
+        [sort]="sorts.get('lastName')"
+    >
         <ng-template let-administrator="item">
             <a class="button-ghost" [routerLink]="['./', administrator.id]"
                 ><span>{{ administrator.firstName }} {{ administrator.lastName }}</span>
-                <clr-icon shape="arrow right"></clr-icon>
+                <ng-icon hlm name="lucideArrowRight"></ng-icon>
             </a>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'settings.email-address' | translate" id="email-address" [sort]="sorts.get('emailAddress')">
+    <vdr-dt2-column
+        [heading]="'settings.email-address' | translate"
+        id="email-address"
+        [sort]="sorts.get('emailAddress')"
+    >
         <ng-template let-administrator="item">
             {{ administrator.emailAddress }}
         </ng-template>

@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ActiveAlert, AlertsService } from '../../providers/alerts/alerts.service';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideBell } from '@ng-icons/lucide';
 
 @Component({
     selector: 'vdr-alerts',

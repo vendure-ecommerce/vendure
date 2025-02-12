@@ -2,10 +2,11 @@
 <p class="instruction">
     {{ 'order.settle-refund-manual-instructions' | translate: { method: refund.method } }}
 </p>
-<clr-input-container>
-    <label>{{ 'order.transaction-id' | translate }}</label>
-    <input clrInput name="transactionId" [(ngModel)]="transactionId" />
-</clr-input-container>
+
+<label hlmLabel>
+    {{ 'order.transaction-id' | translate }}
+    <input hlmInput name="transactionId" [(ngModel)]="transactionId" />
+</label>
 
 <ng-template vdrDialogButtons>
     <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>

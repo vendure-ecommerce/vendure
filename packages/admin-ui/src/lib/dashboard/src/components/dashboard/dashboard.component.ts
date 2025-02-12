@@ -44,15 +44,15 @@ export class DashboardComponent implements OnInit {
     getClassForWidth(width: DashboardWidgetWidth): string {
         switch (width) {
             case 3:
-                return `clr-col-12 clr-col-sm-6 clr-col-lg-3`;
+                return `col-span-12 sm:col-span-6 lg:col-span-3`;
             case 4:
-                return `clr-col-12 clr-col-sm-6 clr-col-lg-4`;
+                return `col-span-12 sm:col-span-6 lg:col-span-4`;
             case 6:
-                return `clr-col-12 clr-col-lg-6`;
+                return `col-span-12 lg:col-span-6`;
             case 8:
-                return `clr-col-12 clr-col-lg-8`;
+                return `col-span-12 lg:col-span-8`;
             case 12:
-                return `clr-col-12`;
+                return `col-span-12`;
             default:
                 assertNever(width);
         }

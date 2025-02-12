@@ -38,9 +38,9 @@ export type DropdownPosition = 'top-left' | 'top-right' | 'bottom-left' | 'botto
         <ng-template #menu>
             <div [dir]="direction$ | async">
                 <div class="dropdown open">
-                    <div class="dropdown-menu" [ngClass]="customClasses" [style.maxHeight.px]="maxHeight">
+                    <div class="dropdown-menu drop-shadow-md" [ngClass]="customClasses" [style.maxHeight.px]="maxHeight">
                         <div
-                            class="dropdown-content-wrapper"
+                            class="dropdown-content-wrapper bg-white  border border-gray-200 py-2 rounded-md"
                             [cdkTrapFocus]="true"
                             [cdkTrapFocusAutoCapture]="true"
                         >

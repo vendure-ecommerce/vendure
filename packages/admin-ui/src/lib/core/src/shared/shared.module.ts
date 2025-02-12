@@ -5,14 +5,21 @@ import { CommonModule } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { ClarityModule } from '@clr/angular';
-import '@clr/icons';
-import '@clr/icons/shapes/all-shapes';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
 import '@webcomponents/custom-elements/custom-elements.min.js';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { HlmIconDirective, HlmIconModule } from '@spartan-ng/ui-icon-helm';
+import { HlmFormFieldModule } from '@spartan-ng/ui-formfield-helm';
 
+import { HlmCheckboxModule } from '@spartan-ng/ui-checkbox-helm';
+import { HlmLabelModule } from '@spartan-ng/ui-label-helm';
+import { HlmSpinnerModule } from '@spartan-ng/ui-spinner-helm';
+import { HlmAlertModule } from '@spartan-ng/ui-alert-helm';
+import { HlmInputModule } from '@spartan-ng/ui-input-helm';
+import { HlmTabsModule } from '@spartan-ng/ui-tabs-helm';
+import { HlmRadioGroupModule } from '@spartan-ng/ui-radiogroup-helm';
+import { BrnRadioGroupModule } from '@spartan-ng/brain/radio-group';
 import { ModalService } from '../providers/modal/modal.service';
 
 import { ActionBarItemsComponent } from './components/action-bar-items/action-bar-items.component';
@@ -177,9 +184,46 @@ import { AddFilterPresetButtonComponent } from './components/data-table-filter-p
 import { RenameFilterPresetDialogComponent } from './components/data-table-filter-presets/rename-filter-preset-dialog.component';
 import { ActionBarDropdownMenuComponent } from './components/action-bar-dropdown-menu/action-bar-dropdown-menu.component';
 import { DuplicateEntityDialogComponent } from './components/duplicate-entity-dialog/duplicate-entity-dialog.component';
+import { HlmButtonModule } from '@spartan-ng/ui-button-helm';
+import { LogoFullComponent } from './components/logo-full/logo-full.component';
+import { NgIcon, NgIconComponent, NgIconsModule, provideIcons } from '@ng-icons/core';
+import {
+    lucideBell,
+    lucideChevronDown,
+    lucideChevronUp,
+    lucideCode,
+    lucideCombine,
+    lucideEllipsisVertical,
+    lucideFilter,
+    lucideGripHorizontal,
+    lucideImages,
+    lucideLanguages,
+    lucideLayers,
+    lucideLogOut,
+    lucideMoon,
+    lucidePanelLeftClose,
+    lucidePanelLeftOpen,
+    lucidePanelRightOpen,
+    lucidePencil,
+    lucideShoppingCart,
+    lucideSun,
+    lucideTag,
+    lucideTicketPercent,
+    lucideUser,
+    lucideUserCog,
+    lucideUsers,
+    lucideX,
+} from '@ng-icons/lucide';
+import { HlmMenuModule } from '@spartan-ng/ui-menu-helm';
+import { BrnMenuModule } from '@spartan-ng/brain/menu';
+import { HlmBreadCrumbModule } from '@spartan-ng/ui-breadcrumb-helm';
+import { HlmScrollAreaModule } from '@spartan-ng/ui-scrollarea-helm';
+import { HlmDialogModule } from '@spartan-ng/ui-dialog-helm';
+import { BrnDialogModule } from '@spartan-ng/brain/dialog';
+import { HlmSelectModule } from '@spartan-ng/ui-select-helm';
+import { BrnSelectModule } from '@spartan-ng/brain/select';
 
 const IMPORTS = [
-    ClarityModule,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -190,6 +234,26 @@ const IMPORTS = [
     OverlayModule,
     DragDropModule,
     A11yModule,
+    HlmIconModule,
+    HlmFormFieldModule,
+    HlmCheckboxModule,
+    HlmLabelModule,
+    HlmSpinnerModule,
+    HlmAlertModule,
+    HlmInputModule,
+    HlmTabsModule,
+    HlmRadioGroupModule,
+    BrnRadioGroupModule,
+    HlmButtonModule,
+    NgIconComponent,
+    HlmMenuModule,
+    BrnMenuModule,
+    HlmBreadCrumbModule,
+    HlmScrollAreaModule,
+    HlmDialogModule,
+    BrnDialogModule,
+    HlmSelectModule,
+    BrnSelectModule,
 ];
 
 const DECLARATIONS = [
@@ -325,6 +389,7 @@ const DECLARATIONS = [
     AddFilterPresetButtonComponent,
     RenameFilterPresetDialogComponent,
     DuplicateEntityDialogComponent,
+    LogoFullComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [
@@ -366,6 +431,32 @@ const DYNAMIC_FORM_INPUTS = [
         // See https://github.com/angular/angular/issues/14324#issuecomment-305650763
         ModalService,
         CanDeactivateDetailGuard,
+        provideIcons({
+            lucideChevronDown,
+            lucideChevronUp,
+            lucideGripHorizontal,
+            lucideX,
+            lucideUser,
+            lucideEllipsisVertical,
+            lucideBell,
+            lucideCombine,
+            lucideTag,
+            lucideFilter,
+            lucideImages,
+            lucideShoppingCart,
+            lucideUsers,
+            lucideTicketPercent,
+            lucideLayers,
+            lucideCode,
+            lucidePanelLeftClose,
+            lucidePanelLeftOpen,
+            lucideLogOut,
+            lucideUserCog,
+            lucideLanguages,
+            lucideMoon,
+            lucideSun,
+            lucidePencil,
+        }),
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

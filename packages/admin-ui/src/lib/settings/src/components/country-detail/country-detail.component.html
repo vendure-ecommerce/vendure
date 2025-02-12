@@ -38,15 +38,11 @@
         <vdr-page-detail-sidebar>
             <vdr-card>
                 <vdr-form-field [label]="'common.enabled' | translate" for="enabled">
-                    <clr-toggle-wrapper>
-                        <input
-                            type="checkbox"
-                            clrToggle
-                            id="enabled"
-                            formControlName="enabled"
-                            [vdrDisabled]="!(updatePermission | hasPermission)"
-                        />
-                    </clr-toggle-wrapper>
+                    <hlm-switch
+                        id="enabled"
+                        formControlName="enabled"
+                        [vdrDisabled]="!(updatePermission | hasPermission)"
+                    />
                 </vdr-form-field>
             </vdr-card>
             <vdr-card *ngIf="entity$ | async as entity">

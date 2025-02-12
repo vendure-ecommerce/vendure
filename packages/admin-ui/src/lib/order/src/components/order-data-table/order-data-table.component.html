@@ -2,10 +2,7 @@
     <ng-content select="vdr-bulk-action-menu"></ng-content>
 </div>
 <div class="table-wrapper">
-    <table
-        class=""
-        [class.no-select]="disableSelect"
-    >
+    <table class="" [class.no-select]="disableSelect">
         <thead [class.items-selected]="selectionManager?.selection.length">
             <tr class="heading-row">
                 <th *ngIf="selectionManager" class="selection-col">
@@ -33,9 +30,9 @@
                         </vdr-ui-extension-point>
                         <div *ngIf="column.sort as sort" class="sort-toggle">
                             <button (click)="sort.toggleSortOrder()" [class.active]="sort.sortOrder">
-                                <clr-icon *ngIf="!sort.sortOrder" shape="two-way-arrows left"></clr-icon>
-                                <clr-icon *ngIf="sort.sortOrder === 'ASC'" shape="arrow up"></clr-icon>
-                                <clr-icon *ngIf="sort.sortOrder === 'DESC'" shape="arrow down"></clr-icon>
+                                <ng-icon hlm *ngIf="!sort.sortOrder" shape="two-way-arrows left"></ng-icon>
+                                <ng-icon hlm *ngIf="sort.sortOrder === 'ASC'" shape="arrow up"></ng-icon>
+                                <ng-icon hlm *ngIf="sort.sortOrder === 'DESC'" shape="arrow down"></ng-icon>
                             </button>
                             <div class="sort-label" *ngIf="sort.sortOrder">{{ sort.sortOrder }}</div>
                         </div>
@@ -64,7 +61,7 @@
                         (click)="toggleSearchFilterRow()"
                         [title]="'common.search-and-filter-list' | translate"
                     >
-                        <clr-icon shape="search"></clr-icon>
+                        <ng-icon hlm name="lucideSearch"></ng-icon>
                     </button>
                     <div class="filter-row-wrapper" [class.hidden]="!showSearchFilterRow">
                         <ng-container *ngTemplateOutlet="searchComponent?.template"></ng-container>
@@ -97,7 +94,7 @@
                                   id: id,
                                   itemsPerPage: itemsPerPage,
                                   currentPage: currentPage,
-                                  totalItems: totalItems
+                                  totalItems: totalItems,
                               };
                     index as i;
                     trackBy: trackByFn
@@ -136,7 +133,9 @@
             <ng-container>
                 <tr *ngIf="!items?.length">
                     <td [attr.colspan]="visibleSortedColumns.length + (selectionManager ? 2 : 1)">
-                        <vdr-empty-placeholder [emptyStateLabel]="'order.order-is-empty' | translate"></vdr-empty-placeholder>
+                        <vdr-empty-placeholder
+                            [emptyStateLabel]="'order.order-is-empty' | translate"
+                        ></vdr-empty-placeholder>
                     </td>
                 </tr>
             </ng-container>
@@ -145,9 +144,9 @@
                 <td class="align-middle sku">{{ surcharge.sku }}</td>
                 <td class="align-middle" [attr.colspan]="visibleSortedColumns.length - 4"></td>
                 <td class="align-middle total">
-                    {{ surcharge.priceWithTax | localeCurrency : order.currencyCode }}
+                    {{ surcharge.priceWithTax | localeCurrency: order.currencyCode }}
                     <div class="net-price" [title]="'order.net-price' | translate">
-                        {{ surcharge.price | localeCurrency : order.currencyCode }}
+                        {{ surcharge.price | localeCurrency: order.currencyCode }}
                     </div>
                 </td>
                 <td><!-- column select --></td>
@@ -161,9 +160,9 @@
                         }}</vdr-chip>
                     </td>
                     <td class="">
-                        {{ discount.amountWithTax | localeCurrency : order.currencyCode }}
+                        {{ discount.amountWithTax | localeCurrency: order.currencyCode }}
                         <div class="net-price" [title]="'order.net-price' | translate">
-                            {{ discount.amount | localeCurrency : order.currencyCode }}
+                            {{ discount.amount | localeCurrency: order.currencyCode }}
                         </div>
                     </td>
                     <td><!-- column select --></td>
@@ -173,9 +172,9 @@
                 <td class="">{{ 'order.sub-total' | translate }}</td>
                 <td [attr.colspan]="visibleSortedColumns.length - 2"></td>
                 <td class="clr-align-middle">
-                    {{ order.subTotalWithTax | localeCurrency : order.currencyCode }}
+                    {{ order.subTotalWithTax | localeCurrency: order.currencyCode }}
                     <div class="net-price" [title]="'order.net-price' | translate">
-                        {{ order.subTotal | localeCurrency : order.currencyCode }}
+                        {{ order.subTotal | localeCurrency: order.currencyCode }}
                     </div>
                 </td>
                 <td><!-- column select --></td>
@@ -188,9 +187,9 @@
                     </vdr-chip>
                 </td>
                 <td class="clr-align-middle">
-                    {{ order.shippingWithTax | localeCurrency : order.currencyCode }}
+                    {{ order.shippingWithTax | localeCurrency: order.currencyCode }}
                     <div class="net-price" [title]="'order.net-price' | translate">
-                        {{ order.shipping | localeCurrency : order.currencyCode }}
+                        {{ order.shipping | localeCurrency: order.currencyCode }}
                     </div>
                 </td>
                 <td><!-- column select --></td>
@@ -199,9 +198,9 @@
                 <td class="">{{ 'order.total' | translate }}</td>
                 <td [attr.colspan]="visibleSortedColumns.length - 2"></td>
                 <td class="clr-align-middle">
-                    {{ order.totalWithTax | localeCurrency : order.currencyCode }}
+                    {{ order.totalWithTax | localeCurrency: order.currencyCode }}
                     <div class="net-price" [title]="'order.net-price' | translate">
-                        {{ order.total | localeCurrency : order.currencyCode }}
+                        {{ order.total | localeCurrency: order.currencyCode }}
                     </div>
                 </td>
                 <td><!-- column select --></td>

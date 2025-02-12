@@ -22,7 +22,7 @@
     </div>
     <div class="card-footer" *ngIf="!readonly && removable">
         <button class="button-small warning" (click)="remove.emit(operation)">
-            <clr-icon shape="times"></clr-icon>
+            <ng-icon hlm name="lucideX"></ng-icon>
             {{ 'common.remove' | translate }}
         </button>
     </div>

@@ -59,19 +59,15 @@
     }
 }
 
-::ng-deep .input-row.has-toggle input:not([type=checkbox]):not([type=radio]) {
+::ng-deep .input-row.has-toggle input:not([type='checkbox']):not([type='radio']) {
     border-start-end-radius: 0 !important;
     border-end-end-radius: 0 !important;
 }
 
 .edit-button {
-    border: 1px solid var(--color-weight-200);
-    border-radius: var(--border-radius-input);
-    border-inline-start-width: 0;
-    border-start-start-radius: 0;
-    border-end-start-radius: 0;
+    @apply flex-shrink w-auto rounded-md text-slate-700 bg-gray-200 rounded-l-none;
+
     &.enabled {
-        color: var(--color-primary-700);
-        background-color: var(--color-primary-100);
+        @apply bg-accent-100 text-accent-500;
     }
 }

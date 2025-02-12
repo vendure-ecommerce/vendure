@@ -24,25 +24,26 @@
     <vdr-dt2-column [heading]="'common.name' | translate" id="name" [optional]="false">
         <ng-template let-collection="item" let-depth="depth">
             <div [ngClass]="'indent-' + depth"></div>
-            <clr-icon
+            <ng-icon
+                hlm
                 class="child-arrow"
                 [class.transparent]="depth === 0"
                 shape="child-arrow"
                 *ngIf="!collection.children?.length && collection.parentId !== '__'"
-            ></clr-icon>
+            ></ng-icon>
             <button
                 class="icon-button folder-button"
                 *ngIf="collection.children?.length"
                 (click)="toggleExpanded(collection)"
             >
-                <clr-icon shape="folder" *ngIf="!expandedIds.includes(collection.id)"></clr-icon>
-                <clr-icon shape="folder-open" *ngIf="expandedIds.includes(collection.id)"></clr-icon>
+                <ng-icon hlm name="lucideFolder" *ngIf="!expandedIds.includes(collection.id)"></ng-icon>
+                <ng-icon hlm name="lucideFolderOpen" *ngIf="expandedIds.includes(collection.id)"></ng-icon>
             </button>
             <button class="icon-button folder-button" *ngIf="collection.parentId === '__'" disabled>
-                <clr-icon shape="folder" class="is-solid"></clr-icon>
+                <ng-icon hlm name="lucideFolder"></ng-icon>
             </button>
             <button class="button-ghost" (click)="resolveWith(collection)">
-                <span>{{ 'catalog.move-collection-to' | translate : {name: collection.name} }}</span>
+                <span>{{ 'catalog.move-collection-to' | translate: { name: collection.name } }}</span>
             </button>
         </ng-template>
     </vdr-dt2-column>

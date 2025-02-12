@@ -25,27 +25,34 @@
         [searchTermControl]="searchTermControl"
         [searchTermPlaceholder]="'settings.search-by-product-name-or-sku' | translate"
     />
-    <vdr-dt2-column [heading]="'common.id' | translate" id="id" [hiddenByDefault]="true" [sort]="sorts.get('id')">
+    <vdr-dt2-column
+        [heading]="'common.id' | translate"
+        id="id"
+        [hiddenByDefault]="true"
+        [sort]="sorts.get('id')"
+    >
         <ng-template let-variant="item">
             {{ variant.id }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.created-at' | translate" id="created-at"
+        [heading]="'common.created-at' | translate"
+        id="created-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('createdAt')"
     >
         <ng-template let-variant="item">
-            {{ variant.createdAt | localeDate : 'short' }}
+            {{ variant.createdAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.updated-at' | translate" id="updated-at"
+        [heading]="'common.updated-at' | translate"
+        id="updated-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('updatedAt')"
     >
         <ng-template let-variant="item">
-            {{ variant.updatedAt | localeDate : 'short' }}
+            {{ variant.updatedAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column [heading]="'common.image' | translate" id="image">
@@ -53,23 +60,28 @@
             <div class="image-placeholder">
                 <img
                     *ngIf="variant.featuredAsset as asset; else imagePlaceholder"
-                    [src]="asset | assetPreview : 'tiny'"
+                    [src]="asset | assetPreview: 'tiny'"
                 />
                 <ng-template #imagePlaceholder>
                     <div class="placeholder">
-                        <clr-icon shape="image" size="48"></clr-icon>
+                        <ng-icon hlm name="lucideImage" size="xl"></ng-icon>
                     </div>
                 </ng-template>
             </div>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'catalog.name' | translate" id="name" [optional]="false" [sort]="sorts.get('name')">
+    <vdr-dt2-column
+        [heading]="'catalog.name' | translate"
+        id="name"
+        [optional]="false"
+        [sort]="sorts.get('name')"
+    >
         <ng-template let-variant="item">
             <a
                 class="button-ghost"
                 [routerLink]="['/catalog/products', variant.productId, 'variants', variant.id]"
                 ><span>{{ variant.name }}</span
-                ><clr-icon shape="arrow right"
+                ><ng-icon hlm shape="arrow right"
             /></a>
         </ng-template>
     </vdr-dt2-column>
@@ -89,21 +101,30 @@
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.price' | translate" id="price"
+        [heading]="'common.price' | translate"
+        id="price"
         [hiddenByDefault]="true"
         [sort]="sorts.get('price')"
     >
         <ng-template let-variant="item">
-            {{ variant.price | localeCurrency : variant.currencyCode }}
+            {{ variant.price | localeCurrency: variant.currencyCode }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.price-with-tax' | translate" id="price-with-tax" [sort]="sorts.get('priceWithTax')">
+    <vdr-dt2-column
+        [heading]="'common.price-with-tax' | translate"
+        id="price-with-tax"
+        [sort]="sorts.get('priceWithTax')"
+    >
         <ng-template let-variant="item">
-            {{ variant.priceWithTax | localeCurrency : variant.currencyCode }}
+            {{ variant.priceWithTax | localeCurrency: variant.currencyCode }}
         </ng-template>
     </vdr-dt2-column>
 
-    <vdr-dt2-column [heading]="'catalog.stock-on-hand' | translate" id="stock-on-hand" [hiddenByDefault]="false">
+    <vdr-dt2-column
+        [heading]="'catalog.stock-on-hand' | translate"
+        id="stock-on-hand"
+        [hiddenByDefault]="false"
+    >
         <ng-template let-variant="item">
             <vdr-chip *ngFor="let stockLevel of variant.stockLevels" [title]="stockLevel.stockLocation?.name">
                 <div class="flex center">

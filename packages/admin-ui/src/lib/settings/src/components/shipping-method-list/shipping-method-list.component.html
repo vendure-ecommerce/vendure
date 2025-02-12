@@ -14,7 +14,7 @@
                 *vdrIfPermissions="['CreateSettings', 'CreateShippingMethod']"
                 [routerLink]="['./', 'create']"
             >
-                <clr-icon shape="plus"></clr-icon>
+                <ng-icon hlm name="lucidePlus"></ng-icon>
                 {{ 'settings.create-new-shipping-method' | translate }}
             </a>
             <vdr-action-bar-dropdown-menu locationId="shipping-method-list" />
@@ -47,28 +47,35 @@
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.created-at' | translate" id="created-at"
+        [heading]="'common.created-at' | translate"
+        id="created-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('createdAt')"
     >
         <ng-template let-shippingMethod="item">
-            {{ shippingMethod.createdAt | localeDate : 'short' }}
+            {{ shippingMethod.createdAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.updated-at' | translate" id="updated-at"
+        [heading]="'common.updated-at' | translate"
+        id="updated-at"
         [hiddenByDefault]="true"
         [sort]="sorts.get('updatedAt')"
     >
         <ng-template let-shippingMethod="item">
-            {{ shippingMethod.updatedAt | localeDate : 'short' }}
+            {{ shippingMethod.updatedAt | localeDate: 'short' }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'common.name' | translate" id="name" [optional]="false" [sort]="sorts.get('name')">
+    <vdr-dt2-column
+        [heading]="'common.name' | translate"
+        id="name"
+        [optional]="false"
+        [sort]="sorts.get('name')"
+    >
         <ng-template let-shippingMethod="item">
             <a class="button-ghost" [routerLink]="['./', shippingMethod.id]"
                 ><span>{{ shippingMethod.name }}</span>
-                <clr-icon shape="arrow right"></clr-icon>
+                <ng-icon hlm name="lucideArrowRight"></ng-icon>
             </a>
         </ng-template>
     </vdr-dt2-column>
@@ -78,7 +85,8 @@
         </ng-template>
     </vdr-dt2-column>
     <vdr-dt2-column
-        [heading]="'common.description' | translate" id="description"
+        [heading]="'common.description' | translate"
+        id="description"
         [sort]="sorts.get('description')"
         [hiddenByDefault]="true"
     >
@@ -86,7 +94,11 @@
             {{ shippingMethod.description }}
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'settings.fulfillment-handler' | translate" id="fulfillment-handler" [sort]="sorts.get('fulfillmentHandlerCode')">
+    <vdr-dt2-column
+        [heading]="'settings.fulfillment-handler' | translate"
+        id="fulfillment-handler"
+        [sort]="sorts.get('fulfillmentHandlerCode')"
+    >
         <ng-template let-shippingMethod="item">
             {{ shippingMethod.fulfillmentHandlerCode }}
         </ng-template>

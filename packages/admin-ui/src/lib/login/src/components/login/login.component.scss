@@ -10,8 +10,6 @@
     padding: 20px;
 
     .login-wrapper-inner {
-
-
         background: var(--login-wrapper-inner-bg);
         width: 1120px;
         height: 590px;
@@ -117,21 +115,6 @@
             }
 
             .login-group {
-
-                input.username,
-                input.password {
-                    display: block;
-                    width: 100%;
-                    margin-bottom: 15px;
-                    padding: 12px 16px !important;
-                    background: #fff;
-                    font-size: 14px;
-                    line-height: 22px;
-                    color: #52667a;
-                    outline: none;
-                    -webkit-appearance: none;
-                }
-
                 .btn {
                     width: 100% !important;
                     margin-top: 20px !important

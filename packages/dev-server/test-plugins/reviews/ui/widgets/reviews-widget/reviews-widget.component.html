@@ -1,8 +1,7 @@
-<table class="table"
->
+<table class="table">
     <tr *ngFor="let review of pendingReviews$ | async">
         <td class="center">
-            {{ review.createdAt | date:'mediumDate' }}
+            {{ review.createdAt | date: 'mediumDate' }}
         </td>
         <td class="center">
             <div class="product-info">
@@ -11,13 +10,12 @@
         </td>
         <td class="center">
             <a class="button-ghost" [routerLink]="['/extensions', 'product-reviews', review.id]">
-            {{ review.summary }}
-                <clr-icon shape="arrow right"></clr-icon>
+                {{ review.summary }}
+                <ng-icon hlm name="lucideArrowRight"></ng-icon>
             </a>
         </td>
         <td class="center">{{ review.authorName }}</td>
         <td class="center">
-
             <star-rating [rating]="review.rating"></star-rating>
         </td>
         <td class="center">
@@ -25,4 +23,3 @@
         </td>
     </tr>
 </table>
-

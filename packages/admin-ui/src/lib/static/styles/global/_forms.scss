@@ -39,47 +39,22 @@ input:not([type='checkbox']):not([type='radio']),
 select,
 textarea,
 .clr-input {
-    color: var(--color-text-100);
-    background-color: var(--color-form-input-bg);
+    @apply text-slate-600 rounded-md w-full bg-white border border-slate-200 focus:border-accent-400 outline-none;
+    @apply min-h-5 px-3 py-2 transition-all font-normal placeholder:text-gray-400 grow;
+
     &:not([readonly]) {
-        background-color: var(--color-form-input-bg);
         &:focus {
             background-size: 0% 100%;
         }
     }
+
     &[readonly] {
-        border-color: var(--color-weight-200);
-    }
-    font-weight: 400;
-    &::placeholder {
-        color: var(--color-weight-400);
+        @apply bg-gray-50;
     }
 
     &.ng-invalid {
-        color: var(--color-error-700);
-        border-color: var(--color-error-300);
+        @apply text-red-500 border-red-300;
     }
-}
-
-input:not([type='checkbox']):not([type='radio']),
-textarea,
-select {
-    border-radius: var(--border-radius-input) !important;
-    border: 1px solid var(--color-weight-200);
-    padding: 5px !important;
-    transition: background-color 0.2s, box-shadow 0.2s !important;
-    &:focus {
-        border-color: var(--color-primary-500);
-        box-shadow: 0 0 1px 1px var(--color-form-input-focus);
-        outline: none;
-    }
-    &[readonly]:focus {
-        border-color: var(--color-weight-400);
-    }
-}
-input:not([type='checkbox']):not([type='radio']),
-select {
-    height: 36px !important;
 }
 
 textarea {
@@ -118,9 +93,12 @@ clr-input-container.expand {
     }
 }
 
-.clr-toggle-wrapper .clr-control-label {
-    display: inline-block;
-    font-size: var(--font-size-sm);
+.clr-toggle-wrapper {
+    @apply inline-flex items-center cursor-pointer;
+
+    label {
+        @apply ms-3 text-sm font-medium text-gray-700 dark:text-gray-300;
+    }
 }
 
 .clr-checkbox-wrapper .clr-control-label {

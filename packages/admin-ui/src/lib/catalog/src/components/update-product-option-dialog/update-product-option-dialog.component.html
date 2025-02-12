@@ -12,10 +12,12 @@
 <vdr-form-field [label]="'common.code' | translate" for="code">
     <input id="code" type="text" #codeInput="ngModel" required [(ngModel)]="code" pattern="[a-z0-9_-]+" />
 </vdr-form-field>
-<clr-checkbox-wrapper>
-    <input type="checkbox" clrCheckbox [(ngModel)]="updateVariantName" />
-    <label>{{ 'catalog.auto-update-option-variant-name' | translate }}</label>
-</clr-checkbox-wrapper>
+
+<label hlmLabel class="flex items-center">
+    <hlm-checkbox [(ngModel)]="updateVariantName" class="mr-2" />
+    {{ 'catalog.auto-update-option-variant-name' | translate }}
+</label>
+
 <section *ngIf="customFields.length">
     <label>{{ 'common.custom-fields' | translate }}</label>
     <vdr-tabbed-custom-fields

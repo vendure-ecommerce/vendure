@@ -9,9 +9,11 @@
     (change)="valueChanged($event)"
 >
     <ng-template ng-label-tmp let-tag="item" let-clear="clear">
-        <vdr-chip [colorFrom]="tag" icon="close" (iconClick)="clear(tag)"><clr-icon shape="tag" class="mr2"></clr-icon> {{ tag }}</vdr-chip>
+        <vdr-chip [colorFrom]="tag" icon="close" (iconClick)="clear(tag)"
+            ><ng-icon hlm shape="tag" class="mr2"></ng-icon> {{ tag }}</vdr-chip
+        >
     </ng-template>
     <ng-option *ngFor="let tag of allTags$ | async" [value]="tag">
-        <vdr-chip [colorFrom]="tag"><clr-icon shape="tag" class="mr2"></clr-icon> {{ tag }}</vdr-chip>
+        <vdr-chip [colorFrom]="tag"><ng-icon hlm shape="tag" class="mr2"></ng-icon> {{ tag }}</vdr-chip>
     </ng-option>
 </ng-select>

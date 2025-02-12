@@ -7,11 +7,11 @@
     <li *ngIf="address.province">{{ address.province }}</li>
     <li *ngIf="address.postalCode">{{ address.postalCode }}</li>
     <li *ngIf="address.country">
-        <clr-icon shape="world" size="12"></clr-icon>
+        <ng-icon hlm name="lucideEarth" size="sm"></ng-icon>
         {{ getCountryName() }}
     </li>
     <li *ngIf="address.phoneNumber">
-        <clr-icon shape="phone-handset" size="12"></clr-icon>
+        <ng-icon hlm shape="phone-handset" size="12"></ng-icon>
         {{ address.phoneNumber }}
     </li>
     <li *ngFor="let customField of getCustomFields()" class="custom-field">

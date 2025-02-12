@@ -39,15 +39,11 @@
         <vdr-page-detail-sidebar>
             <vdr-card>
                 <vdr-form-field [label]="'common.enabled' | translate" for="description">
-                    <clr-toggle-wrapper>
-                        <input
-                            type="checkbox"
-                            clrToggle
-                            id="enabled"
-                            [vdrDisabled]="!(updatePermission | hasPermission)"
-                            formControlName="enabled"
-                        />
-                    </clr-toggle-wrapper>
+                    <hlm-switch
+                        id="enabled"
+                        [vdrDisabled]="!(updatePermission | hasPermission)"
+                        formControlName="enabled"
+                    />
                 </vdr-form-field>
             </vdr-card>
             <vdr-card *ngIf="entity$ | async as entity">
@@ -117,7 +113,7 @@
                 <div *ngIf="!selectedChecker || !selectedCheckerDefinition">
                     <vdr-dropdown>
                         <button class="btn btn-outline" vdrDropdownTrigger>
-                            <clr-icon shape="plus"></clr-icon>
+                            <ng-icon hlm name="lucidePlus"></ng-icon>
                             {{ 'common.select' | translate }}
                         </button>
                         <vdr-dropdown-menu vdrPosition="bottom-left">
@@ -145,7 +141,7 @@
                 <div *ngIf="!selectedHandler || !selectedHandlerDefinition">
                     <vdr-dropdown>
                         <button class="btn btn-outline" vdrDropdownTrigger>
-                            <clr-icon shape="plus"></clr-icon>
+                            <ng-icon hlm name="lucidePlus"></ng-icon>
                             {{ 'common.select' | translate }}
                         </button>
                         <vdr-dropdown-menu vdrPosition="bottom-left">

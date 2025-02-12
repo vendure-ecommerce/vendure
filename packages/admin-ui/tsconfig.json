@@ -59,6 +59,54 @@
       ],
       "@vendure/admin-ui/system": [
         "./src/lib/system/src/public_api"
+      ],
+      "@spartan-ng/ui-icon-helm": [
+        "./src/lib/ui/ui-icon-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-formfield-helm": [
+        "./src/lib/ui/ui-formfield-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-checkbox-helm": [
+        "./src/lib/ui/ui-checkbox-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-label-helm": [
+        "./src/lib/ui/ui-label-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-spinner-helm": [
+        "./src/lib/ui/ui-spinner-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-alert-helm": [
+        "./src/lib/ui/ui-alert-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-switch-helm": [
+        "./src/lib/ui/ui-switch-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-input-helm": [
+        "./src/lib/ui/ui-input-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-tabs-helm": [
+        "./src/lib/ui/ui-tabs-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-button-helm": [
+        "./src/lib/ui/ui-button-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-radiogroup-helm": [
+        "./src/lib/ui/ui-radiogroup-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-menu-helm": [
+        "./src/lib/ui/ui-menu-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-breadcrumb-helm": [
+        "./src/lib/ui/ui-breadcrumb-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-scrollarea-helm": [
+        "./src/lib/ui/ui-scrollarea-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-dialog-helm": [
+        "./src/lib/ui/ui-dialog-helm/src/index.ts"
+      ],
+      "@spartan-ng/ui-select-helm": [
+        "./src/lib/ui/ui-select-helm/src/index.ts"
       ]
     },
     "useDefineForClassFields": false

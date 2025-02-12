@@ -17,14 +17,14 @@
                         [title]="'asset.remove-asset' | translate"
                         (click)="removeImage()"
                     >
-                        <clr-icon shape="times"></clr-icon>
+                        <ng-icon hlm name="lucideX"></ng-icon>
                         {{ 'asset.remove-asset' | translate }}
                     </button>
                 </vdr-dropdown-menu>
             </vdr-dropdown>
 
             <div class="placeholder" *ngIf="!previewLoaded">
-                <clr-icon shape="image" size="128"></clr-icon>
+                <ng-icon hlm shape="image" size="128"></ng-icon>
             </div>
         </div>
         <div class="text-center clr-col-12">
@@ -40,7 +40,7 @@
                 [title]="(!previewLoaded ? 'asset.add-asset' : 'asset.change-asset') | translate"
                 (click)="selectAssets()"
             >
-                <clr-icon shape="attachment"></clr-icon>
+                <ng-icon hlm name="lucidePaperclip"></ng-icon>
                 {{ (!previewLoaded ? 'asset.add-asset' : 'asset.change-asset') | translate }}
             </button>
         </div>

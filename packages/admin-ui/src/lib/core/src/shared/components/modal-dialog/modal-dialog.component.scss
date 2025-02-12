@@ -5,33 +5,48 @@
     &.modal-valign-bottom .modal {
         justify-content: flex-end;
     }
-    .modal-dialog {
-        display: flex;
+    &.modal-valign-center .modal {
+        justify-content: center;
     }
-    .modal-content-wrapper {
-        flex: 1;
-        display: flex;
-    }
-    .modal-dialog .modal-content {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-    }
-    @media screen and (max-height: 700px) {
-        .modal-dialog .modal-content {
-            padding: 0.8rem;
-        }
-        .modal-header, .modal-header--accessible {
-            padding-bottom: 0.8rem;
-        }
-        .modal-footer {
-            padding-top: 0.8rem;
-        }
-    }
-}
 
-.modal-body {
-    display: flex;
-    flex-direction: column;
-    container-type: inline-size;
+    .modal {
+        @apply z-30 fixed w-screen h-screen top-0 right-0 bottom-0 left-0 flex flex-col items-center;
+
+        .modal-dialog {
+            @apply z-50 bg-white flex transition-all w-full max-w-screen-md;
+            @apply rounded-md overflow-hidden  border border-gray-300 shadow-xl;
+
+            &.modal-lg {
+                @apply w-full max-w-screen-lg;
+            }
+            &.modal-sm {
+                @apply w-full max-w-screen-sm;
+            }
+
+            .modal-title-wrapper {
+                @apply px-6 py-4 border-b border-b-gray-200;
+            }
+
+            .modal-title {
+                @apply text-xl text-gray-800 font-semibold;
+            }
+        }
+
+        .modal-content-wrapper {
+            @apply w-full;
+        }
+
+        .modal-backdrop {
+            @apply bg-black/50 absolute top-0 left-0 right-0 bottom-0 z-40;
+        }
+
+        .modal-body {
+            @apply p-6 flex flex-col items-stretch gap-2;
+            container-type: inline-size;
+        }
+
+        .modal-footer {
+            @apply pt-2 pb-6 px-6 flex items-center justify-end;
+        }
+    }
 }

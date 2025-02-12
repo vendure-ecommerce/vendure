@@ -6,31 +6,35 @@
 }
 
 ::ng-deep {
-    .dropdown-menu {
-        max-width: initial;
-    }
-    .dropdown-menu .dropdown-item {
-        display: flex;
-        align-items: center;
-        padding: 3px 24px;
-        clr-icon {
-            margin-inline-end: 3px;
+    .dropdown {
+        .dropdown-menu {
+            max-width: initial;
+            @apply transition-all opacity-0;
+
+            .dropdown-header {
+                @apply flex items-center justify-start text-gray-400 px-4;
+            }
+
+            .dropdown-item {
+                @apply flex items-center py-1 px-4 w-full hover:bg-gray-100 transition-all;
+
+                clr-icon {
+                    @apply mr-2;
+                }
+            }
         }
-        &:focus {
-            outline: var(--color-dropdown-item-focus-outline) solid 1px;
-            outline-offset: 1px 0;
+
+        &.open > .dropdown-menu {
+            @apply opacity-100;
+            position: relative;
+            top: 0;
+            height: 100%;
+            overflow-y: auto;
         }
     }
 }
 
-.dropdown.open > .dropdown-menu {
-    position: relative;
-    top: 0;
-    height: 100%;
-    overflow-y: auto;
-}
-
-:host {
+.dropdown :host {
     opacity: 1;
     transition: opacity 0.3s;
 }

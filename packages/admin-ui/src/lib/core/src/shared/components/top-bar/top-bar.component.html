@@ -1,0 +1,41 @@
+<div class="flex items-center justify-between px-2 h-14 border-b border-border bg-background">
+    <div class="flex items-center justify-start gap-2">
+        <button variant="ghost" class="text-muted-foreground" hlmBtn size="icon" (click)="collapseNav()">
+            <ng-icon size="sm" hlm name="lucidePanelLeftClose"></ng-icon>
+        </button>
+        <vdr-breadcrumb></vdr-breadcrumb>
+    </div>
+
+    <div class="flex items-center justify-end gap-2">
+        <button
+            *ngIf="devMode"
+            hlmBtn
+            size="xs"
+            variant="destructive"
+            class="shrink-0"
+            [brnMenuTriggerFor]="devMode"
+            title="DEV MODE"
+        >
+            <ng-icon hlm name="lucideCode" size="sm" class="mr-1"></ng-icon>
+            DEV MODE
+        </button>
+
+        <ng-template #devMode>
+            <hlm-menu>
+                <hlm-menu-label>Dev Mode</hlm-menu-label>
+                <button hlmMenuItem>
+                    UI extensions
+                    <hlm-menu-shortcut>Ctrl+U</hlm-menu-shortcut>
+                </button>
+            </hlm-menu>
+        </ng-template>
+        <vdr-alerts></vdr-alerts>
+        <vdr-user-menu
+            [userName]="userName$ | async"
+            [uiLanguageAndLocale]="uiLanguageAndLocale$ | async"
+            [availableLanguages]="availableLanguages"
+            (selectUiLanguage)="selectUiLanguage()"
+            (logOut)="logOut()"
+        />
+    </div>
+</div>

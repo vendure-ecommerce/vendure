@@ -5,7 +5,7 @@
     <div class="separator" [class.hidden]="!rightPanelOpen">
         <div class="top"></div>
         <div class="resize-handle" #resizeHandle>
-            <clr-icon shape="drag-handle"></clr-icon>
+            <ng-icon hlm name="lucideGripVertical"></ng-icon>
         </div>
         <div class="bottom"></div>
     </div>
@@ -18,7 +18,7 @@
         <div class="close-row">
             <div class="title" *ngIf="rightTemplate.splitViewTitle as title">{{ title }}</div>
             <button type="button" class="button-small" (click)="close()">
-                <clr-icon shape="close"></clr-icon>
+                <ng-icon hlm name="lucideX"></ng-icon>
             </button>
         </div>
 

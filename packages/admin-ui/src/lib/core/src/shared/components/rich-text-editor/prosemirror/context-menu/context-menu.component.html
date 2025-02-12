@@ -1,12 +1,18 @@
 <ng-template #contextMenu>
     <vdr-dropdown>
-        <button class="context-menu-trigger" vdrDropdownTrigger [class.hidden]="hideTrigger$ | async" (click)="triggerClick()">
-            <clr-icon
+        <button
+            class="context-menu-trigger"
+            vdrDropdownTrigger
+            [class.hidden]="hideTrigger$ | async"
+            (click)="triggerClick()"
+        >
+            <ng-icon
+                hlm
                 *ngIf="menuConfig?.iconShape as shape"
                 [attr.shape]="shape"
                 size="16"
                 class="mr2"
-            ></clr-icon>
+            ></ng-icon>
             <span class="title-label">{{ menuConfig?.title }}</span>
         </button>
         <vdr-dropdown-menu vdrPosition="bottom-right" customClasses="context-menu">
@@ -18,12 +24,13 @@
                     (click)="clickItem(item)"
                 >
                     <div *ngIf="item.iconClass" class="cm-icon" [ngClass]="item.iconClass"></div>
-                    <clr-icon
+                    <ng-icon
+                        hlm
                         *ngIf="item.iconShape as shape"
                         [attr.shape]="shape"
                         size="16"
                         class="mr2"
-                    ></clr-icon>
+                    ></ng-icon>
                     {{ item.label }}
                 </button>
                 <div *ngIf="item.enabled && item.separator" class="dropdown-divider" role="separator"></div>

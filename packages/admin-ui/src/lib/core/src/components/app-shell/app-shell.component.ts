@@ -68,6 +68,8 @@ export class AppShellComponent implements OnInit {
         this.mainNavExpanded$ = this.dataService.client
             .uiState()
             .stream$.pipe(map(({ uiState }) => uiState.mainNavExpanded));
+
+        this.mainNavExpanded$.subscribe(val => console.log(val));
     }
 
     selectUiLanguage() {

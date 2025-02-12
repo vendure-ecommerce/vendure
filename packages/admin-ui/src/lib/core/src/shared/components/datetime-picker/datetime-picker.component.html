@@ -1,7 +1,7 @@
 <div class="input-wrapper">
     <input
         readonly
-        [ngModel]="selected$ | async | localeDate : 'medium'"
+        [ngModel]="selected$ | async | localeDate: 'medium'"
         class="selected-datetime"
         (keydown.enter)="dropdownComponent.toggleOpen()"
         (keydown.space)="dropdownComponent.toggleOpen()"
@@ -12,12 +12,12 @@
         [class.visible]="!disabled && !readonly && (selected$ | async)"
         (click)="clearValue()"
     >
-        <clr-icon shape="times"></clr-icon>
+        <ng-icon hlm name="lucideX"></ng-icon>
     </button>
 </div>
 <vdr-dropdown #dropdownComponent>
     <button class="calendar-button" vdrDropdownTrigger [disabled]="readonly || disabled">
-        <clr-icon shape="calendar"></clr-icon>
+        <ng-icon hlm name="lucideCalendar"></ng-icon>
     </button>
     <vdr-dropdown-menu>
         <div
@@ -55,21 +55,21 @@
                         (click)="prevMonth()"
                         [title]="'common.view-previous-month' | translate"
                     >
-                        <clr-icon shape="caret" dir="left"></clr-icon>
+                        <ng-icon hlm shape="caret" dir="left"></ng-icon>
                     </button>
                     <button
                         class="btn btn-link btn-sm"
                         (click)="selectToday()"
                         [title]="'common.select-today' | translate"
                     >
-                        <clr-icon shape="event"></clr-icon>
+                        <ng-icon hlm name="lucideCalendarCheck"></ng-icon>
                     </button>
                     <button
                         class="btn btn-link btn-sm"
                         (click)="nextMonth()"
                         [title]="'common.view-next-month' | translate"
                     >
-                        <clr-icon shape="caret" dir="right"></clr-icon>
+                        <ng-icon hlm shape="caret" dir="right"></ng-icon>
                     </button>
                 </div>
             </div>
@@ -107,12 +107,12 @@
             <div class="time-picker">
                 <span class="flex-spacer"> {{ 'datetime.time' | translate }}: </span>
                 <select name="hour" [ngModel]="selectedHours$ | async" (change)="setHour($event)">
-                    <option *ngFor="let hour of hours" [value]="hour">{{ hour | number : '2.0-0' }}</option>
+                    <option *ngFor="let hour of hours" [value]="hour">{{ hour | number: '2.0-0' }}</option>
                 </select>
                 <span>:</span>
                 <select name="hour" [ngModel]="selectedMinutes$ | async" (change)="setMinute($event)">
                     <option *ngFor="let minute of minutes" [value]="minute">
-                        {{ minute | number : '2.0-0' }}
+                        {{ minute | number: '2.0-0' }}
                     </option>
                 </select>
             </div>

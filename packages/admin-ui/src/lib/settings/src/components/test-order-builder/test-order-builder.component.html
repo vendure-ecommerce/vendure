@@ -16,16 +16,16 @@
         <td class="align-middle name">{{ line.name }}</td>
         <td class="align-middle sku">{{ line.sku }}</td>
         <td class="align-middle unit-price">
-            {{ line.unitPriceWithTax | localeCurrency : currencyCode }}
+            {{ line.unitPriceWithTax | localeCurrency: currencyCode }}
         </td>
         <td class="align-middle quantity">
             <input [(ngModel)]="line.quantity" (change)="updateQuantity()" type="number" max="9999" min="1" />
             <button class="icon-button" (click)="removeLine(line)">
-                <clr-icon shape="trash"></clr-icon>
+                <ng-icon hlm name="lucideTrash"></ng-icon>
             </button>
         </td>
         <td class="align-middle total">
-            {{ line.unitPriceWithTax * line.quantity | localeCurrency : currencyCode }}
+            {{ line.unitPriceWithTax * line.quantity | localeCurrency: currencyCode }}
         </td>
     </tr>
     <tr class="sub-total">
@@ -34,14 +34,14 @@
         <td></td>
         <td></td>
         <td></td>
-        <td>{{ subTotal | localeCurrency : currencyCode }}</td>
+        <td>{{ subTotal | localeCurrency: currencyCode }}</td>
     </tr>
 </table>
 
 <ng-template #emptyPlaceholder>
     <div class="card-block empty-placeholder card-span">
         <div class="empty-text">{{ 'settings.add-products-to-test-order' | translate }}</div>
-        <clr-icon shape="arrow" dir="down" size="96"></clr-icon>
+        <ng-icon hlm shape="arrow" dir="down" size="96"></ng-icon>
     </div>
 </ng-template>
 <div class="card-block">

@@ -16,19 +16,19 @@
             </vdr-form-field>
             <div>
                 <button class="button-small mt-4" (click)="removeOptionGroup(group)">
-                    <clr-icon shape="trash"></clr-icon>
+                    <ng-icon hlm name="lucideTrash"></ng-icon>
                 </button>
             </div>
         </div>
         <button class="button mt-1" (click)="addOptionGroup()">
-            <clr-icon shape="plus"></clr-icon>
+            <ng-icon hlm name="lucidePlus"></ng-icon>
             {{ 'catalog.create-product-option-group' | translate }}
         </button>
     </vdr-card>
     <vdr-card [paddingX]="false">
         <div class="mx-3">
             <button class="button" (click)="createNewVariant()">
-                <clr-icon shape="plus"></clr-icon>
+                <ng-icon hlm name="lucidePlus"></ng-icon>
                 {{ 'catalog.create-product-variant' | translate }}
             </button>
         </div>
@@ -50,14 +50,22 @@
                     {{ variant.id }}
                 </ng-template>
             </vdr-dt2-column>
-            <vdr-dt2-column [heading]="'common.created-at' | translate" id="created-at" [hiddenByDefault]="true">
+            <vdr-dt2-column
+                [heading]="'common.created-at' | translate"
+                id="created-at"
+                [hiddenByDefault]="true"
+            >
                 <ng-template let-variant="item">
-                    {{ variant.createdAt | localeDate : 'short' }}
+                    {{ variant.createdAt | localeDate: 'short' }}
                 </ng-template>
             </vdr-dt2-column>
-            <vdr-dt2-column [heading]="'common.updated-at' | translate" id="updated-at" [hiddenByDefault]="true">
+            <vdr-dt2-column
+                [heading]="'common.updated-at' | translate"
+                id="updated-at"
+                [hiddenByDefault]="true"
+            >
                 <ng-template let-variant="item">
-                    {{ variant.updatedAt | localeDate : 'short' }}
+                    {{ variant.updatedAt | localeDate: 'short' }}
                 </ng-template>
             </vdr-dt2-column>
             <vdr-dt2-column [heading]="'catalog.name' | translate" id="name" [optional]="false">
@@ -70,7 +78,11 @@
                     {{ variant.sku }}
                 </ng-template>
             </vdr-dt2-column>
-            <vdr-dt2-column *ngFor="let optionGroup of optionGroups$ | async" [heading]="optionGroup.name" [id]="optionGroup.code">
+            <vdr-dt2-column
+                *ngFor="let optionGroup of optionGroups$ | async"
+                [heading]="optionGroup.name"
+                [id]="optionGroup.code"
+            >
                 <ng-template let-variant="item">
                     <vdr-chip
                         *ngIf="getOption(variant, optionGroup.id) as option; else selectOption"
@@ -92,7 +104,7 @@
                                 (click)="addOptionToVariant(variant)"
                                 [disabled]="!optionsToAddToVariant[variant.id]?.[optionGroup.id]"
                             >
-                                <clr-icon shape="floppy"></clr-icon>
+                                <ng-icon hlm shape="floppy"></ng-icon>
                             </button>
                         </div>
                     </ng-template>
@@ -100,18 +112,22 @@
             </vdr-dt2-column>
             <vdr-dt2-column [heading]="'common.price' | translate" id="price" [hiddenByDefault]="true">
                 <ng-template let-variant="item">
-                    {{ variant.price | localeCurrency : variant.currencyCode }}
+                    {{ variant.price | localeCurrency: variant.currencyCode }}
                 </ng-template>
             </vdr-dt2-column>
-            <vdr-dt2-column [heading]="'common.price-with-tax' | translate" id="price-with-tax" [hiddenByDefault]="true">
+            <vdr-dt2-column
+                [heading]="'common.price-with-tax' | translate"
+                id="price-with-tax"
+                [hiddenByDefault]="true"
+            >
                 <ng-template let-variant="item">
-                    {{ variant.priceWithTax | localeCurrency : variant.currencyCode }}
+                    {{ variant.priceWithTax | localeCurrency: variant.currencyCode }}
                 </ng-template>
             </vdr-dt2-column>
             <vdr-dt2-column [heading]="'common.delete' | translate" id="delete" [optional]="false">
                 <ng-template let-variant="item">
                     <button class="button-small" (click)="deleteVariant(variant)">
-                        <clr-icon shape="trash is-danger"></clr-icon>
+                        <ng-icon hlm shape="trash is-danger"></ng-icon>
                     </button>
                 </ng-template>
             </vdr-dt2-column>

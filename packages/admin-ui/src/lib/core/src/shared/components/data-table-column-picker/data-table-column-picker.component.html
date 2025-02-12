@@ -1,6 +1,6 @@
 <vdr-dropdown [manualToggle]="true">
     <button class="button-small" vdrDropdownTrigger [title]="'common.select-table-columns' | translate">
-        <clr-icon shape="view-columns"></clr-icon>
+        <ng-icon hlm name="lucideBetweenVerticalStart"></ng-icon>
     </button>
     <vdr-dropdown-menu vdrPosition="bottom-left">
         <div cdkDropList (cdkDropListDropped)="drop($event)">
@@ -12,7 +12,7 @@
                 [cdkDragData]="column"
             >
                 <div cdkDragHandle class="drag-handle" [cdkDragHandleDisabled]="column.orderable === false">
-                    <clr-icon shape="drag-handle"></clr-icon>
+                    <ng-icon hlm name="lucideGripVertical"></ng-icon>
                 </div>
                 <label class="flex">
                     <clr-checkbox-container>
@@ -35,7 +35,7 @@
         <div class="mt-1 pt-1 mx-1 flex center reset-button">
             <button class="button-small" (click)="reset()">
                 <span>{{ 'common.reset-columns' | translate }}</span>
-                <clr-icon shape="history"></clr-icon>
+                <ng-icon hlm name="lucideHistory"></ng-icon>
             </button>
         </div>
     </vdr-dropdown-menu>

@@ -9,7 +9,7 @@
                 [disabled]="extensionWindowIsOpen"
                 (click)="launchExtensionWindow()"
             >
-                <clr-icon shape="pop-out"></clr-icon>
+                <ng-icon hlm name="lucideExternalLink"></ng-icon>
                 {{ 'common.launch-extension' | translate }}
             </button>
             <h3 class="window-hint" [class.visible]="extensionWindowIsOpen">

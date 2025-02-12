@@ -38,9 +38,17 @@
                         </vdr-ui-extension-point>
                         <div *ngIf="column.sort as sort" class="sort-toggle">
                             <button (click)="sort.toggleSortOrder()" [class.active]="sort.sortOrder">
-                                <clr-icon *ngIf="!sort.sortOrder" shape="two-way-arrows left"></clr-icon>
-                                <clr-icon *ngIf="sort.sortOrder === 'ASC'" shape="arrow up"></clr-icon>
-                                <clr-icon *ngIf="sort.sortOrder === 'DESC'" shape="arrow down"></clr-icon>
+                                <ng-icon hlm *ngIf="!sort.sortOrder" name="lucideArrowDownUp"></ng-icon>
+                                <ng-icon
+                                    hlm
+                                    *ngIf="sort.sortOrder === 'ASC'"
+                                    name="lucideArrowDownUp"
+                                ></ng-icon>
+                                <ng-icon
+                                    hlm
+                                    *ngIf="sort.sortOrder === 'DESC'"
+                                    name="lucideArrowDown"
+                                ></ng-icon>
                             </button>
                             <div class="sort-label" *ngIf="sort.sortOrder">{{ sort.sortOrder }}</div>
                         </div>
@@ -69,7 +77,7 @@
                         (click)="toggleSearchFilterRow()"
                         [title]="'common.search-and-filter-list' | translate"
                     >
-                        <clr-icon shape="search"></clr-icon>
+                        <ng-icon hlm name="lucideSearch"></ng-icon>
                     </button>
                     <div class="filter-row-wrapper" [class.hidden]="!showSearchFilterRow">
                         <ng-container *ngTemplateOutlet="searchComponent?.template"></ng-container>
@@ -105,17 +113,17 @@
         >
             <ng-container
                 *ngFor="
-                let item of items
-                    | paginate
-                        : {
-                              itemsPerPage: itemsPerPage,
-                              currentPage: currentPage,
-                              totalItems: totalItems,
-                              id: id,
-                          };
-                index as i;
-                trackBy: trackByFn
-            "
+                    let item of items
+                        | paginate
+                            : {
+                                  itemsPerPage: itemsPerPage,
+                                  currentPage: currentPage,
+                                  totalItems: totalItems,
+                                  id: id,
+                              };
+                    index as i;
+                    trackBy: trackByFn
+                "
             >
                 <ng-container
                     [ngTemplateOutlet]="collectionRowTmp"
@@ -139,7 +147,7 @@
         (itemsPerPageChange)="itemsPerPageChange.emit($event)"
     ></vdr-items-per-page-controls>
     <div *ngIf="totalItems" class="p5 total-items-count">
-        {{ 'common.total-items' | translate : { currentStart, currentEnd, totalItems } }}
+        {{ 'common.total-items' | translate: { currentStart, currentEnd, totalItems } }}
     </div>
 
     <vdr-pagination-controls
@@ -161,7 +169,7 @@
         >
             <div class="flex">
                 <div class="drag-handle" cdkDragHandle [title]="'catalog.reorder-collection' | translate">
-                    <clr-icon shape="drag-handle"></clr-icon>
+                    <ng-icon hlm name="lucideGripVertical"></ng-icon>
                 </div>
                 <input
                     type="checkbox"

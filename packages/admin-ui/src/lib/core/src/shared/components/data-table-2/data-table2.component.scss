@@ -28,11 +28,7 @@
 }
 
 .table-wrapper {
-    display: block;
-    overflow-y: hidden;
-    overflow-x: auto;
-    position: relative;
-    width: 100%;
+    @apply w-full overflow-x-auto overflow-y-hidden relative;
     max-width: var(--surface-width);
 }
 
@@ -76,16 +72,15 @@ table.no-select {
 
 .toggle-search-filter-row {
     position: absolute;
-    top: -12px;
     left: 4px;
+    @apply h-8 w-8 flex items-center justify-center text-gray-900 p-1 -top-4;
+
     @media screen and (min-width: $breakpoint-large) {
         left: 8px;
     }
 
     &.active {
-        background-color: var(--color-primary-700);
-        color: var(--color-primary-100);
-        border-color: var(--color-primary-700);
+        @apply bg-accent-400 text-white border-accent-400;
     }
 }
 
@@ -121,7 +116,10 @@ th.filter-row {
     padding: calc(var(--space-unit) * 4);
     padding-inline-start: 0;
     max-height: 150px;
-    transition: max-height 0.2s, padding 0.2s, opacity 0.2s;
+    transition:
+        max-height 0.2s,
+        padding 0.2s,
+        opacity 0.2s;
 
     &.hidden {
         max-height: 0px;
@@ -145,8 +143,6 @@ td.active {
 .cell-content {
     display: flex;
     align-items: center;
-    line-height: var(--font-size-sm);
-    color: var(--color-weight-700);
 
     &.left {
         justify-content: flex-start;
