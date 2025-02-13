@@ -326,7 +326,7 @@ export class ProductVideoPlugin {}
 
 Sometimes you need to pass the [RequestContext object](/reference/typescript-api/request/request-context) to the `process` function of a job, since `ctx` is required by many Vendure
 service methods that you may be using inside your `process` function. However, the `RequestContext` object itself is not serializable,
-so it cannot be passed directly to the `JobQueue.add()` method. Instead, you can serialize the `RequestContext` using the ctx.serialize() method, where ctx is an instance of `RequestContext`.`
+so it cannot be passed directly to the `JobQueue.add()` method. Instead, you can serialize the `RequestContext` using the ctx.serialize() method, where ctx is an instance of `RequestContext` .`
 method](/reference/typescript-api/request/request-context/#serialize), and then deserialize it in the `process` function using the static `deserialize` method:
 
 ```ts
