@@ -10,6 +10,7 @@ const loggerCtx = 'AddressBasedTaxZoneStrategy';
  * @description
  * Address based {@link TaxZoneStrategy} which tries to find the applicable {@link Zone} based on the
  * country of the shipping address of the Order.
+ * This is useful for shops that do cross-border B2C orders and use the One-Stop-Shop (OSS) VAT scheme.
  *
  * Returns the default {@link Channel}'s default tax zone if no applicable zone is found.
  *
