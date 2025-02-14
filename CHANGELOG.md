@@ -1,3 +1,18 @@
+## <small>3.1.3 (2025-02-14)</small>
+
+
+#### Fixes
+
+* **admin-ui** Improve display of OrderLine custom fields in form ([4e92d85](https://github.com/vendure-ecommerce/vendure/commit/4e92d85))
+* **core** Allow non-public customOrderLineFields in admin api (#3357) ([becfe9d](https://github.com/vendure-ecommerce/vendure/commit/becfe9d)), closes [#3357](https://github.com/vendure-ecommerce/vendure/issues/3357)
+* **core** Fix undefined type issue with nested fragment spreads (#3351) ([d0c0454](https://github.com/vendure-ecommerce/vendure/commit/d0c0454)), closes [#3351](https://github.com/vendure-ecommerce/vendure/issues/3351)
+
+#### Perf
+
+* **core** Optimize payload of apply-collection-filters job ([4157033](https://github.com/vendure-ecommerce/vendure/commit/4157033))
+* **core** Optimize payload size for buffered jobs in DB ([f81a908](https://github.com/vendure-ecommerce/vendure/commit/f81a908))
+* **job-queue-plugin** Optimize payload size for buffered jobs in Redis ([7c72352](https://github.com/vendure-ecommerce/vendure/commit/7c72352))
+
 ## <small>3.1.2 (2025-01-22)</small>
 
 

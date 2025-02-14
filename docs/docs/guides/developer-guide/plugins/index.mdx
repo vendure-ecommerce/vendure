@@ -216,7 +216,7 @@ By convention, we'll store the entity definitions in the `entities` directory of
 
 ```ts title="src/plugins/wishlist-plugin/entities/wishlist-item.entity.ts"
 import { DeepPartial, ID, ProductVariant, VendureEntity, EntityId } from '@vendure/core';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Entity, ManyToOne } from 'typeorm';
 
 @Entity()
 export class WishlistItem extends VendureEntity {
@@ -727,7 +727,7 @@ We can then query the wishlist items:
 
 
 <Tabs>
-<TabItem value="GetWishlist mutation" label="GetWishlist mutation" default>
+<TabItem value="GetWishlist query" label="GetWishlist query" default>
 
 ```graphql
 query GetWishlist {

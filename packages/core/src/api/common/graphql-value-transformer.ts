@@ -188,28 +188,54 @@ export class GraphqlValueTransformer {
         inputType: GraphQLInputObjectType,
         parent: TypeTreeNode,
     ): { [name: string]: TypeTreeNode } {
-        return Object.entries(inputType.getFields()).reduce((result, [key, field]) => {
-            const namedType = getNamedType(field.type);
-            if (namedType === parent.type) {
-                // prevent recursion-induced stack overflow
-                return result;
-            }
-            const child: TypeTreeNode = {
-                type: namedType,
-                isList: this.isList(field.type),
-                parent,
-                fragmentRefs: [],
-                children: {},
-            };
-            if (isInputObjectType(namedType)) {
-                child.children = this.getChildrenTreeNodes(namedType, child);
-            }
-            return { ...result, [key]: child };
-        }, {} as { [name: string]: TypeTreeNode });
+        return Object.entries(inputType.getFields()).reduce(
+            (result, [key, field]) => {
+                const namedType = getNamedType(field.type);
+                if (namedType === parent.type) {
+                    // prevent recursion-induced stack overflow
+                    return result;
+                }
+                const child: TypeTreeNode = {
+                    type: namedType,
+                    isList: this.isList(field.type),
+                    parent,
+                    fragmentRefs: [],
+                    children: {},
+                };
+                if (isInputObjectType(namedType)) {
+                    child.children = this.getChildrenTreeNodes(namedType, child);
+                }
+                return { ...result, [key]: child };
+            },
+            {} as { [name: string]: TypeTreeNode },
+        );
     }
 
     private isList(t: any): boolean {
         return isListType(t) || (isNonNullType(t) && isListType(t.ofType));
+    }
+
+    private deepMergeChildren(
+        target: { [name: string]: TypeTreeNode },
+        source: { [name: string]: TypeTreeNode },
+    ): { [name: string]: TypeTreeNode } {
+        const merged = { ...target };
+        for (const key in source) {
+            if (source.hasOwnProperty(key)) {
+                if (merged[key]) {
+                    // If the key already exists, merge recursively
+                    if (source[key].children && Object.keys(source[key].children).length > 0) {
+                        merged[key].children = this.deepMergeChildren(
+                            merged[key].children,
+                            source[key].children,
+                        );
+                    }
+                } else {
+                    merged[key] = source[key];
+                }
+            }
+        }
+        return merged;
     }
 
     private getTypeNodeByPath(typeTree: TypeTree, path: Array<string | number>): TypeTreeNode | undefined {
@@ -224,9 +250,12 @@ export class GraphqlValueTransformer {
                             const ref = fragmentRefs.pop();
                             if (ref) {
                                 const fragment = typeTree.fragments[ref];
-                                children = { ...children, ...fragment.children };
-                                if (fragment.fragmentRefs) {
-                                    fragmentRefs.push(...fragment.fragmentRefs);
+                                if (fragment) {
+                                    // Deeply merge the children
+                                    children = this.deepMergeChildren(children, fragment.children);
+                                    if (fragment.fragmentRefs) {
+                                        fragmentRefs.push(...fragment.fragmentRefs);
+                                    }
                                 }
                             }
                         }
