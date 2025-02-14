@@ -7,6 +7,7 @@ import {
     DeletionResponse,
     DeletionResult,
     JobState,
+    LanguageCode,
     MoveCollectionInput,
     Permission,
     PreviewCollectionVariantsInput,
@@ -21,14 +22,9 @@ import { merge } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { In, IsNull } from 'typeorm';
 
-import { RequestContext, SerializedRequestContext } from '../../api/common/request-context';
+import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
-import {
-    ForbiddenError,
-    IllegalOperationError,
-    InternalServerError,
-    UserInputError,
-} from '../../common/error/errors';
+import { ForbiddenError, IllegalOperationError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -48,6 +44,7 @@ import { JobQueueService } from '../../job-queue/job-queue.service';
 import { ConfigArgService } from '../helpers/config-arg/config-arg.service';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
+import { RequestContextService } from '../helpers/request-context/request-context.service';
 import { SlugValidator } from '../helpers/slug-validator/slug-validator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { TranslatorService } from '../helpers/translator/translator.service';
@@ -58,7 +55,14 @@ import { ChannelService } from './channel.service';
 import { RoleService } from './role.service';
 
 export type ApplyCollectionFiltersJobData = {
-    ctx: SerializedRequestContext;
+    // We store this channel data inside a `ctx` object for backward-compatible reasons
+    // since there is a chance that some external plugins assume the existence of a `ctx`
+    // property on this payload. Notably, the AdvancedSearchPlugin defines its own
+    // CollectionJobBuffer which makes this assumption.
+    ctx: {
+        channelToken: string;
+        languageCode: LanguageCode;
+    };
     collectionIds: ID[];
     applyToChangedVariantsOnly?: boolean;
 };
@@ -88,6 +92,7 @@ export class CollectionService implements OnModuleInit {
         private customFieldRelationService: CustomFieldRelationService,
         private translator: TranslatorService,
         private roleService: RoleService,
+        private requestContextService: RequestContextService,
     ) {}
 
     /**
@@ -101,15 +106,14 @@ export class CollectionService implements OnModuleInit {
             .pipe(debounceTime(50))
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             .subscribe(async event => {
-                const collections = await this.connection.rawConnection
-                    .getRepository(Collection)
-                    .createQueryBuilder('collection')
-                    .select('collection.id', 'id')
-                    .getRawMany();
                 await this.applyFiltersQueue.add(
                     {
-                        ctx: event.ctx.serialize(),
-                        collectionIds: collections.map(c => c.id),
+                        ctx: {
+                            channelToken: event.ctx.channel.token,
+                            languageCode: event.ctx.languageCode,
+                        },
+                        // Passing an empty array means that all collections will be updated
+                        collectionIds: [],
                         applyToChangedVariantsOnly: true,
                     },
                     { ctx: event.ctx },
@@ -119,11 +123,24 @@ export class CollectionService implements OnModuleInit {
         this.applyFiltersQueue = await this.jobQueueService.createQueue({
             name: 'apply-collection-filters',
             process: async job => {
-                const ctx = RequestContext.deserialize(job.data.ctx);
-
-                Logger.verbose(`Processing ${job.data.collectionIds.length} Collections`);
+                const ctx = await this.requestContextService.create({
+                    apiType: 'admin',
+                    languageCode: job.data.ctx.languageCode,
+                    channelOrToken: job.data.ctx.channelToken,
+                });
+                let collectionIds = job.data.collectionIds;
+                if (collectionIds.length === 0) {
+                    // An empty array means that all collections should be updated
+                    const collections = await this.connection.rawConnection
+                        .getRepository(Collection)
+                        .createQueryBuilder('collection')
+                        .select('collection.id', 'id')
+                        .getRawMany();
+                    collectionIds = collections.map(c => c.id);
+                }
+                Logger.verbose(`Processing ${collectionIds.length} Collections`);
                 let completed = 0;
-                for (const collectionId of job.data.collectionIds) {
+                for (const collectionId of collectionIds) {
                     if (job.state === JobState.CANCELLED) {
                         throw new Error(`Job was cancelled`);
                     }
@@ -303,7 +320,7 @@ export class CollectionService implements OnModuleInit {
     async getBreadcrumbs(
         ctx: RequestContext,
         collection: Collection,
-    ): Promise<Array<{ name: string; id: ID, slug: string }>> {
+    ): Promise<Array<{ name: string; id: ID; slug: string }>> {
         const rootCollection = await this.getRootCollection(ctx);
         if (idsAreEqual(collection.id, rootCollection.id)) {
             return [pick(rootCollection, ['id', 'name', 'slug'])];
@@ -482,7 +499,10 @@ export class CollectionService implements OnModuleInit {
         );
         await this.applyFiltersQueue.add(
             {
-                ctx: ctx.serialize(),
+                ctx: {
+                    languageCode: ctx.languageCode,
+                    channelToken: ctx.channel.token,
+                },
                 collectionIds: [collection.id],
             },
             { ctx },
@@ -510,7 +530,10 @@ export class CollectionService implements OnModuleInit {
         if (input.filters) {
             await this.applyFiltersQueue.add(
                 {
-                    ctx: ctx.serialize(),
+                    ctx: {
+                        languageCode: ctx.languageCode,
+                        channelToken: ctx.channel.token,
+                    },
                     collectionIds: [collection.id],
                     applyToChangedVariantsOnly: false,
                 },
@@ -588,7 +611,10 @@ export class CollectionService implements OnModuleInit {
         await this.connection.getRepository(ctx, Collection).save(siblings);
         await this.applyFiltersQueue.add(
             {
-                ctx: ctx.serialize(),
+                ctx: {
+                    languageCode: ctx.languageCode,
+                    channelToken: ctx.channel.token,
+                },
                 collectionIds: [target.id],
             },
             { ctx },
@@ -879,7 +905,10 @@ export class CollectionService implements OnModuleInit {
 
         await this.applyFiltersQueue.add(
             {
-                ctx: ctx.serialize(),
+                ctx: {
+                    languageCode: ctx.languageCode,
+                    channelToken: ctx.channel.token,
+                },
                 collectionIds: collectionsToAssign.map(collection => collection.id),
             },
             { ctx },
