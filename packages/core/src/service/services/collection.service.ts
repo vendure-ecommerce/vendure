@@ -19,7 +19,7 @@ import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 import { merge } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime, filter } from 'rxjs/operators';
 import { In, IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -77,6 +77,7 @@ export type ApplyCollectionFiltersJobData = {
 export class CollectionService implements OnModuleInit {
     private rootCollection: Translated<Collection> | undefined;
     private applyFiltersQueue: JobQueue<ApplyCollectionFiltersJobData>;
+    private applyAllFiltersOnProductUpdates = true;
 
     constructor(
         private connection: TransactionalConnection,
@@ -103,21 +104,22 @@ export class CollectionService implements OnModuleInit {
         const variantEvents$ = this.eventBus.ofType(ProductVariantEvent);
 
         merge(productEvents$, variantEvents$)
-            .pipe(debounceTime(50))
+            .pipe(
+                filter(() => {
+                    if (!this.applyAllFiltersOnProductUpdates) {
+                        Logger.debug(
+                            `Detected product data change, but skipping applyCollectionFilters because applyAllFiltersOnProductUpdates = false`,
+                        );
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }),
+                debounceTime(50),
+            )
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             .subscribe(async event => {
-                await this.applyFiltersQueue.add(
-                    {
-                        ctx: {
-                            channelToken: event.ctx.channel.token,
-                            languageCode: event.ctx.languageCode,
-                        },
-                        // Passing an empty array means that all collections will be updated
-                        collectionIds: [],
-                        applyToChangedVariantsOnly: true,
-                    },
-                    { ctx: event.ctx },
-                );
+                await this.triggerApplyFiltersJob(event.ctx);
             });
 
         this.applyFiltersQueue = await this.jobQueueService.createQueue({
@@ -181,6 +183,7 @@ export class CollectionService implements OnModuleInit {
                         }
                     }
                 }
+                return { processedCollections: completed };
             },
         });
     }
@@ -497,16 +500,9 @@ export class CollectionService implements OnModuleInit {
             input,
             collection,
         );
-        await this.applyFiltersQueue.add(
-            {
-                ctx: {
-                    languageCode: ctx.languageCode,
-                    channelToken: ctx.channel.token,
-                },
-                collectionIds: [collection.id],
-            },
-            { ctx },
-        );
+        await this.triggerApplyFiltersJob(ctx, {
+            collectionIds: [collection.id],
+        });
         await this.eventBus.publish(new CollectionEvent(ctx, collectionWithRelations, 'created', input));
         return assertFound(this.findOne(ctx, collection.id));
     }
@@ -528,17 +524,10 @@ export class CollectionService implements OnModuleInit {
         });
         await this.customFieldRelationService.updateRelations(ctx, Collection, input, collection);
         if (input.filters) {
-            await this.applyFiltersQueue.add(
-                {
-                    ctx: {
-                        languageCode: ctx.languageCode,
-                        channelToken: ctx.channel.token,
-                    },
-                    collectionIds: [collection.id],
-                    applyToChangedVariantsOnly: false,
-                },
-                { ctx },
-            );
+            await this.triggerApplyFiltersJob(ctx, {
+                collectionIds: [collection.id],
+                applyToChangedVariantsOnly: false,
+            });
         } else {
             const affectedVariantIds = await this.getCollectionProductVariantIds(collection);
             await this.eventBus.publish(new CollectionModificationEvent(ctx, collection, affectedVariantIds));
@@ -609,17 +598,55 @@ export class CollectionService implements OnModuleInit {
         siblings = moveToIndex(input.index, target, siblings);
 
         await this.connection.getRepository(ctx, Collection).save(siblings);
+        await this.triggerApplyFiltersJob(ctx, {
+            collectionIds: [target.id],
+        });
+        return assertFound(this.findOne(ctx, input.collectionId));
+    }
+
+    /**
+     * @description
+     * By default, whenever product data is updated (as determined by subscribing to the
+     * {@link ProductEvent} and {@link ProductVariantEvent} events), the CollectionFilters are re-applied
+     * to all Collections.
+     *
+     * In certain scenarios, such as when a large number of products are updated at once due to
+     * bulk data import, this can be inefficient. In such cases, you can disable this behaviour
+     * for the duration of the import process by calling this method with `false`, and then
+     * re-enable it by calling with `true`.
+     *
+     * Afterward, you can call the `triggerApplyFiltersJob` method to manually re-apply the filters.
+     *
+     * @since 3.1.3
+     */
+    setApplyAllFiltersOnProductUpdates(applyAllFiltersOnProductUpdates: boolean) {
+        this.applyAllFiltersOnProductUpdates = applyAllFiltersOnProductUpdates;
+    }
+
+    /**
+     * @description
+     * Triggers the creation of an `apply-collection-filters` job which will cause the contents
+     * of the specified collections to be re-evaluated against their filters.
+     *
+     * If no `collectionIds` option is passed, then all collections will be re-evaluated.
+     *
+     * @since 3.1.3
+     */
+    async triggerApplyFiltersJob(
+        ctx: RequestContext,
+        options?: { collectionIds?: ID[]; applyToChangedVariantsOnly?: boolean },
+    ) {
         await this.applyFiltersQueue.add(
             {
                 ctx: {
                     languageCode: ctx.languageCode,
                     channelToken: ctx.channel.token,
                 },
-                collectionIds: [target.id],
+                applyToChangedVariantsOnly: options?.applyToChangedVariantsOnly,
+                collectionIds: options?.collectionIds ?? [],
             },
             { ctx },
         );
-        return assertFound(this.findOne(ctx, input.collectionId));
     }
 
     private getCollectionFiltersFromInput(
@@ -902,17 +929,9 @@ export class CollectionService implements OnModuleInit {
             ([] as ID[]).concat(...collectionsToAssign.map(c => c.assets.map(a => a.assetId))),
         );
         await this.assetService.assignToChannel(ctx, { channelId: input.channelId, assetIds });
-
-        await this.applyFiltersQueue.add(
-            {
-                ctx: {
-                    languageCode: ctx.languageCode,
-                    channelToken: ctx.channel.token,
-                },
-                collectionIds: collectionsToAssign.map(collection => collection.id),
-            },
-            { ctx },
-        );
+        await this.triggerApplyFiltersJob(ctx, {
+            collectionIds: collectionsToAssign.map(collection => collection.id),
+        });
 
         return this.connection
             .findByIdsInChannel(
