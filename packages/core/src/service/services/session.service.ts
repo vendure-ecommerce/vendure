@@ -2,7 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { ID } from '@vendure/common/lib/shared-types';
 import crypto from 'crypto';
 import ms from 'ms';
-import { EntitySubscriberInterface, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
+import {
+    EntitySubscriberInterface,
+    InsertEvent,
+    LessThan,
+    LessThanOrEqual,
+    RemoveEvent,
+    UpdateEvent,
+} from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { ConfigService } from '../../config/config.service';
@@ -22,6 +29,15 @@ import { OrderService } from './order.service';
 /**
  * @description
  * Contains methods relating to {@link Session} entities.
+ *
+ * :::note
+ *
+ * Sessions are neither automatically deleted when expired nor cleaned up periodically by Vendure. The How-to guide
+ * [Expired Session Cleanup](/guides/how-to/expired-session-cleanup/) demonstrates how to create a [Stand-alone CLI
+ * Script](/guides/developer-guide/stand-alone-scripts/) which calls the [cleanupExpiredSessions](#cleanupexpiredsessions)
+ * method to automate this process.
+ *
+ * :::
  *
  * @docsCategory services
  */
@@ -296,6 +312,23 @@ export class SessionService implements EntitySubscriberInterface {
         for (const session of sessions) {
             await this.withTimeout(this.sessionCacheStrategy.delete(session.token));
         }
+    }
+
+    /**
+     * @description
+     * Deletes all expired sessions.
+     *
+     * @since 3.1.0
+     */
+    async cleanupExpiredSessions(ctx: RequestContext): Promise<void> {
+        const now = new Date();
+
+        await this.connection
+            .getRepository(ctx, Session)
+            .createQueryBuilder('session')
+            .where('session.expires <= :now', { now })
+            .delete()
+            .execute();
     }
 
     /**
