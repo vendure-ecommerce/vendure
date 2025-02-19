@@ -1,34 +1,34 @@
+import { AuthContext, useAuth } from '@/auth.js';
+import { AppSidebar } from '@/components/app-sidebar.js';
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb.js';
+import { Separator } from '@/components/ui/separator.js';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar.js';
 import * as React from 'react';
-import { Link, Outlet, createRootRoute } from '@tanstack/react-router';
+import { Link, Outlet, createRootRoute, createRootRouteWithContext } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 
-export const Route = createRootRoute({
+interface MyRouterContext {
+    auth: AuthContext;
+}
+
+export const Route = createRootRouteWithContext<MyRouterContext>()({
     component: RootComponent,
 });
 
 function RootComponent() {
+    // const auth = useAuth();
+    // if (!auth.isAuthenticated) {
+    //     return ;
+    // }
     return (
         <>
-            <div className="p-2 flex gap-2 text-lg">
-                <Link
-                    to="/"
-                    activeProps={{
-                        className: 'font-bold',
-                    }}
-                    activeOptions={{ exact: true }}
-                >
-                    Home
-                </Link>{' '}
-                <Link
-                    to="/about"
-                    activeProps={{
-                        className: 'font-bold',
-                    }}
-                >
-                    About
-                </Link>
-            </div>
-            <hr />
             <Outlet />
             <TanStackRouterDevtools position="bottom-right" />
         </>
