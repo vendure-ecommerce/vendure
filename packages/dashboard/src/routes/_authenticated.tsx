@@ -9,10 +9,8 @@ import {
 } from '@/components/ui/breadcrumb.js';
 import { Separator } from '@/components/ui/separator.js';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar.js';
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import * as React from 'react';
-import { Link, Outlet, createFileRoute, redirect, useRouter } from '@tanstack/react-router';
-
-import { useAuth } from '../auth.js';
 
 export const Route = createFileRoute('/_authenticated')({
     beforeLoad: ({ context, location }) => {
@@ -29,20 +27,6 @@ export const Route = createFileRoute('/_authenticated')({
 });
 
 function AuthLayout() {
-    const router = useRouter();
-    const navigate = Route.useNavigate();
-    const auth = useAuth();
-
-    const handleLogout = () => {
-        if (window.confirm('Are you sure you want to logout?')) {
-            auth.logout().then(() => {
-                router.invalidate().finally(() => {
-                    navigate({ to: '/' });
-                });
-            });
-        }
-    };
-
     return (
         <SidebarProvider>
             <AppSidebar />

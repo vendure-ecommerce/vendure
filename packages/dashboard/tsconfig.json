@@ -7,6 +7,13 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "plugins": [
+      {
+        "name": "gql.tada/ts-plugin",
+        "schema": "http://localhost:3000/admin-api",
+        "tadaOutputLocation": "./src/graphql/graphql-env.d.ts"
+      }
+    ]
   }
 }

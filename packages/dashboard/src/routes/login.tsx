@@ -1,7 +1,7 @@
 import { useAuth } from '@/auth.js';
 import { LoginForm } from '@/components/login-form';
+import { createFileRoute, Navigate, redirect, useRouterState } from '@tanstack/react-router';
 import * as React from 'react';
-import { createFileRoute, redirect, useRouter, useRouterState } from '@tanstack/react-router';
 import { z } from 'zod';
 
 const fallback = '/dashboard' as const;
@@ -18,48 +18,32 @@ export const Route = createFileRoute('/login')({
     component: LoginPage,
 });
 
-async function sleep(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 export default function LoginPage() {
     const auth = useAuth();
-    const router = useRouter();
     const isLoading = useRouterState({ select: s => s.isLoading });
     const navigate = Route.useNavigate();
-    const [isSubmitting, setIsSubmitting] = React.useState(false);
-
     const search = Route.useSearch();
 
-    const onFormSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
-        setIsSubmitting(true);
-        try {
-            evt.preventDefault();
-            const data = new FormData(evt.currentTarget);
-            const fieldValue = data.get('email');
-            if (!fieldValue) return;
-            const username = fieldValue.toString();
-            await auth.login(username);
-
-            await router.invalidate();
-
-            // This is just a hack being used to wait for the auth state to update
-            // in a real app, you'd want to use a more robust solution
-            await sleep(1);
-
-            await navigate({ to: search.redirect || fallback });
-        } catch (error) {
-            console.error('Error logging in: ', error);
-        } finally {
-            setIsSubmitting(false);
-        }
+    const onFormSubmit = (username: string, password: string) => {
+        auth.login(username, password, () => {
+            console.log(`Redirecting to ${search.redirect || fallback}`);
+            navigate({ to: search.redirect || fallback });
+        });
     };
 
-    const isLoggingIn = isLoading || isSubmitting;
+    if (auth.isAuthenticated) {
+        return <Navigate to={search.redirect || fallback} />;
+    }
+
+    const isVerifying = isLoading || auth.status === 'verifying';
     return (
         <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
             <div className="w-full max-w-sm md:max-w-3xl">
-                <LoginForm onFormSubmit={onFormSubmit} />
+                <LoginForm
+                    onFormSubmit={onFormSubmit}
+                    isVerifying={isVerifying}
+                    loginError={auth.authenticationError}
+                />
             </div>
         </div>
     );

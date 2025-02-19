@@ -32,13 +32,11 @@ export function NavUser({
     const auth = useAuth();
 
     const handleLogout = () => {
-        if (window.confirm('Are you sure you want to logout?')) {
-            auth.logout().then(() => {
-                router.invalidate().finally(() => {
-                    navigate({ to: '/' });
-                });
+        auth.logout(() => {
+            router.invalidate().finally(() => {
+                navigate({ to: '/login' });
             });
-        }
+        });
     };
 
     return (

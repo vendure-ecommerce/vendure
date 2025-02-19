@@ -1,56 +1,119 @@
+import { api } from '@/graphql/api.js';
+import { graphql } from '@/graphql/graphql.js';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import * as React from 'react';
 
-async function sleep(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 export interface AuthContext {
+    status: 'authenticated' | 'verifying' | 'unauthenticated';
+    authenticationError?: string;
     isAuthenticated: boolean;
-    login: (username: string) => Promise<void>;
-    logout: () => Promise<void>;
+    login: (username: string, password: string, onSuccess?: () => void) => void;
+    logout: (onSuccess?: () => void) => Promise<void>;
     user: string | null;
 }
 
+const LoginMutation = graphql(`
+    mutation Login($username: String!, $password: String!) {
+        login(username: $username, password: $password) {
+            __typename
+            ... on CurrentUser {
+                id
+                identifier
+            }
+            ... on ErrorResult {
+                message
+                errorCode
+            }
+        }
+    }
+`);
+
+const LogOutMutation = graphql(`
+    mutation LogOut {
+        logout {
+            success
+        }
+    }
+`);
+
+const CurrentUserQuery = graphql(`
+    query CurrentUser {
+        me {
+            id
+            identifier
+        }
+    }
+`);
+
 const AuthContext = React.createContext<AuthContext | null>(null);
 
-const key = 'tanstack.auth.user';
-
-function getStoredUser() {
-    return localStorage.getItem(key);
-}
-
-function setStoredUser(user: string | null) {
-    if (user) {
-        localStorage.setItem(key, user);
-    } else {
-        localStorage.removeItem(key);
-    }
-}
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [user, setUser] = React.useState<string | null>(getStoredUser());
-    const isAuthenticated = !!user;
+    const [status, setStatus] = React.useState<AuthContext['status']>('verifying');
+    const [user, setUser] = React.useState<string | null>(null);
+    const [authenticationError, setAuthenticationError] = React.useState<string | undefined>();
+    const onLoginSuccessFn = React.useRef<() => void>(() => {});
+    const onLogoutSuccessFn = React.useRef<() => void>(() => {});
+    const isAuthenticated = status === 'authenticated';
 
-    const logout = React.useCallback(async () => {
-        await sleep(250);
+    const { data, isLoading } = useQuery({
+        queryKey: ['currentUser'],
+        queryFn: () => api.query(CurrentUserQuery),
+        retry: false,
+    });
 
-        setStoredUser(null);
-        setUser(null);
+    const loginMutation = useMutation({
+        mutationFn: api.mutate(LoginMutation),
+        onSuccess: async data => {
+            if (data?.login.__typename === 'CurrentUser') {
+                setStatus('authenticated');
+                onLoginSuccessFn.current();
+            } else {
+                setAuthenticationError(data?.login.message);
+                setStatus('unauthenticated');
+            }
+        },
+        onError: error => {
+            setAuthenticationError(error.message);
+            setStatus('unauthenticated');
+        },
+    });
+
+    const logoutMutation = useMutation({
+        mutationFn: api.mutate(LogOutMutation),
+        onSuccess: async data => {
+            console.log(data);
+            if (data?.logout.success === true) {
+                setStatus('unauthenticated');
+                onLogoutSuccessFn.current();
+            }
+        },
+    });
+
+    const logout = React.useCallback(async (onLogoutSuccess?: () => void) => {
+        logoutMutation.mutate({});
+        onLogoutSuccessFn.current = onLogoutSuccess || (() => {});
     }, []);
 
-    const login = React.useCallback(async (username: string) => {
-        await sleep(500);
-
-        setStoredUser(username);
-        setUser(username);
+    const login = React.useCallback((username: string, password: string, onLoginSuccess?: () => void) => {
+        setStatus('verifying');
+        onLoginSuccessFn.current = onLoginSuccess || (() => {});
+        loginMutation.mutate({ username, password });
     }, []);
 
     React.useEffect(() => {
-        setUser(getStoredUser());
-    }, []);
+        if (!isLoading) {
+            if (data?.me?.id) {
+                setStatus('authenticated');
+            } else {
+                setStatus('unauthenticated');
+            }
+        } else {
+            setStatus('verifying');
+        }
+    }, [isLoading, data]);
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, authenticationError, status, user, login, logout }}>
             {children}
         </AuthContext.Provider>
     );
