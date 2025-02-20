@@ -1,4 +1,5 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.js';
+import { Trans } from '@lingui/react/macro';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -31,13 +32,17 @@ export function LoginForm({ className, onFormSubmit, isVerifying, loginError, ..
                     <form className="p-6 md:p-8" onSubmit={handleSubmit}>
                         <div className="flex flex-col gap-6">
                             <div className="flex flex-col items-center text-center">
-                                <h1 className="text-2xl font-bold">Welcome back</h1>
+                                <h1 className="text-2xl font-bold">
+                                    <Trans>Welcome back!</Trans>
+                                </h1>
                                 <p className="text-muted-foreground text-balance">
                                     Login to your Acme Inc account
                                 </p>
                             </div>
                             <div className="grid gap-3">
-                                <Label htmlFor="email">User</Label>
+                                <Label htmlFor="email">
+                                    <Trans>User</Trans>
+                                </Label>
                                 <Input
                                     name="username"
                                     id="username"
@@ -48,7 +53,9 @@ export function LoginForm({ className, onFormSubmit, isVerifying, loginError, ..
                             </div>
                             <div className="grid gap-3">
                                 <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
+                                    <Label htmlFor="password">
+                                        <Trans>Password</Trans>
+                                    </Label>
                                     <a
                                         href="#"
                                         className="ml-auto text-sm underline-offset-2 hover:underline"
