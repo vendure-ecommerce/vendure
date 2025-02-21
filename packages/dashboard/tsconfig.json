@@ -3,7 +3,7 @@
   "compilerOptions": {
     "lib": ["dom"],
     "types": ["node"],
-    "jsx": "react",
+    "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
