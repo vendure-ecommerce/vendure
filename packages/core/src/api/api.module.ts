@@ -16,6 +16,13 @@ import { IdInterceptor } from './middleware/id-interceptor';
 import { TranslateErrorResultInterceptor } from './middleware/translate-error-result-interceptor';
 import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fields-interceptor';
 
+export const VENDURE_SHOP_API_TYPE_PATHS = ['shop-api', 'common'].map(p =>
+    path.join(__dirname, 'schema', p, '*.graphql'),
+);
+export const VENDURE_ADMIN_API_TYPE_PATHS = ['admin-api', 'common'].map(p =>
+    path.join(__dirname, 'schema', p, '*.graphql'),
+);
+
 /**
  * The ApiModule is responsible for the public API of the application. This is where requests
  * come in, are parsed and then handed over to the ServiceModule classes which take care
@@ -35,7 +42,7 @@ import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fi
             apiPath: configService.apiOptions.shopApiPath,
             playground: configService.apiOptions.shopApiPlayground,
             debug: configService.apiOptions.shopApiDebug,
-            typePaths: ['shop-api', 'common'].map(p => path.join(__dirname, 'schema', p, '*.graphql')),
+            typePaths: VENDURE_SHOP_API_TYPE_PATHS,
             resolverModule: ShopApiModule,
             validationRules: configService.apiOptions.shopApiValidationRules,
         })),
@@ -44,7 +51,7 @@ import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fi
             apiPath: configService.apiOptions.adminApiPath,
             playground: configService.apiOptions.adminApiPlayground,
             debug: configService.apiOptions.adminApiDebug,
-            typePaths: ['admin-api', 'common'].map(p => path.join(__dirname, 'schema', p, '*.graphql')),
+            typePaths: VENDURE_ADMIN_API_TYPE_PATHS,
             resolverModule: AdminApiModule,
             validationRules: configService.apiOptions.adminApiValidationRules,
         })),

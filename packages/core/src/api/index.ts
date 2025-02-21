@@ -1,6 +1,8 @@
 export { ApiType } from './common/get-api-type';
+export * from './api.module';
 export * from './common/request-context';
 export * from './common/extract-session-token';
+export * from './config/configure-graphql-module';
 export * from './decorators/allow.decorator';
 export * from './decorators/transaction.decorator';
 export * from './decorators/api.decorator';
