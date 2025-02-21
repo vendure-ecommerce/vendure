@@ -5,7 +5,7 @@ import {
     UpdateProductOptionGroupInput,
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
-import { FindManyOptions, Like } from 'typeorm';
+import { FindManyOptions, IsNull, Like } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
@@ -69,7 +69,10 @@ export class ProductOptionGroupService {
         return this.connection
             .getRepository(ctx, ProductOptionGroup)
             .findOne({
-                where: { id },
+                where: {
+                    id,
+                    deletedAt: IsNull(),
+                },
                 relations: relations ?? ['options'],
             })
             .then(group => (group && this.translator.translate(group, ctx, ['options'])) ?? undefined);
