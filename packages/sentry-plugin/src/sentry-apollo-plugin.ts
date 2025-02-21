@@ -1,13 +1,9 @@
 /* eslint-disable @typescript-eslint/require-await */
-import {
-    ApolloServerPlugin,
-    GraphQLRequestListener,
-    GraphQLRequestContext,
-    GraphQLRequestContextDidEncounterErrors,
-} from '@apollo/server';
-import { Transaction, setContext } from '@sentry/node';
+import { ApolloServerPlugin, GraphQLRequestListener, GraphQLRequestContext } from '@apollo/server';
+import { Span } from '@sentry/node';
 
-import { SENTRY_TRANSACTION_KEY } from './constants';
+import { SENTRY_START_SPAN_INACTIVE_KEY } from './constants';
+import { StartInactiveSpanFunction } from './types';
 
 /**
  * Based on https://github.com/ntegral/nestjs-sentry/issues/97#issuecomment-1252446807
@@ -20,34 +16,41 @@ export class SentryApolloPlugin implements ApolloServerPlugin {
         contextValue,
     }: GraphQLRequestContext<any>): Promise<GraphQLRequestListener<any>> {
         const { enableTracing } = this.options;
-        const transaction: Transaction | undefined = contextValue.req[SENTRY_TRANSACTION_KEY];
-        if (request.operationName) {
-            if (enableTracing) {
-                // set the transaction Name if we have named queries
-                transaction?.setName(request.operationName);
+        const startInactiveSpan: StartInactiveSpanFunction | undefined =
+            contextValue.req[SENTRY_START_SPAN_INACTIVE_KEY];
+        let span: Span | undefined;
+        if (enableTracing && startInactiveSpan) {
+            let name = 'GraphQLSpan';
+            if (request.operationName) {
+                // update the span name if we have named queries
+                name = request.operationName;
             }
-            setContext('Graphql Request', {
-                operation_name: request.operationName,
-                variables: request.variables,
-            });
+            span = startInactiveSpan({ name, op: 'resolver' });
+            span?.setAttribute('operation_name', request.operationName);
+            for (const key in request.variables) {
+                if (Object.prototype.hasOwnProperty.call(request.variables, key)) {
+                    span?.setAttribute(key, request.variables[key]);
+                }
+            }
         }
 
         return {
-            // hook for transaction finished
+            // hook for span finished
             async willSendResponse(context) {
-                transaction?.finish();
+                span?.end();
             },
             async executionDidStart() {
                 return {
                     // hook for each new resolver
                     willResolveField({ info }) {
-                        if (enableTracing) {
-                            const span = transaction?.startChild({
+                        if (enableTracing && startInactiveSpan) {
+                            span = startInactiveSpan({
+                                name: 'GraphQLResolver',
                                 op: 'resolver',
-                                description: `${info.parentType.name}.${info.fieldName}`,
                             });
+                            span?.setAttribute('description', `${info.parentType.name}.${info.fieldName}`);
                             return () => {
-                                span?.finish();
+                                span?.end();
                             };
                         }
                     },
