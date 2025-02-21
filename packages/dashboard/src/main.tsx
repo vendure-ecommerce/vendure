@@ -5,9 +5,6 @@ import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
 
-import { schemaInfo } from 'virtual:admin-api-schema';
-
-console.log(`schemaInfo:`, schemaInfo);
 import '@/framework/defaults.js';
 import { routeTree } from './routeTree.gen';
 import './styles.css';

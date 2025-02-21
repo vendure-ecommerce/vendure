@@ -12,6 +12,7 @@ import {
     buildSchema,
     GraphQLList,
     GraphQLNonNull,
+    GraphQLObjectType,
     GraphQLSchema,
     GraphQLType,
     isInputObjectType,
@@ -19,10 +20,15 @@ import {
 } from 'graphql';
 import { Plugin } from 'vite';
 
-interface SchemaInfo {
+export interface SchemaInfo {
     types: {
         [typename: string]: {
-            [fieldname: string]: readonly [type: string, nullable: boolean, list: boolean];
+            [fieldname: string]: readonly [
+                type: string,
+                nullable: boolean,
+                list: boolean,
+                isPaginatedList: boolean,
+            ];
         };
     };
 }
@@ -30,6 +36,7 @@ interface SchemaInfo {
 function getTypeInfo(type: GraphQLType) {
     let nullable = true;
     let list = false;
+    let isPaginatedList = false;
 
     // Unwrap NonNull
     if (type instanceof GraphQLNonNull) {
@@ -43,7 +50,13 @@ function getTypeInfo(type: GraphQLType) {
         type = type.ofType;
     }
 
-    return [type.toString().replace(/!$/, ''), nullable, list] as const;
+    if (type instanceof GraphQLObjectType) {
+        if (type.getInterfaces().some(i => i.name === 'PaginatedList')) {
+            isPaginatedList = true;
+        }
+    }
+
+    return [type.toString().replace(/!$/, ''), nullable, list, isPaginatedList] as const;
 }
 
 function generateSchemaInfo(schema: GraphQLSchema): SchemaInfo {
