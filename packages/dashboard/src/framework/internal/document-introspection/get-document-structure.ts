@@ -48,6 +48,19 @@ export function getListQueryFields(documentNode: DocumentNode): FieldInfo[] {
     return fields;
 }
 
+export function getQueryName(documentNode: DocumentNode): string {
+    const operationDefinition = documentNode.definitions.find(
+        (def): def is OperationDefinitionNode =>
+            def.kind === 'OperationDefinition' && def.operation === 'query',
+    );
+    const firstSelection = operationDefinition?.selectionSet.selections[0];
+    if (firstSelection?.kind === 'Field') {
+        return firstSelection.name.value;
+    } else {
+        throw new Error('Could not determine query name');
+    }
+}
+
 function getQueryInfo(name: string): FieldInfo {
     const fieldInfo = schemaInfo.types.Query[name];
     return {
