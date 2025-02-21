@@ -3,6 +3,7 @@ import {
     getListQueryFields,
     getQueryName,
 } from '@/framework/internal/document-introspection/get-document-structure.js';
+import { DateTime } from '@/framework/internal/type-rendering/date-time.js';
 import { api } from '@/graphql/api.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { useQuery } from '@tanstack/react-query';
@@ -53,6 +54,16 @@ export function ListPage<T extends TypedDocumentNode<U>, U extends Record<string
         columnHelper.accessor(field.name as any, {
             header: customizeColumns?.[field.name as keyof ListQueryFields<T>]?.header ?? field.name,
             meta: { type: field.type },
+            cell: ({ cell }) => {
+                const value = cell.getValue();
+                if (field.list && Array.isArray(value)) {
+                    return value.join(', ');
+                }
+                if ((field.type === 'DateTime' && typeof value === 'string') || value instanceof Date) {
+                    return <DateTime value={value} />;
+                }
+                return value;
+            },
         }),
     );
 

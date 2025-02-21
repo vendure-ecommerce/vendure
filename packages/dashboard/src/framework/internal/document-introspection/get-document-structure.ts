@@ -1,4 +1,10 @@
-import { DocumentNode, OperationDefinitionNode, FieldNode, FragmentDefinitionNode } from 'graphql';
+import {
+    DocumentNode,
+    OperationDefinitionNode,
+    FieldNode,
+    FragmentDefinitionNode,
+    FragmentSpreadNode,
+} from 'graphql';
 import { schemaInfo } from 'virtual:admin-api-schema';
 
 interface FieldInfo {
@@ -38,8 +44,13 @@ export function getListQueryFields(documentNode: DocumentNode): FieldInfo[] {
                     selection => selection.kind === 'Field' && selection.name.value === 'items',
                 ) as FieldNode;
                 const typeName = getPaginatedListType(fieldInfo.name);
+                if (!typeName) {
+                    throw new Error(`Could not determine type of items in ${fieldInfo.name}`);
+                }
                 for (const item of itemsField.selectionSet?.selections ?? []) {
-                    collectFields(typeName, item, fields, fragments);
+                    if (item.kind === 'Field' || item.kind === 'FragmentSpread') {
+                        collectFields(typeName, item, fields, fragments);
+                    }
                 }
             }
         }
@@ -93,12 +104,29 @@ function getObjectFieldInfo(typeName: string, fieldName: string): FieldInfo {
 
 function collectFields(
     typeName: string,
-    fieldNode: FieldNode,
+    fieldNode: FieldNode | FragmentSpreadNode,
     fields: FieldInfo[],
     fragments: Record<string, FragmentDefinitionNode>,
 ) {
     if (fieldNode.kind === 'Field') {
         fields.push(getObjectFieldInfo(typeName, fieldNode.name.value));
+        if (fieldNode.selectionSet) {
+            fieldNode.selectionSet.selections.forEach(subSelection => {
+                if (subSelection.kind === 'Field') {
+                    collectFields(typeName, subSelection, fields, fragments);
+                } else if (subSelection.kind === 'FragmentSpread') {
+                    const fragmentName = subSelection.name.value;
+                    const fragment = fragments[fragmentName];
+                    if (fragment) {
+                        fragment.selectionSet.selections.forEach(fragmentSelection => {
+                            if (fragmentSelection.kind === 'Field') {
+                                collectFields(typeName, fragmentSelection, fields, fragments);
+                            }
+                        });
+                    }
+                }
+            });
+        }
     }
     if (fieldNode.kind === 'FragmentSpread') {
         const fragmentName = fieldNode.name.value;
@@ -110,23 +138,5 @@ function collectFields(
                 }
             });
         }
-    }
-
-    if (fieldNode.selectionSet) {
-        fieldNode.selectionSet.selections.forEach(subSelection => {
-            if (subSelection.kind === 'Field') {
-                collectFields(typeName, subSelection, fields, fragments);
-            } else if (subSelection.kind === 'FragmentSpread') {
-                const fragmentName = subSelection.name.value;
-                const fragment = fragments[fragmentName];
-                if (fragment) {
-                    fragment.selectionSet.selections.forEach(fragmentSelection => {
-                        if (fragmentSelection.kind === 'Field') {
-                            collectFields(typeName, fragmentSelection, fields, fragments);
-                        }
-                    });
-                }
-            }
-        });
     }
 }
