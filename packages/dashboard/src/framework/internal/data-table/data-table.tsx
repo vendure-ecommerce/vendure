@@ -2,6 +2,7 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DataTablePagination } from '@/framework/internal/data-table/data-table-pagination.js';
+import { DataTableViewOptions } from '@/framework/internal/data-table/data-table-view-options.js';
 
 import {
     ColumnDef,
@@ -9,6 +10,7 @@ import {
     getCoreRowModel,
     getPaginationRowModel,
     PaginationState,
+    SortingState,
     useReactTable,
 } from '@tanstack/react-table';
 import React, { useEffect } from 'react';
@@ -20,6 +22,7 @@ interface DataTableProps<TData, TValue> {
     page?: number;
     itemsPerPage?: number;
     onPageChange?: (page: number, itemsPerPage: number) => void;
+    onSortChange?: (sorting: SortingState) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -29,7 +32,9 @@ export function DataTable<TData, TValue>({
     page,
     itemsPerPage,
     onPageChange,
+    onSortChange,
 }: DataTableProps<TData, TValue>) {
+    const [sorting, setSorting] = React.useState<SortingState>([]);
     const [pagination, setPagination] = React.useState<PaginationState>({
         pageIndex: (page ?? 1) - 1,
         pageSize: itemsPerPage ?? 10,
@@ -40,10 +45,13 @@ export function DataTable<TData, TValue>({
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         manualPagination: true,
+        manualSorting: true,
         rowCount: totalItems,
         onPaginationChange: setPagination,
+        onSortingChange: setSorting,
         state: {
             pagination,
+            sorting,
         },
     });
 
@@ -51,9 +59,14 @@ export function DataTable<TData, TValue>({
         onPageChange?.(pagination.pageIndex + 1, pagination.pageSize);
     }, [pagination]);
 
+    useEffect(() => {
+        onSortChange?.(sorting);
+    }, [sorting]);
+
     return (
         <>
-            <div className="rounded-md border">
+            <DataTableViewOptions table={table} />
+            <div className="rounded-md border my-2">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map(headerGroup => (

@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button.js';
 import { useComponentRegistry } from '@/framework/internal/component-registry/component-registry.js';
 import { DataTable } from '@/framework/internal/data-table/data-table.js';
 import {
@@ -13,6 +14,7 @@ import { AnyRouter, Route, useNavigate } from '@tanstack/react-router';
 import { AnyRoute } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
 import { ResultOf } from 'gql.tada';
+import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import React from 'react';
 
 type ListQueryFields<T extends TypedDocumentNode> = {
@@ -56,15 +58,24 @@ export function ListPage<T extends TypedDocumentNode<U>, U extends Record<string
         page: routeSearch.page ? parseInt(routeSearch.page) : 1,
         itemsPerPage: routeSearch.perPage ? parseInt(routeSearch.perPage) : 10,
     };
+    const sorting = routeSearch.sort;
+    const sort = (sorting?.split(',') || [])?.reduce((acc: any, sort: string) => {
+        const [field, direction] = sort.split(':');
+        if (!field || !direction) {
+            return acc;
+        }
+        return { ...acc, [field]: direction === '1' ? 'ASC' : 'DESC' };
+    }, {});
     const { data } = useQuery({
         queryFn: () =>
             api.query(listQuery, {
                 options: {
                     take: pagination.itemsPerPage,
                     skip: (pagination.page - 1) * pagination.itemsPerPage,
+                    sort,
                 },
             }),
-        queryKey: ['ListPage', route.id, pagination],
+        queryKey: ['ListPage', route.id, pagination, sorting],
     });
     const fields = getListQueryFields(listQuery);
     const queryName = getQueryName(listQuery);
@@ -72,7 +83,6 @@ export function ListPage<T extends TypedDocumentNode<U>, U extends Record<string
 
     const columns = fields.map(field =>
         columnHelper.accessor(field.name as any, {
-            header: customizeColumns?.[field.name as keyof ListQueryFields<T>]?.header ?? field.name,
             meta: { type: field.type },
             cell: ({ cell }) => {
                 const value = cell.getValue();
@@ -92,6 +102,22 @@ export function ListPage<T extends TypedDocumentNode<U>, U extends Record<string
                 }
                 return value;
             },
+            header: ({ column }) => {
+                const columSort = column.getIsSorted();
+                const nextSort = columSort === 'asc' ? true : columSort === 'desc' ? undefined : false;
+                return (
+                    <Button variant="ghost" onClick={() => column.toggleSorting(nextSort)}>
+                        {customizeColumns?.[field.name as keyof ListQueryFields<T>]?.header ?? field.name}
+                        {columSort === 'desc' ? (
+                            <ArrowUp />
+                        ) : columSort === 'asc' ? (
+                            <ArrowDown />
+                        ) : (
+                            <ArrowUpDown className="opacity-30" />
+                        )}
+                    </Button>
+                );
+            },
         }),
     );
 
@@ -106,6 +132,13 @@ export function ListPage<T extends TypedDocumentNode<U>, U extends Record<string
                 totalItems={(data as any)?.[queryName]?.totalItems ?? 0}
                 onPageChange={(page, perPage) => {
                     navigate({ search: () => ({ page, perPage }) as never });
+                }}
+                onSortChange={sorting => {
+                    navigate({
+                        replace: false,
+                        search: () =>
+                            ({ sort: sorting.map(s => `${s.id}:${s.desc ? 1 : 0}`).join(',') }) as never,
+                    });
                 }}
             ></DataTable>
         </div>
