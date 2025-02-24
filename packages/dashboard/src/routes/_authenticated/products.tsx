@@ -13,10 +13,11 @@ const productListDocument = graphql(`
             items {
                 id
                 createdAt
-                updatedAt
                 name
-                description
+                updatedAt
+                enabled
             }
+            totalItems
         }
     }
 `);
@@ -27,9 +28,9 @@ export function ProductListPage() {
             title="Products"
             listQuery={productListDocument}
             customizeColumns={{
-                id: { header: 'ID' },
-                name: { header: 'Name' },
+                name: { header: 'Product Name' },
             }}
+            route={Route}
         />
     );
 }

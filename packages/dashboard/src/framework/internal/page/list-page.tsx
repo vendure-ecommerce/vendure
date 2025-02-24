@@ -5,8 +5,12 @@ import {
     getQueryName,
 } from '@/framework/internal/document-introspection/get-document-structure.js';
 import { api } from '@/graphql/api.js';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { useQuery } from '@tanstack/react-query';
+import { AnyRouter, Route, useNavigate } from '@tanstack/react-router';
+import { AnyRoute } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
 import { ResultOf } from 'gql.tada';
 import React from 'react';
@@ -25,26 +29,42 @@ export type CustomizeColumnConfig<T extends TypedDocumentNode> = {
     };
 };
 
-export interface ListPageProps<T extends TypedDocumentNode<U>, U extends { [key: string]: any }> {
+export type ListQueryShape = {
+    [key: string]: {
+        items: any[];
+        totalItems: number;
+    };
+};
+
+export interface ListPageProps<T extends TypedDocumentNode<U>, U extends ListQueryShape> {
     title: string;
     listQuery: T;
     customizeColumns?: CustomizeColumnConfig<T>;
+    route: AnyRoute;
 }
 
 export function ListPage<T extends TypedDocumentNode<U>, U extends Record<string, any> = any>({
     title,
     listQuery,
     customizeColumns,
+    route,
 }: ListPageProps<T, U>) {
     const { getComponent } = useComponentRegistry();
+    const routeSearch = route.useSearch();
+    const navigate = useNavigate<AnyRouter>({ from: route.fullPath });
+    const pagination = {
+        page: routeSearch.page ? parseInt(routeSearch.page) : 1,
+        itemsPerPage: routeSearch.perPage ? parseInt(routeSearch.perPage) : 10,
+    };
     const { data } = useQuery({
         queryFn: () =>
             api.query(listQuery, {
                 options: {
-                    take: 10,
+                    take: pagination.itemsPerPage,
+                    skip: (pagination.page - 1) * pagination.itemsPerPage,
                 },
             }),
-        queryKey: ['ProductList'],
+        queryKey: ['ListPage', route.id, pagination],
     });
     const fields = getListQueryFields(listQuery);
     const queryName = getQueryName(listQuery);
@@ -78,7 +98,16 @@ export function ListPage<T extends TypedDocumentNode<U>, U extends Record<string
     return (
         <div className="m-4">
             <h1 className="text-2xl font-bold">{title}</h1>
-            <DataTable columns={columns} data={(data as any)?.[queryName]?.items ?? []}></DataTable>
+            <DataTable
+                columns={columns}
+                data={(data as any)?.[queryName]?.items ?? []}
+                page={pagination.page}
+                itemsPerPage={pagination.itemsPerPage}
+                totalItems={(data as any)?.[queryName]?.totalItems ?? 0}
+                onPageChange={(page, perPage) => {
+                    navigate({ search: () => ({ page, perPage }) as never });
+                }}
+            ></DataTable>
         </div>
     );
 }
