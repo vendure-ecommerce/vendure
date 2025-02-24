@@ -7,7 +7,7 @@ import {
 } from 'graphql';
 import { schemaInfo } from 'virtual:admin-api-schema';
 
-interface FieldInfo {
+export interface FieldInfo {
     name: string;
     type: string;
     nullable: boolean;

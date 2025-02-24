@@ -1,15 +1,14 @@
+import { useComponentRegistry } from '@/framework/internal/component-registry/component-registry.js';
 import { DataTable } from '@/framework/internal/data-table/data-table.js';
 import {
     getListQueryFields,
     getQueryName,
 } from '@/framework/internal/document-introspection/get-document-structure.js';
-import { DateTime } from '@/framework/internal/type-rendering/date-time.js';
 import { api } from '@/graphql/api.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { useQuery } from '@tanstack/react-query';
 import { createColumnHelper } from '@tanstack/react-table';
 import { ResultOf } from 'gql.tada';
-import { DocumentNode } from 'graphql';
 import React from 'react';
 
 type ListQueryFields<T extends TypedDocumentNode> = {
@@ -37,6 +36,7 @@ export function ListPage<T extends TypedDocumentNode<U>, U extends Record<string
     listQuery,
     customizeColumns,
 }: ListPageProps<T, U>) {
+    const { getComponent } = useComponentRegistry();
     const { data } = useQuery({
         queryFn: () =>
             api.query(listQuery, {
@@ -59,8 +59,16 @@ export function ListPage<T extends TypedDocumentNode<U>, U extends Record<string
                 if (field.list && Array.isArray(value)) {
                     return value.join(', ');
                 }
+                let Cmp: React.ComponentType<{ value: any }> | undefined = undefined;
                 if ((field.type === 'DateTime' && typeof value === 'string') || value instanceof Date) {
-                    return <DateTime value={value} />;
+                    Cmp = getComponent('dateTime.display');
+                }
+                if (field.type === 'Boolean') {
+                    Cmp = getComponent('boolean.display');
+                }
+
+                if (Cmp) {
+                    return <Cmp value={value} />;
                 }
                 return value;
             },

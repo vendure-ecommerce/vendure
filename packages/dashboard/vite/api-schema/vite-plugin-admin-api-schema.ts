@@ -86,17 +86,19 @@ export async function adminApiSchemaPlugin(options: { config: VendureConfig }): 
     resetConfig();
     await setConfig(options.config ?? {});
 
-    const runtimeConfig = await runPluginConfigurations(getConfig() as any);
-    const typesLoader = new GraphQLTypesLoader();
-    const finalSchema = await getFinalVendureSchema({
-        config: runtimeConfig,
-        typePaths: VENDURE_ADMIN_API_TYPE_PATHS,
-        typesLoader,
-        apiType: 'admin',
-        output: 'sdl',
-    });
-    const safeSchema = buildSchema(finalSchema);
-    schemaInfo = generateSchemaInfo(safeSchema);
+    if (!schemaInfo) {
+        const runtimeConfig = await runPluginConfigurations(getConfig() as any);
+        const typesLoader = new GraphQLTypesLoader();
+        const finalSchema = await getFinalVendureSchema({
+            config: runtimeConfig,
+            typePaths: VENDURE_ADMIN_API_TYPE_PATHS,
+            typesLoader,
+            apiType: 'admin',
+            output: 'sdl',
+        });
+        const safeSchema = buildSchema(finalSchema);
+        schemaInfo = generateSchemaInfo(safeSchema);
+    }
 
     return {
         name: 'vendure-admin-api-schema',
