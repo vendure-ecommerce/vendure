@@ -1,3 +1,4 @@
+import { AssetThumbnail } from '@/framework/internal/component-registry/data-types/asset.js';
 import { BooleanDisplayCheckbox } from '@/framework/internal/component-registry/data-types/boolean.js';
 import { DateTime } from './data-types/date-time.js';
 
@@ -28,6 +29,13 @@ export const COMPONENT_REGISTRY = {
             display: {
                 default: {
                     component: DateTime,
+                },
+            },
+        },
+        asset: {
+            display: {
+                default: {
+                    component: AssetThumbnail,
                 },
             },
         },

@@ -10,7 +10,7 @@ interface MyRouterContext {
 export const Route = createRootRouteWithContext<MyRouterContext>()({
     component: RootComponent,
     search: {
-        middlewares: [retainSearchParams(['page', 'perPage', 'sort'] as any)],
+        // middlewares: [retainSearchParams(['page', 'perPage', 'sort'] as any)],
     },
 });
 

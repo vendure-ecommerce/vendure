@@ -6,13 +6,12 @@ import {
     getQueryName,
 } from '@/framework/internal/document-introspection/get-document-structure.js';
 import { api } from '@/graphql/api.js';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { useQuery } from '@tanstack/react-query';
-import { AnyRouter, Route, useNavigate } from '@tanstack/react-router';
-import { AnyRoute } from '@tanstack/react-router';
-import { createColumnHelper } from '@tanstack/react-table';
+import { AnyRoute, AnyRouter, useNavigate } from '@tanstack/react-router';
+import { createColumnHelper, SortingState, Table } from '@tanstack/react-table';
+import { ColumnDef } from '@tanstack/table-core';
 import { ResultOf } from 'gql.tada';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import React from 'react';
@@ -26,9 +25,7 @@ type ListQueryFields<T extends TypedDocumentNode> = {
 }[keyof ResultOf<T>];
 
 export type CustomizeColumnConfig<T extends TypedDocumentNode> = {
-    [Key in keyof ListQueryFields<T>]?: {
-        header: string;
-    };
+    [Key in keyof ListQueryFields<T>]?: Partial<ColumnDef<any>>;
 };
 
 export type ListQueryShape = {
@@ -60,11 +57,13 @@ export function ListPage<T extends TypedDocumentNode<U>, U extends Record<string
     };
     const sorting = routeSearch.sort;
     const sort = (sorting?.split(',') || [])?.reduce((acc: any, sort: string) => {
-        const [field, direction] = sort.split(':');
+        const direction = sort.startsWith('-') ? 'DESC' : 'ASC';
+        const field = sort.replace(/^-/, '');
+
         if (!field || !direction) {
             return acc;
         }
-        return { ...acc, [field]: direction === '1' ? 'ASC' : 'DESC' };
+        return { ...acc, [field]: direction };
     }, {});
     const { data } = useQuery({
         queryFn: () =>
@@ -81,8 +80,10 @@ export function ListPage<T extends TypedDocumentNode<U>, U extends Record<string
     const queryName = getQueryName(listQuery);
     const columnHelper = createColumnHelper();
 
-    const columns = fields.map(field =>
-        columnHelper.accessor(field.name as any, {
+    const columns = fields.map(field => {
+        const customConfig = customizeColumns?.[field.name as keyof ListQueryFields<T>] ?? {};
+        const { header, ...customConfigRest } = customConfig;
+        return columnHelper.accessor(field.name as any, {
             meta: { type: field.type },
             cell: ({ cell }) => {
                 const value = cell.getValue();
@@ -96,30 +97,72 @@ export function ListPage<T extends TypedDocumentNode<U>, U extends Record<string
                 if (field.type === 'Boolean') {
                     Cmp = getComponent('boolean.display');
                 }
+                if (field.type === 'Asset') {
+                    Cmp = getComponent('asset.display');
+                }
 
                 if (Cmp) {
                     return <Cmp value={value} />;
                 }
                 return value;
             },
-            header: ({ column }) => {
+            header: headerContext => {
+                const column = headerContext.column;
+                const isSortable = column.getCanSort();
+                console.log(`${field.name} isSortable: `, isSortable);
+
+                const customHeader = customConfig.header;
+                let display = field.name;
+                if (typeof customHeader === 'function') {
+                    display = customHeader(headerContext);
+                } else if (typeof customHeader === 'string') {
+                    display = customHeader;
+                }
+
                 const columSort = column.getIsSorted();
                 const nextSort = columSort === 'asc' ? true : columSort === 'desc' ? undefined : false;
                 return (
-                    <Button variant="ghost" onClick={() => column.toggleSorting(nextSort)}>
-                        {customizeColumns?.[field.name as keyof ListQueryFields<T>]?.header ?? field.name}
-                        {columSort === 'desc' ? (
-                            <ArrowUp />
-                        ) : columSort === 'asc' ? (
-                            <ArrowDown />
-                        ) : (
-                            <ArrowUpDown className="opacity-30" />
+                    <>
+                        {display}
+                        {isSortable && (
+                            <Button variant="ghost" onClick={() => column.toggleSorting(nextSort)}>
+                                {columSort === 'desc' ? (
+                                    <ArrowUp />
+                                ) : columSort === 'asc' ? (
+                                    <ArrowDown />
+                                ) : (
+                                    <ArrowUpDown className="opacity-30" />
+                                )}
+                            </Button>
                         )}
-                    </Button>
+                    </>
                 );
             },
-        }),
-    );
+            ...customConfigRest,
+        });
+    });
+
+    function persistListStateToUrl(
+        table: Table<any>,
+        listState: {
+            page?: number;
+            perPage?: number;
+            sort?: SortingState;
+        },
+    ) {
+        const tableState = table.getState();
+        const page = listState.page || tableState.pagination.pageIndex + 1;
+        const perPage = listState.perPage || tableState.pagination.pageSize;
+
+        function sortToString(sortingStates?: SortingState) {
+            return sortingStates?.map(s => `${s.desc ? '-' : ''}${s.id}`).join(',');
+        }
+
+        const sort = sortToString(listState.sort ?? tableState.sorting);
+        navigate({
+            search: () => ({ sort, page, perPage }) as never,
+        });
+    }
 
     return (
         <div className="m-4">
@@ -130,15 +173,11 @@ export function ListPage<T extends TypedDocumentNode<U>, U extends Record<string
                 page={pagination.page}
                 itemsPerPage={pagination.itemsPerPage}
                 totalItems={(data as any)?.[queryName]?.totalItems ?? 0}
-                onPageChange={(page, perPage) => {
-                    navigate({ search: () => ({ page, perPage }) as never });
+                onPageChange={(table, page, perPage) => {
+                    persistListStateToUrl(table, { page, perPage });
                 }}
-                onSortChange={sorting => {
-                    navigate({
-                        replace: false,
-                        search: () =>
-                            ({ sort: sorting.map(s => `${s.id}:${s.desc ? 1 : 0}`).join(',') }) as never,
-                    });
+                onSortChange={(table, sorting) => {
+                    persistListStateToUrl(table, { sort: sorting });
                 }}
             ></DataTable>
         </div>

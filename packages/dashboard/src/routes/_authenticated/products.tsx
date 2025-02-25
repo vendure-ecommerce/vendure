@@ -7,20 +7,37 @@ export const Route = createFileRoute('/_authenticated/products')({
     component: ProductListPage,
 });
 
-const productListDocument = graphql(`
-    query ProductList($options: ProductListOptions) {
-        products(options: $options) {
-            items {
-                id
-                createdAt
-                name
-                updatedAt
-                enabled
+const productFragment = graphql(`
+    fragment ProductFragment on Product {
+        id
+        createdAt
+        updatedAt
+        name
+        featuredAsset {
+            id
+            preview
+            focalPoint {
+                x
+                y
             }
-            totalItems
         }
+        enabled
     }
 `);
+
+const productListDocument = graphql(
+    `
+        query ProductList($options: ProductListOptions) {
+            products(options: $options) {
+                items {
+                    ...ProductFragment
+                }
+                totalItems
+            }
+        }
+    `,
+    [productFragment],
+);
 
 export function ProductListPage() {
     return (
@@ -29,6 +46,10 @@ export function ProductListPage() {
             listQuery={productListDocument}
             customizeColumns={{
                 name: { header: 'Product Name' },
+                featuredAsset: {
+                    header: 'Image',
+                    enableSorting: false,
+                },
             }}
             route={Route}
         />

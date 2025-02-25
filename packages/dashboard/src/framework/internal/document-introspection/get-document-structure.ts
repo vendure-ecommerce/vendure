@@ -109,11 +109,12 @@ function collectFields(
     fragments: Record<string, FragmentDefinitionNode>,
 ) {
     if (fieldNode.kind === 'Field') {
-        fields.push(getObjectFieldInfo(typeName, fieldNode.name.value));
+        const fieldInfo = getObjectFieldInfo(typeName, fieldNode.name.value);
+        fields.push(fieldInfo);
         if (fieldNode.selectionSet) {
             fieldNode.selectionSet.selections.forEach(subSelection => {
                 if (subSelection.kind === 'Field') {
-                    collectFields(typeName, subSelection, fields, fragments);
+                    collectFields(fieldInfo.type, subSelection, [], fragments);
                 } else if (subSelection.kind === 'FragmentSpread') {
                     const fragmentName = subSelection.name.value;
                     const fragment = fragments[fragmentName];

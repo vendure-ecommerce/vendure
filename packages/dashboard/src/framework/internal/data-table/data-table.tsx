@@ -1,6 +1,6 @@
 'use client';
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.js';
 import { DataTablePagination } from '@/framework/internal/data-table/data-table-pagination.js';
 import { DataTableViewOptions } from '@/framework/internal/data-table/data-table-view-options.js';
 
@@ -12,6 +12,7 @@ import {
     PaginationState,
     SortingState,
     useReactTable,
+    Table as TableType,
 } from '@tanstack/react-table';
 import React, { useEffect } from 'react';
 
@@ -21,8 +22,8 @@ interface DataTableProps<TData, TValue> {
     totalItems: number;
     page?: number;
     itemsPerPage?: number;
-    onPageChange?: (page: number, itemsPerPage: number) => void;
-    onSortChange?: (sorting: SortingState) => void;
+    onPageChange?: (table: TableType<TData>, page: number, itemsPerPage: number) => void;
+    onSortChange?: (table: TableType<TData>, sorting: SortingState) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -56,11 +57,11 @@ export function DataTable<TData, TValue>({
     });
 
     useEffect(() => {
-        onPageChange?.(pagination.pageIndex + 1, pagination.pageSize);
+        onPageChange?.(table, pagination.pageIndex + 1, pagination.pageSize);
     }, [pagination]);
 
     useEffect(() => {
-        onSortChange?.(sorting);
+        onSortChange?.(table, sorting);
     }, [sorting]);
 
     return (
