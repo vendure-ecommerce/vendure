@@ -10,9 +10,10 @@ import {
     getCoreRowModel,
     getPaginationRowModel,
     PaginationState,
+    VisibilityState,
     SortingState,
-    useReactTable,
     Table as TableType,
+    useReactTable,
 } from '@tanstack/react-table';
 import React, { useEffect } from 'react';
 
@@ -24,6 +25,7 @@ interface DataTableProps<TData, TValue> {
     itemsPerPage?: number;
     onPageChange?: (table: TableType<TData>, page: number, itemsPerPage: number) => void;
     onSortChange?: (table: TableType<TData>, sorting: SortingState) => void;
+    defaultColumnVisibility?: VisibilityState;
 }
 
 export function DataTable<TData, TValue>({
@@ -34,12 +36,16 @@ export function DataTable<TData, TValue>({
     itemsPerPage,
     onPageChange,
     onSortChange,
+    defaultColumnVisibility,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [pagination, setPagination] = React.useState<PaginationState>({
         pageIndex: (page ?? 1) - 1,
         pageSize: itemsPerPage ?? 10,
     });
+    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>(
+        defaultColumnVisibility ?? {},
+    );
     const table = useReactTable({
         data,
         columns,
@@ -50,9 +56,11 @@ export function DataTable<TData, TValue>({
         rowCount: totalItems,
         onPaginationChange: setPagination,
         onSortingChange: setSorting,
+        onColumnVisibilityChange: setColumnVisibility,
         state: {
             pagination,
             sorting,
+            columnVisibility,
         },
     });
 

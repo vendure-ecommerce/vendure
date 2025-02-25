@@ -39,6 +39,8 @@ export interface ListPageProps<T extends TypedDocumentNode<U>, U extends ListQue
     title: string;
     listQuery: T;
     customizeColumns?: CustomizeColumnConfig<T>;
+    defaultColumnOrder?: (keyof ListQueryFields<T>)[];
+    defaultVisibility?: Partial<Record<keyof ListQueryFields<T>, boolean>>;
     route: AnyRoute;
 }
 
@@ -47,6 +49,7 @@ export function ListPage<T extends TypedDocumentNode<U>, U extends Record<string
     listQuery,
     customizeColumns,
     route,
+    defaultVisibility,
 }: ListPageProps<T, U>) {
     const { getComponent } = useComponentRegistry();
     const routeSearch = route.useSearch();
@@ -143,6 +146,13 @@ export function ListPage<T extends TypedDocumentNode<U>, U extends Record<string
         });
     });
 
+    const columnVisibility = {
+        id: false,
+        createdAt: false,
+        updatedAt: false,
+        ...(defaultVisibility ?? {}),
+    };
+
     function persistListStateToUrl(
         table: Table<any>,
         listState: {
@@ -180,6 +190,7 @@ export function ListPage<T extends TypedDocumentNode<U>, U extends Record<string
                 onSortChange={(table, sorting) => {
                     persistListStateToUrl(table, { sort: sorting });
                 }}
+                defaultColumnVisibility={columnVisibility}
             ></DataTable>
         </div>
     );

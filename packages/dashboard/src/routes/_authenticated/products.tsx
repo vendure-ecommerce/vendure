@@ -12,7 +12,6 @@ const productFragment = graphql(`
         id
         createdAt
         updatedAt
-        name
         featuredAsset {
             id
             preview
@@ -21,6 +20,8 @@ const productFragment = graphql(`
                 y
             }
         }
+        name
+        slug
         enabled
     }
 `);
@@ -45,11 +46,16 @@ export function ProductListPage() {
             title="Products"
             listQuery={productListDocument}
             customizeColumns={{
+                id: { enableHiding: true },
                 name: { header: 'Product Name' },
                 featuredAsset: {
                     header: 'Image',
                     enableSorting: false,
                 },
+            }}
+            defaultColumnOrder={['id', 'featuredAsset', 'name']}
+            defaultVisibility={{
+                id: true,
             }}
             route={Route}
         />
