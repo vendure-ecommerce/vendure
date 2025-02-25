@@ -17,6 +17,7 @@ import {
     GraphQLType,
     isInputObjectType,
     isObjectType,
+    isScalarType,
 } from 'graphql';
 import { Plugin } from 'vite';
 
@@ -31,6 +32,17 @@ export interface SchemaInfo {
             ];
         };
     };
+    inputs: {
+        [typename: string]: {
+            [fieldname: string]: readonly [
+                type: string,
+                nullable: boolean,
+                list: boolean,
+                isPaginatedList: boolean,
+            ];
+        };
+    };
+    scalars: string[];
 }
 
 function getTypeInfo(type: GraphQLType) {
@@ -61,16 +73,27 @@ function getTypeInfo(type: GraphQLType) {
 
 function generateSchemaInfo(schema: GraphQLSchema): SchemaInfo {
     const types = schema.getTypeMap();
-    const result: SchemaInfo = { types: {} };
+    const result: SchemaInfo = { types: {}, inputs: {}, scalars: [] };
 
     Object.values(types).forEach(type => {
-        if (isObjectType(type) || isInputObjectType(type)) {
+        if (isObjectType(type)) {
             const fields = type.getFields();
             result.types[type.name] = {};
 
             Object.entries(fields).forEach(([fieldName, field]) => {
                 result.types[type.name][fieldName] = getTypeInfo(field.type);
             });
+        }
+        if (isInputObjectType(type)) {
+            const fields = type.getFields();
+            result.inputs[type.name] = {};
+
+            Object.entries(fields).forEach(([fieldName, field]) => {
+                result.inputs[type.name][fieldName] = getTypeInfo(field.type);
+            });
+        }
+        if (isScalarType(type)) {
+            result.scalars.push(type.name);
         }
     });
 
