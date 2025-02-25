@@ -13,6 +13,7 @@ export interface FieldInfo {
     nullable: boolean;
     list: boolean;
     isPaginatedList: boolean;
+    isScalar: boolean;
 }
 
 /**
@@ -80,6 +81,7 @@ function getQueryInfo(name: string): FieldInfo {
         nullable: fieldInfo[1],
         list: fieldInfo[2],
         isPaginatedList: fieldInfo[3],
+        isScalar: schemaInfo.scalars.includes(fieldInfo[0]),
     };
 }
 
@@ -99,6 +101,7 @@ function getObjectFieldInfo(typeName: string, fieldName: string): FieldInfo {
         nullable: fieldInfo[1],
         list: fieldInfo[2],
         isPaginatedList: fieldInfo[3],
+        isScalar: schemaInfo.scalars.includes(fieldInfo[0]),
     };
 }
 

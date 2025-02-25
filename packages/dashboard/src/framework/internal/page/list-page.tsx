@@ -108,8 +108,9 @@ export function ListPage<T extends TypedDocumentNode<U>, U extends Record<string
             },
             header: headerContext => {
                 const column = headerContext.column;
-                const isSortable = column.getCanSort();
-                console.log(`${field.name} isSortable: `, isSortable);
+                // By default, we only enable sorting on scalar type fields,
+                // unless explicitly configured otherwise.
+                const isSortable = customConfig.enableSorting || field.isScalar;
 
                 const customHeader = customConfig.header;
                 let display = field.name;
