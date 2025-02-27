@@ -197,7 +197,6 @@ export class OrderCalculator {
                 const applicableOrState = await promotion.test(ctx, order);
                 if (applicableOrState) {
                     const state = typeof applicableOrState === 'object' ? applicableOrState : undefined;
-                    // for (const item of line.items) {
                     const adjustment = await promotion.apply(ctx, { orderLine: line }, state);
                     if (adjustment) {
                         line.addAdjustment(adjustment);
