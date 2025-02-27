@@ -189,7 +189,6 @@ export class OrderCalculator {
             line.clearAdjustments();
 
             for (const promotion of promotions) {
-                let priceAdjusted = false;
                 // We need to test the promotion *again*, even though we've tested them for the line.
                 // This is because the previous Promotions may have adjusted the Order in such a way
                 // as to render later promotions no longer applicable.
@@ -199,11 +198,7 @@ export class OrderCalculator {
                     const adjustment = await promotion.apply(ctx, { orderLine: line }, state);
                     if (adjustment) {
                         line.addAdjustment(adjustment);
-                        priceAdjusted = true;
-                    }
-                    if (priceAdjusted) {
                         this.calculateOrderTotals(order);
-                        priceAdjusted = false;
                     }
                     this.addPromotion(order, promotion);
                 }
