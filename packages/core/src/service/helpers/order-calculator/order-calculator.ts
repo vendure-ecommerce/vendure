@@ -90,7 +90,7 @@ export class OrderCalculator {
             // Then test and apply promotions
             const totalBeforePromotions = order.subTotal;
             await this.applyPromotions(ctx, order, promotions);
-            // itemsModifiedByPromotions.forEach(item => updatedOrderItems.add(item));
+
 
             if (order.subTotal !== totalBeforePromotions) {
                 // Finally, re-calculate taxes because the promotions may have
@@ -213,7 +213,7 @@ export class OrderCalculator {
         order: Order,
         promotions: Promotion[],
     ): Promise<void> {
-        // const updatedItems = new Set<OrderItem>();
+
         const orderHasDistributedPromotions = !!order.discounts.find(
             adjustment => adjustment.type === AdjustmentType.DISTRIBUTED_ORDER_PROMOTION,
         );
