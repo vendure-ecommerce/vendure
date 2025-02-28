@@ -7,14 +7,11 @@
 * **core** Do not return deleted ProductOptionGroups (#3363) ([1df1b7f](https://github.com/vendure-ecommerce/vendure/commit/1df1b7f)), closes [#3363](https://github.com/vendure-ecommerce/vendure/issues/3363)
 * **core** Fix progress reporting for collection filters job ([eaa8eb6](https://github.com/vendure-ecommerce/vendure/commit/eaa8eb6))
 * **core** Fix struct custom field support on GlobalSettings ([50a90e7](https://github.com/vendure-ecommerce/vendure/commit/50a90e7)), closes [#3381](https://github.com/vendure-ecommerce/vendure/issues/3381)
+* **core** Add missing "enabled" flag to CreateProductVariant input (#3377) ([f5a0f99](https://github.com/vendure-ecommerce/vendure/commit/f5a0f99)), closes [#3377](https://github.com/vendure-ecommerce/vendure/issues/3377)
 
 #### Perf
 
 * **core** Remove duplicated calls to promotion checks ([4407488](https://github.com/vendure-ecommerce/vendure/commit/4407488))
-
-#### Features
-
-* **core** Add enabled flag to CreateProductVariant input (#3377) ([f5a0f99](https://github.com/vendure-ecommerce/vendure/commit/f5a0f99)), closes [#3377](https://github.com/vendure-ecommerce/vendure/issues/3377)
 
 ## <small>3.1.3 (2025-02-14)</small>
 
