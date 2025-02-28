@@ -148,6 +148,7 @@ input UpdateProductVariantPriceInput {
 
 input CreateProductVariantInput {
     productId: ID!
+    enabled: Boolean
     translations: [ProductVariantTranslationInput!]!
     facetValueIds: [ID!]
     sku: String!
