@@ -14,6 +14,8 @@ import {
     SortingState,
     Table as TableType,
     useReactTable,
+    ColumnFilter,
+    ColumnFiltersState,
 } from '@tanstack/react-table';
 import React, { useEffect } from 'react';
 
@@ -23,8 +25,11 @@ interface DataTableProps<TData, TValue> {
     totalItems: number;
     page?: number;
     itemsPerPage?: number;
+    sorting?: SortingState;
+    columnFilters?: ColumnFiltersState;
     onPageChange?: (table: TableType<TData>, page: number, itemsPerPage: number) => void;
     onSortChange?: (table: TableType<TData>, sorting: SortingState) => void;
+    onFilterChange?: (table: TableType<TData>, columnFilters: ColumnFilter[]) => void;
     defaultColumnVisibility?: VisibilityState;
 }
 
@@ -34,11 +39,15 @@ export function DataTable<TData, TValue>({
     totalItems,
     page,
     itemsPerPage,
+    sorting: sortingInitialState,
+    columnFilters: filtersInitialState,
     onPageChange,
     onSortChange,
+    onFilterChange,
     defaultColumnVisibility,
 }: DataTableProps<TData, TValue>) {
-    const [sorting, setSorting] = React.useState<SortingState>([]);
+    const [sorting, setSorting] = React.useState<SortingState>(sortingInitialState || []);
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(filtersInitialState || []);
     const [pagination, setPagination] = React.useState<PaginationState>({
         pageIndex: (page ?? 1) - 1,
         pageSize: itemsPerPage ?? 10,
@@ -46,6 +55,7 @@ export function DataTable<TData, TValue>({
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>(
         defaultColumnVisibility ?? {},
     );
+
     const table = useReactTable({
         data,
         columns,
@@ -53,14 +63,17 @@ export function DataTable<TData, TValue>({
         getPaginationRowModel: getPaginationRowModel(),
         manualPagination: true,
         manualSorting: true,
+        manualFiltering: true,
         rowCount: totalItems,
         onPaginationChange: setPagination,
         onSortingChange: setSorting,
         onColumnVisibilityChange: setColumnVisibility,
+        onColumnFiltersChange: setColumnFilters,
         state: {
             pagination,
             sorting,
             columnVisibility,
+            columnFilters,
         },
     });
 
@@ -71,6 +84,10 @@ export function DataTable<TData, TValue>({
     useEffect(() => {
         onSortChange?.(table, sorting);
     }, [sorting]);
+
+    useEffect(() => {
+        onFilterChange?.(table, columnFilters);
+    }, [columnFilters]);
 
     return (
         <>

@@ -13,6 +13,19 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#: src/framework/internal/data-table/data-table-filter-dialog.tsx:44
+msgctxt "filter-operator"
+msgid "{op}"
+msgstr "{op}"
+
+#: src/framework/internal/data-table/data-table-filter-dialog.tsx:62
+msgid "Apply filter"
+msgstr "Apply filter"
+
+#: src/framework/internal/data-table/data-table-filter-dialog.tsx:32
+msgid "Filter by {columnId}"
+msgstr "Filter by {columnId}"
+
 #: src/components/login-form.tsx:57
 msgid "Password"
 msgstr "Password"

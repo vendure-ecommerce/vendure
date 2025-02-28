@@ -46,7 +46,6 @@ export function ProductListPage() {
             title="Products"
             listQuery={productListDocument}
             customizeColumns={{
-                id: { enableHiding: true },
                 name: { header: 'Product Name' },
                 featuredAsset: {
                     header: 'Image',
