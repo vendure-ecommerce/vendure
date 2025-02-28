@@ -1,7 +1,7 @@
-import { Transaction } from '@sentry/node';
-import { NodeOptions } from '@sentry/node/types/types';
+import { Span } from '@sentry/node';
+import { NodeOptions } from '@sentry/node';
 
-import { SENTRY_TRANSACTION_KEY } from './constants';
+import { SENTRY_START_SPAN_INACTIVE_KEY } from './constants';
 
 /**
  * @description
@@ -19,8 +19,10 @@ export interface SentryPluginOptions extends NodeOptions {
     includeErrorTestMutation?: boolean;
 }
 
+export type StartInactiveSpanFunction = (options: { name: string; op?: string }) => Span | undefined;
+
 declare module 'express' {
     interface Request {
-        [SENTRY_TRANSACTION_KEY]: Transaction | undefined;
+        [SENTRY_START_SPAN_INACTIVE_KEY]: StartInactiveSpanFunction | undefined;
     }
 }
