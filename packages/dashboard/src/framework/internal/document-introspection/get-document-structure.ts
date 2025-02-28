@@ -19,6 +19,8 @@ export interface FieldInfo {
 /**
  * Given a DocumentNode of a PaginatedList query, returns information about each
  * of the selected fields.
+ *
+ * Inside React components, use the `useListQueryFields` hook to get this information.
  */
 export function getListQueryFields(documentNode: DocumentNode): FieldInfo[] {
     const fields: FieldInfo[] = [];

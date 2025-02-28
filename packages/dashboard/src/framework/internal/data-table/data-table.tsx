@@ -1,5 +1,7 @@
 'use client';
 
+import { Badge } from '@/components/ui/badge.js';
+import { Input } from '@/components/ui/input.js';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.js';
 import { DataTablePagination } from '@/framework/internal/data-table/data-table-pagination.js';
 import { DataTableViewOptions } from '@/framework/internal/data-table/data-table-view-options.js';
@@ -17,6 +19,7 @@ import {
     ColumnFilter,
     ColumnFiltersState,
 } from '@tanstack/react-table';
+import { CircleX, Filter } from 'lucide-react';
 import React, { useEffect } from 'react';
 
 interface DataTableProps<TData, TValue> {
@@ -30,6 +33,7 @@ interface DataTableProps<TData, TValue> {
     onPageChange?: (table: TableType<TData>, page: number, itemsPerPage: number) => void;
     onSortChange?: (table: TableType<TData>, sorting: SortingState) => void;
     onFilterChange?: (table: TableType<TData>, columnFilters: ColumnFilter[]) => void;
+    onSearchTermChange?: (searchTerm: string) => void;
     defaultColumnVisibility?: VisibilityState;
 }
 
@@ -44,6 +48,7 @@ export function DataTable<TData, TValue>({
     onPageChange,
     onSortChange,
     onFilterChange,
+    onSearchTermChange,
     defaultColumnVisibility,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>(sortingInitialState || []);
@@ -91,7 +96,43 @@ export function DataTable<TData, TValue>({
 
     return (
         <>
-            <DataTableViewOptions table={table} />
+            <div className="flex justify-between items-start mt-2">
+                <div className="flex flex-col">
+                    <div>
+                        {onSearchTermChange && (
+                            <div className="flex items-center">
+                                <Input
+                                    placeholder="Filter..."
+                                    onChange={event => onSearchTermChange(event.target.value)}
+                                    className="max-w-sm w-md"
+                                />
+                            </div>
+                        )}
+                    </div>
+                    <div className="flex gap-1 mt-2">
+                        {columnFilters.map(f => {
+                            const [operator, value] = Object.entries(f.value as Record<string, string>)[0];
+                            return (
+                                <Badge key={f.id} className="flex gap-1 items-center" variant="secondary">
+                                    <Filter size="12" className="opacity-50" />
+                                    <div>{f.id}</div>
+                                    <div>{operator}</div>
+                                    <div>{value}</div>
+                                    <button
+                                        className="cursor-pointer"
+                                        onClick={() =>
+                                            setColumnFilters(old => old.filter(x => x.id !== f.id))
+                                        }
+                                    >
+                                        <CircleX size="14" />
+                                    </button>
+                                </Badge>
+                            );
+                        })}
+                    </div>
+                </div>
+                <DataTableViewOptions table={table} />
+            </div>
             <div className="rounded-md border my-2">
                 <Table>
                     <TableHeader>

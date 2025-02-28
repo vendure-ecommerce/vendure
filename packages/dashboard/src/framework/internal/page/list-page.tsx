@@ -5,7 +5,9 @@ import {
     getListQueryFields,
     getQueryName,
 } from '@/framework/internal/document-introspection/get-document-structure.js';
+import { useListQueryFields } from '@/framework/internal/document-introspection/hooks.js';
 import { api } from '@/graphql/api.js';
+import { useDebounce } from 'use-debounce';
 
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { useQuery } from '@tanstack/react-query';
@@ -18,10 +20,11 @@ import {
     Table,
 } from '@tanstack/react-table';
 import { ColumnDef } from '@tanstack/table-core';
+import { ListQueryOptions } from '@vendure/core/src/index.js';
 import { ResultOf } from 'gql.tada';
-import React from 'react';
+import React, { useMemo } from 'react';
 
-type ListQueryFields<T extends TypedDocumentNode> = {
+type ListQueryFields<T extends TypedDocumentNode<any, any>> = {
     [Key in keyof ResultOf<T>]: ResultOf<T>[Key] extends { items: infer U }
         ? U extends any[]
             ? U[number]
@@ -29,7 +32,7 @@ type ListQueryFields<T extends TypedDocumentNode> = {
         : never;
 }[keyof ResultOf<T>];
 
-export type CustomizeColumnConfig<T extends TypedDocumentNode> = {
+export type CustomizeColumnConfig<T extends TypedDocumentNode<any, any>> = {
     [Key in keyof ListQueryFields<T>]?: Partial<ColumnDef<any>>;
 };
 
@@ -40,26 +43,49 @@ export type ListQueryShape = {
     };
 };
 
-export interface ListPageProps<T extends TypedDocumentNode<U>, U extends ListQueryShape> {
+export type ListQueryOptionsShape = {
+    options?: {
+        skip?: number;
+        take?: number;
+        sort?: {
+            [key: string]: 'ASC' | 'DESC';
+        };
+        filter?: any;
+    };
+};
+
+export interface ListPageProps<
+    T extends TypedDocumentNode<U, V>,
+    U extends ListQueryShape,
+    V extends ListQueryOptionsShape,
+> {
     title: string;
     listQuery: T;
+    onSearchTermChange?: (searchTerm: string) => NonNullable<V['options']>['filter'];
+    route: AnyRoute;
     customizeColumns?: CustomizeColumnConfig<T>;
     // TODO: not yet implemented
     defaultColumnOrder?: (keyof ListQueryFields<T>)[];
     defaultVisibility?: Partial<Record<keyof ListQueryFields<T>, boolean>>;
-    route: AnyRoute;
 }
 
-export function ListPage<T extends TypedDocumentNode<U>, U extends Record<string, any> = any>({
+export function ListPage<
+    T extends TypedDocumentNode<U, V>,
+    U extends Record<string, any> = any,
+    V extends ListQueryOptionsShape = {},
+>({
     title,
     listQuery,
     customizeColumns,
     route,
     defaultVisibility,
-}: ListPageProps<T, U>) {
+    onSearchTermChange,
+}: ListPageProps<T, U, V>) {
     const { getComponent } = useComponentRegistry();
     const routeSearch = route.useSearch();
     const navigate = useNavigate<AnyRouter>({ from: route.fullPath });
+    const [searchTerm, setSearchTerm] = React.useState<string>('');
+    const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
     const pagination = {
         page: routeSearch.page ? parseInt(routeSearch.page) : 1,
         itemsPerPage: routeSearch.perPage ? parseInt(routeSearch.perPage) : 10,
@@ -79,60 +105,69 @@ export function ListPage<T extends TypedDocumentNode<U>, U extends Record<string
         }
         return { ...acc, [field]: direction };
     }, {});
+
     const columnFilters = routeSearch.filters;
     const filter = columnFilters?.length
         ? { _and: (routeSearch.filters as ColumnFiltersState).map(f => ({ [f.id]: f.value })) }
         : undefined;
+
     const { data } = useQuery({
-        queryFn: () =>
-            api.query(listQuery, {
+        queryFn: () => {
+            const searchFilter = onSearchTermChange ? onSearchTermChange(debouncedSearchTerm) : {};
+            const mergedFilter = { ...filter, ...searchFilter };
+            return api.query(listQuery, {
                 options: {
                     take: pagination.itemsPerPage,
                     skip: (pagination.page - 1) * pagination.itemsPerPage,
                     sort,
-                    filter,
+                    filter: mergedFilter,
                 },
-            }),
-        queryKey: ['ListPage', route.id, pagination, sorting, filter],
+            } as unknown as V);
+        },
+        queryKey: ['ListPage', route.id, pagination, sorting, filter, debouncedSearchTerm],
     });
-    const fields = getListQueryFields(listQuery);
+    const fields = useListQueryFields(listQuery);
     const queryName = getQueryName(listQuery);
     const columnHelper = createColumnHelper();
 
-    const columns = fields.map(field => {
-        const customConfig = customizeColumns?.[field.name as keyof ListQueryFields<T>] ?? {};
-        const { header, ...customConfigRest } = customConfig;
-        return columnHelper.accessor(field.name as any, {
-            meta: { field },
-            enableColumnFilter: field.isScalar,
-            enableSorting: field.isScalar,
-            cell: ({ cell }) => {
-                const value = cell.getValue();
-                if (field.list && Array.isArray(value)) {
-                    return value.join(', ');
-                }
-                let Cmp: React.ComponentType<{ value: any }> | undefined = undefined;
-                if ((field.type === 'DateTime' && typeof value === 'string') || value instanceof Date) {
-                    Cmp = getComponent('boolean.display');
-                }
-                if (field.type === 'Boolean') {
-                    Cmp = getComponent('boolean.display');
-                }
-                if (field.type === 'Asset') {
-                    Cmp = getComponent('asset.display');
-                }
+    const columns = useMemo(() => {
+        return fields.map(field => {
+            const customConfig = customizeColumns?.[field.name as keyof ListQueryFields<T>] ?? {};
+            const { header, ...customConfigRest } = customConfig;
+            return columnHelper.accessor(field.name as any, {
+                meta: { field },
+                enableColumnFilter: field.isScalar,
+                enableSorting: field.isScalar,
+                cell: ({ cell }) => {
+                    const value = cell.getValue();
+                    if (field.list && Array.isArray(value)) {
+                        return value.join(', ');
+                    }
+                    let Cmp: React.ComponentType<{ value: any }> | undefined = undefined;
+                    if ((field.type === 'DateTime' && typeof value === 'string') || value instanceof Date) {
+                        Cmp = getComponent('boolean.display');
+                    }
+                    if (field.type === 'Boolean') {
+                        Cmp = getComponent('boolean.display');
+                    }
+                    if (field.type === 'Asset') {
+                        Cmp = getComponent('asset.display');
+                    }
 
-                if (Cmp) {
-                    return <Cmp value={value} />;
-                }
-                return value;
-            },
-            header: headerContext => {
-                return <DataTableColumnHeader headerContext={headerContext} customConfig={customConfig} />;
-            },
-            ...customConfigRest,
+                    if (Cmp) {
+                        return <Cmp value={value} />;
+                    }
+                    return value;
+                },
+                header: headerContext => {
+                    return (
+                        <DataTableColumnHeader headerContext={headerContext} customConfig={customConfig} />
+                    );
+                },
+                ...customConfigRest,
+            });
         });
-    });
+    }, [fields, customizeColumns]);
 
     const columnVisibility = {
         id: false,
@@ -182,9 +217,9 @@ export function ListPage<T extends TypedDocumentNode<U>, U extends Record<string
                     persistListStateToUrl(table, { sort: sorting });
                 }}
                 onFilterChange={(table, filters) => {
-                    console.log('filters', filters);
                     persistListStateToUrl(table, { filters });
                 }}
+                onSearchTermChange={onSearchTermChange ? term => setSearchTerm(term) : undefined}
                 defaultColumnVisibility={columnVisibility}
             ></DataTable>
         </div>
