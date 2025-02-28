@@ -11,9 +11,18 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SessionService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/session.service.ts" sourceLine="28" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/session.service.ts" sourceLine="44" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/session#session'>Session</a> entities.
+
+:::note
+
+Sessions are neither automatically deleted when expired nor cleaned up periodically by Vendure. The How-to guide
+[Expired Session Cleanup](/guides/how-to/expired-session-cleanup/) demonstrates how to create a [Stand-alone CLI
+Script](/guides/developer-guide/stand-alone-scripts/) which calls the [cleanupExpiredSessions](#cleanupexpiredsessions)
+method to automate this process.
+
+:::
 
 ```ts title="Signature"
 class SessionService implements EntitySubscriberInterface {
@@ -27,6 +36,7 @@ class SessionService implements EntitySubscriberInterface {
     setActiveChannel(serializedSession: CachedSession, channel: Channel) => Promise<CachedSession>;
     deleteSessionsByUser(ctx: RequestContext, user: User) => Promise<void>;
     deleteSessionsByActiveOrderId(ctx: RequestContext, activeOrderId: ID) => Promise<void>;
+    cleanupExpiredSessions(ctx: RequestContext) => Promise<void>;
 }
 ```
 * Implements: <code>EntitySubscriberInterface</code>
@@ -86,6 +96,11 @@ Deletes all existing sessions for the given user.
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, activeOrderId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;void&#62;`}   />
 
 Deletes all existing sessions with the given activeOrder.
+### cleanupExpiredSessions
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;void&#62;`}  since="3.1.0"  />
+
+Deletes all expired sessions.
 
 
 </div>
