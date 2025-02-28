@@ -4,8 +4,6 @@ sidebar_position: 1
 ---
 
 import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
-
 ## Requirements
  
 * [Node.js](https://nodejs.org/en/) **v18** or above, with support for **even-numbered Node.js versions**. (Odd-numbered versions should still work but are not officially supported.)
