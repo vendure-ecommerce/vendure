@@ -90,7 +90,6 @@ export class OrderCalculator {
             // Then test and apply promotions
             const totalBeforePromotions = order.subTotal;
             await this.applyPromotions(ctx, order, promotions);
-            // itemsModifiedByPromotions.forEach(item => updatedOrderItems.add(item));
 
             if (order.subTotal !== totalBeforePromotions) {
                 // Finally, re-calculate taxes because the promotions may have
@@ -187,25 +186,18 @@ export class OrderCalculator {
             // Must be re-calculated for each line, since the previous lines may have triggered promotions
             // which affected the order price.
             line.clearAdjustments();
-            const applicablePromotions = await filterAsync(promotions, p => p.test(ctx, order).then(Boolean));
 
-            for (const promotion of applicablePromotions) {
-                let priceAdjusted = false;
+            for (const promotion of promotions) {
                 // We need to test the promotion *again*, even though we've tested them for the line.
                 // This is because the previous Promotions may have adjusted the Order in such a way
                 // as to render later promotions no longer applicable.
                 const applicableOrState = await promotion.test(ctx, order);
                 if (applicableOrState) {
                     const state = typeof applicableOrState === 'object' ? applicableOrState : undefined;
-                    // for (const item of line.items) {
                     const adjustment = await promotion.apply(ctx, { orderLine: line }, state);
                     if (adjustment) {
                         line.addAdjustment(adjustment);
-                        priceAdjusted = true;
-                    }
-                    if (priceAdjusted) {
                         this.calculateOrderTotals(order);
-                        priceAdjusted = false;
                     }
                     this.addPromotion(order, promotion);
                 }
@@ -220,7 +212,6 @@ export class OrderCalculator {
         order: Order,
         promotions: Promotion[],
     ): Promise<void> {
-        // const updatedItems = new Set<OrderItem>();
         const orderHasDistributedPromotions = !!order.discounts.find(
             adjustment => adjustment.type === AdjustmentType.DISTRIBUTED_ORDER_PROMOTION,
         );
