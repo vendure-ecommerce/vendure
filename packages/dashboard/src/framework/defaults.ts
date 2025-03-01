@@ -1,3 +1,4 @@
+import { registerDefaultSlots } from '@/framework/internal/layout-engine/slot-registry.js';
 import { navMenu } from '@/framework/internal/nav-menu/nav-menu.js';
 import { BookOpen, Bot, Settings2, SquareTerminal } from 'lucide-react';
 
@@ -82,4 +83,29 @@ navMenu({
         //     ],
         // },
     ],
+});
+
+registerDefaultSlots({
+    // pre-defined slot
+    product_detail: {
+        main: [
+            {
+                priority: 1,
+                component: () =>
+                    import('@/components/product-detail/general-information.js').then(m => m.default),
+                props: {},
+            },
+        ],
+    },
+    // generic slot
+    random_detail: {
+        side: [
+            {
+                priority: 1,
+                component: () =>
+                    import('@/components/product-detail/general-information.js').then(m => m.default),
+                props: {},
+            },
+        ],
+    },
 });
