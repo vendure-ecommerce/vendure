@@ -26,7 +26,7 @@ export class SentryExceptionsFilter extends ExceptionLoggerFilter {
             if (variables) {
                 setContext('GraphQL Error Variables', variables);
             }
-            this.sentryService.captureException(exception,'true');
+            this.sentryService.captureException(exception);
         }
         return super.catch(exception, host);
     }
