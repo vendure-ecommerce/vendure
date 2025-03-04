@@ -20,7 +20,6 @@ import {
     Table,
 } from '@tanstack/react-table';
 import { ColumnDef } from '@tanstack/table-core';
-import { ListQueryOptions } from '@vendure/core/src/index.js';
 import { ResultOf } from 'gql.tada';
 import React, { useMemo } from 'react';
 
@@ -145,7 +144,7 @@ export function ListPage<
                     }
                     let Cmp: React.ComponentType<{ value: any }> | undefined = undefined;
                     if ((field.type === 'DateTime' && typeof value === 'string') || value instanceof Date) {
-                        Cmp = getComponent('boolean.display');
+                        Cmp = getComponent('dateTime.display');
                     }
                     if (field.type === 'Boolean') {
                         Cmp = getComponent('boolean.display');

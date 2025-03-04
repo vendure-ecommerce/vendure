@@ -61,10 +61,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         retry: false,
     });
 
+    const loginMutationFn = api.mutate(LoginMutation);
     const loginMutation = useMutation({
-        mutationFn: api.mutate(LoginMutation),
+        mutationFn: loginMutationFn,
         onSuccess: async data => {
-            if (data?.login.__typename === 'CurrentUser') {
+            if (data.login.__typename === 'CurrentUser') {
                 setStatus('authenticated');
                 onLoginSuccessFn.current();
             } else {
@@ -78,8 +79,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
     });
 
+    const logoutMutationFn = api.mutate(LogOutMutation);
     const logoutMutation = useMutation({
-        mutationFn: api.mutate(LogOutMutation),
+        mutationFn: logoutMutationFn,
         onSuccess: async data => {
             console.log(data);
             if (data?.logout.success === true) {

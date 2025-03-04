@@ -7,55 +7,42 @@ export const Route = createFileRoute('/_authenticated/products')({
     component: ProductListPage,
 });
 
-const productFragment = graphql(`
-    fragment ProductFragment on Product {
-        id
-        createdAt
-        updatedAt
-        featuredAsset {
-            id
-            preview
-            focalPoint {
-                x
-                y
+const productListDocument = graphql(`
+    query ProductList($options: ProductListOptions) {
+        products(options: $options) {
+            items {
+                id
+                createdAt
+                updatedAt
+                featuredAsset {
+                    id
+                    preview
+                }
+                name
+                slug
+                enabled
             }
+            totalItems
         }
-        name
-        slug
-        enabled
     }
 `);
-
-const productListDocument = graphql(
-    `
-        query ProductList($options: ProductListOptions) {
-            products(options: $options) {
-                items {
-                    ...ProductFragment
-                }
-                totalItems
-            }
-        }
-    `,
-    [productFragment],
-);
 
 export function ProductListPage() {
     return (
         <ListPage
             title="Products"
-            listQuery={productListDocument}
             customizeColumns={{
                 name: { header: 'Product Name' },
-                featuredAsset: {
-                    header: 'Image',
-                    enableSorting: false,
-                },
             }}
-            defaultColumnOrder={['id', 'featuredAsset', 'name']}
             defaultVisibility={{
                 id: true,
             }}
+            onSearchTermChange={searchTerm => {
+                return {
+                    name: { contains: searchTerm },
+                };
+            }}
+            listQuery={productListDocument}
             route={Route}
         />
     );

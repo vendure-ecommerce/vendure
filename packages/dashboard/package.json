@@ -6,9 +6,22 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:lib": "tsc --project tsconfig.lib.json",
+    "build:plugin": "tsc --project tsconfig.plugin.json --watch",
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "module": "./dist/lib/index.js",
+  "main": "./dist/lib/index.js",
+  "exports": {
+    ".": "./dist/lib/index.js",
+    "./plugin": "./dist/plugin/index.js"
+  },
+  "files": [
+    "dist",
+    "src",
+    "lingui.config.js"
+  ],
   "dependencies": {
     "@lingui/core": "^5.2.0",
     "@lingui/react": "^5.2.0",

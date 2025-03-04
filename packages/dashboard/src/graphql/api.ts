@@ -24,17 +24,41 @@ function query<T, V extends Variables = Variables>(
     });
 }
 
-function mutate<T, V extends Variables = Variables>(
-    document: RequestDocument | TypedDocumentNode<T, V>,
+function mutate2<T, V extends Variables = Variables>(
+    document: TypedDocumentNode<T, V>,
 ): (variables: V) => Promise<T>;
-function mutate<T, V extends Variables = Variables>(
+function mutate2<T, V extends Variables = Variables>(
     document: RequestDocument | TypedDocumentNode<T, V>,
+    maybeVariables?: V,
+): Promise<T> | ((variables: V) => Promise<T>) {
+    if (maybeVariables) {
+        return client.request<T>({
+            document,
+            variables: maybeVariables,
+        });
+    } else {
+        return (variables: V): Promise<T> => {
+            return client.request<T>({
+                document,
+                variables,
+            });
+        };
+    }
+}
+
+function mutate<T, V extends Variables = Variables>(
+    document: TypedDocumentNode<T, V>,
+): (variables: V) => Promise<T>;
+function mutate(document: RequestDocument): (variables: Variables) => Promise<unknown>;
+function mutate<T, V extends Variables = Variables>(
+    document: TypedDocumentNode<T, V>,
     variables: V,
 ): Promise<T>;
+function mutate(document: RequestDocument, variables: Variables): Promise<unknown>;
 function mutate<T, V extends Variables = Variables>(
     document: RequestDocument | TypedDocumentNode<T, V>,
     maybeVariables?: V,
-) {
+): Promise<T> | ((variables: V) => Promise<T>) {
     if (maybeVariables) {
         return client.request<T>({
             document,
@@ -53,4 +77,5 @@ function mutate<T, V extends Variables = Variables>(
 export const api = {
     query,
     mutate,
+    mutate2,
 };

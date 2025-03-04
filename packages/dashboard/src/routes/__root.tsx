@@ -3,7 +3,7 @@ import { createRootRouteWithContext, Outlet, retainSearchParams } from '@tanstac
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import * as React from 'react';
 
-interface MyRouterContext {
+export interface MyRouterContext {
     auth: AuthContext;
 }
 

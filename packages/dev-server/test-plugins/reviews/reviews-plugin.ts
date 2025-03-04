@@ -1,4 +1,5 @@
 import { LanguageCode, PluginCommonModule, VendurePlugin } from '@vendure/core';
+import gql from 'graphql-tag';
 
 import { ProductReview } from './entities/product-review.entity';
 import { adminApiExtensions, shopApiExtensions } from './api/api-extensions';
@@ -48,6 +49,7 @@ import { AdminUiExtension } from '@vendure/ui-devkit/compiler';
         });
         return config;
     },
+    dashboard: './dashboard/index.tsx',
 })
 export class ReviewsPlugin {
     static uiExtensions: AdminUiExtension = {

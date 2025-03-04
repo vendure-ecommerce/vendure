@@ -5,11 +5,11 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig } from 'vite';
 
-import { adminApiSchemaPlugin } from './vite/api-schema/vite-plugin-admin-api-schema.js';
+import { adminApiSchemaPlugin } from './vite/vite-plugin-admin-api-schema.js';
 
 // https://vite.dev/config/
 export default defineConfig(async () => {
-    const vendureConfig = await import('../dev-server/dev-config').then(m => m.devConfig);
+    const vendureConfig = await import('../dev-server/dev-config.js').then(m => m.devConfig);
     return {
         plugins: [
             TanStackRouterVite({ autoCodeSplitting: true }),

@@ -101,8 +101,7 @@ function generateSchemaInfo(schema: GraphQLSchema): SchemaInfo {
 }
 
 const virtualModuleId = 'virtual:admin-api-schema';
-
-let defaultSchema: GraphQLSchema;
+const resolvedVirtualModuleId = `\0${virtualModuleId}`;
 let schemaInfo: SchemaInfo;
 
 export async function adminApiSchemaPlugin(options: { config: VendureConfig }): Promise<Plugin> {
@@ -125,13 +124,13 @@ export async function adminApiSchemaPlugin(options: { config: VendureConfig }): 
 
     return {
         name: 'vendure-admin-api-schema',
-        resolveId(id, importer) {
+        resolveId(id) {
             if (id === virtualModuleId) {
-                return id;
+                return resolvedVirtualModuleId;
             }
         },
         load(id) {
-            if (id === virtualModuleId) {
+            if (id === resolvedVirtualModuleId) {
                 return `
                     export const schemaInfo = ${JSON.stringify(schemaInfo)};
                 `;
