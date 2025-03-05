@@ -50,7 +50,7 @@ export interface InitialData {
     roles?: RoleDefinition[];
     countries: CountryDefinition[];
     taxRates: Array<{ name: string; percentage: number }>;
-    shippingMethods: Array<{ name: string; price: number }>;
+    shippingMethods: Array<{ name: string; price: number; taxRate?: number }>;
     paymentMethods: Array<{ name: string; handler: ConfigurableOperationInput }>;
     collections: CollectionDefinition[];
 }
