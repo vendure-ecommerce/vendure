@@ -478,8 +478,15 @@ export interface AuthOptions {
      */
     passwordValidationStrategy?: PasswordValidationStrategy;
     /**
-     * @todo TODO
-     * @description TODO By default, it uses the {@link DefaultRolePermissionResolverStrategy}, which TODO
+     * @description
+     * Allows you to customize the way permissions resolve for your users.
+     * By default, it uses the {@link DefaultRolePermissionResolverStrategy}, which means
+     * users can have multiple roles where each role defines both (important!) the permissions AND affected channels.
+     *
+     * You might want to replace the default logic with the {@link ChannelRolePermissionResolverStrategy}
+     * if you're building a marketplace where you'd like to share roles between users, without them being
+     * able to see each others channels. See {@link ChannelRolePlugin} for a more detailed description.
+     *
      * @since TODO
      * @default DefaultRolePermissionResolverStrategy
      */
