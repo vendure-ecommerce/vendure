@@ -11,7 +11,8 @@ import { User } from '../../../entity/user/user.entity';
 
 /**
  * @description
- * TODO
+ * A `ChannelRole` ties {@link Channel}s, {@link Role}s and {@link User}s together to
+ * determine the authorization level of a {@link User} on a given set of {@link Channel}s.
  *
  * @docsCategory entities
  */

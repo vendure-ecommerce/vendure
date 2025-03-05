@@ -28,6 +28,7 @@ export class ChannelRolePermissionResolverStrategy implements RolePermissionReso
         this.channelRoleService = injector.get(ChannelRoleService);
     }
 
+    // eslint-disable-next-line @typescript-eslint/require-await
     async getChannelIdsFromAdministratorMutationInput<
         T extends CreateAdministratorInput | UpdateAdministratorInput,
     >(ctx: RequestContext, input: T & { channelRoleIds: ChannelRoleInput[] }): Promise<ChannelRoleInput[]> {
