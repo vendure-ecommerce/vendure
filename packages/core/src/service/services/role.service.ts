@@ -219,7 +219,9 @@ export class RoleService {
                 const user = await this.connection.getEntityOrThrow(ctx, User, activeUserId, {
                     relations: ['roles', 'roles.channels'],
                 });
-                return this.configService.authOptions.rolePermissionResolverStrategy.resolvePermissions(user);
+                return this.configService.authOptions.rolePermissionResolverStrategy.getPermissionsForUser(
+                    user,
+                );
             },
         );
 

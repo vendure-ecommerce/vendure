@@ -134,11 +134,11 @@ export class AdministratorService {
             .save(administrator);
 
         const channelRoles =
-            await this.configService.authOptions.rolePermissionResolverStrategy.getChannelIdsFromCreateAdministratorInput(
+            await this.configService.authOptions.rolePermissionResolverStrategy.getChannelIdsFromAdministratorMutationInput(
                 ctx,
                 input,
             );
-        await this.configService.authOptions.rolePermissionResolverStrategy.persistUserAndTheirRoles(
+        await this.configService.authOptions.rolePermissionResolverStrategy.saveUserRoles(
             ctx,
             createdAdministrator.user,
             channelRoles,
@@ -193,11 +193,11 @@ export class AdministratorService {
             }
 
             const channelRoles =
-                await this.configService.authOptions.rolePermissionResolverStrategy.getChannelIdsFromCreateAdministratorInput(
+                await this.configService.authOptions.rolePermissionResolverStrategy.getChannelIdsFromAdministratorMutationInput(
                     ctx,
                     input,
                 );
-            await this.configService.authOptions.rolePermissionResolverStrategy.persistUserAndTheirRoles(
+            await this.configService.authOptions.rolePermissionResolverStrategy.saveUserRoles(
                 ctx,
                 administrator.user,
                 channelRoles,

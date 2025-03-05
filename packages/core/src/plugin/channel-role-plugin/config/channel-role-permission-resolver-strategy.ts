@@ -1,6 +1,5 @@
-import { CreateAdministratorInput } from '@vendure/common/lib/generated-types';
+import { CreateAdministratorInput, UpdateAdministratorInput } from '@vendure/common/lib/generated-types';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
-import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../../api/index';
 import { EntityNotFoundError, idsAreEqual, Injector } from '../../../common/index';
@@ -10,13 +9,13 @@ import {
 } from '../../../config/auth/role-permission-resolver-strategy';
 import { TransactionalConnection } from '../../../connection/index';
 import { Channel, Role, User } from '../../../entity/index';
-import { ChannelRole } from '../entities/channel-role.entity';
 import { UserChannelPermissions } from '../../../service/helpers/utils/get-user-channels-permissions';
+import { ChannelRole } from '../entities/channel-role.entity';
 import { ChannelRoleService } from '../services/channel-role.service';
 
 export class ChannelRolePermissionResolverStrategy implements RolePermissionResolverStrategy {
     private connection: TransactionalConnection;
-    // TODO: Check if this can be turned into a normal import
+    // If the UserService is imported directly Nest crashes with a "Nest can't resolve dependencies of the AdministratorService"-Error
     private userService: import('../../../service/services/user.service').UserService;
 
     private channelRoleService: ChannelRoleService;
@@ -29,22 +28,16 @@ export class ChannelRolePermissionResolverStrategy implements RolePermissionReso
         this.channelRoleService = injector.get(ChannelRoleService);
     }
 
-    async getChannelIdsFromCreateAdministratorInput(
-        ctx: RequestContext,
-        input: CreateAdministratorInput & { channelRoleIds: Array<{ channelId: ID; roleId: ID }> },
-    ) {
-        // TODO: generate new type
+    async getChannelIdsFromAdministratorMutationInput<
+        T extends CreateAdministratorInput | UpdateAdministratorInput,
+    >(ctx: RequestContext, input: T & { channelRoleIds: ChannelRoleInput[] }): Promise<ChannelRoleInput[]> {
         return input.channelRoleIds;
     }
 
     /**
-     * @description TODO
+     * @description Persists changes to the junction table of {@link Channel}, {@link Role} and {@link User}.
      */
-    async persistUserAndTheirRoles(
-        ctx: RequestContext,
-        user: User,
-        channelRoles: ChannelRoleInput[],
-    ): Promise<void> {
+    async saveUserRoles(ctx: RequestContext, user: User, channelRoles: ChannelRoleInput[]): Promise<void> {
         const currentChannelRoles = await this.connection
             .getRepository(ctx, ChannelRole)
             .find({ where: { user: { id: user.id } } });
@@ -137,7 +130,7 @@ export class ChannelRolePermissionResolverStrategy implements RolePermissionReso
         }
     }
 
-    async resolvePermissions(user: User): Promise<UserChannelPermissions[]> {
+    async getPermissionsForUser(user: User): Promise<UserChannelPermissions[]> {
         const channelRoleEntries = await this.connection.rawConnection.getRepository(ChannelRole).find({
             where: { user: { id: user.id } },
             relations: ['user', 'channel', 'role'],

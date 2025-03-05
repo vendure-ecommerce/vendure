@@ -172,7 +172,7 @@ export class SessionService implements EntitySubscriberInterface {
                 identifier: user.identifier,
                 verified: user.verified,
                 channelPermissions:
-                    await this.configService.authOptions.rolePermissionResolverStrategy.resolvePermissions(
+                    await this.configService.authOptions.rolePermissionResolverStrategy.getPermissionsForUser(
                         user,
                     ),
             };

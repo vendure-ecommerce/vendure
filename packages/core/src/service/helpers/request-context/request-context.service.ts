@@ -58,7 +58,9 @@ export class RequestContextService {
         let session: CachedSession | undefined;
         if (user) {
             const channelPermissions = user.roles
-                ? await this.configService.authOptions.rolePermissionResolverStrategy.resolvePermissions(user)
+                ? await this.configService.authOptions.rolePermissionResolverStrategy.getPermissionsForUser(
+                      user,
+                  )
                 : [];
             session = {
                 user: {

@@ -146,7 +146,9 @@ export class BaseAuthResolver {
             id: user.id,
             identifier: user.identifier,
             channels:
-                await this.configService.authOptions.rolePermissionResolverStrategy.resolvePermissions(user),
+                await this.configService.authOptions.rolePermissionResolverStrategy.getPermissionsForUser(
+                    user,
+                ),
         };
     }
 }
