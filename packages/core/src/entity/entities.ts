@@ -5,7 +5,6 @@ import { AuthenticationMethod } from './authentication-method/authentication-met
 import { ExternalAuthenticationMethod } from './authentication-method/external-authentication-method.entity';
 import { NativeAuthenticationMethod } from './authentication-method/native-authentication-method.entity';
 import { Channel } from './channel/channel.entity';
-import { ChannelRole } from '../plugin/channel-role-plugin/entities/channel-role.entity';
 import { CollectionAsset } from './collection/collection-asset.entity';
 import { CollectionTranslation } from './collection/collection-translation.entity';
 import { Collection } from './collection/collection.entity';
@@ -84,7 +83,6 @@ export const coreEntitiesMap = {
     AuthenticationMethod,
     Cancellation,
     Channel,
-    ChannelRole,
     Collection,
     CollectionAsset,
     CollectionTranslation,
