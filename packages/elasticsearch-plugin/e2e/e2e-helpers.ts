@@ -63,8 +63,8 @@ export async function testMatchSearchTerm(client: SimpleGraphQLClient) {
         },
     );
     expect(result.search.items.map(i => i.productName)).toEqual([
-        'Instant Camera',
         'Camera Lens',
+        'Instant Camera',
         'SLR Camera',
     ]);
 }

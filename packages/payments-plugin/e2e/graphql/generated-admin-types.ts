@@ -882,11 +882,13 @@ export type CreateProductOptionInput = {
 export type CreateProductVariantInput = {
     assetIds?: InputMaybe<Array<Scalars['ID']['input']>>;
     customFields?: InputMaybe<Scalars['JSON']['input']>;
+    enabled?: InputMaybe<Scalars['Boolean']['input']>;
     facetValueIds?: InputMaybe<Array<Scalars['ID']['input']>>;
     featuredAssetId?: InputMaybe<Scalars['ID']['input']>;
     optionIds?: InputMaybe<Array<Scalars['ID']['input']>>;
     outOfStockThreshold?: InputMaybe<Scalars['Int']['input']>;
     price?: InputMaybe<Scalars['Money']['input']>;
+    prices?: InputMaybe<Array<InputMaybe<CreateProductVariantPriceInput>>>;
     productId: Scalars['ID']['input'];
     sku: Scalars['String']['input'];
     stockLevels?: InputMaybe<Array<StockLevelInput>>;
@@ -901,6 +903,12 @@ export type CreateProductVariantOptionInput = {
     code: Scalars['String']['input'];
     optionGroupId: Scalars['ID']['input'];
     translations: Array<ProductOptionTranslationInput>;
+};
+
+export type CreateProductVariantPriceInput = {
+    currencyCode: CurrencyCode;
+    customFields?: InputMaybe<Scalars['JSON']['input']>;
+    price: Scalars['Money']['input'];
 };
 
 export type CreatePromotionInput = {
@@ -4694,16 +4702,6 @@ export type ProductVariantPrice = {
     price: Scalars['Money']['output'];
 };
 
-/**
- * Used to set up update the price of a ProductVariant in a particular Channel.
- * If the `delete` flag is `true`, the price will be deleted for the given Channel.
- */
-export type ProductVariantPriceInput = {
-    currencyCode: CurrencyCode;
-    delete?: InputMaybe<Scalars['Boolean']['input']>;
-    price: Scalars['Money']['input'];
-};
-
 export type ProductVariantSortParameter = {
     createdAt?: InputMaybe<SortOrder>;
     id?: InputMaybe<SortOrder>;
@@ -6347,7 +6345,7 @@ export type UpdateProductVariantInput = {
     /** Sets the price for the ProductVariant in the Channel's default currency */
     price?: InputMaybe<Scalars['Money']['input']>;
     /** Allows multiple prices to be set for the ProductVariant in different currencies. */
-    prices?: InputMaybe<Array<ProductVariantPriceInput>>;
+    prices?: InputMaybe<Array<UpdateProductVariantPriceInput>>;
     sku?: InputMaybe<Scalars['String']['input']>;
     stockLevels?: InputMaybe<Array<StockLevelInput>>;
     stockOnHand?: InputMaybe<Scalars['Int']['input']>;
@@ -6355,6 +6353,17 @@ export type UpdateProductVariantInput = {
     trackInventory?: InputMaybe<GlobalFlag>;
     translations?: InputMaybe<Array<ProductVariantTranslationInput>>;
     useGlobalOutOfStockThreshold?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/**
+ * Used to set up update the price of a ProductVariant in a particular Channel.
+ * If the `delete` flag is `true`, the price will be deleted for the given Channel.
+ */
+export type UpdateProductVariantPriceInput = {
+    currencyCode: CurrencyCode;
+    customFields?: InputMaybe<Scalars['JSON']['input']>;
+    delete?: InputMaybe<Scalars['Boolean']['input']>;
+    price: Scalars['Money']['input'];
 };
 
 export type UpdatePromotionInput = {

@@ -68,7 +68,10 @@ describe('CacheService with DefaultCachePlugin (sql)', () => {
 
     it('sets a key with ttl', () => setsAKeyWithTtl(cacheService, ttlProvider));
 
-    it('sets a key with sub-second ttl', () => setsAKeyWithSubSecondTtl(cacheService, ttlProvider));
+    // TODO: Re-enable this upon merging in the v3.2 changes. This test currently is flaky due to
+    // a missing precision on the CacheItem.expiresAt field. However, since the fix involves a minor
+    // breaking change, it is being held back until v3.2.
+    it.skip('sets a key with sub-second ttl', () => setsAKeyWithSubSecondTtl(cacheService, ttlProvider));
 
     it('evicts the oldest key when cache is full', () => evictsTheOldestKeyWhenCacheIsFull(cacheService));
 

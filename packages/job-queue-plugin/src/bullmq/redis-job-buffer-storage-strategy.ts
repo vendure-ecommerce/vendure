@@ -54,8 +54,17 @@ export class RedisJobBufferStorageStrategy implements JobBufferStorageStrategy {
 
     private toJobConfigString(job: Job<any>): string {
         const jobConfig: JobConfig<any> = {
-            ...job,
+            queueName: job.queueName,
             data: job.data,
+            retries: job.retries,
+            attempts: job.attempts,
+            state: job.state,
+            progress: job.progress,
+            result: job.result,
+            error: job.error,
+            createdAt: job.createdAt,
+            startedAt: job.startedAt,
+            settledAt: job.settledAt,
             id: job.id ?? undefined,
         };
         return JSON.stringify(jobConfig);
