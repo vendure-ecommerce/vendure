@@ -3,7 +3,6 @@ import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
-    ChannelRolePermissionResolverStrategy,
     DefaultJobQueuePlugin,
     DefaultLogger,
     DefaultSearchPlugin,
@@ -46,7 +45,7 @@ export const devConfig: VendureConfig = {
             secret: 'abc',
         },
         // TODO remove once PR is ready to merge :)
-        rolePermissionResolverStrategy: new ChannelRolePermissionResolverStrategy(),
+        // rolePermissionResolverStrategy: new ChannelRolePermissionResolverStrategy(),
     },
     dbConnectionOptions: {
         synchronize: false,
@@ -69,6 +68,7 @@ export const devConfig: VendureConfig = {
         //     platformFeePercent: 10,
         //     platformFeeSKU: 'FEE',
         // }),
+        // ChannelRolePlugin.init({}), // TODO remove once PR is ready to merge :)
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
