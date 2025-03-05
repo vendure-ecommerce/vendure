@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../../api/index';
-
 import { TransactionalConnection } from '../../../connection/index';
 
 /**
