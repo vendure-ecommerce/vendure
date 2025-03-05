@@ -11,10 +11,10 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
-  "module": "./dist/lib/index.js",
-  "main": "./dist/lib/index.js",
+  "module": "./src/index.ts",
+  "main": "./src/index.ts",
   "exports": {
-    ".": "./dist/lib/index.js",
+    ".": "./src/index.ts",
     "./plugin": "./dist/plugin/index.js"
   },
   "files": [
@@ -50,6 +50,7 @@
     "tailwind-merge": "^3.0.1",
     "tailwindcss": "^4.0.6",
     "tailwindcss-animate": "^1.0.7",
+    "unplugin-swc": "^1.5.1",
     "use-debounce": "^10.0.4"
   },
   "devDependencies": {

@@ -1,24 +1,9 @@
 import { VendureConfig } from '@vendure/core';
-import { DocumentNode } from 'graphql/index.js';
+import { getPluginDashboardExtensions } from '@vendure/core';
 import { Plugin } from 'vite';
 
 const virtualModuleId = 'virtual:dashboard-extensions';
 const resolvedVirtualModuleId = `\0${virtualModuleId}`;
-
-export interface DashboardBaseRouteDefinition {
-    id: string;
-    title?: string;
-}
-
-export interface DashboardListRouteDefinition extends DashboardBaseRouteDefinition {
-    listQuery: DocumentNode;
-}
-
-export type DashboardRouteDefinition = DashboardListRouteDefinition;
-
-export interface DashboardExtension {
-    routes: DashboardRouteDefinition[];
-}
 
 export async function dashboardMetadataPlugin(options: { config: VendureConfig }): Promise<Plugin> {
     return {
@@ -30,8 +15,10 @@ export async function dashboardMetadataPlugin(options: { config: VendureConfig }
         },
         load(id) {
             if (id === resolvedVirtualModuleId) {
+                const extensions = getPluginDashboardExtensions(options.config.plugins ?? []);
+                console.log(`dashboardMetadataPlugin: ${JSON.stringify(extensions)}`);
                 return `
-
+                    export const dashboardExtensions = ${JSON.stringify(extensions)};
                 `;
             }
         },

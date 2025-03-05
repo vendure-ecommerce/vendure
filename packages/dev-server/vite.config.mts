@@ -1,9 +1,12 @@
 import { vendureDashboardPlugin } from '@vendure/dashboard/plugin';
+import { pathToFileURL } from 'url';
 import { defineConfig, UserConfig } from 'vite';
 
 export default defineConfig(async () => {
-    const vendureConfig = await import('./dev-config.js').then(m => m.devConfig);
+    // TODO: hide this ugly stuff internally so we just need to pass a relative path to the plugin
+    const vendureConfigPath = pathToFileURL('./dev-config.ts').href.replace(/^file:[\//]+/, '');
+
     return {
-        plugins: [vendureDashboardPlugin(vendureConfig)],
+        plugins: [vendureDashboardPlugin({ vendureConfigPath })],
     } satisfies UserConfig;
 });

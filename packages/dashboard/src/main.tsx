@@ -8,6 +8,9 @@ import { RouterProvider, createRouter } from '@tanstack/react-router';
 import '@/framework/defaults.js';
 import { routeTree } from './routeTree.gen';
 import './styles.css';
+import { dashboardExtensions } from 'virtual:dashboard-extensions';
+
+console.log(`Dashboard extensions:`, dashboardExtensions);
 
 // Set up a Router instance
 const router = createRouter({

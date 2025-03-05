@@ -1,26 +1,30 @@
 import { lingui } from '@lingui/vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
-import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
-import { VendureConfig } from '@vendure/core';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { PluginOption, UserConfig } from 'vite';
+import { compileFile, loadVendureConfig } from './config-loader.js';
 import { adminApiSchemaPlugin } from './vite-plugin-admin-api-schema.js';
 import { dashboardMetadataPlugin } from './vite-plugin-dashboard-metadata.js';
 
-export function vendureDashboardPlugin(config: VendureConfig): PluginOption[] {
+/**
+ * @description
+ * This is a Vite plugin which configures a set of plugins required to build the Vendure Dashboard.
+ */
+export async function vendureDashboardPlugin(options: {
+    vendureConfigPath: string;
+    vendureConfigExport?: string;
+}): Promise<PluginOption[]> {
+    // const config = await options.loadConfig();
+    const config = await loadVendureConfig(options.vendureConfigPath);
+
     const packageRoot = path
-        .join(import.meta.resolve('@vendure/dashboard'), '../../..')
+        .join(import.meta.resolve('@vendure/dashboard'), '../..')
         .replace(/file:[\/\\]+/, '');
     const linguiConfigPath = path.join(packageRoot, 'lingui.config.js');
-    console.log(`linguiConfigPath: ${linguiConfigPath}`);
 
-    const tanstackRoutesDirectory = path.join(packageRoot, 'src');
-
-    // (import.meta as any).env?.LINGUI_CONFIG = linguiConfigPath;
     process.env.LINGUI_CONFIG = linguiConfigPath;
     return [
-        // TanStackRouterVite({ routesDirectory: tanstackRoutesDirectory }),
         lingui({
             configPath: linguiConfigPath,
         }),
