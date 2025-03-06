@@ -114,7 +114,7 @@
                               id: id,
                           };
                 index as i;
-                trackBy: trackByFn
+                trackBy: trackByFn.bind(this)
             "
             >
                 <ng-container
