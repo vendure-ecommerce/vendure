@@ -3,7 +3,7 @@
 
 #### Fixes
 
-* **core** Fix FastImporterService when using stockOnHand ([f97484c](https://github.com/vendure-ecommerce/vendure/commit/f97484c)), closes [#3288](https://github.com/vendure-ecommerce/vendure/issues/3288)
+* **core** Fix FastImporterService when using stockOnHand ([f97484c](https://github.com/vendure-ecommerce/vendure/commit/f97484c)), fixes regression from [#3288](https://github.com/vendure-ecommerce/vendure/issues/3288)
 
 ## <small>3.1.5 (2025-03-06)</small>
 
