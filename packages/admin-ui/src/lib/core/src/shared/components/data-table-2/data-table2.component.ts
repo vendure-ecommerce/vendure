@@ -297,9 +297,11 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
     }
 
     trackByFn(index: number, item: any) {
-        return this.trackByPath.split('.').reduce((accu, val) => {
-            return accu && accu[val];
-        }, item) ?? index;
+        return (
+            (this.trackByPath ?? 'id').split('.').reduce((accu, val) => {
+                return accu && accu[val];
+            }, item) ?? index
+        );
     }
 
     onToggleAllClick() {
