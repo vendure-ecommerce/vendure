@@ -169,6 +169,7 @@ describe('Multi-vendor orders', () => {
             'alices-wares-shipping',
             'bobs-parts-shipping',
             'express-shipping',
+            'express-shipping-taxed',
             'standard-shipping',
         ]);
 

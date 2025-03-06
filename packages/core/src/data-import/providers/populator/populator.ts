@@ -288,7 +288,7 @@ export class Populator {
 
     private async populateShippingMethods(
         ctx: RequestContext,
-        shippingMethods: Array<{ name: string; price: number }>,
+        shippingMethods: Array<{ name: string; price: number; taxRate?: number }>,
     ) {
         for (const method of shippingMethods) {
             await this.shippingMethodService.create(ctx, {
@@ -301,7 +301,7 @@ export class Populator {
                     code: defaultShippingCalculator.code,
                     arguments: [
                         { name: 'rate', value: method.price.toString() },
-                        { name: 'taxRate', value: '0' },
+                        { name: 'taxRate', value: method.taxRate ? method.taxRate.toString() : '0' },
                         { name: 'includesTax', value: 'auto' },
                     ],
                 },
