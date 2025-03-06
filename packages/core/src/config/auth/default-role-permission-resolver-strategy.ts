@@ -1,5 +1,6 @@
 import { CreateAdministratorInput, UpdateAdministratorInput } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
+import { In } from 'typeorm';
 
 import { RequestContext } from '../../api';
 import { EntityNotFoundError, Injector } from '../../common';
@@ -49,15 +50,18 @@ export class DefaultRolePermissionResolverStrategy implements RolePermissionReso
 
     /**
      * Does what the name implies but with the addition of throwing an error for missing roles.
+     * Must join with `channels` so that we can construct {@link ChannelRoleInput}s for saving user roles.
      *
      * @throws EntityNotFoundError
      */
     private async getRolesFromIds(ctx: RequestContext, roleIds: ID[]): Promise<Role[]> {
         const roles =
-            // Empty array is important because that would return every row when used in the query
             roleIds.length === 0
                 ? []
-                : await this.connection.getRepository(ctx, Role).findBy(roleIds.map(id => ({ id })));
+                : await this.connection.getRepository(ctx, Role).find({
+                      relations: ['channels'],
+                      where: { id: In(roleIds) },
+                  });
 
         // Early exit if we found all corresponding roles
         if (roles.length === roleIds.length) return roles;
