@@ -211,6 +211,15 @@ describe('buildElasticBody()', () => {
         });
     });
 
+    it('collectionIds', () => {
+        const result = buildElasticBody({ collectionIds: ['1', '2'] }, searchConfig, CHANNEL_ID, LanguageCode.en);
+        expect(result.query).toEqual({
+            bool: {
+                filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM, { terms: { collectionIds: ['1', '2'] } }],
+            },
+        });
+    });
+
     it('collectionSlug', () => {
         const result = buildElasticBody(
             { collectionSlug: 'plants' },
@@ -221,6 +230,20 @@ describe('buildElasticBody()', () => {
         expect(result.query).toEqual({
             bool: {
                 filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM, { term: { collectionSlugs: 'plants' } }],
+            },
+        });
+    });
+
+    it('collectionSlugs', () => {
+        const result = buildElasticBody(
+            { collectionSlugs: ['plants', 'tree'] },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM, { terms: { collectionSlugs: ['plants', 'tree'] } }],
             },
         });
     });
