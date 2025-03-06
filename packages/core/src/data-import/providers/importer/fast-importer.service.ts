@@ -192,7 +192,7 @@ export class FastImporterService {
         await this.stockMovementService.adjustProductVariantStock(
             this.importCtx,
             createdVariant.id,
-            input.stockLevels ?? 0,
+            input.stockLevels ?? input.stockOnHand ?? 0,
         );
         const assignedChannelIds = unique([this.defaultChannel, this.importCtx.channel], 'id').map(c => c.id);
         for (const channelId of assignedChannelIds) {
