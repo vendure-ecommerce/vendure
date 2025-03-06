@@ -78,9 +78,11 @@
                         id="edit-options-list"
                         *ngIf="getOptions(optionGroup) as options"
                         [items]="options"
+                        [trackByPath]="'value.id'"
                         [itemsPerPage]="paginationSettings[optionGroup.value.id]?.itemsPerPage"
                         [currentPage]="paginationSettings[optionGroup.value.id]?.currentPage"
                         (pageChange)="paginationSettings[optionGroup.value.id].currentPage = $event"
+                        (itemsPerPageChange)="paginationSettings[optionGroup.value.id].itemsPerPage = $event"
                         [totalItems]="options.length"
                     >
                         <vdr-dt2-column [heading]="'common.id' | translate" id="id" [hiddenByDefault]="true">

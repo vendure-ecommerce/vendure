@@ -446,6 +446,11 @@ describe('custom ActiveOrderStrategy', () => {
                     name: 'Express Shipping',
                     priceWithTax: 1000,
                 },
+                {
+                    id: 'T_3',
+                    name: 'Express Shipping (Taxed)',
+                    priceWithTax: 1200,
+                },
             ]);
         });
 
