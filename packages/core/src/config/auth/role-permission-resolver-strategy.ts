@@ -38,7 +38,7 @@ export interface RolePermissionResolverStrategy extends InjectableStrategy {
     /**
      * Persists related entities. These may differ for custom strategies. See the specific implementation for relevant details.
      */
-    saveUserRoles(ctx: RequestContext, user: User, channelRoles: ChannelRoleInput[]): Promise<void>;
+    saveUserRoles(ctx: RequestContext, user: User, input: ChannelRoleInput[]): Promise<void>;
 
     /**
      * @param user User for which you want to retrieve permissions

@@ -1,8 +1,11 @@
-import { CreateAdministratorInput, UpdateAdministratorInput } from '@vendure/common/lib/generated-types';
-import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
+import {
+    CreateAdministratorInput,
+    DeletionResult,
+    UpdateAdministratorInput,
+} from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../../api/index';
-import { EntityNotFoundError, idsAreEqual, Injector } from '../../../common/index';
+import { idsAreEqual, Injector } from '../../../common/index';
 import {
     ChannelRoleInput,
     RolePermissionResolverStrategy,
@@ -38,13 +41,13 @@ export class ChannelRolePermissionResolverStrategy implements RolePermissionReso
     /**
      * @description Persists changes to the junction table of {@link Channel}, {@link Role} and {@link User}.
      */
-    async saveUserRoles(ctx: RequestContext, user: User, channelRoles: ChannelRoleInput[]): Promise<void> {
+    async saveUserRoles(ctx: RequestContext, user: User, input: ChannelRoleInput[]): Promise<void> {
         const currentChannelRoles = await this.connection
             .getRepository(ctx, ChannelRole)
             .find({ where: { user: { id: user.id } } });
 
-        // What needs to be added
-        for (const channelRole of channelRoles) {
+        const toAddPairs: ChannelRoleInput[] = [];
+        for (const channelRole of input) {
             if (
                 !currentChannelRoles.find(
                     cr =>
@@ -52,82 +55,41 @@ export class ChannelRolePermissionResolverStrategy implements RolePermissionReso
                         idsAreEqual(cr.channelId, channelRole.channelId),
                 )
             ) {
-                // New channel role assignment found
-                await this.channelRoleService.create(ctx, {
-                    userId: user.id,
-                    channelId: channelRole.channelId,
-                    roleId: channelRole.roleId,
-                });
+                toAddPairs.push(channelRole);
             }
         }
 
-        // What needs to be removed
+        const toRemoveChannelRoles: ChannelRole[] = [];
         for (const channelRole of currentChannelRoles) {
             if (
-                !channelRoles.find(
+                !input.find(
                     cr =>
                         idsAreEqual(cr.roleId, channelRole.roleId) &&
                         idsAreEqual(cr.channelId, channelRole.channelId),
                 )
             ) {
-                // A channel role need to be removed
-                await this.channelRoleService.delete(ctx, channelRole.id);
+                toRemoveChannelRoles.push(channelRole);
             }
         }
 
-        // TODO: recycle this: @daniel <3
+        // TODO maybe just make it sequential
+        await Promise.all(
+            toAddPairs.map(pair =>
+                this.channelRoleService.create(ctx, {
+                    channelId: pair.channelId,
+                    roleId: pair.roleId,
+                    userId: user.id,
+                }),
+            ),
+        );
 
-        const roleIds = channelRoles.map(cr => cr.roleId);
-        const roles =
-            // Empty array is important because that would return every row when used in the query
-            roleIds.length === 0
-                ? []
-                : await this.connection.getRepository(ctx, Role).findBy(roleIds.map(id => ({ id })));
-
-        for (const roleId of roleIds) {
-            const foundRole = roles.find(role => role.id === roleId);
-            if (!foundRole) throw new EntityNotFoundError('Role', roleId);
-        }
-
-        // TODO we are relying here on the `roles` relation existing, it could be missing if you query
-        // user entries without supplying the relations argument, for example:
-        // this happens when you create a new user via `.save()` because the default reloading doesnt fetch relations
-        // Q: Should we simply refetch inside her to be more fault tolerant? Could be fixed on the outside too
-        const currentUser = user.roles ? user : await this.userService.getUserById(ctx, user.id);
-        if (!currentUser) throw new EntityNotFoundError('User', user.id);
-
-        const rolesAdded = roles.filter(role => !currentUser.roles.some(userRole => userRole.id === role.id));
-        const rolesRemoved = currentUser.roles.filter(role => roleIds.indexOf(role.id) === -1);
-
-        // Copy so as to not mutate the original user object when setting roles
-        const userCopy = new User({ ...currentUser, roles });
-        // Lets keep the roles on the user eventhough this strategy technically doesnt need them there
-        // This makes it possible to switch back to the default strategy without breaking anything
-        const newUser = await this.connection.getRepository(ctx, User).save(userCopy);
-
-        if (rolesAdded.length > 0) {
-            // TODO these would come from the new `channelIds` argument from the UI
-            // For now as proof of concept, lets just always assign the default channel
-            // Test the permissions by manually creating rows for your channels
-            const channels = await this.connection
-                .getRepository(ctx, Channel)
-                .findBy([{ code: DEFAULT_CHANNEL_CODE }]);
-
-            const newChannelRoleEntries = channels.flatMap(channel =>
-                rolesAdded.map(role => new ChannelRole({ user: newUser, channel, role })),
-            );
-
-            await this.connection
-                .getRepository(ctx, ChannelRole)
-                .save(newChannelRoleEntries, { reload: false });
-        }
-
-        // TODO could be reduced to one query
-        // potentially improve later once we're happy with the `persistUserAndTheirRoles` level of abstraction
-        for (const role of rolesRemoved) {
-            await this.connection
-                .getRepository(ctx, ChannelRole)
-                .delete({ role: { id: role.id }, user: { id: user.id } });
+        // TODO should we parallelize like above, does that even actually help?
+        // try it out later
+        for (const channelRole of toRemoveChannelRoles) {
+            const response = await this.channelRoleService.delete(ctx, channelRole.id);
+            if (response.result === DeletionResult.NOT_DELETED) {
+                // TODO Throw InternalServerError here?
+            }
         }
     }
 

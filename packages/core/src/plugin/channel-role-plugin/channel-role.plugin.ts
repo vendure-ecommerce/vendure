@@ -94,8 +94,6 @@ export interface ChannelRoleOptions {}
                 channelRoles: [ChannelRoleInput!]!
             }
         `,
-        // TODO channel role resolver that extends the admin creation and uses the above extended inputs, ..
-        // see https://docs.vendure.io/guides/developer-guide/extend-graphql-api/#override-built-in-resolvers
     },
     compatibility: '^3.0.0',
 })
