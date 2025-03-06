@@ -3,7 +3,7 @@
 
 #### Fixes
 
-* **admin-ui** Fix broken Collection list & Order detail views ([6a5bb90](https://github.com/vendure-ecommerce/vendure/commit/6a5bb90)), closes [#3368](https://github.com/vendure-ecommerce/vendure/issues/3368)
+* **admin-ui** Fix broken Collection list & Order detail views ([6a5bb90](https://github.com/vendure-ecommerce/vendure/commit/6a5bb90)), fixes regression from [#3368](https://github.com/vendure-ecommerce/vendure/issues/3368)
 
 ## <small>3.1.6 (2025-03-06)</small>
 
