@@ -1623,6 +1623,13 @@ describe('Shop orders', () => {
                         name: 'Express Shipping',
                         description: '',
                     },
+                    {
+                        id: 'T_3',
+                        price: 1000,
+                        code: 'express-shipping-taxed',
+                        name: 'Express Shipping (Taxed)',
+                        description: '',
+                    },
                 ]);
             });
 

@@ -114,6 +114,7 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
     @Input() emptyStateLabel: string;
     @Input() filters: DataTableFilterCollection;
     @Input() activeIndex = -1;
+    @Input() trackByPath = 'id';
     @Output() pageChange = new EventEmitter<number>();
     @Output() itemsPerPageChange = new EventEmitter<number>();
     @Output() visibleColumnsChange = new EventEmitter<Array<DataTable2ColumnComponent<T>>>();
@@ -296,11 +297,11 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
     }
 
     trackByFn(index: number, item: any) {
-        if ((item as any).id != null) {
-            return (item as any).id;
-        } else {
-            return index;
-        }
+        return (
+            (this.trackByPath ?? 'id').split('.').reduce((accu, val) => {
+                return accu && accu[val];
+            }, item) ?? index
+        );
     }
 
     onToggleAllClick() {

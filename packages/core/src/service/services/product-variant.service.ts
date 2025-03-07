@@ -11,7 +11,7 @@ import {
     RemoveProductVariantsFromChannelInput,
     UpdateProductVariantInput,
 } from '@vendure/common/lib/generated-types';
-import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { CustomFieldsObject, ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 import { In, IsNull } from 'typeorm';
 
@@ -48,6 +48,7 @@ import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-build
 import { ProductPriceApplicator } from '../helpers/product-price-applicator/product-price-applicator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { TranslatorService } from '../helpers/translator/translator.service';
+import { patchEntity } from '../helpers/utils/patch-entity';
 import { samplesEach } from '../helpers/utils/samples-each';
 
 import { AssetService } from './asset.service';
@@ -552,6 +553,7 @@ export class ProductVariantService {
                         priceInput.price,
                         ctx.channelId,
                         priceInput.currencyCode,
+                        priceInput.customFields,
                     );
                 }
             }
@@ -570,6 +572,7 @@ export class ProductVariantService {
         price: number,
         channelId: ID,
         currencyCode?: CurrencyCode,
+        customFields?: CustomFieldsObject,
     ): Promise<ProductVariantPrice> {
         const { productVariantPriceUpdateStrategy } = this.configService.catalogOptions;
         const allPrices = await this.connection.getRepository(ctx, ProductVariantPrice).find({
@@ -608,10 +611,22 @@ export class ProductVariantService {
             );
             targetPrice = createdPrice;
         } else {
-            targetPrice.price = price;
+            patchEntity(targetPrice, {
+                price,
+                customFields: customFields || targetPrice.customFields,
+            });
             const updatedPrice = await this.connection
                 .getRepository(ctx, ProductVariantPrice)
                 .save(targetPrice);
+
+            if (customFields) {
+                await this.customFieldRelationService.updateRelations(
+                    ctx,
+                    ProductVariantPrice,
+                    customFields,
+                    updatedPrice,
+                );
+            }
             await this.eventBus.publish(new ProductVariantPriceEvent(ctx, [updatedPrice], 'updated'));
             additionalPricesToUpdate = await productVariantPriceUpdateStrategy.onPriceUpdated(
                 ctx,

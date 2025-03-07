@@ -2,6 +2,11 @@
 
 An open-source headless commerce platform built on [Node.js](https://nodejs.org) with [GraphQL](https://graphql.org/), [Nest](https://nestjs.com/) & [TypeScript](http://www.typescriptlang.org/), with a focus on developer productivity and ease of customization.
 
+> **📣 Announcement: We're are building a new React-based Admin Dashboard**
+>
+> Expected release of the alpha version is end of March. We're phasing out our Angular-based Admin UI with support until June 2026.
+> [Read more >>](https://vendure.io/blog/2025/02/vendure-react-admin-ui)
+
 [![Build Status](https://github.com/vendure-ecommerce/vendure/workflows/Build%20&%20Test/badge.svg)](https://github.com/vendure-ecommerce/vendure/actions) 
 [![Publish & Install](https://github.com/vendure-ecommerce/vendure/workflows/Publish%20&%20Install/badge.svg)](https://github.com/vendure-ecommerce/vendure/actions/workflows/publish_and_install.yml)
 [![Lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
@@ -12,7 +17,7 @@ An open-source headless commerce platform built on [Node.js](https://nodejs.org)
 ### [www.vendure.io](https://www.vendure.io/)
 
 * [Getting Started](https://docs.vendure.io/guides/getting-started/installation/): Get Vendure up and running locally in a matter of minutes with a single command
-* [Live Demo](https://demo.vendure.io/)
+* [Request Demo](https://vendure.io/demo)
 * [Vendure Discord](https://www.vendure.io/community): Join us on Discord for support and answers to your questions
 
 ## Branches

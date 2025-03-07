@@ -382,6 +382,15 @@ describe('Draft Orders resolver', () => {
                 price: 1000,
                 priceWithTax: 1000,
             },
+            {
+                code: 'express-shipping-taxed',
+                description: '',
+                id: 'T_3',
+                metadata: null,
+                name: 'Express Shipping (Taxed)',
+                price: 1000,
+                priceWithTax: 1200,
+            },
         ]);
     });
 
