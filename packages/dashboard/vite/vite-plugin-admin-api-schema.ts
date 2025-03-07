@@ -6,7 +6,6 @@ import {
     runPluginConfigurations,
     setConfig,
     VENDURE_ADMIN_API_TYPE_PATHS,
-    VendureConfig,
 } from '@vendure/core';
 import {
     buildSchema,
@@ -45,6 +44,53 @@ export interface SchemaInfo {
         };
     };
     scalars: string[];
+}
+
+const virtualModuleId = 'virtual:admin-api-schema';
+const resolvedVirtualModuleId = `\0${virtualModuleId}`;
+
+export function adminApiSchemaPlugin(): Plugin {
+    let configLoaderApi: ConfigLoaderApi;
+    let schemaInfo: SchemaInfo;
+
+    return {
+        name: 'vendure:admin-api-schema',
+        configResolved({ plugins }) {
+            configLoaderApi = getConfigLoaderApi(plugins);
+        },
+        async buildStart() {
+            const vendureConfig = await configLoaderApi.getVendureConfig();
+            if (!schemaInfo) {
+                this.info(`Constructing Admin API schema...`);
+                resetConfig();
+                await setConfig(vendureConfig ?? {});
+
+                const runtimeConfig = await runPluginConfigurations(getConfig() as any);
+                const typesLoader = new GraphQLTypesLoader();
+                const finalSchema = await getFinalVendureSchema({
+                    config: runtimeConfig,
+                    typePaths: VENDURE_ADMIN_API_TYPE_PATHS,
+                    typesLoader,
+                    apiType: 'admin',
+                    output: 'sdl',
+                });
+                const safeSchema = buildSchema(finalSchema);
+                schemaInfo = generateSchemaInfo(safeSchema);
+            }
+        },
+        resolveId(id) {
+            if (id === virtualModuleId) {
+                return resolvedVirtualModuleId;
+            }
+        },
+        load(id) {
+            if (id === resolvedVirtualModuleId) {
+                return `
+                    export const schemaInfo = ${JSON.stringify(schemaInfo)};
+                `;
+            }
+        },
+    };
 }
 
 function getTypeInfo(type: GraphQLType) {
@@ -100,51 +146,4 @@ function generateSchemaInfo(schema: GraphQLSchema): SchemaInfo {
     });
 
     return result;
-}
-
-const virtualModuleId = 'virtual:admin-api-schema';
-const resolvedVirtualModuleId = `\0${virtualModuleId}`;
-
-export function adminApiSchemaPlugin(): Plugin {
-    let configLoaderApi: ConfigLoaderApi;
-    let schemaInfo: SchemaInfo;
-
-    return {
-        name: 'vendure:admin-api-schema',
-        async configResolved({ plugins }) {
-            configLoaderApi = getConfigLoaderApi(plugins);
-        },
-        async buildStart() {
-            const vendureConfig = await configLoaderApi.getVendureConfig();
-            if (!schemaInfo) {
-                this.info(`Constructing Admin API schema...`);
-                resetConfig();
-                await setConfig(vendureConfig ?? {});
-
-                const runtimeConfig = await runPluginConfigurations(getConfig() as any);
-                const typesLoader = new GraphQLTypesLoader();
-                const finalSchema = await getFinalVendureSchema({
-                    config: runtimeConfig,
-                    typePaths: VENDURE_ADMIN_API_TYPE_PATHS,
-                    typesLoader,
-                    apiType: 'admin',
-                    output: 'sdl',
-                });
-                const safeSchema = buildSchema(finalSchema);
-                schemaInfo = generateSchemaInfo(safeSchema);
-            }
-        },
-        resolveId(id) {
-            if (id === virtualModuleId) {
-                return resolvedVirtualModuleId;
-            }
-        },
-        load(id) {
-            if (id === resolvedVirtualModuleId) {
-                return `
-                    export const schemaInfo = ${JSON.stringify(schemaInfo)};
-                `;
-            }
-        },
-    };
 }

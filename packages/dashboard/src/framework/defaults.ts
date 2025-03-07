@@ -2,7 +2,7 @@ import { navMenu } from '@/framework/internal/nav-menu/nav-menu.js';
 import { BookOpen, Bot, Settings2, SquareTerminal } from 'lucide-react';
 
 navMenu({
-    items: [
+    sections: [
         {
             id: 'catalog',
             title: 'Catalog',

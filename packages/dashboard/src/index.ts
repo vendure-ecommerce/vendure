@@ -1,2 +1,2 @@
-export * from './framework/internal/plugin-api/plugin-api.js';
-export const test = 'test';
+export * from './framework/internal/extension-api/define-dashboard-extension.js';
+export * from '@/framework/internal/extension-api/extension-api-types.js';

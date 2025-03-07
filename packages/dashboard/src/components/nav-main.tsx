@@ -1,9 +1,3 @@
-'use client';
-
-import { NavMenuItem } from '@/framework/internal/nav-menu/nav-menu.js';
-import { Link } from '@tanstack/react-router';
-import { ChevronRight, type LucideIcon } from 'lucide-react';
-
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
     SidebarGroup,
@@ -15,8 +9,12 @@ import {
     SidebarMenuSubButton,
     SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
+import { NavMenuSection } from '@/framework/internal/nav-menu/nav-menu.js';
+import { Link, rootRouteId, useLocation, useMatch } from '@tanstack/react-router';
+import { ChevronRight } from 'lucide-react';
 
-export function NavMain({ items }: { items: NavMenuItem[] }) {
+export function NavMain({ items }: { items: NavMenuSection[] }) {
+    const location = useLocation();
     return (
         <SidebarGroup>
             <SidebarGroupLabel>Platform</SidebarGroupLabel>
@@ -40,7 +38,10 @@ export function NavMain({ items }: { items: NavMenuItem[] }) {
                                 <SidebarMenuSub>
                                     {item.items?.map(subItem => (
                                         <SidebarMenuSubItem key={subItem.title}>
-                                            <SidebarMenuSubButton asChild>
+                                            <SidebarMenuSubButton
+                                                asChild
+                                                isActive={location.pathname === subItem.url}
+                                            >
                                                 <Link to={subItem.url}>
                                                     <span>{subItem.title}</span>
                                                 </Link>

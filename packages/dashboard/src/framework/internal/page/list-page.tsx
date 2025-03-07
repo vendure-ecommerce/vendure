@@ -2,10 +2,12 @@ import { useComponentRegistry } from '@/framework/internal/component-registry/co
 import { DataTableColumnHeader } from '@/framework/internal/data-table/data-table-column-header.js';
 import { DataTable } from '@/framework/internal/data-table/data-table.js';
 import {
+    FieldInfo,
     getListQueryFields,
     getQueryName,
 } from '@/framework/internal/document-introspection/get-document-structure.js';
 import { useListQueryFields } from '@/framework/internal/document-introspection/hooks.js';
+import { PageProps } from '@/framework/internal/page/page-types.js';
 import { api } from '@/graphql/api.js';
 import { useDebounce } from 'use-debounce';
 
@@ -57,13 +59,10 @@ export interface ListPageProps<
     T extends TypedDocumentNode<U, V>,
     U extends ListQueryShape,
     V extends ListQueryOptionsShape,
-> {
-    title: string;
+> extends PageProps {
     listQuery: T;
     onSearchTermChange?: (searchTerm: string) => NonNullable<V['options']>['filter'];
-    route: AnyRoute;
     customizeColumns?: CustomizeColumnConfig<T>;
-    // TODO: not yet implemented
     defaultColumnOrder?: (keyof ListQueryFields<T>)[];
     defaultVisibility?: Partial<Record<keyof ListQueryFields<T>, boolean>>;
 }
@@ -76,11 +75,12 @@ export function ListPage<
     title,
     listQuery,
     customizeColumns,
-    route,
+    route: routeOrFn,
     defaultVisibility,
     onSearchTermChange,
 }: ListPageProps<T, U, V>) {
     const { getComponent } = useComponentRegistry();
+    const route = typeof routeOrFn === 'function' ? routeOrFn() : routeOrFn;
     const routeSearch = route.useSearch();
     const navigate = useNavigate<AnyRouter>({ from: route.fullPath });
     const [searchTerm, setSearchTerm] = React.useState<string>('');
@@ -156,6 +156,9 @@ export function ListPage<
                     if (Cmp) {
                         return <Cmp value={value} />;
                     }
+                    if (value !== null && typeof value === 'object') {
+                        return JSON.stringify(value);
+                    }
                     return value;
                 },
                 header: headerContext => {
@@ -168,12 +171,7 @@ export function ListPage<
         });
     }, [fields, customizeColumns]);
 
-    const columnVisibility = {
-        id: false,
-        createdAt: false,
-        updatedAt: false,
-        ...(defaultVisibility ?? {}),
-    };
+    const columnVisibility = getColumnVisibility(fields, defaultVisibility);
 
     function sortToString(sortingStates?: SortingState) {
         return sortingStates?.map(s => `${s.desc ? '-' : ''}${s.id}`).join(',');
@@ -223,4 +221,29 @@ export function ListPage<
             ></DataTable>
         </div>
     );
+}
+
+/**
+ * Returns the default column visibility configuration.
+ *
+ * If the user specifies a `defaultVisibility` object with only true values, we will
+ * assume all the other columns should be false.
+ *
+ * If the user specifies a `defaultVisibility` object with only false values, we will
+ * assume all the other columns should be true.
+ */
+function getColumnVisibility(
+    fields: FieldInfo[],
+    defaultVisibility?: Record<string, boolean>,
+): Record<string, boolean> {
+    const allDefaultsTrue = defaultVisibility && Object.values(defaultVisibility).every(v => v === true);
+    const allDefaultsFalse = defaultVisibility && Object.values(defaultVisibility).every(v => v === false);
+    return {
+        id: false,
+        createdAt: false,
+        updatedAt: false,
+        ...(allDefaultsTrue ? { ...Object.fromEntries(fields.map(f => [f.name, false])) } : {}),
+        ...(allDefaultsFalse ? { ...Object.fromEntries(fields.map(f => [f.name, true])) } : {}),
+        ...defaultVisibility,
+    };
 }

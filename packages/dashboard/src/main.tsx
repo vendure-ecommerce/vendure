@@ -1,50 +1,36 @@
 import { AuthProvider, useAuth } from '@/auth.js';
+import { useDashboardExtensions } from '@/framework/internal/extension-api/use-dashboard-extensions.js';
+import UseExtendedRouter from '@/framework/internal/page/use-extended-router.js';
 import { defaultLocale, dynamicActivate, I18nProvider } from '@/i18n/i18n-provider.js';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React, { useEffect } from 'react';
-import ReactDOM from 'react-dom/client';
-import { RouterProvider, createRouter } from '@tanstack/react-router';
+import { RouterProvider } from '@tanstack/react-router';
+import { router } from '@/router.js';
 
 import '@/framework/defaults.js';
-import { routeTree } from './routeTree.gen';
+import React, { useEffect } from 'react';
+import ReactDOM from 'react-dom/client';
 import './styles.css';
-import { runDashboardExtensions } from 'virtual:dashboard-extensions';
-
-// Set up a Router instance
-const router = createRouter({
-    routeTree,
-    defaultPreload: 'intent',
-    scrollRestoration: true,
-    context: {
-        auth: undefined!, // This will be set after we wrap the app in an AuthProvider
-    },
-});
-
-// Register things for typesafety
-declare module '@tanstack/react-router' {
-    interface Register {
-        router: typeof router;
-    }
-}
 
 const queryClient = new QueryClient();
 
 function InnerApp() {
     const auth = useAuth();
-    return <RouterProvider router={router} context={{ auth }} />;
+    const extendedRouter = UseExtendedRouter(router);
+    return <RouterProvider router={extendedRouter} context={{ auth }} />;
 }
 
 function App() {
     const [i18nLoaded, setI18nLoaded] = React.useState(false);
+    const { extensionsLoaded } = useDashboardExtensions();
     useEffect(() => {
         // With this method we dynamically load the catalogs
         dynamicActivate(defaultLocale, () => {
             setI18nLoaded(true);
         });
-        runDashboardExtensions();
     }, []);
     return (
-        i18nLoaded && (
+        i18nLoaded &&
+        extensionsLoaded && (
             <I18nProvider>
                 <QueryClientProvider client={queryClient}>
                     <AuthProvider>

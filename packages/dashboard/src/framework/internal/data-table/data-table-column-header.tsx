@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dialog.js';
 import { DataTableFilterDialog } from '@/framework/internal/data-table/data-table-filter-dialog.js';
 import { FieldInfo } from '@/framework/internal/document-introspection/get-document-structure.js';
+import { camelCaseToTitleCase } from '@/lib/utils.js';
 import { Trans } from '@lingui/react/macro';
 import { ColumnDef, HeaderContext } from '@tanstack/table-core';
 import { ArrowDown, ArrowUp, ArrowUpDown, EllipsisVertical, Filter } from 'lucide-react';
@@ -31,7 +32,7 @@ export function DataTableColumnHeader({ headerContext, customConfig }: DataTable
     const isFilterable = column.getCanFilter();
 
     const customHeader = customConfig.header;
-    let display = column.id;
+    let display = camelCaseToTitleCase(column.id);
     if (typeof customHeader === 'function') {
         display = customHeader(headerContext);
     } else if (typeof customHeader === 'string') {

@@ -12,7 +12,9 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/s
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import * as React from 'react';
 
-export const Route = createFileRoute('/_authenticated')({
+export const AUTHENTICATED_ROUTE_PREFIX = '/_authenticated';
+
+export const Route = createFileRoute(AUTHENTICATED_ROUTE_PREFIX)({
     beforeLoad: ({ context, location }) => {
         if (!context.auth.isAuthenticated) {
             throw redirect({

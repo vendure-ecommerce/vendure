@@ -34,9 +34,6 @@ export function ProductListPage() {
             customizeColumns={{
                 name: { header: 'Product Name' },
             }}
-            defaultVisibility={{
-                id: true,
-            }}
             onSearchTermChange={searchTerm => {
                 return {
                     name: { contains: searchTerm },
