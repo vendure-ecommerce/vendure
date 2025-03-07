@@ -44,8 +44,6 @@ export const devConfig: VendureConfig = {
         cookieOptions: {
             secret: 'abc',
         },
-        // TODO remove once PR is ready to merge :)
-        // rolePermissionResolverStrategy: new ChannelRolePermissionResolverStrategy(),
     },
     dbConnectionOptions: {
         synchronize: false,
@@ -68,7 +66,7 @@ export const devConfig: VendureConfig = {
         //     platformFeePercent: 10,
         //     platformFeeSKU: 'FEE',
         // }),
-        // ChannelRolePlugin.init({}), // TODO remove once PR is ready to merge :)
+        // ChannelRolePlugin.init({}),
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
