@@ -1,6 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import path from 'path';
 
 import { ConfigService } from '../config/config.service';
 import { ConnectionModule } from '../connection/connection.module';
@@ -10,18 +9,12 @@ import { ServiceModule } from '../service/service.module';
 
 import { AdminApiModule, ApiSharedModule, ShopApiModule } from './api-internal-modules';
 import { configureGraphQLModule } from './config/configure-graphql-module';
+import { VENDURE_ADMIN_API_TYPE_PATHS, VENDURE_SHOP_API_TYPE_PATHS } from './constants';
 import { AuthGuard } from './middleware/auth-guard';
 import { ExceptionLoggerFilter } from './middleware/exception-logger.filter';
 import { IdInterceptor } from './middleware/id-interceptor';
 import { TranslateErrorResultInterceptor } from './middleware/translate-error-result-interceptor';
 import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fields-interceptor';
-
-export const VENDURE_SHOP_API_TYPE_PATHS = ['shop-api', 'common'].map(p =>
-    path.join(__dirname, 'schema', p, '*.graphql'),
-);
-export const VENDURE_ADMIN_API_TYPE_PATHS = ['admin-api', 'common'].map(p =>
-    path.join(__dirname, 'schema', p, '*.graphql'),
-);
 
 /**
  * The ApiModule is responsible for the public API of the application. This is where requests
