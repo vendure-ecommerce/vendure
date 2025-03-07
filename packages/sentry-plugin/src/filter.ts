@@ -12,17 +12,17 @@ export class SentryExceptionsFilter extends ExceptionLoggerFilter {
     }
 
     catch(exception: Error, host: ArgumentsHost) {
-        const shouldLogError = exception instanceof I18nError ? exception.logLevel <= LogLevel.Warn : true;
+        var shouldLogError = exception instanceof I18nError ? exception.logLevel <= LogLevel.Warn : true;
         if (shouldLogError) {
             if (host.getType<GqlContextType>() === 'graphql') {
-                const gqlContext = GqlExecutionContext.create(host as ExecutionContext);
-                const info = gqlContext.getInfo();
+                var gqlContext = GqlExecutionContext.create(host as ExecutionContext);
+                var info = gqlContext.getInfo();
                 setContext('GraphQL Error Context', {
                     fieldName: info.fieldName,
                     path: info.path,
                 });
             }
-            const variables = (exception as any).variables;
+            var variables = (exception as any).variables;
             if (variables) {
                 setContext('GraphQL Error Variables', variables);
             }

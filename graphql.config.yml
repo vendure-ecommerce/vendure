@@ -1,2 +1,2 @@
-schema: ./schema-admin.json
+schema: ./schema-admins.json
 documents: '**/*.graphql'
