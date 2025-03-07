@@ -65,9 +65,8 @@ describe('ShippingMethod resolver', () => {
     });
 
     it('shippingEligibilityCheckers', async () => {
-        const { shippingEligibilityCheckers } = await adminClient.query<Codegen.GetEligibilityCheckersQuery>(
-            GET_ELIGIBILITY_CHECKERS,
-        );
+        const { shippingEligibilityCheckers } =
+            await adminClient.query<Codegen.GetEligibilityCheckersQuery>(GET_ELIGIBILITY_CHECKERS);
 
         expect(shippingEligibilityCheckers).toEqual([
             {
@@ -151,12 +150,12 @@ describe('ShippingMethod resolver', () => {
     });
 
     it('shippingMethods', async () => {
-        const { shippingMethods } = await adminClient.query<Codegen.GetShippingMethodListQuery>(
-            GET_SHIPPING_METHOD_LIST,
-        );
-        expect(shippingMethods.totalItems).toEqual(2);
+        const { shippingMethods } =
+            await adminClient.query<Codegen.GetShippingMethodListQuery>(GET_SHIPPING_METHOD_LIST);
+        expect(shippingMethods.totalItems).toEqual(3);
         expect(shippingMethods.items[0].code).toBe('standard-shipping');
         expect(shippingMethods.items[1].code).toBe('express-shipping');
+        expect(shippingMethods.items[2].code).toBe('express-shipping-taxed');
     });
 
     it('shippingMethod', async () => {
@@ -195,7 +194,7 @@ describe('ShippingMethod resolver', () => {
         });
 
         expect(createShippingMethod).toEqual({
-            id: 'T_3',
+            id: 'T_4',
             code: 'new-method',
             name: 'new method',
             description: '',
@@ -268,7 +267,7 @@ describe('ShippingMethod resolver', () => {
 
         expect(testEligibleShippingMethods).toEqual([
             {
-                id: 'T_3',
+                id: 'T_4',
                 name: 'new method',
                 description: '',
                 price: 100,
@@ -292,6 +291,14 @@ describe('ShippingMethod resolver', () => {
                 priceWithTax: 1000,
                 metadata: null,
             },
+            {
+                id: 'T_3',
+                name: 'Express Shipping (Taxed)',
+                description: '',
+                price: 1000,
+                priceWithTax: 1200,
+                metadata: null,
+            },
         ]);
     });
 
@@ -301,7 +308,7 @@ describe('ShippingMethod resolver', () => {
             Codegen.UpdateShippingMethodMutationVariables
         >(UPDATE_SHIPPING_METHOD, {
             input: {
-                id: 'T_3',
+                id: 'T_4',
                 translations: [{ languageCode: LanguageCode.en, name: 'changed method', description: '' }],
             },
         });
@@ -310,16 +317,15 @@ describe('ShippingMethod resolver', () => {
     });
 
     it('deleteShippingMethod', async () => {
-        const listResult1 = await adminClient.query<Codegen.GetShippingMethodListQuery>(
-            GET_SHIPPING_METHOD_LIST,
-        );
-        expect(listResult1.shippingMethods.items.map(i => i.id)).toEqual(['T_1', 'T_2', 'T_3']);
+        const listResult1 =
+            await adminClient.query<Codegen.GetShippingMethodListQuery>(GET_SHIPPING_METHOD_LIST);
+        expect(listResult1.shippingMethods.items.map(i => i.id)).toEqual(['T_1', 'T_2', 'T_3', 'T_4']);
 
         const { deleteShippingMethod } = await adminClient.query<
             Codegen.DeleteShippingMethodMutation,
             Codegen.DeleteShippingMethodMutationVariables
         >(DELETE_SHIPPING_METHOD, {
-            id: 'T_3',
+            id: 'T_4',
         });
 
         expect(deleteShippingMethod).toEqual({
@@ -327,10 +333,9 @@ describe('ShippingMethod resolver', () => {
             message: null,
         });
 
-        const listResult2 = await adminClient.query<Codegen.GetShippingMethodListQuery>(
-            GET_SHIPPING_METHOD_LIST,
-        );
-        expect(listResult2.shippingMethods.items.map(i => i.id)).toEqual(['T_1', 'T_2']);
+        const listResult2 =
+            await adminClient.query<Codegen.GetShippingMethodListQuery>(GET_SHIPPING_METHOD_LIST);
+        expect(listResult2.shippingMethods.items.map(i => i.id)).toEqual(['T_1', 'T_2', 'T_3']);
     });
 
     describe('argument ordering', () => {
@@ -379,7 +384,7 @@ describe('ShippingMethod resolver', () => {
                 Codegen.UpdateShippingMethodMutationVariables
             >(UPDATE_SHIPPING_METHOD, {
                 input: {
-                    id: 'T_4',
+                    id: 'T_5',
                     translations: [],
                     calculator: {
                         code: defaultShippingCalculator.code,
@@ -407,7 +412,7 @@ describe('ShippingMethod resolver', () => {
                 Codegen.GetShippingMethodQuery,
                 Codegen.GetShippingMethodQueryVariables
             >(GET_SHIPPING_METHOD, {
-                id: 'T_4',
+                id: 'T_5',
             });
 
             expect(shippingMethod?.calculator.args).toEqual([

@@ -1079,9 +1079,8 @@ describe('Orders resolver', () => {
         });
 
         it('order.fulfillments resolver for order list', async () => {
-            const { orders } = await adminClient.query<Codegen.GetOrderListFulfillmentsQuery>(
-                GET_ORDER_LIST_FULFILLMENTS,
-            );
+            const { orders } =
+                await adminClient.query<Codegen.GetOrderListFulfillmentsQuery>(GET_ORDER_LIST_FULFILLMENTS);
 
             expect(orders.items[0].fulfillments).toEqual([]);
             expect(orders.items[1].fulfillments?.sort(sortById)).toEqual([
@@ -1170,7 +1169,7 @@ describe('Orders resolver', () => {
                 customers[0].emailAddress,
                 password,
             );
-            await proceedToArrangingPayment(shopClient);
+            await proceedToArrangingPayment(shopClient, 2);
             const order = await addPaymentToOrder(shopClient, failsToSettlePaymentMethod);
             orderGuard.assertSuccess(order);
 
@@ -1290,7 +1289,7 @@ describe('Orders resolver', () => {
         });
 
         it('cannot cancel from ArrangingPayment state', async () => {
-            await proceedToArrangingPayment(shopClient);
+            await proceedToArrangingPayment(shopClient, 2);
             const { order } = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
                 GET_ORDER,
                 {
@@ -1708,7 +1707,7 @@ describe('Orders resolver', () => {
             >(REFUND_ORDER, {
                 input: {
                     lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
-                    shipping: order!.shipping,
+                    shipping: order!.shippingWithTax,
                     adjustment: 0,
                     reason: 'foo',
                     paymentId,
@@ -1716,7 +1715,7 @@ describe('Orders resolver', () => {
             });
             refundGuard.assertSuccess(refundOrder);
 
-            expect(refundOrder.shipping).toBe(order!.shipping);
+            expect(refundOrder.shipping).toBe(order!.shippingWithTax);
             expect(refundOrder.items).toBe(order!.subTotalWithTax);
             expect(refundOrder.total).toBe(order!.totalWithTax);
             expect(refundOrder.transactionId).toBe(null);
@@ -1815,7 +1814,7 @@ describe('Orders resolver', () => {
                 customers[0].emailAddress,
                 password,
             );
-            await proceedToArrangingPayment(shopClient);
+            await proceedToArrangingPayment(shopClient, 2);
             const order = await addPaymentToOrder(shopClient, singleStageRefundFailingPaymentMethod);
             orderGuard.assertSuccess(order);
 
@@ -1827,7 +1826,7 @@ describe('Orders resolver', () => {
             >(REFUND_ORDER, {
                 input: {
                     lines: order.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
-                    shipping: order.shipping,
+                    shipping: order.shippingWithTax,
                     adjustment: 0,
                     reason: 'foo',
                     paymentId: order.payments![0].id,
@@ -1843,7 +1842,7 @@ describe('Orders resolver', () => {
             >(REFUND_ORDER, {
                 input: {
                     lines: order.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
-                    shipping: order.shipping,
+                    shipping: order.shippingWithTax,
                     adjustment: 0,
                     reason: 'foo',
                     paymentId: order.payments![0].id,
@@ -1862,7 +1861,7 @@ describe('Orders resolver', () => {
                 customers[0].emailAddress,
                 password,
             );
-            await proceedToArrangingPayment(shopClient);
+            await proceedToArrangingPayment(shopClient, 2);
             const order = await addPaymentToOrder(shopClient, singleStageRefundablePaymentMethod);
             orderGuard.assertSuccess(order);
 
@@ -1886,7 +1885,7 @@ describe('Orders resolver', () => {
             >(REFUND_ORDER, {
                 input: {
                     lines: order.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
-                    shipping: order.shipping,
+                    shipping: order.shippingWithTax,
                     adjustment: 0,
                     reason: 'foo',
                     paymentId: order.payments![0].id,
@@ -2181,7 +2180,7 @@ describe('Orders resolver', () => {
         });
 
         it('adds a partial payment', async () => {
-            await proceedToArrangingPayment(shopClient);
+            await proceedToArrangingPayment(shopClient, 2);
             const { addPaymentToOrder: order } = await shopClient.query<
                 CodegenShop.AddPaymentToOrderMutation,
                 CodegenShop.AddPaymentToOrderMutationVariables

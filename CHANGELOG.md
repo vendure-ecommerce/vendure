@@ -1,3 +1,27 @@
+## <small>3.1.7 (2025-03-06)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix broken Collection list & Order detail views ([6a5bb90](https://github.com/vendure-ecommerce/vendure/commit/6a5bb90)), fixes regression from [#3368](https://github.com/vendure-ecommerce/vendure/issues/3368)
+
+## <small>3.1.6 (2025-03-06)</small>
+
+
+#### Fixes
+
+* **core** Fix FastImporterService when using stockOnHand ([f97484c](https://github.com/vendure-ecommerce/vendure/commit/f97484c)), fixes regression from [#3288](https://github.com/vendure-ecommerce/vendure/issues/3288)
+
+## <small>3.1.5 (2025-03-06)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix incorrect tracking id on ProductOption's / ProductOption list per page switch (#3368) ([33cfea6](https://github.com/vendure-ecommerce/vendure/commit/33cfea6)), closes [#3368](https://github.com/vendure-ecommerce/vendure/issues/3368)
+* **core** Fix fast-importer-service stock location (#3288) ([59d6447](https://github.com/vendure-ecommerce/vendure/commit/59d6447)), closes [#3288](https://github.com/vendure-ecommerce/vendure/issues/3288)
+* **core** Fix order cancellation when shipping has tax (#3393) ([e753df9](https://github.com/vendure-ecommerce/vendure/commit/e753df9)), closes [#3393](https://github.com/vendure-ecommerce/vendure/issues/3393)
+* **core** Fix server crash when subscribable job times out ([7f851c3](https://github.com/vendure-ecommerce/vendure/commit/7f851c3)), closes [#3397](https://github.com/vendure-ecommerce/vendure/issues/3397)
+
 ## <small>3.1.4 (2025-02-28)</small>
 
 

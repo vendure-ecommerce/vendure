@@ -12,4 +12,5 @@ export const ALL_JOB_TYPES: JobType[] = [
     'active',
     'wait',
     'paused',
+    'prioritized',
 ];
