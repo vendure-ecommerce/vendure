@@ -8,9 +8,7 @@ import { RouterProvider, createRouter } from '@tanstack/react-router';
 import '@/framework/defaults.js';
 import { routeTree } from './routeTree.gen';
 import './styles.css';
-import { dashboardExtensions } from 'virtual:dashboard-extensions';
-
-console.log(`Dashboard extensions:`, dashboardExtensions);
+import { runDashboardExtensions } from 'virtual:dashboard-extensions';
 
 // Set up a Router instance
 const router = createRouter({
@@ -43,6 +41,7 @@ function App() {
         dynamicActivate(defaultLocale, () => {
             setI18nLoaded(true);
         });
+        runDashboardExtensions();
     }, []);
     return (
         i18nLoaded && (

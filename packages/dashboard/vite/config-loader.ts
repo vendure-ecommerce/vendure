@@ -1,8 +1,15 @@
 import { Options, parse, transform } from '@swc/core';
 import { BindingIdentifier, ModuleItem, Pattern, Statement } from '@swc/types';
+import { VendureConfig } from '@vendure/core';
 import fs from 'fs-extra';
 import path from 'path';
 import { pathToFileURL } from 'url';
+
+export interface ConfigLoaderOptions {
+    vendureConfigPath: string;
+    tempDir: string;
+    vendureConfigExport?: string;
+}
 
 /**
  * @description
@@ -20,11 +27,14 @@ import { pathToFileURL } from 'url';
  * these experimental decorators. The compiled files are then loaded by Vite, which is able to handle the compiled
  * JavaScript output.
  */
-export async function loadVendureConfig(configFilePath: string) {
-    const outputPath = path.join(import.meta.dirname, './.vendure-dashboard-temp');
-    const configFileName = path.basename(configFilePath);
+export async function loadVendureConfig(
+    options: ConfigLoaderOptions,
+): Promise<{ vendureConfig: VendureConfig; exportedSymbolName: string }> {
+    const { vendureConfigPath, vendureConfigExport, tempDir } = options;
+    const outputPath = tempDir;
+    const configFileName = path.basename(vendureConfigPath);
     await fs.remove(outputPath);
-    await compileFile(configFilePath, path.join(import.meta.dirname, './.vendure-dashboard-temp'));
+    await compileFile(vendureConfigPath, path.join(import.meta.dirname, './.vendure-dashboard-temp'));
     const compiledConfigFilePath = pathToFileURL(path.join(outputPath, configFileName)).href.replace(
         /.ts$/,
         '.js',
@@ -34,18 +44,24 @@ export async function loadVendureConfig(configFilePath: string) {
 
     // We need to figure out the symbol exported by the config file by
     // analyzing the AST and finding an export with the type "VendureConfig"
-    const ast = await parse(await fs.readFile(configFilePath, 'utf-8'), {
+    const ast = await parse(await fs.readFile(vendureConfigPath, 'utf-8'), {
         syntax: 'typescript',
         decorators: true,
     });
-    const configExportedSymbolName = findConfigExport(ast.body);
+    const detectedExportedSymbolName = findConfigExport(ast.body);
+    const configExportedSymbolName = detectedExportedSymbolName || vendureConfigExport;
     if (!configExportedSymbolName) {
-        throw new Error(`Could not find a variable exported as VendureConfig`);
-    } else {
-        console.log(`Found config export: ${configExportedSymbolName}`);
+        throw new Error(
+            `Could not find a variable exported as VendureConfig. Please specify the name of the exported variable using the "vendureConfigExport" option.`,
+        );
     }
     const config = await import(compiledConfigFilePath).then(m => m[configExportedSymbolName]);
-    return config;
+    if (!config) {
+        throw new Error(
+            `Could not find a variable exported as VendureConfig with the name "${configExportedSymbolName}".`,
+        );
+    }
+    return { vendureConfig: config, exportedSymbolName: configExportedSymbolName };
 }
 
 /**

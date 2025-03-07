@@ -49,7 +49,7 @@ import { AdminUiExtension } from '@vendure/ui-devkit/compiler';
         });
         return config;
     },
-    dashboard: './dashboard/index.tsx',
+    dashboard: path.join(__dirname, './dashboard/index.tsx'),
 })
 export class ReviewsPlugin {
     static uiExtensions: AdminUiExtension = {

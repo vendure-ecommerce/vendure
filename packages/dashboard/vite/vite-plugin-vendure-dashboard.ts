@@ -2,52 +2,68 @@ import { lingui } from '@lingui/vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import { PluginOption, UserConfig } from 'vite';
-import { compileFile, loadVendureConfig } from './config-loader.js';
+import { PluginOption } from 'vite';
+
 import { adminApiSchemaPlugin } from './vite-plugin-admin-api-schema.js';
+import { configLoaderPlugin } from './vite-plugin-config-loader.js';
 import { dashboardMetadataPlugin } from './vite-plugin-dashboard-metadata.js';
+import { setRootPlugin } from './vite-plugin-set-root.js';
+
+/**
+ * @description
+ * Options for the {@link vendureDashboardPlugin} Vite plugin.
+ */
+export interface VitePluginVendureDashboardOptions {
+    /**
+     * @description
+     * The path to the Vendure server configuration file.
+     */
+    vendureConfigPath: string | URL;
+    /**
+     * @description
+     * The name of the exported variable from the Vendure server configuration file.
+     * This is only required if the plugin is unable to auto-detect the name of the exported variable.
+     */
+    vendureConfigExport?: string;
+}
 
 /**
  * @description
  * This is a Vite plugin which configures a set of plugins required to build the Vendure Dashboard.
  */
-export async function vendureDashboardPlugin(options: {
-    vendureConfigPath: string;
-    vendureConfigExport?: string;
-}): Promise<PluginOption[]> {
-    // const config = await options.loadConfig();
-    const config = await loadVendureConfig(options.vendureConfigPath);
-
-    const packageRoot = path
-        .join(import.meta.resolve('@vendure/dashboard'), '../..')
-        .replace(/file:[\/\\]+/, '');
+export function vendureDashboardPlugin(options: VitePluginVendureDashboardOptions): PluginOption[] {
+    const tempDir = path.join(import.meta.dirname, './.vendure-dashboard-temp');
+    const normalizedVendureConfigPath = getNormalizedVendureConfigPath(options.vendureConfigPath);
+    const packageRoot = getDashboardPackageRoot();
     const linguiConfigPath = path.join(packageRoot, 'lingui.config.js');
-
     process.env.LINGUI_CONFIG = linguiConfigPath;
     return [
-        lingui({
-            configPath: linguiConfigPath,
-        }),
+        lingui(),
         react({
             babel: {
                 plugins: ['@lingui/babel-plugin-lingui-macro'],
             },
         }),
         tailwindcss(),
-        adminApiSchemaPlugin({ config }),
-        dashboardMetadataPlugin({ config }),
-        {
-            name: 'vendure-set-root-plugin',
-            config: (config: UserConfig) => {
-                console.log(`Setting root to ${packageRoot}`);
-                config.root = packageRoot;
-                config.resolve = {
-                    alias: {
-                        '@': path.resolve(packageRoot, './src'),
-                    },
-                };
-                return config;
-            },
-        },
+        configLoaderPlugin({ vendureConfigPath: normalizedVendureConfigPath, tempDir }),
+        setRootPlugin({ packageRoot }),
+        adminApiSchemaPlugin(),
+        dashboardMetadataPlugin({ rootDir: tempDir }),
     ];
+}
+
+/**
+ * @description
+ * Returns the path to the root of the `@vendure/dashboard` package.
+ */
+function getDashboardPackageRoot(): string {
+    return path.join(import.meta.resolve('@vendure/dashboard'), '../..').replace(/file:[\/\\]+/, '');
+}
+
+/**
+ * Get the normalized path to the Vendure config file given either a string or URL.
+ */
+function getNormalizedVendureConfigPath(vendureConfigPath: string | URL): string {
+    const stringPath = typeof vendureConfigPath === 'string' ? vendureConfigPath : vendureConfigPath.href;
+    return stringPath.replace(/^file:[\//]+/, '');
 }

@@ -21,6 +21,8 @@ import {
 } from 'graphql';
 import { Plugin } from 'vite';
 
+import { ConfigLoaderApi, getConfigLoaderApi } from './vite-plugin-config-loader.js';
+
 export interface SchemaInfo {
     types: {
         [typename: string]: {
@@ -102,28 +104,36 @@ function generateSchemaInfo(schema: GraphQLSchema): SchemaInfo {
 
 const virtualModuleId = 'virtual:admin-api-schema';
 const resolvedVirtualModuleId = `\0${virtualModuleId}`;
-let schemaInfo: SchemaInfo;
 
-export async function adminApiSchemaPlugin(options: { config: VendureConfig }): Promise<Plugin> {
-    resetConfig();
-    await setConfig(options.config ?? {});
-
-    if (!schemaInfo) {
-        const runtimeConfig = await runPluginConfigurations(getConfig() as any);
-        const typesLoader = new GraphQLTypesLoader();
-        const finalSchema = await getFinalVendureSchema({
-            config: runtimeConfig,
-            typePaths: VENDURE_ADMIN_API_TYPE_PATHS,
-            typesLoader,
-            apiType: 'admin',
-            output: 'sdl',
-        });
-        const safeSchema = buildSchema(finalSchema);
-        schemaInfo = generateSchemaInfo(safeSchema);
-    }
+export function adminApiSchemaPlugin(): Plugin {
+    let configLoaderApi: ConfigLoaderApi;
+    let schemaInfo: SchemaInfo;
 
     return {
-        name: 'vendure-admin-api-schema',
+        name: 'vendure:admin-api-schema',
+        async configResolved({ plugins }) {
+            configLoaderApi = getConfigLoaderApi(plugins);
+        },
+        async buildStart() {
+            const vendureConfig = await configLoaderApi.getVendureConfig();
+            if (!schemaInfo) {
+                this.info(`Constructing Admin API schema...`);
+                resetConfig();
+                await setConfig(vendureConfig ?? {});
+
+                const runtimeConfig = await runPluginConfigurations(getConfig() as any);
+                const typesLoader = new GraphQLTypesLoader();
+                const finalSchema = await getFinalVendureSchema({
+                    config: runtimeConfig,
+                    typePaths: VENDURE_ADMIN_API_TYPE_PATHS,
+                    typesLoader,
+                    apiType: 'admin',
+                    output: 'sdl',
+                });
+                const safeSchema = buildSchema(finalSchema);
+                schemaInfo = generateSchemaInfo(safeSchema);
+            }
+        },
         resolveId(id) {
             if (id === virtualModuleId) {
                 return resolvedVirtualModuleId;

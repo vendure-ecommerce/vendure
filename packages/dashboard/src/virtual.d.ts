@@ -3,5 +3,5 @@ declare module 'virtual:admin-api-schema' {
     export const schemaInfo: SchemaInfo;
 }
 declare module 'virtual:dashboard-extensions' {
-    export const dashboardExtensions: any;
+    export const runDashboardExtensions: () => Promise<void>;
 }
