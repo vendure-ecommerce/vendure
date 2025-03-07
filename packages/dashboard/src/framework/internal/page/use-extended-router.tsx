@@ -42,6 +42,9 @@ const UseExtendedRouter = (router: Router<AnyRoute, any, any>) => {
             const newRoute = createRoute({
                 path: `/${pathWithoutLeadingSlash}`,
                 getParentRoute: () => authenticatedRoute,
+                loader: () => ({
+                    breadcrumb: config.title,
+                }),
                 component: () => (
                     <ListPage
                         title={config.title}

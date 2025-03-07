@@ -1,11 +1,12 @@
 import { NavMenuItem } from '@/framework/internal/nav-menu/nav-menu.js';
 import { ListPageProps, ListQueryOptionsShape, ListQueryShape } from '@/framework/internal/page/list-page.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
+import React from 'react';
 
 export interface DashboardBaseRouteDefinition {
     id: string;
     navMenuItem?: Partial<NavMenuItem> & { sectionId: string };
-    title: string;
+    title: string | React.ReactElement;
 }
 
 export interface DashboardListRouteDefinition<

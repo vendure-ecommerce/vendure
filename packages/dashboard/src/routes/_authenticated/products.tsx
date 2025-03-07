@@ -5,6 +5,9 @@ import React from 'react';
 
 export const Route = createFileRoute('/_authenticated/products')({
     component: ProductListPage,
+    loader: () => ({
+        breadcrumb: 'Products',
+    }),
 });
 
 const productListDocument = graphql(`
