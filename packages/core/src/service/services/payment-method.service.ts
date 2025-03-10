@@ -307,6 +307,7 @@ export class PaymentMethodService {
             .leftJoin('method.channels', 'channel')
             .where('method.code = :code', { code: method })
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
+            .andWhere('method.enabled IS true')
             .getOne();
         if (!paymentMethod) {
             throw new UserInputError('error.payment-method-not-found', { method });
