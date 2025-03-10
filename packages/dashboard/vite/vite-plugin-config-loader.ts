@@ -10,9 +10,8 @@ export interface ConfigLoaderApi {
 export const configLoaderName = 'vendure:config-loader';
 
 /**
- * This Vite plugin scans the configured plugins for any dashboard extensions and dynamically
- * generates an import statement for each one, wrapped up in a `runDashboardExtensions()`
- * function which can then be imported and executed in the Dashboard app.
+ * This Vite plugin loads the VendureConfig from the specified file path, and
+ * makes it available to other plugins via the `ConfigLoaderApi`.
  */
 export function configLoaderPlugin(options: ConfigLoaderOptions): Plugin {
     let vendureConfig: VendureConfig;
