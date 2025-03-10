@@ -9,7 +9,7 @@ import { useMemo } from 'react';
  * Extends the TanStack Router with additional routes for each dashboard
  * extension.
  */
-const UseExtendedRouter = (router: Router<AnyRoute, any, any>) => {
+export const useExtendedRouter = (router: Router<AnyRoute, any, any>) => {
     const { extensionsLoaded } = useDashboardExtensions();
 
     return useMemo(() => {
@@ -77,6 +77,3 @@ const UseExtendedRouter = (router: Router<AnyRoute, any, any>) => {
         return newRouter;
     }, [router, extensionsLoaded]);
 };
-
-// const UseExtendedRouter = UseExtendedRouter;
-export default UseExtendedRouter;

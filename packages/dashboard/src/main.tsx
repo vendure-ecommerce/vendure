@@ -1,22 +1,19 @@
-import { AuthProvider, useAuth } from '@/auth.js';
+import { AppProviders, queryClient, router } from '@/app-providers.js';
+import { useAuth } from '@/auth.js';
 import { useDashboardExtensions } from '@/framework/internal/extension-api/use-dashboard-extensions.js';
-import UseExtendedRouter from '@/framework/internal/page/use-extended-router.js';
-import { defaultLocale, dynamicActivate, I18nProvider } from '@/i18n/i18n-provider.js';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { RouterProvider } from '@tanstack/react-router';
-import { router } from '@/router.js';
+import { useExtendedRouter } from '@/framework/internal/page/use-extended-router.js';
+import { defaultLocale, dynamicActivate } from '@/i18n/i18n-provider.js';
 
 import '@/framework/defaults.js';
+import { RouterProvider } from '@tanstack/react-router';
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import './styles.css';
 
-const queryClient = new QueryClient();
-
 function InnerApp() {
     const auth = useAuth();
-    const extendedRouter = UseExtendedRouter(router);
-    return <RouterProvider router={extendedRouter} context={{ auth }} />;
+    const extendedRouter = useExtendedRouter(router);
+    return <RouterProvider router={extendedRouter} context={{ auth, queryClient }} />;
 }
 
 function App() {
@@ -31,13 +28,9 @@ function App() {
     return (
         i18nLoaded &&
         extensionsLoaded && (
-            <I18nProvider>
-                <QueryClientProvider client={queryClient}>
-                    <AuthProvider>
-                        <InnerApp />
-                    </AuthProvider>
-                </QueryClientProvider>
-            </I18nProvider>
+            <AppProviders>
+                <InnerApp />
+            </AppProviders>
         )
     );
 }
