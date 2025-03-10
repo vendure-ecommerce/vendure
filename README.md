@@ -93,7 +93,7 @@ The first step is to populate the dev server with some test data:
 ```bash
 cd packages/dev-server
 
-[DB=mysql|postres|sqlite] npm run populate
+[DB=mysql|postgres|sqlite] npm run populate
  ```
 
 If you do not specify the `DB` variable, it will default to "mysql". If you specifically want to develop against Postgres,
