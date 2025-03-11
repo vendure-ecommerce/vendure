@@ -50,18 +50,18 @@ export type CachedSession = {
  * SQL query each time. Therefore, we cache the session data only perform the SQL query once and upon
  * invalidation of the cache.
  *
- * The Vendure default from v3.1+ is to use a the {@link DefaultSessionCacheStrategy}, which delegates
+ * The Vendure default from v3.1+ is to use the {@link DefaultSessionCacheStrategy}, which delegates
  * to the configured {@link CacheStrategy} to store the session data. This should be suitable
  * for most use-cases.
  *
  * :::note
  *
- * If you are using v3.1 or later, you should not normally need to implement a custom `SessionCacheStrategy`,
+ * If you are using v3.1 or later, you should normally not need to implement a custom `SessionCacheStrategy`,
  * since this is now handled by the {@link DefaultSessionCacheStrategy}.
  *
  * :::
  *
- * Prior to v3.1, the default was to use the {@link InMemorySessionCacheStrategy}, which is fast but suitable for
+ * Prior to v3.1, the default was to use the {@link InMemorySessionCacheStrategy}, which is fast but only suitable for
  * single-instance deployments.
  *
  * :::info
