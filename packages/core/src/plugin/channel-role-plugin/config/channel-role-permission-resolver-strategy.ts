@@ -18,16 +18,12 @@ import { ChannelRoleService } from '../services/channel-role.service';
 
 export class ChannelRolePermissionResolverStrategy implements RolePermissionResolverStrategy {
     private connection: TransactionalConnection;
-    // If the UserService is imported directly Nest crashes with a "Nest can't resolve dependencies of the AdministratorService"-Error
-    private userService: import('../../../service/services/user.service').UserService;
 
     private channelRoleService: ChannelRoleService;
 
+    // eslint-disable-next-line @typescript-eslint/require-await
     async init(injector: Injector) {
         this.connection = injector.get(TransactionalConnection);
-        this.userService = injector.get(
-            (await import('../../../service/services/user.service.js')).UserService,
-        );
         this.channelRoleService = injector.get(ChannelRoleService);
     }
 
