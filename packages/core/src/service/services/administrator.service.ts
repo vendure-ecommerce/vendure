@@ -28,6 +28,7 @@ import { RequestContextService } from '../helpers/request-context/request-contex
 import { getChannelPermissions } from '../helpers/utils/get-user-channels-permissions';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
+import { ChannelService } from './channel.service';
 import { RoleService } from './role.service';
 import { UserService } from './user.service';
 
@@ -46,6 +47,7 @@ export class AdministratorService {
         private passwordCipher: PasswordCipher,
         private userService: UserService,
         private roleService: RoleService,
+        private channelService: ChannelService,
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
         private requestContextService: RequestContextService,
@@ -125,7 +127,7 @@ export class AdministratorService {
      * Create a new Administrator.
      */
     async create(ctx: RequestContext, input: CreateAdministratorInput): Promise<Administrator> {
-        await this.checkActiveUserCanGrantRoles(ctx, input.roleIds);
+        await this.checkActiveUserCanGrantRoles(ctx, input.roleIds); // TODO use this
         const administrator = new Administrator(input);
         administrator.emailAddress = normalizeEmailAddress(input.emailAddress);
         administrator.user = await this.userService.createAdminUser(ctx, input.emailAddress, input.password);
@@ -166,7 +168,7 @@ export class AdministratorService {
             throw new EntityNotFoundError('Administrator', input.id);
         }
         if (input.roleIds) {
-            await this.checkActiveUserCanGrantRoles(ctx, input.roleIds);
+            await this.checkActiveUserCanGrantRoles(ctx, input.roleIds); // TODO use this
         }
         let updatedAdministrator = patchEntity(administrator, input);
         await this.connection.getRepository(ctx, Administrator).save(administrator, { reload: false });
@@ -333,7 +335,6 @@ export class AdministratorService {
 
         if (!superAdminUser) {
             const ctx = await this.requestContextService.create({ apiType: 'admin' });
-            const superAdminRole = await this.roleService.getSuperAdminRole();
             const administrator = new Administrator({
                 emailAddress: superadminCredentials.identifier,
                 firstName: 'Super',
@@ -346,8 +347,16 @@ export class AdministratorService {
             );
             const { id } = await this.connection.getRepository(ctx, Administrator).save(administrator);
             const createdAdministrator = await assertFound(this.findOne(ctx, id));
-            createdAdministrator.user.roles.push(superAdminRole);
-            await this.connection.getRepository(ctx, User).save(createdAdministrator.user, { reload: false });
+
+            const superAdminRole = await this.roleService.getSuperAdminRole();
+            const defaultChannel = await this.channelService.getDefaultChannel();
+
+            // TODO why does this fail?! connection is undefined inside the strategy... ?!?!?!
+            await this.configService.authOptions.rolePermissionResolverStrategy.saveUserRoles(
+                ctx,
+                createdAdministrator.user,
+                [{ channelId: defaultChannel.id, roleId: superAdminRole.id }],
+            );
         } else {
             const superAdministrator = await this.connection.rawConnection
                 .getRepository(Administrator)

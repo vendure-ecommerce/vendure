@@ -18,7 +18,6 @@ import { ChannelRoleService } from '../services/channel-role.service';
 
 export class ChannelRolePermissionResolverStrategy implements RolePermissionResolverStrategy {
     private connection: TransactionalConnection;
-
     private channelRoleService: ChannelRoleService;
 
     // eslint-disable-next-line @typescript-eslint/require-await
