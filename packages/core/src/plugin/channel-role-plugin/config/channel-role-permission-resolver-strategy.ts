@@ -34,8 +34,11 @@ export class ChannelRolePermissionResolverStrategy implements RolePermissionReso
     // eslint-disable-next-line @typescript-eslint/require-await
     async getChannelIdsFromAdministratorMutationInput<
         T extends CreateAdministratorInput | UpdateAdministratorInput,
-    >(ctx: RequestContext, input: T & { channelRoleIds: ChannelRoleInput[] }): Promise<ChannelRoleInput[]> {
-        return input.channelRoleIds;
+    >(ctx: RequestContext, input: T & { channelRoles: ChannelRoleInput[] }): Promise<ChannelRoleInput[]> {
+        /**
+         * I dislike how the property on input is hardcoded and must conform to the api extension of the plugin
+         */
+        return input.channelRoles;
     }
 
     /**

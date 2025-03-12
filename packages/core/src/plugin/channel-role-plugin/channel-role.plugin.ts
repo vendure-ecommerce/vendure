@@ -89,6 +89,8 @@ export interface ChannelRoleOptions {}
             }
             extend input CreateAdministratorInput {
                 channelRoles: [ChannelRoleInput!]!
+                # Sadly we cant just overwrite it like this :-(
+                # roleIds: [ID!] @deprecated(reason: "Use \`channelRoles\` due to ChannelRolePlugin")
             }
             extend input UpdateAdministratorInput {
                 channelRoles: [ChannelRoleInput!]!
