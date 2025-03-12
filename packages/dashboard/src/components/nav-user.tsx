@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuth } from '@/auth.js';
+import { useAuth } from '@/providers/auth.js';
 import { Route } from '@/routes/_authenticated.js';
 import { useRouter } from '@tanstack/react-router';
 import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from 'lucide-react';

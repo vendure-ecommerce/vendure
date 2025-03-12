@@ -40,7 +40,6 @@ export function useGeneratedForm<
     const updateFields = getOperationVariablesFields(document);
     const schema = createFormSchemaFromFields(updateFields);
     const defaultValues = getDefaultValuesFromFields(updateFields);
-    console.log(`defaultValues`, defaultValues);
     const form = useForm({
         resolver: zodResolver(schema),
         defaultValues,

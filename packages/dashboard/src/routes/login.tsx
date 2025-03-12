@@ -1,4 +1,4 @@
-import { useAuth } from '@/auth.js';
+import { useAuth } from '@/providers/auth.js';
 import { LoginForm } from '@/components/login-form';
 import { createFileRoute, Navigate, redirect, useRouterState } from '@tanstack/react-router';
 import * as React from 'react';

@@ -20,13 +20,14 @@ export function getDetailQueryOptions<T, V extends Variables = Variables>(
 
 export interface DetailPageProps extends PageProps {
     entity: any;
+    children?: React.ReactNode;
 }
 
-export function DetailPage({ title, entity }: DetailPageProps) {
+export function DetailPage({ title, entity, children }: DetailPageProps) {
     return (
         <div>
             <h1 className="text-2xl font-bold">{title}</h1>
-            <pre className="max-w-lg overflow-scroll">{JSON.stringify(entity, null, 2)}</pre>
+            {children}
         </div>
     );
 }
