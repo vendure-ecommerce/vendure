@@ -26,7 +26,7 @@ export interface DetailPageProps extends PageProps {
 export function DetailPage({ title, entity, children }: DetailPageProps) {
     return (
         <div>
-            <h1 className="text-2xl font-bold">{title}</h1>
+            <h1 className="text-2xl font-bold mb-4">{title}</h1>
             {children}
         </div>
     );

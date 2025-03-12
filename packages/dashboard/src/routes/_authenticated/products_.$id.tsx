@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/form.js';
 import { Input } from '@/components/ui/input.js';
 import { Switch } from '@/components/ui/switch.js';
+import { Textarea } from '@/components/ui/textarea.js';
 import { useGeneratedForm } from '@/framework/internal/form-engine/use-generated-form.js';
 import { DetailPage, getDetailQueryOptions } from '@/framework/internal/page/detail-page.js';
 import { api } from '@/graphql/api.js';
@@ -95,9 +96,6 @@ export function ProductDetailPage() {
             console.error(err);
         },
     });
-    const [contentLanguage, setContentLanguage] = React.useState('en');
-
-    const serverConfig = useServerConfig();
 
     const { form, submitHandler } = useGeneratedForm({
         document: updateProductDocument,
@@ -122,7 +120,7 @@ export function ProductDetailPage() {
 
     return (
         <DetailPage title={entity?.name ?? ''} route={Route} entity={entity}>
-            <ContentLanguageSelector value={contentLanguage} onChange={setContentLanguage} />
+            <ContentLanguageSelector className="mb-4" />
             <Form {...form}>
                 <form onSubmit={submitHandler} className="space-y-8">
                     <Card className="">
@@ -159,7 +157,6 @@ export function ProductDetailPage() {
                             <TranslatableFormField
                                 control={form.control}
                                 name="name"
-                                languageCode={contentLanguage}
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>name</FormLabel>
@@ -174,12 +171,25 @@ export function ProductDetailPage() {
                             <TranslatableFormField
                                 control={form.control}
                                 name="slug"
-                                languageCode={contentLanguage}
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Slug</FormLabel>
                                         <FormControl>
                                             <Input placeholder="" {...field} />
+                                        </FormControl>
+                                        <FormDescription></FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <TranslatableFormField
+                                control={form.control}
+                                name="description"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Description</FormLabel>
+                                        <FormControl>
+                                            <Textarea className="resize-none" {...field} />
                                         </FormControl>
                                         <FormDescription></FormDescription>
                                         <FormMessage />

@@ -259,7 +259,7 @@ export interface ServerConfig {
 }
 
 // create a provider for the global settings
-export const ServerConfigProvider = ({ children }: { childred: React.ReactNode }) => {
+export const ServerConfigProvider = ({ children }: { children: React.ReactNode }) => {
     const { data } = useQuery({
         queryKey: ['getServerConfig'],
         queryFn: () => api.query(getServerConfigDocument),

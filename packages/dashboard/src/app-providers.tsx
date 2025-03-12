@@ -5,6 +5,7 @@ import { routeTree } from '@/routeTree.gen.js';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createRouter } from '@tanstack/react-router';
 import React from 'react';
+import { UserSettingsProvider } from './providers/user-settings.js';
 
 export const queryClient = new QueryClient();
 
@@ -31,7 +32,9 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
         <I18nProvider>
             <QueryClientProvider client={queryClient}>
                 <ServerConfigProvider>
-                    <AuthProvider>{children}</AuthProvider>
+                    <UserSettingsProvider>
+                        <AuthProvider>{children}</AuthProvider>
+                    </UserSettingsProvider>
                 </ServerConfigProvider>
             </QueryClientProvider>
         </I18nProvider>

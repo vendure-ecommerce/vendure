@@ -13,6 +13,7 @@ import {
 
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
+import { useUserSettings } from '@/providers/user-settings.js';
 
 const Form = FormProvider;
 
@@ -44,14 +45,13 @@ const TranslatableFormField = <
     TFieldValues extends FieldValues & { translations?: Array<{ languageCode: string }> | null } = FieldValues,
 >({
     name,
-    languageCode,
     ...props
 }: Omit<ControllerProps<TFieldValues>, 'name'> & { 
     name: keyof Omit<NonNullable<TFieldValues['translations']>[number], 'languageCode'>;
-    languageCode: string; 
 }) => {
+    const { contentLanguage } = useUserSettings().settings;
     const index = props.control?._formValues?.translations?.findIndex(
-        (translation: any) => translation?.languageCode === languageCode,
+        (translation: any) => translation?.languageCode === contentLanguage,
     );
     if (index === undefined || index === -1) {
         return null;
