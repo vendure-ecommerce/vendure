@@ -23,6 +23,7 @@
     "lingui.config.js"
   ],
   "dependencies": {
+    "@hookform/resolvers": "^4.1.3",
     "@lingui/core": "^5.2.0",
     "@lingui/react": "^5.2.0",
     "@radix-ui/react-avatar": "^1.1.3",
@@ -33,6 +34,7 @@
     "@radix-ui/react-select": "^2.1.6",
     "@radix-ui/react-separator": "^1.1.2",
     "@radix-ui/react-slot": "^1.1.2",
+    "@radix-ui/react-switch": "^1.1.3",
     "@radix-ui/react-tooltip": "^1.1.8",
     "@tailwindcss/vite": "^4.0.7",
     "@tanstack/react-query": "^5.66.7",
@@ -47,11 +49,13 @@
     "lucide-react": "^0.475.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hook-form": "^7.54.2",
     "tailwind-merge": "^3.0.1",
     "tailwindcss": "^4.0.6",
     "tailwindcss-animate": "^1.0.7",
     "unplugin-swc": "^1.5.1",
-    "use-debounce": "^10.0.4"
+    "use-debounce": "^10.0.4",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",

@@ -24,9 +24,9 @@ export interface DetailPageProps extends PageProps {
 
 export function DetailPage({ title, entity }: DetailPageProps) {
     return (
-        <div className="m-4">
+        <div>
             <h1 className="text-2xl font-bold">{title}</h1>
-            <pre>{JSON.stringify(entity, null, 2)}</pre>
+            <pre className="max-w-lg overflow-scroll">{JSON.stringify(entity, null, 2)}</pre>
         </div>
     );
 }

@@ -4,7 +4,9 @@ import {
     FieldNode,
     FragmentDefinitionNode,
     FragmentSpreadNode,
+    VariableDefinitionNode,
 } from 'graphql';
+import { NamedTypeNode, TypeNode } from 'graphql/language/ast.js';
 import { schemaInfo } from 'virtual:admin-api-schema';
 
 export interface FieldInfo {
@@ -14,6 +16,7 @@ export interface FieldInfo {
     list: boolean;
     isPaginatedList: boolean;
     isScalar: boolean;
+    typeInfo?: FieldInfo[];
 }
 
 /**
@@ -62,6 +65,35 @@ export function getListQueryFields(documentNode: DocumentNode): FieldInfo[] {
     return fields;
 }
 
+export function getOperationVariablesFields(documentNode: DocumentNode): FieldInfo[] {
+    const fields: FieldInfo[] = [];
+
+    const operationDefinition = documentNode.definitions.find(
+        (def): def is OperationDefinitionNode => def.kind === 'OperationDefinition',
+    );
+
+    if (operationDefinition?.variableDefinitions) {
+        operationDefinition.variableDefinitions.forEach(variable => {
+            const unwrappedType = unwrapVariableDefinitionType(variable.type);
+            const inputName = unwrappedType.name.value;
+            const inputFields = getInputTypeInfo(inputName);
+            fields.push(...inputFields);
+        });
+    }
+
+    return fields;
+}
+
+function unwrapVariableDefinitionType(type: TypeNode): NamedTypeNode {
+    if (type.kind === 'NonNullType') {
+        return unwrapVariableDefinitionType(type.type);
+    }
+    if (type.kind === 'ListType') {
+        return unwrapVariableDefinitionType(type.type);
+    }
+    return type;
+}
+
 export function getQueryName(documentNode: DocumentNode): string {
     const operationDefinition = documentNode.definitions.find(
         (def): def is OperationDefinitionNode =>
@@ -75,6 +107,19 @@ export function getQueryName(documentNode: DocumentNode): string {
     }
 }
 
+export function getMutationName(documentNode: DocumentNode): string {
+    const operationDefinition = documentNode.definitions.find(
+        (def): def is OperationDefinitionNode =>
+            def.kind === 'OperationDefinition' && def.operation === 'mutation',
+    );
+    const firstSelection = operationDefinition?.selectionSet.selections[0];
+    if (firstSelection?.kind === 'Field') {
+        return firstSelection.name.value;
+    } else {
+        throw new Error('Could not determine mutation name');
+    }
+}
+
 function getQueryInfo(name: string): FieldInfo {
     const fieldInfo = schemaInfo.types.Query[name];
     return {
@@ -85,6 +130,31 @@ function getQueryInfo(name: string): FieldInfo {
         isPaginatedList: fieldInfo[3],
         isScalar: schemaInfo.scalars.includes(fieldInfo[0]),
     };
+}
+
+function getInputTypeInfo(name: string): FieldInfo[] {
+    return Object.entries(schemaInfo.inputs[name]).map(([fieldName, fieldInfo]) => {
+        const type = fieldInfo[0];
+        const isScalar = isScalarType(type);
+        const isEnum = isEnumType(type);
+        return {
+            name: fieldName,
+            type,
+            nullable: fieldInfo[1],
+            list: fieldInfo[2],
+            isPaginatedList: fieldInfo[3],
+            isScalar,
+            typeInfo: !isScalar && !isEnum ? getInputTypeInfo(type) : undefined,
+        };
+    });
+}
+
+export function isScalarType(type: string): boolean {
+    return schemaInfo.scalars.includes(type);
+}
+
+export function isEnumType(type: string): boolean {
+    return schemaInfo.enums[type] != null;
 }
 
 function getPaginatedListType(name: string): string | undefined {

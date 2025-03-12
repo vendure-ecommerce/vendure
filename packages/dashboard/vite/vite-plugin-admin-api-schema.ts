@@ -14,6 +14,7 @@ import {
     GraphQLObjectType,
     GraphQLSchema,
     GraphQLType,
+    isEnumType,
     isInputObjectType,
     isObjectType,
     isScalarType,
@@ -22,28 +23,28 @@ import { Plugin } from 'vite';
 
 import { ConfigLoaderApi, getConfigLoaderApi } from './vite-plugin-config-loader.js';
 
+export type FieldInfoTuple = readonly [
+    type: string,
+    nullable: boolean,
+    list: boolean,
+    isPaginatedList: boolean,
+];
+
 export interface SchemaInfo {
     types: {
         [typename: string]: {
-            [fieldname: string]: readonly [
-                type: string,
-                nullable: boolean,
-                list: boolean,
-                isPaginatedList: boolean,
-            ];
+            [fieldname: string]: FieldInfoTuple;
         };
     };
     inputs: {
         [typename: string]: {
-            [fieldname: string]: readonly [
-                type: string,
-                nullable: boolean,
-                list: boolean,
-                isPaginatedList: boolean,
-            ];
+            [fieldname: string]: FieldInfoTuple;
         };
     };
     scalars: string[];
+    enums: {
+        [typename: string]: string[];
+    };
 }
 
 const virtualModuleId = 'virtual:admin-api-schema';
@@ -121,7 +122,7 @@ function getTypeInfo(type: GraphQLType) {
 
 function generateSchemaInfo(schema: GraphQLSchema): SchemaInfo {
     const types = schema.getTypeMap();
-    const result: SchemaInfo = { types: {}, inputs: {}, scalars: [] };
+    const result: SchemaInfo = { types: {}, inputs: {}, scalars: [], enums: {} };
 
     Object.values(types).forEach(type => {
         if (isObjectType(type)) {
@@ -142,6 +143,9 @@ function generateSchemaInfo(schema: GraphQLSchema): SchemaInfo {
         }
         if (isScalarType(type)) {
             result.scalars.push(type.name);
+        }
+        if (isEnumType(type)) {
+            result.enums[type.name] = type.getValues().map(v => v.value);
         }
     });
 

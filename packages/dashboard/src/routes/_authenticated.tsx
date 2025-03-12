@@ -36,7 +36,9 @@ function AuthLayout() {
                         <GeneratedBreadcrumbs />
                     </div>
                 </header>
-                <Outlet />
+                <div className="m-4">
+                    <Outlet />
+                </div>
             </SidebarInset>
         </SidebarProvider>
     );
