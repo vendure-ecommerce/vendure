@@ -1,5 +1,5 @@
 import { AdminUiPlugin, AdminUiPluginOptions } from '@vendure/admin-ui-plugin';
-import { AdminUiConfig, VendureConfig } from '@vendure/core';
+import { AdminUiConfig, Type, VendureConfig } from '@vendure/core';
 import { getPluginDashboardExtensions } from '@vendure/core';
 import path from 'path';
 import { Plugin } from 'vite';
@@ -34,13 +34,15 @@ export function uiConfigPlugin(): Plugin {
                     vendureConfig = await configLoaderApi.getVendureConfig();
                 }
 
-                const adminUiPlugin = vendureConfig.plugins?.find(plugin => plugin.name === 'AdminUiPlugin');
+                const adminUiPlugin = vendureConfig.plugins?.find(
+                    plugin => (plugin as Type<any>).name === 'AdminUiPlugin',
+                );
 
                 if (!adminUiPlugin) {
                     throw new Error('AdminUiPlugin not found');
                 }
 
-                const adminUiOptions = adminUiPlugin.options as AdminUiPluginOptions;
+                const adminUiOptions = (adminUiPlugin as any).options as AdminUiPluginOptions;
 
                 return `
                     export const uiConfig = ${JSON.stringify(adminUiOptions.adminUiConfig)}

@@ -18,6 +18,7 @@ import { useGeneratedForm } from '@/framework/internal/form-engine/use-generated
 import { TranslatableFormField } from '@/framework/internal/form/field.js';
 import { DetailPage, getDetailQueryOptions } from '@/framework/internal/page/detail-page.js';
 import { api } from '@/graphql/api.js';
+import { assetFragment } from '@/graphql/fragments.js';
 import { graphql } from '@/graphql/graphql.js';
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
@@ -43,22 +44,10 @@ const productDetailFragment = graphql(`
         slug
         description
         featuredAsset {
-            id
-            preview
-            name
-            focalPoint {
-                x
-                y
-            }
+            ...Asset
         }
         assets {
-            id
-            preview
-            name
-            focalPoint {
-                x
-                y
-            }
+            ...Asset
         }
         translations {
             id
@@ -69,7 +58,7 @@ const productDetailFragment = graphql(`
             description
         }
     }
-`);
+`, [assetFragment]);
 
 const productDetailDocument = graphql(
     `

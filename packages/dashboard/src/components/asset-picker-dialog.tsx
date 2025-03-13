@@ -44,7 +44,7 @@ export function AssetPickerDialog({
           <DialogTitle>{multiSelect ? title : title.replace('Assets', 'Asset')}</DialogTitle>
         </DialogHeader>
         
-        <div className="flex-grow overflow-hidden py-4">
+        <div className="flex-grow py-4">
           <AssetGallery 
             onSelect={handleAssetSelect}
             multiSelect={multiSelect}

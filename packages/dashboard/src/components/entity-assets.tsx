@@ -1,4 +1,5 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { EllipsisIcon } from 'lucide-react';
 import {
     DndContext,
     closestCenter,
@@ -26,13 +27,10 @@ import { Button } from '@/components/ui/button.js';
 import { ImageIcon, PaperclipIcon } from 'lucide-react';
 import { VendureImage } from './vendure-image.js';
 import { AssetPickerDialog } from './asset-picker-dialog.js';
+import { AssetPreviewDialog } from './asset-preview-dialog.js';
+import { AssetFragment } from '@/graphql/fragments.js';
 
-interface Asset {
-    id: string;
-    name?: string | null;
-    preview: string;
-    focalPoint?: { x: number; y: number } | null;
-}
+type Asset = AssetFragment;
 
 export interface EntityAssetValue {
     assetIds?: string[] | null;
@@ -76,45 +74,62 @@ function SortableAsset({
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
-        opacity: isDragging ? 0.5 : 1,
-        zIndex: isDragging ? 1 : 0,
     };
 
     return (
-        <div ref={setNodeRef} style={style} className="relative" {...attributes}>
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <div
-                        {...listeners}
-                        className={`
-              flex items-center justify-center 
-              ${compact ? 'w-12 h-12' : 'w-16 h-16'} 
-              border rounded-md overflow-hidden cursor-pointer
-              ${isFeatured ? 'border-primary ring-1 ring-primary/30' : 'border-border'}
-              ${updatePermissions ? 'hover:border-muted-foreground' : ''}
-            `}
-                        tabIndex={0}
-                    >
-                        <VendureImage asset={asset} mode="crop" preset="tiny" />
-                    </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => onPreview(asset)}>Preview</DropdownMenuItem>
-                    <DropdownMenuItem
-                        disabled={isFeatured || !updatePermissions}
-                        onClick={() => onSetAsFeatured(asset)}
-                    >
-                        Set as featured asset
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                        className="text-destructive"
-                        disabled={!updatePermissions}
-                        onClick={() => onRemove(asset)}
-                    >
-                        Remove asset
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
+        <div ref={setNodeRef} style={style} className="relative group" {...attributes}>
+            {/* Draggable Image Area */}
+            <div
+                {...listeners}
+                className={`
+                    flex items-center justify-center 
+                    ${compact ? 'w-12 h-12' : 'w-16 h-16'} 
+                    border rounded-md overflow-hidden cursor-grab
+                    ${isFeatured ? 'border-primary ring-1 ring-primary/30' : 'border-border'}
+                    ${updatePermissions ? 'hover:border-muted-foreground' : ''}
+                    ${isDragging ? 'opacity-50 cursor-grabbing' : ''}
+                `}
+            >
+                <VendureImage 
+                    asset={asset} 
+                    mode="crop" 
+                    preset="tiny" 
+                />
+            </div>
+
+            {/* Menu Trigger */}
+            {updatePermissions && (
+                <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button 
+                                variant="secondary" 
+                                size="icon" 
+                                className="h-6 w-6 rounded-full shadow-md"
+                            >
+                                <EllipsisIcon className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => onPreview(asset)}>
+                                Preview
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                disabled={isFeatured}
+                                onClick={() => onSetAsFeatured(asset)}
+                            >
+                                Set as featured asset
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() => onRemove(asset)}
+                            >
+                                Remove asset
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            )}
         </div>
     );
 }
@@ -327,7 +342,8 @@ export function EntityAssets({
                 <AssetPreviewDialog
                     asset={previewAsset}
                     assets={assets}
-                    onClose={() => setPreviewAsset(null)}
+                    onOpenChange={() => setPreviewAsset(null)}
+                    onAssetChange={asset => setPreviewAsset(asset)}
                     open={!!previewAsset}
                 />
             )}
@@ -335,17 +351,3 @@ export function EntityAssets({
     );
 }
 
-// Placeholder component - would be implemented separately
-function AssetPreviewDialog({
-    asset,
-    assets,
-    onClose,
-    open,
-}: {
-    asset: Asset;
-    assets: Asset[];
-    onClose: () => void;
-    open: boolean;
-}) {
-    return null; // Implement this component separately
-}

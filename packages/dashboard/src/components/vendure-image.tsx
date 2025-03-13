@@ -21,6 +21,7 @@ export interface VendureImageProps extends React.ImgHTMLAttributes<HTMLImageElem
   quality?: number;
   useFocalPoint?: boolean; // Whether to use the asset's focal point in crop mode
   fallback?: React.ReactNode; // What to show if no asset is provided
+  ref: React.Ref<HTMLImageElement>;
 }
 
 export function VendureImage({
@@ -36,6 +37,7 @@ export function VendureImage({
   alt,
   className,
   style,
+  ref,
   ...imgProps
 }: VendureImageProps) {
   if (!asset) {
@@ -78,6 +80,7 @@ export function VendureImage({
       className={className}
       style={style}
       loading="lazy"
+      ref={ref}
       {...imgProps}
     />
   );

@@ -234,7 +234,7 @@ export function ListPage<
  */
 function getColumnVisibility(
     fields: FieldInfo[],
-    defaultVisibility?: Record<string, boolean>,
+    defaultVisibility?: Record<string, boolean | undefined>,
 ): Record<string, boolean> {
     const allDefaultsTrue = defaultVisibility && Object.values(defaultVisibility).every(v => v === true);
     const allDefaultsFalse = defaultVisibility && Object.values(defaultVisibility).every(v => v === false);

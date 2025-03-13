@@ -19,6 +19,18 @@ import {
 } from '@/components/ui/pagination.js';
 import { Checkbox } from '@/components/ui/checkbox.js';
 import { Loader2, X, Search } from 'lucide-react';
+import { AssetFragment } from '@/graphql/fragments.js';
+
+// Helper function to format file size
+function formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
 
 const getAssetListDocument = graphql(`
     query GetAssetList($options: AssetListOptions) {
@@ -48,15 +60,7 @@ const AssetType = {
     BINARY: 'BINARY',
 } as const;
 
-export interface Asset {
-    id: string;
-    name: string;
-    preview: string;
-    fileSize?: number;
-    mimeType?: string;
-    source: string;
-    focalPoint?: { x: number; y: number } | null;
-}
+export type Asset = AssetFragment;
 
 export interface AssetGalleryProps {
     onSelect: (assets: Asset[]) => void;
@@ -153,7 +157,7 @@ export function AssetGallery({
     return (
         <div className={`flex flex-col ${fixedHeight ? 'h-[600px]' : ''} ${className}`}>
             {showHeader && (
-                <div className="flex flex-col md:flex-row gap-2 mb-4">
+                <div className="flex flex-col md:flex-row gap-2 mb-4 flex-shrink-0">
                     <div className="relative flex-grow">
                         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
@@ -182,51 +186,63 @@ export function AssetGallery({
                 </div>
             )}
 
-            <div
-                className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 ${fixedHeight ? 'overflow-y-auto flex-grow' : ''}`}
-            >
-                {isLoading ? (
-                    <div className="col-span-full flex justify-center py-12">
-                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    </div>
-                ) : (
-                    data?.assets.items.map(asset => (
-                        <Card
-                            key={asset.id}
-                            className={`
-                overflow-hidden cursor-pointer transition-all hover:ring-2 hover:ring-primary/20
-                ${isSelected(asset as Asset) ? 'ring-2 ring-primary' : ''}
-              `}
-                            onClick={() => handleSelect(asset as Asset)}
-                        >
-                            <div className="relative aspect-square bg-muted/30">
-                                <VendureImage
-                                    asset={asset}
-                                    preset="thumb"
-                                    className="w-full h-full object-contain"
-                                />
-                                <div className="absolute top-2 left-2">
-                                    <Checkbox checked={isSelected(asset as Asset)} />
+            <div className={`${fixedHeight ? 'flex-grow overflow-y-auto' : ''}`}>
+                <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 p-1">
+                    {isLoading ? (
+                        <div className="col-span-full flex justify-center py-12">
+                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        </div>
+                    ) : (
+                        data?.assets.items.map(asset => (
+                            <Card
+                                key={asset.id}
+                                className={`
+                                    overflow-hidden cursor-pointer transition-all hover:ring-2 hover:ring-primary/20
+                                    ${isSelected(asset as Asset) ? 'ring-2 ring-primary' : ''}
+                                    flex flex-col min-w-[120px]
+                                `}
+                                onClick={() => handleSelect(asset as Asset)}
+                            >
+                                <div
+                                    className="relative w-full bg-muted/30"
+                                    style={{
+                                        aspectRatio: '1/1',
+                                        minHeight: '120px', // Ensure minimum height for the image
+                                    }}
+                                >
+                                    <VendureImage
+                                        asset={asset}
+                                        preset="thumb"
+                                        className="w-full h-full object-contain"
+                                    />
+                                    <div className="absolute top-2 left-2">
+                                        <Checkbox checked={isSelected(asset as Asset)} />
+                                    </div>
                                 </div>
-                            </div>
-                            <CardContent className="p-2">
-                                <p className="text-xs truncate" title={asset.name}>
-                                    {asset.name}
-                                </p>
-                            </CardContent>
-                        </Card>
-                    ))
-                )}
+                                <CardContent className="p-2">
+                                    <p className="text-xs line-clamp-2 min-h-[2.5rem]" title={asset.name}>
+                                        {asset.name}
+                                    </p>
+                                    {asset.fileSize && (
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                            {formatFileSize(asset.fileSize)}
+                                        </p>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        ))
+                    )}
 
-                {!isLoading && data?.assets.items.length === 0 && (
-                    <div className="col-span-full text-center py-12 text-muted-foreground">
-                        No assets found. Try adjusting your filters.
-                    </div>
-                )}
+                    {!isLoading && data?.assets.items.length === 0 && (
+                        <div className="col-span-full text-center py-12 text-muted-foreground">
+                            No assets found. Try adjusting your filters.
+                        </div>
+                    )}
+                </div>
             </div>
 
             {totalPages > 1 && (
-                <Pagination className="mt-4">
+                <Pagination className="mt-4 flex-shrink-0">
                     <PaginationContent>
                         <PaginationItem>
                             <PaginationPrevious
@@ -335,7 +351,7 @@ export function AssetGallery({
                 </Pagination>
             )}
 
-            <div className="mt-2 text-xs text-muted-foreground">
+            <div className="mt-2 text-xs text-muted-foreground flex-shrink-0">
                 {totalItems} {totalItems === 1 ? 'asset' : 'assets'} found
                 {selected.length > 0 && `, ${selected.length} selected`}
             </div>
