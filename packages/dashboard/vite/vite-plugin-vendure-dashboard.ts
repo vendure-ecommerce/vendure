@@ -60,7 +60,9 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
  * Returns the path to the root of the `@vendure/dashboard` package.
  */
 function getDashboardPackageRoot(): string {
-    return path.join(import.meta.resolve('@vendure/dashboard'), '../..').replace(/^file:\/+/, '/');
+    const fileUrl = import.meta.resolve('@vendure/dashboard');
+    const packagePath = fileUrl.startsWith('file:') ? new URL(fileUrl).pathname : fileUrl;
+    return path.join(packagePath, '../..');
 }
 
 /**
@@ -68,5 +70,8 @@ function getDashboardPackageRoot(): string {
  */
 function getNormalizedVendureConfigPath(vendureConfigPath: string | URL): string {
     const stringPath = typeof vendureConfigPath === 'string' ? vendureConfigPath : vendureConfigPath.href;
-    return stringPath.replace(/^file:[\//]+/, '/');
+    if (stringPath.startsWith('file:')) {
+        return new URL(stringPath).pathname;
+    }
+    return stringPath;
 }
