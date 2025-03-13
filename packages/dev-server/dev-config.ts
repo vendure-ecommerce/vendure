@@ -104,6 +104,7 @@ export const devConfig: VendureConfig = {
         AdminUiPlugin.init({
             route: 'admin',
             port: 5001,
+            adminUiConfig: {},
             // Un-comment to compile a custom admin ui
             // app: compileUiExtensions({
             //     outputPath: path.join(__dirname, './custom-admin-ui'),

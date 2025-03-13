@@ -1,5 +1,5 @@
 import { useAuth } from '@/providers/auth.js';
-import { LoginForm } from '@/components/login-form';
+import { LoginForm } from '@/components/login-form.js';
 import { createFileRoute, Navigate, redirect, useRouterState } from '@tanstack/react-router';
 import * as React from 'react';
 import { z } from 'zod';
@@ -37,7 +37,7 @@ export default function LoginPage() {
 
     const isVerifying = isLoading || auth.status === 'verifying';
     return (
-        <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
+        <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
             <div className="w-full max-w-sm md:max-w-3xl">
                 <LoginForm
                     onFormSubmit={onFormSubmit}
