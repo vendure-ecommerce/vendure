@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
     "build:lib": "tsc --project tsconfig.lib.json",
-    "build:plugin": "tsc --project tsconfig.plugin.json --watch",
+    "build:plugin": "tsc --project tsconfig.plugin.json",
+    "watch:plugin": "tsc --project tsconfig.plugin.json --watch",
     "lint": "eslint .",
     "preview": "vite preview"
   },
