@@ -1,4 +1,5 @@
 import { ContentLanguageSelector } from '@/components/content-language-selector.js';
+import { EntityAssets } from '@/components/entity-assets.js';
 import { Button } from '@/components/ui/button.js';
 import { Card, CardContent, CardHeader } from '@/components/ui/card.js';
 import {
@@ -18,10 +19,9 @@ import { useGeneratedForm } from '@/framework/internal/form-engine/use-generated
 import { DetailPage, getDetailQueryOptions } from '@/framework/internal/page/detail-page.js';
 import { api } from '@/graphql/api.js';
 import { graphql } from '@/graphql/graphql.js';
-import { useServerConfig } from '@/providers/server-config.js';
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import React from 'react';
+import { toast } from 'sonner';
 
 export const Route = createFileRoute('/_authenticated/products_/$id')({
     component: ProductDetailPage,
@@ -45,10 +45,20 @@ const productDetailFragment = graphql(`
         featuredAsset {
             id
             preview
+            name
+            focalPoint {
+                x
+                y
+            }
         }
         assets {
             id
             preview
+            name
+            focalPoint {
+                x
+                y
+            }
         }
         translations {
             id
@@ -90,7 +100,9 @@ export function ProductDetailPage() {
     const updateMutation = useMutation({
         mutationFn: api.mutate(updateProductDocument),
         onSuccess: () => {
-            console.log(`Success`);
+            toast('Updated', {
+                position: 'top-right',
+            });
         },
         onError: err => {
             console.error(err);
@@ -196,6 +208,28 @@ export function ProductDetailPage() {
                                     </FormItem>
                                 )}
                             />
+                        </CardContent>
+                    </Card>
+                    <Card className="">
+                        <CardHeader />
+                        <CardContent>
+                            <FormItem>
+                                <FormLabel>Assets</FormLabel>
+                                <FormControl>
+                                    <EntityAssets
+                                        assets={entity?.assets}
+                                        featuredAsset={entity?.featuredAsset}
+                                        compact={false}
+                                        value={form.getValues()}
+                                        onChange={value => {
+                                            form.setValue('featuredAssetId', value.featuredAssetId);
+                                            form.setValue('assetIds', value.assetIds);
+                                        }}
+                                    />
+                                </FormControl>
+                                <FormDescription></FormDescription>
+                                <FormMessage />
+                            </FormItem>
                         </CardContent>
                     </Card>
                     <Button type="submit">Submit</Button>
