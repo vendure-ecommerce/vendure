@@ -1,5 +1,5 @@
-import { AppSidebar } from '@/components/app-sidebar.js';
-import { GeneratedBreadcrumbs } from '@/components/generated-breadcrumbs.js';
+import { AppSidebar } from '@/components/layout/app-sidebar.js';
+import { GeneratedBreadcrumbs } from '@/components/layout/generated-breadcrumbs.js';
 import { Separator } from '@/components/ui/separator.js';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar.js';
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';

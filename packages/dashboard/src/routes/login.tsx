@@ -1,5 +1,5 @@
 import { useAuth } from '@/providers/auth.js';
-import { LoginForm } from '@/components/login-form.js';
+import { LoginForm } from '@/components/login/login-form.js';
 import { createFileRoute, Navigate, redirect, useRouterState } from '@tanstack/react-router';
 import * as React from 'react';
 import { z } from 'zod';

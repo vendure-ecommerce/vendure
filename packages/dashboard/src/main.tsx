@@ -1,9 +1,9 @@
 import { AppProviders, queryClient, router } from '@/app-providers.js';
 import { useAuth } from '@/providers/auth.js';
-import { useDashboardExtensions } from '@/framework/internal/extension-api/use-dashboard-extensions.js';
-import { useExtendedRouter } from '@/framework/internal/page/use-extended-router.js';
+import { useDashboardExtensions } from '@/framework/extension-api/use-dashboard-extensions.js';
+import { useExtendedRouter } from '@/framework/page/use-extended-router.js';
 import { defaultLocale, dynamicActivate } from '@/providers/i18n-provider.js';
-import { Toaster } from "@/components/ui/sonner.js"
+import { Toaster } from '@/components/ui/sonner.js';
 
 import '@/framework/defaults.js';
 import { RouterProvider } from '@tanstack/react-router';

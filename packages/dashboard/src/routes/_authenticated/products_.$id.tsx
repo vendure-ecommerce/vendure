@@ -1,5 +1,5 @@
-import { ContentLanguageSelector } from '@/components/content-language-selector.js';
-import { EntityAssets } from '@/components/entity-assets.js';
+import { ContentLanguageSelector } from '@/components/layout/content-language-selector.js';
+import { EntityAssets } from '@/components/shared/entity-assets.js';
 import { Button } from '@/components/ui/button.js';
 import { Card, CardContent, CardHeader } from '@/components/ui/card.js';
 import {
@@ -14,9 +14,9 @@ import {
 import { Input } from '@/components/ui/input.js';
 import { Switch } from '@/components/ui/switch.js';
 import { Textarea } from '@/components/ui/textarea.js';
-import { useGeneratedForm } from '@/framework/internal/form-engine/use-generated-form.js';
-import { TranslatableFormField } from '@/framework/internal/form/field.js';
-import { DetailPage, getDetailQueryOptions } from '@/framework/internal/page/detail-page.js';
+import { useGeneratedForm } from '@/framework/form-engine/use-generated-form.js';
+import { TranslatableFormField } from '@/components/shared/translatable-form-field.js';
+import { DetailPage, getDetailQueryOptions } from '@/framework/page/detail-page.js';
 import { api } from '@/graphql/api.js';
 import { assetFragment } from '@/graphql/fragments.js';
 import { graphql } from '@/graphql/graphql.js';
@@ -34,31 +34,34 @@ export const Route = createFileRoute('/_authenticated/products_/$id')({
     },
 });
 
-const productDetailFragment = graphql(`
-    fragment ProductDetail on Product {
-        id
-        createdAt
-        updatedAt
-        enabled
-        name
-        slug
-        description
-        featuredAsset {
-            ...Asset
-        }
-        assets {
-            ...Asset
-        }
-        translations {
+const productDetailFragment = graphql(
+    `
+        fragment ProductDetail on Product {
             id
-            languageCode
-
+            createdAt
+            updatedAt
+            enabled
             name
             slug
             description
+            featuredAsset {
+                ...Asset
+            }
+            assets {
+                ...Asset
+            }
+            translations {
+                id
+                languageCode
+
+                name
+                slug
+                description
+            }
         }
-    }
-`, [assetFragment]);
+    `,
+    [assetFragment],
+);
 
 const productDetailDocument = graphql(
     `
