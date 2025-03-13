@@ -10,12 +10,12 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-    TranslatableFormField,
 } from '@/components/ui/form.js';
 import { Input } from '@/components/ui/input.js';
 import { Switch } from '@/components/ui/switch.js';
 import { Textarea } from '@/components/ui/textarea.js';
 import { useGeneratedForm } from '@/framework/internal/form-engine/use-generated-form.js';
+import { TranslatableFormField } from '@/framework/internal/form/field.js';
 import { DetailPage, getDetailQueryOptions } from '@/framework/internal/page/detail-page.js';
 import { api } from '@/graphql/api.js';
 import { graphql } from '@/graphql/graphql.js';

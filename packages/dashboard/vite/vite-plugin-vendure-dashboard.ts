@@ -9,6 +9,7 @@ import { adminApiSchemaPlugin } from './vite-plugin-admin-api-schema.js';
 import { configLoaderPlugin } from './vite-plugin-config-loader.js';
 import { dashboardMetadataPlugin } from './vite-plugin-dashboard-metadata.js';
 import { setRootPlugin } from './vite-plugin-set-root.js';
+import { uiConfigPlugin } from './vite-plugin-ui-config.js';
 
 /**
  * @description
@@ -52,6 +53,7 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
         setRootPlugin({ packageRoot }),
         adminApiSchemaPlugin(),
         dashboardMetadataPlugin({ rootDir: tempDir }),
+        uiConfigPlugin(),
     ];
 }
 
