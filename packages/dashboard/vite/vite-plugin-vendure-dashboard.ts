@@ -64,7 +64,7 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
 function getDashboardPackageRoot(): string {
     const fileUrl = import.meta.resolve('@vendure/dashboard');
     const packagePath = fileUrl.startsWith('file:') ? new URL(fileUrl).pathname : fileUrl;
-    return path.join(packagePath, '../..');
+    return fixWindowsPath(path.join(packagePath, '../..'));
 }
 
 /**
@@ -73,7 +73,18 @@ function getDashboardPackageRoot(): string {
 function getNormalizedVendureConfigPath(vendureConfigPath: string | URL): string {
     const stringPath = typeof vendureConfigPath === 'string' ? vendureConfigPath : vendureConfigPath.href;
     if (stringPath.startsWith('file:')) {
-        return new URL(stringPath).pathname;
+        return fixWindowsPath(new URL(stringPath).pathname);
     }
-    return stringPath;
+    return fixWindowsPath(stringPath);
+}
+
+function fixWindowsPath(filePath: string): string {
+    // Fix Windows paths that might start with a leading slash
+    if (process.platform === 'win32') {
+        // Remove leading slash before drive letter on Windows
+        if (/^[/\\][A-Za-z]:/.test(filePath)) {
+            return filePath.substring(1);
+        }
+    }
+    return filePath;
 }
