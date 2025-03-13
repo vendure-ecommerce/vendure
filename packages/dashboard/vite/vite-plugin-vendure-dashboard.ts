@@ -38,6 +38,7 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
     const packageRoot = getDashboardPackageRoot();
     const linguiConfigPath = path.join(packageRoot, 'lingui.config.js');
     process.env.LINGUI_CONFIG = linguiConfigPath;
+
     return [
         lingui(),
         TanStackRouterVite({ autoCodeSplitting: true }),
@@ -59,7 +60,7 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
  * Returns the path to the root of the `@vendure/dashboard` package.
  */
 function getDashboardPackageRoot(): string {
-    return path.join(import.meta.resolve('@vendure/dashboard'), '../..').replace(/file:[\/\\]+/, '');
+    return path.join(import.meta.resolve('@vendure/dashboard'), '../..').replace(/^file:\/+/, '/');
 }
 
 /**
@@ -67,5 +68,5 @@ function getDashboardPackageRoot(): string {
  */
 function getNormalizedVendureConfigPath(vendureConfigPath: string | URL): string {
     const stringPath = typeof vendureConfigPath === 'string' ? vendureConfigPath : vendureConfigPath.href;
-    return stringPath.replace(/^file:[\//]+/, '');
+    return stringPath.replace(/^file:[\//]+/, '/');
 }
