@@ -1,5 +1,8 @@
 import type { LucideIcon } from 'lucide-react';
 
+// Define the placement options for navigation sections
+export type NavMenuSectionPlacement = 'top' | 'bottom';
+
 export interface NavMenuItem {
     id: string;
     title: string;
@@ -12,6 +15,7 @@ export interface NavMenuSection {
     icon?: LucideIcon;
     defaultOpen?: boolean;
     items?: NavMenuItem[];
+    placement?: NavMenuSectionPlacement;
 }
 
 export interface NavMenuConfig {
