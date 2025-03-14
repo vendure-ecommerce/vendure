@@ -1,7 +1,9 @@
 import { ContentLanguageSelector } from '@/components/layout/content-language-selector.js';
+import { AssignedFacetValues } from '@/components/shared/assigned-facet-values.js';
 import { EntityAssets } from '@/components/shared/entity-assets.js';
+import { TranslatableFormField } from '@/components/shared/translatable-form-field.js';
 import { Button } from '@/components/ui/button.js';
-import { Card, CardContent, CardHeader } from '@/components/ui/card.js';
+import { Card, CardContent } from '@/components/ui/card.js';
 import {
     Form,
     FormControl,
@@ -15,13 +17,14 @@ import { Input } from '@/components/ui/input.js';
 import { Switch } from '@/components/ui/switch.js';
 import { Textarea } from '@/components/ui/textarea.js';
 import { useGeneratedForm } from '@/framework/form-engine/use-generated-form.js';
-import { TranslatableFormField } from '@/components/shared/translatable-form-field.js';
 import { DetailPage, getDetailQueryOptions } from '@/framework/page/detail-page.js';
 import { api } from '@/graphql/api.js';
 import { assetFragment } from '@/graphql/fragments.js';
 import { graphql } from '@/graphql/graphql.js';
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
+import { Trans } from '@lingui/react/macro';
+import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
+import { useEffect } from 'react';
 import { toast } from 'sonner';
 
 export const Route = createFileRoute('/_authenticated/products_/$id')({
@@ -58,6 +61,16 @@ const productDetailFragment = graphql(
                 slug
                 description
             }
+            facetValues {
+                id
+                name
+                code
+                facet {
+                    id
+                    name
+                    code
+                }
+            }
         }
     `,
     [assetFragment],
@@ -87,7 +100,9 @@ const updateProductDocument = graphql(
 
 export function ProductDetailPage() {
     const params = Route.useParams();
-    const detailQuery = useSuspenseQuery(getDetailQueryOptions(productDetailDocument, { id: params.id }));
+    const queryClient = useQueryClient();
+    const detailQueryOptions = getDetailQueryOptions(productDetailDocument, { id: params.id });
+    const detailQuery = useSuspenseQuery(detailQueryOptions);
     const entity = detailQuery.data.product;
     const updateMutation = useMutation({
         mutationFn: api.mutate(updateProductDocument),
@@ -95,6 +110,8 @@ export function ProductDetailPage() {
             toast('Updated', {
                 position: 'top-right',
             });
+            form.reset();
+            queryClient.invalidateQueries(detailQueryOptions.queryKey);
         },
         onError: err => {
             console.error(err);
@@ -109,6 +126,7 @@ export function ProductDetailPage() {
             enabled: entity.enabled,
             featuredAssetId: entity.featuredAsset?.id,
             assetIds: entity.assets.map(asset => asset.id),
+            facetValueIds: entity.facetValues.map(facetValue => facetValue.id),
             translations: entity.translations.map(translation => ({
                 id: translation.id,
                 languageCode: translation.languageCode,
@@ -124,107 +142,158 @@ export function ProductDetailPage() {
 
     return (
         <DetailPage title={entity?.name ?? ''} route={Route} entity={entity}>
-            <ContentLanguageSelector className="mb-4" />
             <Form {...form}>
                 <form onSubmit={submitHandler} className="space-y-8">
-                    <Card className="">
-                        <CardHeader />
-                        <CardContent>
-                            <FormField
-                                control={form.control}
-                                name="enabled"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Enabled</FormLabel>
-                                        <FormControl>
-                                            <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                        </FormControl>
-                                        <FormDescription>This is your public display name.</FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="featuredAssetId"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>featuredAssetId</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="" {...field} />
-                                        </FormControl>
-                                        <FormDescription></FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <TranslatableFormField
-                                control={form.control}
-                                name="name"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>name</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="" {...field} />
-                                        </FormControl>
-                                        <FormDescription></FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <TranslatableFormField
-                                control={form.control}
-                                name="slug"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Slug</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="" {...field} />
-                                        </FormControl>
-                                        <FormDescription></FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <TranslatableFormField
-                                control={form.control}
-                                name="description"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Description</FormLabel>
-                                        <FormControl>
-                                            <Textarea className="resize-none" {...field} />
-                                        </FormControl>
-                                        <FormDescription></FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </CardContent>
-                    </Card>
-                    <Card className="">
-                        <CardHeader />
-                        <CardContent>
-                            <FormItem>
-                                <FormLabel>Assets</FormLabel>
-                                <FormControl>
-                                    <EntityAssets
-                                        assets={entity?.assets}
-                                        featuredAsset={entity?.featuredAsset}
-                                        compact={false}
-                                        value={form.getValues()}
-                                        onChange={value => {
-                                            form.setValue('featuredAssetId', value.featuredAssetId);
-                                            form.setValue('assetIds', value.assetIds);
-                                        }}
+                    <div className="flex justify-between">
+                        <ContentLanguageSelector className="mb-4" />
+                        <Button
+                            type="submit"
+                            disabled={
+                                !form.formState.isDirty || !form.formState.isValid || updateMutation.isPending
+                            }
+                        >
+                            Submit
+                        </Button>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                        <div className="lg:col-span-3 flex flex-col gap-4">
+                            <Card className="">
+                                <CardContent className="pt-6">
+                                    <div className="flex flex-col gap-4">
+                                        <div className="md:flex w-full gap-4">
+                                            <div className="w-1/2">
+                                                <TranslatableFormField
+                                                    control={form.control}
+                                                    name="name"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>
+                                                                <Trans>Product name</Trans>
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="" {...field} />
+                                                            </FormControl>
+                                                            <FormDescription></FormDescription>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+                                            <div className="w-1/2">
+                                                <TranslatableFormField
+                                                    control={form.control}
+                                                    name="slug"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>
+                                                                <Trans>Slug</Trans>
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Input placeholder="" {...field} />
+                                                            </FormControl>
+                                                            <FormDescription></FormDescription>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+                                        </div>
+                                        <TranslatableFormField
+                                            control={form.control}
+                                            name="description"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>
+                                                        <Trans>Description</Trans>
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <Textarea className="resize-none" {...field} />
+                                                    </FormControl>
+                                                    <FormDescription></FormDescription>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+                        <div className="lg:col-span-1 flex flex-col gap-4">
+                            <Card className="">
+                                <CardContent className="pt-6">
+                                    <FormField
+                                        control={form.control}
+                                        name="enabled"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>
+                                                    <Trans>Enabled</Trans>
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Switch
+                                                        checked={field.value}
+                                                        onCheckedChange={field.onChange}
+                                                    />
+                                                </FormControl>
+                                                <FormDescription>
+                                                    <Trans>
+                                                        When enabled, a product is available in the shop
+                                                    </Trans>
+                                                </FormDescription>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
                                     />
-                                </FormControl>
-                                <FormDescription></FormDescription>
-                                <FormMessage />
-                            </FormItem>
-                        </CardContent>
-                    </Card>
-                    <Button type="submit">Submit</Button>
+                                </CardContent>
+                            </Card>
+                            <Card className="">
+                                <CardContent className="pt-6">
+                                    <FormField
+                                        control={form.control}
+                                        name="facetValueIds"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>
+                                                    <Trans>Facet values</Trans>
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <AssignedFacetValues
+                                                        facetValues={entity.facetValues}
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </CardContent>
+                            </Card>
+                            <Card className="">
+                                <CardContent className="pt-6">
+                                    <FormItem>
+                                        <FormLabel>
+                                            <Trans>Assets</Trans>
+                                        </FormLabel>
+                                        <FormControl>
+                                            <EntityAssets
+                                                assets={entity?.assets}
+                                                featuredAsset={entity?.featuredAsset}
+                                                compact={true}
+                                                value={form.getValues()}
+                                                onChange={value => {
+                                                    form.setValue('featuredAssetId', value.featuredAssetId);
+                                                    form.setValue('assetIds', value.assetIds);
+                                                }}
+                                            />
+                                        </FormControl>
+                                        <FormDescription></FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
                 </form>
             </Form>
         </DetailPage>
