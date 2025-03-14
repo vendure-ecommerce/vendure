@@ -10,34 +10,29 @@ import { VariablesOf } from 'gql.tada';
 import { FormEvent } from 'react';
 import { useForm, UseFormReturn } from 'react-hook-form';
 
-type FormField = 'FormField';
-
-type MapToFormField<T> =
-    T extends Array<infer U>
-        ? Array<MapToFormField<U>>
-        : T extends object
-          ? { [K in keyof Required<T>]: MapToFormField<NonNullable<T[K]>> }
-          : FormField;
-
-// Define InputFormField that takes a TypedDocumentNode and the name of the input variable
-type InputFormField<
-    T extends TypedDocumentNode<any, any>,
-    VarName extends keyof VariablesOf<T> = 'input',
-> = MapToFormField<NonNullable<VariablesOf<T>[VarName]>>;
-
-export function useGeneratedForm<
+export interface GeneratedFormOptions<
     T extends TypedDocumentNode<any, any>,
     VarName extends keyof VariablesOf<T> = 'input',
     E extends Record<string, any> = Record<string, any>,
->(options: {
+> {
     document: T;
     entity: E | null | undefined;
     setValues: (entity: NonNullable<E>) => VariablesOf<T>[VarName];
     onSubmit?: (values: VariablesOf<T>[VarName]) => void;
-}): {
-    form: UseFormReturn<VariablesOf<T>[VarName]>;
-    submitHandler: (event: FormEvent) => void;
-} {
+}
+
+/**
+ * @description
+ * This hook is used to create a form from a document and an entity.
+ * It will create a form with the fields defined in the document's input type.
+ * It will also create a submit handler that will submit the form to the server.
+ * 
+ */
+export function useGeneratedForm<
+    T extends TypedDocumentNode<any, any>,
+    VarName extends keyof VariablesOf<T> = 'input',
+    E extends Record<string, any> = Record<string, any>,
+>(options: GeneratedFormOptions<T, VarName, E>) {
     const { document, entity, setValues, onSubmit } = options;
     const availableLanguages = useServerConfig()?.availableLanguages || [];
     const updateFields = getOperationVariablesFields(document);

@@ -1,17 +1,16 @@
-import {
-    FieldInfo
-} from '@/framework/document-introspection/get-document-structure.js';
 import { PageProps } from '@/framework/page/page-types.js';
 
-import { CustomizeColumnConfig, ListQueryOptionsShape, ListQueryShape, PaginatedListDataTable } from '@/components/shared/paginated-list-data-table.js';
+import {
+    CustomizeColumnConfig,
+    ListQueryOptionsShape,
+    ListQueryShape,
+    PaginatedListDataTable,
+} from '@/components/shared/paginated-list-data-table.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRouter, useNavigate } from '@tanstack/react-router';
-import {
-    ColumnFiltersState,
-    SortingState,
-    Table
-} from '@tanstack/react-table';
+import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
 import { ResultOf } from 'gql.tada';
+import { Page, PageTitle } from '../layout-engine/page-layout.js';
 
 type ListQueryFields<T extends TypedDocumentNode<any, any>> = {
     [Key in keyof ResultOf<T>]: ResultOf<T>[Key] extends { items: infer U }
@@ -85,8 +84,8 @@ export function ListPage<
     }
 
     return (
-        <div className="m-4">
-            <h1 className="text-2xl font-bold">{title}</h1>
+        <Page>
+            <PageTitle>{title}</PageTitle>
             <PaginatedListDataTable
                 listQuery={listQuery}
                 customizeColumns={customizeColumns}
@@ -106,6 +105,6 @@ export function ListPage<
                     persistListStateToUrl(table, { filters });
                 }}
             />
-        </div>
+        </Page>
     );
 }

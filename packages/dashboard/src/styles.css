@@ -122,3 +122,11 @@
         @apply bg-background text-foreground;
     }
 }
+
+@utility col-main {
+    grid-column: span 3 / span 3;
+}
+@utility col-side {
+    grid-column: span 2 / span 2;
+}
+
