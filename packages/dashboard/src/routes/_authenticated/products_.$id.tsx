@@ -61,6 +61,7 @@ const productDetailFragment = graphql(
                 slug
                 description
             }
+            
             facetValues {
                 id
                 name
@@ -139,6 +140,11 @@ export function ProductDetailPage() {
             updateMutation.mutate({ input: values });
         },
     });
+
+    // log changes to the form
+    useEffect(() => {
+        console.log(form.getValues());
+    }, [form.getValues()]);
 
     return (
         <DetailPage title={entity?.name ?? ''} route={Route} entity={entity}>
@@ -259,7 +265,7 @@ export function ProductDetailPage() {
                                                 </FormLabel>
                                                 <FormControl>
                                                     <AssignedFacetValues
-                                                        facetValues={entity.facetValues}
+                                                        facetValues={entity?.facetValues ?? []}
                                                         {...field}
                                                     />
                                                 </FormControl>
