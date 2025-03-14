@@ -108,9 +108,11 @@ export function NavUser() {
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
-                                <DropdownMenuItem>
-                                    <Sparkles />
-                                    Upgrade to Pro
+                                <DropdownMenuItem asChild>
+                                    <a href="https://vendure.io/pricing" target="_blank">
+                                        <Sparkles />
+                                        Explore Enterprise Edition
+                                    </a>
                                 </DropdownMenuItem>
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
