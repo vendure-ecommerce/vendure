@@ -1,5 +1,5 @@
 import { api } from '@/graphql/api.js';
-import { graphql } from '@/graphql/graphql.js';
+import { ResultOf, graphql } from '@/graphql/graphql.js';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import * as React from 'react';
 
@@ -9,7 +9,7 @@ export interface AuthContext {
     isAuthenticated: boolean;
     login: (username: string, password: string, onSuccess?: () => void) => void;
     logout: (onSuccess?: () => void) => Promise<void>;
-    user: string | null;
+    user: ResultOf<typeof ActiveAdministratorQuery>['activeAdministrator'] | undefined;
 }
 
 const LoginMutation = graphql(`
@@ -41,6 +41,23 @@ const CurrentUserQuery = graphql(`
         me {
             id
             identifier
+            channels {
+                id
+                token
+                code
+                permissions
+            }
+        }
+    }
+`);
+
+const ActiveAdministratorQuery = graphql(`
+    query ActiveAdministrator {
+        activeAdministrator {
+            id
+            firstName
+            lastName
+            emailAddress
         }
     }
 `);
@@ -49,16 +66,20 @@ const AuthContext = React.createContext<AuthContext | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [status, setStatus] = React.useState<AuthContext['status']>('verifying');
-    const [user, setUser] = React.useState<string | null>(null);
     const [authenticationError, setAuthenticationError] = React.useState<string | undefined>();
     const onLoginSuccessFn = React.useRef<() => void>(() => {});
     const onLogoutSuccessFn = React.useRef<() => void>(() => {});
     const isAuthenticated = status === 'authenticated';
 
-    const { data, isLoading } = useQuery({
+    const { data: currentUserData, isLoading } = useQuery({
         queryKey: ['currentUser'],
         queryFn: () => api.query(CurrentUserQuery),
         retry: false,
+    });
+
+    const { data: administratorData, isLoading: isAdministratorLoading } = useQuery({
+        queryKey: ['administrator'],
+        queryFn: () => api.query(ActiveAdministratorQuery),
     });
 
     const loginMutationFn = api.mutate(LoginMutation);
@@ -104,7 +125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     React.useEffect(() => {
         if (!isLoading) {
-            if (data?.me?.id) {
+            if (currentUserData?.me?.id) {
                 setStatus('authenticated');
             } else {
                 setStatus('unauthenticated');
@@ -112,10 +133,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } else {
             setStatus('verifying');
         }
-    }, [isLoading, data]);
+    }, [isLoading, currentUserData]);
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, authenticationError, status, user, login, logout }}>
+        <AuthContext.Provider
+            value={{
+                isAuthenticated,
+                authenticationError,
+                status,
+                user: administratorData?.activeAdministrator,
+                login,
+                logout,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );

@@ -6,6 +6,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createRouter } from '@tanstack/react-router';
 import React from 'react';
 import { UserSettingsProvider } from './providers/user-settings.js';
+import { ThemeProvider } from './providers/theme-provider.js';
+import { ChannelProvider } from './providers/channel-provider.js';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 export const queryClient = new QueryClient();
 
@@ -33,9 +36,14 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
             <QueryClientProvider client={queryClient}>
                 <ServerConfigProvider>
                     <UserSettingsProvider>
-                        <AuthProvider>{children}</AuthProvider>
+                        <ThemeProvider defaultTheme="system">
+                            <AuthProvider>
+                                <ChannelProvider>{children}</ChannelProvider>
+                            </AuthProvider>
+                        </ThemeProvider>
                     </UserSettingsProvider>
                 </ServerConfigProvider>
+                <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
             </QueryClientProvider>
         </I18nProvider>
     );
