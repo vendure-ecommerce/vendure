@@ -54,7 +54,7 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
         setRootPlugin({ packageRoot }),
         adminApiSchemaPlugin(),
         dashboardMetadataPlugin({ rootDir: tempDir }),
-        uiConfigPlugin({ adminUiConfig: options.uiConfig }),
+        uiConfigPlugin({ adminUiConfig: options.adminUiConfig }),
     ];
 }
 
