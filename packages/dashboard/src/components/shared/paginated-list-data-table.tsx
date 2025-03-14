@@ -21,6 +21,7 @@ import {
 import { ColumnDef } from '@tanstack/table-core';
 import { ResultOf } from 'gql.tada';
 import React, { useMemo } from 'react';
+import { Delegate } from '@/framework/component-registry/delegate.js';
 
 type ListQueryFields<T extends TypedDocumentNode<any, any>> = {
     [Key in keyof ResultOf<T>]: ResultOf<T>[Key] extends { items: infer U }
@@ -143,19 +144,14 @@ export function PaginatedListDataTable<
                     if (field.list && Array.isArray(value)) {
                         return value.join(', ');
                     }
-                    let Cmp: React.ComponentType<{ value: any }> | undefined = undefined;
                     if ((field.type === 'DateTime' && typeof value === 'string') || value instanceof Date) {
-                        Cmp = getComponent('dateTime.display');
+                        return <Delegate component='dateTime.display' value={value} />
                     }
                     if (field.type === 'Boolean') {
-                        Cmp = getComponent('boolean.display');
+                        return <Delegate component='boolean.display' value={value} />
                     }
                     if (field.type === 'Asset') {
-                        Cmp = getComponent('asset.display');
-                    }
-
-                    if (Cmp) {
-                        return <Cmp value={value} />;
+                        return <Delegate component='asset.display' value={value} />
                     }
                     if (value !== null && typeof value === 'object') {
                         return JSON.stringify(value);

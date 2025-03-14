@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { cn } from '@/lib/utils.js';
 import { getLocalizedLanguageName } from '@/lib/locale-utils.js';
 import { useUserSettings } from '@/providers/user-settings.js';
+import { useLocalFormat } from '@/hooks/use-local-format.js';
 
 interface ContentLanguageSelectorProps {
     value?: string;
@@ -13,6 +14,7 @@ interface ContentLanguageSelectorProps {
 
 export function ContentLanguageSelector({ value, onChange, className }: ContentLanguageSelectorProps) {
     const serverConfig = useServerConfig();
+    const { formatLanguageName } = useLocalFormat();
     const { settings: { contentLanguage, displayLanguage }, setContentLanguage} = useUserSettings();
 
     // Fallback to empty array if serverConfig is null
@@ -32,7 +34,7 @@ export function ContentLanguageSelector({ value, onChange, className }: ContentL
             <SelectContent>
                 {languages.map(language => (
                     <SelectItem key={language} value={language}>
-                        {getLocalizedLanguageName(language, displayLanguage)}
+                        {formatLanguageName(language)}
                     </SelectItem>
                 ))}
             </SelectContent>

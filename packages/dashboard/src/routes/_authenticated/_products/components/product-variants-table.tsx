@@ -2,12 +2,15 @@ import { PaginatedListDataTable } from "@/components/shared/paginated-list-data-
 import { productVariantListDocument } from "../products.graphql.js";
 import { useState } from "react";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
+import { Money } from "@/components/data-type-components/money.js";
+import { useLocalFormat } from "@/hooks/use-local-format.js";
 
 interface ProductVariantsTableProps {
     productId: string;
 }
 
 export function ProductVariantsTable({ productId }: ProductVariantsTableProps) {
+    const { formatCurrencyName } = useLocalFormat();
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [sorting, setSorting] = useState<SortingState>([]);
@@ -19,6 +22,34 @@ export function ProductVariantsTable({ productId }: ProductVariantsTableProps) {
             ...variables,
             productId,
         })}
+        customizeColumns={{
+            currencyCode: {
+                cell: ({ cell, row }) => {
+                    const value = cell.getValue();
+                    return formatCurrencyName(value as string, 'full');
+                },
+            },
+            price: {
+                cell: ({ cell, row }) => {
+                    const value = cell.getValue();
+                    const currencyCode = row.original.currencyCode;
+                    if (typeof value === 'number') {
+                        return <Money value={value} currency={currencyCode} />;
+                    }
+                    return value;
+                },
+            },
+            priceWithTax: {
+                cell: ({ cell, row }) => {
+                    const value = cell.getValue();
+                    const currencyCode = row.original.currencyCode;
+                    if (typeof value === 'number') {
+                        return <Money value={value} currency={currencyCode} />;
+                    }
+                    return value;
+                },
+            },
+        }}
         page={page}
         itemsPerPage={pageSize}
         sorting={sorting}

@@ -1,13 +1,13 @@
-import { useLingui } from '@lingui/react/macro';
+import { useLocalFormat } from '@/hooks/use-local-format.js';
 
 export function DateTime({ value }: { value: string | Date }) {
-    const { i18n } = useLingui();
+    const { formatDate } = useLocalFormat();
     let renderedDate: string;
     try {
-        renderedDate = i18n.date(value);
+        renderedDate = formatDate(value);
     } catch (e) {
         renderedDate = value.toString();
         console.error(e);
     }
-    return <div>{renderedDate}</div>;
+    return renderedDate;
 }

@@ -1,6 +1,7 @@
 import { AssetThumbnail } from '@/components/data-type-components/asset.js';
 import { BooleanDisplayCheckbox } from '@/components/data-type-components/boolean.js';
 import { DateTime } from '@/components/data-type-components/date-time.js';
+import { Money } from '@/components/data-type-components/money.js';
 
 export interface ComponentRegistryEntry {
     component: React.ComponentType<any>;
@@ -39,28 +40,35 @@ export const COMPONENT_REGISTRY = {
                 },
             },
         },
+        money: {
+            display: {
+                default: {
+                    component: Money,
+                },
+            },
+        },
     },
 } satisfies ComponentRegistry;
 
-type TypeRegistry = (typeof COMPONENT_REGISTRY)['type'];
-type TypeRegistryTypes = keyof TypeRegistry;
-type TypeRegistryCategories<T extends TypeRegistryTypes> = {
+export type TypeRegistry = (typeof COMPONENT_REGISTRY)['type'];
+export type TypeRegistryTypes = keyof TypeRegistry;
+export type TypeRegistryCategories<T extends TypeRegistryTypes> = {
     [K in keyof TypeRegistry[T]]: K;
 }[keyof TypeRegistry[T]];
-type TypeRegistryComponents<
+export type TypeRegistryComponents<
     T extends TypeRegistryTypes,
     U extends TypeRegistryCategories<T> = TypeRegistryCategories<T>,
 > = {
     [K in keyof TypeRegistry[T][U]]: K;
 }[keyof TypeRegistry[T][U]];
-type NonDefaultComponents<
+export type NonDefaultComponents<
     T extends TypeRegistryTypes,
     U extends TypeRegistryCategories<T> = TypeRegistryCategories<T>,
 > = {
     [K in TypeRegistryComponents<T, U>]: K extends 'default' ? never : `${T}.${U & string}.${K & string}`;
 }[keyof TypeRegistry[T][U]];
 
-type ComponentTypePath<
+export type ComponentTypePath<
     T extends TypeRegistryTypes,
     U extends TypeRegistryCategories<T> = TypeRegistryCategories<T>,
 > = `${T}.${U & string}` | `${NonDefaultComponents<T, U>}`;

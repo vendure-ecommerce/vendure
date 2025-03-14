@@ -15,7 +15,7 @@ interface FacetValue {
 }
 
 interface AssignedFacetValuesProps {
-    value?: string[];
+    value?: string[] | null;
     facetValues: FacetValue[];
     canUpdate?: boolean;
     onBlur?: () => void;
