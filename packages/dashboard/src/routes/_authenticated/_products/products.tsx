@@ -1,33 +1,12 @@
 import { Button } from '@/components/ui/button.js';
 import { ListPage } from '@/framework/page/list-page.js';
-import { graphql } from '@/graphql/graphql.js';
-import { createFileRoute, Link, Outlet } from '@tanstack/react-router';
-import React from 'react';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { productListDocument } from './products.graphql.js';
 
-export const Route = createFileRoute('/_authenticated/products')({
+export const Route = createFileRoute('/_authenticated/_products/products')({
     component: ProductListPage,
     loader: () => ({ breadcrumb: 'Products' }),
 });
-
-const productListDocument = graphql(`
-    query ProductList($options: ProductListOptions) {
-        products(options: $options) {
-            items {
-                id
-                createdAt
-                updatedAt
-                featuredAsset {
-                    id
-                    preview
-                }
-                name
-                slug
-                enabled
-            }
-            totalItems
-        }
-    }
-`);
 
 export function ProductListPage() {
     return (

@@ -15,9 +15,9 @@ import { Route as LoginImport } from './routes/login';
 import { Route as AboutImport } from './routes/about';
 import { Route as AuthenticatedImport } from './routes/_authenticated';
 import { Route as AuthenticatedIndexImport } from './routes/_authenticated/index';
-import { Route as AuthenticatedProductsImport } from './routes/_authenticated/products';
 import { Route as AuthenticatedDashboardImport } from './routes/_authenticated/dashboard';
-import { Route as AuthenticatedProductsIdImport } from './routes/_authenticated/products_.$id';
+import { Route as AuthenticatedProductsProductsImport } from './routes/_authenticated/_products/products';
+import { Route as AuthenticatedProductsProductsIdImport } from './routes/_authenticated/_products/products_.$id';
 
 // Create/Update Routes
 
@@ -44,20 +44,20 @@ const AuthenticatedIndexRoute = AuthenticatedIndexImport.update({
     getParentRoute: () => AuthenticatedRoute,
 } as any);
 
-const AuthenticatedProductsRoute = AuthenticatedProductsImport.update({
-    id: '/products',
-    path: '/products',
-    getParentRoute: () => AuthenticatedRoute,
-} as any);
-
 const AuthenticatedDashboardRoute = AuthenticatedDashboardImport.update({
     id: '/dashboard',
     path: '/dashboard',
     getParentRoute: () => AuthenticatedRoute,
 } as any);
 
-const AuthenticatedProductsIdRoute = AuthenticatedProductsIdImport.update({
-    id: '/products_/$id',
+const AuthenticatedProductsProductsRoute = AuthenticatedProductsProductsImport.update({
+    id: '/_products/products',
+    path: '/products',
+    getParentRoute: () => AuthenticatedRoute,
+} as any);
+
+const AuthenticatedProductsProductsIdRoute = AuthenticatedProductsProductsIdImport.update({
+    id: '/_products/products_/$id',
     path: '/products/$id',
     getParentRoute: () => AuthenticatedRoute,
 } as any);
@@ -94,13 +94,6 @@ declare module '@tanstack/react-router' {
             preLoaderRoute: typeof AuthenticatedDashboardImport;
             parentRoute: typeof AuthenticatedImport;
         };
-        '/_authenticated/products': {
-            id: '/_authenticated/products';
-            path: '/products';
-            fullPath: '/products';
-            preLoaderRoute: typeof AuthenticatedProductsImport;
-            parentRoute: typeof AuthenticatedImport;
-        };
         '/_authenticated/': {
             id: '/_authenticated/';
             path: '/';
@@ -108,11 +101,18 @@ declare module '@tanstack/react-router' {
             preLoaderRoute: typeof AuthenticatedIndexImport;
             parentRoute: typeof AuthenticatedImport;
         };
-        '/_authenticated/products_/$id': {
-            id: '/_authenticated/products_/$id';
+        '/_authenticated/_products/products': {
+            id: '/_authenticated/_products/products';
+            path: '/products';
+            fullPath: '/products';
+            preLoaderRoute: typeof AuthenticatedProductsProductsImport;
+            parentRoute: typeof AuthenticatedImport;
+        };
+        '/_authenticated/_products/products_/$id': {
+            id: '/_authenticated/_products/products_/$id';
             path: '/products/$id';
             fullPath: '/products/$id';
-            preLoaderRoute: typeof AuthenticatedProductsIdImport;
+            preLoaderRoute: typeof AuthenticatedProductsProductsIdImport;
             parentRoute: typeof AuthenticatedImport;
         };
     }
@@ -122,16 +122,16 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteChildren {
     AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute;
-    AuthenticatedProductsRoute: typeof AuthenticatedProductsRoute;
     AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute;
-    AuthenticatedProductsIdRoute: typeof AuthenticatedProductsIdRoute;
+    AuthenticatedProductsProductsRoute: typeof AuthenticatedProductsProductsRoute;
+    AuthenticatedProductsProductsIdRoute: typeof AuthenticatedProductsProductsIdRoute;
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
     AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-    AuthenticatedProductsRoute: AuthenticatedProductsRoute,
     AuthenticatedIndexRoute: AuthenticatedIndexRoute,
-    AuthenticatedProductsIdRoute: AuthenticatedProductsIdRoute,
+    AuthenticatedProductsProductsRoute: AuthenticatedProductsProductsRoute,
+    AuthenticatedProductsProductsIdRoute: AuthenticatedProductsProductsIdRoute,
 };
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(AuthenticatedRouteChildren);
@@ -141,18 +141,18 @@ export interface FileRoutesByFullPath {
     '/about': typeof AboutRoute;
     '/login': typeof LoginRoute;
     '/dashboard': typeof AuthenticatedDashboardRoute;
-    '/products': typeof AuthenticatedProductsRoute;
     '/': typeof AuthenticatedIndexRoute;
-    '/products/$id': typeof AuthenticatedProductsIdRoute;
+    '/products': typeof AuthenticatedProductsProductsRoute;
+    '/products/$id': typeof AuthenticatedProductsProductsIdRoute;
 }
 
 export interface FileRoutesByTo {
     '/about': typeof AboutRoute;
     '/login': typeof LoginRoute;
     '/dashboard': typeof AuthenticatedDashboardRoute;
-    '/products': typeof AuthenticatedProductsRoute;
     '/': typeof AuthenticatedIndexRoute;
-    '/products/$id': typeof AuthenticatedProductsIdRoute;
+    '/products': typeof AuthenticatedProductsProductsRoute;
+    '/products/$id': typeof AuthenticatedProductsProductsIdRoute;
 }
 
 export interface FileRoutesById {
@@ -161,25 +161,25 @@ export interface FileRoutesById {
     '/about': typeof AboutRoute;
     '/login': typeof LoginRoute;
     '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute;
-    '/_authenticated/products': typeof AuthenticatedProductsRoute;
     '/_authenticated/': typeof AuthenticatedIndexRoute;
-    '/_authenticated/products_/$id': typeof AuthenticatedProductsIdRoute;
+    '/_authenticated/_products/products': typeof AuthenticatedProductsProductsRoute;
+    '/_authenticated/_products/products_/$id': typeof AuthenticatedProductsProductsIdRoute;
 }
 
 export interface FileRouteTypes {
     fileRoutesByFullPath: FileRoutesByFullPath;
-    fullPaths: '' | '/about' | '/login' | '/dashboard' | '/products' | '/' | '/products/$id';
+    fullPaths: '' | '/about' | '/login' | '/dashboard' | '/' | '/products' | '/products/$id';
     fileRoutesByTo: FileRoutesByTo;
-    to: '/about' | '/login' | '/dashboard' | '/products' | '/' | '/products/$id';
+    to: '/about' | '/login' | '/dashboard' | '/' | '/products' | '/products/$id';
     id:
         | '__root__'
         | '/_authenticated'
         | '/about'
         | '/login'
         | '/_authenticated/dashboard'
-        | '/_authenticated/products'
         | '/_authenticated/'
-        | '/_authenticated/products_/$id';
+        | '/_authenticated/_products/products'
+        | '/_authenticated/_products/products_/$id';
     fileRoutesById: FileRoutesById;
 }
 
@@ -212,9 +212,9 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
       "filePath": "_authenticated.tsx",
       "children": [
         "/_authenticated/dashboard",
-        "/_authenticated/products",
         "/_authenticated/",
-        "/_authenticated/products_/$id"
+        "/_authenticated/_products/products",
+        "/_authenticated/_products/products_/$id"
       ]
     },
     "/about": {
@@ -227,16 +227,16 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
       "filePath": "_authenticated/dashboard.tsx",
       "parent": "/_authenticated"
     },
-    "/_authenticated/products": {
-      "filePath": "_authenticated/products.tsx",
-      "parent": "/_authenticated"
-    },
     "/_authenticated/": {
       "filePath": "_authenticated/index.tsx",
       "parent": "/_authenticated"
     },
-    "/_authenticated/products_/$id": {
-      "filePath": "_authenticated/products_.$id.tsx",
+    "/_authenticated/_products/products": {
+      "filePath": "_authenticated/_products/products.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/_products/products_/$id": {
+      "filePath": "_authenticated/_products/products_.$id.tsx",
       "parent": "/_authenticated"
     }
   }

@@ -42,7 +42,7 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
 
     return [
         lingui(),
-        TanStackRouterVite({ autoCodeSplitting: true }),
+        TanStackRouterVite({ autoCodeSplitting: true, routeFileIgnorePattern: '.graphql.ts|components' }),
         react({
             babel: {
                 plugins: ['@lingui/babel-plugin-lingui-macro'],

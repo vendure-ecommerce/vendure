@@ -1,29 +1,17 @@
-import { useComponentRegistry } from '@/framework/component-registry/component-registry.js';
-import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header.js';
-import { DataTable } from '@/components/data-table/data-table.js';
 import {
-    FieldInfo,
-    getListQueryFields,
-    getQueryName,
+    FieldInfo
 } from '@/framework/document-introspection/get-document-structure.js';
-import { useListQueryFields } from '@/framework/document-introspection/hooks.js';
 import { PageProps } from '@/framework/page/page-types.js';
-import { api } from '@/graphql/api.js';
-import { useDebounce } from 'use-debounce';
 
+import { CustomizeColumnConfig, ListQueryOptionsShape, ListQueryShape, PaginatedListDataTable } from '@/components/shared/paginated-list-data-table.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import { useQuery } from '@tanstack/react-query';
-import { AnyRoute, AnyRouter, useNavigate } from '@tanstack/react-router';
+import { AnyRouter, useNavigate } from '@tanstack/react-router';
 import {
     ColumnFiltersState,
-    ColumnSort,
-    createColumnHelper,
     SortingState,
-    Table,
+    Table
 } from '@tanstack/react-table';
-import { ColumnDef } from '@tanstack/table-core';
 import { ResultOf } from 'gql.tada';
-import React, { useMemo } from 'react';
 
 type ListQueryFields<T extends TypedDocumentNode<any, any>> = {
     [Key in keyof ResultOf<T>]: ResultOf<T>[Key] extends { items: infer U }
@@ -32,28 +20,6 @@ type ListQueryFields<T extends TypedDocumentNode<any, any>> = {
             : never
         : never;
 }[keyof ResultOf<T>];
-
-export type CustomizeColumnConfig<T extends TypedDocumentNode<any, any>> = {
-    [Key in keyof ListQueryFields<T>]?: Partial<ColumnDef<any>>;
-};
-
-export type ListQueryShape = {
-    [key: string]: {
-        items: any[];
-        totalItems: number;
-    };
-};
-
-export type ListQueryOptionsShape = {
-    options?: {
-        skip?: number;
-        take?: number;
-        sort?: {
-            [key: string]: 'ASC' | 'DESC';
-        };
-        filter?: any;
-    };
-};
 
 export interface ListPageProps<
     T extends TypedDocumentNode<U, V>,
@@ -79,99 +45,21 @@ export function ListPage<
     defaultVisibility,
     onSearchTermChange,
 }: ListPageProps<T, U, V>) {
-    const { getComponent } = useComponentRegistry();
     const route = typeof routeOrFn === 'function' ? routeOrFn() : routeOrFn;
     const routeSearch = route.useSearch();
     const navigate = useNavigate<AnyRouter>({ from: route.fullPath });
-    const [searchTerm, setSearchTerm] = React.useState<string>('');
-    const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
+
     const pagination = {
         page: routeSearch.page ? parseInt(routeSearch.page) : 1,
         itemsPerPage: routeSearch.perPage ? parseInt(routeSearch.perPage) : 10,
     };
+
     const sorting: SortingState = (routeSearch.sort ?? '').split(',').map((s: string) => {
         return {
             id: s.replace(/^-/, ''),
             desc: s.startsWith('-'),
         };
     });
-    const sort = sorting?.reduce((acc: any, sort: ColumnSort) => {
-        const direction = sort.desc ? 'DESC' : 'ASC';
-        const field = sort.id;
-
-        if (!field || !direction) {
-            return acc;
-        }
-        return { ...acc, [field]: direction };
-    }, {});
-
-    const columnFilters = routeSearch.filters;
-    const filter = columnFilters?.length
-        ? { _and: (routeSearch.filters as ColumnFiltersState).map(f => ({ [f.id]: f.value })) }
-        : undefined;
-
-    const { data } = useQuery({
-        queryFn: () => {
-            const searchFilter = onSearchTermChange ? onSearchTermChange(debouncedSearchTerm) : {};
-            const mergedFilter = { ...filter, ...searchFilter };
-            return api.query(listQuery, {
-                options: {
-                    take: pagination.itemsPerPage,
-                    skip: (pagination.page - 1) * pagination.itemsPerPage,
-                    sort,
-                    filter: mergedFilter,
-                },
-            } as unknown as V);
-        },
-        queryKey: ['ListPage', route.id, pagination, sorting, filter, debouncedSearchTerm],
-    });
-    const fields = useListQueryFields(listQuery);
-    const queryName = getQueryName(listQuery);
-    const columnHelper = createColumnHelper();
-
-    const columns = useMemo(() => {
-        return fields.map(field => {
-            const customConfig = customizeColumns?.[field.name as keyof ListQueryFields<T>] ?? {};
-            const { header, ...customConfigRest } = customConfig;
-            return columnHelper.accessor(field.name as any, {
-                meta: { field },
-                enableColumnFilter: field.isScalar,
-                enableSorting: field.isScalar,
-                cell: ({ cell }) => {
-                    const value = cell.getValue();
-                    if (field.list && Array.isArray(value)) {
-                        return value.join(', ');
-                    }
-                    let Cmp: React.ComponentType<{ value: any }> | undefined = undefined;
-                    if ((field.type === 'DateTime' && typeof value === 'string') || value instanceof Date) {
-                        Cmp = getComponent('dateTime.display');
-                    }
-                    if (field.type === 'Boolean') {
-                        Cmp = getComponent('boolean.display');
-                    }
-                    if (field.type === 'Asset') {
-                        Cmp = getComponent('asset.display');
-                    }
-
-                    if (Cmp) {
-                        return <Cmp value={value} />;
-                    }
-                    if (value !== null && typeof value === 'object') {
-                        return JSON.stringify(value);
-                    }
-                    return value;
-                },
-                header: headerContext => {
-                    return (
-                        <DataTableColumnHeader headerContext={headerContext} customConfig={customConfig} />
-                    );
-                },
-                ...customConfigRest,
-            });
-        });
-    }, [fields, customizeColumns]);
-
-    const columnVisibility = getColumnVisibility(fields, defaultVisibility);
 
     function sortToString(sortingStates?: SortingState) {
         return sortingStates?.map(s => `${s.desc ? '-' : ''}${s.id}`).join(',');
@@ -199,14 +87,15 @@ export function ListPage<
     return (
         <div className="m-4">
             <h1 className="text-2xl font-bold">{title}</h1>
-            <DataTable
-                columns={columns}
-                data={(data as any)?.[queryName]?.items ?? []}
+            <PaginatedListDataTable
+                listQuery={listQuery}
+                customizeColumns={customizeColumns}
+                defaultVisibility={defaultVisibility}
+                onSearchTermChange={onSearchTermChange}
                 page={pagination.page}
                 itemsPerPage={pagination.itemsPerPage}
                 sorting={sorting}
-                columnFilters={columnFilters}
-                totalItems={(data as any)?.[queryName]?.totalItems ?? 0}
+                columnFilters={routeSearch.filters}
                 onPageChange={(table, page, perPage) => {
                     persistListStateToUrl(table, { page, perPage });
                 }}
@@ -216,34 +105,7 @@ export function ListPage<
                 onFilterChange={(table, filters) => {
                     persistListStateToUrl(table, { filters });
                 }}
-                onSearchTermChange={onSearchTermChange ? term => setSearchTerm(term) : undefined}
-                defaultColumnVisibility={columnVisibility}
-            ></DataTable>
+            />
         </div>
     );
-}
-
-/**
- * Returns the default column visibility configuration.
- *
- * If the user specifies a `defaultVisibility` object with only true values, we will
- * assume all the other columns should be false.
- *
- * If the user specifies a `defaultVisibility` object with only false values, we will
- * assume all the other columns should be true.
- */
-function getColumnVisibility(
-    fields: FieldInfo[],
-    defaultVisibility?: Record<string, boolean | undefined>,
-): Record<string, boolean> {
-    const allDefaultsTrue = defaultVisibility && Object.values(defaultVisibility).every(v => v === true);
-    const allDefaultsFalse = defaultVisibility && Object.values(defaultVisibility).every(v => v === false);
-    return {
-        id: false,
-        createdAt: false,
-        updatedAt: false,
-        ...(allDefaultsTrue ? { ...Object.fromEntries(fields.map(f => [f.name, false])) } : {}),
-        ...(allDefaultsFalse ? { ...Object.fromEntries(fields.map(f => [f.name, true])) } : {}),
-        ...defaultVisibility,
-    };
 }

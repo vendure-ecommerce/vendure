@@ -19,15 +19,14 @@ import { Textarea } from '@/components/ui/textarea.js';
 import { useGeneratedForm } from '@/framework/form-engine/use-generated-form.js';
 import { DetailPage, getDetailQueryOptions } from '@/framework/page/detail-page.js';
 import { api } from '@/graphql/api.js';
-import { assetFragment } from '@/graphql/fragments.js';
-import { graphql } from '@/graphql/graphql.js';
 import { Trans } from '@lingui/react/macro';
 import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { useEffect } from 'react';
 import { toast } from 'sonner';
+import { ProductVariantsTable } from './components/product-variants-table.js';
+import { productDetailDocument, updateProductDocument } from './products.graphql.js';
 
-export const Route = createFileRoute('/_authenticated/products_/$id')({
+export const Route = createFileRoute('/_authenticated/_products/products_/$id')({
     component: ProductDetailPage,
     loader: async ({ context, params }) => {
         const result = await context.queryClient.ensureQueryData(
@@ -36,68 +35,6 @@ export const Route = createFileRoute('/_authenticated/products_/$id')({
         return { breadcrumb: [{ path: '/products', label: 'Products' }, result.product.name] };
     },
 });
-
-const productDetailFragment = graphql(
-    `
-        fragment ProductDetail on Product {
-            id
-            createdAt
-            updatedAt
-            enabled
-            name
-            slug
-            description
-            featuredAsset {
-                ...Asset
-            }
-            assets {
-                ...Asset
-            }
-            translations {
-                id
-                languageCode
-
-                name
-                slug
-                description
-            }
-            
-            facetValues {
-                id
-                name
-                code
-                facet {
-                    id
-                    name
-                    code
-                }
-            }
-        }
-    `,
-    [assetFragment],
-);
-
-const productDetailDocument = graphql(
-    `
-        query ProductDetail($id: ID!) {
-            product(id: $id) {
-                ...ProductDetail
-            }
-        }
-    `,
-    [productDetailFragment],
-);
-
-const updateProductDocument = graphql(
-    `
-        mutation UpdateProduct($input: UpdateProductInput!) {
-            updateProduct(input: $input) {
-                ...ProductDetail
-            }
-        }
-    `,
-    [productDetailFragment],
-);
 
 export function ProductDetailPage() {
     const params = Route.useParams();
@@ -112,7 +49,7 @@ export function ProductDetailPage() {
                 position: 'top-right',
             });
             form.reset();
-            queryClient.invalidateQueries(detailQueryOptions.queryKey);
+            queryClient.invalidateQueries({ queryKey: detailQueryOptions.queryKey });
         },
         onError: err => {
             console.error(err);
@@ -140,11 +77,6 @@ export function ProductDetailPage() {
             updateMutation.mutate({ input: values });
         },
     });
-
-    // log changes to the form
-    useEffect(() => {
-        console.log(form.getValues());
-    }, [form.getValues()]);
 
     return (
         <DetailPage title={entity?.name ?? ''} route={Route} entity={entity}>
@@ -222,6 +154,11 @@ export function ProductDetailPage() {
                                             )}
                                         />
                                     </div>
+                                </CardContent>
+                            </Card>
+                            <Card className="">
+                                <CardContent className="pt-6">
+                                    <ProductVariantsTable productId={params.id} />
                                 </CardContent>
                             </Card>
                         </div>
