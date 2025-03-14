@@ -7,6 +7,7 @@ import { createRouter } from '@tanstack/react-router';
 import React from 'react';
 import { UserSettingsProvider } from './providers/user-settings.js';
 import { ThemeProvider } from './providers/theme-provider.js';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 export const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
                         </ThemeProvider>
                     </UserSettingsProvider>
                 </ServerConfigProvider>
+                <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
             </QueryClientProvider>
         </I18nProvider>
     );

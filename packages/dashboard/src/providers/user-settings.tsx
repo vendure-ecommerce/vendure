@@ -3,7 +3,7 @@ import { Theme } from './theme-provider.js';
 
 export interface UserSettings {
     displayLanguage: string;
-    displayLocale: string | null;
+    displayLocale?: string;
     contentLanguage: string;
     theme: Theme;
     displayUiExtensionPoints: boolean;
@@ -12,9 +12,9 @@ export interface UserSettings {
 
 const defaultSettings: UserSettings = {
     displayLanguage: 'en',
-    displayLocale: null,
+    displayLocale: undefined,
     contentLanguage: 'en',
-    theme: 'default',
+    theme: 'system',
     displayUiExtensionPoints: false,
     mainNavExpanded: true,
 };

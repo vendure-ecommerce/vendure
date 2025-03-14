@@ -1,6 +1,7 @@
 import { lingui } from '@lingui/vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
+import { AdminUiConfig } from '@vendure/core';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { PluginOption } from 'vite';
@@ -9,13 +10,13 @@ import { adminApiSchemaPlugin } from './vite-plugin-admin-api-schema.js';
 import { configLoaderPlugin } from './vite-plugin-config-loader.js';
 import { dashboardMetadataPlugin } from './vite-plugin-dashboard-metadata.js';
 import { setRootPlugin } from './vite-plugin-set-root.js';
-import { uiConfigPlugin } from './vite-plugin-ui-config.js';
+import { UiConfigPluginOptions, uiConfigPlugin } from './vite-plugin-ui-config.js';
 
 /**
  * @description
  * Options for the {@link vendureDashboardPlugin} Vite plugin.
  */
-export interface VitePluginVendureDashboardOptions {
+export type VitePluginVendureDashboardOptions = {
     /**
      * @description
      * The path to the Vendure server configuration file.
@@ -27,7 +28,7 @@ export interface VitePluginVendureDashboardOptions {
      * This is only required if the plugin is unable to auto-detect the name of the exported variable.
      */
     vendureConfigExport?: string;
-}
+} & UiConfigPluginOptions;
 
 /**
  * @description
@@ -53,7 +54,7 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
         setRootPlugin({ packageRoot }),
         adminApiSchemaPlugin(),
         dashboardMetadataPlugin({ rootDir: tempDir }),
-        uiConfigPlugin(),
+        uiConfigPlugin({ adminUiConfig: options.uiConfig }),
     ];
 }
 

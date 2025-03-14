@@ -9,7 +9,7 @@ export interface AuthContext {
     isAuthenticated: boolean;
     login: (username: string, password: string, onSuccess?: () => void) => void;
     logout: (onSuccess?: () => void) => Promise<void>;
-    user: ResultOf<typeof AdministratorQuery>['administrator'] | undefined;
+    user: ResultOf<typeof ActiveAdministratorQuery>['activeAdministrator'] | undefined;
 }
 
 const LoginMutation = graphql(`
@@ -51,9 +51,9 @@ const CurrentUserQuery = graphql(`
     }
 `);
 
-const AdministratorQuery = graphql(`
-    query Administrator($id: ID!) {
-        administrator(id: $id) {
+const ActiveAdministratorQuery = graphql(`
+    query ActiveAdministrator {
+        activeAdministrator {
             id
             firstName
             lastName
@@ -79,8 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const { data: administratorData, isLoading: isAdministratorLoading } = useQuery({
         queryKey: ['administrator'],
-        queryFn: () => api.query(AdministratorQuery, { id: currentUserData!.me!.id }),
-        enabled: !!currentUserData?.me?.id,
+        queryFn: () => api.query(ActiveAdministratorQuery),
     });
 
     const loginMutationFn = api.mutate(LoginMutation);
@@ -142,7 +141,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 isAuthenticated,
                 authenticationError,
                 status,
-                user: administratorData?.administrator,
+                user: administratorData?.activeAdministrator,
                 login,
                 logout,
             }}
