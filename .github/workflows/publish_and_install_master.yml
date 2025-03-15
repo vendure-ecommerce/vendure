@@ -1,4 +1,4 @@
-name: Publish & Install Master
+name: Publish & Install
 on:
     push:
         branches:
