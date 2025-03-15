@@ -6,6 +6,11 @@ on:
 defaults:
     run:
         shell: bash
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
 jobs:
     publish_install:
         runs-on: ${{ matrix.os }}
