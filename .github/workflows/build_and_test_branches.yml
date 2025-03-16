@@ -82,7 +82,7 @@ jobs:
                     - 5432
                 options: --health-cmd=pg_isready --health-interval=10s --health-timeout=5s --health-retries=3
             elastic:
-                image: docker.elastic.co/elasticsearch/elasticsearch:7.1.1
+                image: docker.elastic.co/elasticsearch/elasticsearch:8.15.3
                 env:
                     discovery.type: single-node
                     bootstrap.memory_lock: true

@@ -76,7 +76,7 @@ services:
     # Checkout our Elasticsearch plugin: https://docs.vendure.io/reference/core-plugins/elasticsearch-plugin/
     # To run the elasticsearch container run "docker compose up -d elasticsearch"
     elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:7.1.1
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.15.3
         environment:
             discovery.type: single-node
             bootstrap.memory_lock: true
