@@ -78,6 +78,12 @@ services:
     elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:8.15.3
         environment:
+            node.name=es
+            cluster.name=es-docker-cluster
+            xpack.security.enabled=false
+            xpack.security.http.ssl.enabled=false
+            xpack.security.transport.ssl.enabled=false
+            xpack.license.self_generated.type=basic
             discovery.type: single-node
             bootstrap.memory_lock: true
             ES_JAVA_OPTS: -Xms512m -Xmx512m
