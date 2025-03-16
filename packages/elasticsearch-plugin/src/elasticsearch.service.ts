@@ -220,9 +220,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 const totalItems = await this.totalHits(ctx, input, groupByProduct);
                 await this.eventBus.publish(new SearchEvent(ctx, input));
                 return {
-                    items: body.hits.hits.map(hit =>
-                        this.mapProductToSearchResult(hit as SearchHit<VariantIndexItem>),
-                    ),
+                    items: body.hits.hits.map(hit => this.mapProductToSearchResult(hit as any)),
                     totalItems,
                 };
             } catch (e: any) {
@@ -250,10 +248,8 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 );
                 await this.eventBus.publish(new SearchEvent(ctx, input));
                 return {
-                    items: body.hits.hits.map(hit =>
-                        this.mapVariantToSearchResult(hit as SearchHit<VariantIndexItem>),
-                    ),
-                    totalItems: body.hits.total ? Number(body.hits.total) : 0,
+                    items: body.hits.hits.map(hit => this.mapVariantToSearchResult(hit as any)),
+                    totalItems: Number(body.hits.total ? body.hits.total.valueOf() : 0),
                 };
             } catch (e: any) {
                 if (e.meta.body.error.type && e.meta.body.error.type === 'search_phase_execution_exception') {
