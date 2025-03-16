@@ -1,6 +1,5 @@
 import { Client } from '@elastic/elasticsearch';
 import { SortOrder } from '@vendure/common/lib/generated-types';
-import { Logger } from '@vendure/core';
 import { SimpleGraphQLClient } from '@vendure/testing';
 import { expect } from 'vitest';
 
@@ -50,7 +49,6 @@ export async function testNoGrouping(client: SimpleGraphQLClient) {
             },
         },
     );
-    Logger.info(JSON.stringify(result.search));
     expect(result.search.totalItems).toBe(34);
 }
 
@@ -64,7 +62,6 @@ export async function testMatchSearchTerm(client: SimpleGraphQLClient) {
             },
         },
     );
-    Logger.info(JSON.stringify(result.search));
     expect(result.search.items.map(i => i.productName)).toEqual([
         'Camera Lens',
         'Instant Camera',
@@ -86,7 +83,6 @@ export async function testMatchFacetIdsAnd(client: SimpleGraphQLClient) {
             },
         },
     );
-    Logger.info(JSON.stringify(result.search));
     expect(result.search.items.map(i => i.productName)).toEqual([
         'Clacky Keyboard',
         'Curvy Monitor',
@@ -112,7 +108,6 @@ export async function testMatchFacetIdsOr(client: SimpleGraphQLClient) {
             },
         },
     );
-    Logger.info(JSON.stringify(result.search));
     expect(result.search.items.map(i => i.productName)).toEqual([
         'Bonsai Tree',
         'Camera Lens',
@@ -140,7 +135,6 @@ export async function testMatchFacetValueFiltersAnd(client: SimpleGraphQLClient)
             },
         },
     );
-    Logger.info(JSON.stringify(result.search));
     expect(result.search.items.map(i => i.productName).sort()).toEqual(
         ['Laptop', 'Curvy Monitor', 'Gaming PC', 'Hard Drive', 'Clacky Keyboard', 'USB Cable'].sort(),
     );
@@ -160,7 +154,6 @@ export async function testMatchFacetValueFiltersOr(client: SimpleGraphQLClient) 
             },
         },
     );
-    Logger.info(JSON.stringify(result.search));
     expect(result.search.items.map(i => i.productName).sort()).toEqual(
         [
             'Bonsai Tree',
@@ -190,7 +183,6 @@ export async function testMatchFacetValueFiltersOrWithAnd(client: SimpleGraphQLC
             },
         },
     );
-    Logger.info(JSON.stringify(result.search));
     expect(result.search.items.map(i => i.productName).sort()).toEqual(
         [
             'Laptop',
@@ -219,7 +211,6 @@ export async function testMatchFacetValueFiltersWithFacetIdsOr(client: SimpleGra
             },
         },
     );
-    Logger.info(JSON.stringify(result.search));
     expect(result.search.items.map(i => i.productName).sort()).toEqual(
         [
             'Laptop',
@@ -248,7 +239,6 @@ export async function testMatchFacetValueFiltersWithFacetIdsAnd(client: SimpleGr
             },
         },
     );
-    Logger.info(JSON.stringify(result.search));
     expect(result.search.items.map(i => i.productName).sort()).toEqual(
         ['Instant Camera', 'Camera Lens', 'Tripod', 'SLR Camera'].sort(),
     );
@@ -264,7 +254,6 @@ export async function testMatchCollectionId(client: SimpleGraphQLClient) {
             },
         },
     );
-    Logger.info(JSON.stringify(result.search));
     expect(result.search.items.map(i => i.productName).sort()).toEqual([
         'Bonsai Tree',
         'Orchid',
@@ -282,7 +271,6 @@ export async function testMatchCollectionSlug(client: SimpleGraphQLClient) {
             },
         },
     );
-    Logger.info(JSON.stringify(result.search));
     expect(result.search.items.map(i => i.productName).sort()).toEqual([
         'Bonsai Tree',
         'Orchid',
@@ -303,7 +291,6 @@ export async function testSinglePrices(client: SimpleGraphQLClient) {
             },
         },
     );
-    Logger.info(JSON.stringify(result.search));
     expect(result.search.items).toEqual([
         {
             price: { value: 799 },
@@ -331,7 +318,6 @@ export async function testPriceRanges(client: SimpleGraphQLClient) {
             },
         },
     );
-    Logger.info(JSON.stringify(result.search));
     expect(result.search.items).toEqual([
         {
             price: { min: 129900, max: 229900 },
