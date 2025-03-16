@@ -248,8 +248,12 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 );
                 await this.eventBus.publish(new SearchEvent(ctx, input));
                 return {
-                    items: body.hits.hits.map(hit => this.mapVariantToSearchResult(hit as any)),
-                    totalItems: Number(body.hits.total ? body.hits.total.valueOf() : 0),
+                    items: body.hits.hits.map(hit =>
+                        this.mapVariantToSearchResult(hit as SearchHit<VariantIndexItem>),
+                    ),
+                    totalItems: Number(
+                        body.hits.total && typeof body.hits.total === 'object' ? body.hits.total.value : 0,
+                    ),
                 };
             } catch (e: any) {
                 if (e.meta.body.error.type && e.meta.body.error.type === 'search_phase_execution_exception') {
