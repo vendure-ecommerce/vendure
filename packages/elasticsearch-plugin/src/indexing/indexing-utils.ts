@@ -147,8 +147,8 @@ export function getClient(
 }
 
 export async function getIndexNameByAlias(client: Client, aliasName: string) {
-    const aliasExist = await client.indices.existsAlias({ name: aliasName });
-    if (aliasExist) {
+    const aliasExist = await client.indices.existsAlias({ name: aliasName }, { meta: true });
+    if (aliasExist.body) {
         const alias = await client.indices.getAlias({
             name: aliasName,
         });
