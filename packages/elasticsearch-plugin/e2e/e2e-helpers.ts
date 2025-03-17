@@ -62,7 +62,7 @@ export async function testMatchSearchTerm(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(search.items.map(i => i.productName)).toEqual(['Camera Lens', 'Instant Camera', 'SLR Camera']);
+    expect(search.items.map(i => i.productName)).toEqual(['Camera Lens', 'SLR Camera', 'Instant Camera']);
 }
 
 export async function testMatchFacetIdsAnd(client: SimpleGraphQLClient) {
