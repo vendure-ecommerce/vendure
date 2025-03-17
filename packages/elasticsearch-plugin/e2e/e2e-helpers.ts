@@ -240,10 +240,10 @@ export async function testMatchFacetValueFiltersWithFacetIdsAnd(client: SimpleGr
         },
     );
     expect(search.items.map(i => i.productName).sort()).toEqual([
-        'Instant Camera',
         'Camera Lens',
-        'Tripod',
+        'Instant Camera',
         'SLR Camera',
+        'Tripod',
     ]);
 }
 
