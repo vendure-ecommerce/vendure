@@ -144,7 +144,9 @@ export function EntityAssets({
 
     // Update internal state when props change
     useEffect(() => {
-        setAssets([...initialAssets]);
+        if (initialAssets.length) {
+            setAssets([...initialAssets]);
+        }
     }, [initialAssets]);
 
     useEffect(() => {

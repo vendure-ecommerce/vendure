@@ -24,31 +24,45 @@ import {
 } from '@/framework/layout-engine/page-layout.js';
 import { useDetailPage, getDetailQueryOptions } from '@/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@lingui/react/macro';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { ProductVariantsTable } from './components/product-variants-table.js';
-import { productDetailDocument, updateProductDocument } from './products.graphql.js';
-
+import { createProductDocument, productDetailDocument, updateProductDocument } from './products.graphql.js';
+import { NEW_ENTITY_PATH } from '@/constants.js';
+import { notFound } from '@tanstack/react-router';
+import { ErrorPage } from '@/components/shared/error-page.js';
 export const Route = createFileRoute('/_authenticated/_products/products_/$id')({
     component: ProductDetailPage,
     loader: async ({ context, params }) => {
-        const result = await context.queryClient.ensureQueryData(
+        const isNew = params.id === NEW_ENTITY_PATH;
+        const result = isNew ? null : await context.queryClient.ensureQueryData(
             getDetailQueryOptions(productDetailDocument, { id: params.id }),
         );
-        return { breadcrumb: [{ path: '/products', label: 'Products' }, result.product.name] };
+        if (!isNew && !result.product) {
+            throw new Error(`Product with the ID ${params.id} was not found`);
+        }
+        return {
+            breadcrumb: [
+                { path: '/products', label: 'Products' },
+                isNew ? <Trans>New product</Trans> : result.product.name,
+            ],
+        };
     },
+    errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
 export function ProductDetailPage() {
     const params = Route.useParams();
+    const navigate = useNavigate();
+    const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const { i18n } = useLingui();
 
     const { form, submitHandler, entity, isPending } = useDetailPage({
         queryDocument: productDetailDocument,
         entityField: 'product',
+        createDocument: createProductDocument,
         updateDocument: updateProductDocument,
         setValuesForUpdate: entity => {
-            // console.log(entity);
             return {
                 id: entity.id,
                 enabled: entity.enabled,
@@ -56,20 +70,24 @@ export function ProductDetailPage() {
                 assetIds: entity.assets.map(asset => asset.id),
                 facetValueIds: entity.facetValues.map(facetValue => facetValue.id),
                 translations: entity.translations.map(translation => ({
-                id: translation.id,
-                languageCode: translation.languageCode,
-                name: translation.name,
-                slug: translation.slug,
-                description: translation.description,
+                    id: translation.id,
+                    languageCode: translation.languageCode,
+                    name: translation.name,
+                    slug: translation.slug,
+                    description: translation.description,
                 })),
             };
         },
         params: { id: params.id },
-        onSuccess: () => {
+        onSuccess: (data) => {
             toast(i18n.t('Successfully updated product'), {
                 position: 'top-right',
             });
             form.reset();
+            if (creatingNewEntity) {
+                console.log(`navigating to:`, `${data.id}`);
+                navigate({ to: `../${data.id}`, from: Route.id });
+            }
         },
         onError: err => {
             toast(i18n.t('Failed to update product'), {
@@ -79,15 +97,13 @@ export function ProductDetailPage() {
         },
     });
 
-    console.log(`form state:`, form.formState); 
-
     return (
         <Page>
-            <PageTitle>{entity?.name ?? ''}</PageTitle>
+            <PageTitle>{creatingNewEntity ? <Trans>New product</Trans> : (entity?.name ?? '')}</PageTitle>
             <Form {...form}>
                 <form onSubmit={submitHandler} className="space-y-8">
                     <PageActionBar>
-                        <ContentLanguageSelector className="mb-4" />
+                        <ContentLanguageSelector />
                         <Button
                             type="submit"
                             disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
@@ -172,9 +188,11 @@ export function ProductDetailPage() {
                                 )}
                             />
                         </PageBlock>
-                        <PageBlock column="main">
-                            <ProductVariantsTable productId={params.id} />
-                        </PageBlock>
+                        {!creatingNewEntity && (
+                            <PageBlock column="main">
+                                <ProductVariantsTable productId={params.id} />
+                            </PageBlock>
+                        )}
                         <PageBlock column="side">
                             <FormField
                                 control={form.control}

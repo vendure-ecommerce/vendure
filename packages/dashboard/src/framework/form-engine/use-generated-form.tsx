@@ -3,7 +3,8 @@ import {
     createFormSchemaFromFields,
     getDefaultValuesFromFields,
 } from '@/framework/form-engine/form-schema-tools.js';
-import { useServerConfig } from '@/providers/server-config.js';
+import { useChannel } from '@/hooks/use-channel.js';
+import { useServerConfig } from '@/hooks/use-server-config.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { VariablesOf } from 'gql.tada';
@@ -34,10 +35,11 @@ export function useGeneratedForm<
     E extends Record<string, any> = Record<string, any>,
 >(options: GeneratedFormOptions<T, VarName, E>) {
     const { document, entity, setValues, onSubmit } = options;
+    const { activeChannel } = useChannel();
     const availableLanguages = useServerConfig()?.availableLanguages || [];
     const updateFields = getOperationVariablesFields(document);
     const schema = createFormSchemaFromFields(updateFields);
-    const defaultValues = getDefaultValuesFromFields(updateFields);
+    const defaultValues = getDefaultValuesFromFields(updateFields, activeChannel?.defaultLanguageCode);
     const processedEntity = ensureTranslationsForAllLanguages(entity, availableLanguages);
 
     const form = useForm({

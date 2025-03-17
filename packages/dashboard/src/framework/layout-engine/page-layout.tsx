@@ -60,7 +60,7 @@ export function Page({ children }: { children: React.ReactNode }) {
 
 export function PageTitle({ children }: { children: React.ReactNode }) {
     return (
-        <h1 className="text-2xl font-bold">{children}</h1>
+        <h1 className="text-2xl font-bold mb-4">{children}</h1>
     );
 }
 

@@ -1,6 +1,6 @@
 import { Controller } from 'react-hook-form';
 import { FieldPath } from 'react-hook-form';
-import { useUserSettings } from '@/providers/user-settings.js';
+import { useUserSettings } from '@/hooks/use-user-settings.js';
 import { ControllerProps } from 'react-hook-form';
 import { FieldValues } from 'react-hook-form';
 

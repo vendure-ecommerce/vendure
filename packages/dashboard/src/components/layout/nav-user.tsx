@@ -33,6 +33,7 @@ import { useUserSettings } from '@/hooks/use-user-settings.js';
 import { useMemo } from 'react';
 import { Dialog, DialogTrigger } from '../ui/dialog.js';
 import { LanguageDialog } from './language-dialog.js';
+import { Theme } from '@/providers/theme-provider.js';
 
 export function NavUser() {
     const { isMobile } = useSidebar();
@@ -125,7 +126,7 @@ export function NavUser() {
                                         <DropdownMenuSubContent>
                                             <DropdownMenuRadioGroup
                                                 value={settings.theme}
-                                                onValueChange={setTheme}
+                                                onValueChange={(value) => setTheme(value as Theme)}
                                             >
                                                 <DropdownMenuRadioItem value="light">
                                                     <Sun />

@@ -26,3 +26,4 @@ export function AppLayout() {
         </SidebarProvider>
     );
 }
+

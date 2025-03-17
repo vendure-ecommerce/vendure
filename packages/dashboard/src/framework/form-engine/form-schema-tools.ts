@@ -26,30 +26,29 @@ export function createFormSchemaFromFields(fields: FieldInfo[]) {
     return z.object(schemaConfig);
 }
 
-export function getDefaultValuesFromFields(fields: FieldInfo[]) {
+export function getDefaultValuesFromFields(fields: FieldInfo[], defaultLanguageCode?: string) {
     const defaultValues: Record<string, any> = {};
     for (const field of fields) {
         if (field.typeInfo) {
-            const nestedObjectDefaults = getDefaultValuesFromFields(field.typeInfo);
+            const nestedObjectDefaults = getDefaultValuesFromFields(field.typeInfo, defaultLanguageCode);
             if (field.list) {
                 defaultValues[field.name] = [nestedObjectDefaults];
             } else {
                 defaultValues[field.name] = nestedObjectDefaults;
             }
         } else {
-            defaultValues[field.name] = getDefaultValueFromField(field);
+            defaultValues[field.name] = getDefaultValueFromField(field, defaultLanguageCode);
         }
     }
     return defaultValues;
 }
 
-export function getDefaultValueFromField(field: FieldInfo) {
+export function getDefaultValueFromField(field: FieldInfo, defaultLanguageCode?: string) {
     if (field.list) {
         return [];
     }
     switch (field.type) {
         case 'String':
-        case 'ID':
         case 'DateTime':
             return '';
         case 'Int':
@@ -58,8 +57,15 @@ export function getDefaultValueFromField(field: FieldInfo) {
             return 0;
         case 'Boolean':
             return false;
-        default:
+        case 'ID':
+            return undefined;
+        case 'LanguageCode':
+            return defaultLanguageCode || 'en';
+        case 'JSON':
+            return {};
+        default: {
             return '';
+        }
     }
 }
 

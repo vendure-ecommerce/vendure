@@ -10,7 +10,7 @@ import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRouter, useNavigate } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
 import { ResultOf } from 'gql.tada';
-import { Page, PageTitle } from '../layout-engine/page-layout.js';
+import { Page, PageActionBar, PageTitle } from '../layout-engine/page-layout.js';
 
 type ListQueryFields<T extends TypedDocumentNode<any, any>> = {
     [Key in keyof ResultOf<T>]: ResultOf<T>[Key] extends { items: infer U }
@@ -30,6 +30,7 @@ export interface ListPageProps<
     customizeColumns?: CustomizeColumnConfig<T>;
     defaultColumnOrder?: (keyof ListQueryFields<T>)[];
     defaultVisibility?: Partial<Record<keyof ListQueryFields<T>, boolean>>;
+    children?: React.ReactNode;
 }
 
 export function ListPage<
@@ -43,6 +44,7 @@ export function ListPage<
     route: routeOrFn,
     defaultVisibility,
     onSearchTermChange,
+    children,
 }: ListPageProps<T, U, V>) {
     const route = typeof routeOrFn === 'function' ? routeOrFn() : routeOrFn;
     const routeSearch = route.useSearch();
@@ -86,6 +88,7 @@ export function ListPage<
     return (
         <Page>
             <PageTitle>{title}</PageTitle>
+            <PageActionBar>{children}</PageActionBar>
             <PaginatedListDataTable
                 listQuery={listQuery}
                 customizeColumns={customizeColumns}

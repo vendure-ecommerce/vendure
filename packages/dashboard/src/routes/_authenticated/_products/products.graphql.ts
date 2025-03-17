@@ -86,6 +86,17 @@ export const productDetailDocument = graphql(
     [productDetailFragment],
 );
 
+export const createProductDocument = graphql(
+    `
+        mutation CreateProduct($input: CreateProductInput!) {
+            createProduct(input: $input) {
+                ...ProductDetail
+            }
+        }
+    `,
+    [productDetailFragment],
+);
+
 export const updateProductDocument = graphql(
     `
         mutation UpdateProduct($input: UpdateProductInput!) {
