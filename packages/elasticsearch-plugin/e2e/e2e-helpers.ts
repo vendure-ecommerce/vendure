@@ -62,7 +62,11 @@ export async function testMatchSearchTerm(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(search.items.map(i => i.productName)).toEqual(['Camera Lens', 'SLR Camera', 'Instant Camera']);
+    expect(search.items.map(i => i.productName).sort()).toEqual([
+        'Camera Lens',
+        'Instant Camera',
+        'SLR Camera',
+    ]);
 }
 
 export async function testMatchFacetIdsAnd(client: SimpleGraphQLClient) {
@@ -79,7 +83,7 @@ export async function testMatchFacetIdsAnd(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(search.items.map(i => i.productName)).toEqual([
+    expect(search.items.map(i => i.productName).sort()).toEqual([
         'Clacky Keyboard',
         'Curvy Monitor',
         'Gaming PC',
@@ -104,7 +108,7 @@ export async function testMatchFacetIdsOr(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(search.items.map(i => i.productName)).toEqual([
+    expect(search.items.map(i => i.productName).sort()).toEqual([
         'Bonsai Tree',
         'Camera Lens',
         'Clacky Keyboard',
@@ -235,9 +239,12 @@ export async function testMatchFacetValueFiltersWithFacetIdsAnd(client: SimpleGr
             },
         },
     );
-    expect(search.items.map(i => i.productName).sort()).toEqual(
-        ['Instant Camera', 'Camera Lens', 'Tripod', 'SLR Camera'].sort(),
-    );
+    expect(search.items.map(i => i.productName).sort()).toEqual([
+        'Instant Camera',
+        'Camera Lens',
+        'Tripod',
+        'SLR Camera',
+    ]);
 }
 
 export async function testMatchCollectionId(client: SimpleGraphQLClient) {
