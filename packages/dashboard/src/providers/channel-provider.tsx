@@ -46,7 +46,7 @@ const ActiveChannelQuery = graphql(
 type Channel = ResultOf<typeof channelFragment>;
 
 // Define the context interface
-interface ChannelContext {
+export interface ChannelContext {
     activeChannel: Channel | undefined;
     channels: Channel[];
     selectedChannelId: string | undefined;
@@ -56,7 +56,7 @@ interface ChannelContext {
 }
 
 // Create the context
-const ChannelContext = React.createContext<ChannelContext | undefined>(undefined);
+export const ChannelContext = React.createContext<ChannelContext | undefined>(undefined);
 
 // Local storage key for the selected channel
 const SELECTED_CHANNEL_KEY = 'vendure-selected-channel';
@@ -129,11 +129,3 @@ export function ChannelProvider({ children }: { children: React.ReactNode }) {
     return <ChannelContext.Provider value={contextValue}>{children}</ChannelContext.Provider>;
 }
 
-// Hook to use the channel context
-export function useChannel() {
-    const context = React.useContext(ChannelContext);
-    if (context === undefined) {
-        throw new Error('useChannel must be used within a ChannelProvider');
-    }
-    return context;
-}

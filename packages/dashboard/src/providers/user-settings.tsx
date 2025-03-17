@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import { Theme } from './theme-provider.js';
 
 export interface UserSettings {
@@ -22,14 +22,14 @@ const defaultSettings: UserSettings = {
 interface UserSettingsContextType {
     settings: UserSettings;
     setDisplayLanguage: (language: string) => void;
-    setDisplayLocale: (locale: string | null) => void;
+    setDisplayLocale: (locale: string | undefined) => void;
     setContentLanguage: (language: string) => void;
-    setTheme: (theme: string) => void;
+    setTheme: (theme: Theme) => void;
     setDisplayUiExtensionPoints: (display: boolean) => void;
     setMainNavExpanded: (expanded: boolean) => void;
 }
 
-const UserSettingsContext = createContext<UserSettingsContextType | undefined>(undefined);
+export const UserSettingsContext = createContext<UserSettingsContextType | undefined>(undefined);
 
 const STORAGE_KEY = 'vendure-user-settings';
 
@@ -76,11 +76,4 @@ export const UserSettingsProvider: React.FC<React.PropsWithChildren<{}>> = ({ ch
     return <UserSettingsContext.Provider value={contextValue}>{children}</UserSettingsContext.Provider>;
 };
 
-// Hook to use the user settings
-export const useUserSettings = () => {
-    const context = useContext(UserSettingsContext);
-    if (context === undefined) {
-        throw new Error('useUserSettings must be used within a UserSettingsProvider');
-    }
-    return context;
-};
+

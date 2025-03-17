@@ -1,6 +1,7 @@
-import { useServerConfig } from '@/providers/server-config.js';
 import { useLingui } from '@lingui/react';
 import { useCallback, useMemo } from 'react';
+
+import { useServerConfig } from './use-server-config.js';
 
 /**
  * @description

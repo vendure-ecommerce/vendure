@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { useUserSettings } from './user-settings.js';
+import { createContext, useEffect, useState } from 'react';
+import { useUserSettings } from '../hooks/use-user-settings.js';
 
 export type Theme = 'dark' | 'light' | 'system';
 
@@ -19,7 +19,7 @@ const initialState: ThemeProviderState = {
     setTheme: () => null,
 };
 
-const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
+export const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
 export function ThemeProvider({ children, defaultTheme = 'system', ...props }: ThemeProviderProps) {
     const { settings, setTheme } = useUserSettings();
@@ -52,10 +52,3 @@ export function ThemeProvider({ children, defaultTheme = 'system', ...props }: T
     );
 }
 
-export const useTheme = () => {
-    const context = useContext(ThemeProviderContext);
-
-    if (context === undefined) throw new Error('useTheme must be used within a ThemeProvider');
-
-    return context;
-};

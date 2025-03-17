@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { useServerConfig } from '@/providers/server-config.js';
+import { useServerConfig } from '@/hooks/use-server-config.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.js';
 import { cn } from '@/lib/utils.js';
 import { getLocalizedLanguageName } from '@/lib/locale-utils.js';
-import { useUserSettings } from '@/providers/user-settings.js';
+import { useUserSettings } from '@/hooks/use-user-settings.js';
 import { useLocalFormat } from '@/hooks/use-local-format.js';
 
 interface ContentLanguageSelectorProps {

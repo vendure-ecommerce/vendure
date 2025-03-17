@@ -276,6 +276,4 @@ export const ServerConfigProvider = ({ children }: { children: React.ReactNode }
     return <ServerConfigContext.Provider value={value}>{children}</ServerConfigContext.Provider>;
 };
 
-export const useServerConfig = () => React.useContext(ServerConfigContext);
-
-const ServerConfigContext = React.createContext<ServerConfig | null>(null);
+export const ServerConfigContext = React.createContext<ServerConfig | null>(null);

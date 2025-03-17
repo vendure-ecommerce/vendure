@@ -13,7 +13,7 @@ import { FormItem, FormLabel } from '../ui/form.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select.js';
 import { Label } from '../ui/label.js';
 import { uiConfig } from 'virtual:vendure-ui-config';
-import { useUserSettings } from '@/providers/user-settings.js';
+import { useUserSettings } from '@/hooks/use-user-settings.js';
 
 /**
  * This is copied from the generated types from @vendure/common/lib/generated-types.d.ts

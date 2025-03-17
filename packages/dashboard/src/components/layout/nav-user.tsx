@@ -1,19 +1,15 @@
 'use client';
 
-import { useAuth } from '@/providers/auth.js';
+import { useAuth } from '@/hooks/use-auth.js';
 import { Route } from '@/routes/_authenticated.js';
 import { Link, useRouter } from '@tanstack/react-router';
 import {
-    BadgeCheck,
-    Bell,
     ChevronsUpDown,
-    CreditCard,
     LogOut,
     Monitor,
     Moon,
     Sparkles,
-    Sun,
-    SunMoon,
+    Sun
 } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
@@ -23,20 +19,20 @@ import {
     DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-    DropdownMenuSub,
-    DropdownMenuSubTrigger,
     DropdownMenuPortal,
-    DropdownMenuSubContent,
     DropdownMenuRadioGroup,
     DropdownMenuRadioItem,
+    DropdownMenuSeparator,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
+    DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.js';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar.js';
+import { useUserSettings } from '@/hooks/use-user-settings.js';
 import { useMemo } from 'react';
-import { useUserSettings } from '@/providers/user-settings.js';
-import { LanguageDialog } from './language-dialog.js';
 import { Dialog, DialogTrigger } from '../ui/dialog.js';
+import { LanguageDialog } from './language-dialog.js';
 
 export function NavUser() {
     const { isMobile } = useSidebar();

@@ -1,5 +1,5 @@
 import { AppProviders, queryClient, router } from '@/app-providers.js';
-import { useAuth } from '@/providers/auth.js';
+import { useAuth } from './hooks/use-auth.js';
 import { useDashboardExtensions } from '@/framework/extension-api/use-dashboard-extensions.js';
 import { useExtendedRouter } from '@/framework/page/use-extended-router.js';
 import { defaultLocale, dynamicActivate } from '@/providers/i18n-provider.js';
