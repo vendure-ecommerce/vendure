@@ -47,20 +47,23 @@ export function ProductDetailPage() {
         queryDocument: productDetailDocument,
         entityField: 'product',
         updateDocument: updateProductDocument,
-        setValuesForUpdate: entity => ({
-            id: entity.id,
-            enabled: entity.enabled,
-            featuredAssetId: entity.featuredAsset?.id,
-            assetIds: entity.assets.map(asset => asset.id),
-            facetValueIds: entity.facetValues.map(facetValue => facetValue.id),
-            translations: entity.translations.map(translation => ({
+        setValuesForUpdate: entity => {
+            // console.log(entity);
+            return {
+                id: entity.id,
+                enabled: entity.enabled,
+                featuredAssetId: entity.featuredAsset?.id,
+                assetIds: entity.assets.map(asset => asset.id),
+                facetValueIds: entity.facetValues.map(facetValue => facetValue.id),
+                translations: entity.translations.map(translation => ({
                 id: translation.id,
                 languageCode: translation.languageCode,
                 name: translation.name,
                 slug: translation.slug,
                 description: translation.description,
-            })),
-        }),
+                })),
+            };
+        },
         params: { id: params.id },
         onSuccess: () => {
             toast(i18n.t('Successfully updated product'), {
@@ -75,6 +78,8 @@ export function ProductDetailPage() {
             });
         },
     });
+
+    console.log(`form state:`, form.formState); 
 
     return (
         <Page>
@@ -202,8 +207,14 @@ export function ProductDetailPage() {
                                         compact={true}
                                         value={form.getValues()}
                                         onChange={value => {
-                                            form.setValue('featuredAssetId', value.featuredAssetId);
-                                            form.setValue('assetIds', value.assetIds);
+                                            form.setValue('featuredAssetId', value.featuredAssetId, {
+                                                shouldDirty: true,
+                                                shouldValidate: true,
+                                            });
+                                            form.setValue('assetIds', value.assetIds, {
+                                                shouldDirty: true,
+                                                shouldValidate: true,
+                                            });
                                         }}
                                     />
                                 </FormControl>
