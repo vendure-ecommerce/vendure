@@ -38,3 +38,23 @@ export function formatFileSize(bytes: number): string {
 
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)).toString() + ' ' + sizes[i];
 }
+
+/**
+ * This is a copy of the normalizeString function from @vendure/common/lib/normalize-string.js
+ * It is duplicated here due to issues importing from that package
+ * inside the monorepo.
+ */
+export function normalizeString(input: string, spaceReplacer = ' '): string {
+    const multipleSequentialReplacerRegex = new RegExp(`([${spaceReplacer}]){2,}`, 'g');
+
+    return (input || '')
+        .normalize('NFD')
+        .replace(/[\u00df]/g, 'ss')
+        .replace(/[\u1e9e]/g, 'SS')
+        .replace(/[\u0308]/g, 'e')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[!"£$%^&*()+[\]{};:@#~?\\/,|><`¬'=‘’©®™]/g, '')
+        .replace(/\s+/g, spaceReplacer)
+        .replace(multipleSequentialReplacerRegex, spaceReplacer);
+}

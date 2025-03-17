@@ -31,13 +31,17 @@ import { createProductDocument, productDetailDocument, updateProductDocument } f
 import { NEW_ENTITY_PATH } from '@/constants.js';
 import { notFound } from '@tanstack/react-router';
 import { ErrorPage } from '@/components/shared/error-page.js';
+import { CreateProductVariants } from './components/create-product-variants.js';
+import { CreateProductVariantsDialog } from './components/create-product-variants-dialog.js';
 export const Route = createFileRoute('/_authenticated/_products/products_/$id')({
     component: ProductDetailPage,
     loader: async ({ context, params }) => {
         const isNew = params.id === NEW_ENTITY_PATH;
-        const result = isNew ? null : await context.queryClient.ensureQueryData(
-            getDetailQueryOptions(productDetailDocument, { id: params.id }),
-        );
+        const result = isNew
+            ? null
+            : await context.queryClient.ensureQueryData(
+                  getDetailQueryOptions(productDetailDocument, { id: params.id }),
+              );
         if (!isNew && !result.product) {
             throw new Error(`Product with the ID ${params.id} was not found`);
         }
@@ -57,7 +61,7 @@ export function ProductDetailPage() {
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const { i18n } = useLingui();
 
-    const { form, submitHandler, entity, isPending } = useDetailPage({
+    const { form, submitHandler, entity, isPending, refreshEntity } = useDetailPage({
         queryDocument: productDetailDocument,
         entityField: 'product',
         createDocument: createProductDocument,
@@ -79,7 +83,7 @@ export function ProductDetailPage() {
             };
         },
         params: { id: params.id },
-        onSuccess: (data) => {
+        onSuccess: data => {
             toast(i18n.t('Successfully updated product'), {
                 position: 'top-right',
             });
@@ -188,9 +192,20 @@ export function ProductDetailPage() {
                                 )}
                             />
                         </PageBlock>
-                        {!creatingNewEntity && (
+                        {entity && entity.variantList.totalItems > 0 && (
                             <PageBlock column="main">
                                 <ProductVariantsTable productId={params.id} />
+                            </PageBlock>
+                        )}
+                        {entity && entity.variantList.totalItems === 0 && (
+                            <PageBlock column="main">
+                                <CreateProductVariantsDialog
+                                    productId={entity.id}
+                                    productName={entity.name}
+                                    onSuccess={() => {
+                                        refreshEntity();
+                                    }}
+                                />
                             </PageBlock>
                         )}
                         <PageBlock column="side">

@@ -80,6 +80,9 @@ export const productDetailDocument = graphql(
         query ProductDetail($id: ID!) {
             product(id: $id) {
                 ...ProductDetail
+                variantList {
+                    totalItems
+                }
             }
         }
     `,

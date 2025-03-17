@@ -2,8 +2,8 @@ import {
     DEFAULT_AUTH_TOKEN_HEADER_KEY,
     DEFAULT_CHANNEL_TOKEN_KEY,
     ADMIN_API_PATH,
-} from '@vendure/common/lib/shared-constants.js';
-import { AdminUiConfig } from '@vendure/common/lib/shared-types.js';
+} from '@vendure/common/lib/shared-constants';
+import { AdminUiConfig } from '@vendure/common/lib/shared-types';
 import { VendureConfig } from '@vendure/core';
 
 import { defaultAvailableLocales } from './constants.js';

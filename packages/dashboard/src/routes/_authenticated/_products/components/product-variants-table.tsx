@@ -22,6 +22,10 @@ export function ProductVariantsTable({ productId }: ProductVariantsTableProps) {
             ...variables,
             productId,
         })}
+        defaultVisibility={{
+            id: false,
+            currencyCode: false,
+        }}
         customizeColumns={{
             currencyCode: {
                 cell: ({ cell, row }) => {

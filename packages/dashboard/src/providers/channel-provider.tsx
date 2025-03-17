@@ -15,10 +15,13 @@ const channelFragment = graphql(`
     }
 `);
 
-// Query to get all available channels
+// Query to get all available channels and the active channel
 const ChannelsQuery = graphql(
     `
-        query Channels {
+        query ChannelInformation {
+            activeChannel {
+                ...ChannelInfo
+            }
             channels {
                 items {
                     ...ChannelInfo
@@ -30,17 +33,6 @@ const ChannelsQuery = graphql(
     [channelFragment],
 );
 
-// Query to get the active channel
-const ActiveChannelQuery = graphql(
-    `
-        query ActiveChannel {
-            activeChannel {
-                ...ChannelInfo
-            }
-        }
-    `,
-    [channelFragment],
-);
 
 // Define the type for a channel
 type Channel = ResultOf<typeof channelFragment>;
@@ -79,12 +71,6 @@ export function ChannelProvider({ children }: { children: React.ReactNode }) {
         queryFn: () => api.query(ChannelsQuery),
     });
 
-    // Fetch the active channel
-    const { data: activeChannelData, isLoading: isActiveChannelLoading } = useQuery({
-        queryKey: ['activeChannel'],
-        queryFn: () => api.query(ActiveChannelQuery),
-    });
-
     // Set the selected channel and update localStorage
     const setSelectedChannel = React.useCallback((channelId: string) => {
         try {
@@ -98,19 +84,19 @@ export function ChannelProvider({ children }: { children: React.ReactNode }) {
 
     // If no selected channel is set but we have an active channel, use that
     React.useEffect(() => {
-        if (!selectedChannelId && activeChannelData?.activeChannel?.id) {
-            setSelectedChannelId(activeChannelData.activeChannel.id);
+        if (!selectedChannelId && channelsData?.activeChannel?.id) {
+            setSelectedChannelId(channelsData.activeChannel.id);
             try {
-                localStorage.setItem(SELECTED_CHANNEL_KEY, activeChannelData.activeChannel.id);
+                localStorage.setItem(SELECTED_CHANNEL_KEY, channelsData.activeChannel.id);
             } catch (e) {
                 console.error('Failed to store selected channel in localStorage', e);
             }
         }
-    }, [selectedChannelId, activeChannelData]);
+    }, [selectedChannelId, channelsData]);
 
     const channels = channelsData?.channels.items || [];
-    const activeChannel = activeChannelData?.activeChannel;
-    const isLoading = isChannelsLoading || isActiveChannelLoading;
+    const activeChannel = channelsData?.activeChannel;
+    const isLoading = isChannelsLoading;
 
     // Find the selected channel from the list of channels
     const selectedChannel = React.useMemo(() => {

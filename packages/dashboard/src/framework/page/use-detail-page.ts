@@ -5,6 +5,7 @@ import { queryOptions, useMutation, useQueryClient, useSuspenseQuery } from '@ta
 import { ResultOf, VariablesOf } from 'gql.tada';
 import { DocumentNode } from 'graphql';
 import { Variables } from 'graphql-request';
+import { useCallback } from 'react';
 
 import { getMutationName, getQueryName } from '../document-introspection/get-document-structure.js';
 import { useGeneratedForm } from '../form-engine/use-generated-form.js';
@@ -131,5 +132,15 @@ export function useDetailPage<
         },
     });
 
-    return { form, submitHandler, entity, isPending: updateMutation.isPending || detailQuery?.isPending };
+    const refreshEntity = useCallback(() => {
+        void queryClient.invalidateQueries({ queryKey: detailQueryOptions.queryKey });
+    }, [queryClient, detailQueryOptions.queryKey]);
+
+    return {
+        form,
+        submitHandler,
+        entity,
+        isPending: updateMutation.isPending || detailQuery?.isPending,
+        refreshEntity,
+    };
 }
