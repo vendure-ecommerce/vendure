@@ -35,10 +35,7 @@ import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus';
 import { RoleEvent } from '../../event-bus/events/role-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
-import {
-    getChannelPermissions,
-    getUserChannelsPermissions,
-} from '../helpers/utils/get-user-channels-permissions';
+import { getChannelPermissions } from '../helpers/utils/get-user-channels-permissions';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { ChannelService } from './channel.service';
@@ -222,7 +219,9 @@ export class RoleService {
                 const user = await this.connection.getEntityOrThrow(ctx, User, activeUserId, {
                     relations: ['roles', 'roles.channels'],
                 });
-                return getUserChannelsPermissions(user);
+                return this.configService.authOptions.rolePermissionResolverStrategy.getPermissionsForUser(
+                    user,
+                );
             },
         );
 
@@ -277,6 +276,7 @@ export class RoleService {
         if (targetChannels) {
             role.channels = targetChannels;
         }
+
         await this.connection.getRepository(ctx, Role).save(role, { reload: false });
         const updatedRole = await assertFound(this.findOne(ctx, role.id));
         await this.eventBus.publish(new RoleEvent(ctx, updatedRole, 'updated', input));
@@ -437,8 +437,9 @@ export class RoleService {
             code: input.code,
             description: input.description,
             permissions: unique([Permission.Authenticated, ...input.permissions]),
+            channels,
         });
-        role.channels = channels;
+
         return this.connection.getRepository(ctx, Role).save(role);
     }
 
