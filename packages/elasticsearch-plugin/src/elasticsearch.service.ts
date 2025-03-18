@@ -274,7 +274,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         const { aggregations } = body;
         if (!aggregations) {
             throw new InternalServerError(
-                'An error occurred when querying Elasticsearch for priceRange aggregations',
+                'An error occurred when querying Elasticsearch for total hits aggregation',
             );
         }
         return aggregations.total ? aggregations.total.value : 0;
