@@ -1,5 +1,6 @@
 import { api } from '@/graphql/api.js';
 import { ResultOf, graphql } from '@/graphql/graphql.js';
+import { useUserSettings } from '@/hooks/use-user-settings.js';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import * as React from 'react';
 
@@ -9,7 +10,8 @@ export interface AuthContext {
     isAuthenticated: boolean;
     login: (username: string, password: string, onSuccess?: () => void) => void;
     logout: (onSuccess?: () => void) => Promise<void>;
-    user: ResultOf<typeof ActiveAdministratorQuery>['activeAdministrator'] | undefined;
+    user: ResultOf<typeof CurrentUserQuery>['activeAdministrator'] | undefined;
+    channels: NonNullable<ResultOf<typeof CurrentUserQuery>['me']>['channels'] | undefined;
 }
 
 const LoginMutation = graphql(`
@@ -37,7 +39,7 @@ const LogOutMutation = graphql(`
 `);
 
 const CurrentUserQuery = graphql(`
-    query CurrentUser {
+    query CurrentUserInformation {
         me {
             id
             identifier
@@ -48,11 +50,6 @@ const CurrentUserQuery = graphql(`
                 permissions
             }
         }
-    }
-`);
-
-const ActiveAdministratorQuery = graphql(`
-    query ActiveAdministrator {
         activeAdministrator {
             id
             firstName
@@ -67,6 +64,7 @@ export const AuthContext = React.createContext<AuthContext | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [status, setStatus] = React.useState<AuthContext['status']>('verifying');
     const [authenticationError, setAuthenticationError] = React.useState<string | undefined>();
+    const { settings, setActiveChannelId } = useUserSettings();
     const onLoginSuccessFn = React.useRef<() => void>(() => {});
     const onLogoutSuccessFn = React.useRef<() => void>(() => {});
     const isAuthenticated = status === 'authenticated';
@@ -77,10 +75,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         retry: false,
     });
 
-    const { data: administratorData, isLoading: isAdministratorLoading } = useQuery({
-        queryKey: ['administrator'],
-        queryFn: () => api.query(ActiveAdministratorQuery),
-    });
+    React.useEffect(() => {
+        if (!settings.activeChannelId && currentUserData?.me?.channels?.length) {
+            setActiveChannelId(currentUserData.me.channels[0].id);
+        }
+    }, [settings.activeChannelId, currentUserData?.me?.channels]);
 
     const loginMutationFn = api.mutate(LoginMutation);
     const loginMutation = useMutation({
@@ -141,7 +140,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 isAuthenticated,
                 authenticationError,
                 status,
-                user: administratorData?.activeAdministrator,
+                user: currentUserData?.activeAdministrator,
+                channels: currentUserData?.me?.channels,
                 login,
                 logout,
             }}

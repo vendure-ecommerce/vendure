@@ -33,6 +33,7 @@ import { notFound } from '@tanstack/react-router';
 import { ErrorPage } from '@/components/shared/error-page.js';
 import { CreateProductVariants } from './components/create-product-variants.js';
 import { CreateProductVariantsDialog } from './components/create-product-variants-dialog.js';
+import { PermissionGuard } from '@/components/shared/permission-guard.js';
 export const Route = createFileRoute('/_authenticated/_products/products_/$id')({
     component: ProductDetailPage,
     loader: async ({ context, params }) => {
@@ -89,7 +90,6 @@ export function ProductDetailPage() {
             });
             form.reset();
             if (creatingNewEntity) {
-                console.log(`navigating to:`, `${data.id}`);
                 navigate({ to: `../${data.id}`, from: Route.id });
             }
         },
@@ -108,12 +108,14 @@ export function ProductDetailPage() {
                 <form onSubmit={submitHandler} className="space-y-8">
                     <PageActionBar>
                         <ContentLanguageSelector />
-                        <Button
-                            type="submit"
-                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
-                        >
-                            Submit
-                        </Button>
+                        <PermissionGuard requires={['UpdateProduct', 'UpdateCatalog']}>
+                            <Button
+                                type="submit"
+                                disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                            >
+                                <Trans>Update</Trans>
+                            </Button>
+                        </PermissionGuard>
                     </PageActionBar>
                     <PageLayout>
                         <PageBlock column="side">

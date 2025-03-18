@@ -4,6 +4,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { productListDocument } from './products.graphql.js';
 import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
 import { PlusIcon } from 'lucide-react';
+import { PermissionGuard } from '@/components/shared/permission-guard.js';
 
 export const Route = createFileRoute('/_authenticated/_products/products')({
     component: ProductListPage,
@@ -36,12 +37,14 @@ export function ProductListPage() {
         >
             <PageActionBar>
                 <div></div>
-                <Button asChild>
-                    <Link to="./new">
-                        <PlusIcon className="mr-2 h-4 w-4" />
+                <PermissionGuard requires={['CreateProduct', 'CreateCatalog']}>
+                    <Button asChild>
+                        <Link to="./new">
+                            <PlusIcon className="mr-2 h-4 w-4" />
                         New Product
                     </Link>
                 </Button>
+                </PermissionGuard>
             </PageActionBar>
         </ListPage>
     );

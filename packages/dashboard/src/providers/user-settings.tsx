@@ -8,6 +8,7 @@ export interface UserSettings {
     theme: Theme;
     displayUiExtensionPoints: boolean;
     mainNavExpanded: boolean;
+    activeChannelId: string;
 }
 
 const defaultSettings: UserSettings = {
@@ -17,6 +18,7 @@ const defaultSettings: UserSettings = {
     theme: 'system',
     displayUiExtensionPoints: false,
     mainNavExpanded: true,
+    activeChannelId: '',
 };
 
 interface UserSettingsContextType {
@@ -27,6 +29,7 @@ interface UserSettingsContextType {
     setTheme: (theme: Theme) => void;
     setDisplayUiExtensionPoints: (display: boolean) => void;
     setMainNavExpanded: (expanded: boolean) => void;
+    setActiveChannelId: (channelId: string) => void;
 }
 
 export const UserSettingsContext = createContext<UserSettingsContextType | undefined>(undefined);
@@ -71,6 +74,7 @@ export const UserSettingsProvider: React.FC<React.PropsWithChildren<{}>> = ({ ch
         setTheme: theme => updateSetting('theme', theme),
         setDisplayUiExtensionPoints: display => updateSetting('displayUiExtensionPoints', display),
         setMainNavExpanded: expanded => updateSetting('mainNavExpanded', expanded),
+        setActiveChannelId: channelId => updateSetting('activeChannelId', channelId),
     };
 
     return <UserSettingsContext.Provider value={contextValue}>{children}</UserSettingsContext.Provider>;
