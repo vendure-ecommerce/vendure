@@ -17,6 +17,7 @@ import { Route as AuthenticatedImport } from './routes/_authenticated';
 import { Route as AuthenticatedIndexImport } from './routes/_authenticated/index';
 import { Route as AuthenticatedDashboardImport } from './routes/_authenticated/dashboard';
 import { Route as AuthenticatedProductsProductsImport } from './routes/_authenticated/_products/products';
+import { Route as AuthenticatedProductVariantsProductVariantsImport } from './routes/_authenticated/_product-variants/product-variants';
 import { Route as AuthenticatedProductsProductsIdImport } from './routes/_authenticated/_products/products_.$id';
 
 // Create/Update Routes
@@ -55,6 +56,13 @@ const AuthenticatedProductsProductsRoute = AuthenticatedProductsProductsImport.u
     path: '/products',
     getParentRoute: () => AuthenticatedRoute,
 } as any);
+
+const AuthenticatedProductVariantsProductVariantsRoute =
+    AuthenticatedProductVariantsProductVariantsImport.update({
+        id: '/_product-variants/product-variants',
+        path: '/product-variants',
+        getParentRoute: () => AuthenticatedRoute,
+    } as any);
 
 const AuthenticatedProductsProductsIdRoute = AuthenticatedProductsProductsIdImport.update({
     id: '/_products/products_/$id',
@@ -101,6 +109,13 @@ declare module '@tanstack/react-router' {
             preLoaderRoute: typeof AuthenticatedIndexImport;
             parentRoute: typeof AuthenticatedImport;
         };
+        '/_authenticated/_product-variants/product-variants': {
+            id: '/_authenticated/_product-variants/product-variants';
+            path: '/product-variants';
+            fullPath: '/product-variants';
+            preLoaderRoute: typeof AuthenticatedProductVariantsProductVariantsImport;
+            parentRoute: typeof AuthenticatedImport;
+        };
         '/_authenticated/_products/products': {
             id: '/_authenticated/_products/products';
             path: '/products';
@@ -123,6 +138,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteChildren {
     AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute;
     AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute;
+    AuthenticatedProductVariantsProductVariantsRoute: typeof AuthenticatedProductVariantsProductVariantsRoute;
     AuthenticatedProductsProductsRoute: typeof AuthenticatedProductsProductsRoute;
     AuthenticatedProductsProductsIdRoute: typeof AuthenticatedProductsProductsIdRoute;
 }
@@ -130,6 +146,7 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
     AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
     AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+    AuthenticatedProductVariantsProductVariantsRoute: AuthenticatedProductVariantsProductVariantsRoute,
     AuthenticatedProductsProductsRoute: AuthenticatedProductsProductsRoute,
     AuthenticatedProductsProductsIdRoute: AuthenticatedProductsProductsIdRoute,
 };
@@ -142,6 +159,7 @@ export interface FileRoutesByFullPath {
     '/login': typeof LoginRoute;
     '/dashboard': typeof AuthenticatedDashboardRoute;
     '/': typeof AuthenticatedIndexRoute;
+    '/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute;
     '/products': typeof AuthenticatedProductsProductsRoute;
     '/products/$id': typeof AuthenticatedProductsProductsIdRoute;
 }
@@ -151,6 +169,7 @@ export interface FileRoutesByTo {
     '/login': typeof LoginRoute;
     '/dashboard': typeof AuthenticatedDashboardRoute;
     '/': typeof AuthenticatedIndexRoute;
+    '/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute;
     '/products': typeof AuthenticatedProductsProductsRoute;
     '/products/$id': typeof AuthenticatedProductsProductsIdRoute;
 }
@@ -162,15 +181,24 @@ export interface FileRoutesById {
     '/login': typeof LoginRoute;
     '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute;
     '/_authenticated/': typeof AuthenticatedIndexRoute;
+    '/_authenticated/_product-variants/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute;
     '/_authenticated/_products/products': typeof AuthenticatedProductsProductsRoute;
     '/_authenticated/_products/products_/$id': typeof AuthenticatedProductsProductsIdRoute;
 }
 
 export interface FileRouteTypes {
     fileRoutesByFullPath: FileRoutesByFullPath;
-    fullPaths: '' | '/about' | '/login' | '/dashboard' | '/' | '/products' | '/products/$id';
+    fullPaths:
+        | ''
+        | '/about'
+        | '/login'
+        | '/dashboard'
+        | '/'
+        | '/product-variants'
+        | '/products'
+        | '/products/$id';
     fileRoutesByTo: FileRoutesByTo;
-    to: '/about' | '/login' | '/dashboard' | '/' | '/products' | '/products/$id';
+    to: '/about' | '/login' | '/dashboard' | '/' | '/product-variants' | '/products' | '/products/$id';
     id:
         | '__root__'
         | '/_authenticated'
@@ -178,6 +206,7 @@ export interface FileRouteTypes {
         | '/login'
         | '/_authenticated/dashboard'
         | '/_authenticated/'
+        | '/_authenticated/_product-variants/product-variants'
         | '/_authenticated/_products/products'
         | '/_authenticated/_products/products_/$id';
     fileRoutesById: FileRoutesById;
@@ -213,6 +242,7 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
       "children": [
         "/_authenticated/dashboard",
         "/_authenticated/",
+        "/_authenticated/_product-variants/product-variants",
         "/_authenticated/_products/products",
         "/_authenticated/_products/products_/$id"
       ]
@@ -229,6 +259,10 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
     },
     "/_authenticated/": {
       "filePath": "_authenticated/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/_product-variants/product-variants": {
+      "filePath": "_authenticated/_product-variants/product-variants.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/_products/products": {

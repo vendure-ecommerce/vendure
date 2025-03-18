@@ -25,6 +25,12 @@ type RelationCustomFieldFragment = ResultOf<typeof relationCustomFieldFragment>;
 
 let globalCustomFieldsMap: Map<string, CustomFieldConfig[]>;
 
+/**
+ * @description
+ * This function is used to set the global custom fields map.
+ * It is called when the server config is loaded, and then can
+ * be used in other parts of the app via the `getCustomFieldsMap` function.
+ */
 export function setCustomFieldsMap(
     entityCustomFields: ResultOf<
         typeof getServerConfigDocument
@@ -37,6 +43,14 @@ export function setCustomFieldsMap(
             entityCustomField.customFields as CustomFieldConfig[],
         );
     }
+}
+
+/**
+ * @description
+ * This function is used to get the global custom fields map.
+ */
+export function getCustomFieldsMap() {
+    return globalCustomFieldsMap;
 }
 
 /**

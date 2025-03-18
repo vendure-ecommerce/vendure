@@ -58,7 +58,7 @@ export function getDefaultValueFromField(field: FieldInfo, defaultLanguageCode?:
         case 'Boolean':
             return false;
         case 'ID':
-            return undefined;
+            return '';
         case 'LanguageCode':
             return defaultLanguageCode || 'en';
         case 'JSON':
@@ -92,7 +92,7 @@ export function getZodTypeFromField(field: FieldInfo): ZodTypeAny {
         zodType = z.array(zodType);
     }
     if (field.nullable) {
-        zodType = zodType.optional();
+        zodType = zodType.optional().nullable();
     }
     return zodType;
 }

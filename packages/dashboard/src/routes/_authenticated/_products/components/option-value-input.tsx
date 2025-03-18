@@ -6,6 +6,23 @@ import { Button } from "@/components/ui/button.js";
 import { Badge } from "@/components/ui/badge.js";
 import { Plus, X } from "lucide-react";
 
+interface OptionValue {
+    value: string;
+    id: string;
+}
+
+interface FormValues {
+    optionGroups: {
+        name: string;
+        values: OptionValue[];
+    }[];
+    variants: Record<string, {
+        enabled: boolean;
+        sku: string;
+        price: string;
+        stock: string;
+    }>;
+}
 
 interface OptionValueInputProps {
     groupName: string;
@@ -14,7 +31,7 @@ interface OptionValueInputProps {
 }
 
 export function OptionValueInput({ groupName, groupIndex, disabled = false }: OptionValueInputProps) {
-    const { control, watch } = useFormContext();
+    const { control, watch } = useFormContext<FormValues>();
     const { fields, append, remove } = useFieldArray({
         control,
         name: `optionGroups.${groupIndex}.values`,

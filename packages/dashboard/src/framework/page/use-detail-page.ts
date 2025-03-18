@@ -1,5 +1,6 @@
 import { NEW_ENTITY_PATH } from '@/constants.js';
 import { api } from '@/graphql/api.js';
+import { useCustomFieldConfig } from '@/hooks/use-custom-field-config.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { queryOptions, useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { ResultOf, VariablesOf } from 'gql.tada';
@@ -7,7 +8,11 @@ import { DocumentNode } from 'graphql';
 import { Variables } from 'graphql-request';
 import { useCallback } from 'react';
 
-import { getMutationName, getQueryName } from '../document-introspection/get-document-structure.js';
+import {
+    getMutationName,
+    getQueryName,
+    getQueryTypeFieldInfo,
+} from '../document-introspection/get-document-structure.js';
 import { useGeneratedForm } from '../form-engine/use-generated-form.js';
 
 export interface DetailPageOptions<

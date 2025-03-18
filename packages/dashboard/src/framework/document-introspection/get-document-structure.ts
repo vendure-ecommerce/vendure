@@ -9,6 +9,9 @@ import {
 import { DefinitionNode, NamedTypeNode, SelectionSetNode, TypeNode } from 'graphql/language/ast.js';
 import { schemaInfo } from 'virtual:admin-api-schema';
 
+// for debug purposes
+(window as any).schemaInfo = schemaInfo;
+
 export interface FieldInfo {
     name: string;
     type: string;
@@ -20,6 +23,7 @@ export interface FieldInfo {
 }
 
 /**
+ * @description
  * Given a DocumentNode of a PaginatedList query, returns information about each
  * of the selected fields.
  *
@@ -68,6 +72,22 @@ export function getListQueryFields(documentNode: DocumentNode): FieldInfo[] {
     return fields;
 }
 
+/**
+ * @description
+ * This function is used to get the fields of the operation variables from a DocumentNode.
+ *
+ * For example, in the following query:
+ *
+ * ```graphql
+ * mutation UpdateProduct($input: UpdateProductInput!) {
+ *   updateProduct(input: $input) {
+ *     ...ProductDetail
+ *   }
+ * }
+ * ```
+ *
+ * The operation variables fields are the fields of the `UpdateProductInput` type.
+ */
 export function getOperationVariablesFields(documentNode: DocumentNode): FieldInfo[] {
     const fields: FieldInfo[] = [];
 
@@ -97,6 +117,22 @@ function unwrapVariableDefinitionType(type: TypeNode): NamedTypeNode {
     return type;
 }
 
+/**
+ * @description
+ * This function is used to get the name of the query from a DocumentNode.
+ *
+ * For example, in the following query:
+ *
+ * ```graphql
+ * query ProductDetail($id: ID!) {
+ *   product(id: $id) {
+ *     ...ProductDetail
+ *   }
+ * }
+ * ```
+ *
+ * The query name is `product`.
+ */
 export function getQueryName(documentNode: DocumentNode): string {
     const operationDefinition = documentNode.definitions.find(
         (def): def is OperationDefinitionNode =>
@@ -110,6 +146,43 @@ export function getQueryName(documentNode: DocumentNode): string {
     }
 }
 
+/**
+ * @description
+ * This function is used to get the type information of the query from a DocumentNode.
+ *
+ * For example, in the following query:
+ *
+ * ```graphql
+ * query ProductDetail($id: ID!) {
+ *   product(id: $id) {
+ *     ...ProductDetail
+ *   }
+ * }
+ * ```
+ *
+ * The query type field will be the `Product` type.
+ */
+export function getQueryTypeFieldInfo(documentNode: DocumentNode): FieldInfo {
+    const name = getQueryName(documentNode);
+    return getQueryInfo(name);
+}
+
+/**
+ * @description
+ * This function is used to get the name of the mutation from a DocumentNode.
+ *
+ * For example, in the following mutation:
+ *
+ * ```graphql
+ * mutation CreateProduct($input: CreateProductInput!) {
+ *   createProduct(input: $input) {
+ *     ...ProductDetail
+ *   }
+ * }
+ * ```
+ *
+ * The mutation name is `createProduct`.
+ */
 export function getMutationName(documentNode: DocumentNode): string {
     const operationDefinition = documentNode.definitions.find(
         (def): def is OperationDefinitionNode =>
@@ -123,6 +196,10 @@ export function getMutationName(documentNode: DocumentNode): string {
     }
 }
 
+/**
+ * @description
+ * This function is used to get the type information of an operation from a DocumentNode.
+ */
 export function getOperationTypeInfo(
     definitionNode: DefinitionNode | FieldNode,
     parentTypeName?: string,

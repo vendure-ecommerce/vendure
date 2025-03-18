@@ -186,7 +186,6 @@ export function FacetValueSelector({
         ) < 1;
 
         if (scrolledToBottom && hasNextPage && !isFetchingNextPage) {
-            console.log('Fetching next page...');
             fetchNextPage();
         }
     };

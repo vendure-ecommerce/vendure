@@ -33,6 +33,7 @@ import { CreateProductVariantsDialog } from './components/create-product-variant
 import { ProductVariantsTable } from './components/product-variants-table.js';
 import { createProductDocument, productDetailDocument, updateProductDocument } from './products.graphql.js';
 import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
+import { CustomFieldsForm } from '@/components/shared/custom-fields-form.js';
 
 export const Route = createFileRoute('/_authenticated/_products/products_/$id')({
     component: ProductDetailPage,
@@ -80,7 +81,9 @@ export function ProductDetailPage() {
                     name: translation.name,
                     slug: translation.slug,
                     description: translation.description,
+                    customFields: translation.customFields,
                 })),
+                customFields: entity.customFields,
             };
         },
         params: { id: params.id },
@@ -193,6 +196,9 @@ export function ProductDetailPage() {
                                     </FormItem>
                                 )}
                             />
+                        </PageBlock>
+                        <PageBlock column="main">
+                            <CustomFieldsForm entityType="Product" control={form.control} />
                         </PageBlock>
                         {entity && entity.variantList.totalItems > 0 && (
                             <PageBlock column="main">

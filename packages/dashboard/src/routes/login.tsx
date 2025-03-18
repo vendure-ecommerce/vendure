@@ -26,7 +26,6 @@ export default function LoginPage() {
 
     const onFormSubmit = (username: string, password: string) => {
         auth.login(username, password, () => {
-            console.log(`Redirecting to ${search.redirect || fallback}`);
             navigate({ to: search.redirect || fallback });
         });
     };

@@ -15,6 +15,11 @@ navMenu({
                     title: 'Products',
                     url: '/products',
                 },
+                {
+                    id: 'product-variants',
+                    title: 'Product Variants',
+                    url: '/product-variants',
+                },
             ],
         },
         {

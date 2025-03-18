@@ -55,6 +55,7 @@ export const productDetailFragment = graphql(
                     code
                 }
             }
+            customFields
         }
     `,
     [assetFragment],
@@ -89,24 +90,18 @@ export const productDetailDocument = graphql(
     [productDetailFragment],
 );
 
-export const createProductDocument = graphql(
-    `
-        mutation CreateProduct($input: CreateProductInput!) {
-            createProduct(input: $input) {
-                ...ProductDetail
-            }
+export const createProductDocument = graphql(`
+    mutation CreateProduct($input: CreateProductInput!) {
+        createProduct(input: $input) {
+            id
         }
-    `,
-    [productDetailFragment],
-);
+    }
+`);
 
-export const updateProductDocument = graphql(
-    `
-        mutation UpdateProduct($input: UpdateProductInput!) {
-            updateProduct(input: $input) {
-                ...ProductDetail
-            }
+export const updateProductDocument = graphql(`
+    mutation UpdateProduct($input: UpdateProductInput!) {
+        updateProduct(input: $input) {
+            id
         }
-    `,
-    [productDetailFragment],
-);
+    }
+`);

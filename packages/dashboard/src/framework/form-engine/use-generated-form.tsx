@@ -43,7 +43,13 @@ export function useGeneratedForm<
     const processedEntity = ensureTranslationsForAllLanguages(entity, availableLanguages);
 
     const form = useForm({
-        resolver: zodResolver(schema),
+        resolver: async (values, context, options) => {
+            const result = await zodResolver(schema)(values, context, options);
+            if (Object.keys(result.errors).length > 0) {
+                console.log('Zod form validation errors:', result.errors);
+            }
+            return result;
+        },
         defaultValues,
         values: processedEntity ? setValues(processedEntity) : defaultValues,
     });
