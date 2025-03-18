@@ -1,6 +1,8 @@
 import { ContentLanguageSelector } from '@/components/layout/content-language-selector.js';
 import { AssignedFacetValues } from '@/components/shared/assigned-facet-values.js';
 import { EntityAssets } from '@/components/shared/entity-assets.js';
+import { ErrorPage } from '@/components/shared/error-page.js';
+import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { TranslatableFormField } from '@/components/shared/translatable-form-field.js';
 import { Button } from '@/components/ui/button.js';
 import {
@@ -15,6 +17,7 @@ import {
 import { Input } from '@/components/ui/input.js';
 import { Switch } from '@/components/ui/switch.js';
 import { Textarea } from '@/components/ui/textarea.js';
+import { NEW_ENTITY_PATH } from '@/constants.js';
 import {
     Page,
     PageActionBar,
@@ -22,18 +25,15 @@ import {
     PageLayout,
     PageTitle,
 } from '@/framework/layout-engine/page-layout.js';
-import { useDetailPage, getDetailQueryOptions } from '@/framework/page/use-detail-page.js';
+import { getDetailQueryOptions, useDetailPage } from '@/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
+import { CreateProductVariantsDialog } from './components/create-product-variants-dialog.js';
 import { ProductVariantsTable } from './components/product-variants-table.js';
 import { createProductDocument, productDetailDocument, updateProductDocument } from './products.graphql.js';
-import { NEW_ENTITY_PATH } from '@/constants.js';
-import { notFound } from '@tanstack/react-router';
-import { ErrorPage } from '@/components/shared/error-page.js';
-import { CreateProductVariants } from './components/create-product-variants.js';
-import { CreateProductVariantsDialog } from './components/create-product-variants-dialog.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
+import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
+
 export const Route = createFileRoute('/_authenticated/_products/products_/$id')({
     component: ProductDetailPage,
     loader: async ({ context, params }) => {
@@ -41,7 +41,7 @@ export const Route = createFileRoute('/_authenticated/_products/products_/$id')(
         const result = isNew
             ? null
             : await context.queryClient.ensureQueryData(
-                  getDetailQueryOptions(productDetailDocument, { id: params.id }),
+                  getDetailQueryOptions(addCustomFields(productDetailDocument), { id: params.id }), { id: params.id },
               );
         if (!isNew && !result.product) {
             throw new Error(`Product with the ID ${params.id} was not found`);
@@ -63,7 +63,7 @@ export function ProductDetailPage() {
     const { i18n } = useLingui();
 
     const { form, submitHandler, entity, isPending, refreshEntity } = useDetailPage({
-        queryDocument: productDetailDocument,
+        queryDocument: addCustomFields(productDetailDocument),
         entityField: 'product',
         createDocument: createProductDocument,
         updateDocument: updateProductDocument,

@@ -3,7 +3,8 @@ import { DataTable } from '@/components/data-table/data-table.js';
 import { useComponentRegistry } from '@/framework/component-registry/component-registry.js';
 import {
     FieldInfo,
-    getQueryName
+    getQueryName,
+    getTypeFieldInfo,
 } from '@/framework/document-introspection/get-document-structure.js';
 import { useListQueryFields } from '@/framework/document-introspection/hooks.js';
 import { api } from '@/graphql/api.js';
@@ -124,7 +125,15 @@ export function PaginatedListDataTable<
             const transformedVariables = transformVariables ? transformVariables(variables) : variables;
             return api.query(listQuery, transformedVariables);
         },
-        queryKey: ['PaginatedListDataTable', listQuery, page, itemsPerPage, sorting, filter, debouncedSearchTerm],
+        queryKey: [
+            'PaginatedListDataTable',
+            listQuery,
+            page,
+            itemsPerPage,
+            sorting,
+            filter,
+            debouncedSearchTerm,
+        ],
     });
 
     const fields = useListQueryFields(listQuery);
@@ -132,26 +141,42 @@ export function PaginatedListDataTable<
     const columnHelper = createColumnHelper();
 
     const columns = useMemo(() => {
-        return fields.map(field => {
-            const customConfig = customizeColumns?.[field.name as keyof ListQueryFields<T>] ?? {};
+        const columnConfigs: Array<{ fieldInfo: FieldInfo; isCustomField: boolean }> = [];
+
+        columnConfigs.push(
+            ...fields // Filter out custom fields
+                .filter(field => field.name !== 'customFields' && !field.type.endsWith('CustomFields'))
+                .map(field => ({ fieldInfo: field, isCustomField: false })),
+        );
+        
+        const customFieldColumn = fields.find(field => field.name === 'customFields');
+        if (customFieldColumn) {
+            const customFieldFields = getTypeFieldInfo(customFieldColumn.type);
+            columnConfigs.push(
+                ...customFieldFields.map(field => ({ fieldInfo: field, isCustomField: true })),
+            );
+        }
+
+        return columnConfigs.map(({ fieldInfo, isCustomField }) => {
+            const customConfig = customizeColumns?.[fieldInfo.name as keyof ListQueryFields<T>] ?? {};
             const { header, ...customConfigRest } = customConfig;
-            return columnHelper.accessor(field.name as any, {
-                meta: { field },
-                enableColumnFilter: field.isScalar,
-                enableSorting: field.isScalar,
-                cell: ({ cell }) => {
-                    const value = cell.getValue();
-                    if (field.list && Array.isArray(value)) {
+            return columnHelper.accessor(fieldInfo.name as any, {
+                meta: { fieldInfo, isCustomField },
+                enableColumnFilter: fieldInfo.isScalar,
+                enableSorting: fieldInfo.isScalar,
+                cell: ({ cell, row }) => {
+                    const value = !isCustomField ? cell.getValue() : (row.original as any)?.customFields?.[fieldInfo.name];
+                    if (fieldInfo.list && Array.isArray(value)) {
                         return value.join(', ');
                     }
-                    if ((field.type === 'DateTime' && typeof value === 'string') || value instanceof Date) {
-                        return <Delegate component='dateTime.display' value={value} />
+                    if ((fieldInfo.type === 'DateTime' && typeof value === 'string') || value instanceof Date) {
+                        return <Delegate component="dateTime.display" value={value} />;
                     }
-                    if (field.type === 'Boolean') {
-                        return <Delegate component='boolean.display' value={value} />
+                    if (fieldInfo.type === 'Boolean') {
+                        return <Delegate component="boolean.display" value={value} />;
                     }
-                    if (field.type === 'Asset') {
-                        return <Delegate component='asset.display' value={value} />
+                    if (fieldInfo.type === 'Asset') {
+                        return <Delegate component="asset.display" value={value} />;
                     }
                     if (value !== null && typeof value === 'object') {
                         return JSON.stringify(value);
@@ -205,4 +230,4 @@ function getColumnVisibility(
         ...(allDefaultsFalse ? { ...Object.fromEntries(fields.map(f => [f.name, true])) } : {}),
         ...defaultVisibility,
     };
-} 
+}

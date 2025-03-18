@@ -1,6 +1,6 @@
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import { GraphQLClient, RequestDocument } from 'graphql-request';
-import { request as graphqlRequest, Variables } from 'graphql-request';
+import { parse } from 'graphql';
+import { GraphQLClient, RequestDocument, Variables } from 'graphql-request';
 
 const API_URL = 'http://localhost:3000/admin-api';
 
@@ -18,32 +18,11 @@ function query<T, V extends Variables = Variables>(
     document: RequestDocument | TypedDocumentNode<T, V>,
     variables?: V,
 ) {
+    const documentNode = typeof document === 'string' ? parse(document) : document;
     return client.request<T>({
-        document,
+        document: documentNode,
         variables,
     });
-}
-
-function mutate2<T, V extends Variables = Variables>(
-    document: TypedDocumentNode<T, V>,
-): (variables: V) => Promise<T>;
-function mutate2<T, V extends Variables = Variables>(
-    document: RequestDocument | TypedDocumentNode<T, V>,
-    maybeVariables?: V,
-): Promise<T> | ((variables: V) => Promise<T>) {
-    if (maybeVariables) {
-        return client.request<T>({
-            document,
-            variables: maybeVariables,
-        });
-    } else {
-        return (variables: V): Promise<T> => {
-            return client.request<T>({
-                document,
-                variables,
-            });
-        };
-    }
 }
 
 function mutate<T, V extends Variables = Variables>(
@@ -59,15 +38,16 @@ function mutate<T, V extends Variables = Variables>(
     document: RequestDocument | TypedDocumentNode<T, V>,
     maybeVariables?: V,
 ): Promise<T> | ((variables: V) => Promise<T>) {
+    const documentNode = typeof document === 'string' ? parse(document) : document;
     if (maybeVariables) {
         return client.request<T>({
-            document,
+            document: documentNode,
             variables: maybeVariables,
         });
     } else {
         return (variables: V): Promise<T> => {
             return client.request<T>({
-                document,
+                document: documentNode,
                 variables,
             });
         };
@@ -77,5 +57,4 @@ function mutate<T, V extends Variables = Variables>(
 export const api = {
     query,
     mutate,
-    mutate2,
 };

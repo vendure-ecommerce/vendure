@@ -6,7 +6,7 @@ import {
     FragmentSpreadNode,
     VariableDefinitionNode,
 } from 'graphql';
-import { NamedTypeNode, TypeNode } from 'graphql/language/ast.js';
+import { DefinitionNode, NamedTypeNode, SelectionSetNode, TypeNode } from 'graphql/language/ast.js';
 import { schemaInfo } from 'virtual:admin-api-schema';
 
 export interface FieldInfo {
@@ -123,6 +123,28 @@ export function getMutationName(documentNode: DocumentNode): string {
     }
 }
 
+export function getOperationTypeInfo(
+    definitionNode: DefinitionNode | FieldNode,
+    parentTypeName?: string,
+): FieldInfo | undefined {
+    if (definitionNode.kind === 'OperationDefinition') {
+        const firstSelection = definitionNode?.selectionSet.selections[0];
+        if (firstSelection?.kind === 'Field') {
+            return getQueryInfo(firstSelection.name.value);
+        }
+    }
+    if (definitionNode.kind === 'Field' && parentTypeName) {
+        const fieldInfo = getObjectFieldInfo(parentTypeName, definitionNode.name.value);
+        return fieldInfo;
+    }
+}
+
+export function getTypeFieldInfo(typeName: string): FieldInfo[] {
+    return Object.entries(schemaInfo.types[typeName]).map(([fieldName, fieldInfo]) => {
+        return getObjectFieldInfo(typeName, fieldName);
+    });
+}
+
 function getQueryInfo(name: string): FieldInfo {
     const fieldInfo = schemaInfo.types.Query[name];
     return {
@@ -170,13 +192,15 @@ function getPaginatedListType(name: string): string | undefined {
 
 function getObjectFieldInfo(typeName: string, fieldName: string): FieldInfo {
     const fieldInfo = schemaInfo.types[typeName][fieldName];
+    const type = fieldInfo[0];
+    const isScalar = isScalarType(type);
     return {
         name: fieldName,
         type: fieldInfo[0],
         nullable: fieldInfo[1],
         list: fieldInfo[2],
         isPaginatedList: fieldInfo[3],
-        isScalar: schemaInfo.scalars.includes(fieldInfo[0]),
+        isScalar,
     };
 }
 
