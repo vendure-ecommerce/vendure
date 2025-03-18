@@ -4,20 +4,31 @@ import { useUserSettings } from '@/hooks/use-user-settings.js';
 import { ControllerProps } from 'react-hook-form';
 import { FieldValues } from 'react-hook-form';
 
-export type TranslatableFormFieldProps = {};
+export type TranslatableEntity = FieldValues & {
+    translations?: Array<{ languageCode: string }> | null;
+};
+
+export type TranslatableFormFieldProps<TFieldValues extends TranslatableEntity | TranslatableEntity[]> = Omit<
+    ControllerProps<TFieldValues>,
+    'name'
+> & {
+    name: TFieldValues extends TranslatableEntity
+        ? keyof Omit<NonNullable<TFieldValues['translations']>[number], 'languageCode'>
+        : TFieldValues extends TranslatableEntity[]
+          ? keyof Omit<NonNullable<TFieldValues[number]['translations']>[number], 'languageCode'>
+          : never;
+};
 
 export const TranslatableFormField = <
-    TFieldValues extends FieldValues & {
-        translations?: Array<{ languageCode: string }> | null;
-    } = FieldValues,
+    TFieldValues extends TranslatableEntity | TranslatableEntity[] = TranslatableEntity,
 >({
     name,
     ...props
-}: Omit<ControllerProps<TFieldValues>, 'name'> & {
-    name: keyof Omit<NonNullable<TFieldValues['translations']>[number], 'languageCode'>;
-}) => {
+}: TranslatableFormFieldProps<TFieldValues>) => {
     const { contentLanguage } = useUserSettings().settings;
-    const index = props.control?._formValues?.translations?.findIndex(
+    const formValues = props.control?._formValues;
+    const translations = Array.isArray(formValues) ? formValues?.[0].translations : formValues?.translations;
+    const index = translations?.findIndex(
         (translation: any) => translation?.languageCode === contentLanguage,
     );
     if (index === undefined || index === -1) {

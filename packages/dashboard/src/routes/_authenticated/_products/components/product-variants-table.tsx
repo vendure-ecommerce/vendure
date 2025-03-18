@@ -4,6 +4,8 @@ import { useState } from "react";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { Money } from "@/components/data-type-components/money.js";
 import { useLocalFormat } from "@/hooks/use-local-format.js";
+import { Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button.js";
 
 interface ProductVariantsTableProps {
     productId: string;
@@ -27,6 +29,16 @@ export function ProductVariantsTable({ productId }: ProductVariantsTableProps) {
             currencyCode: false,
         }}
         customizeColumns={{
+            name: {
+                header: 'Variant name',
+                cell: ({ row }) => {
+                    return (
+                        <Button asChild variant="ghost">
+                            <Link to={`../../product-variants/${row.original.id}`}>{row.original.name} </Link>
+                        </Button>
+                    );
+                },
+            },
             currencyCode: {
                 cell: ({ cell, row }) => {
                     const value = cell.getValue();

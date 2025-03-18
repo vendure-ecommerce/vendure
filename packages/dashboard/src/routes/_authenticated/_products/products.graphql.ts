@@ -43,7 +43,6 @@ export const productDetailFragment = graphql(
                 name
                 slug
                 description
-                customFields
             }
 
             facetValues {

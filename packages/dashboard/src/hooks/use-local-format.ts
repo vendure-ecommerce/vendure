@@ -32,6 +32,13 @@ export function useLocalFormat() {
         [precisionFactor],
     );
 
+    const toMinorUnits = useCallback(
+        (value: number): number => {
+            return Math.round(value * precisionFactor);
+        },
+        [precisionFactor],
+    );
+
     const formatCurrency = useCallback(
         (value: number, currency: string) => {
             return i18n.number(toMajorUnits(value), {
@@ -99,5 +106,6 @@ export function useLocalFormat() {
         formatLanguageName,
         formatCurrencyName,
         toMajorUnits,
+        toMinorUnits,
     };
 }

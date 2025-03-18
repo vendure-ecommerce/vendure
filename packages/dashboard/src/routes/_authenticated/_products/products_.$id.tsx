@@ -24,6 +24,7 @@ import {
     PageBlock,
     PageLayout,
     PageTitle,
+    CustomFieldsPageBlock,
 } from '@/framework/layout-engine/page-layout.js';
 import { getDetailQueryOptions, useDetailPage } from '@/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@lingui/react/macro';
@@ -33,7 +34,6 @@ import { CreateProductVariantsDialog } from './components/create-product-variant
 import { ProductVariantsTable } from './components/product-variants-table.js';
 import { createProductDocument, productDetailDocument, updateProductDocument } from './products.graphql.js';
 import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
-import { CustomFieldsForm } from '@/components/shared/custom-fields-form.js';
 
 export const Route = createFileRoute('/_authenticated/_products/products_/$id')({
     component: ProductDetailPage,
@@ -197,9 +197,7 @@ export function ProductDetailPage() {
                                 )}
                             />
                         </PageBlock>
-                        <PageBlock column="main">
-                            <CustomFieldsForm entityType="Product" control={form.control} />
-                        </PageBlock>
+                        <CustomFieldsPageBlock column="main" entityType="Product" control={form.control} />
                         {entity && entity.variantList.totalItems > 0 && (
                             <PageBlock column="main">
                                 <ProductVariantsTable productId={params.id} />

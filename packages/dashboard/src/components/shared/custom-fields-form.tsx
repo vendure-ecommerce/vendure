@@ -21,7 +21,7 @@ type CustomFieldConfig = ResultOf<typeof customFieldConfigFragment>;
 
 interface CustomFieldsFormProps {
     entityType: string;
-    control: Control;
+    control: Control<any, any>;
 }
 
 export function CustomFieldsForm({ entityType, control }: CustomFieldsFormProps) {

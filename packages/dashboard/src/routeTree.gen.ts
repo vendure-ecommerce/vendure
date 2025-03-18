@@ -19,6 +19,7 @@ import { Route as AuthenticatedDashboardImport } from './routes/_authenticated/d
 import { Route as AuthenticatedProductsProductsImport } from './routes/_authenticated/_products/products';
 import { Route as AuthenticatedProductVariantsProductVariantsImport } from './routes/_authenticated/_product-variants/product-variants';
 import { Route as AuthenticatedProductsProductsIdImport } from './routes/_authenticated/_products/products_.$id';
+import { Route as AuthenticatedProductVariantsProductVariantsIdImport } from './routes/_authenticated/_product-variants/product-variants_.$id';
 
 // Create/Update Routes
 
@@ -69,6 +70,13 @@ const AuthenticatedProductsProductsIdRoute = AuthenticatedProductsProductsIdImpo
     path: '/products/$id',
     getParentRoute: () => AuthenticatedRoute,
 } as any);
+
+const AuthenticatedProductVariantsProductVariantsIdRoute =
+    AuthenticatedProductVariantsProductVariantsIdImport.update({
+        id: '/_product-variants/product-variants_/$id',
+        path: '/product-variants/$id',
+        getParentRoute: () => AuthenticatedRoute,
+    } as any);
 
 // Populate the FileRoutesByPath interface
 
@@ -123,6 +131,13 @@ declare module '@tanstack/react-router' {
             preLoaderRoute: typeof AuthenticatedProductsProductsImport;
             parentRoute: typeof AuthenticatedImport;
         };
+        '/_authenticated/_product-variants/product-variants_/$id': {
+            id: '/_authenticated/_product-variants/product-variants_/$id';
+            path: '/product-variants/$id';
+            fullPath: '/product-variants/$id';
+            preLoaderRoute: typeof AuthenticatedProductVariantsProductVariantsIdImport;
+            parentRoute: typeof AuthenticatedImport;
+        };
         '/_authenticated/_products/products_/$id': {
             id: '/_authenticated/_products/products_/$id';
             path: '/products/$id';
@@ -140,6 +155,7 @@ interface AuthenticatedRouteChildren {
     AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute;
     AuthenticatedProductVariantsProductVariantsRoute: typeof AuthenticatedProductVariantsProductVariantsRoute;
     AuthenticatedProductsProductsRoute: typeof AuthenticatedProductsProductsRoute;
+    AuthenticatedProductVariantsProductVariantsIdRoute: typeof AuthenticatedProductVariantsProductVariantsIdRoute;
     AuthenticatedProductsProductsIdRoute: typeof AuthenticatedProductsProductsIdRoute;
 }
 
@@ -148,6 +164,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
     AuthenticatedIndexRoute: AuthenticatedIndexRoute,
     AuthenticatedProductVariantsProductVariantsRoute: AuthenticatedProductVariantsProductVariantsRoute,
     AuthenticatedProductsProductsRoute: AuthenticatedProductsProductsRoute,
+    AuthenticatedProductVariantsProductVariantsIdRoute: AuthenticatedProductVariantsProductVariantsIdRoute,
     AuthenticatedProductsProductsIdRoute: AuthenticatedProductsProductsIdRoute,
 };
 
@@ -161,6 +178,7 @@ export interface FileRoutesByFullPath {
     '/': typeof AuthenticatedIndexRoute;
     '/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute;
     '/products': typeof AuthenticatedProductsProductsRoute;
+    '/product-variants/$id': typeof AuthenticatedProductVariantsProductVariantsIdRoute;
     '/products/$id': typeof AuthenticatedProductsProductsIdRoute;
 }
 
@@ -171,6 +189,7 @@ export interface FileRoutesByTo {
     '/': typeof AuthenticatedIndexRoute;
     '/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute;
     '/products': typeof AuthenticatedProductsProductsRoute;
+    '/product-variants/$id': typeof AuthenticatedProductVariantsProductVariantsIdRoute;
     '/products/$id': typeof AuthenticatedProductsProductsIdRoute;
 }
 
@@ -183,6 +202,7 @@ export interface FileRoutesById {
     '/_authenticated/': typeof AuthenticatedIndexRoute;
     '/_authenticated/_product-variants/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute;
     '/_authenticated/_products/products': typeof AuthenticatedProductsProductsRoute;
+    '/_authenticated/_product-variants/product-variants_/$id': typeof AuthenticatedProductVariantsProductVariantsIdRoute;
     '/_authenticated/_products/products_/$id': typeof AuthenticatedProductsProductsIdRoute;
 }
 
@@ -196,9 +216,18 @@ export interface FileRouteTypes {
         | '/'
         | '/product-variants'
         | '/products'
+        | '/product-variants/$id'
         | '/products/$id';
     fileRoutesByTo: FileRoutesByTo;
-    to: '/about' | '/login' | '/dashboard' | '/' | '/product-variants' | '/products' | '/products/$id';
+    to:
+        | '/about'
+        | '/login'
+        | '/dashboard'
+        | '/'
+        | '/product-variants'
+        | '/products'
+        | '/product-variants/$id'
+        | '/products/$id';
     id:
         | '__root__'
         | '/_authenticated'
@@ -208,6 +237,7 @@ export interface FileRouteTypes {
         | '/_authenticated/'
         | '/_authenticated/_product-variants/product-variants'
         | '/_authenticated/_products/products'
+        | '/_authenticated/_product-variants/product-variants_/$id'
         | '/_authenticated/_products/products_/$id';
     fileRoutesById: FileRoutesById;
 }
@@ -244,6 +274,7 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
         "/_authenticated/",
         "/_authenticated/_product-variants/product-variants",
         "/_authenticated/_products/products",
+        "/_authenticated/_product-variants/product-variants_/$id",
         "/_authenticated/_products/products_/$id"
       ]
     },
@@ -267,6 +298,10 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
     },
     "/_authenticated/_products/products": {
       "filePath": "_authenticated/_products/products.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/_product-variants/product-variants_/$id": {
+      "filePath": "_authenticated/_product-variants/product-variants_.$id.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/_products/products_/$id": {

@@ -21,6 +21,9 @@ const ChannelsQuery = graphql(
         query ChannelInformation {
             activeChannel {
                 ...ChannelInfo
+                defaultTaxZone {
+                    id
+                }
             }
             channels {
                 items {
@@ -35,11 +38,12 @@ const ChannelsQuery = graphql(
 
 
 // Define the type for a channel
+type ActiveChannel = ResultOf<typeof ChannelsQuery>['activeChannel'];
 type Channel = ResultOf<typeof channelFragment>;
 
 // Define the context interface
 export interface ChannelContext {
-    activeChannel: Channel | undefined;
+    activeChannel: ActiveChannel | undefined;
     channels: Channel[];
     selectedChannelId: string | undefined;
     selectedChannel: Channel | undefined;
