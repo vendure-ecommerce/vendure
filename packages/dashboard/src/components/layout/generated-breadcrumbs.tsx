@@ -10,7 +10,7 @@ import * as React from 'react';
 import { Fragment } from 'react';
 
 export interface BreadcrumbItem {
-    label: string;
+    label: string | React.ReactNode;
     path: string;
 }
 
@@ -20,7 +20,7 @@ export type PageBreadcrumb = BreadcrumbItem | BreadcrumbShorthand;
 
 export function GeneratedBreadcrumbs() {
     const matches = useRouterState({ select: s => s.matches });
-    const breadcrumbs = matches
+    const breadcrumbs: BreadcrumbItem[] = matches
         .filter(match => match.loaderData?.breadcrumb)
         .map(({ pathname, loaderData }) => {
             if (typeof loaderData.breadcrumb === 'string') {

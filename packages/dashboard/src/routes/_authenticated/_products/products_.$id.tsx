@@ -91,7 +91,7 @@ export function ProductDetailPage() {
             toast(i18n.t('Successfully updated product'), {
                 position: 'top-right',
             });
-            form.reset();
+            form.reset(form.getValues());
             if (creatingNewEntity) {
                 navigate({ to: `../${data.id}`, from: Route.id });
             }

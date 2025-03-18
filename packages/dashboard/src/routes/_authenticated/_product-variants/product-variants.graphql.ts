@@ -3,8 +3,8 @@ import { graphql } from '@/graphql/graphql.js';
 
 export const productVariantListDocument = graphql(
     `
-        query ProductVariantList {
-            productVariants {
+        query ProductVariantLis($options: ProductVariantListOptions) {
+            productVariants(options: $options) {
                 items {
                     id
                     createdAt
@@ -14,6 +14,7 @@ export const productVariantListDocument = graphql(
                     }
                     name
                     sku
+                    currencyCode
                     price
                     priceWithTax
                     stockLevels {
@@ -21,7 +22,9 @@ export const productVariantListDocument = graphql(
                         stockOnHand
                         stockAllocated
                     }
+                    customFields
                 }
+                totalItems
             }
         }
     `,

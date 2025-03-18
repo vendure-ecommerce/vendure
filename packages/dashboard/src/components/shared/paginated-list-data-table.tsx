@@ -150,7 +150,7 @@ export function PaginatedListDataTable<
         );
         
         const customFieldColumn = fields.find(field => field.name === 'customFields');
-        if (customFieldColumn) {
+        if (customFieldColumn && customFieldColumn.type !== 'JSON') {
             const customFieldFields = getTypeFieldInfo(customFieldColumn.type);
             columnConfigs.push(
                 ...customFieldFields.map(field => ({ fieldInfo: field, isCustomField: true })),
