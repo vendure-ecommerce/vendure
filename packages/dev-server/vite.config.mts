@@ -1,7 +1,13 @@
 import { vendureDashboardPlugin } from '@vendure/dashboard/plugin';
+import path from 'path';
 import { pathToFileURL } from 'url';
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-    plugins: [vendureDashboardPlugin({ vendureConfigPath: pathToFileURL('./dev-config.ts') })],
+    test: {
+        globals: true,
+        environment: 'jsdom',
+        root: path.resolve(__dirname, '../dashboard'),
+    },
+    plugins: [vendureDashboardPlugin({ vendureConfigPath: pathToFileURL('./dev-config.ts') }) as any],
 });

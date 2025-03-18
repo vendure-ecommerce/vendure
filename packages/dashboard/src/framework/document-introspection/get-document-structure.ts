@@ -49,6 +49,9 @@ export function getListQueryFields(documentNode: DocumentNode): FieldInfo[] {
                 const itemsField = queryField.selectionSet?.selections.find(
                     selection => selection.kind === 'Field' && selection.name.value === 'items',
                 ) as FieldNode;
+                if (!itemsField) {
+                    continue;
+                }
                 const typeName = getPaginatedListType(fieldInfo.name);
                 if (!typeName) {
                     throw new Error(`Could not determine type of items in ${fieldInfo.name}`);
@@ -193,6 +196,11 @@ function collectFields(
                 } else if (subSelection.kind === 'FragmentSpread') {
                     const fragmentName = subSelection.name.value;
                     const fragment = fragments[fragmentName];
+                    // We only want to collect fields from the fragment if it's the same type as
+                    // the field we're collecting from
+                    if (fragment.name.value !== typeName) {
+                        return;
+                    }
                     if (fragment) {
                         fragment.selectionSet.selections.forEach(fragmentSelection => {
                             if (fragmentSelection.kind === 'Field') {
