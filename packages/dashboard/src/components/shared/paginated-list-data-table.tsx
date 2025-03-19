@@ -5,6 +5,7 @@ import {
     FieldInfo,
     getQueryName,
     getTypeFieldInfo,
+    getObjectPathToPaginatedList,
 } from '@/framework/document-introspection/get-document-structure.js';
 import { useListQueryFields } from '@/framework/document-introspection/hooks.js';
 import { api } from '@/graphql/api.js';
@@ -20,27 +21,101 @@ import {
     SortingState,
     Table,
 } from '@tanstack/react-table';
-import { ColumnDef } from '@tanstack/table-core';
-import { ResultOf } from 'gql.tada';
+import { AccessorKeyColumnDef, ColumnDef } from '@tanstack/table-core';
+import { graphql, ResultOf } from '@/graphql/graphql.js';
 import React, { useMemo } from 'react';
 import { Delegate } from '@/framework/component-registry/delegate.js';
 
-type ListQueryFields<T extends TypedDocumentNode<any, any>> = {
-    [Key in keyof ResultOf<T>]: ResultOf<T>[Key] extends { items: infer U }
-        ? U extends any[]
-            ? U[number]
-            : never
-        : never;
-}[keyof ResultOf<T>];
+// Type that identifies a paginated list structure (has items array and totalItems)
+type IsPaginatedList<T> = T extends { items: any[]; totalItems: number } ? true : false;
+
+// Helper type to extract string keys from an object
+type StringKeys<T> = T extends object ? Extract<keyof T, string> : never;
+
+// Helper type to handle nullability
+type NonNullable<T> = T extends null | undefined ? never : T;
+
+
+// Non-recursive approach to find paginated list paths with max 2 levels
+// Level 0: Direct top-level check
+type Level0PaginatedLists<T> = T extends object
+    ? IsPaginatedList<T> extends true
+        ? ''
+        : never
+    : never;
+
+// Level 1: One level deep
+type Level1PaginatedLists<T> = T extends object
+    ? {
+          [K in StringKeys<T>]: NonNullable<T[K]> extends object
+              ? IsPaginatedList<NonNullable<T[K]>> extends true
+                  ? K
+                  : never
+              : never;
+      }[StringKeys<T>]
+    : never;
+
+// Level 2: Two levels deep
+type Level2PaginatedLists<T> = T extends object
+    ? {
+          [K1 in StringKeys<T>]: NonNullable<T[K1]> extends object
+              ? {
+                    [K2 in StringKeys<NonNullable<T[K1]>>]: NonNullable<NonNullable<T[K1]>[K2]> extends object
+                        ? IsPaginatedList<NonNullable<NonNullable<T[K1]>[K2]>> extends true
+                            ? `${K1}.${K2}`
+                            : never
+                        : never;
+                }[StringKeys<NonNullable<T[K1]>>]
+              : never;
+      }[StringKeys<T>]
+    : never;
+
+// Combine all levels
+type FindPaginatedListPaths<T> = 
+    | Level0PaginatedLists<T>
+    | Level1PaginatedLists<T> 
+    | Level2PaginatedLists<T>;
+
+// Extract all paths from a TypedDocumentNode
+export type PaginatedListPaths<T extends TypedDocumentNode<any, any>> =
+    FindPaginatedListPaths<ResultOf<T>> extends infer Paths ? (Paths extends '' ? never : Paths) : never;
+
+export type PaginatedListItemFields<
+    T extends TypedDocumentNode<any, any>,
+    Path extends PaginatedListPaths<T> = PaginatedListPaths<T>,
+> =
+    // split the path by '.' if it exists
+    Path extends `${infer First}.${infer Rest}`
+        ? NonNullable<ResultOf<T>[First]>[Rest]['items'][number]
+        : Path extends keyof ResultOf<T>
+          ? ResultOf<T>[Path] extends { items: Array<infer Item> }
+              ? ResultOf<T>[Path]['items'][number]
+              : never
+          : never;
+
+export type PaginatedListKeys<
+    T extends TypedDocumentNode<any, any>,
+    Path extends PaginatedListPaths<T> = PaginatedListPaths<T>,
+> = {
+    [K in keyof PaginatedListItemFields<T, Path>]: K;
+}[keyof PaginatedListItemFields<T, Path>];
+
 
 export type CustomizeColumnConfig<T extends TypedDocumentNode<any, any>> = {
-    [Key in keyof ListQueryFields<T>]?: Partial<ColumnDef<any>>;
+    [Key in keyof PaginatedListItemFields<T>]?: Partial<ColumnDef<any>>;
 };
 
 export type ListQueryShape = {
     [key: string]: {
         items: any[];
         totalItems: number;
+    };
+} | {
+    [key: string]: {
+        [key: string]: {
+            items: any[];
+            totalItems: number;
+        };
     };
 };
 
@@ -53,6 +128,7 @@ export type ListQueryOptionsShape = {
         };
         filter?: any;
     };
+    [key: string]: any;
 };
 
 export interface PaginatedListContext {
@@ -64,11 +140,11 @@ export const PaginatedListContext = React.createContext<PaginatedListContext | u
 /**
  * @description
  * Returns the context for the paginated list data table. Must be used within a PaginatedListDataTable.
- * 
+ *
  * @example
  * ```ts
  * const { refetchPaginatedList } = usePaginatedList();
- * 
+ *
  * const mutation = useMutation({
  *     mutationFn: api.mutate(updateFacetValueDocument),
  *     onSuccess: () => {
@@ -83,18 +159,19 @@ export function usePaginatedList() {
         throw new Error('usePaginatedList must be used within a PaginatedListDataTable');
     }
     return context;
-} 
+}
 
 export interface PaginatedListDataTableProps<
     T extends TypedDocumentNode<U, V>,
-    U extends ListQueryShape,
+    U extends any,
     V extends ListQueryOptionsShape,
 > {
     listQuery: T;
+    pathToListQuery?: PaginatedListPaths<T>;
     transformVariables?: (variables: V) => V;
     customizeColumns?: CustomizeColumnConfig<T>;
     additionalColumns?: ColumnDef<any>[];
-    defaultVisibility?: Partial<Record<keyof ListQueryFields<T>, boolean>>;
+    defaultVisibility?: Partial<Record<keyof PaginatedListItemFields<T>, boolean>>;
     onSearchTermChange?: (searchTerm: string) => NonNullable<V['options']>['filter'];
     page: number;
     itemsPerPage: number;
@@ -143,14 +220,7 @@ export function PaginatedListDataTable<
         ? { _and: columnFilters.map(f => ({ [f.id]: f.value })) }
         : undefined;
 
-    const queryKey = [
-        'PaginatedListDataTable',
-        listQuery,
-        page,
-        itemsPerPage,
-        sorting,
-        filter,
-    ];
+    const queryKey = ['PaginatedListDataTable', listQuery, page, itemsPerPage, sorting, filter];
 
     function refetchPaginatedList() {
         queryClient.invalidateQueries({ queryKey });
@@ -176,7 +246,13 @@ export function PaginatedListDataTable<
     });
 
     const fields = useListQueryFields(listQuery);
-    const queryName = getQueryName(listQuery);
+    const paginatedListObjectPath = getObjectPathToPaginatedList(listQuery);
+
+    let listData = data as any;
+    for (const path of paginatedListObjectPath) {
+        listData = listData?.[path];
+    }
+
     const columnHelper = createColumnHelper();
 
     const columns = useMemo(() => {
@@ -197,9 +273,9 @@ export function PaginatedListDataTable<
         }
 
         const queryBasedColumns = columnConfigs.map(({ fieldInfo, isCustomField }) => {
-            const customConfig = customizeColumns?.[fieldInfo.name as keyof ListQueryFields<T>] ?? {};
+            const customConfig = customizeColumns?.[fieldInfo.name as keyof PaginatedListItemFields<T>] ?? {};
             const { header, ...customConfigRest } = customConfig;
-            return columnHelper.accessor(fieldInfo.name as any, {
+            return columnHelper.accessor(fieldInfo.name, {
                 meta: { fieldInfo, isCustomField },
                 enableColumnFilter: fieldInfo.isScalar,
                 enableSorting: fieldInfo.isScalar,
@@ -236,7 +312,16 @@ export function PaginatedListDataTable<
             });
         });
 
-        return [...queryBasedColumns, ...(additionalColumns?.map(def => columnHelper.accessor(def.id, def)) ?? [])];
+        const finalColumns: AccessorKeyColumnDef<unknown, never>[] = [...queryBasedColumns];
+
+        for (const column of additionalColumns ?? []) {
+            if (!column.id) {
+                throw new Error('Column id is required');
+            }
+            finalColumns.push(columnHelper.accessor(column.id, column));
+        }
+
+        return finalColumns;
     }, [fields, customizeColumns]);
 
     const columnVisibility = getColumnVisibility(fields, defaultVisibility);
@@ -245,12 +330,12 @@ export function PaginatedListDataTable<
         <PaginatedListContext.Provider value={{ refetchPaginatedList }}>
             <DataTable
                 columns={columns}
-                data={(data as any)?.[queryName]?.items ?? []}
+                data={listData?.items ?? []}
                 page={page}
                 itemsPerPage={itemsPerPage}
                 sorting={sorting}
                 columnFilters={columnFilters}
-                totalItems={(data as any)?.[queryName]?.totalItems ?? 0}
+                totalItems={listData?.totalItems ?? 0}
                 onPageChange={onPageChange}
                 onSortChange={onSortChange}
                 onFilterChange={onFilterChange}
@@ -260,6 +345,7 @@ export function PaginatedListDataTable<
         </PaginatedListContext.Provider>
     );
 }
+
 
 /**
  * Returns the default column visibility configuration.

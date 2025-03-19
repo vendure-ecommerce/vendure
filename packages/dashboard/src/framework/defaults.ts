@@ -25,6 +25,11 @@ navMenu({
                     title: 'Facets',
                     url: '/facets',
                 },
+                {
+                    id: 'collections',
+                    title: 'Collections',
+                    url: '/collections',
+                },
             ],
         },
         {

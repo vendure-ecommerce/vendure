@@ -78,14 +78,15 @@ export function FacetValuesTable({ facetId }: FacetValuesTableProps) {
                     id: 'actions',
                     header: 'Actions',
                     cell: ({ row }) => {
+                        const [open, setOpen] = useState(false);
                         const facetValue = row.original;
                         return (
-                            <Popover>
+                            <Popover open={open} onOpenChange={setOpen}>
                                 <PopoverTrigger asChild>
                                     <Button type="button" variant="outline" size="sm"><Trans>Edit</Trans></Button>
                                 </PopoverTrigger>
                                 <PopoverContent className="w-80">
-                                    <EditFacetValue facetValueId={facetValue.id} />
+                                    <EditFacetValue facetValueId={facetValue.id} onSuccess={() => setOpen(false)} />
                                 </PopoverContent>
                             </Popover>
                         );

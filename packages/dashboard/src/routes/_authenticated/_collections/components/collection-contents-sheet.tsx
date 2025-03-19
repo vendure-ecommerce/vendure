@@ -8,14 +8,14 @@ import {
 } from '@/components/ui/sheet.js';
 import { Trans } from '@lingui/react/macro';
 import { PanelLeftOpen } from 'lucide-react';
-import { FacetValuesTable } from './facet-values-table.js';
+import { CollectionContentsTable } from './collection-contents-table.js';
 
-export interface FacetValuesSheetProps {
-    facetName: string;
-    facetId: string;
+export interface CollectionContentsSheetProps {
+    collectionId: string;
+    collectionName: string;
 }
 
-export function FacetValuesSheet({ facetName, facetId }: FacetValuesSheetProps) {
+export function CollectionContentsSheet({ collectionId, collectionName }: CollectionContentsSheetProps) {
     return (
         <Sheet>
             <SheetTrigger>
@@ -24,16 +24,16 @@ export function FacetValuesSheet({ facetName, facetId }: FacetValuesSheetProps) 
             <SheetContent className="min-w-[90vw] lg:min-w-[800px]">
                 <SheetHeader>
                     <SheetTitle>
-                        <Trans>Facet values for {facetName}</Trans>
+                        <Trans>Collection contents for {collectionName}</Trans>
                     </SheetTitle>
                     <SheetDescription>
                         <Trans>
-                            These are the facet values for the <strong>{facetName}</strong> facet.
+                            This is the contents of the <strong>{collectionName}</strong> collection.
                         </Trans>
                     </SheetDescription>
                 </SheetHeader>
                 <div className="px-4">
-                    <FacetValuesTable facetId={facetId} />
+                    <CollectionContentsTable collectionId={collectionId} />
                 </div>
             </SheetContent>
         </Sheet>

@@ -20,6 +20,7 @@ export interface DetailPageOptions<
     C extends TypedDocumentNode<any, any>,
     U extends TypedDocumentNode<any, any>,
     EntityField extends keyof ResultOf<T> = keyof ResultOf<T>,
+    VarNameCreate extends keyof VariablesOf<C> = 'input',
     VarNameUpdate extends keyof VariablesOf<U> = 'input',
 > {
     /**
@@ -54,6 +55,8 @@ export interface DetailPageOptions<
      * The function to set the values for the update document.
      */
     setValuesForUpdate: (entity: NonNullable<ResultOf<T>[EntityField]>) => VariablesOf<U>[VarNameUpdate];
+    transformCreateInput?: (input: VariablesOf<C>[VarNameCreate]) => VariablesOf<C>[VarNameCreate];
+    transformUpdateInput?: (input: VariablesOf<U>[VarNameUpdate]) => VariablesOf<U>[VarNameUpdate];
     /**
      * @description
      * The function to call when the update is successful.
@@ -89,12 +92,14 @@ export function useDetailPage<
     EntityField extends keyof ResultOf<T> = keyof ResultOf<T>,
     VarNameUpdate extends keyof VariablesOf<U> = 'input',
     VarNameCreate extends keyof VariablesOf<C> = 'input',
->(options: DetailPageOptions<T, C, U, EntityField, VarNameUpdate>) {
+>(options: DetailPageOptions<T, C, U, EntityField, VarNameCreate, VarNameUpdate>) {
     const {
         queryDocument,
         createDocument,
         updateDocument,
         setValuesForUpdate,
+        transformCreateInput,
+        transformUpdateInput,
         params,
         entityField,
         onSuccess,
@@ -130,9 +135,9 @@ export function useDetailPage<
         setValues: setValuesForUpdate,
         onSubmit(values: any) {
             if (isNew) {
-                createMutation.mutate({ input: values });
+                createMutation.mutate({ input: transformCreateInput?.(values) ?? values });
             } else {
-                updateMutation.mutate({ input: values });
+                updateMutation.mutate({ input: transformUpdateInput?.(values) ?? values });
             }
         },
     });

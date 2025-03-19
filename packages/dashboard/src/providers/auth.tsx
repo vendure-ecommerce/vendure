@@ -103,7 +103,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const logoutMutation = useMutation({
         mutationFn: logoutMutationFn,
         onSuccess: async data => {
-            console.log(data);
             if (data?.logout.success === true) {
                 setStatus('unauthenticated');
                 onLogoutSuccessFn.current();

@@ -37,9 +37,10 @@ const updateFacetValueDocument = graphql(`
 
 export interface EditFacetValueProps {
     facetValueId: string;
+    onSuccess?: () => void;
 }
 
-export function EditFacetValue({ facetValueId }: EditFacetValueProps) {
+export function EditFacetValue({ facetValueId, onSuccess }: EditFacetValueProps) {
     const {
         settings: { contentLanguage },
     } = useUserSettings();
@@ -52,6 +53,7 @@ export function EditFacetValue({ facetValueId }: EditFacetValueProps) {
         mutationFn: api.mutate(updateFacetValueDocument),
         onSuccess: () => {
             refetchPaginatedList();
+            onSuccess?.();
         },
     });
     const facetValue = facetValues?.facetValues.items[0];

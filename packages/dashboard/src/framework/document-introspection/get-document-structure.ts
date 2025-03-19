@@ -50,26 +50,75 @@ export function getListQueryFields(documentNode: DocumentNode): FieldInfo[] {
             const queryField = query;
             const fieldInfo = getQueryInfo(queryField.name.value);
             if (fieldInfo.isPaginatedList) {
-                const itemsField = queryField.selectionSet?.selections.find(
-                    selection => selection.kind === 'Field' && selection.name.value === 'items',
-                ) as FieldNode;
-                if (!itemsField) {
-                    continue;
-                }
-                const typeName = getPaginatedListType(fieldInfo.name);
-                if (!typeName) {
-                    throw new Error(`Could not determine type of items in ${fieldInfo.name}`);
-                }
-                for (const item of itemsField.selectionSet?.selections ?? []) {
-                    if (item.kind === 'Field' || item.kind === 'FragmentSpread') {
-                        collectFields(typeName, item, fields, fragments);
-                    }
-                }
+                processPaginatedList(queryField, fieldInfo, fields, fragments);
+            } else if (queryField.selectionSet) {
+                // Check for nested paginated lists
+                findNestedPaginatedLists(queryField, fieldInfo.type, fields, fragments);
             }
         }
     }
 
     return fields;
+}
+
+function processPaginatedList(
+    field: FieldNode,
+    fieldInfo: FieldInfo,
+    fields: FieldInfo[],
+    fragments: Record<string, FragmentDefinitionNode>,
+) {
+    const itemsField = field.selectionSet?.selections.find(
+        selection => selection.kind === 'Field' && selection.name.value === 'items',
+    ) as FieldNode;
+    if (!itemsField) {
+        return;
+    }
+    const typeFields = schemaInfo.types[fieldInfo.type];
+    const isPaginatedList = typeFields.hasOwnProperty('items') && typeFields.hasOwnProperty('totalItems');
+    if (!isPaginatedList) {
+        throw new Error(`Could not determine type of items in ${fieldInfo.name}`);
+    }
+    const itemsType = getObjectFieldInfo(fieldInfo.type, 'items').type;
+    for (const item of itemsField.selectionSet?.selections ?? []) {
+        if (item.kind === 'Field' || item.kind === 'FragmentSpread') {
+            collectFields(itemsType, item, fields, fragments);
+        }
+    }
+}
+
+function findNestedPaginatedLists(
+    field: FieldNode,
+    parentType: string,
+    fields: FieldInfo[],
+    fragments: Record<string, FragmentDefinitionNode>,
+) {
+    for (const selection of field.selectionSet?.selections ?? []) {
+        if (selection.kind === 'Field') {
+            const fieldInfo = getObjectFieldInfo(parentType, selection.name.value);
+            if (fieldInfo.isPaginatedList) {
+                processPaginatedList(selection, fieldInfo, fields, fragments);
+            } else if (selection.selectionSet && !fieldInfo.isScalar) {
+                // Continue recursion
+                findNestedPaginatedLists(selection, fieldInfo.type, fields, fragments);
+            }
+        } else if (selection.kind === 'FragmentSpread') {
+            // Handle fragment spread on the parent type
+            const fragmentName = selection.name.value;
+            const fragment = fragments[fragmentName];
+            if (fragment && fragment.typeCondition.name.value === parentType) {
+                for (const fragmentSelection of fragment.selectionSet.selections) {
+                    if (fragmentSelection.kind === 'Field') {
+                        const fieldInfo = getObjectFieldInfo(parentType, fragmentSelection.name.value);
+                        if (fieldInfo.isPaginatedList) {
+                            processPaginatedList(fragmentSelection, fieldInfo, fields, fragments);
+                        } else if (fragmentSelection.selectionSet && !fieldInfo.isScalar) {
+                            findNestedPaginatedLists(fragmentSelection, fieldInfo.type, fields, fragments);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -169,6 +218,69 @@ export function getQueryTypeFieldInfo(documentNode: DocumentNode): FieldInfo {
 
 /**
  * @description
+ * This function is used to get the path to the paginated list from a DocumentNode.
+ *
+ * For example, in the following query:
+ *
+ * ```graphql
+ * query GetProductList($options: ProductListOptions) {
+ *   products(options: $options) {
+ *     items {
+ *       ...ProductDetail
+ *     }
+ *     totalCount
+ *   }
+ * }
+ * ```
+ *
+ * The path to the paginated list is `['products']`.
+ */
+export function getObjectPathToPaginatedList(
+    documentNode: DocumentNode,
+    currentPath: string[] = [],
+): string[] {
+    // get the query OperationDefinition
+    const operationDefinition = documentNode.definitions.find(
+        (def): def is OperationDefinitionNode =>
+            def.kind === 'OperationDefinition' && def.operation === 'query',
+    );
+    if (!operationDefinition) {
+        throw new Error('Could not find query operation definition');
+    }
+
+    return findPaginatedListPath(operationDefinition.selectionSet, 'Query', currentPath);
+}
+
+function findPaginatedListPath(
+    selectionSet: SelectionSetNode,
+    parentType: string,
+    currentPath: string[] = [],
+): string[] {
+    for (const selection of selectionSet.selections) {
+        if (selection.kind === 'Field') {
+            const fieldNode = selection;
+            const fieldInfo = getObjectFieldInfo(parentType, fieldNode.name.value);
+            const newPath = [...currentPath, fieldNode.name.value];
+
+            if (fieldInfo.isPaginatedList) {
+                return newPath;
+            }
+
+            // If this field has a selection set, recursively search it
+            if (fieldNode.selectionSet && !fieldInfo.isScalar) {
+                const result = findPaginatedListPath(fieldNode.selectionSet, fieldInfo.type, newPath);
+                if (result.length > 0) {
+                    return result;
+                }
+            }
+        }
+    }
+
+    return [];
+}
+
+/**
+ * @description
  * This function is used to get the name of the mutation from a DocumentNode.
  *
  * For example, in the following mutation:
@@ -235,7 +347,7 @@ function getQueryInfo(name: string): FieldInfo {
 }
 
 function getInputTypeInfo(name: string): FieldInfo[] {
-    return Object.entries(schemaInfo.inputs[name]).map(([fieldName, fieldInfo]) => {
+    return Object.entries(schemaInfo.inputs[name]).map(([fieldName, fieldInfo]: [string, any]) => {
         const type = fieldInfo[0];
         const isScalar = isScalarType(type);
         const isEnum = isEnumType(type);
@@ -257,14 +369,6 @@ export function isScalarType(type: string): boolean {
 
 export function isEnumType(type: string): boolean {
     return schemaInfo.enums[type] != null;
-}
-
-function getPaginatedListType(name: string): string | undefined {
-    const queryInfo = getQueryInfo(name);
-    if (queryInfo.isPaginatedList) {
-        const paginagedListType = getObjectFieldInfo(queryInfo.type, 'items').type;
-        return paginagedListType;
-    }
 }
 
 function getObjectFieldInfo(typeName: string, fieldName: string): FieldInfo {
@@ -297,6 +401,11 @@ function collectFields(
                 } else if (subSelection.kind === 'FragmentSpread') {
                     const fragmentName = subSelection.name.value;
                     const fragment = fragments[fragmentName];
+                    if (!fragment) {
+                        throw new Error(
+                            `Fragment "${fragmentName}" not found. Make sure to include it in the "${typeName}" type query.`,
+                        );
+                    }
                     // We only want to collect fields from the fragment if it's the same type as
                     // the field we're collecting from
                     if (fragment.name.value !== typeName) {

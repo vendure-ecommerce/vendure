@@ -87,13 +87,13 @@ export function ProductDetailPage() {
             };
         },
         params: { id: params.id },
-        onSuccess: data => {
+        onSuccess: async data => {
             toast(i18n.t('Successfully updated product'), {
                 position: 'top-right',
             });
             form.reset(form.getValues());
             if (creatingNewEntity) {
-                navigate({ to: `../${data.id}`, from: Route.id });
+                await navigate({ to: `../${data.id}`, from: Route.id });
             }
         },
         onError: err => {

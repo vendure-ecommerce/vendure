@@ -10,8 +10,20 @@ vi.mock('virtual:admin-api-schema', () => {
                 Query: {
                     products: ['ProductList', false, false, true],
                     product: ['Product', false, false, false],
+                    collection: ['Collection', false, false, false],
                 },
                 Mutation: {},
+
+                Collection: {
+                    id: ['ID', false, false, false],
+                    name: ['String', false, false, false],
+                    productVariants: ['ProductVariantList', false, false, true],
+                },
+
+                ProductVariantList: {
+                    items: ['ProductVariant', false, true, false],
+                    totalItems: ['Int', false, false, false],
+                },
 
                 Product: {
                     channels: ['Channel', false, true, false],
@@ -256,5 +268,43 @@ describe('getListQueryFields', () => {
 
         const fields = getListQueryFields(doc);
         expect(fields).toEqual([]);
+    });
+
+    it.only('should handle a fragment of a nested entity in the query', () => {
+        const doc = graphql(/* graphql*/ `
+            query GetCollectionWithProductVariants {
+                collection {
+                    id
+                    name
+                    productVariants {
+                        items {
+                            id
+                            sku
+                        }
+                        totalItems
+                    }
+                }
+            }
+        `);
+
+        const fields = getListQueryFields(doc);
+        expect(fields).toEqual([
+            {
+                isPaginatedList: false,
+                isScalar: true,
+                list: false,
+                name: 'id',
+                nullable: false,
+                type: 'ID',
+            },
+            {
+                isPaginatedList: false,
+                isScalar: true,
+                list: false,
+                name: 'sku',
+                nullable: false,
+                type: 'String',
+            },
+        ]);
     });
 });

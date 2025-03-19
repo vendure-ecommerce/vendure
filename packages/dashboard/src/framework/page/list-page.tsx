@@ -8,7 +8,7 @@ import {
 } from '@/components/shared/paginated-list-data-table.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRouter, useNavigate } from '@tanstack/react-router';
-import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
+import { ColumnDef, ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
 import { ResultOf } from 'gql.tada';
 import { Page, PageActionBar, PageTitle } from '../layout-engine/page-layout.js';
 
@@ -29,6 +29,7 @@ export interface ListPageProps<
     transformVariables?: (variables: V) => V;
     onSearchTermChange?: (searchTerm: string) => NonNullable<V['options']>['filter'];
     customizeColumns?: CustomizeColumnConfig<T>;
+    additionalColumns?: ColumnDef<any>[];
     defaultColumnOrder?: (keyof ListQueryFields<T>)[];
     defaultVisibility?: Partial<Record<keyof ListQueryFields<T>, boolean>>;
     children?: React.ReactNode;
@@ -43,6 +44,7 @@ export function ListPage<
     listQuery,
     transformVariables,
     customizeColumns,
+    additionalColumns,
     route: routeOrFn,
     defaultVisibility,
     onSearchTermChange,
@@ -95,6 +97,7 @@ export function ListPage<
                 listQuery={listQuery}
                 transformVariables={transformVariables}
                 customizeColumns={customizeColumns}
+                additionalColumns={additionalColumns}
                 defaultVisibility={defaultVisibility}
                 onSearchTermChange={onSearchTermChange}
                 page={pagination.page}

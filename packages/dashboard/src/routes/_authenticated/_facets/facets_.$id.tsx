@@ -76,17 +76,24 @@ export function FacetDetailPage() {
                     name: translation.name,
                     customFields: translation.customFields,
                 })),
+                values: [],
                 customFields: entity.customFields,
             };
         },
+        transformCreateInput: values => {
+            return {
+                ...values,
+                values: [],
+            };
+        },
         params: { id: params.id },
-        onSuccess: data => {
+        onSuccess: async data => {
             toast(i18n.t('Successfully updated facet'), {
                 position: 'top-right',
             });
             form.reset(form.getValues());
             if (creatingNewEntity) {
-                navigate({ to: `../${data?.[0]?.id}`, from: Route.id });
+                await navigate({ to: `../${data?.id}`, from: Route.id });
             }
         },
         onError: err => {
@@ -174,14 +181,12 @@ export function FacetDetailPage() {
                                 </div>
                             </div>
                         </PageBlock>
-                        <CustomFieldsPageBlock
-                            column="main"
-                            entityType="Facet"
-                            control={form.control}
-                        />
-                        <PageBlock column="main" title={<Trans>Facet values</Trans>}>
-                            <FacetValuesTable facetId={entity?.id} />
-                        </PageBlock>
+                        <CustomFieldsPageBlock column="main" entityType="Facet" control={form.control} />
+                        {!creatingNewEntity && (
+                            <PageBlock column="main" title={<Trans>Facet values</Trans>}>
+                                <FacetValuesTable facetId={entity?.id} />
+                            </PageBlock>
+                        )}
                     </PageLayout>
                 </form>
             </Form>
