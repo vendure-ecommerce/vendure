@@ -47,12 +47,14 @@ export function AssignedFacetValues({
                     const facetValue = knownFacetValues.find(fv => fv.id === id);
                     if (!facetValue) return null;
                     return (
+                        <div className="mb-2 mr-1">
                         <FacetValueChip
                             key={facetValue.id}
                             facetValue={facetValue}
                             removable={canUpdate}
                             onRemove={onRemoveHandler}
-                        />
+                            />
+                        </div>
                     );
                 })}
             </div>

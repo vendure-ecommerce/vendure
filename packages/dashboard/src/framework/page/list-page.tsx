@@ -26,6 +26,7 @@ export interface ListPageProps<
     V extends ListQueryOptionsShape,
 > extends PageProps {
     listQuery: T;
+    transformVariables?: (variables: V) => V;
     onSearchTermChange?: (searchTerm: string) => NonNullable<V['options']>['filter'];
     customizeColumns?: CustomizeColumnConfig<T>;
     defaultColumnOrder?: (keyof ListQueryFields<T>)[];
@@ -40,6 +41,7 @@ export function ListPage<
 >({
     title,
     listQuery,
+    transformVariables,
     customizeColumns,
     route: routeOrFn,
     defaultVisibility,
@@ -91,6 +93,7 @@ export function ListPage<
             <PageActionBar>{children}</PageActionBar>
             <PaginatedListDataTable
                 listQuery={listQuery}
+                transformVariables={transformVariables}
                 customizeColumns={customizeColumns}
                 defaultVisibility={defaultVisibility}
                 onSearchTermChange={onSearchTermChange}

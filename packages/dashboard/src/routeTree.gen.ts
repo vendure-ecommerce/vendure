@@ -18,6 +18,7 @@ import { Route as AuthenticatedIndexImport } from './routes/_authenticated/index
 import { Route as AuthenticatedDashboardImport } from './routes/_authenticated/dashboard';
 import { Route as AuthenticatedProductsProductsImport } from './routes/_authenticated/_products/products';
 import { Route as AuthenticatedProductVariantsProductVariantsImport } from './routes/_authenticated/_product-variants/product-variants';
+import { Route as AuthenticatedFacetsFacetsImport } from './routes/_authenticated/_facets/facets';
 import { Route as AuthenticatedProductsProductsIdImport } from './routes/_authenticated/_products/products_.$id';
 import { Route as AuthenticatedProductVariantsProductVariantsIdImport } from './routes/_authenticated/_product-variants/product-variants_.$id';
 
@@ -64,6 +65,12 @@ const AuthenticatedProductVariantsProductVariantsRoute =
         path: '/product-variants',
         getParentRoute: () => AuthenticatedRoute,
     } as any);
+
+const AuthenticatedFacetsFacetsRoute = AuthenticatedFacetsFacetsImport.update({
+    id: '/_facets/facets',
+    path: '/facets',
+    getParentRoute: () => AuthenticatedRoute,
+} as any);
 
 const AuthenticatedProductsProductsIdRoute = AuthenticatedProductsProductsIdImport.update({
     id: '/_products/products_/$id',
@@ -117,6 +124,13 @@ declare module '@tanstack/react-router' {
             preLoaderRoute: typeof AuthenticatedIndexImport;
             parentRoute: typeof AuthenticatedImport;
         };
+        '/_authenticated/_facets/facets': {
+            id: '/_authenticated/_facets/facets';
+            path: '/facets';
+            fullPath: '/facets';
+            preLoaderRoute: typeof AuthenticatedFacetsFacetsImport;
+            parentRoute: typeof AuthenticatedImport;
+        };
         '/_authenticated/_product-variants/product-variants': {
             id: '/_authenticated/_product-variants/product-variants';
             path: '/product-variants';
@@ -153,6 +167,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteChildren {
     AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute;
     AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute;
+    AuthenticatedFacetsFacetsRoute: typeof AuthenticatedFacetsFacetsRoute;
     AuthenticatedProductVariantsProductVariantsRoute: typeof AuthenticatedProductVariantsProductVariantsRoute;
     AuthenticatedProductsProductsRoute: typeof AuthenticatedProductsProductsRoute;
     AuthenticatedProductVariantsProductVariantsIdRoute: typeof AuthenticatedProductVariantsProductVariantsIdRoute;
@@ -162,6 +177,7 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
     AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
     AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+    AuthenticatedFacetsFacetsRoute: AuthenticatedFacetsFacetsRoute,
     AuthenticatedProductVariantsProductVariantsRoute: AuthenticatedProductVariantsProductVariantsRoute,
     AuthenticatedProductsProductsRoute: AuthenticatedProductsProductsRoute,
     AuthenticatedProductVariantsProductVariantsIdRoute: AuthenticatedProductVariantsProductVariantsIdRoute,
@@ -176,6 +192,7 @@ export interface FileRoutesByFullPath {
     '/login': typeof LoginRoute;
     '/dashboard': typeof AuthenticatedDashboardRoute;
     '/': typeof AuthenticatedIndexRoute;
+    '/facets': typeof AuthenticatedFacetsFacetsRoute;
     '/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute;
     '/products': typeof AuthenticatedProductsProductsRoute;
     '/product-variants/$id': typeof AuthenticatedProductVariantsProductVariantsIdRoute;
@@ -187,6 +204,7 @@ export interface FileRoutesByTo {
     '/login': typeof LoginRoute;
     '/dashboard': typeof AuthenticatedDashboardRoute;
     '/': typeof AuthenticatedIndexRoute;
+    '/facets': typeof AuthenticatedFacetsFacetsRoute;
     '/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute;
     '/products': typeof AuthenticatedProductsProductsRoute;
     '/product-variants/$id': typeof AuthenticatedProductVariantsProductVariantsIdRoute;
@@ -200,6 +218,7 @@ export interface FileRoutesById {
     '/login': typeof LoginRoute;
     '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute;
     '/_authenticated/': typeof AuthenticatedIndexRoute;
+    '/_authenticated/_facets/facets': typeof AuthenticatedFacetsFacetsRoute;
     '/_authenticated/_product-variants/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute;
     '/_authenticated/_products/products': typeof AuthenticatedProductsProductsRoute;
     '/_authenticated/_product-variants/product-variants_/$id': typeof AuthenticatedProductVariantsProductVariantsIdRoute;
@@ -214,6 +233,7 @@ export interface FileRouteTypes {
         | '/login'
         | '/dashboard'
         | '/'
+        | '/facets'
         | '/product-variants'
         | '/products'
         | '/product-variants/$id'
@@ -224,6 +244,7 @@ export interface FileRouteTypes {
         | '/login'
         | '/dashboard'
         | '/'
+        | '/facets'
         | '/product-variants'
         | '/products'
         | '/product-variants/$id'
@@ -235,6 +256,7 @@ export interface FileRouteTypes {
         | '/login'
         | '/_authenticated/dashboard'
         | '/_authenticated/'
+        | '/_authenticated/_facets/facets'
         | '/_authenticated/_product-variants/product-variants'
         | '/_authenticated/_products/products'
         | '/_authenticated/_product-variants/product-variants_/$id'
@@ -272,6 +294,7 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
       "children": [
         "/_authenticated/dashboard",
         "/_authenticated/",
+        "/_authenticated/_facets/facets",
         "/_authenticated/_product-variants/product-variants",
         "/_authenticated/_products/products",
         "/_authenticated/_product-variants/product-variants_/$id",
@@ -290,6 +313,10 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
     },
     "/_authenticated/": {
       "filePath": "_authenticated/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/_facets/facets": {
+      "filePath": "_authenticated/_facets/facets.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/_product-variants/product-variants": {

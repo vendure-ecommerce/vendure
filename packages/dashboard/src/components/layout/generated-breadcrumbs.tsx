@@ -44,6 +44,12 @@ export function GeneratedBreadcrumbs() {
                     }
                 });
             }
+            if (typeof loaderData.breadcrumb === 'function') {
+                return {
+                    label: loaderData.breadcrumb(),
+                    path: pathname,
+                };
+            }
         })
         .flat();
     return (

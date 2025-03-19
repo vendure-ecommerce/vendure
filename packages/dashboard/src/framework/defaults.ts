@@ -20,6 +20,11 @@ navMenu({
                     title: 'Product Variants',
                     url: '/product-variants',
                 },
+                {
+                    id: 'facets',
+                    title: 'Facets',
+                    url: '/facets',
+                },
             ],
         },
         {

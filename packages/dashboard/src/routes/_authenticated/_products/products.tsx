@@ -6,10 +6,11 @@ import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
 import { PlusIcon } from 'lucide-react';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
+import { Trans } from '@lingui/react/macro';
 
 export const Route = createFileRoute('/_authenticated/_products/products')({
     component: ProductListPage,
-    loader: () => ({ breadcrumb: 'Products' }),
+    loader: () => ({ breadcrumb: () => <Trans>Products</Trans> }),
 });
 
 export function ProductListPage() {

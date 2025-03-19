@@ -9,7 +9,7 @@ import { useLocalFormat } from '@/hooks/use-local-format.js';
 
 export const Route = createFileRoute('/_authenticated/_product-variants/product-variants')({
     component: ProductListPage,
-    loader: () => ({ breadcrumb: 'Product' }),
+    loader: () => ({ breadcrumb: () => <Trans>Product Variants</Trans> }),
 });
 
 export function ProductListPage() {

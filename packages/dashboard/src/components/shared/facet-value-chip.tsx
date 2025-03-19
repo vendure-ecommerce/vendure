@@ -16,18 +16,19 @@ interface FacetValue {
 interface FacetValueChipProps {
     facetValue: FacetValue;
     removable?: boolean;
+    displayFacetName?: boolean;
     onRemove?: (id: string) => void;
 }
 
-export function FacetValueChip({ facetValue, removable = true, onRemove }: FacetValueChipProps) {
+export function FacetValueChip({ facetValue, removable = true, onRemove, displayFacetName = true }: FacetValueChipProps) {
     return (
         <Badge 
             variant="secondary"
-            className="mr-2 mb-2 flex items-center gap-2 py-0.5 pl-2 pr-1 h-6 hover:bg-secondary/80"
+            className="flex items-center gap-2 py-0.5 pl-2 pr-1 h-6 hover:bg-secondary/80"
         >
             <div className="flex items-center gap-1.5">
                 <span className="font-medium">{facetValue.name}</span>
-                <span className="text-muted-foreground text-xs">in {facetValue.facet.name}</span>
+                {displayFacetName && <span className="text-muted-foreground text-xs">in {facetValue.facet.name}</span>}
             </div>
             {removable && (
                 <button
