@@ -57,3 +57,39 @@ export const facetListDocument = graphql(
     `,
     [facetWithValuesFragment],
 );
+
+export const facetDetailDocument = graphql(`
+    query FacetDetail($id: ID!) {
+        facet(id: $id) {
+            id
+            createdAt
+            updatedAt
+            name
+            code
+            languageCode
+            isPrivate
+            translations {
+                id
+                languageCode
+                name
+            }
+            customFields
+        }
+    }
+`);
+
+export const createFacetDocument = graphql(`
+    mutation CreateFacet($input: CreateFacetInput!) {
+        createFacet(input: $input) {
+            id
+        }
+    }
+`);
+
+export const updateFacetDocument = graphql(`
+    mutation UpdateFacet($input: UpdateFacetInput!) {
+        updateFacet(input: $input) {
+            id
+        }
+    }
+`);

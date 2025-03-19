@@ -9,6 +9,7 @@ import {
 import { useListQueryFields } from '@/framework/document-introspection/hooks.js';
 import { api } from '@/graphql/api.js';
 import { useDebounce } from 'use-debounce';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { useQuery } from '@tanstack/react-query';
@@ -54,6 +55,36 @@ export type ListQueryOptionsShape = {
     };
 };
 
+export interface PaginatedListContext {
+    refetchPaginatedList: () => void;
+}
+
+export const PaginatedListContext = React.createContext<PaginatedListContext | undefined>(undefined);
+
+/**
+ * @description
+ * Returns the context for the paginated list data table. Must be used within a PaginatedListDataTable.
+ * 
+ * @example
+ * ```ts
+ * const { refetchPaginatedList } = usePaginatedList();
+ * 
+ * const mutation = useMutation({
+ *     mutationFn: api.mutate(updateFacetValueDocument),
+ *     onSuccess: () => {
+ *         refetchPaginatedList();
+ *     },
+ * });
+ * ```
+ */
+export function usePaginatedList() {
+    const context = React.useContext(PaginatedListContext);
+    if (!context) {
+        throw new Error('usePaginatedList must be used within a PaginatedListDataTable');
+    }
+    return context;
+} 
+
 export interface PaginatedListDataTableProps<
     T extends TypedDocumentNode<U, V>,
     U extends ListQueryShape,
@@ -62,6 +93,7 @@ export interface PaginatedListDataTableProps<
     listQuery: T;
     transformVariables?: (variables: V) => V;
     customizeColumns?: CustomizeColumnConfig<T>;
+    additionalColumns?: ColumnDef<any>[];
     defaultVisibility?: Partial<Record<keyof ListQueryFields<T>, boolean>>;
     onSearchTermChange?: (searchTerm: string) => NonNullable<V['options']>['filter'];
     page: number;
@@ -81,6 +113,7 @@ export function PaginatedListDataTable<
     listQuery,
     transformVariables,
     customizeColumns,
+    additionalColumns,
     defaultVisibility,
     onSearchTermChange,
     page,
@@ -94,6 +127,7 @@ export function PaginatedListDataTable<
     const { getComponent } = useComponentRegistry();
     const [searchTerm, setSearchTerm] = React.useState<string>('');
     const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
+    const queryClient = useQueryClient();
 
     const sort = sorting?.reduce((acc: any, sort: ColumnSort) => {
         const direction = sort.desc ? 'DESC' : 'ASC';
@@ -108,6 +142,19 @@ export function PaginatedListDataTable<
     const filter = columnFilters?.length
         ? { _and: columnFilters.map(f => ({ [f.id]: f.value })) }
         : undefined;
+
+    const queryKey = [
+        'PaginatedListDataTable',
+        listQuery,
+        page,
+        itemsPerPage,
+        sorting,
+        filter,
+    ];
+
+    function refetchPaginatedList() {
+        queryClient.invalidateQueries({ queryKey });
+    }
 
     const { data } = useQuery({
         queryFn: () => {
@@ -125,15 +172,7 @@ export function PaginatedListDataTable<
             const transformedVariables = transformVariables ? transformVariables(variables) : variables;
             return api.query(listQuery, transformedVariables);
         },
-        queryKey: [
-            'PaginatedListDataTable',
-            listQuery,
-            page,
-            itemsPerPage,
-            sorting,
-            filter,
-            debouncedSearchTerm,
-        ],
+        queryKey,
     });
 
     const fields = useListQueryFields(listQuery);
@@ -148,7 +187,7 @@ export function PaginatedListDataTable<
                 .filter(field => field.name !== 'customFields' && !field.type.endsWith('CustomFields'))
                 .map(field => ({ fieldInfo: field, isCustomField: false })),
         );
-        
+
         const customFieldColumn = fields.find(field => field.name === 'customFields');
         if (customFieldColumn && customFieldColumn.type !== 'JSON') {
             const customFieldFields = getTypeFieldInfo(customFieldColumn.type);
@@ -157,7 +196,7 @@ export function PaginatedListDataTable<
             );
         }
 
-        return columnConfigs.map(({ fieldInfo, isCustomField }) => {
+        const queryBasedColumns = columnConfigs.map(({ fieldInfo, isCustomField }) => {
             const customConfig = customizeColumns?.[fieldInfo.name as keyof ListQueryFields<T>] ?? {};
             const { header, ...customConfigRest } = customConfig;
             return columnHelper.accessor(fieldInfo.name as any, {
@@ -165,11 +204,16 @@ export function PaginatedListDataTable<
                 enableColumnFilter: fieldInfo.isScalar,
                 enableSorting: fieldInfo.isScalar,
                 cell: ({ cell, row }) => {
-                    const value = !isCustomField ? cell.getValue() : (row.original as any)?.customFields?.[fieldInfo.name];
+                    const value = !isCustomField
+                        ? cell.getValue()
+                        : (row.original as any)?.customFields?.[fieldInfo.name];
                     if (fieldInfo.list && Array.isArray(value)) {
                         return value.join(', ');
                     }
-                    if ((fieldInfo.type === 'DateTime' && typeof value === 'string') || value instanceof Date) {
+                    if (
+                        (fieldInfo.type === 'DateTime' && typeof value === 'string') ||
+                        value instanceof Date
+                    ) {
                         return <Delegate component="dateTime.display" value={value} />;
                     }
                     if (fieldInfo.type === 'Boolean') {
@@ -191,25 +235,29 @@ export function PaginatedListDataTable<
                 ...customConfigRest,
             });
         });
+
+        return [...queryBasedColumns, ...(additionalColumns?.map(def => columnHelper.accessor(def.id, def)) ?? [])];
     }, [fields, customizeColumns]);
 
     const columnVisibility = getColumnVisibility(fields, defaultVisibility);
 
     return (
-        <DataTable
-            columns={columns}
-            data={(data as any)?.[queryName]?.items ?? []}
-            page={page}
-            itemsPerPage={itemsPerPage}
-            sorting={sorting}
-            columnFilters={columnFilters}
-            totalItems={(data as any)?.[queryName]?.totalItems ?? 0}
-            onPageChange={onPageChange}
-            onSortChange={onSortChange}
-            onFilterChange={onFilterChange}
-            onSearchTermChange={onSearchTermChange ? term => setSearchTerm(term) : undefined}
-            defaultColumnVisibility={columnVisibility}
-        />
+        <PaginatedListContext.Provider value={{ refetchPaginatedList }}>
+            <DataTable
+                columns={columns}
+                data={(data as any)?.[queryName]?.items ?? []}
+                page={page}
+                itemsPerPage={itemsPerPage}
+                sorting={sorting}
+                columnFilters={columnFilters}
+                totalItems={(data as any)?.[queryName]?.totalItems ?? 0}
+                onPageChange={onPageChange}
+                onSortChange={onSortChange}
+                onFilterChange={onFilterChange}
+                onSearchTermChange={onSearchTermChange ? term => setSearchTerm(term) : undefined}
+                defaultColumnVisibility={columnVisibility}
+            />
+        </PaginatedListContext.Provider>
     );
 }
 
