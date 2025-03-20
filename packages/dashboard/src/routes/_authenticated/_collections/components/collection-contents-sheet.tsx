@@ -9,17 +9,22 @@ import {
 import { Trans } from '@lingui/react/macro';
 import { PanelLeftOpen } from 'lucide-react';
 import { CollectionContentsTable } from './collection-contents-table.js';
+import { Button } from '@/components/ui/button.js';
 
 export interface CollectionContentsSheetProps {
     collectionId: string;
     collectionName: string;
+    children?: React.ReactNode;
 }
 
-export function CollectionContentsSheet({ collectionId, collectionName }: CollectionContentsSheetProps) {
+export function CollectionContentsSheet({ collectionId, collectionName, children }: CollectionContentsSheetProps) {
     return (
         <Sheet>
             <SheetTrigger>
-                <PanelLeftOpen className="w-4 h-4" />
+                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                    {children}
+                    <PanelLeftOpen className="w-4 h-4" />
+                </Button>
             </SheetTrigger>
             <SheetContent className="min-w-[90vw] lg:min-w-[800px]">
                 <SheetHeader>

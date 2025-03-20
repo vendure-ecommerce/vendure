@@ -48,13 +48,12 @@ export function CollectionListPage() {
                     header: 'Contents',
                     cell: ({ row }) => {
                         return (
-                            <Badge variant="outline">
-                                <div><Trans>{row.original.productVariants.totalItems} variants</Trans></div>
                                 <CollectionContentsSheet
                                     collectionId={row.original.id}
                                     collectionName={row.original.name}
-                                />
-                            </Badge>
+                                >
+                                     <Trans>{row.original.productVariants.totalItems} variants</Trans>
+                                </CollectionContentsSheet>
                         );
                     },
                 },

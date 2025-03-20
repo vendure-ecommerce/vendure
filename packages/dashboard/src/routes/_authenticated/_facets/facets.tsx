@@ -53,14 +53,16 @@ export function FacetListPage() {
                                         />
                                     );
                                 })}
-                                <Badge variant="outline">
-                                    {list.totalItems > 3 && (
+                                <FacetValuesSheet
+                                    facetId={cell.row.original.id}
+                                    facetName={cell.row.original.name}
+                                >
+                                    {list.totalItems > 3 ? (
                                         <div>
                                             <Trans>+ {list.totalItems - 3} more</Trans>
-                                        </div>
-                                    )}
-                                    <FacetValuesSheet facetId={cell.row.original.id} facetName={cell.row.original.name} />
-                                </Badge>
+                                        </div>) : <Trans>View values</Trans>
+                                    }
+                                </FacetValuesSheet>
                             </div>
                         );
                     },

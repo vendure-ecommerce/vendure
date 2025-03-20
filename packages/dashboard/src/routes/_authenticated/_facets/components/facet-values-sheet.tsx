@@ -4,22 +4,27 @@ import {
     SheetDescription,
     SheetHeader,
     SheetTitle,
-    SheetTrigger
+    SheetTrigger,
 } from '@/components/ui/sheet.js';
 import { Trans } from '@lingui/react/macro';
 import { PanelLeftOpen } from 'lucide-react';
 import { FacetValuesTable } from './facet-values-table.js';
+import { Button } from '@/components/ui/button.js';
 
 export interface FacetValuesSheetProps {
     facetName: string;
     facetId: string;
+    children?: React.ReactNode;
 }
 
-export function FacetValuesSheet({ facetName, facetId }: FacetValuesSheetProps) {
+export function FacetValuesSheet({ facetName, facetId, children }: FacetValuesSheetProps) {
     return (
         <Sheet>
             <SheetTrigger>
-                <PanelLeftOpen className="w-4 h-4" />
+                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                    {children}
+                    <PanelLeftOpen className="w-4 h-4" />
+                </Button>
             </SheetTrigger>
             <SheetContent className="min-w-[90vw] lg:min-w-[800px]">
                 <SheetHeader>
