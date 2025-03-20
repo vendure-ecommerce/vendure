@@ -9,5 +9,10 @@ export default defineConfig({
         environment: 'jsdom',
         root: path.resolve(__dirname, '../dashboard'),
     },
-    plugins: [vendureDashboardPlugin({ vendureConfigPath: pathToFileURL('./dev-config.ts') }) as any],
+    plugins: [
+        vendureDashboardPlugin({
+            vendureConfigPath: pathToFileURL('./dev-config.ts'),
+            adminUiConfig: { apiHost: 'http://localhost', apiPort: 3000 },
+        }) as any,
+    ],
 });
