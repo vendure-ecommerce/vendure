@@ -18,11 +18,13 @@ import { Route as AuthenticatedIndexImport } from './routes/_authenticated/index
 import { Route as AuthenticatedDashboardImport } from './routes/_authenticated/dashboard';
 import { Route as AuthenticatedSystemJobQueueImport } from './routes/_authenticated/_system/job-queue';
 import { Route as AuthenticatedSystemHealthchecksImport } from './routes/_authenticated/_system/healthchecks';
+import { Route as AuthenticatedStockLocationsStockLocationsImport } from './routes/_authenticated/_stock-locations/stock-locations';
 import { Route as AuthenticatedProductsProductsImport } from './routes/_authenticated/_products/products';
 import { Route as AuthenticatedProductVariantsProductVariantsImport } from './routes/_authenticated/_product-variants/product-variants';
 import { Route as AuthenticatedOrdersOrdersImport } from './routes/_authenticated/_orders/orders';
 import { Route as AuthenticatedFacetsFacetsImport } from './routes/_authenticated/_facets/facets';
 import { Route as AuthenticatedCollectionsCollectionsImport } from './routes/_authenticated/_collections/collections';
+import { Route as AuthenticatedChannelsChannelsImport } from './routes/_authenticated/_channels/channels';
 import { Route as AuthenticatedAssetsAssetsImport } from './routes/_authenticated/_assets/assets';
 import { Route as AuthenticatedProductsProductsIdImport } from './routes/_authenticated/_products/products_.$id';
 import { Route as AuthenticatedProductVariantsProductVariantsIdImport } from './routes/_authenticated/_product-variants/product-variants_.$id';
@@ -72,6 +74,14 @@ const AuthenticatedSystemHealthchecksRoute = AuthenticatedSystemHealthchecksImpo
     getParentRoute: () => AuthenticatedRoute,
 } as any);
 
+const AuthenticatedStockLocationsStockLocationsRoute = AuthenticatedStockLocationsStockLocationsImport.update(
+    {
+        id: '/_stock-locations/stock-locations',
+        path: '/stock-locations',
+        getParentRoute: () => AuthenticatedRoute,
+    } as any,
+);
+
 const AuthenticatedProductsProductsRoute = AuthenticatedProductsProductsImport.update({
     id: '/_products/products',
     path: '/products',
@@ -100,6 +110,12 @@ const AuthenticatedFacetsFacetsRoute = AuthenticatedFacetsFacetsImport.update({
 const AuthenticatedCollectionsCollectionsRoute = AuthenticatedCollectionsCollectionsImport.update({
     id: '/_collections/collections',
     path: '/collections',
+    getParentRoute: () => AuthenticatedRoute,
+} as any);
+
+const AuthenticatedChannelsChannelsRoute = AuthenticatedChannelsChannelsImport.update({
+    id: '/_channels/channels',
+    path: '/channels',
     getParentRoute: () => AuthenticatedRoute,
 } as any);
 
@@ -180,6 +196,13 @@ declare module '@tanstack/react-router' {
             preLoaderRoute: typeof AuthenticatedAssetsAssetsImport;
             parentRoute: typeof AuthenticatedImport;
         };
+        '/_authenticated/_channels/channels': {
+            id: '/_authenticated/_channels/channels';
+            path: '/channels';
+            fullPath: '/channels';
+            preLoaderRoute: typeof AuthenticatedChannelsChannelsImport;
+            parentRoute: typeof AuthenticatedImport;
+        };
         '/_authenticated/_collections/collections': {
             id: '/_authenticated/_collections/collections';
             path: '/collections';
@@ -213,6 +236,13 @@ declare module '@tanstack/react-router' {
             path: '/products';
             fullPath: '/products';
             preLoaderRoute: typeof AuthenticatedProductsProductsImport;
+            parentRoute: typeof AuthenticatedImport;
+        };
+        '/_authenticated/_stock-locations/stock-locations': {
+            id: '/_authenticated/_stock-locations/stock-locations';
+            path: '/stock-locations';
+            fullPath: '/stock-locations';
+            preLoaderRoute: typeof AuthenticatedStockLocationsStockLocationsImport;
             parentRoute: typeof AuthenticatedImport;
         };
         '/_authenticated/_system/healthchecks': {
@@ -266,11 +296,13 @@ interface AuthenticatedRouteChildren {
     AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute;
     AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute;
     AuthenticatedAssetsAssetsRoute: typeof AuthenticatedAssetsAssetsRoute;
+    AuthenticatedChannelsChannelsRoute: typeof AuthenticatedChannelsChannelsRoute;
     AuthenticatedCollectionsCollectionsRoute: typeof AuthenticatedCollectionsCollectionsRoute;
     AuthenticatedFacetsFacetsRoute: typeof AuthenticatedFacetsFacetsRoute;
     AuthenticatedOrdersOrdersRoute: typeof AuthenticatedOrdersOrdersRoute;
     AuthenticatedProductVariantsProductVariantsRoute: typeof AuthenticatedProductVariantsProductVariantsRoute;
     AuthenticatedProductsProductsRoute: typeof AuthenticatedProductsProductsRoute;
+    AuthenticatedStockLocationsStockLocationsRoute: typeof AuthenticatedStockLocationsStockLocationsRoute;
     AuthenticatedSystemHealthchecksRoute: typeof AuthenticatedSystemHealthchecksRoute;
     AuthenticatedSystemJobQueueRoute: typeof AuthenticatedSystemJobQueueRoute;
     AuthenticatedCollectionsCollectionsIdRoute: typeof AuthenticatedCollectionsCollectionsIdRoute;
@@ -283,11 +315,13 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
     AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
     AuthenticatedIndexRoute: AuthenticatedIndexRoute,
     AuthenticatedAssetsAssetsRoute: AuthenticatedAssetsAssetsRoute,
+    AuthenticatedChannelsChannelsRoute: AuthenticatedChannelsChannelsRoute,
     AuthenticatedCollectionsCollectionsRoute: AuthenticatedCollectionsCollectionsRoute,
     AuthenticatedFacetsFacetsRoute: AuthenticatedFacetsFacetsRoute,
     AuthenticatedOrdersOrdersRoute: AuthenticatedOrdersOrdersRoute,
     AuthenticatedProductVariantsProductVariantsRoute: AuthenticatedProductVariantsProductVariantsRoute,
     AuthenticatedProductsProductsRoute: AuthenticatedProductsProductsRoute,
+    AuthenticatedStockLocationsStockLocationsRoute: AuthenticatedStockLocationsStockLocationsRoute,
     AuthenticatedSystemHealthchecksRoute: AuthenticatedSystemHealthchecksRoute,
     AuthenticatedSystemJobQueueRoute: AuthenticatedSystemJobQueueRoute,
     AuthenticatedCollectionsCollectionsIdRoute: AuthenticatedCollectionsCollectionsIdRoute,
@@ -305,11 +339,13 @@ export interface FileRoutesByFullPath {
     '/dashboard': typeof AuthenticatedDashboardRoute;
     '/': typeof AuthenticatedIndexRoute;
     '/assets': typeof AuthenticatedAssetsAssetsRoute;
+    '/channels': typeof AuthenticatedChannelsChannelsRoute;
     '/collections': typeof AuthenticatedCollectionsCollectionsRoute;
     '/facets': typeof AuthenticatedFacetsFacetsRoute;
     '/orders': typeof AuthenticatedOrdersOrdersRoute;
     '/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute;
     '/products': typeof AuthenticatedProductsProductsRoute;
+    '/stock-locations': typeof AuthenticatedStockLocationsStockLocationsRoute;
     '/healthchecks': typeof AuthenticatedSystemHealthchecksRoute;
     '/job-queue': typeof AuthenticatedSystemJobQueueRoute;
     '/collections/$id': typeof AuthenticatedCollectionsCollectionsIdRoute;
@@ -324,11 +360,13 @@ export interface FileRoutesByTo {
     '/dashboard': typeof AuthenticatedDashboardRoute;
     '/': typeof AuthenticatedIndexRoute;
     '/assets': typeof AuthenticatedAssetsAssetsRoute;
+    '/channels': typeof AuthenticatedChannelsChannelsRoute;
     '/collections': typeof AuthenticatedCollectionsCollectionsRoute;
     '/facets': typeof AuthenticatedFacetsFacetsRoute;
     '/orders': typeof AuthenticatedOrdersOrdersRoute;
     '/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute;
     '/products': typeof AuthenticatedProductsProductsRoute;
+    '/stock-locations': typeof AuthenticatedStockLocationsStockLocationsRoute;
     '/healthchecks': typeof AuthenticatedSystemHealthchecksRoute;
     '/job-queue': typeof AuthenticatedSystemJobQueueRoute;
     '/collections/$id': typeof AuthenticatedCollectionsCollectionsIdRoute;
@@ -345,11 +383,13 @@ export interface FileRoutesById {
     '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute;
     '/_authenticated/': typeof AuthenticatedIndexRoute;
     '/_authenticated/_assets/assets': typeof AuthenticatedAssetsAssetsRoute;
+    '/_authenticated/_channels/channels': typeof AuthenticatedChannelsChannelsRoute;
     '/_authenticated/_collections/collections': typeof AuthenticatedCollectionsCollectionsRoute;
     '/_authenticated/_facets/facets': typeof AuthenticatedFacetsFacetsRoute;
     '/_authenticated/_orders/orders': typeof AuthenticatedOrdersOrdersRoute;
     '/_authenticated/_product-variants/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute;
     '/_authenticated/_products/products': typeof AuthenticatedProductsProductsRoute;
+    '/_authenticated/_stock-locations/stock-locations': typeof AuthenticatedStockLocationsStockLocationsRoute;
     '/_authenticated/_system/healthchecks': typeof AuthenticatedSystemHealthchecksRoute;
     '/_authenticated/_system/job-queue': typeof AuthenticatedSystemJobQueueRoute;
     '/_authenticated/_collections/collections_/$id': typeof AuthenticatedCollectionsCollectionsIdRoute;
@@ -367,11 +407,13 @@ export interface FileRouteTypes {
         | '/dashboard'
         | '/'
         | '/assets'
+        | '/channels'
         | '/collections'
         | '/facets'
         | '/orders'
         | '/product-variants'
         | '/products'
+        | '/stock-locations'
         | '/healthchecks'
         | '/job-queue'
         | '/collections/$id'
@@ -385,11 +427,13 @@ export interface FileRouteTypes {
         | '/dashboard'
         | '/'
         | '/assets'
+        | '/channels'
         | '/collections'
         | '/facets'
         | '/orders'
         | '/product-variants'
         | '/products'
+        | '/stock-locations'
         | '/healthchecks'
         | '/job-queue'
         | '/collections/$id'
@@ -404,11 +448,13 @@ export interface FileRouteTypes {
         | '/_authenticated/dashboard'
         | '/_authenticated/'
         | '/_authenticated/_assets/assets'
+        | '/_authenticated/_channels/channels'
         | '/_authenticated/_collections/collections'
         | '/_authenticated/_facets/facets'
         | '/_authenticated/_orders/orders'
         | '/_authenticated/_product-variants/product-variants'
         | '/_authenticated/_products/products'
+        | '/_authenticated/_stock-locations/stock-locations'
         | '/_authenticated/_system/healthchecks'
         | '/_authenticated/_system/job-queue'
         | '/_authenticated/_collections/collections_/$id'
@@ -449,11 +495,13 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
         "/_authenticated/dashboard",
         "/_authenticated/",
         "/_authenticated/_assets/assets",
+        "/_authenticated/_channels/channels",
         "/_authenticated/_collections/collections",
         "/_authenticated/_facets/facets",
         "/_authenticated/_orders/orders",
         "/_authenticated/_product-variants/product-variants",
         "/_authenticated/_products/products",
+        "/_authenticated/_stock-locations/stock-locations",
         "/_authenticated/_system/healthchecks",
         "/_authenticated/_system/job-queue",
         "/_authenticated/_collections/collections_/$id",
@@ -480,6 +528,10 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
       "filePath": "_authenticated/_assets/assets.tsx",
       "parent": "/_authenticated"
     },
+    "/_authenticated/_channels/channels": {
+      "filePath": "_authenticated/_channels/channels.tsx",
+      "parent": "/_authenticated"
+    },
     "/_authenticated/_collections/collections": {
       "filePath": "_authenticated/_collections/collections.tsx",
       "parent": "/_authenticated"
@@ -498,6 +550,10 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
     },
     "/_authenticated/_products/products": {
       "filePath": "_authenticated/_products/products.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/_stock-locations/stock-locations": {
+      "filePath": "_authenticated/_stock-locations/stock-locations.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/_system/healthchecks": {
