@@ -42,11 +42,11 @@ export function DataTableColumnHeader({ headerContext, customConfig }: DataTable
     const columSort = column.getIsSorted();
     const columnFilter = column.getFilterValue();
     const nextSort = columSort === 'asc' ? true : columSort === 'desc' ? undefined : false;
+
     return (
         <div className="flex items-center">
-            <div>{display}</div>
             {isSortable && (
-                <Button size="icon" variant="ghost" onClick={() => column.toggleSorting(nextSort)}>
+                <Button size="icon-sm" variant="ghost" onClick={() => column.toggleSorting(nextSort)}>
                     {columSort === 'desc' ? (
                         <ArrowUp />
                     ) : columSort === 'asc' ? (
@@ -56,10 +56,12 @@ export function DataTableColumnHeader({ headerContext, customConfig }: DataTable
                     )}
                 </Button>
             )}
+            <div>{display}</div>
+
             {isFilterable && (
                 <Dialog>
                     <DialogTrigger asChild>
-                        <Button size="icon" variant="ghost">
+                        <Button size="icon-sm" variant="ghost">
                             <Filter className={columnFilter ? '' : 'opacity-50'} />
                         </Button>
                     </DialogTrigger>

@@ -97,19 +97,9 @@ navMenu({
                     url: '/job-queue',
                 },
                 {
-                    id: 'logs',
-                    title: 'Logs',
-                    url: '/logs',
-                },
-                {
-                    id: 'api-keys',
-                    title: 'API Keys',
-                    url: '/api-keys',
-                },
-                {
-                    id: 'webhooks',
-                    title: 'Webhooks',
-                    url: '/webhooks',
+                    id: 'healthchecks',
+                    title: 'Healthchecks',
+                    url: '/healthchecks',
                 },
             ],
         },

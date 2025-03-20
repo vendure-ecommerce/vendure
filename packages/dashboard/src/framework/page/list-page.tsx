@@ -2,6 +2,7 @@ import { PageProps } from '@/framework/page/page-types.js';
 
 import {
     CustomizeColumnConfig,
+    FacetedFilterConfig,
     ListQueryOptionsShape,
     ListQueryShape,
     PaginatedListDataTable,
@@ -11,6 +12,7 @@ import { AnyRouter, useNavigate } from '@tanstack/react-router';
 import { ColumnDef, ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
 import { ResultOf } from 'gql.tada';
 import { Page, PageActionBar, PageTitle } from '../layout-engine/page-layout.js';
+import { FacetedFilter } from '@/components/data-table/data-table.js';
 
 type ListQueryFields<T extends TypedDocumentNode<any, any>> = {
     [Key in keyof ResultOf<T>]: ResultOf<T>[Key] extends { items: infer U }
@@ -33,6 +35,7 @@ export interface ListPageProps<
     defaultColumnOrder?: (keyof ListQueryFields<T>)[];
     defaultVisibility?: Partial<Record<keyof ListQueryFields<T>, boolean>>;
     children?: React.ReactNode;
+    facetedFilters?: FacetedFilterConfig<T>;
 }
 
 export function ListPage<
@@ -48,6 +51,7 @@ export function ListPage<
     route: routeOrFn,
     defaultVisibility,
     onSearchTermChange,
+    facetedFilters,
     children,
 }: ListPageProps<T, U, V>) {
     const route = typeof routeOrFn === 'function' ? routeOrFn() : routeOrFn;
@@ -113,6 +117,7 @@ export function ListPage<
                 onFilterChange={(table, filters) => {
                     persistListStateToUrl(table, { filters });
                 }}
+                facetedFilters={facetedFilters}
             />
         </Page>
     );

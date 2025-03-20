@@ -47,7 +47,7 @@ export function NavMain({ items }: { items: NavMenuSection[] }) {
                 return;
             }
         }
-    }, [location.pathname, bottomSections]);
+    }, [location.pathname]);
 
     // Render a top navigation section
     const renderTopSection = (item: NavMenuSection) => (

@@ -16,6 +16,8 @@ import { Route as AboutImport } from './routes/about';
 import { Route as AuthenticatedImport } from './routes/_authenticated';
 import { Route as AuthenticatedIndexImport } from './routes/_authenticated/index';
 import { Route as AuthenticatedDashboardImport } from './routes/_authenticated/dashboard';
+import { Route as AuthenticatedSystemJobQueueImport } from './routes/_authenticated/_system/job-queue';
+import { Route as AuthenticatedSystemHealthchecksImport } from './routes/_authenticated/_system/healthchecks';
 import { Route as AuthenticatedProductsProductsImport } from './routes/_authenticated/_products/products';
 import { Route as AuthenticatedProductVariantsProductVariantsImport } from './routes/_authenticated/_product-variants/product-variants';
 import { Route as AuthenticatedOrdersOrdersImport } from './routes/_authenticated/_orders/orders';
@@ -55,6 +57,18 @@ const AuthenticatedIndexRoute = AuthenticatedIndexImport.update({
 const AuthenticatedDashboardRoute = AuthenticatedDashboardImport.update({
     id: '/dashboard',
     path: '/dashboard',
+    getParentRoute: () => AuthenticatedRoute,
+} as any);
+
+const AuthenticatedSystemJobQueueRoute = AuthenticatedSystemJobQueueImport.update({
+    id: '/_system/job-queue',
+    path: '/job-queue',
+    getParentRoute: () => AuthenticatedRoute,
+} as any);
+
+const AuthenticatedSystemHealthchecksRoute = AuthenticatedSystemHealthchecksImport.update({
+    id: '/_system/healthchecks',
+    path: '/healthchecks',
     getParentRoute: () => AuthenticatedRoute,
 } as any);
 
@@ -201,6 +215,20 @@ declare module '@tanstack/react-router' {
             preLoaderRoute: typeof AuthenticatedProductsProductsImport;
             parentRoute: typeof AuthenticatedImport;
         };
+        '/_authenticated/_system/healthchecks': {
+            id: '/_authenticated/_system/healthchecks';
+            path: '/healthchecks';
+            fullPath: '/healthchecks';
+            preLoaderRoute: typeof AuthenticatedSystemHealthchecksImport;
+            parentRoute: typeof AuthenticatedImport;
+        };
+        '/_authenticated/_system/job-queue': {
+            id: '/_authenticated/_system/job-queue';
+            path: '/job-queue';
+            fullPath: '/job-queue';
+            preLoaderRoute: typeof AuthenticatedSystemJobQueueImport;
+            parentRoute: typeof AuthenticatedImport;
+        };
         '/_authenticated/_collections/collections_/$id': {
             id: '/_authenticated/_collections/collections_/$id';
             path: '/collections/$id';
@@ -243,6 +271,8 @@ interface AuthenticatedRouteChildren {
     AuthenticatedOrdersOrdersRoute: typeof AuthenticatedOrdersOrdersRoute;
     AuthenticatedProductVariantsProductVariantsRoute: typeof AuthenticatedProductVariantsProductVariantsRoute;
     AuthenticatedProductsProductsRoute: typeof AuthenticatedProductsProductsRoute;
+    AuthenticatedSystemHealthchecksRoute: typeof AuthenticatedSystemHealthchecksRoute;
+    AuthenticatedSystemJobQueueRoute: typeof AuthenticatedSystemJobQueueRoute;
     AuthenticatedCollectionsCollectionsIdRoute: typeof AuthenticatedCollectionsCollectionsIdRoute;
     AuthenticatedFacetsFacetsIdRoute: typeof AuthenticatedFacetsFacetsIdRoute;
     AuthenticatedProductVariantsProductVariantsIdRoute: typeof AuthenticatedProductVariantsProductVariantsIdRoute;
@@ -258,6 +288,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
     AuthenticatedOrdersOrdersRoute: AuthenticatedOrdersOrdersRoute,
     AuthenticatedProductVariantsProductVariantsRoute: AuthenticatedProductVariantsProductVariantsRoute,
     AuthenticatedProductsProductsRoute: AuthenticatedProductsProductsRoute,
+    AuthenticatedSystemHealthchecksRoute: AuthenticatedSystemHealthchecksRoute,
+    AuthenticatedSystemJobQueueRoute: AuthenticatedSystemJobQueueRoute,
     AuthenticatedCollectionsCollectionsIdRoute: AuthenticatedCollectionsCollectionsIdRoute,
     AuthenticatedFacetsFacetsIdRoute: AuthenticatedFacetsFacetsIdRoute,
     AuthenticatedProductVariantsProductVariantsIdRoute: AuthenticatedProductVariantsProductVariantsIdRoute,
@@ -278,6 +310,8 @@ export interface FileRoutesByFullPath {
     '/orders': typeof AuthenticatedOrdersOrdersRoute;
     '/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute;
     '/products': typeof AuthenticatedProductsProductsRoute;
+    '/healthchecks': typeof AuthenticatedSystemHealthchecksRoute;
+    '/job-queue': typeof AuthenticatedSystemJobQueueRoute;
     '/collections/$id': typeof AuthenticatedCollectionsCollectionsIdRoute;
     '/facets/$id': typeof AuthenticatedFacetsFacetsIdRoute;
     '/product-variants/$id': typeof AuthenticatedProductVariantsProductVariantsIdRoute;
@@ -295,6 +329,8 @@ export interface FileRoutesByTo {
     '/orders': typeof AuthenticatedOrdersOrdersRoute;
     '/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute;
     '/products': typeof AuthenticatedProductsProductsRoute;
+    '/healthchecks': typeof AuthenticatedSystemHealthchecksRoute;
+    '/job-queue': typeof AuthenticatedSystemJobQueueRoute;
     '/collections/$id': typeof AuthenticatedCollectionsCollectionsIdRoute;
     '/facets/$id': typeof AuthenticatedFacetsFacetsIdRoute;
     '/product-variants/$id': typeof AuthenticatedProductVariantsProductVariantsIdRoute;
@@ -314,6 +350,8 @@ export interface FileRoutesById {
     '/_authenticated/_orders/orders': typeof AuthenticatedOrdersOrdersRoute;
     '/_authenticated/_product-variants/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute;
     '/_authenticated/_products/products': typeof AuthenticatedProductsProductsRoute;
+    '/_authenticated/_system/healthchecks': typeof AuthenticatedSystemHealthchecksRoute;
+    '/_authenticated/_system/job-queue': typeof AuthenticatedSystemJobQueueRoute;
     '/_authenticated/_collections/collections_/$id': typeof AuthenticatedCollectionsCollectionsIdRoute;
     '/_authenticated/_facets/facets_/$id': typeof AuthenticatedFacetsFacetsIdRoute;
     '/_authenticated/_product-variants/product-variants_/$id': typeof AuthenticatedProductVariantsProductVariantsIdRoute;
@@ -334,6 +372,8 @@ export interface FileRouteTypes {
         | '/orders'
         | '/product-variants'
         | '/products'
+        | '/healthchecks'
+        | '/job-queue'
         | '/collections/$id'
         | '/facets/$id'
         | '/product-variants/$id'
@@ -350,6 +390,8 @@ export interface FileRouteTypes {
         | '/orders'
         | '/product-variants'
         | '/products'
+        | '/healthchecks'
+        | '/job-queue'
         | '/collections/$id'
         | '/facets/$id'
         | '/product-variants/$id'
@@ -367,6 +409,8 @@ export interface FileRouteTypes {
         | '/_authenticated/_orders/orders'
         | '/_authenticated/_product-variants/product-variants'
         | '/_authenticated/_products/products'
+        | '/_authenticated/_system/healthchecks'
+        | '/_authenticated/_system/job-queue'
         | '/_authenticated/_collections/collections_/$id'
         | '/_authenticated/_facets/facets_/$id'
         | '/_authenticated/_product-variants/product-variants_/$id'
@@ -410,6 +454,8 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
         "/_authenticated/_orders/orders",
         "/_authenticated/_product-variants/product-variants",
         "/_authenticated/_products/products",
+        "/_authenticated/_system/healthchecks",
+        "/_authenticated/_system/job-queue",
         "/_authenticated/_collections/collections_/$id",
         "/_authenticated/_facets/facets_/$id",
         "/_authenticated/_product-variants/product-variants_/$id",
@@ -452,6 +498,14 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
     },
     "/_authenticated/_products/products": {
       "filePath": "_authenticated/_products/products.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/_system/healthchecks": {
+      "filePath": "_authenticated/_system/healthchecks.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/_system/job-queue": {
+      "filePath": "_authenticated/_system/job-queue.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/_collections/collections_/$id": {
