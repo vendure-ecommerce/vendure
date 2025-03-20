@@ -1,4 +1,4 @@
-import { MoneyInput } from '@/components/data-display/money.js';
+import { MoneyInput } from '@/components/data-input/money-input.js';
 import { ContentLanguageSelector } from '@/components/layout/content-language-selector.js';
 import { EntityAssets } from '@/components/shared/entity-assets.js';
 import { ErrorPage } from '@/components/shared/error-page.js';

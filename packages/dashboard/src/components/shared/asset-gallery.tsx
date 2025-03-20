@@ -1,3 +1,4 @@
+import { VendureImage } from '@/components/shared/vendure-image.js';
 import { Button } from '@/components/ui/button.js';
 import { Card, CardContent } from '@/components/ui/card.js';
 import { Checkbox } from '@/components/ui/checkbox.js';
@@ -12,36 +13,46 @@ import {
     PaginationPrevious,
 } from '@/components/ui/pagination.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.js';
-import { VendureImage } from '@/components/shared/vendure-image.js';
 import { api } from '@/graphql/api.js';
-import { AssetFragment } from '@/graphql/fragments.js';
+import { assetFragment, AssetFragment } from '@/graphql/fragments.js';
 import { graphql } from '@/graphql/graphql.js';
 import { formatFileSize } from '@/lib/utils.js';
-import { useQuery } from '@tanstack/react-query';
-import { Loader2, Search, X } from 'lucide-react';
-import React, { useState } from 'react';
+import { Trans } from '@lingui/react/macro';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Loader2, Search, Upload, X } from 'lucide-react';
+import { useCallback, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
 import { useDebounce } from 'use-debounce';
 
 const getAssetListDocument = graphql(`
     query GetAssetList($options: AssetListOptions) {
         assets(options: $options) {
             items {
-                id
-                name
-                preview
-                fileSize
-                mimeType
-                type
-                source
-                focalPoint {
-                    x
-                    y
-                }
+               ...Asset
             }
             totalItems
         }
     }
-`);
+`, [assetFragment]);
+
+export const createAssetsDocument = graphql(`
+    mutation CreateAssets($input: [CreateAssetInput!]!) {
+        createAssets(input: $input) {
+            ...Asset
+            ... on Asset {
+                tags {
+                    id
+                    createdAt
+                    updatedAt
+                    value
+                }
+            }
+            ... on ErrorResult {
+                message
+            }
+        }
+    }
+`, [assetFragment]);
 
 const AssetType = {
     ALL: 'ALL',
@@ -53,23 +64,27 @@ const AssetType = {
 export type Asset = AssetFragment;
 
 export interface AssetGalleryProps {
-    onSelect: (assets: Asset[]) => void;
+    onSelect?: (assets: Asset[]) => void;
+    selectable?: boolean;
     multiSelect?: boolean;
     initialSelectedAssets?: Asset[];
     pageSize?: number;
     fixedHeight?: boolean;
     showHeader?: boolean;
     className?: string;
+    onFilesDropped?: (files: File[]) => void;
 }
 
 export function AssetGallery({
     onSelect,
+    selectable = true,
     multiSelect = false,
     initialSelectedAssets = [],
     pageSize = 24,
     fixedHeight = false,
     showHeader = true,
     className = '',
+    onFilesDropped,
 }: AssetGalleryProps) {
     // State
     const [page, setPage] = useState(1);
@@ -77,10 +92,14 @@ export function AssetGallery({
     const [debouncedSearch] = useDebounce(search, 500);
     const [assetType, setAssetType] = useState<string>(AssetType.ALL);
     const [selected, setSelected] = useState<Asset[]>(initialSelectedAssets || []);
+    const queryClient = useQueryClient();
+
+
+    const queryKey = ['AssetGallery', page, pageSize, debouncedSearch, assetType];
 
     // Query for assets
     const { data, isLoading } = useQuery({
-        queryKey: ['AssetGallery', page, pageSize, debouncedSearch, assetType],
+        queryKey,
         queryFn: () => {
             const filter: Record<string, any> = {};
 
@@ -103,6 +122,20 @@ export function AssetGallery({
         },
     });
 
+    const { mutate: createAssets } = useMutation({
+        mutationFn: api.mutate(createAssetsDocument),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey });
+        },
+    });
+    
+    // Setup dropzone
+    const onDrop = useCallback((acceptedFiles: File[]) => {
+        createAssets({  input: acceptedFiles.map(file => ({ file })) });
+    }, [createAssets]);
+
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, noClick: true });
+
     // Calculate total pages
     const totalItems = data?.assets.totalItems || 0;
     const totalPages = Math.ceil(totalItems / pageSize);
@@ -111,7 +144,7 @@ export function AssetGallery({
     const handleSelect = (asset: Asset) => {
         if (!multiSelect) {
             setSelected([asset]);
-            onSelect([asset]);
+            onSelect?.([asset]);
             return;
         }
 
@@ -125,7 +158,7 @@ export function AssetGallery({
         }
 
         setSelected(newSelected);
-        onSelect(newSelected);
+        onSelect?.(newSelected);
     };
 
     // Check if an asset is selected
@@ -144,11 +177,28 @@ export function AssetGallery({
         setPage(newPage);
     };
 
+    // Create a function to open the file dialog
+    const openFileDialog = () => {
+        // This will trigger the file input's click event
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.multiple = true;
+        fileInput.addEventListener('change', (event) => {
+            const target = event.target as HTMLInputElement;
+            if (target.files) {
+                const filesList = Array.from(target.files);
+                onDrop(filesList);
+            }
+        });
+        fileInput.click();
+    };
+
+
     return (
-        <div className={`flex flex-col ${fixedHeight ? 'h-[600px]' : ''} ${className}`}>
+        <div className={`flex flex-col w-full ${fixedHeight ? 'h-[600px]' : ''} ${className}`}>
             {showHeader && (
                 <div className="flex flex-col md:flex-row gap-2 mb-4 flex-shrink-0">
-                    <div className="relative flex-grow">
+                    <div className="relative flex-grow flex items-center gap-2">
                         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
                             placeholder="Search assets..."
@@ -156,6 +206,11 @@ export function AssetGallery({
                             onChange={e => setSearch(e.target.value)}
                             className="pl-8"
                         />
+                         {(search || assetType !== AssetType.ALL) && (
+                        <Button variant="ghost" size="sm" onClick={clearFilters} className="absolute right-0">
+                            <X className="h-4 w-4 mr-1" /> Clear filters
+                        </Button>
+                    )}
                     </div>
                     <Select value={assetType} onValueChange={setAssetType}>
                         <SelectTrigger className="w-full md:w-[180px]">
@@ -168,15 +223,29 @@ export function AssetGallery({
                             <SelectItem value={AssetType.BINARY}>Binary</SelectItem>
                         </SelectContent>
                     </Select>
-                    {(search || assetType) && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters} className="flex-shrink-0">
-                            <X className="h-4 w-4 mr-1" /> Clear filters
-                        </Button>
-                    )}
+                    <Button onClick={openFileDialog} className="whitespace-nowrap">
+                        <Upload className="h-4 w-4 mr-2" /> <Trans>Upload</Trans>
+                    </Button>
                 </div>
             )}
 
-            <div className={`${fixedHeight ? 'flex-grow overflow-y-auto' : ''}`}>
+            <div 
+                {...getRootProps()} 
+                className={`
+                    ${fixedHeight ? 'flex-grow overflow-y-auto' : ''}
+                    ${isDragActive ? 'ring-2 ring-primary bg-primary/5' : ''}
+                    relative rounded-md transition-all
+                `}
+            >
+                <input {...getInputProps()} />
+                
+                {isDragActive && (
+                    <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-md">
+                        <Upload className="h-12 w-12 text-primary mb-2" />
+                        <p className="text-center font-medium">Drop files here to upload</p>
+                    </div>
+                )}
+
                 <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 p-1">
                     {isLoading ? (
                         <div className="col-span-full flex justify-center py-12">
@@ -205,9 +274,11 @@ export function AssetGallery({
                                         preset="thumb"
                                         className="w-full h-full object-contain"
                                     />
-                                    <div className="absolute top-2 left-2">
-                                        <Checkbox checked={isSelected(asset as Asset)} />
-                                    </div>
+                                    {selectable && (
+                                        <div className="absolute top-2 left-2">
+                                            <Checkbox checked={isSelected(asset as Asset)} />
+                                        </div>
+                                    )}
                                 </div>
                                 <CardContent className="p-2">
                                     <p className="text-xs line-clamp-2 min-h-[2.5rem]" title={asset.name}>

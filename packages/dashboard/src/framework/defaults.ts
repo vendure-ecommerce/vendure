@@ -30,6 +30,11 @@ navMenu({
                     title: 'Collections',
                     url: '/collections',
                 },
+                {
+                    id: 'assets',
+                    title: 'Assets',
+                    url: '/assets',
+                },
             ],
         },
         {
