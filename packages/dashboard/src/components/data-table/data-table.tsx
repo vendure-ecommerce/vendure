@@ -21,6 +21,7 @@ import {
 } from '@tanstack/react-table';
 import { CircleX, Filter } from 'lucide-react';
 import React, { useEffect } from 'react';
+import { Button } from '../ui/button.js';
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
