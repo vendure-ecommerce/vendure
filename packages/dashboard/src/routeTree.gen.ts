@@ -26,6 +26,7 @@ import { Route as AuthenticatedFacetsFacetsImport } from './routes/_authenticate
 import { Route as AuthenticatedCollectionsCollectionsImport } from './routes/_authenticated/_collections/collections';
 import { Route as AuthenticatedChannelsChannelsImport } from './routes/_authenticated/_channels/channels';
 import { Route as AuthenticatedAssetsAssetsImport } from './routes/_authenticated/_assets/assets';
+import { Route as AuthenticatedAdministratorsAdministratorsImport } from './routes/_authenticated/_administrators/administrators';
 import { Route as AuthenticatedProductsProductsIdImport } from './routes/_authenticated/_products/products_.$id';
 import { Route as AuthenticatedProductVariantsProductVariantsIdImport } from './routes/_authenticated/_product-variants/product-variants_.$id';
 import { Route as AuthenticatedFacetsFacetsIdImport } from './routes/_authenticated/_facets/facets_.$id';
@@ -125,6 +126,14 @@ const AuthenticatedAssetsAssetsRoute = AuthenticatedAssetsAssetsImport.update({
     getParentRoute: () => AuthenticatedRoute,
 } as any);
 
+const AuthenticatedAdministratorsAdministratorsRoute = AuthenticatedAdministratorsAdministratorsImport.update(
+    {
+        id: '/_administrators/administrators',
+        path: '/administrators',
+        getParentRoute: () => AuthenticatedRoute,
+    } as any,
+);
+
 const AuthenticatedProductsProductsIdRoute = AuthenticatedProductsProductsIdImport.update({
     id: '/_products/products_/$id',
     path: '/products/$id',
@@ -187,6 +196,13 @@ declare module '@tanstack/react-router' {
             path: '/';
             fullPath: '/';
             preLoaderRoute: typeof AuthenticatedIndexImport;
+            parentRoute: typeof AuthenticatedImport;
+        };
+        '/_authenticated/_administrators/administrators': {
+            id: '/_authenticated/_administrators/administrators';
+            path: '/administrators';
+            fullPath: '/administrators';
+            preLoaderRoute: typeof AuthenticatedAdministratorsAdministratorsImport;
             parentRoute: typeof AuthenticatedImport;
         };
         '/_authenticated/_assets/assets': {
@@ -295,6 +311,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteChildren {
     AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute;
     AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute;
+    AuthenticatedAdministratorsAdministratorsRoute: typeof AuthenticatedAdministratorsAdministratorsRoute;
     AuthenticatedAssetsAssetsRoute: typeof AuthenticatedAssetsAssetsRoute;
     AuthenticatedChannelsChannelsRoute: typeof AuthenticatedChannelsChannelsRoute;
     AuthenticatedCollectionsCollectionsRoute: typeof AuthenticatedCollectionsCollectionsRoute;
@@ -314,6 +331,7 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
     AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
     AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+    AuthenticatedAdministratorsAdministratorsRoute: AuthenticatedAdministratorsAdministratorsRoute,
     AuthenticatedAssetsAssetsRoute: AuthenticatedAssetsAssetsRoute,
     AuthenticatedChannelsChannelsRoute: AuthenticatedChannelsChannelsRoute,
     AuthenticatedCollectionsCollectionsRoute: AuthenticatedCollectionsCollectionsRoute,
@@ -338,6 +356,7 @@ export interface FileRoutesByFullPath {
     '/login': typeof LoginRoute;
     '/dashboard': typeof AuthenticatedDashboardRoute;
     '/': typeof AuthenticatedIndexRoute;
+    '/administrators': typeof AuthenticatedAdministratorsAdministratorsRoute;
     '/assets': typeof AuthenticatedAssetsAssetsRoute;
     '/channels': typeof AuthenticatedChannelsChannelsRoute;
     '/collections': typeof AuthenticatedCollectionsCollectionsRoute;
@@ -359,6 +378,7 @@ export interface FileRoutesByTo {
     '/login': typeof LoginRoute;
     '/dashboard': typeof AuthenticatedDashboardRoute;
     '/': typeof AuthenticatedIndexRoute;
+    '/administrators': typeof AuthenticatedAdministratorsAdministratorsRoute;
     '/assets': typeof AuthenticatedAssetsAssetsRoute;
     '/channels': typeof AuthenticatedChannelsChannelsRoute;
     '/collections': typeof AuthenticatedCollectionsCollectionsRoute;
@@ -382,6 +402,7 @@ export interface FileRoutesById {
     '/login': typeof LoginRoute;
     '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute;
     '/_authenticated/': typeof AuthenticatedIndexRoute;
+    '/_authenticated/_administrators/administrators': typeof AuthenticatedAdministratorsAdministratorsRoute;
     '/_authenticated/_assets/assets': typeof AuthenticatedAssetsAssetsRoute;
     '/_authenticated/_channels/channels': typeof AuthenticatedChannelsChannelsRoute;
     '/_authenticated/_collections/collections': typeof AuthenticatedCollectionsCollectionsRoute;
@@ -406,6 +427,7 @@ export interface FileRouteTypes {
         | '/login'
         | '/dashboard'
         | '/'
+        | '/administrators'
         | '/assets'
         | '/channels'
         | '/collections'
@@ -426,6 +448,7 @@ export interface FileRouteTypes {
         | '/login'
         | '/dashboard'
         | '/'
+        | '/administrators'
         | '/assets'
         | '/channels'
         | '/collections'
@@ -447,6 +470,7 @@ export interface FileRouteTypes {
         | '/login'
         | '/_authenticated/dashboard'
         | '/_authenticated/'
+        | '/_authenticated/_administrators/administrators'
         | '/_authenticated/_assets/assets'
         | '/_authenticated/_channels/channels'
         | '/_authenticated/_collections/collections'
@@ -494,6 +518,7 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
       "children": [
         "/_authenticated/dashboard",
         "/_authenticated/",
+        "/_authenticated/_administrators/administrators",
         "/_authenticated/_assets/assets",
         "/_authenticated/_channels/channels",
         "/_authenticated/_collections/collections",
@@ -522,6 +547,10 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
     },
     "/_authenticated/": {
       "filePath": "_authenticated/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/_administrators/administrators": {
+      "filePath": "_authenticated/_administrators/administrators.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/_assets/assets": {

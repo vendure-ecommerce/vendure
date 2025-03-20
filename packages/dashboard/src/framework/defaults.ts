@@ -126,9 +126,9 @@ navMenu({
                     url: '/stock-locations',
                 },
                 {
-                    id: 'admin-users',
-                    title: 'Admin Users',
-                    url: '/admin-users',
+                    id: 'administrators',
+                    title: 'Administrators',
+                    url: '/administrators',
                 },
                 {
                     id: 'roles',

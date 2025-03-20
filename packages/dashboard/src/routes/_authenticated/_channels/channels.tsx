@@ -7,9 +7,11 @@ import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { PlusIcon } from 'lucide-react';
 import { DetailPageButton } from '@/components/shared/detail-page-button.js';
+import { Trans } from '@lingui/react/macro';
 
 export const Route = createFileRoute('/_authenticated/_channels/channels')({
     component: ChannelListPage,
+    loader: () => ({ breadcrumb: () => <Trans>Channels</Trans> }),
 });
 
 function ChannelListPage() {

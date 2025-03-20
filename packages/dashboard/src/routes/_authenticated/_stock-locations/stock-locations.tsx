@@ -7,9 +7,10 @@ import { PlusIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
-
+import { Trans } from '@lingui/react/macro';
 export const Route = createFileRoute('/_authenticated/_stock-locations/stock-locations')({
     component: StockLocationListPage,
+    loader: () => ({ breadcrumb: () => <Trans>Stock Locations</Trans> }),
 });
 
 function StockLocationListPage() {
