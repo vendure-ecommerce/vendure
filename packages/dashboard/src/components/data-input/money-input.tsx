@@ -1,15 +1,21 @@
-import { useLocalFormat } from "@/hooks/use-local-format.js";
-import { Input } from "../ui/input.js";
-import { useUserSettings } from "@/hooks/use-user-settings.js";
-import { useMemo, useState, useEffect } from "react";
+import { Input } from '../ui/input.js';
+import { useUserSettings } from '@/hooks/use-user-settings.js';
+import { useMemo, useState, useEffect } from 'react';
+import { useLocalFormat } from '@/hooks/use-local-format.js';
 
-export function Money({ value, currency }: { value: number, currency: string }) {
-    const { formatCurrency } = useLocalFormat();
-    return formatCurrency(value, currency);
-}
-
-export function MoneyInput({ value, currency, onChange }: { value: number, currency: string, onChange: (value: number) => void }) {
-    const { settings: { displayLanguage, displayLocale } } = useUserSettings();
+// Original component
+function MoneyInputInternal({
+    value,
+    currency,
+    onChange,
+}: {
+    value: number;
+    currency: string;
+    onChange: (value: number) => void;
+}) {
+    const {
+        settings: { displayLanguage, displayLocale },
+    } = useUserSettings();
     const { toMajorUnits, toMinorUnits } = useLocalFormat();
     const [displayValue, setDisplayValue] = useState(toMajorUnits(value).toFixed(2));
 
@@ -50,11 +56,7 @@ export function MoneyInput({ value, currency, onChange }: { value: number, curre
 
     return (
         <div className="relative flex items-center">
-            {shouldPrefix && (
-                <span className="absolute left-3 text-muted-foreground">
-                    {currencySymbol}
-                </span>
-            )}
+            {shouldPrefix && <span className="absolute left-3 text-muted-foreground">{currencySymbol}</span>}
             <Input
                 type="text"
                 value={displayValue}
@@ -96,16 +98,20 @@ export function MoneyInput({ value, currency, onChange }: { value: number, curre
                         setDisplayValue(newValue.toFixed(2));
                     }
                 }}
-                className={shouldPrefix ? "pl-8" : "pr-8"}
+                className={shouldPrefix ? 'pl-8' : 'pr-8'}
                 step="0.01"
                 min="0"
             />
             {!shouldPrefix && (
-                <span className="absolute right-3 text-muted-foreground">
-                    {currencySymbol}
-                </span>
+                <span className="absolute right-3 text-muted-foreground">{currencySymbol}</span>
             )}
         </div>
     );
 }
 
+// Wrapper that makes it compatible with DataInputComponent
+export function MoneyInput(props: { value: any; onChange: (value: any) => void; [key: string]: any }) {
+    const { value, onChange, ...rest } = props;
+    const currency = rest.currency || 'USD'; // Default currency if none provided
+    return <MoneyInputInternal value={value} currency={currency} onChange={onChange} />;
+}

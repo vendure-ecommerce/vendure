@@ -1,95 +1,69 @@
-import { AssetThumbnail } from '@/components/data-type-components/asset.js';
-import { BooleanDisplayCheckbox } from '@/components/data-type-components/boolean.js';
-import { DateTime } from '@/components/data-type-components/date-time.js';
-import { Money } from '@/components/data-type-components/money.js';
+import { AssetThumbnail } from '@/components/data-display/asset.js';
+import { BooleanDisplayCheckbox } from '@/components/data-display/boolean.js';
+import { DateTime } from '@/components/data-display/date-time.js';
+import { Money } from '@/components/data-display/money.js';
+import { DateTimeInput } from '@/components/data-input/datetime-input.js';
+import { FacetValueInput } from '@/components/data-input/facet-value-input.js';
+import { MoneyInput } from '@/components/data-input/money-input.js';
+import { Checkbox } from '@/components/ui/checkbox.js';
+import { Input } from '@/components/ui/input.js';
+import * as React from 'react';
 
-export interface ComponentRegistryEntry {
-    component: React.ComponentType<any>;
+export interface ComponentRegistryEntry<Props extends Record<string, any>> {
+    component: React.ComponentType<Props>;
 }
 
+// Basic component types
+export type DataDisplayComponent = React.ComponentType<{ value: any; [key: string]: any }>;
+export type DataInputComponent = React.ComponentType<{ value: any; onChange: (value: any) => void; [key: string]: any }>;
+
+// Simple component registry
 interface ComponentRegistry {
-    type: {
-        [dataType: string]: {
-            display: {
-                [id: string]: ComponentRegistryEntry;
-            };
-        };
+    dataDisplay: Record<string, DataDisplayComponent>;
+    dataInput: Record<string, DataInputComponent>;
+}
+
+export const COMPONENT_REGISTRY: ComponentRegistry = {
+    dataDisplay: {
+        'vendure:boolean': BooleanDisplayCheckbox,
+        'vendure:dateTime': DateTime,
+        'vendure:asset': AssetThumbnail,
+        'vendure:money': Money,
+    },
+    dataInput: {
+        'vendure:moneyInput': MoneyInput,
+        'vendure:textInput': (props) => <Input {...props} onChange={e => props.onChange(e.target.value)} />,
+        'vendure:numberInput': (props) => <Input {...props} onChange={e => props.onChange(e.target.value)} type="number" />,
+        'vendure:dateTimeInput': DateTimeInput,
+        'vendure:checkboxInput': (props) => <Checkbox {...props} checked={props.value === 'true' || props.value === true}  onCheckedChange={value => props.onChange(value)} />,
+        'vendure:facetValueInput': FacetValueInput,
+    }
+};
+
+// Simplified implementation - replace with actual implementation
+export function useComponentRegistry() {
+    return {
+        getDisplayComponent: (id: string): DataDisplayComponent | undefined => {
+            // This is a placeholder implementation
+            return COMPONENT_REGISTRY.dataDisplay[id];
+        },
+        getInputComponent: (id: string): DataInputComponent | undefined => {
+            // This is a placeholder implementation
+            return COMPONENT_REGISTRY.dataInput[id];
+        },
     };
 }
 
-export const COMPONENT_REGISTRY = {
-    type: {
-        boolean: {
-            display: {
-                default: {
-                    component: BooleanDisplayCheckbox,
-                },
-            },
-        },
-        dateTime: {
-            display: {
-                default: {
-                    component: DateTime,
-                },
-            },
-        },
-        asset: {
-            display: {
-                default: {
-                    component: AssetThumbnail,
-                },
-            },
-        },
-        money: {
-            display: {
-                default: {
-                    component: Money,
-                },
-            },
-        },
-    },
-} satisfies ComponentRegistry;
-
-export type TypeRegistry = (typeof COMPONENT_REGISTRY)['type'];
-export type TypeRegistryTypes = keyof TypeRegistry;
-export type TypeRegistryCategories<T extends TypeRegistryTypes> = {
-    [K in keyof TypeRegistry[T]]: K;
-}[keyof TypeRegistry[T]];
-export type TypeRegistryComponents<
-    T extends TypeRegistryTypes,
-    U extends TypeRegistryCategories<T> = TypeRegistryCategories<T>,
-> = {
-    [K in keyof TypeRegistry[T][U]]: K;
-}[keyof TypeRegistry[T][U]];
-export type NonDefaultComponents<
-    T extends TypeRegistryTypes,
-    U extends TypeRegistryCategories<T> = TypeRegistryCategories<T>,
-> = {
-    [K in TypeRegistryComponents<T, U>]: K extends 'default' ? never : `${T}.${U & string}.${K & string}`;
-}[keyof TypeRegistry[T][U]];
-
-export type ComponentTypePath<
-    T extends TypeRegistryTypes,
-    U extends TypeRegistryCategories<T> = TypeRegistryCategories<T>,
-> = `${T}.${U & string}` | `${NonDefaultComponents<T, U>}`;
-
-export function useComponentRegistry() {
-    function getComponent<
-        T extends TypeRegistryTypes,
-        U extends TypeRegistryCategories<T> = TypeRegistryCategories<T>,
-    >(path: ComponentTypePath<T>): React.ComponentType<{ value: any }> {
-        const [type, category, componentKey] = path.split('.') as [T, U, string];
-        const availableComponents = COMPONENT_REGISTRY.type[type][category] as any;
-        const componentEntry = availableComponents[componentKey ?? 'default'] as
-            | ComponentRegistryEntry
-            | undefined;
-        if (!componentEntry) {
-            throw new Error(`Component not found for path: ${path}`);
-        }
-        return componentEntry.component;
+export function registerInputComponent(id: string,  component: DataInputComponent) {
+    if (COMPONENT_REGISTRY.dataInput[id]) {
+        throw new Error(`Input component with id ${id} already registered`);
     }
+    COMPONENT_REGISTRY.dataInput[id] = component;
+}
 
-    return {
-        getComponent,
-    };
+export function registerDisplayComponent(id: string, component: DataDisplayComponent) {
+    if (COMPONENT_REGISTRY.dataDisplay[id]) {
+        throw new Error(`Display component with id ${id} already registered`);
+    }
+    COMPONENT_REGISTRY.dataDisplay[id] = component;
 }

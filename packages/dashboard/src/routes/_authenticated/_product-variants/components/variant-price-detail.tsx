@@ -5,7 +5,7 @@ import { Trans } from '@lingui/react/macro';
 import { graphql } from '@/graphql/graphql.js';
 import { api } from '@/graphql/api.js';
 import { useChannel } from '@/hooks/use-channel.js';
-import { Money } from '@/components/data-type-components/money.js';
+import { Money } from '@/components/data-display/money.js';
 
 const taxRatesDocument = graphql(`
     query TaxRates($options: TaxRateListOptions) {

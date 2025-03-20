@@ -1,9 +1,11 @@
+import { api } from '@/graphql/api.js';
 import {
     assetFragment,
     configurableOperationDefFragment,
     configurableOperationFragment,
 } from '@/graphql/fragments.js';
 import { graphql } from '@/graphql/graphql.js';
+import { queryOptions } from '@tanstack/react-query';
 
 export const collectionListDocument = graphql(
     `
@@ -111,3 +113,8 @@ export const getCollectionFiltersDocument = graphql(
     `,
     [configurableOperationDefFragment],
 );
+
+export const getCollectionFiltersQueryOptions = queryOptions({
+    queryKey: ['getCollectionFilters'],
+    queryFn: () => api.query(getCollectionFiltersDocument),
+});

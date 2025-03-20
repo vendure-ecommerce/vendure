@@ -2,7 +2,7 @@ import { PaginatedListDataTable } from "@/components/shared/paginated-list-data-
 import { productVariantListDocument } from "../products.graphql.js";
 import { useState } from "react";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
-import { Money } from "@/components/data-type-components/money.js";
+import { Money } from "@/components/data-display/money.js";
 import { useLocalFormat } from "@/hooks/use-local-format.js";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button.js";

@@ -1,4 +1,5 @@
 import { ContentLanguageSelector } from '@/components/layout/content-language-selector.js';
+import { EntityAssets } from '@/components/shared/entity-assets.js';
 import { ErrorPage } from '@/components/shared/error-page.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { TranslatableFormField } from '@/components/shared/translatable-form-field.js';
@@ -14,6 +15,7 @@ import {
 } from '@/components/ui/form.js';
 import { Input } from '@/components/ui/input.js';
 import { Switch } from '@/components/ui/switch.js';
+import { Textarea } from '@/components/ui/textarea.js';
 import { NEW_ENTITY_PATH } from '@/constants.js';
 import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
 import {
@@ -31,15 +33,11 @@ import { toast } from 'sonner';
 import {
     collectionDetailDocument,
     createCollectionDocument,
-    getCollectionFiltersDocument,
-    updateCollectionDocument,
+    updateCollectionDocument
 } from './collections.graphql.js';
 import { CollectionContentsTable } from './components/collection-contents-table.js';
-import { Textarea } from '@/components/ui/textarea.js';
-import { EntityAssets } from '@/components/shared/entity-assets.js';
-import { api } from '@/graphql/api.js';
-import { useQuery } from '@tanstack/react-query';
 import { CollectionFiltersSelect } from './components/collection-filters-select.js';
+import { CollectionContentsPreviewTable } from './components/collection-contents-preview-table.js';
 
 export const Route = createFileRoute('/_authenticated/_collections/collections_/$id')({
     component: CollectionDetailPage,
@@ -74,6 +72,12 @@ export function CollectionDetailPage() {
         queryDocument: addCustomFields(collectionDetailDocument),
         entityField: 'collection',
         createDocument: createCollectionDocument,
+        transformCreateInput: values => {
+            return {
+                ...values,
+                filters: values.filters.filter(f => f.code !== ''),
+            };
+        },
         updateDocument: updateCollectionDocument,
         setValuesForUpdate: entity => {
             return {
@@ -97,12 +101,6 @@ export function CollectionDetailPage() {
                 customFields: entity.customFields,
             };
         },
-        transformCreateInput: values => {
-            return {
-                ...values,
-                values: [],
-            };
-        },
         params: { id: params.id },
         onSuccess: async data => {
             toast(i18n.t('Successfully updated collection'), {
@@ -120,6 +118,13 @@ export function CollectionDetailPage() {
             });
         },
     });
+
+
+    const shouldPreviewContents =
+        form.getFieldState('inheritFilters').isDirty || form.getFieldState('filters').isDirty;
+
+    const currentFiltersValue = form.watch('filters');
+    const currentInheritFiltersValue = form.watch('inheritFilters');
 
     return (
         <Page>
@@ -238,10 +243,7 @@ export function CollectionDetailPage() {
                                 control={form.control}
                                 name="filters"
                                 render={({ field }) => (
-                                    <CollectionFiltersSelect
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                    />
+                                    <CollectionFiltersSelect value={field.value} onChange={field.onChange} />
                                 )}
                             />
                         </PageBlock>
@@ -272,11 +274,17 @@ export function CollectionDetailPage() {
                                 <FormMessage />
                             </FormItem>
                         </PageBlock>
-                        {!creatingNewEntity && (
                             <PageBlock column="main" title={<Trans>Facet values</Trans>}>
-                                <CollectionContentsTable collectionId={entity?.id} />
+                                {shouldPreviewContents || creatingNewEntity ? (
+                                    <CollectionContentsPreviewTable
+                                        parentId={entity?.parent?.id}
+                                        filters={currentFiltersValue}
+                                        inheritFilters={currentInheritFiltersValue}
+                                    />
+                                ) : (
+                                    <CollectionContentsTable collectionId={entity?.id} />
+                                )}
                             </PageBlock>
-                        )}
                     </PageLayout>
                 </form>
             </Form>

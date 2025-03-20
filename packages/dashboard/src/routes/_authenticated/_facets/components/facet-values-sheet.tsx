@@ -20,7 +20,7 @@ export interface FacetValuesSheetProps {
 export function FacetValuesSheet({ facetName, facetId, children }: FacetValuesSheetProps) {
     return (
         <Sheet>
-            <SheetTrigger>
+            <SheetTrigger asChild>
                 <Button variant="outline" size="sm" className="flex items-center gap-2">
                     {children}
                     <PanelLeftOpen className="w-4 h-4" />

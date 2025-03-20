@@ -1,17 +1,17 @@
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header.js';
 import { DataTable } from '@/components/data-table/data-table.js';
-import { useComponentRegistry } from '@/framework/component-registry/component-registry.js';
 import {
     FieldInfo,
-    getQueryName,
-    getTypeFieldInfo,
     getObjectPathToPaginatedList,
+    getTypeFieldInfo
 } from '@/framework/document-introspection/get-document-structure.js';
 import { useListQueryFields } from '@/framework/document-introspection/hooks.js';
 import { api } from '@/graphql/api.js';
-import { useDebounce } from 'use-debounce';
 import { useQueryClient } from '@tanstack/react-query';
+import { useDebounce } from 'use-debounce';
 
+import { DisplayComponent } from '@/framework/component-registry/dynamic-component.js';
+import { ResultOf } from '@/graphql/graphql.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -22,9 +22,7 @@ import {
     Table,
 } from '@tanstack/react-table';
 import { AccessorKeyColumnDef, ColumnDef } from '@tanstack/table-core';
-import { graphql, ResultOf } from '@/graphql/graphql.js';
 import React, { useMemo } from 'react';
-import { Delegate } from '@/framework/component-registry/delegate.js';
 
 // Type that identifies a paginated list structure (has items array and totalItems)
 type IsPaginatedList<T> = T extends { items: any[]; totalItems: number } ? true : false;
@@ -167,7 +165,7 @@ export interface PaginatedListDataTableProps<
     V extends ListQueryOptionsShape,
 > {
     listQuery: T;
-    pathToListQuery?: PaginatedListPaths<T>;
+    transformQueryKey?: (queryKey: any[]) => any[];
     transformVariables?: (variables: V) => V;
     customizeColumns?: CustomizeColumnConfig<T>;
     additionalColumns?: ColumnDef<any>[];
@@ -188,6 +186,7 @@ export function PaginatedListDataTable<
     V extends ListQueryOptionsShape = {},
 >({
     listQuery,
+    transformQueryKey,
     transformVariables,
     customizeColumns,
     additionalColumns,
@@ -201,7 +200,6 @@ export function PaginatedListDataTable<
     onSortChange,
     onFilterChange,
 }: PaginatedListDataTableProps<T, U, V>) {
-    const { getComponent } = useComponentRegistry();
     const [searchTerm, setSearchTerm] = React.useState<string>('');
     const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
     const queryClient = useQueryClient();
@@ -220,7 +218,8 @@ export function PaginatedListDataTable<
         ? { _and: columnFilters.map(f => ({ [f.id]: f.value })) }
         : undefined;
 
-    const queryKey = ['PaginatedListDataTable', listQuery, page, itemsPerPage, sorting, filter];
+    const defaultQueryKey = ['PaginatedListDataTable', listQuery, page, itemsPerPage, sorting, filter];
+    const queryKey = transformQueryKey ? transformQueryKey(defaultQueryKey) : defaultQueryKey;
 
     function refetchPaginatedList() {
         queryClient.invalidateQueries({ queryKey });
@@ -290,13 +289,13 @@ export function PaginatedListDataTable<
                         (fieldInfo.type === 'DateTime' && typeof value === 'string') ||
                         value instanceof Date
                     ) {
-                        return <Delegate component="dateTime.display" value={value} />;
+                        return <DisplayComponent id="vendure:dateTime" value={value} />;
                     }
                     if (fieldInfo.type === 'Boolean') {
-                        return <Delegate component="boolean.display" value={value} />;
+                        return <DisplayComponent id="vendure:boolean" value={value} />;
                     }
                     if (fieldInfo.type === 'Asset') {
-                        return <Delegate component="asset.display" value={value} />;
+                        return <DisplayComponent id="vendure:asset" value={value} />;
                     }
                     if (value !== null && typeof value === 'object') {
                         return JSON.stringify(value);

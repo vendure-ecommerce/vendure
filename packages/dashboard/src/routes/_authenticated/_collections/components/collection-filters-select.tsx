@@ -1,3 +1,4 @@
+import { ConfigurableOperationInput } from '@/components/shared/configurable-operation-input.js';
 import { Button } from '@/components/ui/button.js';
 import {
     DropdownMenu,
@@ -5,15 +6,13 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.js';
-import { api } from '@/graphql/api.js';
-import { ConfigurableOperationDefFragment, ConfigurableOperationFragment } from '@/graphql/fragments.js';
-import { ConfigurableOperationInput as ConfigurableOperationInputType } from '@vendure/common/lib/generated-types';
+import { Separator } from '@/components/ui/separator.js';
+import { ConfigurableOperationDefFragment } from '@/graphql/fragments.js';
 import { Trans } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
+import { ConfigurableOperationInput as ConfigurableOperationInputType } from '@vendure/common/lib/generated-types';
 import { Plus } from 'lucide-react';
-import { getCollectionFiltersDocument } from '../collections.graphql.js';
-import { useServerConfig } from '@/hooks/use-server-config.js';
-import { ConfigurableOperationInput } from '@/components/shared/configurable-operation-input.js';
+import { getCollectionFiltersQueryOptions } from '../collections.graphql.js';
 
 export interface CollectionFiltersSelectProps {
     value: ConfigurableOperationInputType[];
@@ -21,19 +20,25 @@ export interface CollectionFiltersSelectProps {
 }
 
 export function CollectionFiltersSelect({ value, onChange }: CollectionFiltersSelectProps) {
-    const serverConfig = useServerConfig();
-    const { data: filtersData } = useQuery({
-        queryKey: ['collectionFilters'],
-        queryFn: () => api.query(getCollectionFiltersDocument),
-    });
+    const { data: filtersData } = useQuery(getCollectionFiltersQueryOptions);
 
     const filters = filtersData?.collectionFilters;
 
     const onFilterSelected = (filter: ConfigurableOperationDefFragment) => {
-        if (value.find(f => f.code === filter.code)) {
+        const filterDef = filters?.find(f => f.code === filter.code);
+        if (!filterDef) {
             return;
         }
-        onChange([...value, { code: filter.code, arguments: [] }]);
+        onChange([
+            ...value,
+            {
+                code: filter.code,
+                arguments: filterDef.args.map(arg => ({
+                    name: arg.name,
+                    value: arg.defaultValue != null ? arg.defaultValue.toString() : '',
+                })),
+            },
+        ]);
     };
 
     const onOperationValueChange = (
@@ -43,8 +48,12 @@ export function CollectionFiltersSelect({ value, onChange }: CollectionFiltersSe
         onChange(value.map(f => (f.code === filter.code ? newVal : f)));
     };
 
+    const onOperationRemove = (index: number) => {
+        onChange(value.filter((_, i) => i !== index));
+    };
+
     return (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 mt-4">
             {(value ?? []).map((filter, index) => {
                 const filterDef = filters?.find(f => f.code === filter.code);
                 if (!filterDef) {
@@ -56,7 +65,9 @@ export function CollectionFiltersSelect({ value, onChange }: CollectionFiltersSe
                             operationDefinition={filterDef}
                             value={filter}
                             onChange={value => onOperationValueChange(filter, value)}
+                            onRemove={() => onOperationRemove(index)}
                         />
+                        <Separator className="my-2" />
                     </div>
                 );
             })}
@@ -69,7 +80,7 @@ export function CollectionFiltersSelect({ value, onChange }: CollectionFiltersSe
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-96">
                     {filters?.map(filter => (
-                        <DropdownMenuItem key={filter.code} onClick={() => onFilterSelected?.(filter)}>
+                        <DropdownMenuItem key={filter.code} onClick={() => onFilterSelected(filter)}>
                             {filter.description}
                         </DropdownMenuItem>
                     ))}

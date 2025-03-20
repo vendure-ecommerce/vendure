@@ -1,27 +1,22 @@
-import React, { useState } from 'react';
-import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command.js';
 import { Button } from '@/components/ui/button.js';
-import { Trans } from '@lingui/react/macro';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command.js';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.js';
+import { api } from '@/graphql/api.js';
 import { graphql } from '@/graphql/graphql.js';
 import { useDebounce } from '@/hooks/use-debounce.js';
-import { api } from '@/graphql/api.js';
-import { cn } from '@/lib/utils.js';
-import { Check, ChevronRight, Plus, Loader2 } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.js';
+import { Trans } from '@lingui/react/macro';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { ChevronRight, Loader2, Plus } from 'lucide-react';
+import React, { useState } from 'react';
 
-interface FacetValue {
+export interface FacetValue {
     id: string;
     name: string;
     code: string;
-    facet: {
-        id: string;
-        name: string;
-        code: string;
-    };
+    facet: Facet;
 }
 
-interface Facet {
+export interface Facet {
     id: string;
     name: string;
     code: string;

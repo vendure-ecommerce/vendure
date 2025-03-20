@@ -5,6 +5,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from '../ui/form.js
 import { Input } from '../ui/input.js';
 import { ConfigurableOperationInput as ConfigurableOperationInputType } from '@vendure/common/lib/generated-types';
 import { ConfigurableOperationArgInput } from './configurable-operation-arg-input.js';
+import { Button } from '../ui/button.js';
+import { Trash } from 'lucide-react';
 
 export interface ConfigurableOperationInputProps {
     operationDefinition: ConfigurableOperationDefFragment;
@@ -14,6 +16,7 @@ export interface ConfigurableOperationInputProps {
     hideDescription?: boolean;
     value: ConfigurableOperationInputType;
     onChange: (val: ConfigurableOperationInputType) => void;
+    onRemove?: () => void;
 }
 
 export function ConfigurableOperationInput({
@@ -24,6 +27,7 @@ export function ConfigurableOperationInput({
     hideDescription,
     value,
     onChange,
+    onRemove,
 }: ConfigurableOperationInputProps) {
     const form = useForm({
         defaultValues: {
@@ -44,15 +48,23 @@ export function ConfigurableOperationInput({
         onChange(newVal);
     };
 
+
     return (
         <Form {...form}>
             <div className="space-y-4">
-                {!hideDescription && (
-                    <div className="font-medium">
-                        {' '}
-                        {interpolateDescription(operationDefinition, value.arguments)}
-                    </div>
-                )}
+                <div className="flex flex-row justify-between">
+                    {!hideDescription && (
+                        <div className="font-medium">
+                            {' '}
+                            {interpolateDescription(operationDefinition, value.arguments)}
+                        </div>
+                    )}
+                    {removable !== false && (
+                        <Button variant="outline" size="icon" onClick={onRemove}>
+                            <Trash />
+                        </Button>
+                    )}
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                     {operationDefinition.args.map(arg => {
                         const argValue = value.arguments.find(a => a.name === arg.name)?.value || '';
@@ -62,7 +74,7 @@ export function ConfigurableOperationInput({
                                 name={`args.${arg.name}`}
                                 render={() => (
                                 <FormItem>
-                                    <FormLabel>{arg.name}</FormLabel>
+                                    <FormLabel>{arg.label || arg.name}</FormLabel>
                                     <FormControl>
                                         <ConfigurableOperationArgInput
                                             definition={arg}

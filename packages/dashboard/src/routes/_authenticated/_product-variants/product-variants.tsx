@@ -4,7 +4,7 @@ import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { productVariantListDocument } from './product-variants.graphql.js';
 import { Button } from '@/components/ui/button.js';
-import { Money } from '@/components/data-type-components/money.js';
+import { Money } from '@/components/data-display/money.js';
 import { useLocalFormat } from '@/hooks/use-local-format.js';
 
 export const Route = createFileRoute('/_authenticated/_product-variants/product-variants')({
