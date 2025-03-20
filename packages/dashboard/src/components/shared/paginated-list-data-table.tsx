@@ -23,6 +23,7 @@ import {
 } from '@tanstack/react-table';
 import { AccessorKeyColumnDef, ColumnDef } from '@tanstack/table-core';
 import React, { Key, useMemo } from 'react';
+import { customerListDocument } from '@/routes/_authenticated/_customers/customers.graphql.js';
 
 // Type that identifies a paginated list structure (has items array and totalItems)
 type IsPaginatedList<T> = T extends { items: any[]; totalItems: number } ? true : false;
@@ -91,7 +92,7 @@ export type PaginatedListKeys<
 }[keyof PaginatedListItemFields<T, Path>];
 
 export type CustomizeColumnConfig<T extends TypedDocumentNode<any, any>> = {
-    [Key in keyof PaginatedListItemFields<T>]?: Partial<ColumnDef<any>>;
+    [Key in keyof PaginatedListItemFields<T>]?: Partial<ColumnDef<PaginatedListItemFields<T>>>;
 };
 
 export type FacetedFilterConfig<T extends TypedDocumentNode<any, any>> = {
@@ -125,6 +126,10 @@ export type ListQueryOptionsShape = {
     };
     [key: string]: any;
 };
+
+export type AdditionalColumns<T extends TypedDocumentNode<any, any>> = {
+    [key: string]: ColumnDef<PaginatedListItemFields<T>>
+}
 
 export interface PaginatedListContext {
     refetchPaginatedList: () => void;
@@ -160,12 +165,14 @@ export interface PaginatedListDataTableProps<
     T extends TypedDocumentNode<U, V>,
     U extends any,
     V extends ListQueryOptionsShape,
+    AC extends AdditionalColumns<T>,
 > {
     listQuery: T;
     transformQueryKey?: (queryKey: any[]) => any[];
     transformVariables?: (variables: V) => V;
     customizeColumns?: CustomizeColumnConfig<T>;
-    additionalColumns?: ColumnDef<any>[];
+    additionalColumns?: AC;
+    defaultColumnOrder?: (keyof PaginatedListItemFields<T> | AC[number]['id'])[];
     defaultVisibility?: Partial<Record<keyof PaginatedListItemFields<T>, boolean>>;
     onSearchTermChange?: (searchTerm: string) => NonNullable<V['options']>['filter'];
     page: number;
@@ -182,6 +189,7 @@ export function PaginatedListDataTable<
     T extends TypedDocumentNode<U, V>,
     U extends Record<string, any> = any,
     V extends ListQueryOptionsShape = {},
+    AC extends AdditionalColumns<T> = AdditionalColumns<T>,
 >({
     listQuery,
     transformQueryKey,
@@ -189,6 +197,7 @@ export function PaginatedListDataTable<
     customizeColumns,
     additionalColumns,
     defaultVisibility,
+    defaultColumnOrder,
     onSearchTermChange,
     page,
     itemsPerPage,
@@ -198,7 +207,7 @@ export function PaginatedListDataTable<
     onSortChange,
     onFilterChange,
     facetedFilters,
-}: PaginatedListDataTableProps<T, U, V>) {
+}: PaginatedListDataTableProps<T, U, V, AC>) {
     const [searchTerm, setSearchTerm] = React.useState<string>('');
     const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
     const queryClient = useQueryClient();
@@ -224,7 +233,7 @@ export function PaginatedListDataTable<
           }
         : undefined;
 
-    const defaultQueryKey = ['PaginatedListDataTable', listQuery, page, itemsPerPage, sorting, filter];
+    const defaultQueryKey = ['PaginatedListDataTable', listQuery, page, itemsPerPage, sorting, filter, debouncedSearchTerm];
     const queryKey = transformQueryKey ? transformQueryKey(defaultQueryKey) : defaultQueryKey;
 
     function refetchPaginatedList() {
@@ -258,7 +267,7 @@ export function PaginatedListDataTable<
         listData = listData?.[path];
     }
 
-    const columnHelper = createColumnHelper();
+    const columnHelper = createColumnHelper<PaginatedListItemFields<T>>();
 
     const columns = useMemo(() => {
         const columnConfigs: Array<{ fieldInfo: FieldInfo; isCustomField: boolean }> = [];
@@ -282,7 +291,7 @@ export function PaginatedListDataTable<
             const { header, ...customConfigRest } = customConfig;
             const enableColumnFilter = fieldInfo.isScalar && !facetedFilters?.[fieldInfo.name];
 
-            return columnHelper.accessor(fieldInfo.name, {
+            return columnHelper.accessor(fieldInfo.name as any, {
                 meta: { fieldInfo, isCustomField },
                 enableColumnFilter,
                 enableSorting: fieldInfo.isScalar,
@@ -319,13 +328,26 @@ export function PaginatedListDataTable<
             });
         });
 
-        const finalColumns: AccessorKeyColumnDef<unknown, never>[] = [...queryBasedColumns];
+        let finalColumns = [...queryBasedColumns];
 
-        for (const column of additionalColumns ?? []) {
-            if (!column.id) {
+        for (const [id, column] of Object.entries(additionalColumns ?? {})) {
+            if (!id) {
                 throw new Error('Column id is required');
             }
-            finalColumns.push(columnHelper.accessor(column.id, column));
+            finalColumns.push(columnHelper.accessor(id as any, { ...column, id }));
+        }
+
+        if (defaultColumnOrder) {
+            // ensure the columns with ids matching the items in defaultColumnOrder
+            // appear as the first columns in sequence, and leave the remainder in the
+            // existing order
+            const orderedColumns = finalColumns.filter(
+                column => column.id && defaultColumnOrder.includes(column.id),
+            );
+            const remainingColumns = finalColumns.filter(
+                column => !column.id || !defaultColumnOrder.includes(column.id),
+            );
+            finalColumns = [...orderedColumns, ...remainingColumns];
         }
 
         return finalColumns;

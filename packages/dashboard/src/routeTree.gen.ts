@@ -22,6 +22,7 @@ import { Route as AuthenticatedProductsProductsImport } from './routes/_authenti
 import { Route as AuthenticatedProductVariantsProductVariantsImport } from './routes/_authenticated/_product-variants/product-variants';
 import { Route as AuthenticatedOrdersOrdersImport } from './routes/_authenticated/_orders/orders';
 import { Route as AuthenticatedFacetsFacetsImport } from './routes/_authenticated/_facets/facets';
+import { Route as AuthenticatedCustomersCustomersImport } from './routes/_authenticated/_customers/customers';
 import { Route as AuthenticatedCollectionsCollectionsImport } from './routes/_authenticated/_collections/collections';
 import { Route as AuthenticatedAssetsAssetsImport } from './routes/_authenticated/_assets/assets';
 import { Route as AuthenticatedProductsProductsIdImport } from './routes/_authenticated/_products/products_.$id';
@@ -95,6 +96,12 @@ const AuthenticatedOrdersOrdersRoute = AuthenticatedOrdersOrdersImport.update({
 const AuthenticatedFacetsFacetsRoute = AuthenticatedFacetsFacetsImport.update({
     id: '/_facets/facets',
     path: '/facets',
+    getParentRoute: () => AuthenticatedRoute,
+} as any);
+
+const AuthenticatedCustomersCustomersRoute = AuthenticatedCustomersCustomersImport.update({
+    id: '/_customers/customers',
+    path: '/customers',
     getParentRoute: () => AuthenticatedRoute,
 } as any);
 
@@ -194,6 +201,13 @@ declare module '@tanstack/react-router' {
             preLoaderRoute: typeof AuthenticatedCollectionsCollectionsImport;
             parentRoute: typeof AuthenticatedImport;
         };
+        '/_authenticated/_customers/customers': {
+            id: '/_authenticated/_customers/customers';
+            path: '/customers';
+            fullPath: '/customers';
+            preLoaderRoute: typeof AuthenticatedCustomersCustomersImport;
+            parentRoute: typeof AuthenticatedImport;
+        };
         '/_authenticated/_facets/facets': {
             id: '/_authenticated/_facets/facets';
             path: '/facets';
@@ -281,6 +295,7 @@ interface AuthenticatedRouteChildren {
     AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute;
     AuthenticatedAssetsAssetsRoute: typeof AuthenticatedAssetsAssetsRoute;
     AuthenticatedCollectionsCollectionsRoute: typeof AuthenticatedCollectionsCollectionsRoute;
+    AuthenticatedCustomersCustomersRoute: typeof AuthenticatedCustomersCustomersRoute;
     AuthenticatedFacetsFacetsRoute: typeof AuthenticatedFacetsFacetsRoute;
     AuthenticatedOrdersOrdersRoute: typeof AuthenticatedOrdersOrdersRoute;
     AuthenticatedProductVariantsProductVariantsRoute: typeof AuthenticatedProductVariantsProductVariantsRoute;
@@ -299,6 +314,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
     AuthenticatedIndexRoute: AuthenticatedIndexRoute,
     AuthenticatedAssetsAssetsRoute: AuthenticatedAssetsAssetsRoute,
     AuthenticatedCollectionsCollectionsRoute: AuthenticatedCollectionsCollectionsRoute,
+    AuthenticatedCustomersCustomersRoute: AuthenticatedCustomersCustomersRoute,
     AuthenticatedFacetsFacetsRoute: AuthenticatedFacetsFacetsRoute,
     AuthenticatedOrdersOrdersRoute: AuthenticatedOrdersOrdersRoute,
     AuthenticatedProductVariantsProductVariantsRoute: AuthenticatedProductVariantsProductVariantsRoute,
@@ -322,6 +338,7 @@ export interface FileRoutesByFullPath {
     '/': typeof AuthenticatedIndexRoute;
     '/assets': typeof AuthenticatedAssetsAssetsRoute;
     '/collections': typeof AuthenticatedCollectionsCollectionsRoute;
+    '/customers': typeof AuthenticatedCustomersCustomersRoute;
     '/facets': typeof AuthenticatedFacetsFacetsRoute;
     '/orders': typeof AuthenticatedOrdersOrdersRoute;
     '/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute;
@@ -342,6 +359,7 @@ export interface FileRoutesByTo {
     '/': typeof AuthenticatedIndexRoute;
     '/assets': typeof AuthenticatedAssetsAssetsRoute;
     '/collections': typeof AuthenticatedCollectionsCollectionsRoute;
+    '/customers': typeof AuthenticatedCustomersCustomersRoute;
     '/facets': typeof AuthenticatedFacetsFacetsRoute;
     '/orders': typeof AuthenticatedOrdersOrdersRoute;
     '/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute;
@@ -364,6 +382,7 @@ export interface FileRoutesById {
     '/_authenticated/': typeof AuthenticatedIndexRoute;
     '/_authenticated/_assets/assets': typeof AuthenticatedAssetsAssetsRoute;
     '/_authenticated/_collections/collections': typeof AuthenticatedCollectionsCollectionsRoute;
+    '/_authenticated/_customers/customers': typeof AuthenticatedCustomersCustomersRoute;
     '/_authenticated/_facets/facets': typeof AuthenticatedFacetsFacetsRoute;
     '/_authenticated/_orders/orders': typeof AuthenticatedOrdersOrdersRoute;
     '/_authenticated/_product-variants/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute;
@@ -387,6 +406,7 @@ export interface FileRouteTypes {
         | '/'
         | '/assets'
         | '/collections'
+        | '/customers'
         | '/facets'
         | '/orders'
         | '/product-variants'
@@ -406,6 +426,7 @@ export interface FileRouteTypes {
         | '/'
         | '/assets'
         | '/collections'
+        | '/customers'
         | '/facets'
         | '/orders'
         | '/product-variants'
@@ -426,6 +447,7 @@ export interface FileRouteTypes {
         | '/_authenticated/'
         | '/_authenticated/_assets/assets'
         | '/_authenticated/_collections/collections'
+        | '/_authenticated/_customers/customers'
         | '/_authenticated/_facets/facets'
         | '/_authenticated/_orders/orders'
         | '/_authenticated/_product-variants/product-variants'
@@ -472,6 +494,7 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
         "/_authenticated/",
         "/_authenticated/_assets/assets",
         "/_authenticated/_collections/collections",
+        "/_authenticated/_customers/customers",
         "/_authenticated/_facets/facets",
         "/_authenticated/_orders/orders",
         "/_authenticated/_product-variants/product-variants",
@@ -505,6 +528,10 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
     },
     "/_authenticated/_collections/collections": {
       "filePath": "_authenticated/_collections/collections.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/_customers/customers": {
+      "filePath": "_authenticated/_customers/customers.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/_facets/facets": {

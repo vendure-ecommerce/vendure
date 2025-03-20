@@ -43,7 +43,7 @@ interface DataTableProps<TData, TValue> {
     onFilterChange?: (table: TableType<TData>, columnFilters: ColumnFilter[]) => void;
     onSearchTermChange?: (searchTerm: string) => void;
     defaultColumnVisibility?: VisibilityState;
-    facetedFilters?: Record<string, FacetedFilter>;
+    facetedFilters?: { [key: string]: FacetedFilter | undefined };
 }
 
 export function DataTable<TData, TValue>({
