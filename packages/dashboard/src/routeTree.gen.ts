@@ -19,6 +19,7 @@ import { Route as AuthenticatedDashboardImport } from './routes/_authenticated/d
 import { Route as AuthenticatedSystemJobQueueImport } from './routes/_authenticated/_system/job-queue';
 import { Route as AuthenticatedSystemHealthchecksImport } from './routes/_authenticated/_system/healthchecks';
 import { Route as AuthenticatedStockLocationsStockLocationsImport } from './routes/_authenticated/_stock-locations/stock-locations';
+import { Route as AuthenticatedRolesRolesImport } from './routes/_authenticated/_roles/roles';
 import { Route as AuthenticatedProductsProductsImport } from './routes/_authenticated/_products/products';
 import { Route as AuthenticatedProductVariantsProductVariantsImport } from './routes/_authenticated/_product-variants/product-variants';
 import { Route as AuthenticatedOrdersOrdersImport } from './routes/_authenticated/_orders/orders';
@@ -82,6 +83,12 @@ const AuthenticatedStockLocationsStockLocationsRoute = AuthenticatedStockLocatio
         getParentRoute: () => AuthenticatedRoute,
     } as any,
 );
+
+const AuthenticatedRolesRolesRoute = AuthenticatedRolesRolesImport.update({
+    id: '/_roles/roles',
+    path: '/roles',
+    getParentRoute: () => AuthenticatedRoute,
+} as any);
 
 const AuthenticatedProductsProductsRoute = AuthenticatedProductsProductsImport.update({
     id: '/_products/products',
@@ -254,6 +261,13 @@ declare module '@tanstack/react-router' {
             preLoaderRoute: typeof AuthenticatedProductsProductsImport;
             parentRoute: typeof AuthenticatedImport;
         };
+        '/_authenticated/_roles/roles': {
+            id: '/_authenticated/_roles/roles';
+            path: '/roles';
+            fullPath: '/roles';
+            preLoaderRoute: typeof AuthenticatedRolesRolesImport;
+            parentRoute: typeof AuthenticatedImport;
+        };
         '/_authenticated/_stock-locations/stock-locations': {
             id: '/_authenticated/_stock-locations/stock-locations';
             path: '/stock-locations';
@@ -319,6 +333,7 @@ interface AuthenticatedRouteChildren {
     AuthenticatedOrdersOrdersRoute: typeof AuthenticatedOrdersOrdersRoute;
     AuthenticatedProductVariantsProductVariantsRoute: typeof AuthenticatedProductVariantsProductVariantsRoute;
     AuthenticatedProductsProductsRoute: typeof AuthenticatedProductsProductsRoute;
+    AuthenticatedRolesRolesRoute: typeof AuthenticatedRolesRolesRoute;
     AuthenticatedStockLocationsStockLocationsRoute: typeof AuthenticatedStockLocationsStockLocationsRoute;
     AuthenticatedSystemHealthchecksRoute: typeof AuthenticatedSystemHealthchecksRoute;
     AuthenticatedSystemJobQueueRoute: typeof AuthenticatedSystemJobQueueRoute;
@@ -339,6 +354,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
     AuthenticatedOrdersOrdersRoute: AuthenticatedOrdersOrdersRoute,
     AuthenticatedProductVariantsProductVariantsRoute: AuthenticatedProductVariantsProductVariantsRoute,
     AuthenticatedProductsProductsRoute: AuthenticatedProductsProductsRoute,
+    AuthenticatedRolesRolesRoute: AuthenticatedRolesRolesRoute,
     AuthenticatedStockLocationsStockLocationsRoute: AuthenticatedStockLocationsStockLocationsRoute,
     AuthenticatedSystemHealthchecksRoute: AuthenticatedSystemHealthchecksRoute,
     AuthenticatedSystemJobQueueRoute: AuthenticatedSystemJobQueueRoute,
@@ -364,6 +380,7 @@ export interface FileRoutesByFullPath {
     '/orders': typeof AuthenticatedOrdersOrdersRoute;
     '/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute;
     '/products': typeof AuthenticatedProductsProductsRoute;
+    '/roles': typeof AuthenticatedRolesRolesRoute;
     '/stock-locations': typeof AuthenticatedStockLocationsStockLocationsRoute;
     '/healthchecks': typeof AuthenticatedSystemHealthchecksRoute;
     '/job-queue': typeof AuthenticatedSystemJobQueueRoute;
@@ -386,6 +403,7 @@ export interface FileRoutesByTo {
     '/orders': typeof AuthenticatedOrdersOrdersRoute;
     '/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute;
     '/products': typeof AuthenticatedProductsProductsRoute;
+    '/roles': typeof AuthenticatedRolesRolesRoute;
     '/stock-locations': typeof AuthenticatedStockLocationsStockLocationsRoute;
     '/healthchecks': typeof AuthenticatedSystemHealthchecksRoute;
     '/job-queue': typeof AuthenticatedSystemJobQueueRoute;
@@ -410,6 +428,7 @@ export interface FileRoutesById {
     '/_authenticated/_orders/orders': typeof AuthenticatedOrdersOrdersRoute;
     '/_authenticated/_product-variants/product-variants': typeof AuthenticatedProductVariantsProductVariantsRoute;
     '/_authenticated/_products/products': typeof AuthenticatedProductsProductsRoute;
+    '/_authenticated/_roles/roles': typeof AuthenticatedRolesRolesRoute;
     '/_authenticated/_stock-locations/stock-locations': typeof AuthenticatedStockLocationsStockLocationsRoute;
     '/_authenticated/_system/healthchecks': typeof AuthenticatedSystemHealthchecksRoute;
     '/_authenticated/_system/job-queue': typeof AuthenticatedSystemJobQueueRoute;
@@ -435,6 +454,7 @@ export interface FileRouteTypes {
         | '/orders'
         | '/product-variants'
         | '/products'
+        | '/roles'
         | '/stock-locations'
         | '/healthchecks'
         | '/job-queue'
@@ -456,6 +476,7 @@ export interface FileRouteTypes {
         | '/orders'
         | '/product-variants'
         | '/products'
+        | '/roles'
         | '/stock-locations'
         | '/healthchecks'
         | '/job-queue'
@@ -478,6 +499,7 @@ export interface FileRouteTypes {
         | '/_authenticated/_orders/orders'
         | '/_authenticated/_product-variants/product-variants'
         | '/_authenticated/_products/products'
+        | '/_authenticated/_roles/roles'
         | '/_authenticated/_stock-locations/stock-locations'
         | '/_authenticated/_system/healthchecks'
         | '/_authenticated/_system/job-queue'
@@ -526,6 +548,7 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
         "/_authenticated/_orders/orders",
         "/_authenticated/_product-variants/product-variants",
         "/_authenticated/_products/products",
+        "/_authenticated/_roles/roles",
         "/_authenticated/_stock-locations/stock-locations",
         "/_authenticated/_system/healthchecks",
         "/_authenticated/_system/job-queue",
@@ -579,6 +602,10 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
     },
     "/_authenticated/_products/products": {
       "filePath": "_authenticated/_products/products.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/_roles/roles": {
+      "filePath": "_authenticated/_roles/roles.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/_stock-locations/stock-locations": {
