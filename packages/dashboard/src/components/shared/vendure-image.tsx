@@ -1,6 +1,7 @@
+import { cn } from '@/lib/utils.js';
 import React from 'react';
 
-export interface Asset {
+export interface AssetLike {
     id: string;
     preview: string; // Base URL of the asset
     name?: string | null;
@@ -12,7 +13,7 @@ export type ImageFormat = 'jpg' | 'jpeg' | 'png' | 'webp' | 'avif' | null;
 export type ImageMode = 'crop' | 'resize' | null;
 
 export interface VendureImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
-    asset: Asset | null | undefined;
+    asset: AssetLike | null | undefined;
     preset?: ImagePreset;
     mode?: ImageMode;
     width?: number;
@@ -77,7 +78,7 @@ export function VendureImage({
         <img
             src={url.toString()}
             alt={alt || asset.name || ''}
-            className={className}
+            className={cn(className, 'rounded-sm')}
             style={style}
             loading="lazy"
             ref={ref}

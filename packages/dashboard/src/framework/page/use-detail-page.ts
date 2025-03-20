@@ -44,12 +44,12 @@ export interface DetailPageOptions<
      * @description
      * The document to create the entity.
      */
-    createDocument: C;
+    createDocument?: C;
     /**
      * @description
      * The document to update the entity.
      */
-    updateDocument: U;
+    updateDocument?: U;
     /**
      * @description
      * The function to set the values for the update document.
@@ -112,25 +112,29 @@ export function useDetailPage<
     const entity = detailQuery?.data[entityField];
 
     const createMutation = useMutation({
-        mutationFn: api.mutate(createDocument),
+        mutationFn: createDocument ? api.mutate(createDocument) : undefined,
         onSuccess: data => {
-            const createMutationName = getMutationName(createDocument);
-            onSuccess?.((data as any)[createMutationName]);
+            if (createDocument) {
+                const createMutationName = getMutationName(createDocument);
+                onSuccess?.((data as any)[createMutationName]);
+            }
         },
     });
 
     const updateMutation = useMutation({
-        mutationFn: api.mutate(updateDocument),
+        mutationFn: updateDocument ? api.mutate(updateDocument) : undefined,
         onSuccess: data => {
-            const updateMutationName = getMutationName(updateDocument);
-            onSuccess?.((data as any)[updateMutationName]);
-            void queryClient.invalidateQueries({ queryKey: detailQueryOptions.queryKey });
+            if (updateDocument) {
+                const updateMutationName = getMutationName(updateDocument);
+                onSuccess?.((data as any)[updateMutationName]);
+                void queryClient.invalidateQueries({ queryKey: detailQueryOptions.queryKey });
+            }
         },
         onError,
     });
 
     const { form, submitHandler } = useGeneratedForm({
-        document: isNew ? createDocument : updateDocument,
+        document: isNew ? (createDocument ?? updateDocument) : updateDocument,
         entity,
         setValues: setValuesForUpdate,
         onSubmit(values: any) {

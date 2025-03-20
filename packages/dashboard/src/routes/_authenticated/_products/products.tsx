@@ -35,7 +35,7 @@ export function ProductListPage() {
                 };
             }}
             listQuery={addCustomFields(productListDocument)}
-            route={Route}
+            route={Route} 
         >
             <PageActionBar>
                 <div></div>

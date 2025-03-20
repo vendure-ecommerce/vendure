@@ -67,7 +67,7 @@ export function OrderListPage() {
                         const id = row.original.id;
                         return (
                             <Button asChild variant="ghost">
-                                <Link to={`/customers/${id}`}>{value}</Link>
+                                <Link to={`/orders/${id}`}>{value}</Link>
                             </Button>
                         );
                     },

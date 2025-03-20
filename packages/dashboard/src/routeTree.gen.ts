@@ -26,6 +26,7 @@ import { Route as AuthenticatedCollectionsCollectionsImport } from './routes/_au
 import { Route as AuthenticatedAssetsAssetsImport } from './routes/_authenticated/_assets/assets';
 import { Route as AuthenticatedProductsProductsIdImport } from './routes/_authenticated/_products/products_.$id';
 import { Route as AuthenticatedProductVariantsProductVariantsIdImport } from './routes/_authenticated/_product-variants/product-variants_.$id';
+import { Route as AuthenticatedOrdersOrdersIdImport } from './routes/_authenticated/_orders/orders_.$id';
 import { Route as AuthenticatedFacetsFacetsIdImport } from './routes/_authenticated/_facets/facets_.$id';
 import { Route as AuthenticatedCollectionsCollectionsIdImport } from './routes/_authenticated/_collections/collections_.$id';
 
@@ -121,6 +122,12 @@ const AuthenticatedProductVariantsProductVariantsIdRoute =
         path: '/product-variants/$id',
         getParentRoute: () => AuthenticatedRoute,
     } as any);
+
+const AuthenticatedOrdersOrdersIdRoute = AuthenticatedOrdersOrdersIdImport.update({
+    id: '/_orders/orders_/$id',
+    path: '/orders/$id',
+    getParentRoute: () => AuthenticatedRoute,
+} as any);
 
 const AuthenticatedFacetsFacetsIdRoute = AuthenticatedFacetsFacetsIdImport.update({
     id: '/_facets/facets_/$id',
@@ -243,6 +250,13 @@ declare module '@tanstack/react-router' {
             preLoaderRoute: typeof AuthenticatedFacetsFacetsIdImport;
             parentRoute: typeof AuthenticatedImport;
         };
+        '/_authenticated/_orders/orders_/$id': {
+            id: '/_authenticated/_orders/orders_/$id';
+            path: '/orders/$id';
+            fullPath: '/orders/$id';
+            preLoaderRoute: typeof AuthenticatedOrdersOrdersIdImport;
+            parentRoute: typeof AuthenticatedImport;
+        };
         '/_authenticated/_product-variants/product-variants_/$id': {
             id: '/_authenticated/_product-variants/product-variants_/$id';
             path: '/product-variants/$id';
@@ -275,6 +289,7 @@ interface AuthenticatedRouteChildren {
     AuthenticatedSystemJobQueueRoute: typeof AuthenticatedSystemJobQueueRoute;
     AuthenticatedCollectionsCollectionsIdRoute: typeof AuthenticatedCollectionsCollectionsIdRoute;
     AuthenticatedFacetsFacetsIdRoute: typeof AuthenticatedFacetsFacetsIdRoute;
+    AuthenticatedOrdersOrdersIdRoute: typeof AuthenticatedOrdersOrdersIdRoute;
     AuthenticatedProductVariantsProductVariantsIdRoute: typeof AuthenticatedProductVariantsProductVariantsIdRoute;
     AuthenticatedProductsProductsIdRoute: typeof AuthenticatedProductsProductsIdRoute;
 }
@@ -292,6 +307,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
     AuthenticatedSystemJobQueueRoute: AuthenticatedSystemJobQueueRoute,
     AuthenticatedCollectionsCollectionsIdRoute: AuthenticatedCollectionsCollectionsIdRoute,
     AuthenticatedFacetsFacetsIdRoute: AuthenticatedFacetsFacetsIdRoute,
+    AuthenticatedOrdersOrdersIdRoute: AuthenticatedOrdersOrdersIdRoute,
     AuthenticatedProductVariantsProductVariantsIdRoute: AuthenticatedProductVariantsProductVariantsIdRoute,
     AuthenticatedProductsProductsIdRoute: AuthenticatedProductsProductsIdRoute,
 };
@@ -314,6 +330,7 @@ export interface FileRoutesByFullPath {
     '/job-queue': typeof AuthenticatedSystemJobQueueRoute;
     '/collections/$id': typeof AuthenticatedCollectionsCollectionsIdRoute;
     '/facets/$id': typeof AuthenticatedFacetsFacetsIdRoute;
+    '/orders/$id': typeof AuthenticatedOrdersOrdersIdRoute;
     '/product-variants/$id': typeof AuthenticatedProductVariantsProductVariantsIdRoute;
     '/products/$id': typeof AuthenticatedProductsProductsIdRoute;
 }
@@ -333,6 +350,7 @@ export interface FileRoutesByTo {
     '/job-queue': typeof AuthenticatedSystemJobQueueRoute;
     '/collections/$id': typeof AuthenticatedCollectionsCollectionsIdRoute;
     '/facets/$id': typeof AuthenticatedFacetsFacetsIdRoute;
+    '/orders/$id': typeof AuthenticatedOrdersOrdersIdRoute;
     '/product-variants/$id': typeof AuthenticatedProductVariantsProductVariantsIdRoute;
     '/products/$id': typeof AuthenticatedProductsProductsIdRoute;
 }
@@ -354,6 +372,7 @@ export interface FileRoutesById {
     '/_authenticated/_system/job-queue': typeof AuthenticatedSystemJobQueueRoute;
     '/_authenticated/_collections/collections_/$id': typeof AuthenticatedCollectionsCollectionsIdRoute;
     '/_authenticated/_facets/facets_/$id': typeof AuthenticatedFacetsFacetsIdRoute;
+    '/_authenticated/_orders/orders_/$id': typeof AuthenticatedOrdersOrdersIdRoute;
     '/_authenticated/_product-variants/product-variants_/$id': typeof AuthenticatedProductVariantsProductVariantsIdRoute;
     '/_authenticated/_products/products_/$id': typeof AuthenticatedProductsProductsIdRoute;
 }
@@ -376,6 +395,7 @@ export interface FileRouteTypes {
         | '/job-queue'
         | '/collections/$id'
         | '/facets/$id'
+        | '/orders/$id'
         | '/product-variants/$id'
         | '/products/$id';
     fileRoutesByTo: FileRoutesByTo;
@@ -394,6 +414,7 @@ export interface FileRouteTypes {
         | '/job-queue'
         | '/collections/$id'
         | '/facets/$id'
+        | '/orders/$id'
         | '/product-variants/$id'
         | '/products/$id';
     id:
@@ -413,6 +434,7 @@ export interface FileRouteTypes {
         | '/_authenticated/_system/job-queue'
         | '/_authenticated/_collections/collections_/$id'
         | '/_authenticated/_facets/facets_/$id'
+        | '/_authenticated/_orders/orders_/$id'
         | '/_authenticated/_product-variants/product-variants_/$id'
         | '/_authenticated/_products/products_/$id';
     fileRoutesById: FileRoutesById;
@@ -458,6 +480,7 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
         "/_authenticated/_system/job-queue",
         "/_authenticated/_collections/collections_/$id",
         "/_authenticated/_facets/facets_/$id",
+        "/_authenticated/_orders/orders_/$id",
         "/_authenticated/_product-variants/product-variants_/$id",
         "/_authenticated/_products/products_/$id"
       ]
@@ -514,6 +537,10 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
     },
     "/_authenticated/_facets/facets_/$id": {
       "filePath": "_authenticated/_facets/facets_.$id.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/_orders/orders_/$id": {
+      "filePath": "_authenticated/_orders/orders_.$id.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/_product-variants/product-variants_/$id": {

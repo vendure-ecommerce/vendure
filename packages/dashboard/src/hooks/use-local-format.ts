@@ -55,8 +55,8 @@ export function useLocalFormat() {
         return i18n.number(value);
     };
 
-    const formatDate = (value: string | Date) => {
-        return i18n.date(value);
+    const formatDate = (value: string | Date, options?: Intl.DateTimeFormatOptions) => {
+        return i18n.date(value, options);
     };
 
     const formatLanguageName = (value: string): string => {

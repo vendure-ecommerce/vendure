@@ -12,6 +12,7 @@ export type PageBlockProps = {
     title?: React.ReactNode | string;
     description?: React.ReactNode | string;
     className?: string;
+    borderless?: boolean;
 };
 
 export type PageLayoutProps = {
@@ -55,16 +56,16 @@ export function PageActionBar({ children }: { children: React.ReactNode }) {
     return <div className="flex justify-between">{children}</div>;
 }
 
-export function PageBlock({ children, title, description }: PageBlockProps) {
+export function PageBlock({ children, title, description, borderless }: PageBlockProps) {
     return (
-        <Card className="w-full">
+        <Card className={cn('w-full')}>
             {title || description ? (
                 <CardHeader>
                     {title && <CardTitle>{title}</CardTitle>}
                     {description && <CardDescription>{description}</CardDescription>}
                 </CardHeader>
             ) : null}
-            <CardContent className={!title ? 'pt-6' : ''}>{children}</CardContent>
+            <CardContent className={cn(!title ? 'pt-6' : '', borderless && 'p-0')}>{children}</CardContent>
         </Card>
     );
 }

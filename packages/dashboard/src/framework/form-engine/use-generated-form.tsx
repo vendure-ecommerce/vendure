@@ -37,7 +37,7 @@ export function useGeneratedForm<
     const { document, entity, setValues, onSubmit } = options;
     const { activeChannel } = useChannel();
     const availableLanguages = useServerConfig()?.availableLanguages || [];
-    const updateFields = getOperationVariablesFields(document);
+    const updateFields = document ? getOperationVariablesFields(document) : [];
     const schema = createFormSchemaFromFields(updateFields);
     const defaultValues = getDefaultValuesFromFields(updateFields, activeChannel?.defaultLanguageCode);
     const processedEntity = ensureTranslationsForAllLanguages(entity, availableLanguages);
