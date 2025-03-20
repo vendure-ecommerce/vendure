@@ -32,3 +32,12 @@ export const jobListDocument = graphql(
     `,
     [jobInfoFragment],
 );
+
+export const jobQueueListDocument = graphql(`
+    query JobQueueList {
+        jobQueues {
+            name
+            running
+        }
+    }
+`);

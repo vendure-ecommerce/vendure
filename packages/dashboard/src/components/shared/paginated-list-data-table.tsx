@@ -1,9 +1,9 @@
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header.js';
-import { DataTable } from '@/components/data-table/data-table.js';
+import { DataTable, FacetedFilter } from '@/components/data-table/data-table.js';
 import {
     FieldInfo,
     getObjectPathToPaginatedList,
-    getTypeFieldInfo
+    getTypeFieldInfo,
 } from '@/framework/document-introspection/get-document-structure.js';
 import { useListQueryFields } from '@/framework/document-introspection/hooks.js';
 import { api } from '@/graphql/api.js';
@@ -22,7 +22,7 @@ import {
     Table,
 } from '@tanstack/react-table';
 import { AccessorKeyColumnDef, ColumnDef } from '@tanstack/table-core';
-import React, { useMemo } from 'react';
+import React, { Key, useMemo } from 'react';
 
 // Type that identifies a paginated list structure (has items array and totalItems)
 type IsPaginatedList<T> = T extends { items: any[]; totalItems: number } ? true : false;
@@ -33,14 +33,9 @@ type StringKeys<T> = T extends object ? Extract<keyof T, string> : never;
 // Helper type to handle nullability
 type NonNullable<T> = T extends null | undefined ? never : T;
 
-
 // Non-recursive approach to find paginated list paths with max 2 levels
 // Level 0: Direct top-level check
-type Level0PaginatedLists<T> = T extends object
-    ? IsPaginatedList<T> extends true
-        ? ''
-        : never
-    : never;
+type Level0PaginatedLists<T> = T extends object ? (IsPaginatedList<T> extends true ? '' : never) : never;
 
 // Level 1: One level deep
 type Level1PaginatedLists<T> = T extends object
@@ -69,10 +64,7 @@ type Level2PaginatedLists<T> = T extends object
     : never;
 
 // Combine all levels
-type FindPaginatedListPaths<T> = 
-    | Level0PaginatedLists<T>
-    | Level1PaginatedLists<T> 
-    | Level2PaginatedLists<T>;
+type FindPaginatedListPaths<T> = Level0PaginatedLists<T> | Level1PaginatedLists<T> | Level2PaginatedLists<T>;
 
 // Extract all paths from a TypedDocumentNode
 export type PaginatedListPaths<T extends TypedDocumentNode<any, any>> =
@@ -98,24 +90,29 @@ export type PaginatedListKeys<
     [K in keyof PaginatedListItemFields<T, Path>]: K;
 }[keyof PaginatedListItemFields<T, Path>];
 
-
 export type CustomizeColumnConfig<T extends TypedDocumentNode<any, any>> = {
     [Key in keyof PaginatedListItemFields<T>]?: Partial<ColumnDef<any>>;
 };
 
-export type ListQueryShape = {
-    [key: string]: {
-        items: any[];
-        totalItems: number;
-    };
-} | {
-    [key: string]: {
-        [key: string]: {
-            items: any[];
-            totalItems: number;
-        };
-    };
+export type FacetedFilterConfig<T extends TypedDocumentNode<any, any>> = {
+    [Key in keyof PaginatedListItemFields<T>]?: FacetedFilter;
 };
+
+export type ListQueryShape =
+    | {
+          [key: string]: {
+              items: any[];
+              totalItems: number;
+          };
+      }
+    | {
+          [key: string]: {
+              [key: string]: {
+                  items: any[];
+                  totalItems: number;
+              };
+          };
+      };
 
 export type ListQueryOptionsShape = {
     options?: {
@@ -178,6 +175,7 @@ export interface PaginatedListDataTableProps<
     onPageChange: (table: Table<any>, page: number, perPage: number) => void;
     onSortChange: (table: Table<any>, sorting: SortingState) => void;
     onFilterChange: (table: Table<any>, filters: ColumnFiltersState) => void;
+    facetedFilters?: FacetedFilterConfig<T>;
 }
 
 export function PaginatedListDataTable<
@@ -199,6 +197,7 @@ export function PaginatedListDataTable<
     onPageChange,
     onSortChange,
     onFilterChange,
+    facetedFilters,
 }: PaginatedListDataTableProps<T, U, V>) {
     const [searchTerm, setSearchTerm] = React.useState<string>('');
     const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
@@ -215,7 +214,14 @@ export function PaginatedListDataTable<
     }, {});
 
     const filter = columnFilters?.length
-        ? { _and: columnFilters.map(f => ({ [f.id]: f.value })) }
+        ? {
+              _and: columnFilters.map(f => {
+                  if (Array.isArray(f.value)) {
+                      return { [f.id]: { in: f.value } };
+                  }
+                  return { [f.id]: f.value };
+              }),
+          }
         : undefined;
 
     const defaultQueryKey = ['PaginatedListDataTable', listQuery, page, itemsPerPage, sorting, filter];
@@ -274,9 +280,11 @@ export function PaginatedListDataTable<
         const queryBasedColumns = columnConfigs.map(({ fieldInfo, isCustomField }) => {
             const customConfig = customizeColumns?.[fieldInfo.name as keyof PaginatedListItemFields<T>] ?? {};
             const { header, ...customConfigRest } = customConfig;
+            const enableColumnFilter = fieldInfo.isScalar && !facetedFilters?.[fieldInfo.name];
+
             return columnHelper.accessor(fieldInfo.name, {
                 meta: { fieldInfo, isCustomField },
-                enableColumnFilter: fieldInfo.isScalar,
+                enableColumnFilter,
                 enableSorting: fieldInfo.isScalar,
                 cell: ({ cell, row }) => {
                     const value = !isCustomField
@@ -340,11 +348,11 @@ export function PaginatedListDataTable<
                 onFilterChange={onFilterChange}
                 onSearchTermChange={onSearchTermChange ? term => setSearchTerm(term) : undefined}
                 defaultColumnVisibility={columnVisibility}
+                facetedFilters={facetedFilters}
             />
         </PaginatedListContext.Provider>
     );
 }
-
 
 /**
  * Returns the default column visibility configuration.

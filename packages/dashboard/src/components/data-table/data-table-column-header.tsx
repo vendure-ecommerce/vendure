@@ -42,6 +42,7 @@ export function DataTableColumnHeader({ headerContext, customConfig }: DataTable
     const columSort = column.getIsSorted();
     const columnFilter = column.getFilterValue();
     const nextSort = columSort === 'asc' ? true : columSort === 'desc' ? undefined : false;
+
     return (
         <div className="flex items-center">
             <div>{display}</div>

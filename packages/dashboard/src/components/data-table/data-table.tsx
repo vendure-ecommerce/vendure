@@ -18,10 +18,17 @@ import {
     useReactTable,
     ColumnFilter,
     ColumnFiltersState,
+    Column,
 } from '@tanstack/react-table';
 import { CircleX, Filter } from 'lucide-react';
-import React, { useEffect } from 'react';
-import { Button } from '../ui/button.js';
+import React, { Suspense, useEffect } from 'react';
+import { DataTableFacetedFilter, DataTableFacetedFilterOption } from './data-table-faceted-filter.js';
+
+export interface FacetedFilter {
+    title: string;
+    optionsFn?: () => Promise<DataTableFacetedFilterOption[]>;
+    options?: DataTableFacetedFilterOption[];
+}
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -36,6 +43,7 @@ interface DataTableProps<TData, TValue> {
     onFilterChange?: (table: TableType<TData>, columnFilters: ColumnFilter[]) => void;
     onSearchTermChange?: (searchTerm: string) => void;
     defaultColumnVisibility?: VisibilityState;
+    facetedFilters?: Record<string, FacetedFilter>;
 }
 
 export function DataTable<TData, TValue>({
@@ -51,6 +59,7 @@ export function DataTable<TData, TValue>({
     onFilterChange,
     onSearchTermChange,
     defaultColumnVisibility,
+    facetedFilters,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>(sortingInitialState || []);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(filtersInitialState || []);
@@ -99,7 +108,7 @@ export function DataTable<TData, TValue>({
         <>
             <div className="flex justify-between items-start mt-2">
                 <div className="flex flex-col">
-                    <div>
+                    <div className="flex items-center justify-start gap-2">
                         {onSearchTermChange && (
                             <div className="flex items-center">
                                 <Input
@@ -109,27 +118,42 @@ export function DataTable<TData, TValue>({
                                 />
                             </div>
                         )}
+                        <Suspense>
+                            {Object.entries(facetedFilters ?? {}).map(([key, filter]) => (
+                                <DataTableFacetedFilter
+                                    key={key}
+                                    column={table.getColumn(key)}
+                                    title={filter.title}
+                                    options={filter.options}
+                                    optionsFn={filter.optionsFn}
+                                />
+                            ))}
+                        </Suspense>
                     </div>
                     <div className="flex gap-1 mt-2">
-                        {columnFilters.map(f => {
-                            const [operator, value] = Object.entries(f.value as Record<string, string>)[0];
-                            return (
-                                <Badge key={f.id} className="flex gap-1 items-center" variant="secondary">
-                                    <Filter size="12" className="opacity-50" />
-                                    <div>{f.id}</div>
-                                    <div>{operator}</div>
-                                    <div>{value}</div>
-                                    <button
-                                        className="cursor-pointer"
-                                        onClick={() =>
-                                            setColumnFilters(old => old.filter(x => x.id !== f.id))
-                                        }
-                                    >
-                                        <CircleX size="14" />
-                                    </button>
-                                </Badge>
-                            );
-                        })}
+                        {columnFilters
+                            .filter(f => !facetedFilters?.[f.id])
+                            .map(f => {
+                                const [operator, value] = Object.entries(
+                                    f.value as Record<string, string>,
+                                )[0];
+                                return (
+                                    <Badge key={f.id} className="flex gap-1 items-center" variant="secondary">
+                                        <Filter size="12" className="opacity-50" />
+                                        <div>{f.id}</div>
+                                        <div>{operator}</div>
+                                        <div>{value}</div>
+                                        <button
+                                            className="cursor-pointer"
+                                            onClick={() =>
+                                                setColumnFilters(old => old.filter(x => x.id !== f.id))
+                                            }
+                                        >
+                                            <CircleX size="14" />
+                                        </button>
+                                    </Badge>
+                                );
+                            })}
                     </div>
                 </div>
                 <DataTableViewOptions table={table} />
