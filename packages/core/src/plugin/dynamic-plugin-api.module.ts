@@ -33,21 +33,6 @@ export function createDynamicGraphQlModulesForPlugins(apiType: 'shop' | 'admin')
         .filter(notNullOrUndefined);
 }
 
-/**
- * This function retrieves any dynamic modules which were created with createDynamicGraphQlModulesForPlugins.
- */
-export function getDynamicGraphQlModulesForPlugins(apiType: 'shop' | 'admin'): Array<Type<any>> {
-    return getConfig()
-        .plugins.map(plugin => {
-            const pluginModule = isDynamicModule(plugin) ? plugin.module : plugin;
-            const resolvers = graphQLResolversFor(plugin, apiType) || [];
-
-            const className = dynamicClassName(pluginModule, apiType);
-            return dynamicApiModuleClassMap[className];
-        })
-        .filter(notNullOrUndefined);
-}
-
 function dynamicClassName(module: Type<any>, apiType: 'shop' | 'admin'): string {
     return module.name + 'Dynamic' + (apiType === 'shop' ? 'Shop' : 'Admin') + 'Module';
 }

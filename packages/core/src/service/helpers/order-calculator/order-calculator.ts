@@ -91,7 +91,6 @@ export class OrderCalculator {
             const totalBeforePromotions = order.subTotal;
             await this.applyPromotions(ctx, order, promotions);
 
-
             if (order.subTotal !== totalBeforePromotions) {
                 // Finally, re-calculate taxes because the promotions may have
                 // altered the unit prices, which in turn will alter the tax payable.
@@ -213,7 +212,6 @@ export class OrderCalculator {
         order: Order,
         promotions: Promotion[],
     ): Promise<void> {
-
         const orderHasDistributedPromotions = !!order.discounts.find(
             adjustment => adjustment.type === AdjustmentType.DISTRIBUTED_ORDER_PROMOTION,
         );

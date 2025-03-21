@@ -1079,9 +1079,8 @@ describe('Orders resolver', () => {
         });
 
         it('order.fulfillments resolver for order list', async () => {
-            const { orders } = await adminClient.query<Codegen.GetOrderListFulfillmentsQuery>(
-                GET_ORDER_LIST_FULFILLMENTS,
-            );
+            const { orders } =
+                await adminClient.query<Codegen.GetOrderListFulfillmentsQuery>(GET_ORDER_LIST_FULFILLMENTS);
 
             expect(orders.items[0].fulfillments).toEqual([]);
             expect(orders.items[1].fulfillments?.sort(sortById)).toEqual([

@@ -3045,6 +3045,8 @@ export type Mutation = {
     updateProductOption: ProductOption;
     /** Update an existing ProductOptionGroup */
     updateProductOptionGroup: ProductOptionGroup;
+    /** Update an existing ProductVariant */
+    updateProductVariant: ProductVariant;
     /** Update existing ProductVariants */
     updateProductVariants: Array<Maybe<ProductVariant>>;
     /** Update multiple existing Products */
@@ -3696,6 +3698,10 @@ export type MutationUpdateProductOptionArgs = {
 
 export type MutationUpdateProductOptionGroupArgs = {
     input: UpdateProductOptionGroupInput;
+};
+
+export type MutationUpdateProductVariantArgs = {
+    input: UpdateProductVariantInput;
 };
 
 export type MutationUpdateProductVariantsArgs = {

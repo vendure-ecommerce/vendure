@@ -22,6 +22,7 @@ import path from 'path';
 import { DataSourceOptions } from 'typeorm';
 
 import { MultivendorPlugin } from './example-plugins/multivendor-plugin/multivendor.plugin';
+import { ReviewsPlugin } from './test-plugins/reviews/reviews-plugin';
 
 /**
  * Config settings used during development
@@ -63,7 +64,34 @@ export const devConfig: VendureConfig = {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
 
-    customFields: {},
+    customFields: {
+        Product: [
+            {
+                name: 'infoUrl',
+                type: 'string',
+                label: [{ languageCode: LanguageCode.en, value: 'Info URL' }],
+                description: [{ languageCode: LanguageCode.en, value: 'Info URL' }],
+            },
+            {
+                name: 'downloadable',
+                type: 'boolean',
+                label: [{ languageCode: LanguageCode.en, value: 'Downloadable' }],
+                description: [{ languageCode: LanguageCode.en, value: 'Downloadable' }],
+            },
+            {
+                name: 'shortName',
+                type: 'localeString',
+                label: [{ languageCode: LanguageCode.en, value: 'Short Name' }],
+                description: [{ languageCode: LanguageCode.en, value: 'Short Name' }],
+            },
+            {
+                name: 'lastUpdated',
+                type: 'datetime',
+                label: [{ languageCode: LanguageCode.en, value: 'Last Updated' }],
+                description: [{ languageCode: LanguageCode.en, value: 'Last Updated' }],
+            },
+        ],
+    },
     logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
@@ -73,6 +101,7 @@ export const devConfig: VendureConfig = {
         //     platformFeePercent: 10,
         //     platformFeeSKU: 'FEE',
         // }),
+        ReviewsPlugin,
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
@@ -102,6 +131,7 @@ export const devConfig: VendureConfig = {
         AdminUiPlugin.init({
             route: 'admin',
             port: 5001,
+            adminUiConfig: {},
             // Un-comment to compile a custom admin ui
             // app: compileUiExtensions({
             //     outputPath: path.join(__dirname, './custom-admin-ui'),

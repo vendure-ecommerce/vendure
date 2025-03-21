@@ -1,0 +1,13 @@
+{
+  "extends": ["./tsconfig.json"],
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
+    "resolveJsonModule": false,
+    "skipLibCheck": true,
+    "plugins": [],
+    "declaration": true,
+    "outDir": "./dist/plugin"
+  },
+  "include": ["vite/**/*"],
+}

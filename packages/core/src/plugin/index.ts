@@ -10,3 +10,4 @@ export * from './redis-cache-plugin/types';
 export * from './vendure-plugin';
 export * from './plugin-common.module';
 export * from './plugin-utils';
+export * from './plugin-metadata';
