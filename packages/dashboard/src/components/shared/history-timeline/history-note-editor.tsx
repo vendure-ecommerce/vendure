@@ -10,6 +10,7 @@ import {
 import { Textarea } from '@/components/ui/textarea.js';
 import { Trans } from '@lingui/react/macro';
 import { useState } from 'react';
+import { HistoryNoteCheckbox } from './history-note-checkbox.js';
 
 interface NoteEditorProps {
     note: string;
@@ -20,10 +21,18 @@ interface NoteEditorProps {
     isPrivate: boolean;
 }
 
-export function NoteEditor({ open, onOpenChange, note, onNoteChange, noteId, isPrivate }: NoteEditorProps) {
+export function HistoryNoteEditor({
+    open,
+    onOpenChange,
+    note,
+    onNoteChange,
+    noteId,
+    isPrivate,
+}: NoteEditorProps) {
     const [value, setValue] = useState(note);
+    const [noteIsPrivate, setNoteIsPrivate] = useState(isPrivate);
     const handleSave = () => {
-        onNoteChange(noteId, value, isPrivate);
+        onNoteChange(noteId, value, noteIsPrivate);
         onOpenChange(false);
     };
 
@@ -34,8 +43,12 @@ export function NoteEditor({ open, onOpenChange, note, onNoteChange, noteId, isP
                     <DialogTitle>
                         <Trans>Edit Note</Trans>
                     </DialogTitle>
+                    <DialogDescription>
+                        <Trans>Update the note content or visibility</Trans>
+                    </DialogDescription>
                 </DialogHeader>
                 <Textarea value={value} onChange={e => setValue(e.target.value)} />
+                <HistoryNoteCheckbox value={noteIsPrivate} onChange={setNoteIsPrivate} />
                 <DialogFooter>
                     <Button onClick={() => handleSave()}>
                         <Trans>Save</Trans>
