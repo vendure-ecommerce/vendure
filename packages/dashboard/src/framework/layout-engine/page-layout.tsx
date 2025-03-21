@@ -53,7 +53,7 @@ export function PageTitle({ children }: { children: React.ReactNode }) {
 }
 
 export function PageActionBar({ children }: { children: React.ReactNode }) {
-    return <div className="flex justify-between">{children}</div>;
+    return <div className="flex justify-between gap-2">{children}</div>;
 }
 
 export function PageBlock({ children, title, description, borderless }: PageBlockProps) {
