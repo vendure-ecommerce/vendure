@@ -8,6 +8,7 @@ import { PlusIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
+import { Badge } from '@/components/ui/badge.js';
 export const Route = createFileRoute('/_authenticated/_administrators/administrators')({
     component: AdministratorListPage,
     loader: () => ({ breadcrumb: () => <Trans>Administrators</Trans> }),
@@ -41,7 +42,17 @@ function AdministratorListPage() {
                     id: 'roles',
                     header: 'Roles',
                     cell: ({ row }) => {
-                        return row.original.user.roles.map((role: any) => role.name).join(', ');
+                        return (
+                            <div className="flex flex-wrap gap-2">
+                                {row.original.user.roles.map(role => {
+                                    return (
+                                        <Badge variant="secondary" key={role.id}>
+                                            {role.code}
+                                        </Badge>
+                                    );
+                                })}
+                            </div>
+                        );
                     },
                 },
             ]}
