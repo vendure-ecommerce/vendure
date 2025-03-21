@@ -64,7 +64,7 @@ function AdministratorListPage() {
                 <PermissionGuard requires={['CreateAdministrator']}>
                     <Button asChild>
                         <Link to="./new">
-                            <PlusIcon className="mr-2 h-4 w-4" />
+                            <PlusIcon />
                             New Administrator
                         </Link>
                     </Button>

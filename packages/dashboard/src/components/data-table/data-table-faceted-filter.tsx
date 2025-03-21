@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Column } from '@tanstack/react-table';
-import { Check, PlusCircle } from 'lucide-react';
+import { Check, FilterIcon, PlusCircle } from 'lucide-react';
 
 import { cn } from '@/lib/utils.js';
 import { Badge } from '@/components/ui/badge.js';
@@ -26,6 +26,7 @@ export interface DataTableFacetedFilterOption {
 export interface DataTableFacetedFilterProps<TData, TValue> {
     column?: Column<TData, TValue>;
     title?: string;
+    icon?: React.ComponentType<{ className?: string }>;
     options?: DataTableFacetedFilterOption[];
     optionsFn?: () => Promise<DataTableFacetedFilterOption[]>;
 }
@@ -33,6 +34,7 @@ export interface DataTableFacetedFilterProps<TData, TValue> {
 export function DataTableFacetedFilter<TData, TValue>({
     column,
     title,
+    icon,
     options,
     optionsFn,
 }: DataTableFacetedFilterProps<TData, TValue>) {
@@ -70,7 +72,8 @@ export function DataTableFacetedFilter<TData, TValue>({
         <Popover>
             <PopoverTrigger asChild>
                 <Button variant="outline" size="sm" className="h-8 border-dashed">
-                    <PlusCircle />
+                    {icon && <icon />}
+                    {!icon && <FilterIcon />}
                     {title}
                     {selectedValues?.size > 0 && (
                         <>

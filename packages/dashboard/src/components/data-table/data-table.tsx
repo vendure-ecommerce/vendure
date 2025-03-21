@@ -26,6 +26,7 @@ import { DataTableFacetedFilter, DataTableFacetedFilterOption } from './data-tab
 
 export interface FacetedFilter {
     title: string;
+    icon?: React.ComponentType<{ className?: string }>;
     optionsFn?: () => Promise<DataTableFacetedFilterOption[]>;
     options?: DataTableFacetedFilterOption[];
 }

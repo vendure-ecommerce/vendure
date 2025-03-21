@@ -16,6 +16,8 @@ import { Route as AboutImport } from './routes/about';
 import { Route as AuthenticatedImport } from './routes/_authenticated';
 import { Route as AuthenticatedIndexImport } from './routes/_authenticated/index';
 import { Route as AuthenticatedDashboardImport } from './routes/_authenticated/dashboard';
+import { Route as AuthenticatedZonesZonesImport } from './routes/_authenticated/_zones/zones';
+import { Route as AuthenticatedTaxRatesTaxRatesImport } from './routes/_authenticated/_tax-rates/tax-rates';
 import { Route as AuthenticatedTaxCategoriesTaxCategoriesImport } from './routes/_authenticated/_tax-categories/tax-categories';
 import { Route as AuthenticatedSystemJobQueueImport } from './routes/_authenticated/_system/job-queue';
 import { Route as AuthenticatedSystemHealthchecksImport } from './routes/_authenticated/_system/healthchecks';
@@ -28,6 +30,7 @@ import { Route as AuthenticatedProductVariantsProductVariantsImport } from './ro
 import { Route as AuthenticatedPaymentMethodsPaymentMethodsImport } from './routes/_authenticated/_payment-methods/payment-methods';
 import { Route as AuthenticatedOrdersOrdersImport } from './routes/_authenticated/_orders/orders';
 import { Route as AuthenticatedFacetsFacetsImport } from './routes/_authenticated/_facets/facets';
+import { Route as AuthenticatedCountriesCountriesImport } from './routes/_authenticated/_countries/countries';
 import { Route as AuthenticatedCollectionsCollectionsImport } from './routes/_authenticated/_collections/collections';
 import { Route as AuthenticatedChannelsChannelsImport } from './routes/_authenticated/_channels/channels';
 import { Route as AuthenticatedAssetsAssetsImport } from './routes/_authenticated/_assets/assets';
@@ -65,6 +68,18 @@ const AuthenticatedIndexRoute = AuthenticatedIndexImport.update({
 const AuthenticatedDashboardRoute = AuthenticatedDashboardImport.update({
     id: '/dashboard',
     path: '/dashboard',
+    getParentRoute: () => AuthenticatedRoute,
+} as any);
+
+const AuthenticatedZonesZonesRoute = AuthenticatedZonesZonesImport.update({
+    id: '/_zones/zones',
+    path: '/zones',
+    getParentRoute: () => AuthenticatedRoute,
+} as any);
+
+const AuthenticatedTaxRatesTaxRatesRoute = AuthenticatedTaxRatesTaxRatesImport.update({
+    id: '/_tax-rates/tax-rates',
+    path: '/tax-rates',
     getParentRoute: () => AuthenticatedRoute,
 } as any);
 
@@ -143,6 +158,12 @@ const AuthenticatedOrdersOrdersRoute = AuthenticatedOrdersOrdersImport.update({
 const AuthenticatedFacetsFacetsRoute = AuthenticatedFacetsFacetsImport.update({
     id: '/_facets/facets',
     path: '/facets',
+    getParentRoute: () => AuthenticatedRoute,
+} as any);
+
+const AuthenticatedCountriesCountriesRoute = AuthenticatedCountriesCountriesImport.update({
+    id: '/_countries/countries',
+    path: '/countries',
     getParentRoute: () => AuthenticatedRoute,
 } as any);
 
@@ -264,6 +285,13 @@ declare module '@tanstack/react-router' {
             preLoaderRoute: typeof AuthenticatedCollectionsCollectionsImport;
             parentRoute: typeof AuthenticatedImport;
         };
+        '/_authenticated/_countries/countries': {
+            id: '/_authenticated/_countries/countries';
+            path: '/countries';
+            fullPath: '/countries';
+            preLoaderRoute: typeof AuthenticatedCountriesCountriesImport;
+            parentRoute: typeof AuthenticatedImport;
+        };
         '/_authenticated/_facets/facets': {
             id: '/_authenticated/_facets/facets';
             path: '/facets';
@@ -348,6 +376,20 @@ declare module '@tanstack/react-router' {
             preLoaderRoute: typeof AuthenticatedTaxCategoriesTaxCategoriesImport;
             parentRoute: typeof AuthenticatedImport;
         };
+        '/_authenticated/_tax-rates/tax-rates': {
+            id: '/_authenticated/_tax-rates/tax-rates';
+            path: '/tax-rates';
+            fullPath: '/tax-rates';
+            preLoaderRoute: typeof AuthenticatedTaxRatesTaxRatesImport;
+            parentRoute: typeof AuthenticatedImport;
+        };
+        '/_authenticated/_zones/zones': {
+            id: '/_authenticated/_zones/zones';
+            path: '/zones';
+            fullPath: '/zones';
+            preLoaderRoute: typeof AuthenticatedZonesZonesImport;
+            parentRoute: typeof AuthenticatedImport;
+        };
         '/_authenticated/_collections/collections_/$id': {
             id: '/_authenticated/_collections/collections_/$id';
             path: '/collections/$id';
@@ -388,6 +430,7 @@ interface AuthenticatedRouteChildren {
     AuthenticatedAssetsAssetsRoute: typeof AuthenticatedAssetsAssetsRoute;
     AuthenticatedChannelsChannelsRoute: typeof AuthenticatedChannelsChannelsRoute;
     AuthenticatedCollectionsCollectionsRoute: typeof AuthenticatedCollectionsCollectionsRoute;
+    AuthenticatedCountriesCountriesRoute: typeof AuthenticatedCountriesCountriesRoute;
     AuthenticatedFacetsFacetsRoute: typeof AuthenticatedFacetsFacetsRoute;
     AuthenticatedOrdersOrdersRoute: typeof AuthenticatedOrdersOrdersRoute;
     AuthenticatedPaymentMethodsPaymentMethodsRoute: typeof AuthenticatedPaymentMethodsPaymentMethodsRoute;
@@ -400,6 +443,8 @@ interface AuthenticatedRouteChildren {
     AuthenticatedSystemHealthchecksRoute: typeof AuthenticatedSystemHealthchecksRoute;
     AuthenticatedSystemJobQueueRoute: typeof AuthenticatedSystemJobQueueRoute;
     AuthenticatedTaxCategoriesTaxCategoriesRoute: typeof AuthenticatedTaxCategoriesTaxCategoriesRoute;
+    AuthenticatedTaxRatesTaxRatesRoute: typeof AuthenticatedTaxRatesTaxRatesRoute;
+    AuthenticatedZonesZonesRoute: typeof AuthenticatedZonesZonesRoute;
     AuthenticatedCollectionsCollectionsIdRoute: typeof AuthenticatedCollectionsCollectionsIdRoute;
     AuthenticatedFacetsFacetsIdRoute: typeof AuthenticatedFacetsFacetsIdRoute;
     AuthenticatedProductVariantsProductVariantsIdRoute: typeof AuthenticatedProductVariantsProductVariantsIdRoute;
@@ -413,6 +458,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
     AuthenticatedAssetsAssetsRoute: AuthenticatedAssetsAssetsRoute,
     AuthenticatedChannelsChannelsRoute: AuthenticatedChannelsChannelsRoute,
     AuthenticatedCollectionsCollectionsRoute: AuthenticatedCollectionsCollectionsRoute,
+    AuthenticatedCountriesCountriesRoute: AuthenticatedCountriesCountriesRoute,
     AuthenticatedFacetsFacetsRoute: AuthenticatedFacetsFacetsRoute,
     AuthenticatedOrdersOrdersRoute: AuthenticatedOrdersOrdersRoute,
     AuthenticatedPaymentMethodsPaymentMethodsRoute: AuthenticatedPaymentMethodsPaymentMethodsRoute,
@@ -425,6 +471,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
     AuthenticatedSystemHealthchecksRoute: AuthenticatedSystemHealthchecksRoute,
     AuthenticatedSystemJobQueueRoute: AuthenticatedSystemJobQueueRoute,
     AuthenticatedTaxCategoriesTaxCategoriesRoute: AuthenticatedTaxCategoriesTaxCategoriesRoute,
+    AuthenticatedTaxRatesTaxRatesRoute: AuthenticatedTaxRatesTaxRatesRoute,
+    AuthenticatedZonesZonesRoute: AuthenticatedZonesZonesRoute,
     AuthenticatedCollectionsCollectionsIdRoute: AuthenticatedCollectionsCollectionsIdRoute,
     AuthenticatedFacetsFacetsIdRoute: AuthenticatedFacetsFacetsIdRoute,
     AuthenticatedProductVariantsProductVariantsIdRoute: AuthenticatedProductVariantsProductVariantsIdRoute,
@@ -443,6 +491,7 @@ export interface FileRoutesByFullPath {
     '/assets': typeof AuthenticatedAssetsAssetsRoute;
     '/channels': typeof AuthenticatedChannelsChannelsRoute;
     '/collections': typeof AuthenticatedCollectionsCollectionsRoute;
+    '/countries': typeof AuthenticatedCountriesCountriesRoute;
     '/facets': typeof AuthenticatedFacetsFacetsRoute;
     '/orders': typeof AuthenticatedOrdersOrdersRoute;
     '/payment-methods': typeof AuthenticatedPaymentMethodsPaymentMethodsRoute;
@@ -455,6 +504,8 @@ export interface FileRoutesByFullPath {
     '/healthchecks': typeof AuthenticatedSystemHealthchecksRoute;
     '/job-queue': typeof AuthenticatedSystemJobQueueRoute;
     '/tax-categories': typeof AuthenticatedTaxCategoriesTaxCategoriesRoute;
+    '/tax-rates': typeof AuthenticatedTaxRatesTaxRatesRoute;
+    '/zones': typeof AuthenticatedZonesZonesRoute;
     '/collections/$id': typeof AuthenticatedCollectionsCollectionsIdRoute;
     '/facets/$id': typeof AuthenticatedFacetsFacetsIdRoute;
     '/product-variants/$id': typeof AuthenticatedProductVariantsProductVariantsIdRoute;
@@ -470,6 +521,7 @@ export interface FileRoutesByTo {
     '/assets': typeof AuthenticatedAssetsAssetsRoute;
     '/channels': typeof AuthenticatedChannelsChannelsRoute;
     '/collections': typeof AuthenticatedCollectionsCollectionsRoute;
+    '/countries': typeof AuthenticatedCountriesCountriesRoute;
     '/facets': typeof AuthenticatedFacetsFacetsRoute;
     '/orders': typeof AuthenticatedOrdersOrdersRoute;
     '/payment-methods': typeof AuthenticatedPaymentMethodsPaymentMethodsRoute;
@@ -482,6 +534,8 @@ export interface FileRoutesByTo {
     '/healthchecks': typeof AuthenticatedSystemHealthchecksRoute;
     '/job-queue': typeof AuthenticatedSystemJobQueueRoute;
     '/tax-categories': typeof AuthenticatedTaxCategoriesTaxCategoriesRoute;
+    '/tax-rates': typeof AuthenticatedTaxRatesTaxRatesRoute;
+    '/zones': typeof AuthenticatedZonesZonesRoute;
     '/collections/$id': typeof AuthenticatedCollectionsCollectionsIdRoute;
     '/facets/$id': typeof AuthenticatedFacetsFacetsIdRoute;
     '/product-variants/$id': typeof AuthenticatedProductVariantsProductVariantsIdRoute;
@@ -499,6 +553,7 @@ export interface FileRoutesById {
     '/_authenticated/_assets/assets': typeof AuthenticatedAssetsAssetsRoute;
     '/_authenticated/_channels/channels': typeof AuthenticatedChannelsChannelsRoute;
     '/_authenticated/_collections/collections': typeof AuthenticatedCollectionsCollectionsRoute;
+    '/_authenticated/_countries/countries': typeof AuthenticatedCountriesCountriesRoute;
     '/_authenticated/_facets/facets': typeof AuthenticatedFacetsFacetsRoute;
     '/_authenticated/_orders/orders': typeof AuthenticatedOrdersOrdersRoute;
     '/_authenticated/_payment-methods/payment-methods': typeof AuthenticatedPaymentMethodsPaymentMethodsRoute;
@@ -511,6 +566,8 @@ export interface FileRoutesById {
     '/_authenticated/_system/healthchecks': typeof AuthenticatedSystemHealthchecksRoute;
     '/_authenticated/_system/job-queue': typeof AuthenticatedSystemJobQueueRoute;
     '/_authenticated/_tax-categories/tax-categories': typeof AuthenticatedTaxCategoriesTaxCategoriesRoute;
+    '/_authenticated/_tax-rates/tax-rates': typeof AuthenticatedTaxRatesTaxRatesRoute;
+    '/_authenticated/_zones/zones': typeof AuthenticatedZonesZonesRoute;
     '/_authenticated/_collections/collections_/$id': typeof AuthenticatedCollectionsCollectionsIdRoute;
     '/_authenticated/_facets/facets_/$id': typeof AuthenticatedFacetsFacetsIdRoute;
     '/_authenticated/_product-variants/product-variants_/$id': typeof AuthenticatedProductVariantsProductVariantsIdRoute;
@@ -529,6 +586,7 @@ export interface FileRouteTypes {
         | '/assets'
         | '/channels'
         | '/collections'
+        | '/countries'
         | '/facets'
         | '/orders'
         | '/payment-methods'
@@ -541,6 +599,8 @@ export interface FileRouteTypes {
         | '/healthchecks'
         | '/job-queue'
         | '/tax-categories'
+        | '/tax-rates'
+        | '/zones'
         | '/collections/$id'
         | '/facets/$id'
         | '/product-variants/$id'
@@ -555,6 +615,7 @@ export interface FileRouteTypes {
         | '/assets'
         | '/channels'
         | '/collections'
+        | '/countries'
         | '/facets'
         | '/orders'
         | '/payment-methods'
@@ -567,6 +628,8 @@ export interface FileRouteTypes {
         | '/healthchecks'
         | '/job-queue'
         | '/tax-categories'
+        | '/tax-rates'
+        | '/zones'
         | '/collections/$id'
         | '/facets/$id'
         | '/product-variants/$id'
@@ -582,6 +645,7 @@ export interface FileRouteTypes {
         | '/_authenticated/_assets/assets'
         | '/_authenticated/_channels/channels'
         | '/_authenticated/_collections/collections'
+        | '/_authenticated/_countries/countries'
         | '/_authenticated/_facets/facets'
         | '/_authenticated/_orders/orders'
         | '/_authenticated/_payment-methods/payment-methods'
@@ -594,6 +658,8 @@ export interface FileRouteTypes {
         | '/_authenticated/_system/healthchecks'
         | '/_authenticated/_system/job-queue'
         | '/_authenticated/_tax-categories/tax-categories'
+        | '/_authenticated/_tax-rates/tax-rates'
+        | '/_authenticated/_zones/zones'
         | '/_authenticated/_collections/collections_/$id'
         | '/_authenticated/_facets/facets_/$id'
         | '/_authenticated/_product-variants/product-variants_/$id'
@@ -635,6 +701,7 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
         "/_authenticated/_assets/assets",
         "/_authenticated/_channels/channels",
         "/_authenticated/_collections/collections",
+        "/_authenticated/_countries/countries",
         "/_authenticated/_facets/facets",
         "/_authenticated/_orders/orders",
         "/_authenticated/_payment-methods/payment-methods",
@@ -647,6 +714,8 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
         "/_authenticated/_system/healthchecks",
         "/_authenticated/_system/job-queue",
         "/_authenticated/_tax-categories/tax-categories",
+        "/_authenticated/_tax-rates/tax-rates",
+        "/_authenticated/_zones/zones",
         "/_authenticated/_collections/collections_/$id",
         "/_authenticated/_facets/facets_/$id",
         "/_authenticated/_product-variants/product-variants_/$id",
@@ -681,6 +750,10 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
     },
     "/_authenticated/_collections/collections": {
       "filePath": "_authenticated/_collections/collections.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/_countries/countries": {
+      "filePath": "_authenticated/_countries/countries.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/_facets/facets": {
@@ -729,6 +802,14 @@ export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileT
     },
     "/_authenticated/_tax-categories/tax-categories": {
       "filePath": "_authenticated/_tax-categories/tax-categories.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/_tax-rates/tax-rates": {
+      "filePath": "_authenticated/_tax-rates/tax-rates.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/_zones/zones": {
+      "filePath": "_authenticated/_zones/zones.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/_collections/collections_/$id": {
