@@ -38,6 +38,7 @@ export interface ListPageProps<
     customizeColumns?: CustomizeColumnConfig<T>;
     additionalColumns?: AC;
     defaultColumnOrder?: (keyof ListQueryFields<T> | keyof AC)[];
+    defaultSort?: SortingState;
     defaultVisibility?: Partial<Record<keyof ListQueryFields<T> | keyof AC, boolean>>;
     children?: React.ReactNode;
     facetedFilters?: FacetedFilterConfig<T>;
@@ -55,6 +56,7 @@ export function ListPage<
     customizeColumns,
     additionalColumns,
     defaultColumnOrder,
+    defaultSort,
     route: routeOrFn,
     defaultVisibility,
     onSearchTermChange,
@@ -70,12 +72,16 @@ export function ListPage<
         itemsPerPage: routeSearch.perPage ? parseInt(routeSearch.perPage) : 10,
     };
 
-    const sorting: SortingState = (routeSearch.sort ?? '').split(',').map((s: string) => {
+    const sorting: SortingState = (routeSearch.sort ?? '').split(',').filter(s => s.length).map((s: string) => {
         return {
             id: s.replace(/^-/, ''),
             desc: s.startsWith('-'),
         };
     });
+
+    if (defaultSort && !sorting.length) {
+        sorting.push(...defaultSort);
+    }
 
     function sortToString(sortingStates?: SortingState) {
         return sortingStates?.map(s => `${s.desc ? '-' : ''}${s.id}`).join(',');

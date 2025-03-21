@@ -28,6 +28,7 @@ export function OrderListPage() {
                     },
                 };
             }}
+            defaultSort={[{ id: 'orderPlacedAt', desc: true }]}
             transformVariables={variables => {
                 return {
                     ...variables,

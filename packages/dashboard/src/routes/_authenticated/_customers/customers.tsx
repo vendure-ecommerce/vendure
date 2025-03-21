@@ -39,11 +39,8 @@ export function CustomerListPage() {
                 user: {
                     header: 'Status',
                     cell: ({ cell }) => {
-                        const value = cell.getValue() as ResultOf<
-                            typeof customerListDocument
-                        >['customers']['items'][number]['user'];
-                        const status = value ? (value.verified ? 'verified' : 'registered') : 'guest';
-                        return <CustomerStatusBadge status={status} />;
+                        const value = cell.getValue();
+                        return <CustomerStatusBadge user={value?.user} />;
                     },
                 },
             }}

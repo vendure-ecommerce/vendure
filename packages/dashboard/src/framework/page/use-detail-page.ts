@@ -180,15 +180,11 @@ export function useDetailPage<
         },
     });
 
-    const refreshEntity = useCallback(() => {
-        void queryClient.invalidateQueries({ queryKey: detailQueryOptions.queryKey });
-    }, [queryClient, detailQueryOptions.queryKey]);
-
     return {
         form,
         submitHandler,
         entity,
         isPending: updateMutation.isPending || detailQuery?.isPending,
-        refreshEntity,
+        refreshEntity: detailQuery.refetch,
     };
 }

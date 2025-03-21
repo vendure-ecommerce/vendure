@@ -110,7 +110,7 @@ export function FacetDetailPage() {
         <Page>
             <PageTitle>{creatingNewEntity ? <Trans>New facet</Trans> : (entity?.name ?? '')}</PageTitle>
             <Form {...form}>
-                <form onSubmit={submitHandler} className="space-y-8">
+                <form onSubmit={submitHandler} className="space-y-8"> 
                     <PageActionBar>
                         <ContentLanguageSelector />
                         <PermissionGuard requires={['UpdateProduct', 'UpdateCatalog']}>

@@ -92,7 +92,7 @@ export type PaginatedListKeys<
 }[keyof PaginatedListItemFields<T, Path>];
 
 export type CustomizeColumnConfig<T extends TypedDocumentNode<any, any>> = {
-    [Key in keyof PaginatedListItemFields<T>]?: Partial<ColumnDef<PaginatedListItemFields<T>>>;
+    [Key in keyof PaginatedListItemFields<T>]?: Partial<ColumnDef<PaginatedListItemFields<T>, PaginatedListItemFields<T>[Key]>>;
 };
 
 export type FacetedFilterConfig<T extends TypedDocumentNode<any, any>> = {
@@ -212,6 +212,8 @@ export function PaginatedListDataTable<
     const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
     const queryClient = useQueryClient();
 
+
+
     const sort = sorting?.reduce((acc: any, sort: ColumnSort) => {
         const direction = sort.desc ? 'DESC' : 'ASC';
         const field = sort.id;
@@ -221,6 +223,7 @@ export function PaginatedListDataTable<
         }
         return { ...acc, [field]: direction };
     }, {});
+
 
     const filter = columnFilters?.length
         ? {

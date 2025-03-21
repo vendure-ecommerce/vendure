@@ -1,16 +1,15 @@
 import { api } from '@/graphql/api.js';
 import { graphql } from '@/graphql/graphql.js';
 import { useLingui } from '@lingui/react/macro';
-import { useMutation, useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { orderHistoryDocument } from '../../orders.graphql.js';
-
+import { customerHistoryDocument } from '../../customers.graphql.js';
 // Simplified mutation definitions - adjust based on your actual schema
-const addOrderNoteDocument = graphql(`
-    mutation AddOrderNote($orderId: ID!, $note: String!, $isPublic: Boolean!) {
-        addNoteToOrder(input: { id: $orderId, note: $note, isPublic: $isPublic }) {
+const addCustomerNoteDocument = graphql(`
+    mutation AddCustomerNote($customerId: ID!, $note: String!, $isPublic: Boolean!) {
+        addNoteToCustomer(input: { id: $customerId, note: $note, isPublic: $isPublic }) {
             id
             history(options: { take: 1, sort: { createdAt: DESC } }) {
                 items {
@@ -25,24 +24,24 @@ const addOrderNoteDocument = graphql(`
     }
 `);
 
-const updateOrderNoteDocument = graphql(`
-    mutation UpdateOrderNote($noteId: ID!, $note: String!, $isPublic: Boolean!) {
-        updateOrderNote(input: { noteId: $noteId, note: $note, isPublic: $isPublic }) {
+const updateCustomerNoteDocument = graphql(`
+    mutation UpdateCustomerNote($noteId: ID!, $note: String!) {
+        updateCustomerNote(input: { noteId: $noteId, note: $note }) {
             id
         }
     }
 `);
 
-const deleteOrderNoteDocument = graphql(`
-    mutation DeleteOrderNote($noteId: ID!) {
-        deleteOrderNote(id: $noteId) {
+const deleteCustomerNoteDocument = graphql(`
+    mutation DeleteCustomerNote($noteId: ID!) {
+        deleteCustomerNote(id: $noteId) {
             result
             message
         }
     }
 `);
 
-export function useOrderHistory({ orderId, pageSize = 10 }: { orderId: string; pageSize?: number }) {
+export function useCustomerHistory({ customerId, pageSize = 10 }: { customerId: string; pageSize?: number }) {
     const [isLoading, setIsLoading] = useState(false);
     const { i18n } = useLingui();
 
@@ -56,18 +55,18 @@ export function useOrderHistory({ orderId, pageSize = 10 }: { orderId: string; p
         hasNextPage,
     } = useInfiniteQuery({
         queryFn: ({ pageParam = 0 }) =>
-            api.query(orderHistoryDocument, {
-                id: orderId,
+            api.query(customerHistoryDocument, {
+                id: customerId,
                 options: {
                     sort: { createdAt: 'DESC' },
                     skip: pageParam * pageSize,
                     take: pageSize,
                 },
             }),
-        queryKey: ['OrderHistory', orderId],
+        queryKey: ['CustomerHistory', customerId],
         initialPageParam: 0,
-        getNextPageParam: (lastPage, _pages, lastPageParam) => {
-            const totalItems = lastPage.order?.history?.totalItems ?? 0;
+        getNextPageParam: (lastPage, pages, lastPageParam) => {
+            const totalItems = lastPage.customer?.history?.totalItems ?? 0;
             const currentMaxItem = (lastPageParam + 1) * pageSize;
             const nextPage = lastPageParam + 1;
             return currentMaxItem < totalItems ? nextPage : undefined;
@@ -76,7 +75,7 @@ export function useOrderHistory({ orderId, pageSize = 10 }: { orderId: string; p
 
     // Add note mutation
     const { mutate: addNoteMutation } = useMutation({
-        mutationFn: api.mutate(addOrderNoteDocument),
+        mutationFn: api.mutate(addCustomerNoteDocument),
         onSuccess: () => {
             toast.success(i18n.t('Note added successfully'));
             void refetch();
@@ -89,15 +88,15 @@ export function useOrderHistory({ orderId, pageSize = 10 }: { orderId: string; p
     const addNote = (note: string, isPrivate: boolean) => {
         setIsLoading(true);
         addNoteMutation({
-            orderId,
+            customerId,
             note,
-            isPublic: !isPrivate, // isPrivate in UI is the opposite of isPublic in API
+            isPublic: !isPrivate,
         });
     };
 
     // Update note mutation
     const { mutate: updateNoteMutation } = useMutation({
-        mutationFn: api.mutate(updateOrderNoteDocument),
+        mutationFn: api.mutate(updateCustomerNoteDocument),
         onSuccess: () => {
             toast.success(i18n.t('Note updated successfully'));
             void refetch();
@@ -112,13 +111,12 @@ export function useOrderHistory({ orderId, pageSize = 10 }: { orderId: string; p
         updateNoteMutation({
             noteId,
             note,
-            isPublic: !isPrivate, // isPrivate in UI is the opposite of isPublic in API
         });
     };
 
     // Delete note mutation
     const { mutate: deleteNoteMutation } = useMutation({
-        mutationFn: api.mutate(deleteOrderNoteDocument),
+        mutationFn: api.mutate(deleteCustomerNoteDocument),
         onSuccess: () => {
             toast.success(i18n.t('Note deleted successfully'));
             void refetch();
@@ -134,11 +132,11 @@ export function useOrderHistory({ orderId, pageSize = 10 }: { orderId: string; p
         });
     };
 
-    const historyEntries = data?.pages.flatMap(page => page.order?.history?.items).filter(x => x != null);
+    const historyEntries = data?.pages.flatMap(page => page.customer?.history?.items).filter(x => x != null);
 
     return {
         historyEntries,
-        order: data?.pages[0]?.order,
+        customer: data?.pages[0]?.customer,
         loading: isLoadingQuery || isLoading,
         error,
         addNote,

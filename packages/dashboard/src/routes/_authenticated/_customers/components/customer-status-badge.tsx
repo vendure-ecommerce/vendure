@@ -2,7 +2,14 @@ import { Badge } from '@/components/ui/badge.js';
 import { BadgeX, BadgeCheck } from 'lucide-react';
 import { Trans } from '@lingui/react/macro';
 
-export function CustomerStatusBadge({ status }: { status: 'guest' | 'registered' | 'verified' }) {
+export type CustomerStatus = 'guest' | 'registered' | 'verified';
+
+export interface CustomerStatusBadgeProps {
+    user?: { verified: boolean } | null;
+}
+
+export function CustomerStatusBadge({ user }: CustomerStatusBadgeProps) {
+    const status = user ? (user.verified ? 'verified' : 'registered') : 'guest';
     return (
         <Badge variant="outline">
             {status === 'verified' ? (

@@ -23,8 +23,22 @@ import {
     createCustomerDocument,
     customerDetailDocument,
     updateCustomerDocument,
+    createCustomerAddressDocument,
+    removeCustomerFromGroupDocument,
+    addCustomerToGroupDocument,
 } from './customers.graphql.js';
 import { CustomerAddressCard } from './components/customer-address-card.js';
+import { DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogContent, Dialog } from '@/components/ui/dialog.js';
+import { EditIcon, Plus } from 'lucide-react';
+import { CustomerAddressForm } from './components/customer-address-form.js';
+import { useState } from 'react';
+import { api } from '@/graphql/api.js';
+import { useMutation } from '@tanstack/react-query';
+import { CustomerOrderTable } from './components/customer-order-table.js';
+import { CustomerHistoryContainer } from './components/customer-history/customer-history-container.js';
+import { CustomerGroupSelector } from '@/components/shared/customer-group-selector.js';
+import { CustomerGroupChip } from '@/components/shared/customer-group-chip.js';
+import { CustomerStatusBadge } from './components/customer-status-badge.js';
 
 export const Route = createFileRoute('/_authenticated/_customers/customers_/$id')({
     component: CustomerDetailPage,
@@ -58,8 +72,9 @@ export function CustomerDetailPage() {
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const { i18n } = useLingui();
+    const [newAddressOpen, setNewAddressOpen] = useState(false);
 
-    const { form, submitHandler, entity, isPending } = useDetailPage({
+    const { form, submitHandler, entity, isPending, refreshEntity } = useDetailPage({
         queryDocument: addCustomFields(customerDetailDocument),
         entityField: 'customer',
         createDocument: createCustomerDocument,
@@ -98,6 +113,37 @@ export function CustomerDetailPage() {
                 position: 'top-right',
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
+        },
+    });
+
+    const { mutate: createAddress } = useMutation({
+        mutationFn: api.mutate(createCustomerAddressDocument),
+        onSuccess: () => {
+            setNewAddressOpen(false);
+            refreshEntity();
+        },
+        onError: () => {
+            toast(i18n.t('Failed to create address'), { position: 'top-right' });
+        },
+    });
+
+    const { mutate: addCustomerToGroup } = useMutation({
+        mutationFn: api.mutate(addCustomerToGroupDocument),
+        onSuccess: () => {
+            refreshEntity();
+        },
+        onError: () => {
+            toast(i18n.t('Failed to add customer to group'), { position: 'top-right' });
+        },
+    });
+
+    const { mutate: removeCustomerFromGroup } = useMutation({
+        mutationFn: api.mutate(removeCustomerFromGroupDocument),
+        onSuccess: () => {
+            refreshEntity();
+        },
+        onError: () => {
+            toast(i18n.t('Failed to remove customer from group'), { position: 'top-right' });
         },
     });
 
@@ -203,16 +249,71 @@ export function CustomerDetailPage() {
                         </PageBlock>
                         <CustomFieldsPageBlock column="main" entityType="Customer" control={form.control} />
                         <PageBlock column="main" title={<Trans>Addresses</Trans>}>
-                            <div className="md:grid md:grid-cols-2 gap-4">
+                            <div className="md:grid md:grid-cols-2 gap-4 mb-4">
                                 {entity?.addresses?.map(address => (
                                     <CustomerAddressCard
                                         key={address.id}
                                         address={address}
                                         editable
                                         deletable
+                                        onUpdate={() => {
+                                            refreshEntity();
+                                        }}
+                                        onDelete={() => {
+                                            refreshEntity();
+                                        }}
                                     />
                                 ))}
                             </div>
+                            <Dialog open={newAddressOpen} onOpenChange={setNewAddressOpen}>
+                                <DialogTrigger asChild>
+                                    <Button variant="outline">
+                                        <Plus className="w-4 h-4" /> <Trans>Add new address</Trans>
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>
+                                            <Trans>Add new address</Trans>
+                                        </DialogTitle>
+                                        <DialogDescription>
+                                            <Trans>Add a new address to the customer.</Trans>
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <CustomerAddressForm
+                                        onSubmit={values => {
+                                            const { id, ...input } = values;
+                                            createAddress({
+                                                customerId: entity.id,
+                                                input,
+                                            });
+                                        }}
+                                    />
+                                </DialogContent>
+                            </Dialog>
+                        </PageBlock>
+                        <PageBlock column="main" title={<Trans>Orders</Trans>}>
+                            <CustomerOrderTable customerId={entity.id} />
+                        </PageBlock>
+                        <PageBlock column="main" title={<Trans>Customer history</Trans>}>
+                            <CustomerHistoryContainer customerId={entity.id} />
+                        </PageBlock>
+                        <PageBlock column="side" title={<Trans>Status</Trans>}>
+                            <CustomerStatusBadge user={entity.user} />
+                        </PageBlock>
+                        <PageBlock column="side" title={<Trans>Customer groups</Trans>}>
+                            <div className={`flex flex-col gap-2 ${entity?.groups?.length > 0 ? 'mb-2' : ''}`}>
+                                {entity?.groups?.map(group => (
+                                    <CustomerGroupChip
+                                        key={group.id}
+                                        group={group}
+                                        onRemove={groupId => removeCustomerFromGroup({ customerId: entity.id, groupId })}
+                                    />
+                                ))}
+                            </div>
+                            <CustomerGroupSelector
+                                onSelect={group => addCustomerToGroup({ customerId: entity.id, groupId: group.id })}
+                            />
                         </PageBlock>
                     </PageLayout>
                 </form>
