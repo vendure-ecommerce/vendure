@@ -124,9 +124,9 @@ export function DataTable<TData, TValue>({
                                 <DataTableFacetedFilter
                                     key={key}
                                     column={table.getColumn(key)}
-                                    title={filter.title}
-                                    options={filter.options}
-                                    optionsFn={filter.optionsFn}
+                                    title={filter?.title}
+                                    options={filter?.options}
+                                    optionsFn={filter?.optionsFn}
                                 />
                             ))}
                         </Suspense>

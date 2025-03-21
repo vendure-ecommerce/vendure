@@ -55,7 +55,7 @@ export function CustomerListPage() {
                         return (
                             <Button asChild variant="ghost">
                                 <Link
-                                    to="/_authenticated/_customers/customers/$id"
+                                    to="/customers/$id"
                                     params={{ id: row.original.id }}
                                 >
                                     {value}

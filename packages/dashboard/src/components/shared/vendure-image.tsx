@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils.js';
+import { Image } from 'lucide-react';
 import React from 'react';
 
 export interface AssetLike {
@@ -42,7 +43,7 @@ export function VendureImage({
     ...imgProps
 }: VendureImageProps) {
     if (!asset) {
-        return fallback ? <>{fallback}</> : null;
+        return fallback ? <>{fallback}</> : <PlaceholderImage preset={preset} width={width} height={height} className={className} />;
     }
 
     // Build the URL with query parameters
@@ -84,6 +85,46 @@ export function VendureImage({
             ref={ref}
             {...imgProps}
         />
+    );
+}
+
+export function PlaceholderImage({
+    width = 100,
+    height = 100,
+    preset = null,
+    className,
+    ...props
+}: React.ImgHTMLAttributes<HTMLImageElement> & { preset?: ImagePreset }) {
+    if (preset) {
+        switch (preset) {
+            case 'tiny':
+                width = 50;
+                height = 50;
+                break;
+            case 'thumb':
+                width = 150;
+                height = 150;
+                break;
+            case 'small':
+                width = 300;
+                height = 300;
+                break;
+            case 'medium':
+                width = 500;
+                height = 500;
+                break;
+            case 'large':
+                width = 800;
+                height = 800;
+                break;
+            default:
+                break;
+        }
+    }
+    return (
+        <div className={cn(className, 'rounded-sm bg-muted')} style={{ width, height }} {...props}>
+            <Image className="w-full h-full text-muted-foreground" />
+        </div>
     );
 }
 

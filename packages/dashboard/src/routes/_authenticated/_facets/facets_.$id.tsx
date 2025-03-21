@@ -60,7 +60,7 @@ export function FacetDetailPage() {
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const { i18n } = useLingui();
 
-    const { form, submitHandler, entity, isPending, refreshEntity } = useDetailPage({
+    const { form, submitHandler, entity, isPending } = useDetailPage({
         queryDocument: addCustomFields(facetDetailDocument),
         entityField: 'facet',
         createDocument: createFacetDocument,
