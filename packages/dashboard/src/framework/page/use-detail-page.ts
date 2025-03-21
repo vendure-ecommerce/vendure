@@ -1,18 +1,13 @@
 import { NEW_ENTITY_PATH } from '@/constants.js';
-import { api } from '@/graphql/api.js';
-import { useCustomFieldConfig } from '@/hooks/use-custom-field-config.js';
+import { api, Variables } from '@/graphql/api.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { queryOptions, useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { ResultOf, VariablesOf } from 'gql.tada';
 import { DocumentNode } from 'graphql';
-import { Variables } from 'graphql-request';
-import { useCallback } from 'react';
+import { FormEvent, useCallback } from 'react';
+import { UseFormReturn } from 'react-hook-form';
 
-import {
-    getMutationName,
-    getQueryName,
-    getQueryTypeFieldInfo,
-} from '../document-introspection/get-document-structure.js';
+import { getMutationName, getQueryName } from '../document-introspection/get-document-structure.js';
 import { useGeneratedForm } from '../form-engine/use-generated-form.js';
 
 export interface DetailPageOptions<
@@ -82,6 +77,42 @@ export function getDetailQueryOptions<T, V extends Variables = Variables>(
 
 /**
  * @description
+ * Adds a "customFields" property to the translations if the entity has translations.
+ */
+export type DetailPageTranslations<
+    T extends TypedDocumentNode<any, any>,
+    EntityField extends keyof ResultOf<T>,
+> = 'translations' extends keyof NonNullable<ResultOf<T>[EntityField]>
+    ? Array<NonNullable<ResultOf<T>[EntityField]>['translations'][number] & { customFields?: any }>
+    : undefined;
+
+/**
+ * @description
+ * Adds a "customFields" property to the entity and a "translations" property to the entity.
+ */
+export type DetailPageEntity<
+    T extends TypedDocumentNode<any, any>,
+    EntityField extends keyof ResultOf<T>,
+> = ResultOf<T>[EntityField] & {
+    customFields?: any;
+    translations: DetailPageTranslations<T, EntityField>;
+};
+
+export interface UseDetailPageResult<
+    T extends TypedDocumentNode<any, any>,
+    C extends TypedDocumentNode<any, any>,
+    U extends TypedDocumentNode<any, any>,
+    EntityField extends keyof ResultOf<T>,
+> {
+    form: UseFormReturn<VariablesOf<U>['input']>;
+    submitHandler: (event: FormEvent<HTMLFormElement>) => void;
+    entity: DetailPageEntity<T, EntityField>;
+    isPending: boolean;
+    refreshEntity: () => void;
+}
+
+/**
+ * @description
  * This hook is used to create an entity detail page which can read
  * and update an entity.
  */
@@ -92,7 +123,9 @@ export function useDetailPage<
     EntityField extends keyof ResultOf<T> = keyof ResultOf<T>,
     VarNameUpdate extends keyof VariablesOf<U> = 'input',
     VarNameCreate extends keyof VariablesOf<C> = 'input',
->(options: DetailPageOptions<T, C, U, EntityField, VarNameCreate, VarNameUpdate>) {
+>(
+    options: DetailPageOptions<T, C, U, EntityField, VarNameCreate, VarNameUpdate>,
+): UseDetailPageResult<T, C, U, EntityField> {
     const {
         queryDocument,
         createDocument,
@@ -109,7 +142,7 @@ export function useDetailPage<
     const queryClient = useQueryClient();
     const detailQueryOptions = getDetailQueryOptions(queryDocument, { id: isNew ? '__NEW__' : params.id });
     const detailQuery = useSuspenseQuery(detailQueryOptions);
-    const entity = detailQuery?.data[entityField];
+    const entity = detailQuery?.data[entityField] as DetailPageEntity<T, EntityField>;
 
     const createMutation = useMutation({
         mutationFn: createDocument ? api.mutate(createDocument) : undefined,
@@ -133,8 +166,9 @@ export function useDetailPage<
         onError,
     });
 
+    const document = isNew ? (createDocument ?? updateDocument) : updateDocument;
     const { form, submitHandler } = useGeneratedForm({
-        document: isNew ? (createDocument ?? updateDocument) : updateDocument,
+        document,
         entity,
         setValues: setValuesForUpdate,
         onSubmit(values: any) {

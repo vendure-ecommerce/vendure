@@ -9,14 +9,14 @@ import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { VariablesOf } from 'gql.tada';
 import { FormEvent } from 'react';
-import { useForm, UseFormReturn } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 export interface GeneratedFormOptions<
     T extends TypedDocumentNode<any, any>,
     VarName extends keyof VariablesOf<T> = 'input',
     E extends Record<string, any> = Record<string, any>,
 > {
-    document: T;
+    document?: T;
     entity: E | null | undefined;
     setValues: (entity: NonNullable<E>) => VariablesOf<T>[VarName];
     onSubmit?: (values: VariablesOf<T>[VarName]) => void;
@@ -27,7 +27,7 @@ export interface GeneratedFormOptions<
  * This hook is used to create a form from a document and an entity.
  * It will create a form with the fields defined in the document's input type.
  * It will also create a submit handler that will submit the form to the server.
- * 
+ *
  */
 export function useGeneratedForm<
     T extends TypedDocumentNode<any, any>,
