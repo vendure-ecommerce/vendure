@@ -5,8 +5,11 @@ import { roleListQuery } from './roles.graphql.js';
 import { ListPage } from '@/framework/page/list-page.js';
 import { ExpandablePermissions } from './components/expandable-permissions.js';
 import { Badge } from '@/components/ui/badge.js';
-import { LayersIcon } from 'lucide-react';
-
+import { LayersIcon, PlusIcon } from 'lucide-react';
+import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
+import { PermissionGuard } from '@/components/shared/permission-guard.js';
+import { Button } from '@/components/ui/button.js';
+import { Link } from '@tanstack/react-router';
 export const Route = createFileRoute('/_authenticated/_roles/roles')({
     component: RoleListPage,
     loader: () => ({ breadcrumb: () => <Trans>Roles</Trans> }),
@@ -60,6 +63,17 @@ function RoleListPage() {
                     },
                 },
             }}
-        />
+        >
+            <PageActionBar>
+                <PermissionGuard requires={['CreateAdministrator']}>
+                    <Button asChild>
+                        <Link to="./new">
+                            <PlusIcon className="mr-2 h-4 w-4" />
+                            New Role
+                        </Link>
+                    </Button>
+                </PermissionGuard>
+            </PageActionBar>
+        </ListPage>
     );
 }
