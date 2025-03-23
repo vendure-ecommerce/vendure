@@ -17,12 +17,14 @@ function InnerApp() {
     const auth = useAuth();
     const extendedRouter = useExtendedRouter(router);
     const serverConfig = useServerConfig();
+
     useEffect(() => {
         if (!serverConfig) {
-            return document;
+            return;
         }
         setCustomFieldsMap(serverConfig.entityCustomFields);
     }, [serverConfig?.entityCustomFields]);
+
     return <RouterProvider router={extendedRouter} context={{ auth, queryClient }} />;
 }
 
