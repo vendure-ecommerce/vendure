@@ -14,6 +14,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Label } from '../ui/label.js';
 import { uiConfig } from 'virtual:vendure-ui-config';
 import { useUserSettings } from '@/hooks/use-user-settings.js';
+import { useLocalFormat } from '@/hooks/use-local-format.js';
+import { useState } from 'react';
 
 /**
  * This is copied from the generated types from @vendure/common/lib/generated-types.d.ts
@@ -341,6 +343,8 @@ export function LanguageDialog() {
     const { availableLocales, availableLanguages } = uiConfig;
     const { settings, setDisplayLanguage, setDisplayLocale } = useUserSettings();
     const availableCurrencyCodes = Object.values(CurrencyCode);
+    const { formatCurrency, formatLanguageName, formatCurrencyName, formatDate } = useLocalFormat();
+    const [selectedCurrency, setSelectedCurrency] = useState<string>('USD');
 
     return (
         <DialogContent>
@@ -361,8 +365,7 @@ export function LanguageDialog() {
                         <SelectContent>
                             {availableLanguages.map(language => (
                                 <SelectItem key={language} value={language}>
-                                    {/* TODO: Translate with global helper function */}
-                                    Language {language}
+                                    {formatLanguageName(language)}
                                 </SelectItem>
                             ))}
                         </SelectContent>
@@ -379,8 +382,7 @@ export function LanguageDialog() {
                         <SelectContent>
                             {availableLocales.map(locale => (
                                 <SelectItem key={locale} value={locale}>
-                                    {/* TODO: Translate with global helper function */}
-                                    Locale {locale}
+                                    {formatLanguageName(locale)}
                                 </SelectItem>
                             ))}
                         </SelectContent>
@@ -391,33 +393,29 @@ export function LanguageDialog() {
                 <span className="font-medium block text-accent-foreground">
                     <Trans>Sample Formatting</Trans>: {settings.displayLocale} {settings.displayLanguage}
                 </span>
-                <Select>
+                <Select defaultValue={selectedCurrency} onValueChange={setSelectedCurrency}>
                     <SelectTrigger>
                         <SelectValue placeholder="Select a currency" />
                     </SelectTrigger>
                     <SelectContent>
                         {availableCurrencyCodes.map(currency => (
                             <SelectItem key={currency} value={currency}>
-                                {/* TODO: Translate with global helper function */}
-                                {currency}
+                                {formatCurrencyName(currency)}
                             </SelectItem>
                         ))}
                     </SelectContent>
                 </Select>
                 <div className="flex flex-col">
                     <span className="text-muted-foreground text-sm font-medium">Medium date</span>
-                    {/* TODO: Format date with global helper function */}
-                    <span>2025-03-14</span>
+                    <span>{formatDate(new Date('2025-03-14'), { dateStyle: 'medium' })}</span>
                 </div>
                 <div className="flex flex-col">
                     <span className="text-muted-foreground text-sm font-medium">Short date</span>
-                    {/* TODO: Format date with global helper function */}
-                    <span>2025-03-14</span>
+                    <span>{formatDate(new Date('2025-03-14'), { dateStyle: 'short' })}</span>
                 </div>
                 <div className="flex flex-col">
                     <span className="text-muted-foreground text-sm font-medium">Price</span>
-                    {/* TODO: Format price with global helper function */}
-                    <span>100.00</span>
+                    <span>{formatCurrency(100.0, selectedCurrency)}</span>
                 </div>
             </div>
             <DialogFooter>
