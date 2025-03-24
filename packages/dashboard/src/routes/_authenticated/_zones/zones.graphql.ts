@@ -41,3 +41,47 @@ export const zoneMembersQuery = graphql(`
         }
     }
 `);
+
+export const zoneDetailQuery = graphql(
+    `
+        query ZoneDetail($id: ID!) {
+            zone(id: $id) {
+                ...ZoneItem
+                customFields
+            }
+        }
+    `,
+    [zoneItemFragment],
+);
+
+export const createZoneDocument = graphql(`
+    mutation CreateZone($input: CreateZoneInput!) {
+        createZone(input: $input) {
+            id
+        }
+    }
+`);
+
+export const updateZoneDocument = graphql(`
+    mutation UpdateZone($input: UpdateZoneInput!) {
+        updateZone(input: $input) {
+            id
+        }
+    }
+`);
+
+export const addCountryToZoneMutation = graphql(`
+    mutation AddMembersToZone($zoneId: ID!, $memberIds: [ID!]!) {
+        addMembersToZone(zoneId: $zoneId, memberIds: $memberIds) {
+            id
+        }
+    }
+`);
+
+export const removeCountryFromZoneMutation = graphql(`
+    mutation RemoveMembersFromZone($zoneId: ID!, $memberIds: [ID!]!) {
+        removeMembersFromZone(zoneId: $zoneId, memberIds: $memberIds) {
+            id
+        }
+    }
+`);
