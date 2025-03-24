@@ -21,9 +21,8 @@ import {
     SortingState,
     Table,
 } from '@tanstack/react-table';
-import { AccessorKeyColumnDef, ColumnDef } from '@tanstack/table-core';
-import React, { Key, useMemo } from 'react';
-import { customerListDocument } from '@/routes/_authenticated/_customers/customers.graphql.js';
+import { ColumnDef } from '@tanstack/table-core';
+import React, { useMemo } from 'react';
 
 // Type that identifies a paginated list structure (has items array and totalItems)
 type IsPaginatedList<T> = T extends { items: any[]; totalItems: number } ? true : false;
@@ -188,7 +187,7 @@ export interface PaginatedListDataTableProps<
 export function PaginatedListDataTable<
     T extends TypedDocumentNode<U, V>,
     U extends Record<string, any> = any,
-    V extends ListQueryOptionsShape = {},
+    V extends ListQueryOptionsShape = any,
     AC extends AdditionalColumns<T> = AdditionalColumns<T>,
 >({
     listQuery,

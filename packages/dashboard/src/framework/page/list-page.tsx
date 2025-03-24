@@ -47,7 +47,7 @@ export interface ListPageProps<
 export function ListPage<
     T extends TypedDocumentNode<U, V>,
     U extends Record<string, any> = any,
-    V extends ListQueryOptionsShape = {},
+    V extends ListQueryOptionsShape = ListQueryOptionsShape,
     AC extends AdditionalColumns<T> = AdditionalColumns<T>,
 >({
     title,
