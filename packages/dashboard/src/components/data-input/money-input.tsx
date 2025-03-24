@@ -1,7 +1,7 @@
-import { Input } from '../ui/input.js';
 import { useUserSettings } from '@/hooks/use-user-settings.js';
 import { useMemo, useState, useEffect } from 'react';
 import { useLocalFormat } from '@/hooks/use-local-format.js';
+import { AffixedInput } from './affixed-input.js';
 
 // Original component
 function MoneyInputInternal({
@@ -55,57 +55,52 @@ function MoneyInputInternal({
     }, [currency, displayLocale, displayLanguage]);
 
     return (
-        <div className="relative flex items-center">
-            {shouldPrefix && <span className="absolute left-3 text-muted-foreground">{currencySymbol}</span>}
-            <Input
-                type="text"
-                value={displayValue}
-                onChange={e => {
-                    const inputValue = e.target.value;
-                    // Allow empty input
-                    if (inputValue === '') {
-                        setDisplayValue('');
-                        return;
-                    }
-                    // Only allow numbers and one decimal point
-                    if (!/^[0-9.]*$/.test(inputValue)) {
-                        return;
-                    }
-                    setDisplayValue(inputValue);
-                }}
-                onKeyDown={e => {
-                    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-                        e.preventDefault();
-                        const currentValue = parseFloat(displayValue) || 0;
-                        const step = e.key === 'ArrowUp' ? 0.01 : -0.01;
-                        const newValue = currentValue + step;
-                        if (newValue >= 0) {
-                            onChange(toMinorUnits(newValue));
-                            setDisplayValue(newValue.toString());
-                        }
-                    }
-                }}
-                onBlur={e => {
-                    const inputValue = e.target.value;
-                    if (inputValue === '') {
-                        onChange(0);
-                        setDisplayValue('0');
-                        return;
-                    }
-                    const newValue = parseFloat(inputValue);
-                    if (!isNaN(newValue)) {
+        <AffixedInput
+            type="text"
+            value={displayValue}
+            onChange={e => {
+                const inputValue = e.target.value;
+                // Allow empty input
+                if (inputValue === '') {
+                    setDisplayValue('');
+                    return;
+                }
+                // Only allow numbers and one decimal point
+                if (!/^[0-9.]*$/.test(inputValue)) {
+                    return;
+                }
+                setDisplayValue(inputValue);
+            }}
+            onKeyDown={e => {
+                if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    const currentValue = parseFloat(displayValue) || 0;
+                    const step = e.key === 'ArrowUp' ? 0.01 : -0.01;
+                    const newValue = currentValue + step;
+                    if (newValue >= 0) {
                         onChange(toMinorUnits(newValue));
-                        setDisplayValue(newValue.toFixed(2));
+                        setDisplayValue(newValue.toString());
                     }
-                }}
-                className={shouldPrefix ? 'pl-8' : 'pr-8'}
-                step="0.01"
-                min="0"
-            />
-            {!shouldPrefix && (
-                <span className="absolute right-3 text-muted-foreground">{currencySymbol}</span>
-            )}
-        </div>
+                }
+            }}
+            onBlur={e => {
+                const inputValue = e.target.value;
+                if (inputValue === '') {
+                    onChange(0);
+                    setDisplayValue('0');
+                    return;
+                }
+                const newValue = parseFloat(inputValue);
+                if (!isNaN(newValue)) {
+                    onChange(toMinorUnits(newValue));
+                    setDisplayValue(newValue.toFixed(2));
+                }
+            }}
+            step="0.01"
+            min="0"
+            prefix={shouldPrefix ? currencySymbol : undefined}
+            suffix={!shouldPrefix ? currencySymbol : undefined}
+        />
     );
 }
 

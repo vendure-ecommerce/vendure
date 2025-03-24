@@ -3,7 +3,7 @@ import { ContentLanguageSelector } from '@/components/layout/content-language-se
 import { EntityAssets } from '@/components/shared/entity-assets.js';
 import { ErrorPage } from '@/components/shared/error-page.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { TaxCategorySelect } from '@/components/shared/tax-category-select.js';
+import { TaxCategorySelector } from '@/components/shared/tax-category-selector.js';
 import { TranslatableFormField } from '@/components/shared/translatable-form-field.js';
 import { Button } from '@/components/ui/button.js';
 import {
@@ -215,7 +215,7 @@ export function ProductVariantDetailPage() {
                                                 <Trans>Tax category</Trans>
                                             </FormLabel>
                                             <FormControl>
-                                                <TaxCategorySelect {...field} />
+                                                <TaxCategorySelector {...field} />
                                             </FormControl>
                                         </FormItem>
                                     )}

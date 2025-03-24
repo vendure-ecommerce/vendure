@@ -25,8 +25,8 @@ export const taxRateItemFragment = graphql(`
 
 export const taxRateListQuery = graphql(
     `
-        query TaxRateList {
-            taxRates {
+        query TaxRateList($options: TaxRateListOptions) {
+            taxRates(options: $options) {
                 items {
                     ...TaxRateItem
                 }
@@ -36,3 +36,31 @@ export const taxRateListQuery = graphql(
     `,
     [taxRateItemFragment],
 );
+
+export const taxRateDetailQuery = graphql(
+    `
+        query TaxRateDetail($id: ID!) {
+            taxRate(id: $id) {
+                ...TaxRateItem
+                customFields
+            }
+        }
+    `,
+    [taxRateItemFragment],
+);
+
+export const createTaxRateDocument = graphql(`
+    mutation CreateTaxRate($input: CreateTaxRateInput!) {
+        createTaxRate(input: $input) {
+            id
+        }
+    }
+`);
+
+export const updateTaxRateDocument = graphql(`
+    mutation UpdateTaxRate($input: UpdateTaxRateInput!) {
+        updateTaxRate(input: $input) {
+            id
+        }
+    }
+`);
