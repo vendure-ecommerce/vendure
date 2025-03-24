@@ -184,6 +184,8 @@ export interface PaginatedListDataTableProps<
     facetedFilters?: FacetedFilterConfig<T>;
 }
 
+export const PaginatedListDataTableKey = 'PaginatedListDataTable';
+
 export function PaginatedListDataTable<
     T extends TypedDocumentNode<U, V>,
     U extends Record<string, any> = any,
@@ -235,7 +237,7 @@ export function PaginatedListDataTable<
           }
         : undefined;
 
-    const defaultQueryKey = ['PaginatedListDataTable', listQuery, page, itemsPerPage, sorting, filter, debouncedSearchTerm];
+    const defaultQueryKey = [PaginatedListDataTableKey, listQuery, page, itemsPerPage, sorting, filter, debouncedSearchTerm];
     const queryKey = transformQueryKey ? transformQueryKey(defaultQueryKey) : defaultQueryKey;
 
     function refetchPaginatedList() {

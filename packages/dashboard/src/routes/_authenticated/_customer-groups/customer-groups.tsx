@@ -51,7 +51,7 @@ function CustomerGroupListPage() {
             }}
         >
             <PageActionBar>
-                <PermissionGuard requires={['CreateCustomer']}>
+                <PermissionGuard requires={['CreateCustomerGroup']}>
                     <Button asChild>
                         <Link to="./new">
                             <PlusIcon className="mr-2 h-4 w-4" />
