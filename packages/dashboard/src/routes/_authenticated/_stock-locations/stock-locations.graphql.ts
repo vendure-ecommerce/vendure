@@ -1,6 +1,6 @@
 import { graphql } from '@/graphql/graphql.js';
 
-export const stockLocationItem = graphql(`
+export const stockLocationFragment = graphql(`
     fragment StockLocationItem on StockLocation {
         id
         createdAt
@@ -21,5 +21,33 @@ export const stockLocationListQuery = graphql(
             }
         }
     `,
-    [stockLocationItem],
+    [stockLocationFragment],
 );
+
+export const stockLocationDetailQuery = graphql(
+    `
+        query StockLocationDetail($id: ID!) {
+            stockLocation(id: $id) {
+                ...StockLocationItem
+                customFields
+            }
+        }
+    `,
+    [stockLocationFragment],
+);
+
+export const createStockLocationDocument = graphql(`
+    mutation CreateStockLocation($input: CreateStockLocationInput!) {
+        createStockLocation(input: $input) {
+            id
+        }
+    }
+`);
+
+export const updateStockLocationDocument = graphql(`
+    mutation UpdateStockLocation($input: UpdateStockLocationInput!) {
+        updateStockLocation(input: $input) {
+            id
+        }
+    }
+`);
