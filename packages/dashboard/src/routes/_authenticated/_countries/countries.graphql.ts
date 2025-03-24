@@ -1,5 +1,4 @@
 import { graphql } from '@/graphql/graphql.js';
-import { gql } from 'graphql-tag';
 
 export const countryItemFragment = graphql(`
     fragment CountryItem on Country {
@@ -7,13 +6,14 @@ export const countryItemFragment = graphql(`
         name
         code
         enabled
+        customFields
     }
 `);
 
 export const countriesListQuery = graphql(
     `
-        query CountriesList {
-            countries {
+        query CountriesList($options: CountryListOptions) {
+            countries(options: $options) {
                 items {
                     ...CountryItem
                 }
@@ -23,3 +23,38 @@ export const countriesListQuery = graphql(
     `,
     [countryItemFragment],
 );
+
+export const countryDetailQuery = graphql(`
+    query CountryDetail($id: ID!) {
+        country(id: $id) {
+            id
+            name
+            code
+            enabled
+            translations {
+                id
+                createdAt
+                updatedAt
+                languageCode
+                name
+            }
+            customFields
+        }
+    }
+`);
+
+export const createCountryDocument = graphql(`
+    mutation CreateCountry($input: CreateCountryInput!) {
+        createCountry(input: $input) {
+            id
+        }
+    }
+`);
+
+export const updateCountryDocument = graphql(`
+    mutation UpdateCountry($input: UpdateCountryInput!) {
+        updateCountry(input: $input) {
+            id
+        }
+    }
+`);
