@@ -36,7 +36,7 @@ import {
     updateCollectionDocument
 } from './collections.graphql.js';
 import { CollectionContentsTable } from './components/collection-contents-table.js';
-import { CollectionFiltersSelect } from './components/collection-filters-select.js';
+import { CollectionFiltersSelector } from './components/collection-filters-selector.js';
 import { CollectionContentsPreviewTable } from './components/collection-contents-preview-table.js';
 
 export const Route = createFileRoute('/_authenticated/_collections/collections_/$id')({
@@ -243,7 +243,7 @@ export function CollectionDetailPage() {
                                 control={form.control}
                                 name="filters"
                                 render={({ field }) => (
-                                    <CollectionFiltersSelect value={field.value} onChange={field.onChange} />
+                                    <CollectionFiltersSelector value={field.value ?? []} onChange={field.onChange} />
                                 )}
                             />
                         </PageBlock>

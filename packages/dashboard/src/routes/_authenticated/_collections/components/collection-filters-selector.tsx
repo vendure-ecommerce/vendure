@@ -14,12 +14,12 @@ import { ConfigurableOperationInput as ConfigurableOperationInputType } from '@v
 import { Plus } from 'lucide-react';
 import { getCollectionFiltersQueryOptions } from '../collections.graphql.js';
 
-export interface CollectionFiltersSelectProps {
+export interface CollectionFiltersSelectorProps {
     value: ConfigurableOperationInputType[];
     onChange: (filters: ConfigurableOperationInputType[]) => void;
 }
 
-export function CollectionFiltersSelect({ value, onChange }: CollectionFiltersSelectProps) {
+export function CollectionFiltersSelector({ value, onChange }: CollectionFiltersSelectorProps) {
     const { data: filtersData } = useQuery(getCollectionFiltersQueryOptions);
 
     const filters = filtersData?.collectionFilters;

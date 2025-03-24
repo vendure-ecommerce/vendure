@@ -98,7 +98,7 @@ export function ConfigurableOperationInput({
  */
 export function interpolateDescription(
     operation: any,
-    values: { [name: string]: any },
+    values: Array<{ name: string; value: string }>,
     precisionFactor = 2,
 ): string {
     if (!operation) {
@@ -109,7 +109,7 @@ export function interpolateDescription(
         /{\s*([a-zA-Z0-9]+)\s*}/gi,
         (substring: string, argName: string) => {
             const normalizedArgName = argName.toLowerCase();
-            const value = values[normalizedArgName];
+            const value = values.find(v => v.name === normalizedArgName)?.value;
             if (value == null) {
                 return '_';
             }
@@ -121,10 +121,10 @@ export function interpolateDescription(
                 argDef.ui &&
                 argDef.ui.component === 'currency-form-input'
             ) {
-                formatted = value / Math.pow(10, precisionFactor);
+                formatted = (Number(value) / Math.pow(10, precisionFactor)).toString();
             }
-            if (argDef && argDef.type === 'datetime' && value instanceof Date) {
-                formatted = value.toLocaleDateString();
+            if (argDef && argDef.type === 'datetime' && (value as any) instanceof Date) {
+                formatted = (value as any).toLocaleDateString();
             }
             return formatted;
         },
