@@ -9,6 +9,7 @@ import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { PlusIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button.js';
+import { BooleanDisplayBadge } from '@/components/data-display/boolean.js';
 
 export const Route = createFileRoute('/_authenticated/_countries/countries')({
     component: CountryListPage,
@@ -44,9 +45,7 @@ function CountryListPage() {
                 enabled: {
                     header: 'Enabled',
                     cell: ({ row }) => (
-                        <Badge variant={row.original.enabled ? 'success' : 'destructive'}>
-                            {row.original.enabled ? 'Enabled' : 'Disabled'}
-                        </Badge>
+                        <BooleanDisplayBadge value={row.original.enabled} />
                     ),
                 },
             }}

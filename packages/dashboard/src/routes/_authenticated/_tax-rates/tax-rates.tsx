@@ -12,6 +12,7 @@ import { PlusIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
+import { BooleanDisplayBadge } from '@/components/data-display/boolean.js';
 
 export const Route = createFileRoute('/_authenticated/_tax-rates/tax-rates')({
     component: TaxRateListPage,
@@ -77,9 +78,7 @@ function TaxRateListPage() {
                 enabled: {
                     header: 'Enabled',
                     cell: ({ row }) => (
-                        <Badge variant={row.original.enabled ? 'success' : 'destructive'}>
-                            <Trans>{row.original.enabled ? 'Enabled' : 'Disabled'}</Trans>
-                        </Badge>
+                        <BooleanDisplayBadge value={row.original.enabled} />
                     ),
                 },
                 category: {
