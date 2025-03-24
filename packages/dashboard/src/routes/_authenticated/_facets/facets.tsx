@@ -1,17 +1,16 @@
+import { FacetValueChip } from '@/components/shared/facet-value-chip.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
-import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
 import { Button } from '@/components/ui/button.js';
+import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
+import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/framework/page/list-page.js';
+import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
-import { Trans } from '@lingui/react/macro';
 import { facetListDocument } from './facets.graphql.js';
-import { FacetValueChip } from '@/components/shared/facet-value-chip.js';
 
 import { ResultOf } from 'gql.tada';
 import { FacetValuesSheet } from './components/facet-values-sheet.js';
-import { Badge } from '@/components/ui/badge.js';
 
 export const Route = createFileRoute('/_authenticated/_facets/facets')({
     component: FacetListPage,

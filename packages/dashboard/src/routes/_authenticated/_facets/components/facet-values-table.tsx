@@ -73,9 +73,8 @@ export function FacetValuesTable({ facetId }: FacetValuesTableProps) {
                     },
                 };
             }}
-            additionalColumns={[
-                {
-                    id: 'actions',
+            additionalColumns={{
+                actions: {
                     header: 'Actions',
                     cell: ({ row }) => {
                         const [open, setOpen] = useState(false);
@@ -92,7 +91,7 @@ export function FacetValuesTable({ facetId }: FacetValuesTableProps) {
                         );
                     },
                 },
-            ]}
+            }}
         />
     );
 }

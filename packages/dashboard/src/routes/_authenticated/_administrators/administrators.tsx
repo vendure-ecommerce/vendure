@@ -27,9 +27,8 @@ function AdministratorListPage() {
                     emailAddress: { contains: searchTerm },
                 };
             }}
-            additionalColumns={[
-                {
-                    id: 'name',
+            additionalColumns={{
+                name: {
                     header: 'Name',
                     cell: ({ row }) => (
                         <DetailPageButton
@@ -38,8 +37,7 @@ function AdministratorListPage() {
                         />
                     ),
                 },
-                {
-                    id: 'roles',
+                roles: {
                     header: 'Roles',
                     cell: ({ row }) => {
                         return (
@@ -55,7 +53,7 @@ function AdministratorListPage() {
                         );
                     },
                 },
-            ]}
+            }}
             defaultVisibility={{
                 emailAddress: true,
             }}

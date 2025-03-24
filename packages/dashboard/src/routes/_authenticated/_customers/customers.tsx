@@ -40,7 +40,7 @@ export function CustomerListPage() {
                     header: 'Status',
                     cell: ({ cell }) => {
                         const value = cell.getValue();
-                        return <CustomerStatusBadge user={value?.user} />;
+                        return <CustomerStatusBadge user={value} />;
                     },
                 },
             }}

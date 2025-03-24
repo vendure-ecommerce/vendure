@@ -26,9 +26,8 @@ function ZoneListPage() {
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
             }}
-            additionalColumns={[
-                {
-                    id: 'regions',
+            additionalColumns={{
+                regions: {
                     header: 'Regions',
                     cell: ({ row }) => (
                         <ZoneCountriesSheet zoneId={row.original.id} zoneName={row.original.name}>
@@ -36,7 +35,7 @@ function ZoneListPage() {
                         </ZoneCountriesSheet>
                     ),
                 },
-            ]}
+            }}
         />
     );
 }
