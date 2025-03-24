@@ -1,11 +1,11 @@
+import { Money } from '@/components/data-display/money.js';
+import { DetailPageButton } from '@/components/shared/detail-page-button.js';
 import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/framework/page/list-page.js';
-import { Trans } from '@lingui/react/macro';
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { productVariantListDocument } from './product-variants.graphql.js';
-import { Button } from '@/components/ui/button.js';
-import { Money } from '@/components/data-display/money.js';
 import { useLocalFormat } from '@/hooks/use-local-format.js';
+import { Trans } from '@lingui/react/macro';
+import { createFileRoute } from '@tanstack/react-router';
+import { productVariantListDocument } from './product-variants.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_product-variants/product-variants')({
     component: ProductListPage,
@@ -20,13 +20,7 @@ export function ProductListPage() {
             customizeColumns={{
                 name: {
                     header: 'Product Name',
-                    cell: ({ row }) => {
-                        return (
-                            <Button asChild variant="ghost">
-                                <Link to={`./${row.original.id}`}>{row.original.name} </Link>
-                            </Button>
-                        );
-                    },
+                    cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
                 currencyCode: {
                     cell: ({ cell, row }) => {
@@ -60,7 +54,11 @@ export function ProductListPage() {
                         if (Array.isArray(value)) {
                             const totalOnHand = value.reduce((acc, curr) => acc + curr.stockOnHand, 0);
                             const totalAllocated = value.reduce((acc, curr) => acc + curr.stockAllocated, 0);
-                            return <span>{totalOnHand} / {totalAllocated}</span>;
+                            return (
+                                <span>
+                                    {totalOnHand} / {totalAllocated}
+                                </span>
+                            );
                         }
                         return value;
                     },

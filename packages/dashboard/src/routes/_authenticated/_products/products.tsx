@@ -7,6 +7,7 @@ import { PlusIcon } from 'lucide-react';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
 import { Trans } from '@lingui/react/macro';
+import { DetailPageButton } from '@/components/shared/detail-page-button.js';
 
 export const Route = createFileRoute('/_authenticated/_products/products')({
     component: ProductListPage,
@@ -20,13 +21,7 @@ export function ProductListPage() {
             customizeColumns={{
                 name: {
                     header: 'Product Name',
-                    cell: ({ row }) => {
-                        return (
-                            <Link to={`./${row.original.id}`}>
-                                <Button variant="ghost">{row.original.name}</Button>
-                            </Link>
-                        );
-                    },
+                    cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
             }}
             onSearchTermChange={searchTerm => {
@@ -35,7 +30,7 @@ export function ProductListPage() {
                 };
             }}
             listQuery={addCustomFields(productListDocument)}
-            route={Route} 
+            route={Route}
         >
             <PageActionBar>
                 <div></div>
@@ -43,9 +38,9 @@ export function ProductListPage() {
                     <Button asChild>
                         <Link to="./new">
                             <PlusIcon className="mr-2 h-4 w-4" />
-                        New Product
-                    </Link>
-                </Button>
+                            New Product
+                        </Link>
+                    </Button>
                 </PermissionGuard>
             </PageActionBar>
         </ListPage>

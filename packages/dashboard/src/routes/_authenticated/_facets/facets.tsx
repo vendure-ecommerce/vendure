@@ -11,7 +11,7 @@ import { facetListDocument } from './facets.graphql.js';
 
 import { ResultOf } from 'gql.tada';
 import { FacetValuesSheet } from './components/facet-values-sheet.js';
-
+import { DetailPageButton } from '@/components/shared/detail-page-button.js';
 export const Route = createFileRoute('/_authenticated/_facets/facets')({
     component: FacetListPage,
     loader: () => ({ breadcrumb: () => <Trans>Facets</Trans> }),
@@ -24,13 +24,7 @@ export function FacetListPage() {
             customizeColumns={{
                 name: {
                     header: 'Facet Name',
-                    cell: ({ row }) => {
-                        return (
-                            <Link to={`./${row.original.id}`}>
-                                <Button variant="ghost">{row.original.name}</Button>
-                            </Link>
-                        );
-                    },
+                    cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
                 valueList: {
                     header: () => <Trans>Values</Trans>,

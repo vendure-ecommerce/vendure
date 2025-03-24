@@ -313,7 +313,11 @@ export function PaginatedListDataTable<
                         return <DisplayComponent id="vendure:dateTime" value={value} />;
                     }
                     if (fieldInfo.type === 'Boolean') {
-                        return <DisplayComponent id="vendure:boolean" value={value} />;
+                        if (cell.column.id === 'enabled') {
+                            return <DisplayComponent id="vendure:booleanBadge" value={value} />;
+                        } else {
+                            return <DisplayComponent id="vendure:booleanCheckbox" value={value} />;
+                        }
                     }
                     if (fieldInfo.type === 'Asset') {
                         return <DisplayComponent id="vendure:asset" value={value} />;

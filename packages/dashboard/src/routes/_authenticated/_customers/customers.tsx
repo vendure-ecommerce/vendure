@@ -1,14 +1,13 @@
+import { DetailPageButton } from '@/components/shared/detail-page-button.js';
 import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
 import { ListPage } from '@/framework/page/list-page.js';
 import { createFileRoute } from '@tanstack/react-router';
-import { ResultOf } from 'gql.tada';
 import { CustomerStatusBadge } from './components/customer-status-badge.js';
 import { customerListDocument } from './customers.graphql.js';
-import { Button } from '@/components/ui/button.js';
-import { Link } from '@tanstack/react-router';
-
+import { Trans } from '@lingui/react/macro';
 export const Route = createFileRoute('/_authenticated/_customers/customers')({
     component: CustomerListPage,
+    loader: () => ({ breadcrumb: () => <Trans>Customers</Trans> }),
 });
 
 export function CustomerListPage() {
@@ -49,16 +48,7 @@ export function CustomerListPage() {
                     header: 'Name',
                     cell: ({ row }) => {
                         const value = `${row.original.firstName} ${row.original.lastName}`;
-                        return (
-                            <Button asChild variant="ghost">
-                                <Link
-                                    to="/customers/$id"
-                                    params={{ id: row.original.id }}
-                                >
-                                    {value}
-                                </Link>
-                            </Button>
-                        );
+                        return <DetailPageButton id={row.original.id} label={value} />;
                     },
                 },
             }}

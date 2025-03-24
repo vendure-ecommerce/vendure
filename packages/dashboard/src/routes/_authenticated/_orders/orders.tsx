@@ -6,9 +6,12 @@ import { ListPage } from '@/framework/page/list-page.js';
 import { ResultOf } from '@/graphql/graphql.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { orderListDocument } from './orders.graphql.js';
+import { DetailPageButton } from '@/components/shared/detail-page-button.js';
+import { Trans } from '@lingui/react/macro';
 
 export const Route = createFileRoute('/_authenticated/_orders/orders')({
     component: OrderListPage,
+    loader: () => ({ breadcrumb: () => <Trans>Orders</Trans> }),
 });
 
 export function OrderListPage() {
@@ -66,11 +69,7 @@ export function OrderListPage() {
                     cell: ({ cell, row }) => {
                         const value = cell.getValue() as string;
                         const id = row.original.id;
-                        return (
-                            <Button asChild variant="ghost">
-                                <Link to={`/orders/${id}`}>{value}</Link>
-                            </Button>
-                        );
+                        return <DetailPageButton id={id} label={value} />;
                     },
                 },
                 customer: {

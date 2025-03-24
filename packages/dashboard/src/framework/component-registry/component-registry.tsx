@@ -1,10 +1,10 @@
-import { BooleanDisplayCheckbox } from '@/components/data-display/boolean.js';
+import { BooleanDisplayBadge, BooleanDisplayCheckbox } from '@/components/data-display/boolean.js';
 import { DateTime } from '@/components/data-display/date-time.js';
 import { Money } from '@/components/data-display/money.js';
 import { DateTimeInput } from '@/components/data-input/datetime-input.js';
 import { FacetValueInput } from '@/components/data-input/facet-value-input.js';
 import { MoneyInput } from '@/components/data-input/money-input.js';
-import { AssetLike, VendureImage } from '@/components/shared/vendure-image.js';
+import { VendureImage } from '@/components/shared/vendure-image.js';
 import { Checkbox } from '@/components/ui/checkbox.js';
 import { Input } from '@/components/ui/input.js';
 import * as React from 'react';
@@ -25,7 +25,8 @@ interface ComponentRegistry {
 
 export const COMPONENT_REGISTRY: ComponentRegistry = {
     dataDisplay: {
-        'vendure:boolean': BooleanDisplayCheckbox,
+        'vendure:booleanCheckbox': BooleanDisplayCheckbox,
+        'vendure:booleanBadge': BooleanDisplayBadge,
         'vendure:dateTime': DateTime,
         'vendure:asset': ({value}) => <VendureImage asset={value} preset="tiny" />,
         'vendure:money': Money,

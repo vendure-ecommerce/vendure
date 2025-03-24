@@ -1,3 +1,4 @@
+import { DetailPageButton } from '@/components/shared/detail-page-button.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { Button } from '@/components/ui/button.js';
 import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
@@ -8,7 +9,6 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { collectionListDocument } from './collections.graphql.js';
 import { CollectionContentsSheet } from './components/collection-contents-sheet.js';
-import { Badge } from '@/components/ui/badge.js';
 
 export const Route = createFileRoute('/_authenticated/_collections/collections')({
     component: CollectionListPage,
@@ -22,13 +22,7 @@ export function CollectionListPage() {
             customizeColumns={{
                 name: {
                     header: 'Collection Name',
-                    cell: ({ row }) => {
-                        return (
-                            <Link to={`./${row.original.id}`}>
-                                <Button variant="ghost">{row.original.name}</Button>
-                            </Link>
-                        );
-                    },
+                    cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
                 breadcrumbs: {
                     cell: ({ cell }) => {
