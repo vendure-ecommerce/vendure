@@ -36,6 +36,11 @@ export function GeneratedBreadcrumbs() {
                             label: breadcrumb,
                             path: pathname,
                         };
+                    } else if (React.isValidElement(breadcrumb)) {
+                        return {
+                            label: breadcrumb,
+                            path: pathname,
+                        };
                     } else {
                         return {
                             label: breadcrumb.label,
@@ -47,6 +52,12 @@ export function GeneratedBreadcrumbs() {
             if (typeof loaderData.breadcrumb === 'function') {
                 return {
                     label: loaderData.breadcrumb(),
+                    path: pathname,
+                };
+            }
+            if (React.isValidElement(loaderData.breadcrumb)) {
+                return {
+                    label: loaderData.breadcrumb,
                     path: pathname,
                 };
             }

@@ -2,7 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { Button } from '../ui/button.js';
 import { SquareArrowOutUpRightIcon } from 'lucide-react';
 
-export function DetailPageButton({ id, label }: { id: string; label: string }) {
+export function DetailPageButton({ id, label }: { id: string; label: string | React.ReactNode }) {
     return (
         <Button asChild variant="ghost">
             <Link to={`./${id}`}>

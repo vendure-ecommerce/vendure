@@ -29,8 +29,8 @@ export const channelItemFragment = graphql(`
 
 export const channelListQuery = graphql(
     `
-        query ChannelList {
-            channels {
+        query ChannelList($options: ChannelListOptions) {
+            channels(options: $options) {
                 items {
                     ...ChannelItem
                 }
@@ -40,3 +40,45 @@ export const channelListQuery = graphql(
     `,
     [channelItemFragment],
 );
+
+export const channelDetailDocument = graphql(
+    `
+        query ChannelDetail($id: ID!) {
+            channel(id: $id) {
+                ...ChannelItem
+                customFields
+            }
+        }
+    `,
+    [channelItemFragment],
+);
+
+export const createChannelDocument = graphql(`
+    mutation CreateChannel($input: CreateChannelInput!) {
+        createChannel(input: $input) {
+            __typename
+            ... on Channel {
+                id
+            }
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+        }
+    }
+`);
+
+export const updateChannelDocument = graphql(`
+    mutation UpdateChannel($input: UpdateChannelInput!) {
+        updateChannel(input: $input) {
+            __typename
+            ... on Channel {
+                id
+            }
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+        }
+    }
+`);
