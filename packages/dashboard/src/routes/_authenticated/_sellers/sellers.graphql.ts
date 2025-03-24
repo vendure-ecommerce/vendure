@@ -22,3 +22,31 @@ export const sellerListQuery = graphql(
     `,
     [sellerItemFragment],
 );
+
+export const sellerDetailDocument = graphql(
+    `
+        query SellerDetail($id: ID!) {
+            seller(id: $id) {
+                ...SellerItem
+                customFields
+            }
+        }
+    `,
+    [sellerItemFragment],
+);
+
+export const updateSellerDocument = graphql(`
+    mutation UpdateSeller($input: UpdateSellerInput!) {
+        updateSeller(input: $input) {
+            id
+        }
+    }
+`);
+
+export const createSellerDocument = graphql(`
+    mutation CreateSeller($input: CreateSellerInput!) {
+        createSeller(input: $input) {
+            id
+        }
+    }
+`);
