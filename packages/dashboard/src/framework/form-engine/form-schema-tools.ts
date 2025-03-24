@@ -15,7 +15,7 @@ export function createFormSchemaFromFields(fields: FieldInfo[]) {
         } else if (field.typeInfo) {
             let nestedType: ZodType = createFormSchemaFromFields(field.typeInfo);
             if (field.nullable) {
-                nestedType = nestedType.optional();
+                nestedType = nestedType.optional().nullable();
             }
             if (field.list) {
                 nestedType = z.array(nestedType);
