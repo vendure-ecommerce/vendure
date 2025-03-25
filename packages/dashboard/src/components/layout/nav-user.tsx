@@ -114,7 +114,7 @@ export function NavUser() {
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
-                                <DropdownMenuItem>
+                                <DropdownMenuItem asChild>
                                     <Link to="/profile">Profile</Link>
                                 </DropdownMenuItem>
                                 <DialogTrigger asChild>
