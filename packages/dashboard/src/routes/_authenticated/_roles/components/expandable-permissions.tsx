@@ -11,7 +11,6 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area.js';
 import { ResultOf } from 'gql.tada';
 import { PlusIcon } from 'lucide-react';
-import { useState } from 'react';
 import { roleItemFragment } from '../roles.graphql.js';
 
 export function ExpandablePermissions({ role }: { role: ResultOf<typeof roleItemFragment> }) {

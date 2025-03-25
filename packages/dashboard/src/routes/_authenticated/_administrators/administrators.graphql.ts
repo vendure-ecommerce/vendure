@@ -18,12 +18,16 @@ export const administratorItemFragment = graphql(`
                 updatedAt
                 code
                 description
+                channels {
+                    id
+                    code
+                }
             }
         }
     }
 `);
 
-export const administratorListQuery = graphql(
+export const administratorListDocument = graphql(
     `
         query AdministratorList {
             administrators {
@@ -36,3 +40,31 @@ export const administratorListQuery = graphql(
     `,
     [administratorItemFragment],
 );
+
+export const administratorDetailDocument = graphql(
+    `
+        query AdministratorDetail($id: ID!) {
+            administrator(id: $id) {
+                ...AdministratorItem
+                customFields
+            }
+        }
+    `,
+    [administratorItemFragment],
+);
+
+export const createAdministratorDocument = graphql(`
+    mutation CreateAdministrator($input: CreateAdministratorInput!) {
+        createAdministrator(input: $input) {
+            id
+        }
+    }
+`);
+
+export const updateAdministratorDocument = graphql(`
+    mutation UpdateAdministrator($input: UpdateAdministratorInput!) {
+        updateAdministrator(input: $input) {
+            id
+        }
+    }
+`);

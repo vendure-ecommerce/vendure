@@ -1,23 +1,16 @@
-import { Button } from '@/components/ui/button.js';
-import { Switch } from '@/components/ui/switch.js';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip.js';
-import { useServerConfig } from '@/hooks/use-server-config.js';
-import { ServerConfig } from '@/providers/server-config.js';
-import { Trans, useLingui } from '@lingui/react/macro';
-import { useMemo, useState } from 'react';
 import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion.js";
-
-interface PermissionGridRow {
-    id: string;
-    label: string;
-    description: string;
-    permissions: ServerConfig['permissions'];
-}
+import { Button } from '@/components/ui/button.js';
+import { Switch } from '@/components/ui/switch.js';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip.js';
+import { useGroupedPermissions } from '@/hooks/use-grouped-permissions.js';
+import { ServerConfig } from '@/providers/server-config.js';
+import { Trans, useLingui } from '@lingui/react/macro';
+import { useState } from 'react';
 
 interface PermissionsGridProps {
     value: string[];
@@ -27,9 +20,7 @@ interface PermissionsGridProps {
 
 export function PermissionsGrid({ value, onChange, readonly = false }: PermissionsGridProps) {
     const { i18n } = useLingui();
-    const serverConfig = useServerConfig();
-
-    const permissionDefinitions = serverConfig?.permissions ?? [];
+    const groupedPermissions = useGroupedPermissions();
 
     const setPermission = (permission: string, checked: boolean) => {
         if (readonly) return;
@@ -48,52 +39,8 @@ export function PermissionsGrid({ value, onChange, readonly = false }: Permissio
         onChange(newPermissions);
     };
 
-    const extractCrudDescription = (def: ServerConfig['permissions'][number]): string => {
-        return def.description.replace(/Grants permission to [\w]+/, 'Grants permissions on');
-    };
-
-    const gridData = useMemo(() => {
-        const crudGroups = new Map<string, ServerConfig['permissions']>();
-        const nonCrud: ServerConfig['permissions'] = [];
-        const crudRe = /^(Create|Read|Update|Delete)([a-zA-Z]+)$/;
-
-        for (const def of permissionDefinitions) {
-            const isCrud = crudRe.test(def.name);
-            if (isCrud) {
-                const groupName = def.name.match(crudRe)?.[2];
-                if (groupName) {
-                    const existing = crudGroups.get(groupName);
-                    if (existing) {
-                        existing.push(def);
-                    } else {
-                        crudGroups.set(groupName, [def]);
-                    }
-                }
-            } else if (def.assignable) {
-                nonCrud.push(def);
-            }
-        }
-
-        return [
-            ...nonCrud.map(d => ({
-                label: d.name,
-                description: d.description,
-                permissions: [d],
-            })),
-            ...Array.from(crudGroups.entries()).map(([label, defs]) => ({
-                label,
-                description: extractCrudDescription(defs[0]),
-                permissions: defs,
-            })),
-        ].map(d => ({
-            ...d,
-            id: `section-${d.label.toLowerCase().replace(/ /g, '-')}`,
-        }));
-    }, [permissionDefinitions]);
-
-
     // Get default expanded sections based on which ones have active permissions
-    const defaultExpandedSections = gridData
+    const defaultExpandedSections = groupedPermissions
         .map((section) => ({
             section,
             hasActivePermissions: section.permissions.some(permission => value.includes(permission.name)),
@@ -106,7 +53,7 @@ export function PermissionsGrid({ value, onChange, readonly = false }: Permissio
     return (
         <div className="w-full">
             <Accordion type="multiple" value={accordionValue.length ? accordionValue : defaultExpandedSections} onValueChange={setAccordionValue} className="space-y-4">
-                {gridData.map((section, index) => (
+                {groupedPermissions.map((section, index) => (
                     <AccordionItem
                         key={index}
                         value={section.id}
