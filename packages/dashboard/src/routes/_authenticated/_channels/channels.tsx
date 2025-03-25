@@ -8,7 +8,7 @@ import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { PlusIcon } from 'lucide-react';
 import { DetailPageButton } from '@/components/shared/detail-page-button.js';
 import { Trans } from '@lingui/react/macro';
-import { ChannelCodeLabel } from './components/channel-code-label.js';
+import { ChannelCodeLabel } from '../../../components/shared/channel-code-label.js';
 
 export const Route = createFileRoute('/_authenticated/_channels/channels')({
     component: ChannelListPage,

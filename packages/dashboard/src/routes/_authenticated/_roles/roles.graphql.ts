@@ -18,8 +18,8 @@ export const roleItemFragment = graphql(`
 
 export const roleListQuery = graphql(
     `
-        query RoleList {
-            roles {
+        query RoleList($options: RoleListOptions) {
+            roles(options: $options) {
                 items {
                     ...RoleItem
                 }
@@ -29,3 +29,39 @@ export const roleListQuery = graphql(
     `,
     [roleItemFragment],
 );
+
+export const roleDetailDocument = graphql(
+    `
+        query RoleDetail($id: ID!) {
+            role(id: $id) {
+                ...RoleItem
+            }
+        }
+    `,
+    [roleItemFragment],
+);
+
+export const createRoleDocument = graphql(`
+    mutation RoleCreate($input: CreateRoleInput!) {
+        createRole(input: $input) {
+            id
+        }
+    }
+`);
+
+export const updateRoleDocument = graphql(`
+    mutation UpdateRole($input: UpdateRoleInput!) {
+        updateRole(input: $input) {
+            id
+        }
+    }
+`);
+
+export const deleteRoleDocument = graphql(`
+    mutation DeleteRole($id: ID!) {
+        deleteRole(id: $id) {
+            result
+            message
+        }
+    }
+`);

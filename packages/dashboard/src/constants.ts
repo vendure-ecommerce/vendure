@@ -1,5 +1,7 @@
 export const NEW_ENTITY_PATH = 'new';
 export const DEFAULT_CHANNEL_CODE = '__default_channel__';
+export const SUPER_ADMIN_ROLE_CODE = '__super_admin_role__';
+export const CUSTOMER_ROLE_CODE = '__customer_role__';
 /**
  * This is copied from the generated types from @vendure/common/lib/generated-types.d.ts
  * It is used to provide a list of available currency codes for the user to select from.

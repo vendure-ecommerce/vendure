@@ -8,7 +8,7 @@ import { Control } from 'react-hook-form';
 export type PageBlockProps = {
     children: React.ReactNode;
     /** Which column this block should appear in */
-    column: 'main' | 'side';
+    column: 'main' | 'side' ;
     title?: React.ReactNode | string;
     description?: React.ReactNode | string;
     className?: string;

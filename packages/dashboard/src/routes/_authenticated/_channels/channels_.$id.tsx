@@ -33,7 +33,7 @@ import { CurrencySelector } from '@/components/shared/currency-selector.js';
 import { ZoneSelector } from '@/components/shared/zone-selector.js';
 import { Badge } from '@/components/ui/badge.js';
 import { DEFAULT_CHANNEL_CODE } from '@/constants.js';
-import { ChannelCodeLabel } from './components/channel-code-label.js';
+import { ChannelCodeLabel } from '../../../components/shared/channel-code-label.js';
 
 export const Route = createFileRoute('/_authenticated/_channels/channels_/$id')({
     component: ChannelDetailPage,

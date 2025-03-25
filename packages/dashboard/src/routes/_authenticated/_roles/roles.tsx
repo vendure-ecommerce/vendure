@@ -1,21 +1,24 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { Trans } from '@lingui/react/macro';
-import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
-import { roleListQuery } from './roles.graphql.js';
-import { ListPage } from '@/framework/page/list-page.js';
-import { ExpandablePermissions } from './components/expandable-permissions.js';
-import { Badge } from '@/components/ui/badge.js';
-import { LayersIcon, PlusIcon } from 'lucide-react';
-import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
+import { DetailPageButton } from '@/components/shared/detail-page-button.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
+import { RoleCodeLabel } from '@/components/shared/role-code-label.js';
+import { Badge } from '@/components/ui/badge.js';
 import { Button } from '@/components/ui/button.js';
-import { Link } from '@tanstack/react-router';
+import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '@/constants.js';
+import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
+import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
+import { ListPage } from '@/framework/page/list-page.js';
+import { Trans } from '@lingui/react/macro';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { LayersIcon, PlusIcon } from 'lucide-react';
+import { ChannelCodeLabel } from '../../../components/shared/channel-code-label.js';
+import { ExpandablePermissions } from './components/expandable-permissions.js';
+import { roleListQuery } from './roles.graphql.js';
 export const Route = createFileRoute('/_authenticated/_roles/roles')({
     component: RoleListPage,
     loader: () => ({ breadcrumb: () => <Trans>Roles</Trans> }),
 });
 
-const SYSTEM_ROLES = ['__super_admin_role__', '__customer_role__'];
+const SYSTEM_ROLES = [SUPER_ADMIN_ROLE_CODE, CUSTOMER_ROLE_CODE];
 
 function RoleListPage() {
     return (
@@ -30,6 +33,16 @@ function RoleListPage() {
                 permissions: true,
             }}
             customizeColumns={{
+                code: {
+                    header: 'Code',
+                    cell: ({ row }) => {
+                        return <DetailPageButton
+                                id={row.original.id}
+                                label={<RoleCodeLabel code={row.original.code} />}
+                                disabled={SYSTEM_ROLES.includes(row.original.code)}
+                            />  
+                    },
+                },
                 permissions: {
                     header: 'Permissions',
                     cell: ({ row }) => {
@@ -55,7 +68,7 @@ function RoleListPage() {
                             <div className="flex flex-wrap gap-2">
                                 {row.original.channels.map(channel => (
                                     <Badge variant="secondary" key={channel.code}>
-                                        <LayersIcon /> {channel.code}
+                                        <LayersIcon /> <ChannelCodeLabel code={channel.code} />
                                     </Badge>
                                 ))}
                             </div>

@@ -14,6 +14,7 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/c
 import { Trans } from '@lingui/react/macro';
 import { useChannel } from '@/hooks/use-channel.js';
 import { Link } from '@tanstack/react-router';
+import { ChannelCodeLabel } from '@/components/shared/channel-code-label.js';
 
 export function ChannelSwitcher() {
     const { isMobile } = useSidebar();
@@ -37,9 +38,9 @@ export function ChannelSwitcher() {
                                 </span>
                             </div>
                             <div className="grid flex-1 text-left text-sm leading-tight">
-                                <span className="truncate font-semibold">{displayChannel?.code}</span>
+                                <span className="truncate font-semibold"><ChannelCodeLabel code={displayChannel?.code} /></span>
                                 <span className="truncate text-xs">
-                                    Default Language: {displayChannel?.defaultLanguageCode}
+                                    Default Language: {displayChannel?.defaultLanguageCode?.toUpperCase()}
                                 </span>
                             </div>
                             <ChevronsUpDown className="ml-auto" />
@@ -65,7 +66,7 @@ export function ChannelSwitcher() {
                                         {channel.defaultCurrencyCode}
                                     </span>
                                 </div>
-                                {channel.code}
+                                <ChannelCodeLabel code={channel.code} />
                                 <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
                             </DropdownMenuItem>
                         ))}
