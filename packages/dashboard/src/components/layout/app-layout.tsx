@@ -22,9 +22,7 @@ export function AppLayout() {
                             <Alerts />
                         </div>
                     </header>
-                    <div className="px-4">
-                        <Outlet />
-                    </div>
+                    <Outlet />
                 </div>
             </SidebarInset>
         </SidebarProvider>

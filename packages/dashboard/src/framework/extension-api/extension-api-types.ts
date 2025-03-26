@@ -12,6 +12,11 @@ export interface DashboardRouteDefinition extends DashboardBaseRouteDefinition {
     component: (route: AnyRoute) => React.ReactNode;
 }
 
+/**
+ * @description
+ * The main entry point for a dashboard extension.
+ * This is used to define the routes, widgets, etc. that will be displayed in the dashboard.
+ */
 export interface DashboardExtension {
     routes: DashboardRouteDefinition[];
 }

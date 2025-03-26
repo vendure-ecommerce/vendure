@@ -40,12 +40,12 @@ export function useLocalFormat() {
     );
 
     const formatCurrency = useCallback(
-        (value: number, currency: string) => {
+        (value: number, currency: string, precision?: number) => {
             return i18n.number(toMajorUnits(value), {
                 style: 'currency',
                 currency,
-                minimumFractionDigits: moneyStrategyPrecision,
-                maximumFractionDigits: moneyStrategyPrecision,
+                minimumFractionDigits: precision ?? moneyStrategyPrecision,
+                maximumFractionDigits: precision ?? moneyStrategyPrecision,
             });
         },
         [i18n, moneyStrategyPrecision, toMajorUnits],

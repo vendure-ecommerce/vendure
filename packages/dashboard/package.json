@@ -69,6 +69,7 @@
     "react-dropzone": "^14.3.8",
     "react-grid-layout": "^1.5.1",
     "react-hook-form": "^7.54.2",
+    "recharts": "^2.15.1",
     "sonner": "^2.0.1",
     "tailwind-merge": "^3.0.1",
     "tailwindcss": "^4.0.6",

@@ -4,8 +4,8 @@ import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import * as React from 'react';
 import { useEffect, useMemo, useState } from 'react';
-import { ExampleWidget } from '@/widgets/ExampleWidget.js';
 import { DashboardBaseWidgetProps } from '@/framework/dashboard-widget/base-widget.js';
+import { MetricsWidget } from '@/framework/dashboard-widget/metrics-widget/index.js';
 
 // Widget registry type definitions
 export type WidgetDefinition = {
@@ -43,10 +43,10 @@ export const Route = createFileRoute('/_authenticated/')({
 });
 
 registerWidget({
-    id: 'example-widget',
-    name: 'Example Widget',
-    component: ExampleWidget,
-    defaultSize: { w: 12, h: 4, x: 0, y: 0 },
+    id: 'metrics-widget',
+    name: 'Metrics Widget',
+    component: MetricsWidget,
+    defaultSize: { w: 12, h: 6, x: 0, y: 0 },
 });
 
 function DashboardPage() {
