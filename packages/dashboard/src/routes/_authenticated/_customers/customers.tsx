@@ -3,7 +3,7 @@ import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { CustomerStatusBadge } from './components/customer-status-badge.js';
-import { customerListDocument } from './customers.graphql.js';
+import { customerListDocument, deleteCustomerDocument } from './customers.graphql.js';
 import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
 import { PlusIcon } from 'lucide-react';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
@@ -18,6 +18,8 @@ export function CustomerListPage() {
     return (
         <ListPage
             title="Customers"
+            listQuery={customerListDocument}
+            deleteMutation={deleteCustomerDocument}
             onSearchTermChange={searchTerm => {
                 return {
                     lastName: {
@@ -36,7 +38,6 @@ export function CustomerListPage() {
                     },
                 };
             }}
-            listQuery={customerListDocument}
             route={Route}
             customizeColumns={{
                 user: {

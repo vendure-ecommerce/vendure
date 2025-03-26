@@ -68,3 +68,12 @@ export const updateAdministratorDocument = graphql(`
         }
     }
 `);
+
+export const deleteAdministratorDocument = graphql(`
+    mutation DeleteAdministrator($id: ID!) {
+        deleteAdministrator(id: $id) {
+            result
+            message
+        }
+    }
+`);

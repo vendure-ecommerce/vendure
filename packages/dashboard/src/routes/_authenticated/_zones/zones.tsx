@@ -7,7 +7,7 @@ import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { ZoneCountriesSheet } from './components/zone-countries-sheet.js';
-import { zoneListQuery } from './zones.graphql.js';
+import { deleteZoneDocument, zoneListQuery } from './zones.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_zones/zones')({
     component: ZoneListPage,
@@ -18,6 +18,7 @@ function ZoneListPage() {
     return (
         <ListPage
             listQuery={zoneListQuery}
+            deleteMutation={deleteZoneDocument}
             route={Route}
             title="Zones"
             defaultVisibility={{

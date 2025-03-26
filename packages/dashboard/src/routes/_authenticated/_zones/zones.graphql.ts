@@ -85,3 +85,12 @@ export const removeCountryFromZoneMutation = graphql(`
         }
     }
 `);
+
+export const deleteZoneDocument = graphql(`
+    mutation DeleteZone($id: ID!) {
+        deleteZone(id: $id) {
+            result
+            message
+        }
+    }
+`);

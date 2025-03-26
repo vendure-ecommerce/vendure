@@ -72,3 +72,12 @@ export const updatePaymentMethodDocument = graphql(`
         }
     }
 `);
+
+export const deletePaymentMethodDocument = graphql(`
+    mutation DeletePaymentMethod($id: ID!) {
+        deletePaymentMethod(id: $id) {
+            result
+            message
+        }
+    }
+`);

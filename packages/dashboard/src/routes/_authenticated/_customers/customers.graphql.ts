@@ -129,6 +129,15 @@ export const updateCustomerDocument = graphql(`
     }
 `);
 
+export const deleteCustomerDocument = graphql(`
+    mutation DeleteCustomer($id: ID!) {
+        deleteCustomer(id: $id) {
+            result
+            message
+        }
+    }
+`);
+
 export const createCustomerAddressDocument = graphql(`
     mutation CreateCustomerAddress($customerId: ID!, $input: CreateAddressInput!) {
         createCustomerAddress(customerId: $customerId, input: $input) {

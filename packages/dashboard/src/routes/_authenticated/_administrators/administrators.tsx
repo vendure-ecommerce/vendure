@@ -8,7 +8,7 @@ import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@lingui/react/macro';
 import { Link, createFileRoute } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
-import { administratorListDocument } from './administrators.graphql.js';
+import { administratorListDocument, deleteAdministratorDocument } from './administrators.graphql.js';
 export const Route = createFileRoute('/_authenticated/_administrators/administrators')({
     component: AdministratorListPage,
     loader: () => ({ breadcrumb: () => <Trans>Administrators</Trans> }),
@@ -19,6 +19,7 @@ function AdministratorListPage() {
         <ListPage
             title="Administrators"
             listQuery={administratorListDocument}
+            deleteMutation={deleteAdministratorDocument}
             route={Route}
             onSearchTermChange={searchTerm => {
                 return {

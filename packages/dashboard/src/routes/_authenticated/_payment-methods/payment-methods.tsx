@@ -7,7 +7,7 @@ import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
-import { paymentMethodListQuery } from './payment-methods.graphql.js';
+import { deletePaymentMethodDocument, paymentMethodListQuery } from './payment-methods.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_payment-methods/payment-methods')({
     component: PaymentMethodListPage,
@@ -18,6 +18,7 @@ function PaymentMethodListPage() {
     return (
         <ListPage
             listQuery={paymentMethodListQuery}
+            deleteMutation={deletePaymentMethodDocument}
             route={Route}
             title="Payment Methods"
             defaultVisibility={{

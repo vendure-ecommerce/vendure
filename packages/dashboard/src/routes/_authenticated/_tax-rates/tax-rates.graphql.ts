@@ -64,3 +64,12 @@ export const updateTaxRateDocument = graphql(`
         }
     }
 `);
+
+export const deleteTaxRateDocument = graphql(`
+    mutation DeleteTaxRate($id: ID!) {
+        deleteTaxRate(id: $id) {
+            result
+            message
+        }
+    }
+`);

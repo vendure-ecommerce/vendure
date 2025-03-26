@@ -6,7 +6,7 @@ import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@lingui/react/macro';
 import { Link, createFileRoute } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
-import { stockLocationListQuery } from './stock-locations.graphql.js';
+import { deleteStockLocationDocument, stockLocationListQuery } from './stock-locations.graphql.js';
 export const Route = createFileRoute('/_authenticated/_stock-locations/stock-locations')({
     component: StockLocationListPage,
     loader: () => ({ breadcrumb: () => <Trans>Stock Locations</Trans> }),
@@ -17,6 +17,7 @@ function StockLocationListPage() {
         <ListPage
             title="Stock Locations"
             listQuery={stockLocationListQuery}
+            deleteMutation={deleteStockLocationDocument}
             route={Route}
             customizeColumns={{
                 name: {

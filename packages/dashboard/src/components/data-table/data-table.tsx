@@ -1,24 +1,22 @@
 'use client';
 
+import { DataTablePagination } from '@/components/data-table/data-table-pagination.js';
+import { DataTableViewOptions } from '@/components/data-table/data-table-view-options.js';
 import { Badge } from '@/components/ui/badge.js';
 import { Input } from '@/components/ui/input.js';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.js';
-import { DataTablePagination } from '@/components/data-table/data-table-pagination.js';
-import { DataTableViewOptions } from '@/components/data-table/data-table-view-options.js';
-
 import {
     ColumnDef,
+    ColumnFilter,
+    ColumnFiltersState,
     flexRender,
     getCoreRowModel,
     getPaginationRowModel,
     PaginationState,
-    VisibilityState,
     SortingState,
     Table as TableType,
     useReactTable,
-    ColumnFilter,
-    ColumnFiltersState,
-    Column,
+    VisibilityState
 } from '@tanstack/react-table';
 import { CircleX, Filter } from 'lucide-react';
 import React, { Suspense, useEffect } from 'react';

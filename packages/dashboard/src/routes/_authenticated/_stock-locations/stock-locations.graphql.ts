@@ -51,3 +51,12 @@ export const updateStockLocationDocument = graphql(`
         }
     }
 `);
+
+export const deleteStockLocationDocument = graphql(`
+    mutation DeleteStockLocation($id: ID!) {
+        deleteStockLocation(input: { id: $id }) {
+            result
+            message
+        }
+    }
+`);

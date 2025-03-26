@@ -60,3 +60,12 @@ export const updateCustomerGroupDocument = graphql(`
         }
     }
 `);
+
+export const deleteCustomerGroupDocument = graphql(`
+    mutation DeleteCustomerGroup($id: ID!) {
+        deleteCustomerGroup(id: $id) {
+            result
+            message
+        }
+    }
+`);

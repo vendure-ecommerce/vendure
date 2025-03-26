@@ -7,7 +7,7 @@ import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@lingui/react/macro';
 import { Link, createFileRoute } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
-import { taxCategoryListQuery } from './tax-categories.graphql.js';
+import { deleteTaxCategoryDocument, taxCategoryListQuery } from './tax-categories.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_tax-categories/tax-categories')({
     component: TaxCategoryListPage,
@@ -18,6 +18,7 @@ function TaxCategoryListPage() {
     return (
         <ListPage
             listQuery={taxCategoryListQuery}
+            deleteMutation={deleteTaxCategoryDocument}
             route={Route}
             title="Tax Categories"
             defaultVisibility={{

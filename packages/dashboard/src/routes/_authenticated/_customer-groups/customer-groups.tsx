@@ -7,7 +7,9 @@ import { Trans } from '@lingui/react/macro';
 import { Link, createFileRoute } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { CustomerGroupMembersSheet } from './components/customer-group-members-sheet.js';
-import { customerGroupListDocument } from './customer-groups.graphql.js';
+import { customerGroupListDocument, deleteCustomerGroupDocument } from './customer-groups.graphql.js';
+import { useMutation } from '@tanstack/react-query';
+import { api } from '@/graphql/api.js';
 
 export const Route = createFileRoute('/_authenticated/_customer-groups/customer-groups')({
     component: CustomerGroupListPage,
@@ -19,6 +21,7 @@ function CustomerGroupListPage() {
         <ListPage
             title="Customer Groups"
             listQuery={customerGroupListDocument}
+            deleteMutation={deleteCustomerGroupDocument}
             route={Route}
             customizeColumns={{
                 name: {

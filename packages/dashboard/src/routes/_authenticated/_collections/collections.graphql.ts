@@ -104,6 +104,15 @@ export const updateCollectionDocument = graphql(`
     }
 `);
 
+export const deleteCollectionDocument = graphql(`
+    mutation DeleteCollection($id: ID!) {
+        deleteCollection(id: $id) {
+            result
+            message
+        }
+    }
+`);
+
 export const getCollectionFiltersDocument = graphql(
     `
         query GetCollectionFilters {

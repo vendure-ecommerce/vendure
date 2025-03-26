@@ -5,8 +5,8 @@ import { PageActionBar, PageActionBarRight } from '@/framework/layout-engine/pag
 import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { PlusIcon } from 'lucide-react';
-import { productListDocument } from './products.graphql.js';
+import { PlusIcon, TrashIcon } from 'lucide-react';
+import { deleteProductDocument, productListDocument } from './products.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_products/products')({
     component: ProductListPage,
@@ -16,6 +16,8 @@ export const Route = createFileRoute('/_authenticated/_products/products')({
 export function ProductListPage() {
     return (
         <ListPage
+            listQuery={productListDocument}
+            deleteMutation={deleteProductDocument}
             title="Products"
             customizeColumns={{
                 name: {
@@ -28,7 +30,6 @@ export function ProductListPage() {
                     name: { contains: searchTerm },
                 };
             }}
-            listQuery={productListDocument}
             route={Route}
         >
             <PageActionBar>

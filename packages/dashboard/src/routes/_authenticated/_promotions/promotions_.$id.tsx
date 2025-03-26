@@ -2,9 +2,7 @@ import { DateTimeInput } from '@/components/data-input/datetime-input.js';
 import { ErrorPage } from '@/components/shared/error-page.js';
 import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import {
-    TranslatableFormFieldWrapper
-} from '@/components/shared/translatable-form-field.js';
+import { TranslatableFormFieldWrapper } from '@/components/shared/translatable-form-field.js';
 import { Button } from '@/components/ui/button.js';
 import { Input } from '@/components/ui/input.js';
 import { Switch } from '@/components/ui/switch.js';
@@ -148,12 +146,14 @@ export function PromotionDetailPage() {
                             />
                             <div></div>
                         </DetailFormGrid>
-                        <TranslatableFormFieldWrapper
-                            control={form.control}
-                            name="description"
-                            label={<Trans>Description</Trans>}
-                            render={({ field }) => <Textarea {...field} />}
-                        />
+                        <div className="mb-4">
+                            <TranslatableFormFieldWrapper
+                                control={form.control}
+                                name="description"
+                                label={<Trans>Description</Trans>}
+                                render={({ field }) => <Textarea {...field} />}
+                            />
+                        </div>
                         <DetailFormGrid>
                             <FormFieldWrapper
                                 control={form.control}
@@ -187,13 +187,25 @@ export function PromotionDetailPage() {
                                 control={form.control}
                                 name="perCustomerUsageLimit"
                                 label={<Trans>Per customer usage limit</Trans>}
-                                render={({ field }) => <Input type="number" {...field} />}
+                                render={({ field }) => (
+                                    <Input
+                                        type="number"
+                                        value={field.value ?? ''}
+                                        onChange={e => field.onChange(e.target.valueAsNumber)}
+                                    />
+                                )}
                             />
                             <FormFieldWrapper
                                 control={form.control}
                                 name="usageLimit"
                                 label={<Trans>Usage limit</Trans>}
-                                render={({ field }) => <Input type="number" {...field} />}
+                                render={({ field }) => (
+                                    <Input
+                                        type="number"
+                                        value={field.value ?? ''}
+                                        onChange={e => field.onChange(e.target.valueAsNumber)}
+                                    />
+                                )}
                             />
                         </DetailFormGrid>
                     </PageBlock>

@@ -20,13 +20,12 @@ export interface DateTimeInputProps {
 }
  
 export function DateTimeInput(props: DateTimeInputProps) {
-  const [date, setDate] = React.useState<string>(props.value && props.value instanceof Date ? props.value.toISOString() : props.value ?? '');
+  const date = props.value && props.value instanceof Date ? props.value.toISOString() : props.value ?? '';
   const [isOpen, setIsOpen] = React.useState(false);
  
   const hours = Array.from({ length: 12 }, (_, i) => i + 1);
   const handleDateSelect = (selectedDate: Date | undefined) => {
     if (selectedDate) {
-      setDate(selectedDate.toISOString());
       props.onChange(selectedDate);
     }
   };
@@ -49,7 +48,6 @@ export function DateTimeInput(props: DateTimeInputProps) {
           value === "PM" ? currentHours + 12 : currentHours - 12
         );
       }
-      setDate(newDate.toISOString());
       props.onChange(newDate);
     }
   };

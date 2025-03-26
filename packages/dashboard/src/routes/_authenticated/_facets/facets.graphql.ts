@@ -93,3 +93,12 @@ export const updateFacetDocument = graphql(`
         }
     }
 `);
+
+export const deleteFacetDocument = graphql(`
+    mutation DeleteFacet($id: ID!) {
+        deleteFacet(id: $id) {
+            result
+            message
+        }
+    }
+`);

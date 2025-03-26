@@ -6,7 +6,7 @@ import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@lingui/react/macro';
 import { Link, createFileRoute } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
-import { countriesListQuery } from './countries.graphql.js';
+import { countriesListQuery, deleteCountryDocument } from './countries.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_countries/countries')({
     component: CountryListPage,
@@ -17,6 +17,7 @@ function CountryListPage() {
     return (
         <ListPage
             listQuery={countriesListQuery}
+            deleteMutation={deleteCountryDocument}
             route={Route}
             title="Countries"
             defaultVisibility={{

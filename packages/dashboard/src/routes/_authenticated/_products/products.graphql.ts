@@ -105,3 +105,12 @@ export const updateProductDocument = graphql(`
         }
     }
 `);
+
+export const deleteProductDocument = graphql(`
+    mutation DeleteProduct($id: ID!) {
+        deleteProduct(id: $id) {
+            result
+            message
+        }
+    }
+`);

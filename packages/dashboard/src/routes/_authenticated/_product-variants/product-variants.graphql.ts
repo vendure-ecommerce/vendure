@@ -112,3 +112,12 @@ export const updateProductVariantDocument = graphql(`
         }
     }
 `);
+
+export const deleteProductVariantDocument = graphql(`
+    mutation DeleteProductVariant($id: ID!) {
+        deleteProductVariant(id: $id) {
+            result
+            message
+        }
+    }
+`);

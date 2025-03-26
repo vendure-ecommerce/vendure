@@ -7,7 +7,7 @@ import { Trans } from '@lingui/react/macro';
 import { Link, createFileRoute } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { TestShippingMethodDialog } from './components/test-shipping-method-dialog.js';
-import { shippingMethodListQuery } from './shipping-methods.graphql.js';
+import { deleteShippingMethodDocument, shippingMethodListQuery } from './shipping-methods.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_shipping-methods/shipping-methods')({
     component: ShippingMethodListPage,
@@ -18,6 +18,7 @@ function ShippingMethodListPage() {
     return (
         <ListPage
             listQuery={shippingMethodListQuery}
+            deleteMutation={deleteShippingMethodDocument}
             route={Route}
             title="Shipping Methods"
             defaultVisibility={{

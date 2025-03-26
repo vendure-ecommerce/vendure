@@ -7,7 +7,7 @@ import {
 } from '@/framework/document-introspection/get-document-structure.js';
 import { useListQueryFields } from '@/framework/document-introspection/hooks.js';
 import { api } from '@/graphql/api.js';
-import { useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useDebounce } from 'use-debounce';
 
 import { DisplayComponent } from '@/framework/component-registry/dynamic-component.js';
@@ -21,8 +21,26 @@ import {
     SortingState,
     Table,
 } from '@tanstack/react-table';
-import { ColumnDef } from '@tanstack/table-core';
+import { AccessorKeyColumnDef, ColumnDef, Row } from '@tanstack/table-core';
 import React, { useMemo } from 'react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuPortal,
+    DropdownMenuSeparator,
+    DropdownMenuShortcut,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu.js';
+import { Button } from '../ui/button.js';
+import { EllipsisIcon, TrashIcon } from 'lucide-react';
+import { Trans, useLingui } from '@lingui/react/macro';
+import { toast } from 'sonner';
 
 // Type that identifies a paginated list structure (has items array and totalItems)
 type IsPaginatedList<T> = T extends { items: any[]; totalItems: number } ? true : false;
@@ -88,7 +106,9 @@ export type PaginatedListKeys<
 }[keyof PaginatedListItemFields<T, Path>];
 
 export type CustomizeColumnConfig<T extends TypedDocumentNode<any, any>> = {
-    [Key in keyof PaginatedListItemFields<T>]?: Partial<ColumnDef<PaginatedListItemFields<T>, PaginatedListItemFields<T>[Key]>>;
+    [Key in keyof PaginatedListItemFields<T>]?: Partial<
+        ColumnDef<PaginatedListItemFields<T>, PaginatedListItemFields<T>[Key]>
+    >;
 };
 
 export type FacetedFilterConfig<T extends TypedDocumentNode<any, any>> = {
@@ -124,8 +144,8 @@ export type ListQueryOptionsShape = {
 };
 
 export type AdditionalColumns<T extends TypedDocumentNode<any, any>> = {
-    [key: string]: ColumnDef<PaginatedListItemFields<T>>
-}
+    [key: string]: ColumnDef<PaginatedListItemFields<T>>;
+};
 
 export interface PaginatedListContext {
     refetchPaginatedList: () => void;
@@ -157,6 +177,11 @@ export function usePaginatedList() {
     return context;
 }
 
+export interface RowAction<T> {
+    label: React.ReactNode;
+    onClick?: (row: Row<T>) => void;
+}
+
 export interface PaginatedListDataTableProps<
     T extends TypedDocumentNode<U, V>,
     U extends any,
@@ -164,6 +189,7 @@ export interface PaginatedListDataTableProps<
     AC extends AdditionalColumns<T>,
 > {
     listQuery: T;
+    deleteMutation?: TypedDocumentNode<any, any>;
     transformQueryKey?: (queryKey: any[]) => any[];
     transformVariables?: (variables: V) => V;
     customizeColumns?: CustomizeColumnConfig<T>;
@@ -179,6 +205,7 @@ export interface PaginatedListDataTableProps<
     onSortChange: (table: Table<any>, sorting: SortingState) => void;
     onFilterChange: (table: Table<any>, filters: ColumnFiltersState) => void;
     facetedFilters?: FacetedFilterConfig<T>;
+    rowActions?: RowAction<PaginatedListItemFields<T>>[];
 }
 
 export const PaginatedListDataTableKey = 'PaginatedListDataTable';
@@ -190,6 +217,7 @@ export function PaginatedListDataTable<
     AC extends AdditionalColumns<T> = AdditionalColumns<T>,
 >({
     listQuery,
+    deleteMutation,
     transformQueryKey,
     transformVariables,
     customizeColumns,
@@ -205,12 +233,11 @@ export function PaginatedListDataTable<
     onSortChange,
     onFilterChange,
     facetedFilters,
+    rowActions,
 }: PaginatedListDataTableProps<T, U, V, AC>) {
     const [searchTerm, setSearchTerm] = React.useState<string>('');
     const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
     const queryClient = useQueryClient();
-
-
 
     const sort = sorting?.reduce((acc: any, sort: ColumnSort) => {
         const direction = sort.desc ? 'DESC' : 'ASC';
@@ -221,7 +248,6 @@ export function PaginatedListDataTable<
         }
         return { ...acc, [field]: direction };
     }, {});
-
 
     const filter = columnFilters?.length
         ? {
@@ -234,7 +260,15 @@ export function PaginatedListDataTable<
           }
         : undefined;
 
-    const defaultQueryKey = [PaginatedListDataTableKey, listQuery, page, itemsPerPage, sorting, filter, debouncedSearchTerm];
+    const defaultQueryKey = [
+        PaginatedListDataTableKey,
+        listQuery,
+        page,
+        itemsPerPage,
+        sorting,
+        filter,
+        debouncedSearchTerm,
+    ];
     const queryKey = transformQueryKey ? transformQueryKey(defaultQueryKey) : defaultQueryKey;
 
     function refetchPaginatedList() {
@@ -269,6 +303,7 @@ export function PaginatedListDataTable<
     }
 
     const columnHelper = createColumnHelper<PaginatedListItemFields<T>>();
+    const customFieldColumnNames: string[] = [];
 
     const columns = useMemo(() => {
         const columnConfigs: Array<{ fieldInfo: FieldInfo; isCustomField: boolean }> = [];
@@ -285,6 +320,7 @@ export function PaginatedListDataTable<
             columnConfigs.push(
                 ...customFieldFields.map(field => ({ fieldInfo: field, isCustomField: true })),
             );
+            customFieldColumnNames.push(...customFieldFields.map(field => field.name));
         }
 
         const queryBasedColumns = columnConfigs.map(({ fieldInfo, isCustomField }) => {
@@ -352,14 +388,20 @@ export function PaginatedListDataTable<
             const remainingColumns = finalColumns.filter(
                 column => !column.id || !defaultColumnOrder.includes(column.id),
             );
-            finalColumns = [...orderedColumns, ...remainingColumns];
+            finalColumns = [...orderedColumns];
+        }
+
+        if (rowActions || deleteMutation) {
+            const rowActionColumn = getRowActions(rowActions, deleteMutation);
+            if (rowActionColumn) {
+                finalColumns.push(rowActionColumn);
+            }
         }
 
         return finalColumns;
-    }, [fields, customizeColumns]);
+    }, [fields, customizeColumns, rowActions]);
 
-    const columnVisibility = getColumnVisibility(fields, defaultVisibility);
-
+    const columnVisibility = getColumnVisibility(fields, defaultVisibility, customFieldColumnNames);
     return (
         <PaginatedListContext.Provider value={{ refetchPaginatedList }}>
             <DataTable
@@ -381,12 +423,80 @@ export function PaginatedListDataTable<
     );
 }
 
+function getRowActions(
+    rowActions?: RowAction<any>[],
+    deleteMutation?: TypedDocumentNode<any, any>,
+): AccessorKeyColumnDef<any> | undefined {
+    return {
+        id: 'actions',
+        accessorKey: 'actions',
+        header: 'Actions',
+        cell: ({ row }) => {
+            return (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                            <EllipsisIcon />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        {rowActions?.map((action, index) => (
+                            <DropdownMenuItem onClick={() => action.onClick?.(row)} key={index}>
+                                {action.label}
+                            </DropdownMenuItem>
+                        ))}
+                        {deleteMutation && <DeleteMutationRowAction deleteMutation={deleteMutation} row={row} />}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            );
+        },
+    };
+}
+
+function DeleteMutationRowAction({
+    deleteMutation,
+    row,
+}: {
+    deleteMutation: TypedDocumentNode<any, any>;
+    row: Row<{ id: string }>;
+}) {
+    const { refetchPaginatedList } = usePaginatedList();
+    const { i18n } = useLingui();
+    const { mutate: deleteMutationFn } = useMutation({
+        mutationFn: api.mutate(deleteMutation),
+        onSuccess: (result: { [key: string]: { result: 'DELETED' | 'NOT_DELETED'; message: string } }) => {
+            const unwrappedResult = Object.values(result)[0];
+            if (unwrappedResult.result === 'DELETED') {
+                refetchPaginatedList();
+                toast.success(i18n.t('Deleted successfully'));
+            } else {
+                toast.error(i18n.t('Failed to delete'), {
+                    description: unwrappedResult.message,
+                });
+            }
+        },
+        onError: (err: Error) => {
+            toast.error(i18n.t('Failed to delete'), {
+                description: err.message,
+            });
+        },
+    });
+    return (
+        <DropdownMenuItem onClick={() => deleteMutationFn({ id: row.original.id })}>
+            <div className="flex items-center gap-2 text-destructive">
+                <TrashIcon className="w-4 h-4 text-destructive" />
+                <Trans>Delete</Trans>
+            </div>
+        </DropdownMenuItem>
+    );
+}
 /**
  * Returns the default column visibility configuration.
  */
 function getColumnVisibility(
     fields: FieldInfo[],
     defaultVisibility?: Record<string, boolean | undefined>,
+    customFieldColumnNames?: string[],
 ): Record<string, boolean> {
     const allDefaultsTrue = defaultVisibility && Object.values(defaultVisibility).every(v => v === true);
     const allDefaultsFalse = defaultVisibility && Object.values(defaultVisibility).every(v => v === false);
@@ -397,5 +507,8 @@ function getColumnVisibility(
         ...(allDefaultsTrue ? { ...Object.fromEntries(fields.map(f => [f.name, false])) } : {}),
         ...(allDefaultsFalse ? { ...Object.fromEntries(fields.map(f => [f.name, true])) } : {}),
         ...defaultVisibility,
+        ...(customFieldColumnNames
+            ? { ...Object.fromEntries(customFieldColumnNames.map(f => [f, false])) }
+            : {}),
     };
 }

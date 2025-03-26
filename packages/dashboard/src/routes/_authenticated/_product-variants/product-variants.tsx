@@ -5,7 +5,7 @@ import { ListPage } from '@/framework/page/list-page.js';
 import { useLocalFormat } from '@/hooks/use-local-format.js';
 import { Trans } from '@lingui/react/macro';
 import { createFileRoute } from '@tanstack/react-router';
-import { productVariantListDocument } from './product-variants.graphql.js';
+import { deleteProductVariantDocument, productVariantListDocument } from './product-variants.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_product-variants/product-variants')({
     component: ProductListPage,
@@ -17,6 +17,8 @@ export function ProductListPage() {
     return (
         <ListPage
             title={<Trans>Product Variants</Trans>}
+            listQuery={productVariantListDocument}
+            deleteMutation={deleteProductVariantDocument}
             customizeColumns={{
                 name: {
                     header: 'Product Name',
@@ -69,7 +71,6 @@ export function ProductListPage() {
                     name: { contains: searchTerm },
                 };
             }}
-            listQuery={productVariantListDocument}
             route={Route}
         >
             <PageActionBar>

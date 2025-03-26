@@ -6,7 +6,7 @@ import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@lingui/react/macro';
 import { Link, createFileRoute } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
-import { sellerListQuery } from './sellers.graphql.js';
+import { deleteSellerDocument, sellerListQuery } from './sellers.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_sellers/sellers')({
     component: SellerListPage,
@@ -17,6 +17,7 @@ function SellerListPage() {
     return (
         <ListPage
             listQuery={sellerListQuery}
+            deleteMutation={deleteSellerDocument}
             route={Route}
             title="Sellers"
             defaultVisibility={{

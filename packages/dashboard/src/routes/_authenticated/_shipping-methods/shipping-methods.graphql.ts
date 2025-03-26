@@ -72,3 +72,12 @@ export const updateShippingMethodDocument = graphql(`
         }
     }
 `);
+
+export const deleteShippingMethodDocument = graphql(`
+    mutation DeleteShippingMethod($id: ID!) {
+        deleteShippingMethod(id: $id) {
+            result
+            message
+        }
+    }
+`);

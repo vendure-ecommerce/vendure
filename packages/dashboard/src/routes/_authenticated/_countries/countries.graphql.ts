@@ -58,3 +58,12 @@ export const updateCountryDocument = graphql(`
         }
     }
 `);
+
+export const deleteCountryDocument = graphql(`
+    mutation DeleteCountry($id: ID!) {
+        deleteCountry(id: $id) {
+            result
+            message
+        }
+    }
+`);

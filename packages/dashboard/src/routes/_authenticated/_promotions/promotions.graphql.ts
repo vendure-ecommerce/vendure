@@ -59,6 +59,7 @@ export const promotionDetailDocument = graphql(
 export const createPromotionDocument = graphql(`
     mutation CreatePromotion($input: CreatePromotionInput!) {
         createPromotion(input: $input) {
+            __typename
             ... on Promotion {
                 id
             }
@@ -73,6 +74,7 @@ export const createPromotionDocument = graphql(`
 export const updatePromotionDocument = graphql(`
     mutation UpdatePromotion($input: UpdatePromotionInput!) {
         updatePromotion(input: $input) {
+            __typename
             ... on Promotion {
                 id
             }
@@ -80,6 +82,15 @@ export const updatePromotionDocument = graphql(`
                 errorCode
                 message
             }
+        }
+    }
+`);
+
+export const deletePromotionDocument = graphql(`
+    mutation DeletePromotion($id: ID!) {
+        deletePromotion(id: $id) {
+            result
+            message
         }
     }
 `);

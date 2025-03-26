@@ -6,7 +6,8 @@ import {
     FacetedFilterConfig,
     ListQueryOptionsShape,
     ListQueryShape,
-    PaginatedListDataTable
+    PaginatedListDataTable,
+    RowAction
 } from '@/components/shared/paginated-list-data-table.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRouter, useNavigate } from '@tanstack/react-router';
@@ -31,6 +32,7 @@ export interface ListPageProps<
     AC extends AdditionalColumns<T>,
 > extends PageProps {
     listQuery: T;
+    deleteMutation?: TypedDocumentNode<any, { id: string }>;
     transformVariables?: (variables: V) => V;
     onSearchTermChange?: (searchTerm: string) => NonNullable<V['options']>['filter'];
     customizeColumns?: CustomizeColumnConfig<T>;
@@ -40,6 +42,7 @@ export interface ListPageProps<
     defaultVisibility?: Partial<Record<keyof ListQueryFields<T> | keyof AC, boolean>>;
     children?: React.ReactNode;
     facetedFilters?: FacetedFilterConfig<T>;
+    rowActions?: RowAction<ListQueryFields<T>>[];
 }
 
 export function ListPage<
@@ -50,6 +53,7 @@ export function ListPage<
 >({
     title,
     listQuery,
+    deleteMutation,
     transformVariables,
     customizeColumns,
     additionalColumns,
@@ -60,6 +64,7 @@ export function ListPage<
     onSearchTermChange,
     facetedFilters,
     children,
+    rowActions,
 }: ListPageProps<T, U, V, AC>) {
     const route = typeof routeOrFn === 'function' ? routeOrFn() : routeOrFn;
     const routeSearch = route.useSearch();
@@ -112,6 +117,7 @@ export function ListPage<
             <PageActionBar>{children}</PageActionBar>
             <PaginatedListDataTable
                 listQuery={listQueryWithCustomFields}
+                deleteMutation={deleteMutation}
                 transformVariables={transformVariables}
                 customizeColumns={customizeColumns}
                 additionalColumns={additionalColumns}
@@ -132,6 +138,7 @@ export function ListPage<
                     persistListStateToUrl(table, { filters });
                 }}
                 facetedFilters={facetedFilters}
+                rowActions={rowActions}
             />
         </Page>
     );

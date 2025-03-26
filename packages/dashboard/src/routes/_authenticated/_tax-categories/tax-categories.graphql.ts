@@ -52,3 +52,12 @@ export const updateTaxCategoryDocument = graphql(`
         }
     }
 `);
+
+export const deleteTaxCategoryDocument = graphql(`
+    mutation DeleteTaxCategory($id: ID!) {
+        deleteTaxCategory(id: $id) {
+            result
+            message
+        }
+    }
+`);

@@ -11,7 +11,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { LayersIcon, PlusIcon } from 'lucide-react';
 import { ChannelCodeLabel } from '../../../components/shared/channel-code-label.js';
 import { ExpandablePermissions } from './components/expandable-permissions.js';
-import { roleListQuery } from './roles.graphql.js';
+import { deleteRoleDocument, roleListQuery } from './roles.graphql.js';
 export const Route = createFileRoute('/_authenticated/_roles/roles')({
     component: RoleListPage,
     loader: () => ({ breadcrumb: () => <Trans>Roles</Trans> }),
@@ -24,6 +24,7 @@ function RoleListPage() {
         <ListPage
             title="Roles"
             listQuery={roleListQuery}
+            deleteMutation={deleteRoleDocument}
             route={Route}
             defaultVisibility={{
                 description: true,

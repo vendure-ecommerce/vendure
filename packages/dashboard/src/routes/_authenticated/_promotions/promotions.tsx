@@ -6,7 +6,7 @@ import { DetailPageButton } from '@/components/shared/detail-page-button.js';
 import { PlusIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { promotionListDocument } from './promotions.graphql.js';
+import { deletePromotionDocument, promotionListDocument } from './promotions.graphql.js';
 import { BooleanDisplayBadge } from '@/components/data-display/boolean.js';
 
 export const Route = createFileRoute('/_authenticated/_promotions/promotions')({
@@ -18,6 +18,7 @@ function PromotionListPage() {
     return (
         <ListPage
             listQuery={promotionListDocument}
+            deleteMutation={deletePromotionDocument}
             route={Route}
             title="Promotions"
             defaultVisibility={{

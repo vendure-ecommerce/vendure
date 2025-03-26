@@ -8,9 +8,7 @@ import { api } from '@/graphql/api.js';
 import { Trans } from '@lingui/react/macro';
 import { Link, createFileRoute } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
-import { taxCategoryListQuery } from '../_tax-categories/tax-categories.graphql.js';
-import { zoneListQuery } from '../_zones/zones.graphql.js';
-import { taxRateListQuery } from './tax-rates.graphql.js';
+import { deleteTaxRateDocument, taxRateListQuery } from './tax-rates.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_tax-rates/tax-rates')({
     component: TaxRateListPage,
@@ -21,6 +19,7 @@ function TaxRateListPage() {
     return (
         <ListPage
             listQuery={taxRateListQuery}
+            deleteMutation={deleteTaxRateDocument}
             route={Route}
             title="Tax Rates"
             defaultVisibility={{

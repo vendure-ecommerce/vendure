@@ -6,7 +6,7 @@ import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
-import { collectionListDocument } from './collections.graphql.js';
+import { collectionListDocument, deleteCollectionDocument } from './collections.graphql.js';
 import { CollectionContentsSheet } from './components/collection-contents-sheet.js';
 
 export const Route = createFileRoute('/_authenticated/_collections/collections')({
@@ -18,6 +18,8 @@ export function CollectionListPage() {
     return (
         <ListPage
             title="Collections"
+            listQuery={collectionListDocument}
+            deleteMutation={deleteCollectionDocument}
             customizeColumns={{
                 name: {
                     header: 'Collection Name',
@@ -63,7 +65,6 @@ export function CollectionListPage() {
                     name: { contains: searchTerm },
                 };
             }}
-            listQuery={collectionListDocument}
             route={Route}
         >
             <PageActionBar>

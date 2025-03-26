@@ -7,7 +7,7 @@ import { Trans } from '@lingui/react/macro';
 import { Link, createFileRoute } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { ChannelCodeLabel } from '../../../components/shared/channel-code-label.js';
-import { channelListQuery } from './channels.graphql.js';
+import { channelListQuery, deleteChannelDocument } from './channels.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_channels/channels')({
     component: ChannelListPage,
@@ -19,6 +19,7 @@ function ChannelListPage() {
         <ListPage
             title="Channels"
             listQuery={channelListQuery}
+            deleteMutation={deleteChannelDocument}
             route={Route}
             defaultVisibility={{
                 code: true,

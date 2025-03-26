@@ -6,7 +6,7 @@ import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
-import { facetListDocument } from './facets.graphql.js';
+import { facetListDocument, deleteFacetDocument } from './facets.graphql.js';
 
 import { DetailPageButton } from '@/components/shared/detail-page-button.js';
 import { ResultOf } from 'gql.tada';
@@ -20,6 +20,8 @@ export function FacetListPage() {
     return (
         <ListPage
             title="Facets"
+            listQuery={facetListDocument}
+            deleteMutation={deleteFacetDocument}
             customizeColumns={{
                 name: {
                     header: 'Facet Name',
@@ -65,7 +67,6 @@ export function FacetListPage() {
                     name: { contains: searchTerm },
                 };
             }}
-            listQuery={facetListDocument}
             transformVariables={variables => {
                 return {
                     ...variables,

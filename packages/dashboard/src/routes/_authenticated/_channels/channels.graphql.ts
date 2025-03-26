@@ -82,3 +82,12 @@ export const updateChannelDocument = graphql(`
         }
     }
 `);
+
+export const deleteChannelDocument = graphql(`
+    mutation DeleteChannel($id: ID!) {
+        deleteChannel(id: $id) {
+            result
+            message
+        }
+    }
+`);
