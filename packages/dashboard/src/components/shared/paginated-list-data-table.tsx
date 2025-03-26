@@ -206,6 +206,7 @@ export interface PaginatedListDataTableProps<
     onFilterChange: (table: Table<any>, filters: ColumnFiltersState) => void;
     facetedFilters?: FacetedFilterConfig<T>;
     rowActions?: RowAction<PaginatedListItemFields<T>>[];
+    disableViewOptions?: boolean;
 }
 
 export const PaginatedListDataTableKey = 'PaginatedListDataTable';
@@ -234,6 +235,7 @@ export function PaginatedListDataTable<
     onFilterChange,
     facetedFilters,
     rowActions,
+    disableViewOptions,
 }: PaginatedListDataTableProps<T, U, V, AC>) {
     const [searchTerm, setSearchTerm] = React.useState<string>('');
     const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
@@ -418,6 +420,7 @@ export function PaginatedListDataTable<
                 onSearchTermChange={onSearchTermChange ? term => setSearchTerm(term) : undefined}
                 defaultColumnVisibility={columnVisibility}
                 facetedFilters={facetedFilters}
+                disableViewOptions={disableViewOptions}
             />
         </PaginatedListContext.Provider>
     );
@@ -445,7 +448,9 @@ function getRowActions(
                                 {action.label}
                             </DropdownMenuItem>
                         ))}
-                        {deleteMutation && <DeleteMutationRowAction deleteMutation={deleteMutation} row={row} />}
+                        {deleteMutation && (
+                            <DeleteMutationRowAction deleteMutation={deleteMutation} row={row} />
+                        )}
                     </DropdownMenuContent>
                 </DropdownMenu>
             );

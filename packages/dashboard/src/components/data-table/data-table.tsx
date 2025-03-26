@@ -16,7 +16,7 @@ import {
     SortingState,
     Table as TableType,
     useReactTable,
-    VisibilityState
+    VisibilityState,
 } from '@tanstack/react-table';
 import { CircleX, Filter } from 'lucide-react';
 import React, { Suspense, useEffect } from 'react';
@@ -43,6 +43,7 @@ interface DataTableProps<TData, TValue> {
     onSearchTermChange?: (searchTerm: string) => void;
     defaultColumnVisibility?: VisibilityState;
     facetedFilters?: { [key: string]: FacetedFilter | undefined };
+    disableViewOptions?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -59,6 +60,7 @@ export function DataTable<TData, TValue>({
     onSearchTermChange,
     defaultColumnVisibility,
     facetedFilters,
+    disableViewOptions,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>(sortingInitialState || []);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(filtersInitialState || []);
@@ -105,8 +107,8 @@ export function DataTable<TData, TValue>({
 
     return (
         <>
-            <div className="flex justify-between items-start mt-2">
-                <div className="flex flex-col">
+            <div className="flex justify-between items-start">
+                <div className="flex flex-col space-y-2">
                     <div className="flex items-center justify-start gap-2">
                         {onSearchTermChange && (
                             <div className="flex items-center">
@@ -129,7 +131,7 @@ export function DataTable<TData, TValue>({
                             ))}
                         </Suspense>
                     </div>
-                    <div className="flex gap-1 mt-2">
+                    <div className="flex gap-1">
                         {columnFilters
                             .filter(f => !facetedFilters?.[f.id])
                             .map(f => {
@@ -155,7 +157,7 @@ export function DataTable<TData, TValue>({
                             })}
                     </div>
                 </div>
-                <DataTableViewOptions table={table} />
+                {!disableViewOptions && <DataTableViewOptions table={table} />}
             </div>
             <div className="rounded-md border my-2">
                 <Table>

@@ -25,6 +25,7 @@ export function LatestOrdersWidget() {
     return (
         <DashboardBaseWidget id={WIDGET_ID} title="Latest Orders" description="Your latest orders">
             <PaginatedListDataTable
+                disableViewOptions
                 page={page}
                 transformVariables={variables => ({
                     ...variables,
