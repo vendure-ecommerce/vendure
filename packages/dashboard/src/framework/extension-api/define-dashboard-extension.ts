@@ -1,3 +1,4 @@
+import { registerDashboardWidget } from '@/framework/dashboard-widget/registry.js';
 import { DashboardExtension } from '@/framework/extension-api/extension-api-types.js';
 import { addNavMenuItem, NavMenuItem } from '@/framework/nav-menu/nav-menu.js';
 import { registerRoute } from '@/framework/page/page-api.js';
@@ -24,6 +25,11 @@ export function defineDashboardExtension(extension: DashboardExtension) {
                 // Configure a list page
                 registerRoute(route);
             }
+        }
+    }
+    if (extension.widgets) {
+        for (const widget of extension.widgets) {
+            registerDashboardWidget(widget);
         }
     }
     if (extensionSourceChangeCallbacks.size) {

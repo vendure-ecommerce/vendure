@@ -2,6 +2,8 @@ import { NavMenuItem } from '@/framework/nav-menu/nav-menu.js';
 import { AnyRoute } from '@tanstack/react-router';
 import React from 'react';
 
+import { DashboardWidgetDefinition } from '../dashboard-widget/types.js';
+
 export interface DashboardBaseRouteDefinition {
     id: string;
     navMenuItem?: Partial<NavMenuItem> & { sectionId: string };
@@ -19,4 +21,5 @@ export interface DashboardRouteDefinition extends DashboardBaseRouteDefinition {
  */
 export interface DashboardExtension {
     routes: DashboardRouteDefinition[];
+    widgets: DashboardWidgetDefinition[];
 }

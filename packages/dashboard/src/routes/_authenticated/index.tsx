@@ -3,6 +3,8 @@ import { DashboardBaseWidgetProps } from '@/framework/dashboard-widget/base-widg
 import { LatestOrdersWidget } from '@/framework/dashboard-widget/latest-orders-widget/index.js';
 import { MetricsWidget } from '@/framework/dashboard-widget/metrics-widget/index.js';
 import { OrdersSummaryWidget } from '@/framework/dashboard-widget/orders-summary/index.js';
+import { getDashboardWidget, getDashboardWidgetRegistry } from '@/framework/dashboard-widget/registry.js';
+import { DashboardWidgetInstance, WidgetDefinition } from '@/framework/dashboard-widget/types.js';
 import { Page, PageActionBar, PageActionBarRight, PageTitle } from '@/framework/layout-engine/page-layout.js';
 import { createFileRoute } from '@tanstack/react-router';
 import * as React from 'react';
@@ -11,72 +13,90 @@ import { Responsive as ResponsiveGridLayout, WidthProvider } from 'react-grid-la
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
-// Widget registry type definitions
-export type WidgetDefinition = {
-    id: string;
-    name: string;
-    component: React.ComponentType<DashboardBaseWidgetProps>;
-    defaultSize: { w: number; h: number; x: number; y: number };
-    minSize?: { w: number; h: number };
-    maxSize?: { w: number; h: number };
-};
-
-// Widget instance in the dashboard
-type WidgetInstance = {
-    id: string;
-    widgetId: string;
-    layout: {
-        x: number;
-        y: number;
-        w: number;
-        h: number;
-    };
-    config?: Record<string, unknown>;
-};
-
-// Widget registry for plugin system
-const widgetRegistry = new Map<string, WidgetDefinition>();
-
-// Helper to register new widgets
-export function registerWidget(widget: WidgetDefinition) {
-    widgetRegistry.set(widget.id, widget);
-}
-
 export const Route = createFileRoute('/_authenticated/')({
     component: DashboardPage,
 });
 
-registerWidget({
-    id: 'metrics-widget',
-    name: 'Metrics Widget',
-    component: MetricsWidget,
-    defaultSize: { w: 12, h: 6, x: 0, y: 0 },
-});
+const findNextPosition = (
+    existingWidgets: DashboardWidgetInstance[],
+    newWidgetSize: { w: number; h: number },
+) => {
+    // Create a set of all occupied cells
+    const occupied = new Set();
+    let maxExistingRow = 0;
 
-registerWidget({
-    id: 'latest-orders-widget',
-    name: 'Latest Orders Widget',
-    component: LatestOrdersWidget,
-    defaultSize: { w: 6, h: 7, x: 0, y: 0 },
-});
+    existingWidgets.forEach(widget => {
+        const { x, y, w, h } = widget.layout;
+        // Track the maximum row used by existing widgets
+        maxExistingRow = Math.max(maxExistingRow, y + h);
 
-registerWidget({
-    id: 'orders-summary-widget',
-    name: 'Orders Summary Widget',
-    component: OrdersSummaryWidget,
-    defaultSize: { w: 6, h: 3, x: 6, y: 0 },
-});
+        for (let i = x; i < x + w; i++) {
+            for (let j = y; j < y + h; j++) {
+                occupied.add(`${i},${j}`);
+            }
+        }
+    });
+
+    // Search up to 3 rows past the last occupied row
+    const maxSearchRows = maxExistingRow + 3;
+
+    // Find first position where the widget fits
+    for (let y = 0; y < maxSearchRows; y++) {
+        for (let x = 0; x < 12 - (newWidgetSize.w || 1); x++) {
+            let fits = true;
+            // Check if all cells needed for this widget are free
+            for (let i = x; i < x + (newWidgetSize.w || 1); i++) {
+                for (let j = y; j < y + (newWidgetSize.h || 1); j++) {
+                    if (occupied.has(`${i},${j}`)) {
+                        fits = false;
+                        break;
+                    }
+                }
+                if (!fits) break;
+            }
+            if (fits) {
+                return { x, y };
+            }
+        }
+    }
+    // If no space found, place it in the next row after all existing widgets
+    return { x: 0, y: maxExistingRow };
+};
 
 function DashboardPage() {
-    const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
+    const [widgets, setWidgets] = useState<DashboardWidgetInstance[]>([]);
     const [editMode, setEditMode] = useState(false);
 
     useEffect(() => {
-        const initialWidgets = Array.from(widgetRegistry.entries()).map(([id, widget]) => ({
-            id,
-            widgetId: id,
-            layout: widget.defaultSize,
-        }));
+        const initialWidgets = Array.from(getDashboardWidgetRegistry().entries()).reduce(
+            (acc: DashboardWidgetInstance[], [id, widget]) => {
+                const layout = {
+                    ...widget.defaultSize,
+                    x: widget.defaultSize.x ?? 0,
+                    y: widget.defaultSize.y ?? 0,
+                };
+
+                // If x or y is not set, find the next available position
+                if (widget.defaultSize.x === undefined || widget.defaultSize.y === undefined) {
+                    const pos = findNextPosition(acc, {
+                        w: widget.defaultSize.w || 1,
+                        h: widget.defaultSize.h || 1,
+                    });
+                    layout.x = pos.x;
+                    layout.y = pos.y;
+                }
+
+                return [
+                    ...acc,
+                    {
+                        id,
+                        widgetId: id,
+                        layout,
+                    },
+                ];
+            },
+            [],
+        );
 
         setWidgets(initialWidgets);
     }, []);
@@ -119,7 +139,7 @@ function DashboardPage() {
                 autoSize={true}
             >
                 {widgets.map(widget => {
-                    const definition = widgetRegistry.get(widget.widgetId);
+                    const definition = getDashboardWidget(widget.widgetId);
                     if (!definition) return null;
                     const WidgetComponent = definition.component;
 
