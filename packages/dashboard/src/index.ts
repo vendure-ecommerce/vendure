@@ -124,6 +124,7 @@ export * from './framework/form-engine/use-generated-form.js';
 export * from './framework/layout-engine/page-layout.js';
 export * from './framework/nav-menu/nav-menu.js';
 export * from './framework/page/detail-page-route-loader.js';
+export * from './framework/page/detail-page.js';
 export * from './framework/page/list-page.js';
 export * from './framework/page/page-api.js';
 export * from './framework/page/page-types.js';

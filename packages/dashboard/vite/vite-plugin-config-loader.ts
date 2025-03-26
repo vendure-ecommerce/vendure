@@ -15,9 +15,7 @@ export const configLoaderName = 'vendure:config-loader';
  */
 export function configLoaderPlugin(options: ConfigLoaderOptions): Plugin {
     let vendureConfig: VendureConfig;
-    let onConfigLoaded = () => {
-        /* */
-    };
+    const onConfigLoaded: Array<() => void> = [];
     return {
         name: configLoaderName,
         async buildStart() {
@@ -35,7 +33,7 @@ export function configLoaderPlugin(options: ConfigLoaderOptions): Plugin {
                     this.error(`Error loading Vendure config: ${e.message}`);
                 }
             }
-            onConfigLoaded();
+            onConfigLoaded.forEach(fn => fn());
         },
         api: {
             getVendureConfig(): Promise<VendureConfig> {
@@ -43,9 +41,9 @@ export function configLoaderPlugin(options: ConfigLoaderOptions): Plugin {
                     return Promise.resolve(vendureConfig);
                 } else {
                     return new Promise<VendureConfig>(resolve => {
-                        onConfigLoaded = () => {
+                        onConfigLoaded.push(() => {
                             resolve(vendureConfig);
-                        };
+                        });
                     });
                 }
             },

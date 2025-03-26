@@ -21,6 +21,7 @@ import {
 } from 'graphql';
 import { Plugin } from 'vite';
 
+import { generateSchema } from './schema-generator.js';
 import { ConfigLoaderApi, getConfigLoaderApi } from './vite-plugin-config-loader.js';
 
 export type FieldInfoTuple = readonly [
@@ -62,20 +63,7 @@ export function adminApiSchemaPlugin(): Plugin {
         async buildStart() {
             const vendureConfig = await configLoaderApi.getVendureConfig();
             if (!schemaInfo) {
-                this.info(`Constructing Admin API schema...`);
-                resetConfig();
-                await setConfig(vendureConfig ?? {});
-
-                const runtimeConfig = await runPluginConfigurations(getConfig() as any);
-                const typesLoader = new GraphQLTypesLoader();
-                const finalSchema = await getFinalVendureSchema({
-                    config: runtimeConfig,
-                    typePaths: VENDURE_ADMIN_API_TYPE_PATHS,
-                    typesLoader,
-                    apiType: 'admin',
-                    output: 'sdl',
-                });
-                const safeSchema = buildSchema(finalSchema);
+                const safeSchema = await generateSchema({ vendureConfig });
                 schemaInfo = generateSchemaInfo(safeSchema);
             }
         },

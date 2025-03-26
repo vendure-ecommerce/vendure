@@ -1,11 +1,4 @@
-import { TypedDocumentNode, ResultOf } from '@graphql-typed-document-node/core';
-import { AnyRoute } from '@tanstack/react-router';
-import React from 'react';
-
-export interface PageProps {
-    title: string | React.ReactElement;
-    route: AnyRoute | (() => AnyRoute);
-}
+import { ResultOf, TypedDocumentNode } from '@graphql-typed-document-node/core';
 
 // Type that identifies a paginated list structure (has items array and totalItems)
 type IsEntity<T> = T extends { id: string } ? true : false;

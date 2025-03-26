@@ -1,6 +1,4 @@
-import { AdminUiPlugin, AdminUiPluginOptions } from '@vendure/admin-ui-plugin';
-import { AdminUiConfig, Type, VendureConfig } from '@vendure/core';
-import { getPluginDashboardExtensions } from '@vendure/core';
+import { AdminUiConfig, VendureConfig } from '@vendure/core';
 import path from 'path';
 import { Plugin } from 'vite';
 
