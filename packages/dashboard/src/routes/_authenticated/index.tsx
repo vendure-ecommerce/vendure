@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { DashboardBaseWidgetProps } from '@/framework/dashboard-widget/base-widget.js';
 import { MetricsWidget } from '@/framework/dashboard-widget/metrics-widget/index.js';
 import { LatestOrdersWidget } from '@/framework/dashboard-widget/latest-orders-widget/index.js';
+import { OrdersSummaryWidget } from '@/framework/dashboard-widget/orders-summary/index.js';
 
 // Widget registry type definitions
 export type WidgetDefinition = {
@@ -55,6 +56,13 @@ registerWidget({
     name: 'Latest Orders Widget',
     component: LatestOrdersWidget,
     defaultSize: { w: 6, h: 11, x: 0, y: 0 },
+});
+
+registerWidget({
+    id: 'orders-summary-widget',
+    name: 'Orders Summary Widget',
+    component: OrdersSummaryWidget,
+    defaultSize: { w: 6, h: 6, x: 6, y: 0 },
 });
 
 function DashboardPage() {
