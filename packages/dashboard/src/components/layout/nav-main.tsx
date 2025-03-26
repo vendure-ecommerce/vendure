@@ -56,7 +56,7 @@ export function NavMain({ items }: { items: Array<NavMenuSection | NavMenuItem> 
     const renderTopSection = (item: NavMenuSection | NavMenuItem) => {
         if ('url' in item) {
             return (
-                <SidebarMenuItem>
+                <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton tooltip={item.title} asChild>
                         <Link to={item.url}>
                             {item.icon && <item.icon />}
@@ -110,7 +110,7 @@ export function NavMain({ items }: { items: Array<NavMenuSection | NavMenuItem> 
     const renderBottomSection = (item: NavMenuSection | NavMenuItem) => {
         if ('url' in item) {
             return (
-                <SidebarMenuItem>
+                <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton tooltip={item.title} asChild>
                         <Link to={item.url}>
                             {item.icon && <item.icon />}
