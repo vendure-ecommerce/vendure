@@ -2,7 +2,6 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -120,6 +119,8 @@
     --color-sidebar-foreground: var(--sidebar-foreground);
     --color-sidebar: var(--sidebar);
     --color-brand: #17c1ff;
+    --color-brand-lighter: #e6f9ff;
+    --color-brand-darker: #0099ff;
     --font-sans: 'Geist', sans-serif;
     --font-mono: 'Geist Mono', monospace;
 }

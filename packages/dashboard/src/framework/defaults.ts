@@ -1,8 +1,30 @@
 import { navMenu } from '@/framework/nav-menu/nav-menu.js';
-import { BookOpen, Bot, Settings2, ShoppingCart, SquareTerminal, Users, Mail, Terminal } from 'lucide-react';
+import {
+    BookOpen,
+    Bot,
+    Settings2,
+    ShoppingCart,
+    SquareTerminal,
+    Users,
+    Mail,
+    Terminal,
+    LayoutDashboardIcon,
+} from 'lucide-react';
+
+import { LatestOrdersWidget } from './dashboard-widget/latest-orders-widget/index.js';
+import { MetricsWidget } from './dashboard-widget/metrics-widget/index.js';
+import { OrdersSummaryWidget } from './dashboard-widget/orders-summary/index.js';
+import { registerDashboardWidget } from './dashboard-widget/registry.js';
 
 navMenu({
     sections: [
+        {
+            id: 'dashboard',
+            title: 'Dashboard',
+            placement: 'top',
+            icon: LayoutDashboardIcon,
+            url: '/',
+        },
         {
             id: 'catalog',
             title: 'Catalog',
@@ -173,4 +195,25 @@ navMenu({
             ],
         },
     ],
+});
+
+registerDashboardWidget({
+    id: 'metrics-widget',
+    name: 'Metrics Widget',
+    component: MetricsWidget,
+    defaultSize: { w: 12, h: 6, x: 0, y: 0 },
+});
+
+registerDashboardWidget({
+    id: 'latest-orders-widget',
+    name: 'Latest Orders Widget',
+    component: LatestOrdersWidget,
+    defaultSize: { w: 6, h: 7, x: 0, y: 0 },
+});
+
+registerDashboardWidget({
+    id: 'orders-summary-widget',
+    name: 'Orders Summary Widget',
+    component: OrdersSummaryWidget,
+    defaultSize: { w: 6, h: 3, x: 6, y: 0 },
 });

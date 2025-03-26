@@ -9,18 +9,18 @@ import {
     SidebarMenuSubButton,
     SidebarMenuSubItem,
 } from '@/components/ui/sidebar.js';
-import { NavMenuSection } from '@/framework/nav-menu/nav-menu.js';
+import { NavMenuSection, NavMenuItem } from '@/framework/nav-menu/nav-menu.js';
 import { Link, rootRouteId, useLocation, useMatch } from '@tanstack/react-router';
 import { ChevronRight } from 'lucide-react';
 import * as React from 'react';
 
-export function NavMain({ items }: { items: NavMenuSection[] }) {
+export function NavMain({ items }: { items: Array<NavMenuSection | NavMenuItem> }) {
     const location = useLocation();
     // State to track which bottom section is currently open
     const [openBottomSectionId, setOpenBottomSectionId] = React.useState<string | null>(null);
 
     // Split sections into top and bottom groups based on placement property
-    const topSections = items.filter(item => item.placement !== 'bottom');
+    const topSections = items.filter(item => item.placement === 'top');
     const bottomSections = items.filter(item => item.placement === 'bottom');
 
     // Handle bottom section open/close
@@ -38,9 +38,12 @@ export function NavMain({ items }: { items: NavMenuSection[] }) {
 
         // Check if the current path is in any bottom section
         for (const section of bottomSections) {
-            const matchingItem = section.items?.find(
-                item => currentPath === item.url || currentPath.startsWith(`${item.url}/`),
-            );
+            const matchingItem =
+                'items' in section
+                    ? section.items?.find(
+                          item => currentPath === item.url || currentPath.startsWith(`${item.url}/`),
+                      )
+                    : null;
 
             if (matchingItem) {
                 setOpenBottomSectionId(section.id);
@@ -50,78 +53,112 @@ export function NavMain({ items }: { items: NavMenuSection[] }) {
     }, [location.pathname]);
 
     // Render a top navigation section
-    const renderTopSection = (item: NavMenuSection) => (
-        <Collapsible key={item.title} asChild defaultOpen={item.defaultOpen} className="group/collapsible">
-            <SidebarMenuItem>
-                <CollapsibleTrigger asChild>
-                    <SidebarMenuButton tooltip={item.title}>
-                        {item.icon && <item.icon />}
-                        <span>{item.title}</span>
-                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+    const renderTopSection = (item: NavMenuSection | NavMenuItem) => {
+        if ('url' in item) {
+            return (
+                <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton tooltip={item.title} asChild>
+                        <Link to={item.url}>
+                            {item.icon && <item.icon />}
+                            <span>{item.title}</span>
+                        </Link>
                     </SidebarMenuButton>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                    <SidebarMenuSub>
-                        {item.items?.map(subItem => (
-                            <SidebarMenuSubItem key={subItem.title}>
-                                <SidebarMenuSubButton
-                                    asChild
-                                    isActive={
-                                        location.pathname === subItem.url ||
-                                        location.pathname.startsWith(`${subItem.url}/`)
-                                    }
-                                >
-                                    <Link to={subItem.url}>
-                                        <span>{subItem.title}</span>
-                                    </Link>
-                                </SidebarMenuSubButton>
-                            </SidebarMenuSubItem>
-                        ))}
-                    </SidebarMenuSub>
-                </CollapsibleContent>
-            </SidebarMenuItem>
-        </Collapsible>
-    );
+                </SidebarMenuItem>
+            );
+        }
+
+        return (
+            <Collapsible
+                key={item.title}
+                asChild
+                defaultOpen={item.defaultOpen}
+                className="group/collapsible"
+            >
+                <SidebarMenuItem>
+                    <CollapsibleTrigger asChild>
+                        <SidebarMenuButton tooltip={item.title}>
+                            {item.icon && <item.icon />}
+                            <span>{item.title}</span>
+                            <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                        </SidebarMenuButton>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                        <SidebarMenuSub>
+                            {item.items?.map(subItem => (
+                                <SidebarMenuSubItem key={subItem.title}>
+                                    <SidebarMenuSubButton
+                                        asChild
+                                        isActive={
+                                            location.pathname === subItem.url ||
+                                            location.pathname.startsWith(`${subItem.url}/`)
+                                        }
+                                    >
+                                        <Link to={subItem.url}>
+                                            <span>{subItem.title}</span>
+                                        </Link>
+                                    </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                            ))}
+                        </SidebarMenuSub>
+                    </CollapsibleContent>
+                </SidebarMenuItem>
+            </Collapsible>
+        );
+    };
 
     // Render a bottom navigation section with controlled open state
-    const renderBottomSection = (item: NavMenuSection) => (
-        <Collapsible
-            key={item.title}
-            asChild
-            open={openBottomSectionId === item.id}
-            onOpenChange={isOpen => handleBottomSectionToggle(item.id, isOpen)}
-            className="group/collapsible"
-        >
-            <SidebarMenuItem>
-                <CollapsibleTrigger asChild>
-                    <SidebarMenuButton tooltip={item.title}>
-                        {item.icon && <item.icon />}
-                        <span>{item.title}</span>
-                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+    const renderBottomSection = (item: NavMenuSection | NavMenuItem) => {
+        if ('url' in item) {
+            return (
+                <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton tooltip={item.title} asChild>
+                        <Link to={item.url}>
+                            {item.icon && <item.icon />}
+                            <span>{item.title}</span>
+                        </Link>
                     </SidebarMenuButton>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                    <SidebarMenuSub>
-                        {item.items?.map(subItem => (
-                            <SidebarMenuSubItem key={subItem.title}>
-                                <SidebarMenuSubButton
-                                    asChild
-                                    isActive={
-                                        location.pathname === subItem.url ||
-                                        location.pathname.startsWith(`${subItem.url}/`)
-                                    }
-                                >
-                                    <Link to={subItem.url}>
-                                        <span>{subItem.title}</span>
-                                    </Link>
-                                </SidebarMenuSubButton>
-                            </SidebarMenuSubItem>
-                        ))}
-                    </SidebarMenuSub>
-                </CollapsibleContent>
-            </SidebarMenuItem>
-        </Collapsible>
-    );
+                </SidebarMenuItem>
+            );
+        }
+        return (
+            <Collapsible
+                key={item.title}
+                asChild
+                open={openBottomSectionId === item.id}
+                onOpenChange={isOpen => handleBottomSectionToggle(item.id, isOpen)}
+                className="group/collapsible"
+            >
+                <SidebarMenuItem>
+                    <CollapsibleTrigger asChild>
+                        <SidebarMenuButton tooltip={item.title}>
+                            {item.icon && <item.icon />}
+                            <span>{item.title}</span>
+                            <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                        </SidebarMenuButton>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                        <SidebarMenuSub>
+                            {item.items?.map(subItem => (
+                                <SidebarMenuSubItem key={subItem.title}>
+                                    <SidebarMenuSubButton
+                                        asChild
+                                        isActive={
+                                            location.pathname === subItem.url ||
+                                            location.pathname.startsWith(`${subItem.url}/`)
+                                        }
+                                    >
+                                        <Link to={subItem.url}>
+                                            <span>{subItem.title}</span>
+                                        </Link>
+                                    </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                            ))}
+                        </SidebarMenuSub>
+                    </CollapsibleContent>
+                </SidebarMenuItem>
+            </Collapsible>
+        );
+    };
 
     return (
         <>

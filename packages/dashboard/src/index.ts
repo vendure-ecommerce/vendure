@@ -1,5 +1,5 @@
 // This file is auto-generated. Do not edit manually.
-// Generated on: 2025-03-26T14:10:22.200Z
+// Generated on: 2025-03-26T15:54:22.739Z
 
 export * from './components/data-display/boolean.js';
 export * from './components/data-display/date-time.js';
@@ -25,6 +25,8 @@ export * from './components/layout/nav-main.js';
 export * from './components/layout/nav-projects.js';
 export * from './components/layout/nav-user.js';
 export * from './components/login/login-form.js';
+export * from './components/shared/alerts.js';
+export * from './components/shared/animated-number.js';
 export * from './components/shared/asset-gallery.js';
 export * from './components/shared/asset-picker-dialog.js';
 export * from './components/shared/asset-preview-dialog.js';
@@ -100,6 +102,16 @@ export * from './components/ui/textarea.js';
 export * from './components/ui/tooltip.js';
 export * from './framework/component-registry/component-registry.js';
 export * from './framework/component-registry/dynamic-component.js';
+export * from './framework/dashboard-widget/base-widget.js';
+export * from './framework/dashboard-widget/latest-orders-widget/index.js';
+export * from './framework/dashboard-widget/latest-orders-widget/latest-orders-widget.graphql.js';
+export * from './framework/dashboard-widget/metrics-widget/chart.js';
+export * from './framework/dashboard-widget/metrics-widget/index.js';
+export * from './framework/dashboard-widget/metrics-widget/metrics-widget.graphql.js';
+export * from './framework/dashboard-widget/orders-summary/index.js';
+export * from './framework/dashboard-widget/orders-summary/order-summary-widget.graphql.js';
+export * from './framework/dashboard-widget/registry.js';
+export * from './framework/dashboard-widget/types.js';
 export * from './framework/defaults.js';
 export * from './framework/document-introspection/add-custom-fields.js';
 export * from './framework/document-introspection/get-document-structure.js';
