@@ -70,7 +70,7 @@ export function DashboardBaseWidget({
         <Card
             ref={wrapperRef}
             key={`dashboard-widget-${id}`}
-            className={cn('h-full w-full flex flex-col', !title && 'pt-6')}
+            className={cn('h-full w-full flex flex-col rounded-md', !title && 'pt-6')}
         >
             {title && (
                 <CardHeader
