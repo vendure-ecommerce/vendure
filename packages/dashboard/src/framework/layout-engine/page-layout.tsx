@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form } from '@/components/ui/form.js';
 import { useCustomFieldConfig } from '@/hooks/use-custom-field-config.js';
 import { cn } from '@/lib/utils.js';
-import React from 'react';
+import React, { ComponentProps, PropsWithChildren } from 'react';
 import { Control, UseFormReturn } from 'react-hook-form';
 import { useMediaQuery } from '@uidotdev/usehooks';
 
@@ -82,12 +82,16 @@ export function DetailFormGrid({ children }: { children: React.ReactNode }) {
     return <div className="md:grid md:grid-cols-2 gap-4 items-start mb-4">{children}</div>;
 }
 
-export function Page({ children }: { children: React.ReactNode }) {
-    return <div className="m-4">{children}</div>;
+export function Page({ children, ...props }: PropsWithChildren<ComponentProps<'div'>>) {
+    return (
+        <div className={cn('m-4', props.className)} {...props}>
+            {children}
+        </div>
+    );
 }
 
 export function PageTitle({ children }: { children: React.ReactNode }) {
-    return <h1 className="text-2xl font-bold mb-4">{children}</h1>;
+    return <h1 className="text-2xl font-semibold mb-4">{children}</h1>;
 }
 
 export function PageActionBar({ children }: { children: React.ReactNode }) {

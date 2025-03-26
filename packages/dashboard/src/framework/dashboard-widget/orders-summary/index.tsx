@@ -6,6 +6,7 @@ import { useMemo, useState } from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs.js';
 import { useChannel, useLocalFormat } from '@/index.js';
 import { startOfDay, endOfDay, subDays, subMonths, startOfMonth, endOfMonth } from 'date-fns';
+import { AnimatedCurrency, AnimatedNumber } from '@/components/shared/animated-number.js';
 
 export const WIDGET_ID = 'orders-summary-widget';
 
@@ -14,6 +15,23 @@ enum Range {
     Yesterday = 'yesterday',
     ThisWeek = 'thisWeek',
     ThisMonth = 'thisMonth',
+}
+
+interface PercentageChangeProps {
+    value: number;
+}
+
+function PercentageChange({ value }: PercentageChangeProps) {
+    const isZero = value === 0;
+    const isPositive = value > 0;
+    const colorClass = isZero ? 'text-muted-foreground' : isPositive ? 'text-success' : 'text-destructive';
+    const arrow = isZero ? null : isPositive ? '↑' : '↓';
+
+    return (
+        <p className={`text-sm ${colorClass}`}>
+            {arrow} <AnimatedNumber value={Math.abs(value)} />%
+        </p>
+    );
 }
 
 export function OrdersSummaryWidget() {
@@ -106,8 +124,6 @@ export function OrdersSummaryWidget() {
     const orderChange = calculatePercentChange(currentTotalOrders, previousTotalOrders);
     const revenueChange = calculatePercentChange(currentRevenue, previousRevenue);
 
-    console.log({ orderChange, revenueChange });
-
     return (
         <DashboardBaseWidget
             id={WIDGET_ID}
@@ -127,19 +143,23 @@ export function OrdersSummaryWidget() {
             <div className="flex flex-col gap-4 items-center justify-center text-center">
                 <div className="flex flex-col gap-2">
                     <p className="text-lg text-muted-foreground">Total Orders</p>
-                    <p className="text-3xl font-semibold">{currentTotalOrders}</p>
-                    <p className={`text-sm ${orderChange >= 0 ? 'text-success' : 'text-destructive'}`}>
-                        {orderChange >= 0 ? '↑' : '↓'} {Math.abs(orderChange).toFixed(1)}%
+                    <p className="text-3xl font-semibold">
+                        <AnimatedNumber
+                            animationConfig={{ mass: 0.5, stiffness: 90, damping: 10 }}
+                            value={currentTotalOrders}
+                        />
                     </p>
+                    <PercentageChange value={orderChange} />
                 </div>
                 <div className="flex flex-col gap-2">
                     <p className="text-lg text-muted-foreground">Total Revenue</p>
                     <p className="text-3xl font-semibold">
-                        {formatCurrency(currentRevenue, activeChannel?.defaultCurrencyCode ?? 'USD')}
+                        <AnimatedCurrency
+                            animationConfig={{ mass: 0.2, stiffness: 90, damping: 10 }}
+                            value={currentRevenue}
+                        />
                     </p>
-                    <p className={`text-sm ${revenueChange >= 0 ? 'text-success' : 'text-destructive'}`}>
-                        {revenueChange >= 0 ? '↑' : '↓'} {Math.abs(revenueChange).toFixed(1)}%
-                    </p>
+                    <PercentageChange value={revenueChange} />
                 </div>
             </div>
         </DashboardBaseWidget>

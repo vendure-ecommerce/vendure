@@ -1,13 +1,15 @@
+import { Button } from '@/components/ui/button.js';
+import { DashboardBaseWidgetProps } from '@/framework/dashboard-widget/base-widget.js';
+import { LatestOrdersWidget } from '@/framework/dashboard-widget/latest-orders-widget/index.js';
+import { MetricsWidget } from '@/framework/dashboard-widget/metrics-widget/index.js';
+import { OrdersSummaryWidget } from '@/framework/dashboard-widget/orders-summary/index.js';
+import { Page, PageActionBar, PageActionBarRight, PageTitle } from '@/framework/layout-engine/page-layout.js';
 import { createFileRoute } from '@tanstack/react-router';
+import * as React from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Responsive as ResponsiveGridLayout, WidthProvider } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import * as React from 'react';
-import { useEffect, useMemo, useState } from 'react';
-import { DashboardBaseWidgetProps } from '@/framework/dashboard-widget/base-widget.js';
-import { MetricsWidget } from '@/framework/dashboard-widget/metrics-widget/index.js';
-import { LatestOrdersWidget } from '@/framework/dashboard-widget/latest-orders-widget/index.js';
-import { OrdersSummaryWidget } from '@/framework/dashboard-widget/orders-summary/index.js';
 
 // Widget registry type definitions
 export type WidgetDefinition = {
@@ -55,19 +57,19 @@ registerWidget({
     id: 'latest-orders-widget',
     name: 'Latest Orders Widget',
     component: LatestOrdersWidget,
-    defaultSize: { w: 6, h: 11, x: 0, y: 0 },
+    defaultSize: { w: 6, h: 7, x: 0, y: 0 },
 });
 
 registerWidget({
     id: 'orders-summary-widget',
     name: 'Orders Summary Widget',
     component: OrdersSummaryWidget,
-    defaultSize: { w: 6, h: 6, x: 6, y: 0 },
+    defaultSize: { w: 6, h: 3, x: 6, y: 0 },
 });
 
 function DashboardPage() {
-    // This would typically come from user preferences in your backend
     const [widgets, setWidgets] = useState<WidgetInstance[]>([]);
+    const [editMode, setEditMode] = useState(false);
 
     useEffect(() => {
         const initialWidgets = Array.from(widgetRegistry.entries()).map(([id, widget]) => ({
@@ -92,22 +94,33 @@ function DashboardPage() {
     const ResponsiveReactGridLayout = useMemo(() => WidthProvider(ResponsiveGridLayout), []);
 
     return (
-        <div className="min-h-dvh w-full">
+        <Page className="min-h-dvh w-full">
+            <PageTitle>Dashboard</PageTitle>
+            <PageActionBar>
+                <PageActionBarRight>
+                    <Button variant="outline" onClick={() => setEditMode(prev => !prev)}>
+                        Edit Mode
+                        {editMode ? (
+                            <span className="text-xs text-destructive">ON</span>
+                        ) : (
+                            <span className="text-xs text-muted-foreground">OFF</span>
+                        )}
+                    </Button>
+                </PageActionBarRight>
+            </PageActionBar>
             <ResponsiveReactGridLayout
                 className="h-full w-full"
                 layouts={{ lg: widgets.map(w => ({ ...w.layout, i: w.id })) }}
                 onLayoutChange={handleLayoutChange}
                 cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-                rowHeight={50}
-                isDraggable
-                isResizable
+                rowHeight={100}
+                isDraggable={editMode}
+                isResizable={editMode}
+                autoSize={true}
             >
                 {widgets.map(widget => {
                     const definition = widgetRegistry.get(widget.widgetId);
-
-                    console.log({ definition });
                     if (!definition) return null;
-
                     const WidgetComponent = definition.component;
 
                     return (
@@ -117,6 +130,6 @@ function DashboardPage() {
                     );
                 })}
             </ResponsiveReactGridLayout>
-        </div>
+        </Page>
     );
 }
