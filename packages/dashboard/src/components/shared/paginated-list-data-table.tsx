@@ -10,9 +10,16 @@ import { api } from '@/graphql/api.js';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useDebounce } from 'use-debounce';
 
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu.js';
 import { DisplayComponent } from '@/framework/component-registry/dynamic-component.js';
 import { ResultOf } from '@/graphql/graphql.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import {
     ColumnFiltersState,
@@ -22,25 +29,10 @@ import {
     Table,
 } from '@tanstack/react-table';
 import { AccessorKeyColumnDef, ColumnDef, Row } from '@tanstack/table-core';
-import React, { useMemo } from 'react';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuPortal,
-    DropdownMenuSeparator,
-    DropdownMenuShortcut,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
-import { Button } from '../ui/button.js';
 import { EllipsisIcon, TrashIcon } from 'lucide-react';
-import { Trans, useLingui } from '@lingui/react/macro';
+import React, { useMemo } from 'react';
 import { toast } from 'sonner';
+import { Button } from '../ui/button.js';
 
 // Type that identifies a paginated list structure (has items array and totalItems)
 type IsPaginatedList<T> = T extends { items: any[]; totalItems: number } ? true : false;

@@ -29,6 +29,7 @@ import { toast } from 'sonner';
 import { CreateProductVariantsDialog } from './components/create-product-variants-dialog.js';
 import { ProductVariantsTable } from './components/product-variants-table.js';
 import { createProductDocument, productDetailDocument, updateProductDocument } from './products.graphql.js';
+import { RichTextInput } from '@/components/data-input/richt-text-input.js';
 
 export const Route = createFileRoute('/_authenticated/_products/products_/$id')({
     component: ProductDetailPage,
@@ -135,7 +136,7 @@ export function ProductDetailPage() {
                             control={form.control}
                             name="description"
                             label={<Trans>Description</Trans>}
-                            render={({ field }) => <Textarea className="resize-none" {...field} />}
+                            render={({ field }) => <RichTextInput {...field} />}
                         />
                     </PageBlock>
                     <CustomFieldsPageBlock column="main" entityType="Product" control={form.control} />

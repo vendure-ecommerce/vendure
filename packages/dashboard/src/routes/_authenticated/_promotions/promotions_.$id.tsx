@@ -1,4 +1,5 @@
 import { DateTimeInput } from '@/components/data-input/datetime-input.js';
+import { RichTextInput } from '@/components/data-input/richt-text-input.js';
 import { ErrorPage } from '@/components/shared/error-page.js';
 import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
@@ -6,7 +7,6 @@ import { TranslatableFormFieldWrapper } from '@/components/shared/translatable-f
 import { Button } from '@/components/ui/button.js';
 import { Input } from '@/components/ui/input.js';
 import { Switch } from '@/components/ui/switch.js';
-import { Textarea } from '@/components/ui/textarea.js';
 import { NEW_ENTITY_PATH } from '@/constants.js';
 import {
     CustomFieldsPageBlock,
@@ -151,7 +151,7 @@ export function PromotionDetailPage() {
                                 control={form.control}
                                 name="description"
                                 label={<Trans>Description</Trans>}
-                                render={({ field }) => <Textarea {...field} />}
+                                render={({ field }) => <RichTextInput {...field} />}
                             />
                         </div>
                         <DetailFormGrid>

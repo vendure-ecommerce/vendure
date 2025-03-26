@@ -41,6 +41,7 @@ import {
 import { CollectionContentsPreviewTable } from './components/collection-contents-preview-table.js';
 import { CollectionContentsTable } from './components/collection-contents-table.js';
 import { CollectionFiltersSelector } from './components/collection-filters-selector.js';
+import { RichTextInput } from '@/components/data-input/richt-text-input.js';
 
 export const Route = createFileRoute('/_authenticated/_collections/collections_/$id')({
     component: CollectionDetailPage,
@@ -150,20 +151,20 @@ export function CollectionDetailPage() {
                                 control={form.control}
                                 name="name"
                                 label={<Trans>Name</Trans>}
-                                render={({ field }) => <Input placeholder="" {...field} />}
+                                render={({ field }) => <Input {...field} />}
                             />
                             <TranslatableFormFieldWrapper
                                 control={form.control}
                                 name="slug"
                                 label={<Trans>Slug</Trans>}
-                                render={({ field }) => <Input placeholder="" {...field} />}
+                                render={({ field }) => <Input {...field} />}
                             />
                         </DetailFormGrid>
                         <TranslatableFormFieldWrapper
                             control={form.control}
                             name="description"
                             label={<Trans>Description</Trans>}
-                            render={({ field }) => <Textarea placeholder="" {...field} />}
+                            render={({ field }) => <RichTextInput {...field} />}
                         />
                     </PageBlock>
                     <CustomFieldsPageBlock column="main" entityType="Collection" control={form.control} />

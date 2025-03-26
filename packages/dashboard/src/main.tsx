@@ -17,15 +17,23 @@ function InnerApp() {
     const auth = useAuth();
     const extendedRouter = useExtendedRouter(router);
     const serverConfig = useServerConfig();
+    const [hasSetCustomFieldsMap, setHasSetCustomFieldsMap] = React.useState(false);
 
     useEffect(() => {
         if (!serverConfig) {
             return;
         }
         setCustomFieldsMap(serverConfig.entityCustomFields);
+        setHasSetCustomFieldsMap(true);
     }, [serverConfig?.entityCustomFields]);
 
-    return <RouterProvider router={extendedRouter} context={{ auth, queryClient }} />;
+    return (
+        <>
+            {hasSetCustomFieldsMap && (
+                <RouterProvider router={extendedRouter} context={{ auth, queryClient }} />
+            )}
+        </>
+    );
 }
 
 function App() {
