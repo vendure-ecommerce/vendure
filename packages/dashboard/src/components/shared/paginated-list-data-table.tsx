@@ -303,10 +303,10 @@ export function PaginatedListDataTable<
     }
 
     const columnHelper = createColumnHelper<PaginatedListItemFields<T>>();
-    const customFieldColumnNames: string[] = [];
 
-    const columns = useMemo(() => {
+    const { columns, customFieldColumnNames } = useMemo(() => {
         const columnConfigs: Array<{ fieldInfo: FieldInfo; isCustomField: boolean }> = [];
+        const customFieldColumnNames: string[] = [];
 
         columnConfigs.push(
             ...fields // Filter out custom fields
@@ -398,7 +398,7 @@ export function PaginatedListDataTable<
             }
         }
 
-        return finalColumns;
+        return { columns: finalColumns, customFieldColumnNames };
     }, [fields, customizeColumns, rowActions]);
 
     const columnVisibility = getColumnVisibility(fields, defaultVisibility, customFieldColumnNames);
@@ -507,6 +507,7 @@ function getColumnVisibility(
         ...(allDefaultsTrue ? { ...Object.fromEntries(fields.map(f => [f.name, false])) } : {}),
         ...(allDefaultsFalse ? { ...Object.fromEntries(fields.map(f => [f.name, true])) } : {}),
         ...defaultVisibility,
+        // Make custom fields hidden by default
         ...(customFieldColumnNames
             ? { ...Object.fromEntries(customFieldColumnNames.map(f => [f, false])) }
             : {}),
