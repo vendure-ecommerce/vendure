@@ -1,8 +1,25 @@
 import { navMenu } from '@/framework/nav-menu/nav-menu.js';
-import { BookOpen, Bot, Settings2, ShoppingCart, SquareTerminal, Users, Mail, Terminal } from 'lucide-react';
+import {
+    BookOpen,
+    Bot,
+    Settings2,
+    ShoppingCart,
+    SquareTerminal,
+    Users,
+    Mail,
+    Terminal,
+    LayoutDashboardIcon,
+} from 'lucide-react';
 
 navMenu({
     sections: [
+        {
+            id: 'dashboard',
+            title: 'Dashboard',
+            placement: 'top',
+            icon: LayoutDashboardIcon,
+            url: '/',
+        },
         {
             id: 'catalog',
             title: 'Catalog',
