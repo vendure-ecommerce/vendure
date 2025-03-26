@@ -1,15 +1,14 @@
-import { ListPage } from '@/framework/page/list-page.js';
-import { Link, createFileRoute } from '@tanstack/react-router';
-import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
-import { administratorListDocument } from './administrators.graphql.js';
-import { Trans } from '@lingui/react/macro';
 import { DetailPageButton } from '@/components/shared/detail-page-button.js';
-import { PlusIcon } from 'lucide-react';
-import { Button } from '@/components/ui/button.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
-import { Badge } from '@/components/ui/badge.js';
 import { RoleCodeLabel } from '@/components/shared/role-code-label.js';
+import { Badge } from '@/components/ui/badge.js';
+import { Button } from '@/components/ui/button.js';
+import { PageActionBar, PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
+import { ListPage } from '@/framework/page/list-page.js';
+import { Trans } from '@lingui/react/macro';
+import { Link, createFileRoute } from '@tanstack/react-router';
+import { PlusIcon } from 'lucide-react';
+import { administratorListDocument } from './administrators.graphql.js';
 export const Route = createFileRoute('/_authenticated/_administrators/administrators')({
     component: AdministratorListPage,
     loader: () => ({ breadcrumb: () => <Trans>Administrators</Trans> }),
@@ -19,7 +18,7 @@ function AdministratorListPage() {
     return (
         <ListPage
             title="Administrators"
-            listQuery={addCustomFields(administratorListDocument)}
+            listQuery={administratorListDocument}
             route={Route}
             onSearchTermChange={searchTerm => {
                 return {
@@ -70,14 +69,16 @@ function AdministratorListPage() {
             defaultColumnOrder={['name', 'emailAddress', 'roles']}
         >
             <PageActionBar>
-                <PermissionGuard requires={['CreateAdministrator']}>
-                    <Button asChild>
-                        <Link to="./new">
+                <PageActionBarRight>
+                    <PermissionGuard requires={['CreateAdministrator']}>
+                        <Button asChild>
+                            <Link to="./new">
                             <PlusIcon />
                             New Administrator
                         </Link>
-                    </Button>
-                </PermissionGuard>
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
             </PageActionBar>
         </ListPage>
     );

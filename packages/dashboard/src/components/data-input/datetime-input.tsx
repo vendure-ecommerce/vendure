@@ -15,18 +15,18 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area.js";
 import { CalendarClock } from "lucide-react";
 
 export interface DateTimeInputProps {
-  value: Date;
+  value: Date | string | undefined;
   onChange: (value: Date) => void;
 }
  
 export function DateTimeInput(props: DateTimeInputProps) {
-  const [date, setDate] = React.useState<Date>(props.value);
+  const [date, setDate] = React.useState<string>(props.value && props.value instanceof Date ? props.value.toISOString() : props.value ?? '');
   const [isOpen, setIsOpen] = React.useState(false);
  
   const hours = Array.from({ length: 12 }, (_, i) => i + 1);
   const handleDateSelect = (selectedDate: Date | undefined) => {
     if (selectedDate) {
-      setDate(selectedDate);
+      setDate(selectedDate.toISOString());
       props.onChange(selectedDate);
     }
   };
@@ -49,7 +49,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
           value === "PM" ? currentHours + 12 : currentHours - 12
         );
       }
-      setDate(newDate);
+      setDate(newDate.toISOString());
       props.onChange(newDate);
     }
   };
@@ -76,7 +76,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
         <div className="sm:flex">
           <Calendar
             mode="single"
-            selected={date}
+            selected={new Date(date)}
             onSelect={handleDateSelect}
             initialFocus
           />
@@ -88,7 +88,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
                     key={hour}
                     size="icon"
                     variant={
-                      date && date.getHours() % 12 === hour % 12
+                      date && new Date(date).getHours() % 12 === hour % 12
                         ? "default"
                         : "ghost"
                     }
@@ -108,7 +108,7 @@ export function DateTimeInput(props: DateTimeInputProps) {
                     key={minute}
                     size="icon"
                     variant={
-                      date && date.getMinutes() === minute
+                      date && new Date(date).getMinutes() === minute
                         ? "default"
                         : "ghost"
                     }
@@ -131,8 +131,8 @@ export function DateTimeInput(props: DateTimeInputProps) {
                     size="icon"
                     variant={
                       date &&
-                      ((ampm === "AM" && date.getHours() < 12) ||
-                        (ampm === "PM" && date.getHours() >= 12))
+                      ((ampm === "AM" && new Date(date).getHours() < 12) ||
+                        (ampm === "PM" && new Date(date).getHours() >= 12))
                         ? "default"
                         : "ghost"
                     }

@@ -1,14 +1,13 @@
-import { Link, createFileRoute } from '@tanstack/react-router';
-import { channelListQuery } from './channels.graphql.js';
-import { ListPage } from '@/framework/page/list-page.js';
-import { Button } from '@/components/ui/button.js';
-import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
-import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { PlusIcon } from 'lucide-react';
 import { DetailPageButton } from '@/components/shared/detail-page-button.js';
+import { PermissionGuard } from '@/components/shared/permission-guard.js';
+import { Button } from '@/components/ui/button.js';
+import { PageActionBar, PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
+import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@lingui/react/macro';
+import { Link, createFileRoute } from '@tanstack/react-router';
+import { PlusIcon } from 'lucide-react';
 import { ChannelCodeLabel } from '../../../components/shared/channel-code-label.js';
+import { channelListQuery } from './channels.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_channels/channels')({
     component: ChannelListPage,
@@ -19,7 +18,7 @@ function ChannelListPage() {
     return (
         <ListPage
             title="Channels"
-            listQuery={addCustomFields(channelListQuery)}
+            listQuery={channelListQuery}
             route={Route}
             defaultVisibility={{
                 code: true,
@@ -34,20 +33,27 @@ function ChannelListPage() {
                 code: {
                     header: 'Code',
                     cell: ({ row }) => {
-                        return <DetailPageButton id={row.original.id} label={<ChannelCodeLabel code={row.original.code} />} />;
+                        return (
+                            <DetailPageButton
+                                id={row.original.id}
+                                label={<ChannelCodeLabel code={row.original.code} />}
+                            />
+                        );
                     },
                 },
             }}
         >
             <PageActionBar>
-                <PermissionGuard requires={['CreateChannel']}>
-                    <Button asChild>
-                        <Link to="./new">
-                            <PlusIcon className="mr-2 h-4 w-4" />
-                            New Channel
-                        </Link>
-                    </Button>
-                </PermissionGuard>
+                <PageActionBarRight>
+                    <PermissionGuard requires={['CreateChannel']}>
+                        <Button asChild>
+                            <Link to="./new">
+                                <PlusIcon className="mr-2 h-4 w-4" />
+                                New Channel
+                            </Link>
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
             </PageActionBar>
         </ListPage>
     );

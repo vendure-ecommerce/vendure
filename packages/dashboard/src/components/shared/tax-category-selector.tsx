@@ -25,7 +25,7 @@ const taxCategoriesDocument = graphql(`
 `);
 
 export interface TaxCategorySelectorProps {
-    value: string;
+    value: string | undefined;
     onChange: (value: string) => void;
 }
 

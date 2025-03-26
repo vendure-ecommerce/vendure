@@ -27,27 +27,17 @@ import { CustomerSelector } from '@/components/shared/customer-selector.js';
 import { api } from '@/graphql/api.js';
 import { addCustomerToGroupDocument } from '../_customers/customers.graphql.js';
 import { useMutation } from '@tanstack/react-query';
+import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
 
 export const Route = createFileRoute('/_authenticated/_sellers/sellers_/$id')({
     component: SellerDetailPage,
-    loader: async ({ context, params }) => {
-        const isNew = params.id === NEW_ENTITY_PATH;
-        const result = isNew
-            ? null
-            : await context.queryClient.ensureQueryData(
-                  getDetailQueryOptions(addCustomFields(sellerDetailDocument), { id: params.id }),
-                  { id: params.id },
-              );
-        if (!isNew && !result.seller) {
-            throw new Error(`Seller with the ID ${params.id} was not found`);
-        }
-        return {
-            breadcrumb: [
-                { path: '/sellers', label: 'Sellers' },
-                    isNew ? <Trans>New seller</Trans> : result.seller.name,
-            ],
-        };
-    },
+    loader: detailPageRouteLoader({
+        queryDocument: sellerDetailDocument,
+        breadcrumb: (isNew, entity) => [
+            { path: '/sellers', label: 'Sellers' },
+            isNew ? <Trans>New seller</Trans> : entity?.name,
+        ],
+    }),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
@@ -58,8 +48,7 @@ export function SellerDetailPage() {
     const { i18n } = useLingui();
 
     const { form, submitHandler, entity, isPending } = useDetailPage({
-        queryDocument: addCustomFields(sellerDetailDocument),
-        entityField: 'seller',
+        queryDocument: sellerDetailDocument,
         createDocument: createSellerDocument,
         updateDocument: updateSellerDocument,
         setValuesForUpdate: entity => {

@@ -1,10 +1,14 @@
 import { DetailPageButton } from '@/components/shared/detail-page-button.js';
-import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
 import { ListPage } from '@/framework/page/list-page.js';
-import { createFileRoute } from '@tanstack/react-router';
+import { Trans } from '@lingui/react/macro';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { CustomerStatusBadge } from './components/customer-status-badge.js';
 import { customerListDocument } from './customers.graphql.js';
-import { Trans } from '@lingui/react/macro';
+import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
+import { PlusIcon } from 'lucide-react';
+import { PermissionGuard } from '@/components/shared/permission-guard.js';
+import { Button } from '@/components/ui/button.js';
+import { PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
 export const Route = createFileRoute('/_authenticated/_customers/customers')({
     component: CustomerListPage,
     loader: () => ({ breadcrumb: () => <Trans>Customers</Trans> }),
@@ -32,7 +36,7 @@ export function CustomerListPage() {
                     },
                 };
             }}
-            listQuery={addCustomFields(customerListDocument)}
+            listQuery={customerListDocument}
             route={Route}
             customizeColumns={{
                 user: {
@@ -60,6 +64,19 @@ export function CustomerListPage() {
                 firstName: false,
                 lastName: false,
             }}
-        />
+        >
+            <PageActionBar>
+                <PageActionBarRight>
+                    <PermissionGuard requires={['CreateCustomer']}>
+                        <Button asChild>
+                            <Link to="./new">
+                                <PlusIcon />
+                                <Trans>New Customer</Trans>
+                            </Link>
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
+            </PageActionBar>
+        </ListPage>
     );
 }

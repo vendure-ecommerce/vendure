@@ -81,6 +81,7 @@ export const collectionDetailDocument = graphql(
                     id
                     name
                 }
+                customFields
             }
         }
     `,

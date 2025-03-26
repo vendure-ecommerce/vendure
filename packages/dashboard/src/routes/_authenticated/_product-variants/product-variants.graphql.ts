@@ -51,9 +51,11 @@ export const productVariantDetailDocument = graphql(
                 }
                 facetValues {
                     id
+                    code
                     name
                     facet {
                         id
+                        code
                         name
                     }
                 }

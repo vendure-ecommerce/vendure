@@ -1,13 +1,11 @@
 import { Money } from '@/components/data-display/money.js';
+import { DetailPageButton } from '@/components/shared/detail-page-button.js';
 import { Badge } from '@/components/ui/badge.js';
 import { Button } from '@/components/ui/button.js';
-import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
 import { ListPage } from '@/framework/page/list-page.js';
-import { ResultOf } from '@/graphql/graphql.js';
+import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { orderListDocument } from './orders.graphql.js';
-import { DetailPageButton } from '@/components/shared/detail-page-button.js';
-import { Trans } from '@lingui/react/macro';
 
 export const Route = createFileRoute('/_authenticated/_orders/orders')({
     component: OrderListPage,
@@ -38,7 +36,7 @@ export function OrderListPage() {
                     filterOperator: 'OR',
                 };
             }}
-            listQuery={addCustomFields(orderListDocument)}
+            listQuery={orderListDocument}
             route={Route}
             customizeColumns={{
                 total: {
@@ -75,9 +73,7 @@ export function OrderListPage() {
                 customer: {
                     header: 'Customer',
                     cell: ({ cell }) => {
-                        const value = cell.getValue() as ResultOf<
-                            typeof orderListDocument
-                        >['orders']['items'][number]['customer'];
+                        const value = cell.getValue();
                         if (!value) {
                             return null;
                         }
@@ -93,7 +89,7 @@ export function OrderListPage() {
                 shippingLines: {
                     header: 'Shipping',
                     cell: ({ cell }) => {
-                        const value = cell.getValue() as ResultOf<typeof orderListDocument>['orders']['items'][number]['shippingLines'];
+                        const value = cell.getValue();
                         return <div>{value.map(line => line.shippingMethod.name).join(', ')}</div>;
                     },
                 },

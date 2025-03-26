@@ -1,9 +1,8 @@
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.js';
 import { api } from '@/graphql/api.js';
-import { ConfigurableOperationDefFragment, configurableOperationDefFragment } from '@/graphql/fragments.js';
-import { useQuery } from '@tanstack/react-query';
+import { configurableOperationDefFragment } from '@/graphql/fragments.js';
 import { graphql } from '@/graphql/graphql.js';
-import { ConfigurableOperationInput as ConfigurableOperationInputType } from '@vendure/common/lib/generated-types';
-import { Select, SelectValue, SelectTrigger, SelectItem, SelectContent } from '@/components/ui/select.js';
+import { useQuery } from '@tanstack/react-query';
 
 export const fulfillmentHandlersDocument = graphql(
     `
@@ -17,8 +16,8 @@ export const fulfillmentHandlersDocument = graphql(
 );
 
 interface FulfillmentHandlerSelectorProps {
-    value: string | null;
-    onChange: (value: string | null) => void;
+    value: string | undefined;
+    onChange: (value: string | undefined) => void;
 }
 
 export function FulfillmentHandlerSelector({ value, onChange }: FulfillmentHandlerSelectorProps) {

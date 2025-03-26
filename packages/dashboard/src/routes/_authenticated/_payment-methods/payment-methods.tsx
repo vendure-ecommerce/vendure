@@ -2,7 +2,6 @@ import { BooleanDisplayBadge } from '@/components/data-display/boolean.js';
 import { DetailPageButton } from '@/components/shared/detail-page-button.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { Button } from '@/components/ui/button.js';
-import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
 import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@lingui/react/macro';
@@ -18,7 +17,7 @@ export const Route = createFileRoute('/_authenticated/_payment-methods/payment-m
 function PaymentMethodListPage() {
     return (
         <ListPage
-            listQuery={addCustomFields(paymentMethodListQuery)}
+            listQuery={paymentMethodListQuery}
             route={Route}
             title="Payment Methods"
             defaultVisibility={{

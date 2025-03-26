@@ -4,8 +4,7 @@ import { RoleCodeLabel } from '@/components/shared/role-code-label.js';
 import { Badge } from '@/components/ui/badge.js';
 import { Button } from '@/components/ui/button.js';
 import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '@/constants.js';
-import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
-import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
+import { PageActionBar, PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
@@ -24,7 +23,7 @@ function RoleListPage() {
     return (
         <ListPage
             title="Roles"
-            listQuery={addCustomFields(roleListQuery)}
+            listQuery={roleListQuery}
             route={Route}
             defaultVisibility={{
                 description: true,
@@ -78,14 +77,16 @@ function RoleListPage() {
             }}
         >
             <PageActionBar>
-                <PermissionGuard requires={['CreateAdministrator']}>
-                    <Button asChild>
-                        <Link to="./new">
+                <PageActionBarRight>
+                    <PermissionGuard requires={['CreateAdministrator']}>
+                        <Button asChild>
+                            <Link to="./new">
                             <PlusIcon className="mr-2 h-4 w-4" />
                             New Role
                         </Link>
-                    </Button>
-                </PermissionGuard>
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
             </PageActionBar>
         </ListPage>
     );

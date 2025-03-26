@@ -1,14 +1,13 @@
-import { Link, createFileRoute } from '@tanstack/react-router';
-import { Trans } from '@lingui/react/macro';
-import { ListPage } from '@/framework/page/list-page.js';
-import { taxCategoryListQuery } from './tax-categories.graphql.js';
-import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
 import { DetailPageButton } from '@/components/shared/detail-page-button.js';
-import { Badge } from '@/components/ui/badge.js';
-import { PlusIcon } from 'lucide-react';
-import { Button } from '@/components/ui/button.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
+import { Badge } from '@/components/ui/badge.js';
+import { Button } from '@/components/ui/button.js';
+import { PageActionBar, PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
+import { ListPage } from '@/framework/page/list-page.js';
+import { Trans } from '@lingui/react/macro';
+import { Link, createFileRoute } from '@tanstack/react-router';
+import { PlusIcon } from 'lucide-react';
+import { taxCategoryListQuery } from './tax-categories.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_tax-categories/tax-categories')({
     component: TaxCategoryListPage,
@@ -18,7 +17,7 @@ export const Route = createFileRoute('/_authenticated/_tax-categories/tax-catego
 function TaxCategoryListPage() {
     return (
         <ListPage
-            listQuery={addCustomFields(taxCategoryListQuery)}
+            listQuery={taxCategoryListQuery}
             route={Route}
             title="Tax Categories"
             defaultVisibility={{
@@ -50,14 +49,16 @@ function TaxCategoryListPage() {
             }}
         >
             <PageActionBar>
-                <PermissionGuard requires={['CreateTaxCategory']}>
-                    <Button asChild>
-                        <Link to="./new">
-                            <PlusIcon />
-                            <Trans>New Tax Category</Trans>
-                        </Link>
-                    </Button>
-                </PermissionGuard>
+                <PageActionBarRight>
+                    <PermissionGuard requires={['CreateTaxCategory']}>
+                        <Button asChild>
+                            <Link to="./new">
+                                <PlusIcon />
+                                <Trans>New Tax Category</Trans>
+                            </Link>
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
             </PageActionBar>
         </ListPage>
     );

@@ -1,9 +1,7 @@
-import { BooleanDisplayBadge } from '@/components/data-display/boolean.js';
 import { DetailPageButton } from '@/components/shared/detail-page-button.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { Button } from '@/components/ui/button.js';
-import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
-import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
+import { PageActionBar, PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@lingui/react/macro';
 import { Link, createFileRoute } from '@tanstack/react-router';
@@ -18,7 +16,7 @@ export const Route = createFileRoute('/_authenticated/_countries/countries')({
 function CountryListPage() {
     return (
         <ListPage
-            listQuery={addCustomFields(countriesListQuery)}
+            listQuery={countriesListQuery}
             route={Route}
             title="Countries"
             defaultVisibility={{
@@ -42,7 +40,7 @@ function CountryListPage() {
                     options: {
                         ...variables.options,
                         filterOperator: 'OR',
-                    }
+                    },
                 };
             }}
             customizeColumns={{
@@ -53,14 +51,16 @@ function CountryListPage() {
             }}
         >
             <PageActionBar>
-                <PermissionGuard requires={['CreateCountry']}>
-                    <Button asChild>
-                        <Link to="./new">
-                            <PlusIcon />
-                            <Trans>Add Country</Trans>
-                        </Link>
-                    </Button>
-                </PermissionGuard>
+                <PageActionBarRight>
+                    <PermissionGuard requires={['CreateCountry']}>
+                        <Button asChild>
+                            <Link to="./new">
+                                <PlusIcon />
+                                <Trans>Add Country</Trans>
+                            </Link>
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
             </PageActionBar>
         </ListPage>
     );

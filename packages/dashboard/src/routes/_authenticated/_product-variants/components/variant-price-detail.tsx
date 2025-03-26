@@ -25,9 +25,9 @@ const taxRatesDocument = graphql(`
 `);
 interface VariantPriceDetailProps {
     priceIncludesTax: boolean;
-    price: number;
+    price: number | undefined;
     currencyCode: string;
-    taxCategoryId: string;
+    taxCategoryId: string | undefined;
 }
 
 export function VariantPriceDetail({

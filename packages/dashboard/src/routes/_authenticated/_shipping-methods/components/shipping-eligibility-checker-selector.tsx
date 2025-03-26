@@ -26,8 +26,8 @@ export const shippingEligibilityCheckersDocument = graphql(
 );
 
 interface ShippingEligibilityCheckerSelectorProps {
-    value: ConfigurableOperationInputType | null;
-    onChange: (value: ConfigurableOperationInputType | null) => void;
+    value: ConfigurableOperationInputType | undefined;
+    onChange: (value: ConfigurableOperationInputType | undefined) => void;
 }
 
 export function ShippingEligibilityCheckerSelector({ value, onChange }: ShippingEligibilityCheckerSelectorProps) {
@@ -62,7 +62,7 @@ export function ShippingEligibilityCheckerSelector({ value, onChange }: Shipping
     };
 
     const onOperationRemove = () => {
-        onChange(null);
+        onChange(undefined);
     };
 
     const checkerDef = checkers?.find(c => c.code === value?.code);

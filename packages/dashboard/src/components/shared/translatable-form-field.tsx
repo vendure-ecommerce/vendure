@@ -3,6 +3,11 @@ import { FieldPath } from 'react-hook-form';
 import { useUserSettings } from '@/hooks/use-user-settings.js';
 import { ControllerProps } from 'react-hook-form';
 import { FieldValues } from 'react-hook-form';
+import { FormFieldWrapper } from './form-field-wrapper.js';
+import { FormMessage } from '../ui/form.js';
+import { FormControl } from '../ui/form.js';
+import { FormItem } from '../ui/form.js';
+import { FormDescription, FormField, FormLabel } from '../ui/form.js';
 
 export type TranslatableEntity = FieldValues & {
     translations?: Array<{ languageCode: string }> | null;
@@ -36,4 +41,34 @@ export const TranslatableFormField = <
     }
     const translationName = `translations.${index}.${String(name)}` as FieldPath<TFieldValues>;
     return <Controller {...props} name={translationName} key={translationName} />;
+};
+
+export type TranslatableFormFieldWrapperProps<
+    TFieldValues extends TranslatableEntity | TranslatableEntity[],
+> = TranslatableFormFieldProps<TFieldValues> &
+    Omit<React.ComponentProps<typeof FormFieldWrapper<TFieldValues>>, 'name'>;
+
+export const TranslatableFormFieldWrapper = <
+    TFieldValues extends TranslatableEntity | TranslatableEntity[] = TranslatableEntity,
+>({
+    name,
+    label,
+    description,
+    render,
+    ...props
+}: TranslatableFormFieldWrapperProps<TFieldValues>) => {
+    return (
+        <TranslatableFormField
+            control={props.control}
+            name={name}
+            render={renderArgs => (
+                <FormItem>
+                    {label && <FormLabel>{label}</FormLabel>}
+                    <FormControl>{render(renderArgs)}</FormControl>
+                    {description && <FormDescription>{description}</FormDescription>}
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
+    );
 };

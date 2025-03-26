@@ -1,17 +1,16 @@
 import { FacetValueChip } from '@/components/shared/facet-value-chip.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { Button } from '@/components/ui/button.js';
-import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
-import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
+import { PageActionBar, PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { facetListDocument } from './facets.graphql.js';
 
+import { DetailPageButton } from '@/components/shared/detail-page-button.js';
 import { ResultOf } from 'gql.tada';
 import { FacetValuesSheet } from './components/facet-values-sheet.js';
-import { DetailPageButton } from '@/components/shared/detail-page-button.js';
 export const Route = createFileRoute('/_authenticated/_facets/facets')({
     component: FacetListPage,
     loader: () => ({ breadcrumb: () => <Trans>Facets</Trans> }),
@@ -66,7 +65,7 @@ export function FacetListPage() {
                     name: { contains: searchTerm },
                 };
             }}
-            listQuery={addCustomFields(facetListDocument)}
+            listQuery={facetListDocument}
             transformVariables={variables => {
                 return {
                     ...variables,
@@ -78,15 +77,16 @@ export function FacetListPage() {
             route={Route}
         >
             <PageActionBar>
-                <div></div>
-                <PermissionGuard requires={['CreateFacet', 'CreateCatalog']}>
-                    <Button asChild>
-                        <Link to="./new">
+                <PageActionBarRight>
+                    <PermissionGuard requires={['CreateFacet', 'CreateCatalog']}>
+                        <Button asChild>
+                            <Link to="./new">
                             <PlusIcon className="mr-2 h-4 w-4" />
                             <Trans>New Facet</Trans>
                         </Link>
-                    </Button>
-                </PermissionGuard>
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
             </PageActionBar>
         </ListPage>
     );

@@ -1,72 +1,50 @@
-import { ContentLanguageSelector } from '@/components/layout/content-language-selector.js';
-import { EntityAssets } from '@/components/shared/entity-assets.js';
+import { DateTimeInput } from '@/components/data-input/datetime-input.js';
 import { ErrorPage } from '@/components/shared/error-page.js';
+import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { TranslatableFormField } from '@/components/shared/translatable-form-field.js';
-import { Button } from '@/components/ui/button.js';
 import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from '@/components/ui/form.js';
+    TranslatableFormFieldWrapper
+} from '@/components/shared/translatable-form-field.js';
+import { Button } from '@/components/ui/button.js';
 import { Input } from '@/components/ui/input.js';
 import { Switch } from '@/components/ui/switch.js';
 import { Textarea } from '@/components/ui/textarea.js';
 import { NEW_ENTITY_PATH } from '@/constants.js';
-import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
 import {
     CustomFieldsPageBlock,
+    DetailFormGrid,
     Page,
     PageActionBar,
+    PageActionBarRight,
     PageBlock,
+    PageDetailForm,
     PageLayout,
     PageTitle,
 } from '@/framework/layout-engine/page-layout.js';
-import { getDetailQueryOptions, useDetailPage } from '@/framework/page/use-detail-page.js';
+import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
+import { useDetailPage } from '@/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
+import { PromotionActionsSelector } from './components/promotion-actions-selector.js';
+import { PromotionConditionsSelector } from './components/promotion-conditions-selector.js';
 import {
-    collectionDetailDocument,
-    createCollectionDocument,
-    updateCollectionDocument,
-} from './collections.graphql.js';
-import { CollectionContentsTable } from './components/collection-contents-table.js';
-import { CollectionFiltersSelect } from './components/collection-filters-select.js';
-import { CollectionContentsPreviewTable } from './components/collection-contents-preview-table.js';
-import {
-    promotionDetailDocument,
     createPromotionDocument,
+    promotionDetailDocument,
     updatePromotionDocument,
 } from './promotions.graphql.js';
-import { PromotionConditionsSelector } from './components/promotion-conditions-selector.js';
-import { PromotionActionsSelector } from './components/promotion-actions-selector.js';
-import { DateTimeInput } from '@/components/data-input/datetime-input.js';
 
 export const Route = createFileRoute('/_authenticated/_promotions/promotions_/$id')({
     component: PromotionDetailPage,
-    loader: async ({ context, params }) => {
-        const isNew = params.id === NEW_ENTITY_PATH;
-        const result = isNew
-            ? null
-            : await context.queryClient.ensureQueryData(
-                  getDetailQueryOptions(addCustomFields(promotionDetailDocument), { id: params.id }),
-                  { id: params.id },
-              );
-        if (!isNew && !result.promotion) {
-            throw new Error(`Promotion with the ID ${params.id} was not found`);
-        }
-        return {
-            breadcrumb: [
+    loader: detailPageRouteLoader({
+        queryDocument: promotionDetailDocument,
+        breadcrumb(isNew, entity) {
+            return [
                 { path: '/promotions', label: 'Promotions' },
-                isNew ? <Trans>New promotion</Trans> : result.promotion.name,
-            ],
-        };
-    },
+                isNew ? <Trans>New promotion</Trans> : entity?.name,
+            ];
+        },
+    }),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
@@ -76,9 +54,8 @@ export function PromotionDetailPage() {
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const { i18n } = useLingui();
 
-    const { form, submitHandler, entity, isPending, refreshEntity } = useDetailPage({
-        queryDocument: addCustomFields(promotionDetailDocument),
-        entityField: 'promotion',
+    const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        queryDocument: promotionDetailDocument,
         createDocument: createPromotionDocument,
         transformCreateInput: values => {
             return {
@@ -118,17 +95,16 @@ export function PromotionDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated promotion'), {
-                position: 'top-right',
-            });
-            form.reset(form.getValues());
-            if (creatingNewEntity) {
-                await navigate({ to: `../${data?.id}`, from: Route.id });
+            if (data.__typename === 'Promotion') {
+                toast.success(i18n.t('Successfully updated promotion'));
+                resetForm();
+                if (creatingNewEntity) {
+                    await navigate({ to: `../${data.id}`, from: Route.id });
+                }
             }
         },
         onError: err => {
-            toast(i18n.t('Failed to update promotion'), {
-                position: 'top-right',
+            toast.error(i18n.t('Failed to update promotion'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -137,10 +113,9 @@ export function PromotionDetailPage() {
     return (
         <Page>
             <PageTitle>{creatingNewEntity ? <Trans>New promotion</Trans> : (entity?.name ?? '')}</PageTitle>
-            <Form {...form}>
-                <form onSubmit={submitHandler} className="space-y-8">
-                    <PageActionBar>
-                        <ContentLanguageSelector />
+            <PageDetailForm form={form} submitHandler={submitHandler}>
+                <PageActionBar>
+                    <PageActionBarRight>
                         <PermissionGuard requires={['UpdatePromotion']}>
                             <Button
                                 type="submit"
@@ -149,170 +124,106 @@ export function PromotionDetailPage() {
                                 <Trans>Update</Trans>
                             </Button>
                         </PermissionGuard>
-                    </PageActionBar>
-                    <PageLayout>
-                        <PageBlock column="side">
-                            <FormField
+                    </PageActionBarRight>
+                </PageActionBar>
+                <PageLayout>
+                    <PageBlock column="side">
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="enabled"
+                            label={<Trans>Enabled</Trans>}
+                            description={<Trans>When enabled, a promotion is available in the shop</Trans>}
+                            render={({ field }) => (
+                                <Switch checked={field.value} onCheckedChange={field.onChange} />
+                            )}
+                        />
+                    </PageBlock>
+                    <PageBlock column="main">
+                        <DetailFormGrid>
+                            <TranslatableFormFieldWrapper
                                 control={form.control}
-                                name="enabled"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>
-                                            <Trans>Enabled</Trans>
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                        </FormControl>
-                                        <FormDescription>
-                                            <Trans>
-                                                If a promotion is enabled, it will be applied to orders in the
-                                                shop
-                                            </Trans>
-                                        </FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
+                                name="name"
+                                label={<Trans>Name</Trans>}
+                                render={({ field }) => <Input {...field} />}
                             />
-                        </PageBlock>
-                        <PageBlock column="main">
-                            <div className="md:grid md:grid-cols-2 md:gap-4 mb-4">
-                                <TranslatableFormField
-                                    control={form.control}
-                                    name="name"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>
-                                                <Trans>Name</Trans>
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                            <TranslatableFormField
+                            <div></div>
+                        </DetailFormGrid>
+                        <TranslatableFormFieldWrapper
+                            control={form.control}
+                            name="description"
+                            label={<Trans>Description</Trans>}
+                            render={({ field }) => <Textarea {...field} />}
+                        />
+                        <DetailFormGrid>
+                            <FormFieldWrapper
                                 control={form.control}
-                                name="description"
+                                name="startsAt"
+                                label={<Trans>Starts at</Trans>}
                                 render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>
-                                            <Trans>Description</Trans>
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Textarea placeholder="" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <div className="md:grid md:grid-cols-2 md:gap-4 my-4">
-                                <FormField
-                                    control={form.control}
-                                    name="startsAt"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>
-                                                <Trans>Starts at</Trans>
-                                            </FormLabel>
-                                            <FormControl>
-                                                <DateTimeInput value={field.value} onChange={value => field.onChange(value.toISOString())} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}  
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="endsAt"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>
-                                                <Trans>Ends at</Trans>
-                                            </FormLabel>
-                                            <FormControl>
-                                                <DateTimeInput value={field.value} onChange={value => field.onChange(value.toISOString())} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="couponCode"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>
-                                                <Trans>Coupon code</Trans>
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="perCustomerUsageLimit"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>
-                                                <Trans>Per customer usage limit</Trans>
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="" type="number" value={field.value} onChange={e => field.onChange(e.target.valueAsNumber)} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="usageLimit"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>
-                                                <Trans>Usage limit</Trans>
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="" type="number" value={field.value} onChange={e => field.onChange(e.target.valueAsNumber)} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                        </PageBlock>
-                        <CustomFieldsPageBlock column="main" entityType="Promotion" control={form.control} />
-                        <PageBlock column="main" title={<Trans>Conditions</Trans>}>
-                            <FormField
-                                control={form.control}
-                                name="conditions"
-                                render={({ field }) => (
-                                    <PromotionConditionsSelector
-                                        value={field.value ?? []}
-                                        onChange={field.onChange}
+                                    <DateTimeInput
+                                        value={field.value}
+                                        onChange={value => field.onChange(value.toISOString())}
                                     />
                                 )}
                             />
-                        </PageBlock>
-                        <PageBlock column="main" title={<Trans>Actions</Trans>}>
-                            <FormField
+                            <FormFieldWrapper
                                 control={form.control}
-                                name="actions"
+                                name="endsAt"
+                                label={<Trans>Ends at</Trans>}
                                 render={({ field }) => (
-                                    <PromotionActionsSelector
-                                        value={field.value ?? []}
-                                        onChange={field.onChange}
+                                    <DateTimeInput
+                                        value={field.value}
+                                        onChange={value => field.onChange(value.toISOString())}
                                     />
                                 )}
                             />
-                        </PageBlock>
-                    </PageLayout>
-                </form>
-            </Form>
+                            <FormFieldWrapper
+                                control={form.control}
+                                name="couponCode"
+                                label={<Trans>Coupon code</Trans>}
+                                render={({ field }) => <Input {...field} />}
+                            />
+                            <FormFieldWrapper
+                                control={form.control}
+                                name="perCustomerUsageLimit"
+                                label={<Trans>Per customer usage limit</Trans>}
+                                render={({ field }) => <Input type="number" {...field} />}
+                            />
+                            <FormFieldWrapper
+                                control={form.control}
+                                name="usageLimit"
+                                label={<Trans>Usage limit</Trans>}
+                                render={({ field }) => <Input type="number" {...field} />}
+                            />
+                        </DetailFormGrid>
+                    </PageBlock>
+                    <CustomFieldsPageBlock column="main" entityType="Promotion" control={form.control} />
+                    <PageBlock column="main" title={<Trans>Conditions</Trans>}>
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="conditions"
+                            render={({ field }) => (
+                                <PromotionConditionsSelector
+                                    value={field.value ?? []}
+                                    onChange={field.onChange}
+                                />
+                            )}
+                        />
+                    </PageBlock>
+                    <PageBlock column="main" title={<Trans>Actions</Trans>}>
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="actions"
+                            render={({ field }) => (
+                                <PromotionActionsSelector
+                                    value={field.value ?? []}
+                                    onChange={field.onChange}
+                                />
+                            )}
+                        />
+                    </PageBlock>
+                </PageLayout>
+            </PageDetailForm>
         </Page>
     );
 }

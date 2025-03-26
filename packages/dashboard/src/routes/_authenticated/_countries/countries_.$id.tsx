@@ -1,49 +1,37 @@
 import { ErrorPage } from '@/components/shared/error-page.js';
+import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { TranslatableFormField } from '@/components/shared/translatable-form-field.js';
+import { TranslatableFormFieldWrapper } from '@/components/shared/translatable-form-field.js';
 import { Button } from '@/components/ui/button.js';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form.js';
 import { Input } from '@/components/ui/input.js';
+import { Switch } from '@/components/ui/switch.js';
 import { NEW_ENTITY_PATH } from '@/constants.js';
-import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
 import {
     CustomFieldsPageBlock,
+    DetailFormGrid,
     Page,
     PageActionBar,
+    PageActionBarRight,
     PageBlock,
+    PageDetailForm,
     PageLayout,
     PageTitle,
 } from '@/framework/layout-engine/page-layout.js';
-import { getDetailQueryOptions, useDetailPage } from '@/framework/page/use-detail-page.js';
+import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
+import { useDetailPage } from '@/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
-import {
-    countryDetailQuery,
-    createCountryDocument,
-    updateCountryDocument,
-} from './countries.graphql.js';
-import { Switch } from '@/components/ui/switch.js';
+import { countryDetailQuery, createCountryDocument, updateCountryDocument } from './countries.graphql.js';
 export const Route = createFileRoute('/_authenticated/_countries/countries_/$id')({
     component: CountryDetailPage,
-    loader: async ({ context, params }) => {
-        const isNew = params.id === NEW_ENTITY_PATH;
-        const result = isNew
-            ? null
-            : await context.queryClient.ensureQueryData(
-                  getDetailQueryOptions(addCustomFields(countryDetailQuery), { id: params.id }),
-                  { id: params.id },
-              );
-        if (!isNew && !result.country) {
-            throw new Error(`Country with the ID ${params.id} was not found`);
-        }
-        return {
-            breadcrumb: [
-                { path: '/countries', label: 'Countries' },
-                    isNew ? <Trans>New country</Trans> : result.country.name,
-            ],
-        };
-    },
+    loader: detailPageRouteLoader({
+        queryDocument: countryDetailQuery,
+        breadcrumb: (isNew, entity) => [
+            { path: '/countries', label: 'Countries' },
+            isNew ? <Trans>New country</Trans> : entity?.name,
+        ],
+    }),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
@@ -54,8 +42,7 @@ export function CountryDetailPage() {
     const { i18n } = useLingui();
 
     const { form, submitHandler, entity, isPending } = useDetailPage({
-        queryDocument: addCustomFields(countryDetailQuery),
-        entityField: 'country',
+        queryDocument: countryDetailQuery,
         createDocument: createCountryDocument,
         updateDocument: updateCountryDocument,
         setValuesForUpdate: entity => {
@@ -76,7 +63,7 @@ export function CountryDetailPage() {
             });
             form.reset(form.getValues());
             if (creatingNewEntity) {
-                await navigate({ to: `../${data?.id}`, from: Route.id });
+                await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
@@ -89,13 +76,10 @@ export function CountryDetailPage() {
 
     return (
         <Page>
-            <PageTitle>
-                {creatingNewEntity ? <Trans>New country</Trans> : (entity?.name ?? '')}
-            </PageTitle>
-            <Form {...form}>
-                <form onSubmit={submitHandler} className="space-y-8">
-                    <PageActionBar>
-                        <div></div>
+            <PageTitle>{creatingNewEntity ? <Trans>New country</Trans> : (entity?.name ?? '')}</PageTitle>
+            <PageDetailForm form={form} submitHandler={submitHandler}>
+                <PageActionBar>
+                    <PageActionBarRight>
                         <PermissionGuard requires={['UpdateCountry']}>
                             <Button
                                 type="submit"
@@ -104,67 +88,38 @@ export function CountryDetailPage() {
                                 <Trans>Update</Trans>
                             </Button>
                         </PermissionGuard>
-                    </PageActionBar>
-                    <PageLayout>
-                        <PageBlock column='side'>
-                            <FormField
-                                control={form.control}
-                                name="enabled"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>
-                                            <Trans>Enabled</Trans>
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </PageBlock>
-                        <PageBlock column="main">
-                            <div className="md:grid md:grid-cols-2 gap-4">
-                                    <TranslatableFormField
-                                        control={form.control}
-                                        name="name"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>
-                                                    <Trans>Name</Trans>
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="code"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>
-                                                    <Trans>Code</Trans>
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                            </div>
-                        </PageBlock>
-                        <CustomFieldsPageBlock
-                            column="main"
-                            entityType="Country"
+                    </PageActionBarRight>
+                </PageActionBar>
+                <PageLayout>
+                    <PageBlock column="side">
+                        <FormFieldWrapper
                             control={form.control}
+                            label={<Trans>Enabled</Trans>}
+                            name="enabled"
+                            render={({ field }) => (
+                                <Switch checked={field.value} onCheckedChange={field.onChange} />
+                            )}
                         />
-                    </PageLayout>
-                </form>
-            </Form>
+                    </PageBlock>
+                    <PageBlock column="main">
+                        <DetailFormGrid>
+                            <TranslatableFormFieldWrapper
+                                control={form.control}
+                                name="name"
+                                label={<Trans>Name</Trans>}
+                                render={({ field }) => <Input placeholder="" {...field} />}
+                            />
+                            <FormFieldWrapper
+                                control={form.control}
+                                name="code"
+                                label={<Trans>Code</Trans>}
+                                render={({ field }) => <Input placeholder="" {...field} />}
+                            />
+                        </DetailFormGrid>
+                    </PageBlock>
+                    <CustomFieldsPageBlock column="main" entityType="Country" control={form.control} />
+                </PageLayout>
+            </PageDetailForm>
         </Page>
     );
 }

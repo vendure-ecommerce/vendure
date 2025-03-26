@@ -24,7 +24,7 @@ const zonesDocument = graphql(`
 `);
 
 export interface ZoneSelectorProps {
-    value: string;
+    value: string | undefined;
     onChange: (value: string) => void;
 }
 

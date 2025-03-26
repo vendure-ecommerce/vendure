@@ -10,10 +10,10 @@ export const Route = createFileRoute('/_authenticated/_assets/assets')({
 function RouteComponent() {
     return (
         <Page>
-            <PageTitle><Trans>Assets</Trans></PageTitle>
-            <PageActionBar>
-                <AssetGallery selectable={false} />
-            </PageActionBar>
+            <PageTitle>
+                <Trans>Assets</Trans>
+            </PageTitle>
+            <AssetGallery selectable={false} />
         </Page>
     );
 }

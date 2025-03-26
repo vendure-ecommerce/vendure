@@ -8,9 +8,12 @@ import { NEW_ENTITY_PATH } from '@/constants.js';
 import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
 import {
     CustomFieldsPageBlock,
+    DetailFormGrid,
     Page,
     PageActionBar,
+    PageActionBarRight,
     PageBlock,
+    PageDetailForm,
     PageLayout,
     PageTitle,
 } from '@/framework/layout-engine/page-layout.js';
@@ -18,33 +21,19 @@ import { getDetailQueryOptions, useDetailPage } from '@/framework/page/use-detai
 import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
-import {
-    createZoneDocument,
-    zoneDetailQuery,
-    updateZoneDocument,
-} from './zones.graphql.js';
+import { createZoneDocument, zoneDetailQuery, updateZoneDocument } from './zones.graphql.js';
 import { ZoneCountriesTable } from './components/zone-countries-table.js';
+import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
+import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
 
 export const Route = createFileRoute('/_authenticated/_zones/zones_/$id')({
     component: ZoneDetailPage,
-    loader: async ({ context, params }) => {
-        const isNew = params.id === NEW_ENTITY_PATH;
-        const result = isNew
-            ? null
-            : await context.queryClient.ensureQueryData(
-                  getDetailQueryOptions(addCustomFields(zoneDetailQuery), { id: params.id }),
-                  { id: params.id },
-              );
-        if (!isNew && !result.zone) {
-            throw new Error(`Zone with the ID ${params.id} was not found`);
-        }
-        return {
-            breadcrumb: [
-                { path: '/zones', label: 'Zones' },
-                isNew ? <Trans>New zone</Trans> : result.zone.name,
-            ],
-        };
-    },
+    loader: detailPageRouteLoader({
+        queryDocument: zoneDetailQuery,
+        breadcrumb(isNew, entity) {
+            return [{ path: '/zones', label: 'Zones' }, isNew ? <Trans>New zone</Trans> : entity?.name];
+        },
+    }),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
@@ -54,9 +43,8 @@ export function ZoneDetailPage() {
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const { i18n } = useLingui();
 
-    const { form, submitHandler, entity, isPending } = useDetailPage({
-        queryDocument: addCustomFields(zoneDetailQuery),
-        entityField: 'zone',
+    const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        queryDocument: zoneDetailQuery,
         createDocument: createZoneDocument,
         updateDocument: updateZoneDocument,
         setValuesForUpdate: entity => {
@@ -68,17 +56,14 @@ export function ZoneDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated zone'), {
-                position: 'top-right',
-            });
-            form.reset(form.getValues());
+            toast.success(i18n.t('Successfully updated zone'));
+            resetForm();
             if (creatingNewEntity) {
-                await navigate({ to: `../${data?.id}`, from: Route.id });
+                await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast(i18n.t('Failed to update zone'), {
-                position: 'top-right',
+            toast.error(i18n.t('Failed to update zone'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -86,13 +71,10 @@ export function ZoneDetailPage() {
 
     return (
         <Page>
-            <PageTitle>
-                {creatingNewEntity ? <Trans>New zone</Trans> : (entity?.name ?? '')}
-            </PageTitle>
-            <Form {...form}>
-                <form onSubmit={submitHandler} className="space-y-8">
-                    <PageActionBar>
-                        <div></div>
+            <PageTitle>{creatingNewEntity ? <Trans>New zone</Trans> : (entity?.name ?? '')}</PageTitle>
+            <PageDetailForm form={form} submitHandler={submitHandler}>
+                <PageActionBar>
+                    <PageActionBarRight>
                         <PermissionGuard requires={['UpdateZone']}>
                             <Button
                                 type="submit"
@@ -101,40 +83,27 @@ export function ZoneDetailPage() {
                                 <Trans>Update</Trans>
                             </Button>
                         </PermissionGuard>
-                    </PageActionBar>
-                    <PageLayout>
-                        <PageBlock column="main">
-                            <div className="md:grid md:grid-cols-2 gap-4">
-                                <FormField
-                                    control={form.control}
-                                    name="name"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>
-                                                <Trans>Name</Trans>
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
+                    </PageActionBarRight>
+                </PageActionBar>
+                <PageLayout>
+                    <PageBlock column="main">
+                        <DetailFormGrid>
+                            <FormFieldWrapper
+                                control={form.control}
+                                name="name"
+                                label={<Trans>Name</Trans>}
+                                render={({ field }) => <Input {...field} />}
+                            />
+                        </DetailFormGrid>
+                    </PageBlock>
+                    <CustomFieldsPageBlock column="main" entityType="Zone" control={form.control} />
+                    {!creatingNewEntity && (
+                        <PageBlock column="main" title={<Trans>Countries</Trans>}>
+                            <ZoneCountriesTable zoneId={entity?.id} canAddCountries={true} />
                         </PageBlock>
-                        <CustomFieldsPageBlock
-                            column="main"
-                            entityType="Zone"
-                            control={form.control}
-                        />
-                        {!creatingNewEntity && (
-                            <PageBlock column="main" title={<Trans>Countries</Trans>}>
-                                <ZoneCountriesTable zoneId={entity?.id} canAddCountries={true} />
-                            </PageBlock>
-                        )}
-                    </PageLayout>
-                </form>
-            </Form>
+                    )}
+                </PageLayout>
+            </PageDetailForm>
         </Page>
     );
 }

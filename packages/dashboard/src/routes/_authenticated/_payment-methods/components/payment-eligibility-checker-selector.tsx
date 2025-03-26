@@ -26,8 +26,8 @@ export const paymentEligibilityCheckersDocument = graphql(
 );
 
 interface PaymentEligibilityCheckerSelectorProps {
-    value: ConfigurableOperationInputType | null;
-    onChange: (value: ConfigurableOperationInputType | null) => void;
+    value: ConfigurableOperationInputType | undefined;
+    onChange: (value: ConfigurableOperationInputType | undefined) => void;
 }
 
 export function PaymentEligibilityCheckerSelector({
@@ -61,7 +61,7 @@ export function PaymentEligibilityCheckerSelector({
     };
 
     const onOperationRemove = () => {
-        onChange(null);
+        onChange(undefined);
     };
 
     const checkerDef = checkers?.find(c => c.code === value?.code);

@@ -30,9 +30,6 @@ type IsPaginatedList<T> = T extends { items: any[]; totalItems: number } ? true 
 // Helper type to extract string keys from an object
 type StringKeys<T> = T extends object ? Extract<keyof T, string> : never;
 
-// Helper type to handle nullability
-type NonNullable<T> = T extends null | undefined ? never : T;
-
 // Non-recursive approach to find paginated list paths with max 2 levels
 // Level 0: Direct top-level check
 type Level0PaginatedLists<T> = T extends object ? (IsPaginatedList<T> extends true ? '' : never) : never;

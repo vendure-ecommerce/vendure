@@ -12,6 +12,7 @@ export const customerGroupListDocument = graphql(`
                     totalItems
                 }
             }
+            totalItems
         }
     }
 `);

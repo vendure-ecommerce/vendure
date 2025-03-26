@@ -10,11 +10,11 @@ import * as React from 'react';
 import { Fragment } from 'react';
 
 export interface BreadcrumbItem {
-    label: string | React.ReactNode;
+    label: string | React.ReactElement;
     path: string;
 }
 
-export type BreadcrumbShorthand = string;
+export type BreadcrumbShorthand = string | React.ReactElement;
 
 export type PageBreadcrumb = BreadcrumbItem | BreadcrumbShorthand;
 

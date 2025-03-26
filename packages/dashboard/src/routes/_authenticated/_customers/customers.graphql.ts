@@ -69,6 +69,7 @@ export const customerDetailDocument = graphql(
                 addresses {
                     ...Address
                 }
+                customFields
             }
         }
     `,

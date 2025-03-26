@@ -1,10 +1,11 @@
+import { Variables } from '@/graphql/api.js';
 import {
     getServerConfigDocument,
     relationCustomFieldFragment,
     structCustomFieldFragment,
 } from '@/providers/server-config.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import { CustomFieldConfig, EntityCustomFields } from '@vendure/common/lib/generated-types';
+import { CustomFieldConfig } from '@vendure/common/lib/generated-types';
 import { ResultOf } from 'gql.tada';
 import {
     DefinitionNode,
@@ -16,7 +17,6 @@ import {
     SelectionNode,
     SelectionSetNode,
 } from 'graphql';
-import type { Variables } from 'graphql-request';
 
 import { getOperationTypeInfo } from './get-document-structure.js';
 

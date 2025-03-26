@@ -26,8 +26,8 @@ export const shippingCalculatorsDocument = graphql(
 );
 
 interface ShippingCalculatorSelectorProps {
-    value: ConfigurableOperationInputType | null;
-    onChange: (value: ConfigurableOperationInputType | null) => void;
+    value: ConfigurableOperationInputType | undefined;
+    onChange: (value: ConfigurableOperationInputType | undefined) => void;
 }
 
 export function ShippingCalculatorSelector({ value, onChange }: ShippingCalculatorSelectorProps) {
@@ -62,7 +62,7 @@ export function ShippingCalculatorSelector({ value, onChange }: ShippingCalculat
     };
 
     const onOperationRemove = () => {
-        onChange(null);
+        onChange(undefined);
     };
 
     const calculatorDef = calculators?.find(c => c.code === value?.code);

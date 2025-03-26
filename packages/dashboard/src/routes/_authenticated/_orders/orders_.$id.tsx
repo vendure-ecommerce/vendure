@@ -3,55 +3,45 @@ import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { Badge } from '@/components/ui/badge.js';
 import { Button } from '@/components/ui/button.js';
 import {
-    Form
-} from '@/components/ui/form.js';
-import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
-import {
     CustomFieldsPageBlock,
     Page,
     PageActionBar,
+    PageActionBarRight,
     PageBlock,
+    PageDetailForm,
     PageLayout,
     PageTitle,
 } from '@/framework/layout-engine/page-layout.js';
-import { getDetailQueryOptions, useDetailPage } from '@/framework/page/use-detail-page.js';
+import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
+import { useDetailPage } from '@/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@lingui/react/macro';
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { User } from 'lucide-react';
 import { toast } from 'sonner';
+import { OrderAddress } from './components/order-address.js';
 import { OrderHistoryContainer } from './components/order-history/order-history-container.js';
 import { OrderTable } from './components/order-table.js';
 import { OrderTaxSummary } from './components/order-tax-summary.js';
-import { orderDetailDocument } from './orders.graphql.js';
-import { OrderAddress } from './components/order-address.js';
 import { PaymentDetails } from './components/payment-details.js';
+import { orderDetailDocument } from './orders.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_orders/orders_/$id')({
     component: FacetDetailPage,
-    loader: async ({ context, params }) => {
-        const result = await context.queryClient.ensureQueryData(
-            getDetailQueryOptions(addCustomFields(orderDetailDocument), { id: params.id }),
-            { id: params.id },
-        );
-        if (!result.order) {
-            throw new Error(`Order with the ID ${params.id} was not found`);
-        }
-        return {
-            breadcrumb: [{ path: '/orders', label: 'Orders' }, result.order.code],
-        };
-    },
+    loader: detailPageRouteLoader({
+        queryDocument: orderDetailDocument,
+        breadcrumb(_isNew, entity) {
+            return [{ path: '/orders', label: 'Orders' }, entity?.code];
+        },
+    }),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
 export function FacetDetailPage() {
     const params = Route.useParams();
-    const navigate = useNavigate();
     const { i18n } = useLingui();
 
-    const { form, submitHandler, entity, isPending, refreshEntity } = useDetailPage({
-        queryDocument: addCustomFields(orderDetailDocument),
-        entityField: 'order',
-        // updateDocument: updateOrderDocument,
+    const { form, submitHandler, entity, isPending } = useDetailPage({
+        queryDocument: orderDetailDocument,
         setValuesForUpdate: entity => {
             return {
                 id: entity.id,
@@ -59,15 +49,12 @@ export function FacetDetailPage() {
             };
         },
         params: { id: params.id },
-        onSuccess: async data => {
-            toast(i18n.t('Successfully updated facet'), {
-                position: 'top-right',
-            });
+        onSuccess: async () => {
+            toast(i18n.t('Successfully updated order'));
             form.reset(form.getValues());
         },
         onError: err => {
-            toast(i18n.t('Failed to update facet'), {
-                position: 'top-right',
+            toast(i18n.t('Failed to update order'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -76,10 +63,9 @@ export function FacetDetailPage() {
     return (
         <Page>
             <PageTitle>{entity?.code ?? ''}</PageTitle>
-            <Form {...form}>
-                <form onSubmit={submitHandler} className="space-y-8">
-                    <PageActionBar>
-                        <div></div>
+            <PageDetailForm form={form} submitHandler={submitHandler}>
+                <PageActionBar>
+                    <PageActionBarRight>
                         <PermissionGuard requires={['UpdateProduct', 'UpdateCatalog']}>
                             <Button
                                 type="submit"
@@ -88,29 +74,30 @@ export function FacetDetailPage() {
                                 <Trans>Update</Trans>
                             </Button>
                         </PermissionGuard>
-                    </PageActionBar>
-                    <PageLayout>
-                        <PageBlock column="main">
-                            <OrderTable order={entity} />
-                        </PageBlock>
-                        <PageBlock column="main" title={<Trans>Tax summary</Trans>}>
-                            <OrderTaxSummary order={entity} />
-                        </PageBlock>
-                        <CustomFieldsPageBlock column="main" entityType="Order" control={form.control} />
-                        <PageBlock column="main" title={<Trans>Order history</Trans>}>
-                            <OrderHistoryContainer orderId={entity.id} />
-                        </PageBlock>
-                        <PageBlock column="side" title={<Trans>State</Trans>}>
-                            <Badge variant="outline">{entity?.state}</Badge>
-                        </PageBlock>
-                        <PageBlock column="side" title={<Trans>Customer</Trans>}>
-                            <Button variant="ghost" asChild>
-                                <Link to={`/customers/${entity?.customer?.id}`}>
-                                    <User className="w-4 h-4" />
-                                    {entity?.customer?.firstName} {entity?.customer?.lastName}
-                                </Link>
-                            </Button>
-                            <div className="mt-4 divide-y">
+                    </PageActionBarRight>
+                </PageActionBar>
+                <PageLayout>
+                    <PageBlock column="main">
+                        <OrderTable order={entity} />
+                    </PageBlock>
+                    <PageBlock column="main" title={<Trans>Tax summary</Trans>}>
+                        <OrderTaxSummary order={entity} />
+                    </PageBlock>
+                    <CustomFieldsPageBlock column="main" entityType="Order" control={form.control} />
+                    <PageBlock column="main" title={<Trans>Order history</Trans>}>
+                        <OrderHistoryContainer orderId={entity.id} />
+                    </PageBlock>
+                    <PageBlock column="side" title={<Trans>State</Trans>}>
+                        <Badge variant="outline">{entity?.state}</Badge>
+                    </PageBlock>
+                    <PageBlock column="side" title={<Trans>Customer</Trans>}>
+                        <Button variant="ghost" asChild>
+                            <Link to={`/customers/${entity?.customer?.id}`}>
+                                <User className="w-4 h-4" />
+                                {entity?.customer?.firstName} {entity?.customer?.lastName}
+                            </Link>
+                        </Button>
+                        <div className="mt-4 divide-y">
                             {entity.shippingAddress && (
                                 <div className="pb-6">
                                     <div className="font-medium">
@@ -127,16 +114,19 @@ export function FacetDetailPage() {
                                     <OrderAddress address={entity.billingAddress} />
                                 </div>
                             )}
-                            </div>
-                        </PageBlock>
-                        <PageBlock column="side" title={<Trans>Payment details</Trans>}>
-                        {entity.payments.map(payment => (
-                            <PaymentDetails key={payment.id} payment={payment} currencyCode={entity.currencyCode} />
+                        </div>
+                    </PageBlock>
+                    <PageBlock column="side" title={<Trans>Payment details</Trans>}>
+                        {entity.payments?.map(payment => (
+                            <PaymentDetails
+                                key={payment.id}
+                                payment={payment}
+                                currencyCode={entity.currencyCode}
+                            />
                         ))}
-                        </PageBlock>
-                    </PageLayout>
-                </form>
-            </Form>
+                    </PageBlock>
+                </PageLayout>
+            </PageDetailForm>
         </Page>
     );
 }

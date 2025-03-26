@@ -290,6 +290,7 @@ export const orderDetailDocument = graphql(
         query GetOrder($id: ID!) {
             order(id: $id) {
                 ...OrderDetail
+                customFields
             }
         }
     `,

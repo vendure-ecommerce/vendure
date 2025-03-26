@@ -26,8 +26,8 @@ export const paymentHandlersDocument = graphql(
 );
 
 interface PaymentHandlerSelectorProps {
-    value: ConfigurableOperationInputType | null;
-    onChange: (value: ConfigurableOperationInputType | null) => void;
+    value: ConfigurableOperationInputType | undefined;
+    onChange: (value: ConfigurableOperationInputType | undefined) => void;
 }
 
 export function PaymentHandlerSelector({
@@ -61,7 +61,7 @@ export function PaymentHandlerSelector({
     };
 
     const onOperationRemove = () => {
-        onChange(null);
+        onChange(undefined);
     };
 
     const handlerDef = handlers?.find(h => h.code === value?.code);

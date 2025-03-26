@@ -6,16 +6,14 @@ import {
     FacetedFilterConfig,
     ListQueryOptionsShape,
     ListQueryShape,
-    PaginatedListDataTable,
-    PaginatedListItemFields,
+    PaginatedListDataTable
 } from '@/components/shared/paginated-list-data-table.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRouter, useNavigate } from '@tanstack/react-router';
-import { ColumnDef, ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
+import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
 import { ResultOf } from 'gql.tada';
 import { Page, PageActionBar, PageTitle } from '../layout-engine/page-layout.js';
-import { FacetedFilter } from '@/components/data-table/data-table.js';
-import { customerListDocument } from '@/routes/_authenticated/_customers/customers.graphql.js';
+import { addCustomFields } from '../document-introspection/add-custom-fields.js';
 
 type ListQueryFields<T extends TypedDocumentNode<any, any>> = {
     [Key in keyof ResultOf<T>]: ResultOf<T>[Key] extends { items: infer U }
@@ -106,12 +104,14 @@ export function ListPage<
         });
     }
 
+    const listQueryWithCustomFields = addCustomFields(listQuery);
+
     return (
         <Page>
             <PageTitle>{title}</PageTitle>
             <PageActionBar>{children}</PageActionBar>
             <PaginatedListDataTable
-                listQuery={listQuery}
+                listQuery={listQueryWithCustomFields}
                 transformVariables={transformVariables}
                 customizeColumns={customizeColumns}
                 additionalColumns={additionalColumns}

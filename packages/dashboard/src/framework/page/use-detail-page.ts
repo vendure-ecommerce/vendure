@@ -4,17 +4,27 @@ import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { queryOptions, useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { ResultOf, VariablesOf } from 'gql.tada';
 import { DocumentNode } from 'graphql';
-import { FormEvent, useCallback } from 'react';
+import { FormEvent } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 
+import { addCustomFields } from '../document-introspection/add-custom-fields.js';
 import { getMutationName, getQueryName } from '../document-introspection/get-document-structure.js';
 import { useGeneratedForm } from '../form-engine/use-generated-form.js';
+
+import { DetailEntityPath } from './page-types.js';
+
+// Utility type to remove null from a type union
+type RemoveNull<T> = T extends null ? never : T;
+
+type RemoveNullFields<T> = {
+    [K in keyof T]: RemoveNull<T[K]>;
+};
 
 export interface DetailPageOptions<
     T extends TypedDocumentNode<any, any>,
     C extends TypedDocumentNode<any, any>,
     U extends TypedDocumentNode<any, any>,
-    EntityField extends keyof ResultOf<T> = keyof ResultOf<T>,
+    EntityField extends keyof ResultOf<T> = DetailEntityPath<T>,
     VarNameCreate extends keyof VariablesOf<C> = 'input',
     VarNameUpdate extends keyof VariablesOf<U> = 'input',
 > {
@@ -27,7 +37,7 @@ export interface DetailPageOptions<
      * @description
      * The field of the query document that contains the entity.
      */
-    entityField: EntityField;
+    entityField?: EntityField;
     /**
      * @description
      * The parameters used to identify the entity.
@@ -104,11 +114,12 @@ export interface UseDetailPageResult<
     U extends TypedDocumentNode<any, any>,
     EntityField extends keyof ResultOf<T>,
 > {
-    form: UseFormReturn<VariablesOf<U>['input']>;
+    form: UseFormReturn<RemoveNullFields<VariablesOf<U>['input']>>;
     submitHandler: (event: FormEvent<HTMLFormElement>) => void;
-    entity: DetailPageEntity<T, EntityField>;
+    entity?: DetailPageEntity<T, EntityField>;
     isPending: boolean;
     refreshEntity: () => void;
+    resetForm: () => void;
 }
 
 /**
@@ -140,9 +151,16 @@ export function useDetailPage<
     } = options;
     const isNew = params.id === NEW_ENTITY_PATH;
     const queryClient = useQueryClient();
-    const detailQueryOptions = getDetailQueryOptions(queryDocument, { id: isNew ? '__NEW__' : params.id });
+    const detailQueryOptions = getDetailQueryOptions(addCustomFields(queryDocument), {
+        id: isNew ? '__NEW__' : params.id,
+    });
     const detailQuery = useSuspenseQuery(detailQueryOptions);
-    const entity = detailQuery?.data[entityField] as DetailPageEntity<T, EntityField>;
+    const entityQueryField = entityField ?? getQueryName(queryDocument);
+    const entity = detailQuery?.data[entityQueryField] as DetailPageEntity<T, EntityField> | undefined;
+
+    const resetForm = () => {
+        form.reset(form.getValues());
+    };
 
     const createMutation = useMutation({
         mutationFn: createDocument ? api.mutate(createDocument) : undefined,
@@ -181,10 +199,11 @@ export function useDetailPage<
     });
 
     return {
-        form,
+        form: form as any,
         submitHandler,
         entity,
         isPending: updateMutation.isPending || detailQuery?.isPending,
         refreshEntity: detailQuery.refetch,
+        resetForm,
     };
 }

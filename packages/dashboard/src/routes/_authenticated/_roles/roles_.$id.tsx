@@ -1,26 +1,22 @@
 import { ChannelSelector } from '@/components/shared/channel-selector.js';
 import { ErrorPage } from '@/components/shared/error-page.js';
+import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { Button } from '@/components/ui/button.js';
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from '@/components/ui/form.js';
 import { Input } from '@/components/ui/input.js';
 import { NEW_ENTITY_PATH } from '@/constants.js';
 import {
+    DetailFormGrid,
     Page,
     PageActionBar,
+    PageActionBarRight,
     PageBlock,
+    PageDetailForm,
     PageLayout,
-    PageTitle
+    PageTitle,
 } from '@/framework/layout-engine/page-layout.js';
-import { getDetailQueryOptions, useDetailPage } from '@/framework/page/use-detail-page.js';
+import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
+import { useDetailPage } from '@/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
@@ -29,24 +25,15 @@ import { createRoleDocument, roleDetailDocument, updateRoleDocument } from './ro
 
 export const Route = createFileRoute('/_authenticated/_roles/roles_/$id')({
     component: RoleDetailPage,
-    loader: async ({ context, params }) => {
-        const isNew = params.id === NEW_ENTITY_PATH;
-        const result = isNew
-            ? null
-            : await context.queryClient.ensureQueryData(
-                  getDetailQueryOptions(roleDetailDocument, { id: params.id }),
-                  { id: params.id },
-              );
-        if (!isNew && !result.role) {
-            throw new Error(`Role with the ID ${params.id} was not found`);
-        }
-        return {
-            breadcrumb: [
+    loader: detailPageRouteLoader({
+        queryDocument: roleDetailDocument,
+        breadcrumb(isNew, entity) {
+            return [
                 { path: '/roles', label: 'Roles' },
-                isNew ? <Trans>New role</Trans> : result.role.description,
-            ],
-        };
-    },
+                isNew ? <Trans>New role</Trans> : entity?.description,
+            ];
+        },
+    }),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
@@ -56,9 +43,8 @@ export function RoleDetailPage() {
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const { i18n } = useLingui();
 
-    const { form, submitHandler, entity, isPending } = useDetailPage({
+    const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
         queryDocument: roleDetailDocument,
-        entityField: 'role',
         createDocument: createRoleDocument,
         updateDocument: updateRoleDocument,
         setValuesForUpdate: entity => {
@@ -72,17 +58,14 @@ export function RoleDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated role'), {
-                position: 'top-right',
-            });
-            form.reset(form.getValues());
+            toast.success(i18n.t('Successfully updated role'));
+            resetForm();
             if (creatingNewEntity) {
-                await navigate({ to: `../${data?.id}`, from: Route.id });
+                await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast(i18n.t('Failed to update role'), {
-                position: 'top-right',
+            toast.error(i18n.t('Failed to update role'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -90,13 +73,10 @@ export function RoleDetailPage() {
 
     return (
         <Page>
-            <PageTitle>
-                {creatingNewEntity ? <Trans>New role</Trans> : (entity?.description ?? '')}
-            </PageTitle>
-            <Form {...form}>
-                <form onSubmit={submitHandler} className="space-y-8">
-                    <PageActionBar>
-                        <div></div>
+            <PageTitle>{creatingNewEntity ? <Trans>New role</Trans> : (entity?.description ?? '')}</PageTitle>
+            <PageDetailForm form={form} submitHandler={submitHandler}>
+                <PageActionBar>
+                    <PageActionBarRight>
                         <PermissionGuard requires={['UpdateAdministrator']}>
                             <Button
                                 type="submit"
@@ -105,93 +85,61 @@ export function RoleDetailPage() {
                                 <Trans>Update</Trans>
                             </Button>
                         </PermissionGuard>
-                    </PageActionBar>
-                    <PageLayout>
-                        <PageBlock column="main">
+                    </PageActionBarRight>
+                </PageActionBar>
+                <PageLayout>
+                    <PageBlock column="main">
+                        <DetailFormGrid>
+                            <FormFieldWrapper
+                                control={form.control}
+                                name="description"
+                                label={<Trans>Description</Trans>}
+                                render={({ field }) => <Input {...field} />}
+                            />
+                            <FormFieldWrapper
+                                control={form.control}
+                                name="code"
+                                label={<Trans>Code</Trans>}
+                                render={({ field }) => <Input {...field} />}
+                            />
+                        </DetailFormGrid>
+                    </PageBlock>
+                    <PageBlock column="main">
+                        <div className="space-y-8">
                             <div className="md:grid md:grid-cols-2 gap-4">
-                                <FormField
+                                <FormFieldWrapper
                                     control={form.control}
-                                    name="description"
+                                    name="channelIds"
+                                    label={<Trans>Channels</Trans>}
+                                    description={
+                                        <Trans>
+                                            The selected permissions will be applied to the these channels.
+                                        </Trans>
+                                    }
                                     render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>
-                                                <Trans>Description</Trans>
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="" {...field} />
-                                            </FormControl>
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="code"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>
-                                                <Trans>Code</Trans>
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
+                                        <ChannelSelector
+                                            multiple={true}
+                                            value={field.value ?? []}
+                                            onChange={value => field.onChange(value)}
+                                        />
                                     )}
                                 />
                             </div>
-                        </PageBlock>
-                        <PageBlock column="main">
-                            <div className="space-y-8">
-                                <div className="md:grid md:grid-cols-2 gap-4">
-                                    <FormField
-                                        control={form.control}
-                                        name="channelIds"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>
-                                                    <Trans>Channels</Trans>
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <ChannelSelector
-                                                        multiple={true}
-                                                        value={field.value ?? []}
-                                                        onChange={value => field.onChange(value)}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                                <FormDescription>
-                                                    <Trans>
-                                                        The selected permissions will be applied to the these
-                                                        channels.
-                                                    </Trans>
-                                                </FormDescription>
-                                            </FormItem>
-                                        )}
+                            <FormFieldWrapper
+                                control={form.control}
+                                name="permissions"
+                                label={<Trans>Permissions</Trans>}
+                                render={({ field }) => (
+                                    <PermissionsGrid
+                                        value={field.value ?? []}
+                                        onChange={value => field.onChange(value)}
                                     />
-                                </div>
-                                <FormField
-                                    control={form.control}
-                                    name="permissions"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>
-                                                <Trans>Permissions</Trans>
-                                            </FormLabel>
-                                            <FormControl>
-                                                <PermissionsGrid
-                                                    value={field.value ?? []}
-                                                    onChange={value => field.onChange(value)}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                        </PageBlock>
-                    </PageLayout>
-                </form>
-            </Form>
+                                )}
+                            />
+                        </div>
+                    </PageBlock>
+                </PageLayout>
+            </PageDetailForm>
         </Page>
     );
 }

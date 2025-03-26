@@ -1,18 +1,16 @@
-import { Link, createFileRoute } from '@tanstack/react-router';
-import { Trans } from '@lingui/react/macro';
-import { ListPage } from '@/framework/page/list-page.js';
-import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
-import { taxRateListQuery } from './tax-rates.graphql.js';
+import { BooleanDisplayBadge } from '@/components/data-display/boolean.js';
 import { DetailPageButton } from '@/components/shared/detail-page-button.js';
-import { Badge } from '@/components/ui/badge.js';
+import { PermissionGuard } from '@/components/shared/permission-guard.js';
+import { Button } from '@/components/ui/button.js';
+import { PageActionBar, PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
+import { ListPage } from '@/framework/page/list-page.js';
 import { api } from '@/graphql/api.js';
+import { Trans } from '@lingui/react/macro';
+import { Link, createFileRoute } from '@tanstack/react-router';
+import { PlusIcon } from 'lucide-react';
 import { taxCategoryListQuery } from '../_tax-categories/tax-categories.graphql.js';
 import { zoneListQuery } from '../_zones/zones.graphql.js';
-import { PlusIcon } from 'lucide-react';
-import { Button } from '@/components/ui/button.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
-import { BooleanDisplayBadge } from '@/components/data-display/boolean.js';
+import { taxRateListQuery } from './tax-rates.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_tax-rates/tax-rates')({
     component: TaxRateListPage,
@@ -22,7 +20,7 @@ export const Route = createFileRoute('/_authenticated/_tax-rates/tax-rates')({
 function TaxRateListPage() {
     return (
         <ListPage
-            listQuery={addCustomFields(taxRateListQuery)}
+            listQuery={taxRateListQuery}
             route={Route}
             title="Tax Rates"
             defaultVisibility={{
@@ -77,9 +75,7 @@ function TaxRateListPage() {
                 },
                 enabled: {
                     header: 'Enabled',
-                    cell: ({ row }) => (
-                        <BooleanDisplayBadge value={row.original.enabled} />
-                    ),
+                    cell: ({ row }) => <BooleanDisplayBadge value={row.original.enabled} />,
                 },
                 category: {
                     header: 'Category',
@@ -96,14 +92,16 @@ function TaxRateListPage() {
             }}
         >
             <PageActionBar>
-                <PermissionGuard requires={['CreateTaxRate']}>
-                    <Button asChild>
-                        <Link to="./new">
-                            <PlusIcon />
-                            <Trans>New Tax Rate</Trans>
-                        </Link>
-                    </Button>
-                </PermissionGuard>
+                <PageActionBarRight>
+                    <PermissionGuard requires={['CreateTaxRate']}>
+                        <Button asChild>
+                            <Link to="./new">
+                                <PlusIcon />
+                                <Trans>New Tax Rate</Trans>
+                            </Link>
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
             </PageActionBar>
         </ListPage>
     );

@@ -1,20 +1,23 @@
 import { ErrorPage } from '@/components/shared/error-page.js';
+import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { Button } from '@/components/ui/button.js';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form.js';
 import { Input } from '@/components/ui/input.js';
-import { Switch } from '@/components/ui/switch.js';
+import { Textarea } from '@/components/ui/textarea.js';
 import { NEW_ENTITY_PATH } from '@/constants.js';
-import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
 import {
     CustomFieldsPageBlock,
+    DetailFormGrid,
     Page,
     PageActionBar,
+    PageActionBarRight,
     PageBlock,
+    PageDetailForm,
     PageLayout,
     PageTitle,
 } from '@/framework/layout-engine/page-layout.js';
-import { getDetailQueryOptions, useDetailPage } from '@/framework/page/use-detail-page.js';
+import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
+import { useDetailPage } from '@/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
@@ -23,28 +26,18 @@ import {
     stockLocationDetailQuery,
     updateStockLocationDocument,
 } from './stock-locations.graphql.js';
-import { Textarea } from '@/components/ui/textarea.js';
 
 export const Route = createFileRoute('/_authenticated/_stock-locations/stock-locations_/$id')({
     component: StockLocationDetailPage,
-    loader: async ({ context, params }) => {
-        const isNew = params.id === NEW_ENTITY_PATH;
-        const result = isNew
-            ? null
-            : await context.queryClient.ensureQueryData(
-                  getDetailQueryOptions(addCustomFields(stockLocationDetailQuery), { id: params.id }),
-                  { id: params.id },
-              );
-        if (!isNew && !result.stockLocation) {
-            throw new Error(`Stock location with the ID ${params.id} was not found`);
-        }
-        return {
-            breadcrumb: [
+    loader: detailPageRouteLoader({
+        queryDocument: stockLocationDetailQuery,
+        breadcrumb(isNew, entity) {
+            return [
                 { path: '/stock-locations', label: 'Stock locations' },
-                isNew ? <Trans>New stock location</Trans> : result.stockLocation.name,
-            ],
-        };
-    },
+                isNew ? <Trans>New stock location</Trans> : entity?.name,
+            ];
+        },
+    }),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
@@ -54,9 +47,8 @@ export function StockLocationDetailPage() {
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const { i18n } = useLingui();
 
-    const { form, submitHandler, entity, isPending } = useDetailPage({
-        queryDocument: addCustomFields(stockLocationDetailQuery),
-        entityField: 'stockLocation',
+    const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        queryDocument: stockLocationDetailQuery,
         createDocument: createStockLocationDocument,
         updateDocument: updateStockLocationDocument,
         setValuesForUpdate: entity => {
@@ -69,17 +61,14 @@ export function StockLocationDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated stock location'), {
-                position: 'top-right',
-            });
-            form.reset(form.getValues());
+            toast.success(i18n.t('Successfully updated stock location'));
+            resetForm();
             if (creatingNewEntity) {
-                await navigate({ to: `../${data?.id}`, from: Route.id });
+                await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
-            toast(i18n.t('Failed to update stock location'), {
-                position: 'top-right',
+            toast.error(i18n.t('Failed to update stock location'), {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -90,10 +79,9 @@ export function StockLocationDetailPage() {
             <PageTitle>
                 {creatingNewEntity ? <Trans>New stock location</Trans> : (entity?.name ?? '')}
             </PageTitle>
-            <Form {...form}>
-                <form onSubmit={submitHandler} className="space-y-8">
-                    <PageActionBar>
-                        <div></div>
+            <PageDetailForm form={form} submitHandler={submitHandler}>
+                <PageActionBar>
+                    <PageActionBarRight>
                         <PermissionGuard requires={['UpdateStockLocation']}>
                             <Button
                                 type="submit"
@@ -102,50 +90,29 @@ export function StockLocationDetailPage() {
                                 <Trans>Update</Trans>
                             </Button>
                         </PermissionGuard>
-                    </PageActionBar>
-                    <PageLayout>
-                        <PageBlock column="main">
-                            <div className="md:grid md:grid-cols-2 gap-4 mb-4">
-                                <FormField
-                                    control={form.control}
-                                    name="name"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>
-                                                <Trans>Name</Trans>
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <div></div>
-                            </div>
-                            <FormField
+                    </PageActionBarRight>
+                </PageActionBar>
+                <PageLayout>
+                    <PageBlock column="main">
+                        <DetailFormGrid>
+                            <FormFieldWrapper
                                 control={form.control}
-                                name="description"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>
-                                            <Trans>Description</Trans>
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Textarea {...field} />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
+                                label={<Trans>Name</Trans>}
+                                name="name"
+                                render={({ field }) => <Input {...field} />}
                             />
-                        </PageBlock>
-                        <CustomFieldsPageBlock
-                            column="main"
-                            entityType="StockLocation"
+                            <div></div>
+                        </DetailFormGrid>
+                        <FormFieldWrapper
                             control={form.control}
+                            name="description"
+                            label={<Trans>Description</Trans>}
+                            render={({ field }) => <Textarea {...field} />}
                         />
-                    </PageLayout>
-                </form>
-            </Form>
+                    </PageBlock>
+                    <CustomFieldsPageBlock column="main" entityType="StockLocation" control={form.control} />
+                </PageLayout>
+            </PageDetailForm>
         </Page>
     );
 }

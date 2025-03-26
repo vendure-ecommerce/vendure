@@ -1,8 +1,7 @@
 import { DetailPageButton } from '@/components/shared/detail-page-button.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { Button } from '@/components/ui/button.js';
-import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
-import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
+import { PageActionBar, PageActionBarLeft, PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
@@ -42,12 +41,12 @@ export function CollectionListPage() {
                     header: 'Contents',
                     cell: ({ row }) => {
                         return (
-                                <CollectionContentsSheet
-                                    collectionId={row.original.id}
-                                    collectionName={row.original.name}
-                                >
-                                     <Trans>{row.original.productVariants.totalItems} variants</Trans>
-                                </CollectionContentsSheet>
+                            <CollectionContentsSheet
+                                collectionId={row.original.id}
+                                collectionName={row.original.name}
+                            >
+                                <Trans>{row.original.productVariants.totalItems} variants</Trans>
+                            </CollectionContentsSheet>
                         );
                     },
                 },
@@ -64,19 +63,20 @@ export function CollectionListPage() {
                     name: { contains: searchTerm },
                 };
             }}
-            listQuery={addCustomFields(collectionListDocument)}
+            listQuery={collectionListDocument}
             route={Route}
         >
             <PageActionBar>
-                <div></div>
-                <PermissionGuard requires={['CreateCollection', 'CreateCatalog']}>
-                    <Button asChild>
-                        <Link to="./new">
+                <PageActionBarRight>
+                    <PermissionGuard requires={['CreateCollection', 'CreateCatalog']}>
+                        <Button asChild>
+                            <Link to="./new">
                             <PlusIcon className="mr-2 h-4 w-4" />
                             <Trans>New Collection</Trans>
                         </Link>
-                    </Button>
-                </PermissionGuard>
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
             </PageActionBar>
         </ListPage>
     );
