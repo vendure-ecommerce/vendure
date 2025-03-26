@@ -10,7 +10,7 @@ import {
     RowAction
 } from '@/components/shared/paginated-list-data-table.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import { AnyRouter, useNavigate } from '@tanstack/react-router';
+import { AnyRoute, AnyRouter, useNavigate } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
 import { ResultOf } from 'gql.tada';
 import { Page, PageActionBar, PageTitle } from '../layout-engine/page-layout.js';
@@ -31,6 +31,8 @@ export interface ListPageProps<
     V extends ListQueryOptionsShape,
     AC extends AdditionalColumns<T>,
 > extends PageProps {
+    route: AnyRoute | (() => AnyRoute);
+    title: string | React.ReactElement;
     listQuery: T;
     deleteMutation?: TypedDocumentNode<any, { id: string }>;
     transformVariables?: (variables: V) => V;

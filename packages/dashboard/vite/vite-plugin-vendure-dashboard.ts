@@ -9,6 +9,7 @@ import { PluginOption } from 'vite';
 import { adminApiSchemaPlugin } from './vite-plugin-admin-api-schema.js';
 import { configLoaderPlugin } from './vite-plugin-config-loader.js';
 import { dashboardMetadataPlugin } from './vite-plugin-dashboard-metadata.js';
+import { gqlTadaPlugin } from './vite-plugin-gql-tada.js';
 import { setRootPlugin } from './vite-plugin-set-root.js';
 import { UiConfigPluginOptions, uiConfigPlugin } from './vite-plugin-ui-config.js';
 
@@ -28,6 +29,7 @@ export type VitePluginVendureDashboardOptions = {
      * This is only required if the plugin is unable to auto-detect the name of the exported variable.
      */
     vendureConfigExport?: string;
+    gqlTadaOutputPath?: string;
 } & UiConfigPluginOptions;
 
 /**
@@ -55,6 +57,9 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
         adminApiSchemaPlugin(),
         dashboardMetadataPlugin({ rootDir: tempDir }),
         uiConfigPlugin({ adminUiConfig: options.adminUiConfig }),
+        ...(options.gqlTadaOutputPath
+            ? [gqlTadaPlugin({ gqlTadaOutputPath: options.gqlTadaOutputPath, tempDir, packageRoot })]
+            : []),
     ];
 }
 

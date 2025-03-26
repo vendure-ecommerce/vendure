@@ -1,3 +1,4 @@
+import { ErrorPage } from '@/components/shared/error-page.js';
 import { useDashboardExtensions } from '@/framework/extension-api/use-dashboard-extensions.js';
 import { ListPage } from '@/framework/page/list-page.js';
 import { extensionRoutes } from '@/framework/page/page-api.js';
@@ -42,10 +43,9 @@ export const useExtendedRouter = (router: Router<AnyRoute, any, any>) => {
             const newRoute = createRoute({
                 path: `/${pathWithoutLeadingSlash}`,
                 getParentRoute: () => authenticatedRoute,
-                loader: () => ({
-                    breadcrumb: config.title,
-                }),
+                loader: config.loader,
                 component: () => config.component(newRoute),
+                errorComponent: ({ error }) => <ErrorPage message={error.message} />,
             });
             newRoutes.push(newRoute);
         }

@@ -16,7 +16,7 @@ export function defineDashboardExtension(extension: DashboardExtension) {
                 const item: NavMenuItem = {
                     url: route.navMenuItem.url ?? route.path,
                     id: route.navMenuItem.id ?? route.id,
-                    title: route.navMenuItem.title ?? route.title,
+                    title: route.navMenuItem.title,
                 };
                 addNavMenuItem(item, route.navMenuItem.sectionId);
             }

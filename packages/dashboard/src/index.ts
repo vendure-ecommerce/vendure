@@ -1,5 +1,5 @@
 // This file is auto-generated. Do not edit manually.
-// Generated on: 2025-03-26T10:58:17.182Z
+// Generated on: 2025-03-26T14:10:22.200Z
 
 export * from './components/data-display/boolean.js';
 export * from './components/data-display/date-time.js';
@@ -112,6 +112,7 @@ export * from './framework/form-engine/use-generated-form.js';
 export * from './framework/layout-engine/page-layout.js';
 export * from './framework/nav-menu/nav-menu.js';
 export * from './framework/page/detail-page-route-loader.js';
+export * from './framework/page/detail-page.js';
 export * from './framework/page/list-page.js';
 export * from './framework/page/page-api.js';
 export * from './framework/page/page-types.js';

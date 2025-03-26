@@ -34,7 +34,7 @@ export async function loadVendureConfig(
     const outputPath = tempDir;
     const configFileName = path.basename(vendureConfigPath);
     await fs.remove(outputPath);
-    await compileFile(vendureConfigPath, path.join(import.meta.dirname, './.vendure-dashboard-temp'));
+    await compileFile(vendureConfigPath, outputPath);
     const compiledConfigFilePath = pathToFileURL(path.join(outputPath, configFileName)).href.replace(
         /.ts$/,
         '.js',

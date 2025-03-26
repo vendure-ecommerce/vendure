@@ -59,6 +59,10 @@ export function FacetDetailPage() {
             });
         },
     });
+    
+    if (!entity) {
+        return null;
+    }
 
     return (
         <Page>
