@@ -1,9 +1,9 @@
-import { DashboardListRouteDefinition } from '@/framework/extension-api/extension-api-types.js';
+import { DashboardRouteDefinition } from '@/framework/extension-api/extension-api-types.js';
 
-export const listViewExtensionRoutes = new Map<string, DashboardListRouteDefinition>();
+export const extensionRoutes = new Map<string, DashboardRouteDefinition>();
 
-export function registerListView(config: DashboardListRouteDefinition) {
+export function registerRoute(config: DashboardRouteDefinition) {
     if (config.path) {
-        listViewExtensionRoutes.set(config.path, config);
+        extensionRoutes.set(config.path, config);
     }
 }

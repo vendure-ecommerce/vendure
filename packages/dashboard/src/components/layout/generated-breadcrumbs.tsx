@@ -9,18 +9,18 @@ import { Link, useRouterState } from '@tanstack/react-router';
 import * as React from 'react';
 import { Fragment } from 'react';
 
-export interface BreadcrumbItem {
+export interface BreadcrumbPair {
     label: string | React.ReactElement;
     path: string;
 }
 
 export type BreadcrumbShorthand = string | React.ReactElement;
 
-export type PageBreadcrumb = BreadcrumbItem | BreadcrumbShorthand;
+export type PageBreadcrumb = BreadcrumbPair | BreadcrumbShorthand;
 
 export function GeneratedBreadcrumbs() {
     const matches = useRouterState({ select: s => s.matches });
-    const breadcrumbs: BreadcrumbItem[] = matches
+    const breadcrumbs: BreadcrumbPair[] = matches
         .filter(match => match.loaderData?.breadcrumb)
         .map(({ pathname, loaderData }) => {
             if (typeof loaderData.breadcrumb === 'string') {

@@ -1,4 +1,4 @@
-import { DashboardListRouteDefinition } from '@vendure/dashboard';
+import { DashboardRouteDefinition, DetailPageButton, ListPage } from '@vendure/dashboard';
 import gql from 'graphql-tag';
 
 const getReviewList = gql`
@@ -19,7 +19,7 @@ const getReviewList = gql`
                 }
                 summary
                 body
-                rating
+                rating  
                 authorName
                 authorLocation
                 upvotes
@@ -32,16 +32,31 @@ const getReviewList = gql`
     }
 `;
 
-export const reviewList: DashboardListRouteDefinition = {
+export const reviewList: DashboardRouteDefinition = {
     id: 'review-list',
-    title: 'Product Reviews!',
+    navMenuItem: {
+        sectionId: 'catalog',
+        id: 'reviews',
+        url: '/reviews',
+        title: 'Product Reviews',
+    },
     path: '/reviews',
-    navMenuItem: { sectionId: 'catalog' },
-    defaultVisibility: {
+    component: (route) => <ListPage title="Product Reviews" listQuery={getReviewList} route={route} defaultVisibility={{
         product: true,
         summary: true,
         rating: true,
         authorName: true,
-    },
-    listQuery: getReviewList,
+    }}
+    customizeColumns={{
+        product: {
+            header: 'Product',
+            cell: ({ row }) => {
+                return (
+                    <DetailPageButton id={row.original.id} label={row.original.product.name} />
+                );
+            },
+        },
+        
+    }}
+    />,
 };

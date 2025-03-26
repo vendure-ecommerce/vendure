@@ -98,7 +98,7 @@ export function FacetDetailPage() {
                             </Link>
                         </Button>
                         <div className="mt-4 divide-y">
-                            {entity.shippingAddress && (
+                            {entity?.shippingAddress && (
                                 <div className="pb-6">
                                     <div className="font-medium">
                                         <Trans>Shipping address</Trans>
@@ -106,7 +106,7 @@ export function FacetDetailPage() {
                                     <OrderAddress address={entity.shippingAddress} />
                                 </div>
                             )}
-                            {entity.billingAddress && (
+                            {entity?.billingAddress && (
                                 <div className="pt-4">
                                     <div className="font-medium">
                                         <Trans>Billing address</Trans>
@@ -117,7 +117,7 @@ export function FacetDetailPage() {
                         </div>
                     </PageBlock>
                     <PageBlock column="side" title={<Trans>Payment details</Trans>}>
-                        {entity.payments?.map(payment => (
+                        {entity?.payments?.map(payment => (
                             <PaymentDetails
                                 key={payment.id}
                                 payment={payment}

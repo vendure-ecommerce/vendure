@@ -19,13 +19,8 @@ const customerGroupsDocument = graphql(`
     }
 `);
 
-export interface CustomerGroup {
-    id: string;
-    name: string;
-}
-
 export interface CustomerGroupSelectorProps {
-    onSelect: (value: CustomerGroup) => void;
+    onSelect: (value: { id: string; name: string }) => void;
     readOnly?: boolean;
 }
 

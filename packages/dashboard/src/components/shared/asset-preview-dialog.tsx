@@ -1,21 +1,20 @@
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
-    DialogDescription,
 } from '@/components/ui/dialog.js';
-import { Asset, AssetPreview } from './asset-preview.js';
-import { SheetDescription } from '../ui/sheet.js';
+import { AssetWithTags, AssetPreview } from './asset-preview.js';
 
 interface AssetPreviewDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    asset: Asset;
-    assets?: Asset[];
+    asset: AssetWithTags;
+    assets?: AssetWithTags[];
     editable?: boolean;
     customFields?: any[];
-    onAssetChange?: (asset: Partial<Asset>) => void;
+    onAssetChange?: (asset: Partial<AssetWithTags>) => void;
 }
 
 export function AssetPreviewDialog({

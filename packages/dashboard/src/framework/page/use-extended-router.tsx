@@ -1,6 +1,6 @@
 import { useDashboardExtensions } from '@/framework/extension-api/use-dashboard-extensions.js';
 import { ListPage } from '@/framework/page/list-page.js';
-import { listViewExtensionRoutes } from '@/framework/page/page-api.js';
+import { extensionRoutes } from '@/framework/page/page-api.js';
 import { AUTHENTICATED_ROUTE_PREFIX } from '@/routes/_authenticated.js';
 import { AnyRoute, createRoute, Router } from '@tanstack/react-router';
 import { useMemo } from 'react';
@@ -29,7 +29,7 @@ export const useExtendedRouter = (router: Router<AnyRoute, any, any>) => {
 
         const newRoutes: AnyRoute[] = [];
         // Create new routes for each extension
-        for (const [path, config] of listViewExtensionRoutes.entries()) {
+        for (const [path, config] of extensionRoutes.entries()) {
             const pathWithoutLeadingSlash = path.startsWith('/') ? path.slice(1) : path;
             if (
                 authenticatedRoute.children.findIndex((r: AnyRoute) => r.path === pathWithoutLeadingSlash) >
@@ -45,17 +45,7 @@ export const useExtendedRouter = (router: Router<AnyRoute, any, any>) => {
                 loader: () => ({
                     breadcrumb: config.title,
                 }),
-                component: () => (
-                    <ListPage
-                        title={config.title}
-                        listQuery={config.listQuery}
-                        defaultVisibility={config.defaultVisibility}
-                        customizeColumns={config.customizeColumns}
-                        onSearchTermChange={config.onSearchTermChange}
-                        defaultColumnOrder={config.defaultColumnOrder}
-                        route={() => newRoute}
-                    />
-                ),
+                component: () => config.component(newRoute),
             });
             newRoutes.push(newRoute);
         }

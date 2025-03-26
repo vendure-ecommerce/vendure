@@ -1,6 +1,6 @@
 import { DashboardExtension } from '@/framework/extension-api/extension-api-types.js';
 import { addNavMenuItem, NavMenuItem } from '@/framework/nav-menu/nav-menu.js';
-import { registerListView } from '@/framework/page/page-api.js';
+import { registerRoute } from '@/framework/page/page-api.js';
 
 const extensionSourceChangeCallbacks = new Set<() => void>();
 
@@ -20,9 +20,9 @@ export function defineDashboardExtension(extension: DashboardExtension) {
                 };
                 addNavMenuItem(item, route.navMenuItem.sectionId);
             }
-            if (route.listQuery) {
+            if (route.path) {
                 // Configure a list page
-                registerListView(route);
+                registerRoute(route);
             }
         }
     }

@@ -1,12 +1,11 @@
 import { X } from 'lucide-react';
-import { CustomerGroup } from './customer-group-selector.js';
 import { Badge } from '../ui/badge.js';
 
 export function CustomerGroupChip({
     group,
     onRemove,
 }: {
-    group: CustomerGroup;
+    group: { id: string; name: string };
     onRemove?: (id: string) => void;
 }) {
     return (

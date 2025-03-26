@@ -19,14 +19,14 @@ interface Point {
     y: number;
 }
 
-export type Asset = AssetFragment & { tags?: { value: string }[] };
+export type AssetWithTags = AssetFragment & { tags?: { value: string }[] };
 
 interface AssetPreviewProps {
-    asset: Asset;
-    assets?: Asset[];
+    asset: AssetWithTags;
+    assets?: AssetWithTags[];
     editable?: boolean;
     customFields?: any[];
-    onAssetChange?: (asset: Partial<Asset>) => void;
+    onAssetChange?: (asset: Partial<AssetWithTags>) => void;
     onEditClick?: () => void;
 }
 

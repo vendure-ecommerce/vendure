@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
     "module": "nodenext",
+    "jsx": "react-jsx"
   }
 }

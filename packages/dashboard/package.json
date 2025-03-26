@@ -9,7 +9,8 @@
     "build:plugin": "tsc --project tsconfig.plugin.json",
     "watch:plugin": "tsc --project tsconfig.plugin.json --watch",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate-index": "node ./generate-index.js"
   },
   "module": "./src/index.ts",
   "main": "./src/index.ts",

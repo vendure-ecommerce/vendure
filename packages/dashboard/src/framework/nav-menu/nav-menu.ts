@@ -5,7 +5,7 @@ export type NavMenuSectionPlacement = 'top' | 'bottom';
 
 export interface NavMenuItem {
     id: string;
-    title: string;
+    title: React.ReactNode;
     url: string;
 }
 
