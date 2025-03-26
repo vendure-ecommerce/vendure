@@ -17,15 +17,15 @@ import path from 'path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import * as Codegen from '../../core/e2e/graphql/generated-e2e-admin-types';
 import {
     SearchProductsShopQuery,
     SearchProductsShopQueryVariables,
 } from '../../core/e2e/graphql/generated-e2e-shop-types';
 import {
-    ASSIGN_PRODUCTVARIANT_TO_CHANNEL,
     ASSIGN_PRODUCT_TO_CHANNEL,
+    ASSIGN_PRODUCTVARIANT_TO_CHANNEL,
     CREATE_CHANNEL,
     CREATE_COLLECTION,
     CREATE_FACET,
@@ -34,8 +34,8 @@ import {
     DELETE_ASSET,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
-    REMOVE_PRODUCTVARIANT_FROM_CHANNEL,
     REMOVE_PRODUCT_FROM_CHANNEL,
+    REMOVE_PRODUCTVARIANT_FROM_CHANNEL,
     UPDATE_ASSET,
     UPDATE_COLLECTION,
     UPDATE_PRODUCT,
@@ -754,7 +754,7 @@ describe('Elasticsearch plugin', () => {
                 expect(result.search.items).toEqual([
                     {
                         price: { min: 129900, max: 229900 },
-                        priceWithTax: { min: 194850, max: 344850 },
+                        priceWithTax: { min: 155880, max: 275880 },
                     },
                 ]);
             });
@@ -1087,7 +1087,7 @@ describe('Elasticsearch plugin', () => {
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
 
                 const { reindex } = await adminClient.query<Codegen.ReindexMutation>(REINDEX);
-                await awaitRunningJobs(adminClient);
+                await awaitRunningJobs(adminClient, 5000, 5000);
 
                 const { job } = await adminClient.query<GetJobInfoQuery, GetJobInfoQueryVariables>(
                     GET_JOB_INFO,

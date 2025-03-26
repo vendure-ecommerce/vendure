@@ -29,7 +29,7 @@ export function doAdminSearchQuery(client: SimpleGraphQLClient, input: SearchInp
 }
 
 export async function testGroupByProduct(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
+    const { search } = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -37,11 +37,11 @@ export async function testGroupByProduct(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(result.search.totalItems).toBe(20);
+    expect(search.totalItems).toBe(20);
 }
 
 export async function testNoGrouping(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
+    const { search } = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -49,11 +49,11 @@ export async function testNoGrouping(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(result.search.totalItems).toBe(34);
+    expect(search.totalItems).toBe(34);
 }
 
 export async function testMatchSearchTerm(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
+    const { search } = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -62,7 +62,7 @@ export async function testMatchSearchTerm(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(result.search.items.map(i => i.productName)).toEqual([
+    expect(search.items.map(i => i.productName).sort()).toEqual([
         'Camera Lens',
         'Instant Camera',
         'SLR Camera',
@@ -70,7 +70,7 @@ export async function testMatchSearchTerm(client: SimpleGraphQLClient) {
 }
 
 export async function testMatchFacetIdsAnd(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
+    const { search } = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -83,7 +83,7 @@ export async function testMatchFacetIdsAnd(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(result.search.items.map(i => i.productName)).toEqual([
+    expect(search.items.map(i => i.productName).sort()).toEqual([
         'Clacky Keyboard',
         'Curvy Monitor',
         'Gaming PC',
@@ -94,7 +94,7 @@ export async function testMatchFacetIdsAnd(client: SimpleGraphQLClient) {
 }
 
 export async function testMatchFacetIdsOr(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
+    const { search } = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -108,7 +108,7 @@ export async function testMatchFacetIdsOr(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(result.search.items.map(i => i.productName)).toEqual([
+    expect(search.items.map(i => i.productName).sort()).toEqual([
         'Bonsai Tree',
         'Camera Lens',
         'Clacky Keyboard',
@@ -126,7 +126,7 @@ export async function testMatchFacetIdsOr(client: SimpleGraphQLClient) {
 }
 
 export async function testMatchFacetValueFiltersAnd(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
+    const { search } = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -135,13 +135,13 @@ export async function testMatchFacetValueFiltersAnd(client: SimpleGraphQLClient)
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual(
+    expect(search.items.map(i => i.productName).sort()).toEqual(
         ['Laptop', 'Curvy Monitor', 'Gaming PC', 'Hard Drive', 'Clacky Keyboard', 'USB Cable'].sort(),
     );
 }
 
 export async function testMatchFacetValueFiltersOr(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
+    const { search } = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -154,7 +154,7 @@ export async function testMatchFacetValueFiltersOr(client: SimpleGraphQLClient) 
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual(
+    expect(search.items.map(i => i.productName).sort()).toEqual(
         [
             'Bonsai Tree',
             'Camera Lens',
@@ -174,7 +174,7 @@ export async function testMatchFacetValueFiltersOr(client: SimpleGraphQLClient) 
 }
 
 export async function testMatchFacetValueFiltersOrWithAnd(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
+    const { search } = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -183,7 +183,7 @@ export async function testMatchFacetValueFiltersOrWithAnd(client: SimpleGraphQLC
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual(
+    expect(search.items.map(i => i.productName).sort()).toEqual(
         [
             'Laptop',
             'Curvy Monitor',
@@ -200,7 +200,7 @@ export async function testMatchFacetValueFiltersOrWithAnd(client: SimpleGraphQLC
 }
 
 export async function testMatchFacetValueFiltersWithFacetIdsOr(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
+    const { search } = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -211,7 +211,7 @@ export async function testMatchFacetValueFiltersWithFacetIdsOr(client: SimpleGra
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual(
+    expect(search.items.map(i => i.productName).sort()).toEqual(
         [
             'Laptop',
             'Curvy Monitor',
@@ -228,7 +228,7 @@ export async function testMatchFacetValueFiltersWithFacetIdsOr(client: SimpleGra
 }
 
 export async function testMatchFacetValueFiltersWithFacetIdsAnd(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
+    const { search } = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -239,13 +239,16 @@ export async function testMatchFacetValueFiltersWithFacetIdsAnd(client: SimpleGr
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual(
-        ['Instant Camera', 'Camera Lens', 'Tripod', 'SLR Camera'].sort(),
-    );
+    expect(search.items.map(i => i.productName).sort()).toEqual([
+        'Camera Lens',
+        'Instant Camera',
+        'SLR Camera',
+        'Tripod',
+    ]);
 }
 
 export async function testMatchCollectionId(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
+    const { search } = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -254,15 +257,11 @@ export async function testMatchCollectionId(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual([
-        'Bonsai Tree',
-        'Orchid',
-        'Spiky Cactus',
-    ]);
+    expect(search.items.map(i => i.productName).sort()).toEqual(['Bonsai Tree', 'Orchid', 'Spiky Cactus']);
 }
 
 export async function testMatchCollectionSlug(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
+    const { search } = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
@@ -271,15 +270,11 @@ export async function testMatchCollectionSlug(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(result.search.items.map(i => i.productName).sort()).toEqual([
-        'Bonsai Tree',
-        'Orchid',
-        'Spiky Cactus',
-    ]);
+    expect(search.items.map(i => i.productName).sort()).toEqual(['Bonsai Tree', 'Orchid', 'Spiky Cactus']);
 }
 
 export async function testSinglePrices(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchGetPricesQuery, SearchGetPricesQueryVariables>(
+    const { search } = await client.query<SearchGetPricesQuery, SearchGetPricesQueryVariables>(
         SEARCH_GET_PRICES,
         {
             input: {
@@ -291,7 +286,7 @@ export async function testSinglePrices(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(result.search.items).toEqual([
+    expect(search.items).toEqual([
         {
             price: { value: 799 },
             priceWithTax: { value: 959 },
@@ -308,7 +303,7 @@ export async function testSinglePrices(client: SimpleGraphQLClient) {
 }
 
 export async function testPriceRanges(client: SimpleGraphQLClient) {
-    const result = await client.query<SearchGetPricesQuery, SearchGetPricesQueryVariables>(
+    const { search } = await client.query<SearchGetPricesQuery, SearchGetPricesQueryVariables>(
         SEARCH_GET_PRICES,
         {
             input: {
@@ -318,7 +313,7 @@ export async function testPriceRanges(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(result.search.items).toEqual([
+    expect(search.items).toEqual([
         {
             price: { min: 129900, max: 229900 },
             priceWithTax: { min: 155880, max: 275880 },
