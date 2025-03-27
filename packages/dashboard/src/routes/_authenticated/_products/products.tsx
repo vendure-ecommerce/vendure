@@ -13,7 +13,7 @@ export const Route = createFileRoute('/_authenticated/_products/products')({
     loader: () => ({ breadcrumb: () => <Trans>Products</Trans> }),
 });
 
-export function ProductListPage() {
+function ProductListPage() {
     return (
         <ListPage
             pageId="product-list"

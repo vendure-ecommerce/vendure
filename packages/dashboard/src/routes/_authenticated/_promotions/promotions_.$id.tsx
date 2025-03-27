@@ -46,7 +46,7 @@ export const Route = createFileRoute('/_authenticated/_promotions/promotions_/$i
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
-export function PromotionDetailPage() {
+function PromotionDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;

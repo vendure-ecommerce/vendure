@@ -12,7 +12,7 @@ export const Route = createFileRoute('/_authenticated/_orders/orders')({
     loader: () => ({ breadcrumb: () => <Trans>Orders</Trans> }),
 });
 
-export function OrderListPage() {
+function OrderListPage() {
     return (
         <ListPage
             pageId="order-list"

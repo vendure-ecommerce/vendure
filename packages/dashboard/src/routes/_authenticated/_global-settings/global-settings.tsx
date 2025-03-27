@@ -38,7 +38,7 @@ export const Route = createFileRoute('/_authenticated/_global-settings/global-se
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
-export function GlobalSettingsPage() {
+function GlobalSettingsPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;

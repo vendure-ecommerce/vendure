@@ -48,7 +48,7 @@ const STATES = [
     },
 ];
 
-export function JobQueuePage() {
+function JobQueuePage() {
     return (
         <ListPage
             pageId="job-queue-list"

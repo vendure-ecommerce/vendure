@@ -40,7 +40,7 @@ export const Route = createFileRoute('/_authenticated/_customer-groups/customer-
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
-export function CustomerGroupDetailPage() {
+function CustomerGroupDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;

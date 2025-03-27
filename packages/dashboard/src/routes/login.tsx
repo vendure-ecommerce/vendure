@@ -1,7 +1,6 @@
-import { useAuth } from '@/hooks/use-auth.js';
 import { LoginForm } from '@/components/login/login-form.js';
+import { useAuth } from '@/hooks/use-auth.js';
 import { createFileRoute, Navigate, redirect, useRouterState } from '@tanstack/react-router';
-import * as React from 'react';
 import { z } from 'zod';
 
 const fallback = '/dashboard' as const;
@@ -18,7 +17,7 @@ export const Route = createFileRoute('/login')({
     component: LoginPage,
 });
 
-export default function LoginPage() {
+function LoginPage() {
     const auth = useAuth();
     const isLoading = useRouterState({ select: s => s.isLoading });
     const navigate = Route.useNavigate();

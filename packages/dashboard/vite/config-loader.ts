@@ -33,8 +33,9 @@ export async function loadVendureConfig(
     const { vendureConfigPath, vendureConfigExport, tempDir } = options;
     const outputPath = tempDir;
     const configFileName = path.basename(vendureConfigPath);
+    const inputRootDir = path.dirname(vendureConfigPath);
     await fs.remove(outputPath);
-    await compileFile(vendureConfigPath, outputPath);
+    await compileFile(inputRootDir, vendureConfigPath, outputPath);
     const compiledConfigFilePath = pathToFileURL(path.join(outputPath, configFileName)).href.replace(
         /.ts$/,
         '.js',
@@ -95,6 +96,7 @@ function isBindingIdentifier(id: Pattern): id is BindingIdentifier {
 }
 
 export async function compileFile(
+    inputRootDir: string,
     inputPath: string,
     outputDir: string,
     compiledFiles = new Set<string>(),
@@ -140,7 +142,7 @@ export async function compileFile(
     const result = await transform(source, config);
 
     // Generate output file path
-    const relativePath = path.relative(process.cwd(), inputPath);
+    const relativePath = path.relative(inputRootDir, inputPath);
     const outputPath = path.join(outputDir, relativePath).replace(/\.ts$/, '.js');
 
     // Ensure the subdirectory for the output file exists
@@ -174,6 +176,6 @@ export async function compileFile(
 
     // Recursively compile all relative imports
     for (const importPath of importPaths) {
-        await compileFile(importPath, outputDir, compiledFiles);
+        await compileFile(inputRootDir, importPath, outputDir, compiledFiles);
     }
 }

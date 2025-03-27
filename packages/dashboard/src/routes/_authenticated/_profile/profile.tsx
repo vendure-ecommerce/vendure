@@ -34,7 +34,7 @@ export const Route = createFileRoute('/_authenticated/_profile/profile')({
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
-export function ProfilePage() {
+function ProfilePage() {
     const { i18n } = useLingui();
 
     const { form, submitHandler, isPending } = useDetailPage({

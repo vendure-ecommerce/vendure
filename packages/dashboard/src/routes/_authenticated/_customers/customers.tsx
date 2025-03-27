@@ -14,7 +14,7 @@ export const Route = createFileRoute('/_authenticated/_customers/customers')({
     loader: () => ({ breadcrumb: () => <Trans>Customers</Trans> }),
 });
 
-export function CustomerListPage() {
+function CustomerListPage() {
     return (
         <ListPage
             title="Customers"

@@ -14,7 +14,7 @@ export const Route = createFileRoute('/_authenticated/_collections/collections')
     loader: () => ({ breadcrumb: () => <Trans>Collections</Trans> }),
 });
 
-export function CollectionListPage() {
+function CollectionListPage() {
     return (
         <ListPage
             pageId="collection-list"

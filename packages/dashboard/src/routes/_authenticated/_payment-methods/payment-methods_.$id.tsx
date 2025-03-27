@@ -42,7 +42,7 @@ export const Route = createFileRoute('/_authenticated/_payment-methods/payment-m
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
-export function PaymentMethodDetailPage() {
+function PaymentMethodDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;

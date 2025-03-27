@@ -9,6 +9,8 @@ import { Trans } from '@lingui/react/macro';
 import { Link, createFileRoute } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { deleteTaxRateDocument, taxRateListQuery } from './tax-rates.graphql.js';
+import { zoneListQuery } from '../_zones/zones.graphql.js';
+import { taxCategoryListQuery } from '../_tax-categories/tax-categories.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_tax-rates/tax-rates')({
     component: TaxRateListPage,

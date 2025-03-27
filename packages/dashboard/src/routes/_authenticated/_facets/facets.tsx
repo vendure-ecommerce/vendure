@@ -11,12 +11,13 @@ import { facetListDocument, deleteFacetDocument } from './facets.graphql.js';
 import { DetailPageButton } from '@/components/shared/detail-page-button.js';
 import { ResultOf } from 'gql.tada';
 import { FacetValuesSheet } from './components/facet-values-sheet.js';
+
 export const Route = createFileRoute('/_authenticated/_facets/facets')({
     component: FacetListPage,
     loader: () => ({ breadcrumb: () => <Trans>Facets</Trans> }),
 });
 
-export function FacetListPage() {
+function FacetListPage() {
     return (
         <ListPage
             pageId="facet-list"

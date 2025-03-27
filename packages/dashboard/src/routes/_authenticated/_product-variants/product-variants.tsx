@@ -12,7 +12,7 @@ export const Route = createFileRoute('/_authenticated/_product-variants/product-
     loader: () => ({ breadcrumb: () => <Trans>Product Variants</Trans> }),
 });
 
-export function ProductListPage() {
+function ProductListPage() {
     const { formatCurrencyName } = useLocalFormat();
     return (
         <ListPage

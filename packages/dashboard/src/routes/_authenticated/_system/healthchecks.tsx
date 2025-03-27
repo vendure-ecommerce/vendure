@@ -23,7 +23,7 @@ interface HealthcheckResponse {
     details: Record<string, HealthcheckItem>;
 }
 
-export function HealthchecksPage() {
+function HealthchecksPage() {
     const { data, refetch, dataUpdatedAt } = useQuery({
         queryKey: ['healthchecks'],
         queryFn: async () => {

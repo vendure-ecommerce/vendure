@@ -8,6 +8,7 @@
     "build:lib": "tsc --project tsconfig.lib.json",
     "build:plugin": "tsc --project tsconfig.plugin.json",
     "watch:plugin": "tsc --project tsconfig.plugin.json --watch",
+    "test": "vitest run",
     "lint": "eslint .",
     "preview": "vite preview",
     "generate-index": "node ./generate-index.js"
@@ -16,7 +17,7 @@
   "main": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./plugin": "./dist/plugin/index.js"
+    "./plugin": "./dist-plugin/index.js"
   },
   "files": [
     "dist",

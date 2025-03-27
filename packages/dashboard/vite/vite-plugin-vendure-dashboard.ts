@@ -29,7 +29,12 @@ export type VitePluginVendureDashboardOptions = {
      * This is only required if the plugin is unable to auto-detect the name of the exported variable.
      */
     vendureConfigExport?: string;
+    /**
+     * @description
+     * The path to the directory where the generated GraphQL Tada files will be output.
+     */
     gqlTadaOutputPath?: string;
+    tempCompilationDir?: string;
 } & UiConfigPluginOptions;
 
 /**
@@ -37,7 +42,7 @@ export type VitePluginVendureDashboardOptions = {
  * This is a Vite plugin which configures a set of plugins required to build the Vendure Dashboard.
  */
 export function vendureDashboardPlugin(options: VitePluginVendureDashboardOptions): PluginOption[] {
-    const tempDir = path.join(import.meta.dirname, './.vendure-dashboard-temp');
+    const tempDir = options.tempCompilationDir ?? path.join(import.meta.dirname, './.vendure-dashboard-temp');
     const normalizedVendureConfigPath = getNormalizedVendureConfigPath(options.vendureConfigPath);
     const packageRoot = getDashboardPackageRoot();
     const linguiConfigPath = path.join(packageRoot, 'lingui.config.js');

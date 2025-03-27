@@ -26,7 +26,7 @@ import { PaymentDetails } from './components/payment-details.js';
 import { orderDetailDocument } from './orders.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_orders/orders_/$id')({
-    component: FacetDetailPage,
+    component: OrderDetailPage,
     loader: detailPageRouteLoader({
         queryDocument: orderDetailDocument,
         breadcrumb(_isNew, entity) {
@@ -36,7 +36,7 @@ export const Route = createFileRoute('/_authenticated/_orders/orders_/$id')({
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
-export function FacetDetailPage() {
+function OrderDetailPage() {
     const params = Route.useParams();
     const { i18n } = useLingui();
 

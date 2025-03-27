@@ -37,7 +37,7 @@ export const Route = createFileRoute('/_authenticated/_roles/roles_/$id')({
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
-export function RoleDetailPage() {
+function RoleDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;

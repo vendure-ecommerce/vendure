@@ -55,7 +55,7 @@ export const Route = createFileRoute('/_authenticated/_collections/collections_/
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
-export function CollectionDetailPage() {
+function CollectionDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;

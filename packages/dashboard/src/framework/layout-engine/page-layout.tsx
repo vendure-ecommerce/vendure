@@ -38,11 +38,16 @@ export type PageLayoutProps = {
 };
 
 function isPageBlock(child: unknown): child is React.ReactElement<PageBlockProps> {
+    if (!child) {
+        return false;
+    }
+    if (!React.isValidElement(child)) {
+        return false;
+    }
     const props = (child as React.ReactElement<PageBlockProps>).props;
-    const isReactElement = React.isValidElement(child);
     const hasColumn = 'column' in props;
     const hasBlockId = 'blockId' in props;
-    return isReactElement && (hasColumn || hasBlockId);
+    return hasColumn || hasBlockId;
 }
 
 export function PageLayout({ children, className }: PageLayoutProps) {

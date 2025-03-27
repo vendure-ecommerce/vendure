@@ -78,7 +78,10 @@ function processPaginatedList(
     if (!isPaginatedList) {
         throw new Error(`Could not determine type of items in ${fieldInfo.name}`);
     }
-    const itemsType = getObjectFieldInfo(fieldInfo.type, 'items').type;
+    const itemsType = getObjectFieldInfo(fieldInfo.type, 'items')?.type;
+    if (!itemsType) {
+        throw new Error(`Could not determine type of items in ${fieldInfo.name}`);
+    }
     for (const item of itemsField.selectionSet?.selections ?? []) {
         if (item.kind === 'Field' || item.kind === 'FragmentSpread') {
             collectFields(itemsType, item, fields, fragments);
@@ -95,6 +98,9 @@ function findNestedPaginatedLists(
     for (const selection of field.selectionSet?.selections ?? []) {
         if (selection.kind === 'Field') {
             const fieldInfo = getObjectFieldInfo(parentType, selection.name.value);
+            if (!fieldInfo) {
+                continue;
+            }
             if (fieldInfo.isPaginatedList) {
                 processPaginatedList(selection, fieldInfo, fields, fragments);
             } else if (selection.selectionSet && !fieldInfo.isScalar) {
@@ -109,6 +115,9 @@ function findNestedPaginatedLists(
                 for (const fragmentSelection of fragment.selectionSet.selections) {
                     if (fragmentSelection.kind === 'Field') {
                         const fieldInfo = getObjectFieldInfo(parentType, fragmentSelection.name.value);
+                        if (!fieldInfo) {
+                            continue;
+                        }
                         if (fieldInfo.isPaginatedList) {
                             processPaginatedList(fragmentSelection, fieldInfo, fields, fragments);
                         } else if (fragmentSelection.selectionSet && !fieldInfo.isScalar) {
@@ -260,6 +269,9 @@ function findPaginatedListPath(
         if (selection.kind === 'Field') {
             const fieldNode = selection;
             const fieldInfo = getObjectFieldInfo(parentType, fieldNode.name.value);
+            if (!fieldInfo) {
+                continue;
+            }
             const newPath = [...currentPath, fieldNode.name.value];
 
             if (fieldInfo.isPaginatedList) {
@@ -329,9 +341,15 @@ export function getOperationTypeInfo(
 }
 
 export function getTypeFieldInfo(typeName: string): FieldInfo[] {
-    return Object.entries(schemaInfo.types[typeName]).map(([fieldName, fieldInfo]) => {
-        return getObjectFieldInfo(typeName, fieldName);
-    });
+    return Object.entries(schemaInfo.types[typeName])
+        .map(([fieldName]) => {
+            const fieldInfo = getObjectFieldInfo(typeName, fieldName);
+            if (!fieldInfo) {
+                return;
+            }
+            return fieldInfo;
+        })
+        .filter(x => !!x);
 }
 
 function getQueryInfo(name: string): FieldInfo {
@@ -371,8 +389,11 @@ export function isEnumType(type: string): boolean {
     return schemaInfo.enums[type] != null;
 }
 
-function getObjectFieldInfo(typeName: string, fieldName: string): FieldInfo {
-    const fieldInfo = schemaInfo.types[typeName][fieldName];
+function getObjectFieldInfo(typeName: string, fieldName: string): FieldInfo | undefined {
+    const fieldInfo = schemaInfo.types[typeName]?.[fieldName];
+    if (!fieldInfo) {
+        return undefined;
+    }
     const type = fieldInfo[0];
     const isScalar = isScalarType(type);
     return {
@@ -393,6 +414,9 @@ function collectFields(
 ) {
     if (fieldNode.kind === 'Field') {
         const fieldInfo = getObjectFieldInfo(typeName, fieldNode.name.value);
+        if (!fieldInfo) {
+            return;
+        }
         fields.push(fieldInfo);
         if (fieldNode.selectionSet) {
             fieldNode.selectionSet.selections.forEach(subSelection => {

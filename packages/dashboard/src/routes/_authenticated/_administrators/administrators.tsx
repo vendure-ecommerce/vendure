@@ -9,6 +9,7 @@ import { Trans } from '@lingui/react/macro';
 import { Link, createFileRoute } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { administratorListDocument, deleteAdministratorDocument } from './administrators.graphql.js';
+
 export const Route = createFileRoute('/_authenticated/_administrators/administrators')({
     component: AdministratorListPage,
     loader: () => ({ breadcrumb: () => <Trans>Administrators</Trans> }),

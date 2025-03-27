@@ -7,7 +7,7 @@
     "skipLibCheck": true,
     "plugins": [],
     "declaration": true,
-    "outDir": "./dist/plugin"
+    "outDir": "./dist-plugin"
   },
   "include": ["vite/**/*"],
 }

@@ -23,6 +23,7 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { countryDetailQuery, createCountryDocument, updateCountryDocument } from './countries.graphql.js';
+
 export const Route = createFileRoute('/_authenticated/_countries/countries_/$id')({
     component: CountryDetailPage,
     loader: detailPageRouteLoader({
@@ -35,7 +36,7 @@ export const Route = createFileRoute('/_authenticated/_countries/countries_/$id'
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
-export function CountryDetailPage() {
+function CountryDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;

@@ -47,7 +47,7 @@ export const Route = createFileRoute('/_authenticated/_shipping-methods/shipping
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
-export function ShippingMethodDetailPage() {
+function ShippingMethodDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;

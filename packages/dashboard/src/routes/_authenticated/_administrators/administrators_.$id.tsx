@@ -24,7 +24,7 @@ import {
     administratorDetailDocument,
     createAdministratorDocument,
     updateAdministratorDocument,
-} from './administrators.graphql.js';
+} from './administrators.graphql.js'; 
 import { RolePermissionsDisplay } from './components/role-permissions-display.js';
 
 export const Route = createFileRoute('/_authenticated/_administrators/administrators_/$id')({
@@ -42,7 +42,7 @@ export const Route = createFileRoute('/_authenticated/_administrators/administra
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 
-export function AdministratorDetailPage() {
+function AdministratorDetailPage() {
     const params = Route.useParams();
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
