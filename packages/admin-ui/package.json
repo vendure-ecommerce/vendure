@@ -91,7 +91,7 @@
         "@types/jasmine": "~4.3.5",
         "@types/jasminewd2": "~2.0.10",
         "@types/node": "^18.17.9",
-        "@types/react": "^18.2.21",
+        "@types/react": "^19.0.12",
         "@typescript-eslint/eslint-plugin": "^5.59.2",
         "@typescript-eslint/parser": "^5.59.2",
         "@vendure/ngx-translate-extract": "^8.2.2",
