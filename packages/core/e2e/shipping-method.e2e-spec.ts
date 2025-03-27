@@ -65,9 +65,8 @@ describe('ShippingMethod resolver', () => {
     });
 
     it('shippingEligibilityCheckers', async () => {
-        const { shippingEligibilityCheckers } = await adminClient.query<Codegen.GetEligibilityCheckersQuery>(
-            GET_ELIGIBILITY_CHECKERS,
-        );
+        const { shippingEligibilityCheckers } =
+            await adminClient.query<Codegen.GetEligibilityCheckersQuery>(GET_ELIGIBILITY_CHECKERS);
 
         expect(shippingEligibilityCheckers).toEqual([
             {
@@ -151,9 +150,8 @@ describe('ShippingMethod resolver', () => {
     });
 
     it('shippingMethods', async () => {
-        const { shippingMethods } = await adminClient.query<Codegen.GetShippingMethodListQuery>(
-            GET_SHIPPING_METHOD_LIST,
-        );
+        const { shippingMethods } =
+            await adminClient.query<Codegen.GetShippingMethodListQuery>(GET_SHIPPING_METHOD_LIST);
         expect(shippingMethods.totalItems).toEqual(3);
         expect(shippingMethods.items[0].code).toBe('standard-shipping');
         expect(shippingMethods.items[1].code).toBe('express-shipping');
@@ -319,9 +317,8 @@ describe('ShippingMethod resolver', () => {
     });
 
     it('deleteShippingMethod', async () => {
-        const listResult1 = await adminClient.query<Codegen.GetShippingMethodListQuery>(
-            GET_SHIPPING_METHOD_LIST,
-        );
+        const listResult1 =
+            await adminClient.query<Codegen.GetShippingMethodListQuery>(GET_SHIPPING_METHOD_LIST);
         expect(listResult1.shippingMethods.items.map(i => i.id)).toEqual(['T_1', 'T_2', 'T_3', 'T_4']);
 
         const { deleteShippingMethod } = await adminClient.query<
@@ -336,9 +333,8 @@ describe('ShippingMethod resolver', () => {
             message: null,
         });
 
-        const listResult2 = await adminClient.query<Codegen.GetShippingMethodListQuery>(
-            GET_SHIPPING_METHOD_LIST,
-        );
+        const listResult2 =
+            await adminClient.query<Codegen.GetShippingMethodListQuery>(GET_SHIPPING_METHOD_LIST);
         expect(listResult2.shippingMethods.items.map(i => i.id)).toEqual(['T_1', 'T_2', 'T_3']);
     });
 

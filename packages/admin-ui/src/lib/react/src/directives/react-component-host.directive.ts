@@ -45,7 +45,7 @@ export class ReactComponentHostDirective<Comp extends ElementType> {
                     },
                 },
                 createElement(Comp, this.props),
-            ),
+            ) as any,
         );
     }
 

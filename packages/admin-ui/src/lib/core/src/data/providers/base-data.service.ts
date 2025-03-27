@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { MutationUpdaterFn, SingleExecutionResult, WatchQueryFetchPolicy } from '@apollo/client/core';
+import { MutationUpdaterFunction, SingleExecutionResult, WatchQueryFetchPolicy } from '@apollo/client/core';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
 import { Apollo } from 'apollo-angular';
@@ -69,7 +69,7 @@ export class BaseDataService {
     mutate<T, V extends Record<string, any> = Record<string, any>>(
         mutation: DocumentNode | TypedDocumentNode<T, V>,
         variables?: V,
-        update?: MutationUpdaterFn<T>,
+        update?: MutationUpdaterFunction<T, V, any, any>,
         options: ExtendedQueryOptions = {},
     ): Observable<T> {
         const withCustomFields = addCustomFields(mutation, this.customFields, options.includeCustomFields);

@@ -326,9 +326,9 @@ function checkPluginCompatibility(
 }
 
 /**
- * Initialize any configured plugins.
+ * Run the configuration functions of all plugins and return the final config object.
  */
-async function runPluginConfigurations(config: RuntimeVendureConfig): Promise<RuntimeVendureConfig> {
+export async function runPluginConfigurations(config: RuntimeVendureConfig): Promise<RuntimeVendureConfig> {
     for (const plugin of config.plugins) {
         const configFn = getConfigurationFunction(plugin);
         if (typeof configFn === 'function') {

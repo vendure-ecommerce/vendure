@@ -18,6 +18,10 @@
     "files": [
         "lib/**/*"
     ],
+    "exports": {
+        ".": "./lib/index.js",
+        "./lib/*": "./lib/*.js"
+    },
     "devDependencies": {
         "rimraf": "^5.0.5",
         "typescript": "5.3.3"

@@ -45,7 +45,9 @@ async function generatePastOrders() {
     for (let i = DAYS_TO_COVER; i > 0; i--) {
         const numberOfOrders = Math.floor(Math.random() * 10) + 5;
         Logger.info(
-            `Generating ${numberOfOrders} orders for ${dayjs().subtract(i, 'day').format('YYYY-MM-DD')}`,
+            `Generating ${numberOfOrders} orders for ${dayjs()
+                .subtract(30 - i, 'day')
+                .format('YYYY-MM-DD')}`,
         );
         for (let j = 0; j < numberOfOrders; j++) {
             const customer = getRandomItem(customers);
@@ -81,7 +83,11 @@ async function generatePastOrders() {
                 continue;
             }
             const randomHourOfDay = Math.floor(Math.random() * 24);
-            const placedAt = dayjs().subtract(i, 'day').startOf('day').add(randomHourOfDay, 'hour').toDate();
+            const placedAt = dayjs()
+                .subtract(DAYS_TO_COVER - i, 'day')
+                .startOf('day')
+                .add(randomHourOfDay, 'hour')
+                .toDate();
             await connection.getRepository(ctx, 'Order').update(order.id, {
                 orderPlacedAt: placedAt,
             });
