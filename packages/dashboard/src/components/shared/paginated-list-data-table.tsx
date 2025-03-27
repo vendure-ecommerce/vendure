@@ -8,7 +8,7 @@ import {
 import { useListQueryFields } from '@/framework/document-introspection/hooks.js';
 import { api } from '@/graphql/api.js';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useDebounce } from 'use-debounce';
+import { useDebounce } from '@uidotdev/usehooks';
 
 import {
     DropdownMenu,

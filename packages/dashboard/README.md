@@ -4,7 +4,10 @@ This is an admin dashboard for managing Vendure applications. It is designed to 
 
 Current status: early work in progress
 
+## Development
+
+Run `npx vite` to start Vite in dev mode.
+
 ## Testing
 
-There are some unit tests in this repo (`.spec.ts` files). In order to run them, you need to go to the `../dev-server` dir
-and run `npx vitest`. This is a temporary work-around for some hard-to-debug path issue when trying to run from this dir.
+Run `npm run test` to run tests once, or `npx vitest` to run tests in watch mode

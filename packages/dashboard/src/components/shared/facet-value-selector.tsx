@@ -3,7 +3,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.js';
 import { api } from '@/graphql/api.js';
 import { graphql } from '@/graphql/graphql.js';
-import { useDebounce } from '@/hooks/use-debounce.js';
+import { useDebounce } from '@uidotdev/usehooks';
 import { Trans } from '@lingui/react/macro';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { ChevronRight, Loader2, Plus } from 'lucide-react';

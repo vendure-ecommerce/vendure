@@ -1,3 +1,4 @@
+import { RichTextInput } from '@/components/data-input/richt-text-input.js';
 import { AssignedFacetValues } from '@/components/shared/assigned-facet-values.js';
 import { EntityAssets } from '@/components/shared/entity-assets.js';
 import { ErrorPage } from '@/components/shared/error-page.js';
@@ -8,7 +9,6 @@ import { Button } from '@/components/ui/button.js';
 import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from '@/components/ui/form.js';
 import { Input } from '@/components/ui/input.js';
 import { Switch } from '@/components/ui/switch.js';
-import { Textarea } from '@/components/ui/textarea.js';
 import { NEW_ENTITY_PATH } from '@/constants.js';
 import {
     CustomFieldsPageBlock,
@@ -29,7 +29,6 @@ import { toast } from 'sonner';
 import { CreateProductVariantsDialog } from './components/create-product-variants-dialog.js';
 import { ProductVariantsTable } from './components/product-variants-table.js';
 import { createProductDocument, productDetailDocument, updateProductDocument } from './products.graphql.js';
-import { RichTextInput } from '@/components/data-input/richt-text-input.js';
 
 export const Route = createFileRoute('/_authenticated/_products/products_/$id')({
     component: ProductDetailPage,
@@ -65,7 +64,7 @@ function ProductDetailPage() {
                 translations: entity.translations.map(translation => ({
                     id: translation.id,
                     languageCode: translation.languageCode,
-                    name: translation.name,
+                    name: translation.name, 
                     slug: translation.slug,
                     description: translation.description,
                     customFields: translation.customFields,

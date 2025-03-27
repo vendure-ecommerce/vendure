@@ -22,7 +22,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Loader2, Search, Upload, X } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { useDebounce } from 'use-debounce';
+import { useDebounce } from '@uidotdev/usehooks';
 
 const getAssetListDocument = graphql(`
     query GetAssetList($options: AssetListOptions) {
