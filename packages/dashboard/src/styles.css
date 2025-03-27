@@ -23,6 +23,8 @@
     --destructive-foreground: hsl(0 0% 98%);
     --success: hsl(100, 81%, 35%);
     --success-foreground: hsl(0 0% 98%);
+    --dev-mode: hsl(204, 76%, 62%);
+    --dev-mode-foreground: hsl(0 0% 98%);
     --border: hsl(0 0% 89.8%);
     --input: hsl(0 0% 89.8%);
     --ring: hsl(0 0% 3.9%);
@@ -61,6 +63,8 @@
     --destructive-foreground: hsl(0 0% 98%);
     --success: hsl(100, 100%, 35%);
     --success-foreground: hsl(0 0% 98%);
+    --dev-mode: hsl(204, 86%, 53%);
+    --dev-mode-foreground: hsl(0 0% 98%);
     --border: hsl(0 0% 14.9%);
     --input: hsl(0 0% 14.9%);
     --ring: hsl(0 0% 83.1%);
@@ -98,6 +102,8 @@
     --color-destructive-foreground: var(--destructive-foreground);
     --color-success: var(--success);
     --color-success-foreground: var(--success-foreground);
+    --color-dev-mode: var(--dev-mode);
+    --color-dev-mode-foreground: var(--dev-mode-foreground);
     --color-border: var(--border);
     --color-input: var(--input);
     --color-ring: var(--ring);

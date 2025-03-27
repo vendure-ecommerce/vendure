@@ -1,16 +1,16 @@
 import { CustomFieldsForm } from '@/components/shared/custom-fields-form.js';
-import { Button } from '@/components/ui/button.js';
+import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.js';
 import { Form } from '@/components/ui/form.js';
 import { useCustomFieldConfig } from '@/hooks/use-custom-field-config.js';
 import { usePage } from '@/hooks/use-page.js';
 import { cn } from '@/lib/utils.js';
 import { useMediaQuery } from '@uidotdev/usehooks';
-import React, { ComponentProps, createContext, PropsWithChildren, useState } from 'react';
+import React, { ComponentProps, createContext, useState } from 'react';
 import { Control, UseFormReturn } from 'react-hook-form';
 import { DashboardActionBarItem } from '../extension-api/extension-api-types.js';
 import { getDashboardActionBarItems, getDashboardPageBlocks } from './register.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
+import { LocationWrapper } from './location-wrapper.js';
 
 export interface PageProps extends ComponentProps<'div'> {
     pageId?: string;
@@ -23,9 +23,11 @@ export function Page({ children, ...props }: PageProps) {
     const [form, setForm] = useState<UseFormReturn<any> | undefined>(undefined);
     return (
         <PageProvider value={{ pageId: props.pageId ?? '', form, setForm, entity: props.entity }}>
-            <div className={cn('m-4', props.className)} {...props}>
-                {children}
-            </div>
+            <LocationWrapper>
+                <div className={cn('m-4', props.className)} {...props}>
+                    {children}
+                </div>
+            </LocationWrapper>
         </PageProvider>
     );
 }
@@ -199,15 +201,19 @@ export type PageBlockProps = {
 
 export function PageBlock({ children, title, description, borderless, className, blockId }: PageBlockProps) {
     return (
-        <Card className={cn('w-full', className)}>
-            {title || description ? (
-                <CardHeader>
-                    {title && <CardTitle>{title}</CardTitle>}
-                    {description && <CardDescription>{description}</CardDescription>}
-                </CardHeader>
-            ) : null}
-            <CardContent className={cn(!title ? 'pt-6' : '', borderless && 'p-0')}>{children}</CardContent>
-        </Card>
+        <LocationWrapper blockId={blockId}>
+            <Card className={cn('w-full', className)}>
+                {title || description ? (
+                    <CardHeader>
+                        {title && <CardTitle>{title}</CardTitle>}
+                        {description && <CardDescription>{description}</CardDescription>}
+                    </CardHeader>
+                ) : null}
+                <CardContent className={cn(!title ? 'pt-6' : '', borderless && 'p-0')}>
+                    {children}
+                </CardContent>
+            </Card>
+        </LocationWrapper>
     );
 }
 
@@ -225,7 +231,7 @@ export function CustomFieldsPageBlock({
         return null;
     }
     return (
-        <PageBlock column={column} locationId="custom-fields">
+        <PageBlock column={column} blockId="custom-fields">
             <CustomFieldsForm entityType={entityType} control={control} />
         </PageBlock>
     );

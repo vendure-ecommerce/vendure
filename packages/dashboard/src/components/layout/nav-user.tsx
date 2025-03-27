@@ -3,14 +3,7 @@
 import { useAuth } from '@/hooks/use-auth.js';
 import { Route } from '@/routes/_authenticated.js';
 import { Link, useRouter } from '@tanstack/react-router';
-import {
-    ChevronsUpDown,
-    LogOut,
-    Monitor,
-    Moon,
-    Sparkles,
-    Sun
-} from 'lucide-react';
+import { ChevronsUpDown, LogOut, Monitor, Moon, Sparkles, Sun } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
 import {
@@ -34,13 +27,15 @@ import { useMemo } from 'react';
 import { Dialog, DialogTrigger } from '../ui/dialog.js';
 import { LanguageDialog } from './language-dialog.js';
 import { Theme } from '@/providers/theme-provider.js';
+import { Badge } from '../ui/badge.js';
+import { Trans } from '@lingui/react/macro';
 
 export function NavUser() {
     const { isMobile } = useSidebar();
     const router = useRouter();
     const navigate = Route.useNavigate();
     const { user, ...auth } = useAuth();
-    const { settings, setTheme } = useUserSettings();
+    const { settings, setTheme, setDevMode } = useUserSettings();
 
     const handleLogout = () => {
         auth.logout(() => {
@@ -57,6 +52,8 @@ export function NavUser() {
     const avatarFallback = useMemo(() => {
         return user.firstName.charAt(0) + user.lastName.charAt(0);
     }, [user]);
+
+    const isDevMode = (import.meta as any).env?.MODE === 'development';
 
     return (
         <SidebarMenu>
@@ -126,7 +123,7 @@ export function NavUser() {
                                         <DropdownMenuSubContent>
                                             <DropdownMenuRadioGroup
                                                 value={settings.theme}
-                                                onValueChange={(value) => setTheme(value as Theme)}
+                                                onValueChange={value => setTheme(value as Theme)}
                                             >
                                                 <DropdownMenuRadioItem value="light">
                                                     <Sun />
@@ -145,6 +142,27 @@ export function NavUser() {
                                     </DropdownMenuPortal>
                                 </DropdownMenuSub>
                             </DropdownMenuGroup>
+                            {isDevMode && (
+                                <DropdownMenuItem
+                                    onClick={e => {
+                                        e.preventDefault();
+                                        setDevMode(!settings.devMode);
+                                    }}
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <Trans>Dev Mode</Trans>
+                                        {settings.devMode ? (
+                                            <Badge variant="success">
+                                                <Trans>enabled</Trans>
+                                            </Badge>
+                                        ) : (
+                                            <Badge variant="outline">
+                                                <Trans>disabled</Trans>
+                                            </Badge>
+                                        )}
+                                    </div>
+                                </DropdownMenuItem>
+                            )}
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={handleLogout}>
                                 <LogOut />
