@@ -1,5 +1,3 @@
-import { PageProps } from '@/framework/page/page-types.js';
-
 import {
     AdditionalColumns,
     CustomizeColumnConfig,
@@ -7,13 +5,19 @@ import {
     ListQueryOptionsShape,
     ListQueryShape,
     PaginatedListDataTable,
-    RowAction
+    RowAction,
 } from '@/components/shared/paginated-list-data-table.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRoute, AnyRouter, useNavigate } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
 import { ResultOf } from 'gql.tada';
-import { Page, PageActionBar, PageTitle } from '../layout-engine/page-layout.js';
+import {
+    FullWidthPageBlock,
+    Page,
+    PageActionBar,
+    PageLayout,
+    PageTitle,
+} from '../layout-engine/page-layout.js';
 import { addCustomFields } from '../document-introspection/add-custom-fields.js';
 
 type ListQueryFields<T extends TypedDocumentNode<any, any>> = {
@@ -24,13 +28,12 @@ type ListQueryFields<T extends TypedDocumentNode<any, any>> = {
         : never;
 }[keyof ResultOf<T>];
 
-
 export interface ListPageProps<
     T extends TypedDocumentNode<U, V>,
     U extends ListQueryShape,
     V extends ListQueryOptionsShape,
     AC extends AdditionalColumns<T>,
-> extends PageProps {
+> {
     pageId?: string;
     route: AnyRoute | (() => AnyRoute);
     title: string | React.ReactElement;
@@ -79,12 +82,15 @@ export function ListPage<
         itemsPerPage: routeSearch.perPage ? parseInt(routeSearch.perPage) : 10,
     };
 
-    const sorting: SortingState = (routeSearch.sort ?? '').split(',').filter(s => s.length).map((s: string) => {
-        return {
-            id: s.replace(/^-/, ''),
-            desc: s.startsWith('-'),
-        };
-    });
+    const sorting: SortingState = (routeSearch.sort ?? '')
+        .split(',')
+        .filter(s => s.length)
+        .map((s: string) => {
+            return {
+                id: s.replace(/^-/, ''),
+                desc: s.startsWith('-'),
+            };
+        });
 
     if (defaultSort && !sorting.length) {
         sorting.push(...defaultSort);
@@ -119,31 +125,35 @@ export function ListPage<
         <Page pageId={pageId}>
             <PageTitle>{title}</PageTitle>
             <PageActionBar>{children}</PageActionBar>
-            <PaginatedListDataTable
-                listQuery={listQueryWithCustomFields}
-                deleteMutation={deleteMutation}
-                transformVariables={transformVariables}
-                customizeColumns={customizeColumns}
-                additionalColumns={additionalColumns}
-                defaultColumnOrder={defaultColumnOrder}
-                defaultVisibility={defaultVisibility}
-                onSearchTermChange={onSearchTermChange}
-                page={pagination.page}
-                itemsPerPage={pagination.itemsPerPage}
-                sorting={sorting}
-                columnFilters={routeSearch.filters}
-                onPageChange={(table, page, perPage) => {
-                    persistListStateToUrl(table, { page, perPage });
-                }}
-                onSortChange={(table, sorting) => {
-                    persistListStateToUrl(table, { sort: sorting });
-                }}
-                onFilterChange={(table, filters) => {
-                    persistListStateToUrl(table, { filters });
-                }}
-                facetedFilters={facetedFilters}
-                rowActions={rowActions}
-            />
+            <PageLayout>
+                <FullWidthPageBlock blockId="list-table">
+                    <PaginatedListDataTable
+                        listQuery={listQueryWithCustomFields}
+                        deleteMutation={deleteMutation}
+                        transformVariables={transformVariables}
+                        customizeColumns={customizeColumns}
+                        additionalColumns={additionalColumns}
+                        defaultColumnOrder={defaultColumnOrder}
+                        defaultVisibility={defaultVisibility}
+                        onSearchTermChange={onSearchTermChange}
+                        page={pagination.page}
+                        itemsPerPage={pagination.itemsPerPage}
+                        sorting={sorting}
+                        columnFilters={routeSearch.filters}
+                        onPageChange={(table, page, perPage) => {
+                            persistListStateToUrl(table, { page, perPage });
+                        }}
+                        onSortChange={(table, sorting) => {
+                            persistListStateToUrl(table, { sort: sorting });
+                        }}
+                        onFilterChange={(table, filters) => {
+                            persistListStateToUrl(table, { filters });
+                        }}
+                        facetedFilters={facetedFilters}
+                        rowActions={rowActions}
+                    />
+                </FullWidthPageBlock>
+            </PageLayout>
         </Page>
     );
 }

@@ -30,6 +30,7 @@ export interface DetailPageProps<
     U extends TypedDocumentNode<any, any>,
     EntityField extends keyof ResultOf<T> = DetailEntityPath<T>,
 > {
+    pageId: string;
     route: AnyRoute;
     title: (entity: ResultOf<T>[EntityField]) => string;
     queryDocument: T;
@@ -43,6 +44,7 @@ export function DetailPage<
     C extends TypedDocumentNode<any, any>,
     U extends TypedDocumentNode<any, any>,
 >({
+    pageId,
     route,
     queryDocument,
     createDocument,
@@ -72,7 +74,7 @@ export function DetailPage<
     const updateFields = getOperationVariablesFields(updateDocument);
 
     return (
-        <Page>
+        <Page pageId={pageId}>
             <PageDetailForm form={form} submitHandler={submitHandler}>
                 <PageActionBar>
                     <PageActionBarLeft>
@@ -88,7 +90,7 @@ export function DetailPage<
                     </PageActionBarRight>
                 </PageActionBar>
                 <PageLayout>
-                    <PageBlock column="main">
+                    <PageBlock column="main" blockId="main-form">
                         <DetailFormGrid>
                             {updateFields.map(fieldInfo => {
                                 console.log(fieldInfo);

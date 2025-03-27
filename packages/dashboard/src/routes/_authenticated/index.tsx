@@ -1,13 +1,15 @@
 import { Button } from '@/components/ui/button.js';
-import { DashboardBaseWidgetProps } from '@/framework/dashboard-widget/base-widget.js';
-import { LatestOrdersWidget } from '@/framework/dashboard-widget/latest-orders-widget/index.js';
-import { MetricsWidget } from '@/framework/dashboard-widget/metrics-widget/index.js';
-import { OrdersSummaryWidget } from '@/framework/dashboard-widget/orders-summary/index.js';
 import { getDashboardWidget, getDashboardWidgetRegistry } from '@/framework/dashboard-widget/registry.js';
-import { DashboardWidgetInstance, WidgetDefinition } from '@/framework/dashboard-widget/types.js';
-import { Page, PageActionBar, PageActionBarRight, PageTitle } from '@/framework/layout-engine/page-layout.js';
+import { DashboardWidgetInstance } from '@/framework/dashboard-widget/types.js';
+import {
+    FullWidthPageBlock,
+    Page,
+    PageActionBar,
+    PageActionBarRight,
+    PageLayout,
+    PageTitle,
+} from '@/framework/layout-engine/page-layout.js';
 import { createFileRoute } from '@tanstack/react-router';
-import * as React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { Responsive as ResponsiveGridLayout, WidthProvider } from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
@@ -102,7 +104,6 @@ function DashboardPage() {
     }, []);
 
     const handleLayoutChange = (layout: ReactGridLayout.Layout[]) => {
-        console.log({ layout });
         setWidgets(prev =>
             prev.map((widget, i) => ({
                 ...widget,
@@ -114,7 +115,7 @@ function DashboardPage() {
     const ResponsiveReactGridLayout = useMemo(() => WidthProvider(ResponsiveGridLayout), []);
 
     return (
-        <Page className="min-h-dvh w-full">
+        <Page pageId="dashboard">
             <PageTitle>Dashboard</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>
@@ -128,28 +129,32 @@ function DashboardPage() {
                     </Button>
                 </PageActionBarRight>
             </PageActionBar>
-            <ResponsiveReactGridLayout
-                className="h-full w-full"
-                layouts={{ lg: widgets.map(w => ({ ...w.layout, i: w.id })) }}
-                onLayoutChange={handleLayoutChange}
-                cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-                rowHeight={100}
-                isDraggable={editMode}
-                isResizable={editMode}
-                autoSize={true}
-            >
-                {widgets.map(widget => {
-                    const definition = getDashboardWidget(widget.widgetId);
-                    if (!definition) return null;
-                    const WidgetComponent = definition.component;
+            <PageLayout>
+                <FullWidthPageBlock blockId="widgets">
+                    <ResponsiveReactGridLayout
+                        className="h-full w-full"
+                        layouts={{ lg: widgets.map(w => ({ ...w.layout, i: w.id })) }}
+                        onLayoutChange={handleLayoutChange}
+                        cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+                        rowHeight={100}
+                        isDraggable={editMode}
+                        isResizable={editMode}
+                        autoSize={true}
+                    >
+                        {widgets.map(widget => {
+                            const definition = getDashboardWidget(widget.widgetId);
+                            if (!definition) return null;
+                            const WidgetComponent = definition.component;
 
-                    return (
-                        <div key={widget.id}>
-                            <WidgetComponent id={widget.id} config={widget.config} />
-                        </div>
-                    );
-                })}
-            </ResponsiveReactGridLayout>
+                            return (
+                                <div key={widget.id}>
+                                    <WidgetComponent id={widget.id} config={widget.config} />
+                                </div>
+                            );
+                        })}
+                    </ResponsiveReactGridLayout>
+                </FullWidthPageBlock>
+            </PageLayout>
         </Page>
     );
 }

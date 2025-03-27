@@ -33,7 +33,6 @@ const getReviewList = graphql(`
 `);
 
 export const reviewList: DashboardRouteDefinition = {
-    id: 'review-list',
     navMenuItem: {
         sectionId: 'catalog',
         id: 'reviews',
@@ -46,6 +45,7 @@ export const reviewList: DashboardRouteDefinition = {
     }),
     component: route => (
         <ListPage
+            pageId="review-list"
             title="Product Reviews"
             listQuery={getReviewList}
             route={route}

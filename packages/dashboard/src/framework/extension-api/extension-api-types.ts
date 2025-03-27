@@ -7,7 +7,6 @@ import { PageContext } from '../layout-engine/page-layout.js';
 
 export interface DashboardRouteDefinition {
     component: (route: AnyRoute) => React.ReactNode;
-    id: string;
     path: string;
     navMenuItem?: Partial<NavMenuItem> & { sectionId: string };
     loader?: RouteOptions['loader'];

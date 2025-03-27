@@ -53,11 +53,11 @@ export function LocationWrapper({ children, blockId }: { children: React.ReactNo
                     onMouseLeave={() => setHoverId(parentId)}
                 >
                     <div
-                        className={`absolute top-0.5 right-0.5 transition-all delay-50 ${isHovered || isPopoverOpen ? 'visible' : 'invisible'}`}
+                        className={`absolute top-0.5 right-0.5 transition-all delay-50 z-10 ${isHovered || isPopoverOpen ? 'visible' : 'invisible'}`}
                     >
                         <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                             <PopoverTrigger asChild>
-                                <Button variant="ghost" size="icon">
+                                <Button variant="ghost" size="icon" className="rounded-lg">
                                     <CodeXmlIcon className="text-dev-mode w-5 h-5" />
                                 </Button>
                             </PopoverTrigger>

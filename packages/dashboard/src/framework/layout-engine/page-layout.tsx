@@ -19,10 +19,10 @@ export interface PageProps extends ComponentProps<'div'> {
 
 export const PageProvider = createContext<PageContext | undefined>(undefined);
 
-export function Page({ children, ...props }: PageProps) {
+export function Page({ children, pageId, entity, ...props }: PageProps) {
     const [form, setForm] = useState<UseFormReturn<any> | undefined>(undefined);
     return (
-        <PageProvider value={{ pageId: props.pageId ?? '', form, setForm, entity: props.entity }}>
+        <PageProvider value={{ pageId, form, setForm, entity }}>
             <LocationWrapper>
                 <div className={cn('m-4', props.className)} {...props}>
                     {children}
@@ -38,7 +38,11 @@ export type PageLayoutProps = {
 };
 
 function isPageBlock(child: unknown): child is React.ReactElement<PageBlockProps> {
-    return React.isValidElement(child) && 'column' in (child as React.ReactElement<PageBlockProps>).props;
+    const props = (child as React.ReactElement<PageBlockProps>).props;
+    const isReactElement = React.isValidElement(child);
+    const hasColumn = 'column' in props;
+    const hasBlockId = 'blockId' in props;
+    return isReactElement && (hasColumn || hasBlockId);
 }
 
 export function PageLayout({ children, className }: PageLayoutProps) {
@@ -91,6 +95,7 @@ export function PageLayout({ children, className }: PageLayoutProps) {
         }
     }
 
+    const fullWidthBlocks = finalChildArray.filter(child => isPageBlock(child) && child.type === FullWidthPageBlock);
     const mainBlocks = finalChildArray.filter(child => isPageBlock(child) && child.props.column === 'main');
     const sideBlocks = finalChildArray.filter(child => isPageBlock(child) && child.props.column === 'side');
 
@@ -98,6 +103,9 @@ export function PageLayout({ children, className }: PageLayoutProps) {
         <div className={cn('w-full space-y-4', className)}>
             {isDesktop ? (
                 <div className="hidden md:grid md:grid-cols-5 lg:grid-cols-4 md:gap-4">
+                    {fullWidthBlocks.length > 0 && (
+                        <div className="md:col-span-5 space-y-4">{fullWidthBlocks}</div>
+                    )}
                     <div className="md:col-span-3 space-y-4">{mainBlocks}</div>
                     <div className="md:col-span-2 lg:col-span-1 space-y-4">{sideBlocks}</div>
                 </div>
@@ -199,7 +207,6 @@ export type PageBlockProps = {
     title?: React.ReactNode | string;
     description?: React.ReactNode | string;
     className?: string;
-    borderless?: boolean;
 };
 
 export function PageBlock({ children, title, description, borderless, className, blockId }: PageBlockProps) {
@@ -216,6 +223,18 @@ export function PageBlock({ children, title, description, borderless, className,
                     {children}
                 </CardContent>
             </Card>
+        </LocationWrapper>
+    );
+}
+
+export function FullWidthPageBlock({
+    children,
+    className,
+    blockId,
+}: Pick<PageBlockProps, 'children' | 'className' | 'blockId'>) {
+    return (
+        <LocationWrapper blockId={blockId}>
+            <div className={cn('w-full', className)}>{children}</div>
         </LocationWrapper>
     );
 }

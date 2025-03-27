@@ -43,7 +43,6 @@ const updateReviewDocument = graphql(`
 `);
 
 export const reviewDetail: DashboardRouteDefinition = {
-    id: 'review-detail',
     path: '/reviews/$id',
     loader: detailPageRouteLoader({
         queryDocument: reviewDetailDocument,
@@ -55,6 +54,7 @@ export const reviewDetail: DashboardRouteDefinition = {
     component: route => {
         return (
             <DetailPage
+                pageId="review-detail"
                 queryDocument={reviewDetailDocument}
                 updateDocument={updateReviewDocument}
                 route={route}
