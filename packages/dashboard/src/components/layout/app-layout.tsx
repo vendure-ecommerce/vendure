@@ -1,12 +1,15 @@
 import { AppSidebar } from '@/components/layout/app-sidebar.js';
 import { GeneratedBreadcrumbs } from '@/components/layout/generated-breadcrumbs.js';
+import { Badge } from '@/components/ui/badge.js';
 import { Separator } from '@/components/ui/separator.js';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar.js';
+import { useUserSettings } from '@/hooks/use-user-settings.js';
+import { Trans } from '@lingui/react/macro';
 import { Outlet } from '@tanstack/react-router';
-import * as React from 'react';
 import { Alerts } from '../shared/alerts.js';
 
 export function AppLayout() {
+    const { settings } = useUserSettings();
     return (
         <SidebarProvider>
             <AppSidebar />
@@ -19,7 +22,10 @@ export function AppLayout() {
                                 <Separator orientation="vertical" className="mr-2 h-4" />
                                 <GeneratedBreadcrumbs />
                             </div>
-                            <Alerts />
+                            <div className="flex items-center justify-end gap-2">
+                                {settings.devMode && <Badge variant="destructive"><Trans>Dev Mode</Trans></Badge>}
+                                <Alerts />
+                            </div>
                         </div>
                     </header>
                     <Outlet />

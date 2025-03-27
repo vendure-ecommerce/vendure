@@ -18,6 +18,7 @@ export function CustomerListPage() {
     return (
         <ListPage
             title="Customers"
+            pageId="customer-list"
             listQuery={customerListDocument}
             deleteMutation={deleteCustomerDocument}
             onSearchTermChange={searchTerm => {

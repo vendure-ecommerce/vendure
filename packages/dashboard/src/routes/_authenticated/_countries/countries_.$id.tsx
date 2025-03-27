@@ -75,7 +75,7 @@ export function CountryDetailPage() {
     });
 
     return (
-        <Page>
+        <Page pageId="country-detail">
             <PageTitle>{creatingNewEntity ? <Trans>New country</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageDetailForm form={form} submitHandler={submitHandler}>
                 <PageActionBar>
@@ -91,7 +91,7 @@ export function CountryDetailPage() {
                     </PageActionBarRight>
                 </PageActionBar>
                 <PageLayout>
-                    <PageBlock column="side">
+                    <PageBlock column="side" blockId="enabled">
                         <FormFieldWrapper
                             control={form.control}
                             label={<Trans>Enabled</Trans>}
@@ -101,7 +101,7 @@ export function CountryDetailPage() {
                             )}
                         />
                     </PageBlock>
-                    <PageBlock column="main">
+                    <PageBlock column="main" blockId="main-form">
                         <DetailFormGrid>
                             <TranslatableFormFieldWrapper
                                 control={form.control}

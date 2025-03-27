@@ -97,7 +97,7 @@ export function ShippingMethodDetailPage() {
     });
 
     return (
-        <Page>
+        <Page pageId="shipping-method-detail">
             <PageTitle>
                 {creatingNewEntity ? <Trans>New shipping method</Trans> : (entity?.name ?? '')}
             </PageTitle>
@@ -115,7 +115,7 @@ export function ShippingMethodDetailPage() {
                     </PageActionBarRight>
                 </PageActionBar>
                 <PageLayout>
-                    <PageBlock column="main">
+                    <PageBlock column="main" blockId="main-form">
                         <DetailFormGrid>
                             <TranslatableFormFieldWrapper
                                 control={form.control}
@@ -151,7 +151,7 @@ export function ShippingMethodDetailPage() {
                         </DetailFormGrid>
                     </PageBlock>
                     <CustomFieldsPageBlock column="main" entityType="Promotion" control={form.control} />
-                    <PageBlock column="main" title={<Trans>Conditions</Trans>}>
+                    <PageBlock column="main" blockId="conditions" title={<Trans>Conditions</Trans>}>
                         <FormFieldWrapper
                             control={form.control}
                             name="checker"
@@ -163,7 +163,7 @@ export function ShippingMethodDetailPage() {
                             )}
                         />
                     </PageBlock>
-                    <PageBlock column="main" title={<Trans>Calculator</Trans>}>
+                    <PageBlock column="main" blockId="calculator" title={<Trans>Calculator</Trans>}>
                         <FormFieldWrapper
                             control={form.control}
                             name="calculator"

@@ -16,6 +16,7 @@ export const Route = createFileRoute('/_authenticated/_countries/countries')({
 function CountryListPage() {
     return (
         <ListPage
+            pageId="country-list"
             listQuery={countriesListQuery}
             deleteMutation={deleteCountryDocument}
             route={Route}

@@ -112,7 +112,7 @@ export function ProductVariantDetailPage() {
     const [price, taxCategoryId] = form.watch(['price', 'taxCategoryId']);
 
     return (
-        <Page>
+        <Page pageId="product-variant-detail">
             <PageTitle>
                 {creatingNewEntity ? <Trans>New product variant</Trans> : (entity?.name ?? '')}
             </PageTitle>
@@ -130,7 +130,7 @@ export function ProductVariantDetailPage() {
                     </PageActionBarRight>
                 </PageActionBar>
                 <PageLayout>
-                    <PageBlock column="side">
+                    <PageBlock column="side" blockId="enabled">
                         <FormFieldWrapper
                             control={form.control}
                             name="enabled"
@@ -141,7 +141,7 @@ export function ProductVariantDetailPage() {
                             )}
                         />
                     </PageBlock>
-                    <PageBlock column="main">
+                    <PageBlock column="main" blockId="main-form">
                         <DetailFormGrid>
                             <TranslatableFormFieldWrapper
                                 control={form.control}
@@ -160,7 +160,7 @@ export function ProductVariantDetailPage() {
                     </PageBlock>
                     <CustomFieldsPageBlock column="main" entityType="ProductVariant" control={form.control} />
 
-                    <PageBlock column="main" title={<Trans>Price and tax</Trans>}>
+                    <PageBlock column="main" blockId="price-and-tax" title={<Trans>Price and tax</Trans>}>
                         <div className="grid grid-cols-2 gap-4 items-start">
                             <FormFieldWrapper
                                 control={form.control}
@@ -189,7 +189,7 @@ export function ProductVariantDetailPage() {
                             </div>
                         </div>
                     </PageBlock>
-                    <PageBlock column="main" title={<Trans>Stock</Trans>}>
+                    <PageBlock column="main" blockId="stock" title={<Trans>Stock</Trans>}>
                         <DetailFormGrid>
                             {entity.stockLevels.map((stockLevel, index) => (
                                 <Fragment key={stockLevel.id}>
@@ -292,7 +292,7 @@ export function ProductVariantDetailPage() {
                         </DetailFormGrid>
                     </PageBlock>
 
-                    <PageBlock column="side">
+                    <PageBlock column="side" blockId="facet-values">
                         <FormFieldWrapper
                             control={form.control}
                             name="facetValueIds"
@@ -302,7 +302,7 @@ export function ProductVariantDetailPage() {
                             )}
                         />
                     </PageBlock>
-                    <PageBlock column="side">
+                    <PageBlock column="side" blockId="assets">
                         <FormItem>
                             <FormLabel>
                                 <Trans>Assets</Trans>

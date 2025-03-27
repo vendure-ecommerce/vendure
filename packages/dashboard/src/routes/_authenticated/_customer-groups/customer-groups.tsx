@@ -19,6 +19,7 @@ export const Route = createFileRoute('/_authenticated/_customer-groups/customer-
 function CustomerGroupListPage() {
     return (
         <ListPage
+            pageId="customer-group-list"
             title="Customer Groups"
             listQuery={customerGroupListDocument}
             deleteMutation={deleteCustomerGroupDocument}

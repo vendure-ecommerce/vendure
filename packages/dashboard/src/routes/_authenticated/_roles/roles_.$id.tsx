@@ -72,7 +72,7 @@ export function RoleDetailPage() {
     });
 
     return (
-        <Page>
+        <Page pageId="role-detail">
             <PageTitle>{creatingNewEntity ? <Trans>New role</Trans> : (entity?.description ?? '')}</PageTitle>
             <PageDetailForm form={form} submitHandler={submitHandler}>
                 <PageActionBar>
@@ -88,7 +88,7 @@ export function RoleDetailPage() {
                     </PageActionBarRight>
                 </PageActionBar>
                 <PageLayout>
-                    <PageBlock column="main">
+                    <PageBlock column="main" blockId="main-form">
                         <DetailFormGrid>
                             <FormFieldWrapper
                                 control={form.control}
@@ -104,7 +104,7 @@ export function RoleDetailPage() {
                             />
                         </DetailFormGrid>
                     </PageBlock>
-                    <PageBlock column="main">
+                    <PageBlock column="main" blockId="channels">
                         <div className="space-y-8">
                             <div className="md:grid md:grid-cols-2 gap-4">
                                 <FormFieldWrapper

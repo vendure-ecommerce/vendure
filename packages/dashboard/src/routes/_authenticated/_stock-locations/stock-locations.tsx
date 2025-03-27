@@ -15,6 +15,7 @@ export const Route = createFileRoute('/_authenticated/_stock-locations/stock-loc
 function StockLocationListPage() {
     return (
         <ListPage
+            pageId="stock-location-list"
             title="Stock Locations"
             listQuery={stockLocationListQuery}
             deleteMutation={deleteStockLocationDocument}

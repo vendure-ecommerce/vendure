@@ -79,7 +79,7 @@ export function TaxRateDetailPage() {
     });
 
     return (
-        <Page>
+        <Page pageId="tax-rate-detail">
             <PageTitle>{creatingNewEntity ? <Trans>New tax rate</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageDetailForm form={form} submitHandler={submitHandler}>
                 <PageActionBar>
@@ -95,7 +95,7 @@ export function TaxRateDetailPage() {
                     </PageActionBarRight>
                 </PageActionBar>
                 <PageLayout>
-                    <PageBlock column="side">
+                    <PageBlock column="side" blockId="enabled">
                         <FormFieldWrapper
                             control={form.control}
                             name="enabled"
@@ -105,7 +105,7 @@ export function TaxRateDetailPage() {
                             )}
                         />
                     </PageBlock>
-                    <PageBlock column="main">
+                    <PageBlock column="main" blockId="main-form">
                         <DetailFormGrid>
                             <FormFieldWrapper
                                 control={form.control}

@@ -73,7 +73,7 @@ export function ProfilePage() {
     });
 
     return (
-        <Page>
+        <Page pageId="profile">
             <PageTitle>
                 <Trans>Profile</Trans>
             </PageTitle>
@@ -89,7 +89,7 @@ export function ProfilePage() {
                     </PageActionBarRight>
                 </PageActionBar>
                 <PageLayout>
-                    <PageBlock column="main">
+                    <PageBlock column="main" blockId="main-form">
                         <DetailFormGrid>
                             <FormFieldWrapper
                                 control={form.control}

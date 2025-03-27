@@ -17,6 +17,7 @@ export const Route = createFileRoute('/_authenticated/_zones/zones')({
 function ZoneListPage() {
     return (
         <ListPage
+            pageId="zone-list"
             listQuery={zoneListQuery}
             deleteMutation={deleteZoneDocument}
             route={Route}

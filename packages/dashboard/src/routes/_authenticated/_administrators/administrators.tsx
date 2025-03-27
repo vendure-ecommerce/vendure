@@ -17,6 +17,7 @@ export const Route = createFileRoute('/_authenticated/_administrators/administra
 function AdministratorListPage() {
     return (
         <ListPage
+            pageId="administrator-list"
             title="Administrators"
             listQuery={administratorListDocument}
             deleteMutation={deleteAdministratorDocument}

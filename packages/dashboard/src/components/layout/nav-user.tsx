@@ -143,25 +143,24 @@ export function NavUser() {
                                 </DropdownMenuSub>
                             </DropdownMenuGroup>
                             {isDevMode && (
-                                <DropdownMenuItem
-                                    onClick={e => {
-                                        e.preventDefault();
-                                        setDevMode(!settings.devMode);
-                                    }}
-                                >
-                                    <div className="flex items-center gap-2">
-                                        <Trans>Dev Mode</Trans>
-                                        {settings.devMode ? (
-                                            <Badge variant="success">
-                                                <Trans>enabled</Trans>
-                                            </Badge>
-                                        ) : (
-                                            <Badge variant="outline">
-                                                <Trans>disabled</Trans>
-                                            </Badge>
-                                        )}
-                                    </div>
-                                </DropdownMenuItem>
+                                <DropdownMenuSub>
+                                    <DropdownMenuSubTrigger>Dev Mode</DropdownMenuSubTrigger>
+                                    <DropdownMenuPortal>
+                                        <DropdownMenuSubContent>
+                                            <DropdownMenuRadioGroup
+                                                value={settings.devMode.toString()}
+                                                onValueChange={value => setDevMode(value === 'true')}
+                                            >
+                                                <DropdownMenuRadioItem value="true">
+                                                    <Trans>Enabled</Trans>
+                                                </DropdownMenuRadioItem>
+                                                <DropdownMenuRadioItem value="false">
+                                                    <Trans>Disabled</Trans>
+                                                </DropdownMenuRadioItem>
+                                            </DropdownMenuRadioGroup>
+                                        </DropdownMenuSubContent>
+                                    </DropdownMenuPortal>
+                                </DropdownMenuSub>
                             )}
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={handleLogout}>

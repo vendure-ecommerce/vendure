@@ -17,6 +17,7 @@ export const Route = createFileRoute('/_authenticated/_payment-methods/payment-m
 function PaymentMethodListPage() {
     return (
         <ListPage
+            pageId="payment-method-list"
             listQuery={paymentMethodListQuery}
             deleteMutation={deletePaymentMethodDocument}
             route={Route}

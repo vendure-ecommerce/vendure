@@ -118,7 +118,7 @@ export function CollectionDetailPage() {
     const currentInheritFiltersValue = form.watch('inheritFilters');
 
     return (
-        <Page id="collection-detail">
+        <Page pageId="collection-detail">
             <PageTitle>{creatingNewEntity ? <Trans>New collection</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageDetailForm form={form} submitHandler={submitHandler}>
                 <PageActionBar>
@@ -134,7 +134,7 @@ export function CollectionDetailPage() {
                     </PageActionBarRight>
                 </PageActionBar>
                 <PageLayout>
-                    <PageBlock column="side">
+                    <PageBlock column="side" blockId="privacy">
                         <FormFieldWrapper
                             control={form.control}
                             name="isPrivate"
@@ -145,7 +145,7 @@ export function CollectionDetailPage() {
                             )}
                         />
                     </PageBlock>
-                    <PageBlock column="main">
+                    <PageBlock column="main" blockId="main-form">
                         <DetailFormGrid>
                             <TranslatableFormFieldWrapper
                                 control={form.control}
@@ -168,7 +168,7 @@ export function CollectionDetailPage() {
                         />
                     </PageBlock>
                     <CustomFieldsPageBlock column="main" entityType="Collection" control={form.control} />
-                    <PageBlock column="main" title={<Trans>Filters</Trans>}>
+                    <PageBlock column="main" blockId="filters" title={<Trans>Filters</Trans>}>
                         <FormFieldWrapper
                             control={form.control}
                             name="inheritFilters"
@@ -194,7 +194,7 @@ export function CollectionDetailPage() {
                             )}
                         />
                     </PageBlock>
-                    <PageBlock column="side">
+                    <PageBlock column="side" blockId="assets">
                         <FormItem>
                             <FormLabel>
                                 <Trans>Assets</Trans>
@@ -206,11 +206,11 @@ export function CollectionDetailPage() {
                                     compact={true}
                                     value={form.getValues()}
                                     onChange={value => {
-                                        form.setValue('featuredAssetId', value.featuredAssetId, {
+                                        form.setValue('featuredAssetId', value.featuredAssetId ?? undefined, {
                                             shouldDirty: true,
                                             shouldValidate: true,
                                         });
-                                        form.setValue('assetIds', value.assetIds, {
+                                        form.setValue('assetIds', value.assetIds ?? [], {
                                             shouldDirty: true,
                                             shouldValidate: true,
                                         });
@@ -221,7 +221,7 @@ export function CollectionDetailPage() {
                             <FormMessage />
                         </FormItem>
                     </PageBlock>
-                    <PageBlock column="main" title={<Trans>Facet values</Trans>}>
+                    <PageBlock column="main" blockId="contents" title={<Trans>Facet values</Trans>}>
                         {shouldPreviewContents || creatingNewEntity ? (
                             <CollectionContentsPreviewTable
                                 parentId={entity?.parent?.id}

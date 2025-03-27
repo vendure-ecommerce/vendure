@@ -83,7 +83,7 @@ export function GlobalSettingsPage() {
     });
 
     return (
-        <Page>
+        <Page pageId="global-settings">
             <PageTitle>
                 <Trans>Global settings</Trans>
             </PageTitle>
@@ -101,7 +101,7 @@ export function GlobalSettingsPage() {
                     </PageActionBarRight>
                 </PageActionBar>
                 <PageLayout>
-                    <PageBlock column="main">
+                    <PageBlock column="main" blockId="main-form">
                         <DetailFormGrid>
                             <FormFieldWrapper
                                 control={form.control}

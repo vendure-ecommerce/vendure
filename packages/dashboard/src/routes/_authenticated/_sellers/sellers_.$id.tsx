@@ -77,7 +77,7 @@ export function SellerDetailPage() {
     });
 
     return (
-        <Page>
+        <Page pageId="seller-detail">
             <PageTitle>
                 {creatingNewEntity ? <Trans>New seller</Trans> : (entity?.name ?? '')}
             </PageTitle>
@@ -95,7 +95,7 @@ export function SellerDetailPage() {
                         </PermissionGuard>
                     </PageActionBar>
                     <PageLayout>
-                        <PageBlock column="main">
+                        <PageBlock column="main" blockId="main-form">
                             <div className="md:flex w-full gap-4">
                                 <div className="w-1/2">
                                     <FormField

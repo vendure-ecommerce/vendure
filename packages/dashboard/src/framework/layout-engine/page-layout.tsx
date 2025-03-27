@@ -48,19 +48,21 @@ export function PageLayout({ children, className }: PageLayoutProps) {
     const childArray: React.ReactElement<PageBlockProps>[] = [];
     const extensionBlocks = getDashboardPageBlocks(page.pageId ?? '');
     React.Children.forEach(children, child => {
-        let childBlock: React.ReactElement<PageBlockProps> | undefined;
         if (isPageBlock(child)) {
-            childBlock = child;
+            childArray.push(child);
         }
         // check for a React Fragment
         if (React.isValidElement(child) && child.type === React.Fragment) {
             React.Children.forEach((child as React.ReactElement<PageBlockProps>).props.children, child => {
                 if (isPageBlock(child)) {
-                    childBlock = child;
+                    childArray.push(child);
                 }
             });
         }
+    });
 
+    const finalChildArray: React.ReactElement<PageBlockProps>[] = [];
+    for (const childBlock of childArray) {
         if (childBlock) {
             const blockId =
                 childBlock.props.blockId ??
@@ -77,19 +79,20 @@ export function PageLayout({ children, className }: PageLayoutProps) {
                     </PageBlock>
                 );
                 if (extensionBlock.location.position.order === 'before') {
-                    childArray.push(ExtensionBlock, childBlock);
+                    finalChildArray.push(ExtensionBlock, childBlock);
                 } else if (extensionBlock.location.position.order === 'after') {
-                    childArray.push(childBlock, ExtensionBlock);
+                    finalChildArray.push(childBlock, ExtensionBlock);
                 } else if (extensionBlock.location.position.order === 'replace') {
-                    childArray.push(ExtensionBlock);
+                    finalChildArray.push(ExtensionBlock);
                 }
             } else {
-                childArray.push(childBlock);
+                finalChildArray.push(childBlock);
             }
         }
-    });
-    const mainBlocks = childArray.filter(child => isPageBlock(child) && child.props.column === 'main');
-    const sideBlocks = childArray.filter(child => isPageBlock(child) && child.props.column === 'side');
+    }
+
+    const mainBlocks = finalChildArray.filter(child => isPageBlock(child) && child.props.column === 'main');
+    const sideBlocks = finalChildArray.filter(child => isPageBlock(child) && child.props.column === 'side');
 
     return (
         <div className={cn('w-full space-y-4', className)}>

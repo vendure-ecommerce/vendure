@@ -19,6 +19,7 @@ export const Route = createFileRoute('/_authenticated/_facets/facets')({
 export function FacetListPage() {
     return (
         <ListPage
+            pageId="facet-list"
             title="Facets"
             listQuery={facetListDocument}
             deleteMutation={deleteFacetDocument}

@@ -105,7 +105,7 @@ export function ChannelDetailPage() {
     const codeIsDefault = entity?.code === DEFAULT_CHANNEL_CODE;
 
     return (
-        <Page>
+        <Page pageId="channel-detail">
             <PageTitle>
                 {creatingNewEntity ? (
                     <Trans>New channel</Trans>
@@ -127,7 +127,7 @@ export function ChannelDetailPage() {
                     </PageActionBarRight>
                 </PageActionBar>
                 <PageLayout>
-                    <PageBlock column="main">
+                    <PageBlock column="main" blockId="main-form">
                         <DetailFormGrid>
                             <FormFieldWrapper
                                 control={form.control}
@@ -183,7 +183,7 @@ export function ChannelDetailPage() {
                             />
                         </DetailFormGrid>
                     </PageBlock>
-                    <PageBlock column="main" title={<Trans>Channel defaults</Trans>}>
+                    <PageBlock column="main" blockId="channel-defaults" title={<Trans>Channel defaults</Trans>}>
                         <DetailFormGrid>
                             <FormFieldWrapper
                                 control={form.control}

@@ -70,7 +70,7 @@ export function ZoneDetailPage() {
     });
 
     return (
-        <Page>
+        <Page pageId="zone-detail">
             <PageTitle>{creatingNewEntity ? <Trans>New zone</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageDetailForm form={form} submitHandler={submitHandler}>
                 <PageActionBar>
@@ -86,7 +86,7 @@ export function ZoneDetailPage() {
                     </PageActionBarRight>
                 </PageActionBar>
                 <PageLayout>
-                    <PageBlock column="main">
+                    <PageBlock column="main" blockId="main-form">
                         <DetailFormGrid>
                             <FormFieldWrapper
                                 control={form.control}
@@ -97,9 +97,9 @@ export function ZoneDetailPage() {
                         </DetailFormGrid>
                     </PageBlock>
                     <CustomFieldsPageBlock column="main" entityType="Zone" control={form.control} />
-                    {!creatingNewEntity && (
-                        <PageBlock column="main" title={<Trans>Countries</Trans>}>
-                            <ZoneCountriesTable zoneId={entity?.id} canAddCountries={true} />
+                    {entity && (
+                        <PageBlock column="main" blockId="countries" title={<Trans>Countries</Trans>}>
+                            <ZoneCountriesTable zoneId={entity.id} canAddCountries={true} />
                         </PageBlock>
                     )}
                 </PageLayout>

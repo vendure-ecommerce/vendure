@@ -73,7 +73,7 @@ export function TaxCategoryDetailPage() {
     });
 
     return (
-        <Page>
+        <Page pageId="tax-category-detail">
             <PageTitle>
                 {creatingNewEntity ? <Trans>New tax category</Trans> : (entity?.name ?? '')}
             </PageTitle>
@@ -91,7 +91,7 @@ export function TaxCategoryDetailPage() {
                     </PageActionBarRight>
                 </PageActionBar>
                 <PageLayout>
-                    <PageBlock column="main">
+                    <PageBlock column="main" blockId="main-form">
                         <DetailFormGrid>
                             <FormFieldWrapper
                                 control={form.control}

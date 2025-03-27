@@ -73,7 +73,7 @@ export function CustomerGroupDetailPage() {
     });
 
     return (
-        <Page>
+        <Page pageId="customer-group-detail">
             <PageTitle>
                 {creatingNewEntity ? <Trans>New customer group</Trans> : (entity?.name ?? '')}
             </PageTitle>
@@ -91,7 +91,7 @@ export function CustomerGroupDetailPage() {
                     </PageActionBarRight>
                 </PageActionBar>
                 <PageLayout>
-                    <PageBlock column="main">
+                    <PageBlock column="main" blockId="main-form">
                         <DetailFormGrid>
                             <FormFieldWrapper
                                 control={form.control}
@@ -103,7 +103,7 @@ export function CustomerGroupDetailPage() {
                     </PageBlock>
                     <CustomFieldsPageBlock column="main" entityType="CustomerGroup" control={form.control} />
                     {entity && (
-                        <PageBlock column="main" title={<Trans>Customers</Trans>}>
+                        <PageBlock column="main" blockId="customers" title={<Trans>Customers</Trans>}>
                             <CustomerGroupMembersTable customerGroupId={entity?.id} />
                         </PageBlock>
                     )}

@@ -9,7 +9,7 @@ export const Route = createFileRoute('/_authenticated/_assets/assets')({
 
 function RouteComponent() {
     return (
-        <Page>
+        <Page pageId="asset-list">
             <PageTitle>
                 <Trans>Assets</Trans>
             </PageTitle>

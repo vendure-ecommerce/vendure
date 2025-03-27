@@ -75,7 +75,7 @@ export function StockLocationDetailPage() {
     });
 
     return (
-        <Page>
+        <Page pageId="stock-location-detail">
             <PageTitle>
                 {creatingNewEntity ? <Trans>New stock location</Trans> : (entity?.name ?? '')}
             </PageTitle>
@@ -93,7 +93,7 @@ export function StockLocationDetailPage() {
                     </PageActionBarRight>
                 </PageActionBar>
                 <PageLayout>
-                    <PageBlock column="main">
+                    <PageBlock column="main" blockId="main-form">
                         <DetailFormGrid>
                             <FormFieldWrapper
                                 control={form.control}

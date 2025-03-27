@@ -109,7 +109,7 @@ export function PromotionDetailPage() {
     });
 
     return (
-        <Page>
+        <Page pageId="promotion-detail">
             <PageTitle>{creatingNewEntity ? <Trans>New promotion</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageDetailForm form={form} submitHandler={submitHandler}>
                 <PageActionBar>
@@ -125,7 +125,7 @@ export function PromotionDetailPage() {
                     </PageActionBarRight>
                 </PageActionBar>
                 <PageLayout>
-                    <PageBlock column="side">
+                    <PageBlock column="side" blockId="enabled">
                         <FormFieldWrapper
                             control={form.control}
                             name="enabled"
@@ -136,7 +136,7 @@ export function PromotionDetailPage() {
                             )}
                         />
                     </PageBlock>
-                    <PageBlock column="main">
+                    <PageBlock column="main" blockId="main-form">
                         <DetailFormGrid>
                             <TranslatableFormFieldWrapper
                                 control={form.control}
@@ -210,7 +210,7 @@ export function PromotionDetailPage() {
                         </DetailFormGrid>
                     </PageBlock>
                     <CustomFieldsPageBlock column="main" entityType="Promotion" control={form.control} />
-                    <PageBlock column="main" title={<Trans>Conditions</Trans>}>
+                    <PageBlock column="main" blockId="conditions" title={<Trans>Conditions</Trans>}>
                         <FormFieldWrapper
                             control={form.control}
                             name="conditions"
@@ -222,7 +222,7 @@ export function PromotionDetailPage() {
                             )}
                         />
                     </PageBlock>
-                    <PageBlock column="main" title={<Trans>Actions</Trans>}>
+                    <PageBlock column="main" blockId="actions" title={<Trans>Actions</Trans>}>
                         <FormFieldWrapper
                             control={form.control}
                             name="actions"

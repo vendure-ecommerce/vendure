@@ -17,6 +17,7 @@ export const Route = createFileRoute('/_authenticated/_promotions/promotions')({
 function PromotionListPage() {  
     return (
         <ListPage
+            pageId="promotion-list"
             listQuery={promotionListDocument}
             deleteMutation={deletePromotionDocument}
             route={Route}

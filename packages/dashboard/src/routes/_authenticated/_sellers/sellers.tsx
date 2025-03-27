@@ -16,6 +16,7 @@ export const Route = createFileRoute('/_authenticated/_sellers/sellers')({
 function SellerListPage() {
     return (
         <ListPage
+            pageId="seller-list"
             listQuery={sellerListQuery}
             deleteMutation={deleteSellerDocument}
             route={Route}

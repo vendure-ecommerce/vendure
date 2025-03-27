@@ -17,6 +17,7 @@ export const Route = createFileRoute('/_authenticated/_shipping-methods/shipping
 function ShippingMethodListPage() {
     return (
         <ListPage
+            pageId="shipping-method-list"
             listQuery={shippingMethodListQuery}
             deleteMutation={deleteShippingMethodDocument}
             route={Route}

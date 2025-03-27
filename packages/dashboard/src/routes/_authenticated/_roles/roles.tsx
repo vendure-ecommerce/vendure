@@ -22,6 +22,7 @@ const SYSTEM_ROLES = [SUPER_ADMIN_ROLE_CODE, CUSTOMER_ROLE_CODE];
 function RoleListPage() {
     return (
         <ListPage
+            pageId="role-list"
             title="Roles"
             listQuery={roleListQuery}
             deleteMutation={deleteRoleDocument}

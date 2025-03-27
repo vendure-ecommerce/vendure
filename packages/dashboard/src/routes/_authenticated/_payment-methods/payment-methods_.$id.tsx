@@ -99,7 +99,7 @@ export function PaymentMethodDetailPage() {
     });
 
     return (
-        <Page>
+        <Page pageId="payment-method-detail">
             <PageTitle>
                 {creatingNewEntity ? <Trans>New payment method</Trans> : (entity?.name ?? '')}
             </PageTitle>
@@ -117,7 +117,7 @@ export function PaymentMethodDetailPage() {
                     </PageActionBarRight>
                 </PageActionBar>
                 <PageLayout>
-                    <PageBlock column="side">
+                    <PageBlock column="side" blockId="enabled">
                         <FormFieldWrapper
                                 control={form.control}
                                 name="enabled"
@@ -125,7 +125,7 @@ export function PaymentMethodDetailPage() {
                                 render={({ field }) => <Switch checked={field.value ?? false} onCheckedChange={field.onChange} />}
                             />
                         </PageBlock>
-                        <PageBlock column="main">
+                        <PageBlock column="main" blockId="main-form">
                             <DetailFormGrid>
                                 <TranslatableFormFieldWrapper
                                     control={form.control}
@@ -148,7 +148,7 @@ export function PaymentMethodDetailPage() {
                             />
                         </PageBlock>
                         <CustomFieldsPageBlock column="main" entityType="PaymentMethod" control={form.control} />
-                        <PageBlock column="main" title={<Trans>Payment eligibility checker</Trans>}>
+                        <PageBlock column="main" blockId="payment-eligibility-checker" title={<Trans>Payment eligibility checker</Trans>}>
                             <FormFieldWrapper
                                 control={form.control}
                                 name="checker"
@@ -160,7 +160,7 @@ export function PaymentMethodDetailPage() {
                                 )}
                             />
                         </PageBlock>
-                        <PageBlock column="main" title={<Trans>Calculator</Trans>}>
+                        <PageBlock column="main" blockId="payment-handler" title={<Trans>Calculator</Trans>}>
                             <FormFieldWrapper
                                 control={form.control}
                                 name="handler"

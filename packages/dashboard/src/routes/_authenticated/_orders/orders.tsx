@@ -15,6 +15,7 @@ export const Route = createFileRoute('/_authenticated/_orders/orders')({
 export function OrderListPage() {
     return (
         <ListPage
+            pageId="order-list"
             title="Orders"
             onSearchTermChange={searchTerm => {
                 return {

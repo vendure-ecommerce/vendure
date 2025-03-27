@@ -17,6 +17,7 @@ export const Route = createFileRoute('/_authenticated/_channels/channels')({
 function ChannelListPage() {
     return (
         <ListPage
+            pageId="channel-list"
             title="Channels"
             listQuery={channelListQuery}
             deleteMutation={deleteChannelDocument}

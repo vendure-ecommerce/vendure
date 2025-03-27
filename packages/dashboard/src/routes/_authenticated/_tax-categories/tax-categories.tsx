@@ -17,6 +17,7 @@ export const Route = createFileRoute('/_authenticated/_tax-categories/tax-catego
 function TaxCategoryListPage() {
     return (
         <ListPage
+            pageId="tax-category-list"
             listQuery={taxCategoryListQuery}
             deleteMutation={deleteTaxCategoryDocument}
             route={Route}

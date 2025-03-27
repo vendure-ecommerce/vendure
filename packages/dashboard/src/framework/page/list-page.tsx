@@ -31,6 +31,7 @@ export interface ListPageProps<
     V extends ListQueryOptionsShape,
     AC extends AdditionalColumns<T>,
 > extends PageProps {
+    pageId?: string;
     route: AnyRoute | (() => AnyRoute);
     title: string | React.ReactElement;
     listQuery: T;
@@ -53,6 +54,7 @@ export function ListPage<
     V extends ListQueryOptionsShape = ListQueryOptionsShape,
     AC extends AdditionalColumns<T> = AdditionalColumns<T>,
 >({
+    pageId,
     title,
     listQuery,
     deleteMutation,
@@ -114,7 +116,7 @@ export function ListPage<
     const listQueryWithCustomFields = addCustomFields(listQuery);
 
     return (
-        <Page>
+        <Page pageId={pageId}>
             <PageTitle>{title}</PageTitle>
             <PageActionBar>{children}</PageActionBar>
             <PaginatedListDataTable

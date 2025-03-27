@@ -16,6 +16,7 @@ export function ProductListPage() {
     const { formatCurrencyName } = useLocalFormat();
     return (
         <ListPage
+            pageId="product-variant-list"
             title={<Trans>Product Variants</Trans>}
             listQuery={productVariantListDocument}
             deleteMutation={deleteProductVariantDocument}

@@ -26,7 +26,7 @@ export const collectionContentsDocument = graphql(`
 
 
 export interface CollectionContentsTableProps {
-    collectionId: string;
+    collectionId?: string;
 }
 
 export function CollectionContentsTable({ collectionId }: CollectionContentsTableProps) {

@@ -51,6 +51,7 @@ const STATES = [
 export function JobQueuePage() {
     return (
         <ListPage
+            pageId="job-queue-list"
             title="Job Queue"
             listQuery={jobListDocument}
             route={Route}

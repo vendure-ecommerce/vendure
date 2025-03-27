@@ -139,7 +139,7 @@ export function CustomerDetailPage() {
     console.log(entity);
 
     return (
-        <Page>
+        <Page pageId="customer-detail">
             <PageTitle>{creatingNewEntity ? <Trans>New customer</Trans> : customerName}</PageTitle>
             <PageDetailForm form={form} submitHandler={submitHandler}>
                 <PageActionBar>
@@ -155,7 +155,7 @@ export function CustomerDetailPage() {
                     </PageActionBarRight>
                 </PageActionBar>
                 <PageLayout>
-                    <PageBlock column="main">
+                    <PageBlock column="main" blockId="main-form">
                         <DetailFormGrid>
                             <FormFieldWrapper
                                 control={form.control}
@@ -194,7 +194,7 @@ export function CustomerDetailPage() {
 
                     {entity && (
                         <>
-                            <PageBlock column="main" title={<Trans>Addresses</Trans>}>
+                            <PageBlock column="main" blockId="addresses" title={<Trans>Addresses</Trans>}>
                                 <DetailFormGrid>
                                     {entity?.addresses?.map(address => (
                                         <CustomerAddressCard
@@ -240,16 +240,16 @@ export function CustomerDetailPage() {
                                 </Dialog>
                             </PageBlock>
 
-                            <PageBlock column="main" title={<Trans>Orders</Trans>}>
+                            <PageBlock column="main" blockId="orders" title={<Trans>Orders</Trans>}>
                                 <CustomerOrderTable customerId={entity.id} />
                             </PageBlock>
-                            <PageBlock column="main" title={<Trans>Customer history</Trans>}>
+                            <PageBlock column="main" blockId="history" title={<Trans>Customer history</Trans>}>
                                 <CustomerHistoryContainer customerId={entity.id} />
                             </PageBlock>
-                            <PageBlock column="side" title={<Trans>Status</Trans>}>
+                            <PageBlock column="side" blockId="status" title={<Trans>Status</Trans>}>
                                 <CustomerStatusBadge user={entity.user} />
                             </PageBlock>
-                            <PageBlock column="side" title={<Trans>Customer groups</Trans>}>
+                            <PageBlock column="side" blockId="groups" title={<Trans>Customer groups</Trans>}>
                                 <div
                                     className={`flex flex-col gap-2 ${entity?.groups?.length > 0 ? 'mb-2' : ''}`}
                                 >

@@ -65,7 +65,7 @@ export function FacetDetailPage() {
     }
 
     return (
-        <Page>
+        <Page pageId="order-detail">
             <PageTitle>{entity?.code ?? ''}</PageTitle>
             <PageDetailForm form={form} submitHandler={submitHandler}>
                 <PageActionBar>
@@ -81,20 +81,20 @@ export function FacetDetailPage() {
                     </PageActionBarRight>
                 </PageActionBar>
                 <PageLayout>
-                    <PageBlock column="main">
+                    <PageBlock column="main" blockId="order-table">
                         <OrderTable order={entity} />
                     </PageBlock>
-                    <PageBlock column="main" title={<Trans>Tax summary</Trans>}>
+                    <PageBlock column="main" blockId="tax-summary" title={<Trans>Tax summary</Trans>}>
                         <OrderTaxSummary order={entity} />
                     </PageBlock>
                     <CustomFieldsPageBlock column="main" entityType="Order" control={form.control} />
-                    <PageBlock column="main" title={<Trans>Order history</Trans>}>
+                    <PageBlock column="main" blockId="order-history" title={<Trans>Order history</Trans>}>
                         <OrderHistoryContainer orderId={entity.id} />
                     </PageBlock>
-                    <PageBlock column="side" title={<Trans>State</Trans>}>
+                    <PageBlock column="side" blockId="state" title={<Trans>State</Trans>}>
                         <Badge variant="outline">{entity?.state}</Badge>
                     </PageBlock>
-                    <PageBlock column="side" title={<Trans>Customer</Trans>}>
+                    <PageBlock column="side" blockId="customer" title={<Trans>Customer</Trans>}>
                         <Button variant="ghost" asChild>
                             <Link to={`/customers/${entity?.customer?.id}`}>
                                 <User className="w-4 h-4" />
@@ -120,7 +120,7 @@ export function FacetDetailPage() {
                             )}
                         </div>
                     </PageBlock>
-                    <PageBlock column="side" title={<Trans>Payment details</Trans>}>
+                    <PageBlock column="side" blockId="payment-details" title={<Trans>Payment details</Trans>}>
                         {entity?.payments?.map(payment => (
                             <PaymentDetails
                                 key={payment.id}

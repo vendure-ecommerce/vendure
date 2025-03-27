@@ -17,6 +17,7 @@ export const Route = createFileRoute('/_authenticated/_collections/collections')
 export function CollectionListPage() {
     return (
         <ListPage
+            pageId="collection-list"
             title="Collections"
             listQuery={collectionListDocument}
             deleteMutation={deleteCollectionDocument}

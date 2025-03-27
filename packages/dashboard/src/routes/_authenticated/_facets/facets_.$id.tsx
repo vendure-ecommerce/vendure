@@ -88,7 +88,7 @@ export function FacetDetailPage() {
     });
 
     return (
-        <Page>
+        <Page pageId="facet-detail">
             <PageTitle>{creatingNewEntity ? <Trans>New facet</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageDetailForm form={form} submitHandler={submitHandler}>
                 <PageActionBar>
@@ -104,7 +104,7 @@ export function FacetDetailPage() {
                     </PageActionBarRight>
                 </PageActionBar>
                 <PageLayout>
-                    <PageBlock column="side">
+                    <PageBlock column="side" blockId="privacy">
                         <FormFieldWrapper
                             control={form.control}
                             name="isPrivate"
@@ -115,7 +115,7 @@ export function FacetDetailPage() {
                             )}
                         />
                     </PageBlock>
-                    <PageBlock column="main">
+                    <PageBlock column="main" blockId="main-form">
                         <DetailFormGrid>
                             <TranslatableFormFieldWrapper
                                 control={form.control}
@@ -132,8 +132,8 @@ export function FacetDetailPage() {
                         </DetailFormGrid>
                     </PageBlock>
                     <CustomFieldsPageBlock column="main" entityType="Facet" control={form.control} />
-                    {!creatingNewEntity && (
-                        <PageBlock column="main" title={<Trans>Facet values</Trans>}>
+                    {entity && (
+                        <PageBlock column="main" blockId="facet-values" title={<Trans>Facet values</Trans>}>
                             <FacetValuesTable facetId={entity?.id} />
                         </PageBlock>
                     )}
