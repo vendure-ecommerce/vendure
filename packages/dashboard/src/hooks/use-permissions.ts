@@ -8,6 +8,9 @@ export function usePermissions() {
     const { settings } = useUserSettings();
 
     function hasPermissions(permissions: string[]) {
+        if (permissions.length === 0) {
+            return true;
+        }
         const activeChannel = (channels ?? []).find(channel => channel.id === settings.activeChannelId);
         if (!activeChannel) {
             return false;

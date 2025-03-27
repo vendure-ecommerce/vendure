@@ -3,6 +3,8 @@ import { DashboardExtension } from '@/framework/extension-api/extension-api-type
 import { addNavMenuItem, NavMenuItem } from '@/framework/nav-menu/nav-menu.js';
 import { registerRoute } from '@/framework/page/page-api.js';
 
+import { registerDashboardActionBarItem, registerDashboardPageBlock } from '../layout-engine/register.js';
+
 const extensionSourceChangeCallbacks = new Set<() => void>();
 
 export function onExtensionSourceChange(callback: () => void) {
@@ -25,6 +27,16 @@ export function defineDashboardExtension(extension: DashboardExtension) {
                 // Configure a list page
                 registerRoute(route);
             }
+        }
+    }
+    if (extension.actionBarItems) {
+        for (const item of extension.actionBarItems) {
+            registerDashboardActionBarItem(item);
+        }
+    }
+    if (extension.pageBlocks) {
+        for (const block of extension.pageBlocks) {
+            registerDashboardPageBlock(block);
         }
     }
     if (extension.widgets) {

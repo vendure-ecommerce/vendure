@@ -20,7 +20,6 @@ export const Route = createFileRoute('/login')({
 
 export default function LoginPage() {
     const auth = useAuth();
-    console.log('login page', auth);
     const isLoading = useRouterState({ select: s => s.isLoading });
     const navigate = Route.useNavigate();
     const search = Route.useSearch();

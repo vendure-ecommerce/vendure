@@ -118,7 +118,7 @@ export function CollectionDetailPage() {
     const currentInheritFiltersValue = form.watch('inheritFilters');
 
     return (
-        <Page>
+        <Page id="collection-detail">
             <PageTitle>{creatingNewEntity ? <Trans>New collection</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageDetailForm form={form} submitHandler={submitHandler}>
                 <PageActionBar>

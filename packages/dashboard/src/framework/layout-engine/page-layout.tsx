@@ -1,21 +1,34 @@
 import { CustomFieldsForm } from '@/components/shared/custom-fields-form.js';
+import { Button } from '@/components/ui/button.js';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.js';
 import { Form } from '@/components/ui/form.js';
 import { useCustomFieldConfig } from '@/hooks/use-custom-field-config.js';
+import { usePage } from '@/hooks/use-page.js';
 import { cn } from '@/lib/utils.js';
-import React, { ComponentProps, PropsWithChildren } from 'react';
-import { Control, UseFormReturn } from 'react-hook-form';
 import { useMediaQuery } from '@uidotdev/usehooks';
+import React, { ComponentProps, createContext, PropsWithChildren, useState } from 'react';
+import { Control, UseFormReturn } from 'react-hook-form';
+import { DashboardActionBarItem } from '../extension-api/extension-api-types.js';
+import { getDashboardActionBarItems, getDashboardPageBlocks } from './register.js';
+import { PermissionGuard } from '@/components/shared/permission-guard.js';
 
-export type PageBlockProps = {
-    children: React.ReactNode;
-    /** Which column this block should appear in */
-    column: 'main' | 'side';
-    title?: React.ReactNode | string;
-    description?: React.ReactNode | string;
-    className?: string;
-    borderless?: boolean;
-};
+export interface PageProps extends ComponentProps<'div'> {
+    pageId?: string;
+    entity?: any;
+}
+
+export const PageProvider = createContext<PageContext | undefined>(undefined);
+
+export function Page({ children, ...props }: PageProps) {
+    const [form, setForm] = useState<UseFormReturn<any> | undefined>(undefined);
+    return (
+        <PageProvider value={{ pageId: props.pageId ?? '', form, setForm, entity: props.entity }}>
+            <div className={cn('m-4', props.className)} {...props}>
+                {children}
+            </div>
+        </PageProvider>
+    );
+}
 
 export type PageLayoutProps = {
     children: React.ReactNode;
@@ -27,20 +40,50 @@ function isPageBlock(child: unknown): child is React.ReactElement<PageBlockProps
 }
 
 export function PageLayout({ children, className }: PageLayoutProps) {
+    const page = usePage();
     const isDesktop = useMediaQuery('only screen and (min-width : 769px)');
     // Separate blocks into categories
     const childArray: React.ReactElement<PageBlockProps>[] = [];
+    const extensionBlocks = getDashboardPageBlocks(page.pageId ?? '');
     React.Children.forEach(children, child => {
+        let childBlock: React.ReactElement<PageBlockProps> | undefined;
         if (isPageBlock(child)) {
-            childArray.push(child);
+            childBlock = child;
         }
         // check for a React Fragment
         if (React.isValidElement(child) && child.type === React.Fragment) {
             React.Children.forEach((child as React.ReactElement<PageBlockProps>).props.children, child => {
                 if (isPageBlock(child)) {
-                    childArray.push(child);
+                    childBlock = child;
                 }
             });
+        }
+
+        if (childBlock) {
+            const blockId =
+                childBlock.props.blockId ??
+                (childBlock.type === CustomFieldsPageBlock ? 'custom-fields' : undefined);
+            const extensionBlock = extensionBlocks.find(block => block.location.position.blockId === blockId);
+            if (extensionBlock) {
+                const ExtensionBlock = (
+                    <PageBlock
+                        column={extensionBlock.location.column}
+                        blockId={extensionBlock.id}
+                        title={extensionBlock.title}
+                    >
+                        {<extensionBlock.component context={page} />}
+                    </PageBlock>
+                );
+                if (extensionBlock.location.position.order === 'before') {
+                    childArray.push(ExtensionBlock, childBlock);
+                } else if (extensionBlock.location.position.order === 'after') {
+                    childArray.push(childBlock, ExtensionBlock);
+                } else if (extensionBlock.location.position.order === 'replace') {
+                    childArray.push(ExtensionBlock);
+                }
+            } else {
+                childArray.push(childBlock);
+            }
         }
     });
     const mainBlocks = childArray.filter(child => isPageBlock(child) && child.props.column === 'main');
@@ -69,6 +112,10 @@ export function PageDetailForm({
     form: UseFormReturn<any>;
     submitHandler: any;
 }) {
+    const page = usePage();
+    if (!page.form && form) {
+        page.setForm(form);
+    }
     return (
         <Form {...form}>
             <form onSubmit={submitHandler} className="space-y-8">
@@ -82,12 +129,11 @@ export function DetailFormGrid({ children }: { children: React.ReactNode }) {
     return <div className="md:grid md:grid-cols-2 gap-4 items-start mb-4">{children}</div>;
 }
 
-export function Page({ children, ...props }: PropsWithChildren<ComponentProps<'div'>>) {
-    return (
-        <div className={cn('m-4', props.className)} {...props}>
-            {children}
-        </div>
-    );
+export interface PageContext {
+    pageId?: string;
+    entity?: any;
+    form?: UseFormReturn<any>;
+    setForm: (form: UseFormReturn<any>) => void;
 }
 
 export function PageTitle({ children }: { children: React.ReactNode }) {
@@ -120,12 +166,40 @@ export function PageActionBarLeft({ children }: { children: React.ReactNode }) {
 }
 
 export function PageActionBarRight({ children }: { children: React.ReactNode }) {
-    return <div className="flex justify-end gap-2">{children}</div>;
+    const page = usePage();
+    const actionBarItems = page.pageId ? getDashboardActionBarItems(page.pageId) : [];
+    return (
+        <div className="flex justify-end gap-2">
+            {actionBarItems.map((item, index) => (
+                <PageActionBarItem key={index} item={item} page={page} />
+            ))}
+            {children}
+        </div>
+    );
 }
 
-export function PageBlock({ children, title, description, borderless }: PageBlockProps) {
+function PageActionBarItem({ item, page }: { item: DashboardActionBarItem; page: PageContext }) {
     return (
-        <Card className={cn('w-full')}>
+        <PermissionGuard requires={item.requiresPermission ?? []}>
+            <item.component context={page} />
+        </PermissionGuard>
+    );
+}
+
+export type PageBlockProps = {
+    children?: React.ReactNode;
+    /** Which column this block should appear in */
+    column: 'main' | 'side';
+    blockId?: string;
+    title?: React.ReactNode | string;
+    description?: React.ReactNode | string;
+    className?: string;
+    borderless?: boolean;
+};
+
+export function PageBlock({ children, title, description, borderless, className, blockId }: PageBlockProps) {
+    return (
+        <Card className={cn('w-full', className)}>
             {title || description ? (
                 <CardHeader>
                     {title && <CardTitle>{title}</CardTitle>}
@@ -151,7 +225,7 @@ export function CustomFieldsPageBlock({
         return null;
     }
     return (
-        <PageBlock column={column}>
+        <PageBlock column={column} locationId="custom-fields">
             <CustomFieldsForm entityType={entityType} control={control} />
         </PageBlock>
     );

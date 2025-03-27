@@ -89,7 +89,7 @@ export function ProductDetailPage() {
     });
 
     return (
-        <Page>
+        <Page pageId="product-detail" entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New product</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageDetailForm form={form} submitHandler={submitHandler}>
                 <PageActionBar>
@@ -105,7 +105,7 @@ export function ProductDetailPage() {
                     </PageActionBarRight>
                 </PageActionBar>
                 <PageLayout>
-                    <PageBlock column="side">
+                    <PageBlock column="side" blockId="enabled-toggle">
                         <FormFieldWrapper
                             control={form.control}
                             name="enabled"
@@ -116,7 +116,7 @@ export function ProductDetailPage() {
                             )}
                         />
                     </PageBlock>
-                    <PageBlock column="main">
+                    <PageBlock column="main" blockId="main-form">
                         <DetailFormGrid>
                             <TranslatableFormFieldWrapper
                                 control={form.control}
@@ -141,12 +141,12 @@ export function ProductDetailPage() {
                     </PageBlock>
                     <CustomFieldsPageBlock column="main" entityType="Product" control={form.control} />
                     {entity && entity.variantList.totalItems > 0 && (
-                        <PageBlock column="main">
+                        <PageBlock column="main" blockId="product-variants-table">
                             <ProductVariantsTable productId={params.id} />
                         </PageBlock>
                     )}
                     {entity && entity.variantList.totalItems === 0 && (
-                        <PageBlock column="main">
+                        <PageBlock column="main" blockId="create-product-variants-dialog">
                             <CreateProductVariantsDialog
                                 productId={entity.id}
                                 productName={entity.name}
@@ -156,7 +156,7 @@ export function ProductDetailPage() {
                             />
                         </PageBlock>
                     )}
-                    <PageBlock column="side">
+                    <PageBlock column="side" blockId="facet-values">
                         <FormFieldWrapper
                             control={form.control}
                             name="facetValueIds"
@@ -166,7 +166,7 @@ export function ProductDetailPage() {
                             )}
                         />
                     </PageBlock>
-                    <PageBlock column="side">
+                    <PageBlock column="side" blockId="assets">
                         <FormItem>
                             <FormLabel>
                                 <Trans>Assets</Trans>
