@@ -9,7 +9,7 @@ import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@lingui/react/macro';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { LayersIcon, PlusIcon } from 'lucide-react';
-import { ChannelCodeLabel } from '../../../components/shared/channel-code-label.js';
+import { ChannelCodeLabel } from '@/components/shared/channel-code-label.js';
 import { ExpandablePermissions } from './components/expandable-permissions.js';
 import { deleteRoleDocument, roleListQuery } from './roles.graphql.js';
 export const Route = createFileRoute('/_authenticated/_roles/roles')({
@@ -37,11 +37,13 @@ function RoleListPage() {
                 code: {
                     header: 'Code',
                     cell: ({ row }) => {
-                        return <DetailPageButton
+                        return (
+                            <DetailPageButton
                                 id={row.original.id}
                                 label={<RoleCodeLabel code={row.original.code} />}
                                 disabled={SYSTEM_ROLES.includes(row.original.code)}
-                            />  
+                            />
+                        );
                     },
                 },
                 permissions: {
@@ -83,9 +85,9 @@ function RoleListPage() {
                     <PermissionGuard requires={['CreateAdministrator']}>
                         <Button asChild>
                             <Link to="./new">
-                            <PlusIcon className="mr-2 h-4 w-4" />
-                            New Role
-                        </Link>
+                                <PlusIcon className="mr-2 h-4 w-4" />
+                                New Role
+                            </Link>
                         </Button>
                     </PermissionGuard>
                 </PageActionBarRight>

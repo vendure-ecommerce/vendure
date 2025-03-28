@@ -25,4 +25,4 @@ dist-ssr
 *.sln
 *.sw?
 
-src/routeTree.gen.ts
+src/app/routeTree.gen.ts

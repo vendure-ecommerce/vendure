@@ -25,7 +25,7 @@ import { useDetailPage } from '@/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
-import { ChannelCodeLabel } from '../../../components/shared/channel-code-label.js';
+import { ChannelCodeLabel } from '@/components/shared/channel-code-label.js';
 import { channelDetailDocument, createChannelDocument, updateChannelDocument } from './channels.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_channels/channels_/$id')({
@@ -183,7 +183,11 @@ function ChannelDetailPage() {
                             />
                         </DetailFormGrid>
                     </PageBlock>
-                    <PageBlock column="main" blockId="channel-defaults" title={<Trans>Channel defaults</Trans>}>
+                    <PageBlock
+                        column="main"
+                        blockId="channel-defaults"
+                        title={<Trans>Channel defaults</Trans>}
+                    >
                         <DetailFormGrid>
                             <FormFieldWrapper
                                 control={form.control}

@@ -23,7 +23,7 @@ import { getOperationTypeInfo } from './get-document-structure.js';
 type StructCustomFieldFragment = ResultOf<typeof structCustomFieldFragment>;
 type RelationCustomFieldFragment = ResultOf<typeof relationCustomFieldFragment>;
 
-let globalCustomFieldsMap: Map<string, CustomFieldConfig[]>;
+let globalCustomFieldsMap: Map<string, CustomFieldConfig[]> = new Map();
 
 /**
  * @description

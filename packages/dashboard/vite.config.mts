@@ -8,6 +8,7 @@ export default defineConfig({
         globals: true,
         environment: 'jsdom',
     },
+    assetsInclude: ['src/i18n/**/*'],
     plugins: [
         vendureDashboardPlugin({
             vendureConfigPath: pathToFileURL('./sample-vendure-config.ts'),

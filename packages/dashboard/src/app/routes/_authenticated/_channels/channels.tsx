@@ -6,7 +6,7 @@ import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@lingui/react/macro';
 import { Link, createFileRoute } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
-import { ChannelCodeLabel } from '../../../components/shared/channel-code-label.js';
+import { ChannelCodeLabel } from '@/components/shared/channel-code-label.js';
 import { channelListQuery, deleteChannelDocument } from './channels.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_channels/channels')({

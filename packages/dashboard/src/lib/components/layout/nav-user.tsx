@@ -1,8 +1,7 @@
 'use client';
 
 import { useAuth } from '@/hooks/use-auth.js';
-import { Route } from '@/routes/_authenticated.js';
-import { Link, useRouter } from '@tanstack/react-router';
+import { Link, useNavigate, useRouter } from '@tanstack/react-router';
 import { ChevronsUpDown, LogOut, Monitor, Moon, Sparkles, Sun } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
@@ -33,7 +32,7 @@ import { Trans } from '@lingui/react/macro';
 export function NavUser() {
     const { isMobile } = useSidebar();
     const router = useRouter();
-    const navigate = Route.useNavigate();
+    const navigate = useNavigate();
     const { user, ...auth } = useAuth();
     const { settings, setTheme, setDevMode } = useUserSettings();
 

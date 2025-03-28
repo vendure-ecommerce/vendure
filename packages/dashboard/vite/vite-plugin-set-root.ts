@@ -8,7 +8,7 @@ export function setRootPlugin({ packageRoot }: { packageRoot: string }): Plugin 
             config.root = packageRoot;
             config.resolve = {
                 alias: {
-                    '@': path.resolve(packageRoot, './src'),
+                    '@': path.resolve(packageRoot, './src/lib'),
                 },
             };
             return config;

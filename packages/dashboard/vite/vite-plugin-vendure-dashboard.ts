@@ -46,11 +46,16 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
     const normalizedVendureConfigPath = getNormalizedVendureConfigPath(options.vendureConfigPath);
     const packageRoot = getDashboardPackageRoot();
     const linguiConfigPath = path.join(packageRoot, 'lingui.config.js');
-    process.env.LINGUI_CONFIG = linguiConfigPath;
+    // process.env.LINGUI_CONFIG = linguiConfigPath;
 
     return [
         lingui(),
-        TanStackRouterVite({ autoCodeSplitting: true, routeFileIgnorePattern: '.graphql.ts|components' }),
+        TanStackRouterVite({
+            autoCodeSplitting: true,
+            routeFileIgnorePattern: '.graphql.ts|components',
+            routesDirectory: path.join(packageRoot, 'src/app/routes'),
+            generatedRouteTree: path.join(packageRoot, 'src/app/routeTree.gen.ts'),
+        }),
         react({
             babel: {
                 plugins: ['@lingui/babel-plugin-lingui-macro'],

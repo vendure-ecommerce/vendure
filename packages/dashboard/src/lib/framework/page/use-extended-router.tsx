@@ -2,7 +2,7 @@ import { ErrorPage } from '@/components/shared/error-page.js';
 import { useDashboardExtensions } from '@/framework/extension-api/use-dashboard-extensions.js';
 import { ListPage } from '@/framework/page/list-page.js';
 import { extensionRoutes } from '@/framework/page/page-api.js';
-import { AUTHENTICATED_ROUTE_PREFIX } from '@/routes/_authenticated.js';
+import { AUTHENTICATED_ROUTE_PREFIX } from '@/constants.js';
 import { AnyRoute, createRoute, Router } from '@tanstack/react-router';
 import { useMemo } from 'react';
 

@@ -1,17 +1,30 @@
-import { AppProviders, queryClient, router } from '@/app-providers.js';
 import { Toaster } from '@/components/ui/sonner.js';
+import { setCustomFieldsMap } from '@/framework/document-introspection/add-custom-fields.js';
 import { useDashboardExtensions } from '@/framework/extension-api/use-dashboard-extensions.js';
 import { useExtendedRouter } from '@/framework/page/use-extended-router.js';
-import { defaultLocale, dynamicActivate } from '@/providers/i18n-provider.js';
-import { useAuth } from './hooks/use-auth.js';
+import { useAuth } from '@/hooks/use-auth.js';
 
 import '@/framework/defaults.js';
-import { RouterProvider } from '@tanstack/react-router';
+import { useServerConfig } from '@/hooks/use-server-config.js';
+import { defaultLocale, dynamicActivate } from '@/providers/i18n-provider.js';
+import { createRouter, RouterProvider } from '@tanstack/react-router';
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
-import { setCustomFieldsMap } from './framework/document-introspection/add-custom-fields.js';
-import { useServerConfig } from './hooks/use-server-config.js';
+import { AppProviders, queryClient } from './app-providers.js';
+import { routeTree } from './routeTree.gen.js';
 import './styles.css';
+
+export const router = createRouter({
+    routeTree,
+    defaultPreload: 'intent',
+    scrollRestoration: true,
+    context: {
+        /* eslint-disable @typescript-eslint/no-non-null-assertion */
+        auth: undefined!, // This will be set after we wrap the app in an AuthProvider
+        queryClient,
+    },
+    defaultErrorComponent: ({ error }: { error: Error }) => <div>Uh Oh!!! {error.message}</div>,
+});
 
 function InnerApp() {
     const auth = useAuth();
