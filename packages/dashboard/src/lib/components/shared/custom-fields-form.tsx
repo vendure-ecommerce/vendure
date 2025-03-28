@@ -71,7 +71,7 @@ export function CustomFieldsForm({ entityType, control }: CustomFieldsFormProps)
     );
 }
 
-function FormInputForType({ fieldDef, field }: { fieldDef: CustomFieldConfig, field: ControllerRenderProps }) {
+function FormInputForType({ fieldDef, field }: { fieldDef: CustomFieldConfig, field: ControllerRenderProps<any, any> }) {
     switch (fieldDef.type as CustomFieldType) {    
         case 'string':
             return <Input {...field} />;

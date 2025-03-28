@@ -46,7 +46,7 @@ export function gqlTadaPlugin(options: {
             });
 
             // Copy the graphql.ts file to the output path
-            const graphqlTsPath = path.join(options.packageRoot, 'src/graphql/graphql.ts');
+            const graphqlTsPath = path.join(options.packageRoot, 'src/lib/graphql/graphql.ts');
             try {
                 await fs.copyFile(graphqlTsPath, path.join(options.gqlTadaOutputPath, 'graphql.ts'));
             } catch (error) {

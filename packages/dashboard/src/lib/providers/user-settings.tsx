@@ -23,7 +23,7 @@ const defaultSettings: UserSettings = {
     devMode: false,
 };
 
-interface UserSettingsContextType {
+export interface UserSettingsContextType {
     settings: UserSettings;
     setDisplayLanguage: (language: string) => void;
     setDisplayLocale: (locale: string | undefined) => void;
@@ -83,5 +83,3 @@ export const UserSettingsProvider: React.FC<React.PropsWithChildren<{}>> = ({ ch
 
     return <UserSettingsContext.Provider value={contextValue}>{children}</UserSettingsContext.Provider>;
 };
-
-

@@ -84,7 +84,7 @@ export function ListPage<
 
     const sorting: SortingState = (routeSearch.sort ?? '')
         .split(',')
-        .filter(s => s.length)
+        .filter((s: string) => s.length)
         .map((s: string) => {
             return {
                 id: s.replace(/^-/, ''),
@@ -131,8 +131,8 @@ export function ListPage<
                         listQuery={listQueryWithCustomFields}
                         deleteMutation={deleteMutation}
                         transformVariables={transformVariables}
-                        customizeColumns={customizeColumns}
-                        additionalColumns={additionalColumns}
+                        customizeColumns={customizeColumns as any}
+                        additionalColumns={additionalColumns as any}
                         defaultColumnOrder={defaultColumnOrder}
                         defaultVisibility={defaultVisibility}
                         onSearchTermChange={onSearchTermChange}

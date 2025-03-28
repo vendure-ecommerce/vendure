@@ -1,11 +1,13 @@
 import type { LucideIcon } from 'lucide-react';
 
+import { globalRegistry } from '../registry/global-registry.js';
+
 // Define the placement options for navigation sections
 export type NavMenuSectionPlacement = 'top' | 'bottom';
 
 interface NavMenuBaseItem {
     id: string;
-    title: string | React.ReactNode;
+    title: string;
     icon?: LucideIcon;
     placement?: NavMenuSectionPlacement;
 }
@@ -23,15 +25,24 @@ export interface NavMenuConfig {
     sections: Array<NavMenuSection | NavMenuItem>;
 }
 
-let navMenuConfig: NavMenuConfig = { sections: [] };
+globalRegistry.register('navMenuConfig', { sections: [] });
 
-export function navMenu(config: NavMenuConfig) {
-    navMenuConfig = config;
+export function getNavMenuConfig() {
+    return globalRegistry.get('navMenuConfig');
+}
+
+export function setNavMenuConfig(config: NavMenuConfig) {
+    globalRegistry.set('navMenuConfig', oldValue => {
+        return Object.assign({}, oldValue, config);
+    });
 }
 
 export function addNavMenuItem(item: NavMenuItem, sectionId: string) {
+    const navMenuConfig = getNavMenuConfig();
     navMenuConfig.sections = [...navMenuConfig.sections];
-    const sectionIndex = navMenuConfig.sections.findIndex(s => s.id === sectionId);
+    const sectionIndex = navMenuConfig.sections.findIndex(
+        (s: NavMenuSection | NavMenuItem) => s.id === sectionId,
+    );
     if (sectionIndex !== -1) {
         const sectionFromConfig = navMenuConfig.sections[sectionIndex];
 
@@ -40,7 +51,7 @@ export function addNavMenuItem(item: NavMenuItem, sectionId: string) {
                 ...sectionFromConfig,
                 items: [...(sectionFromConfig.items ?? [])],
             };
-            const itemIndex = section.items.findIndex(i => i.id === item.id);
+            const itemIndex = section.items.findIndex((i: NavMenuItem) => i.id === item.id);
             if (itemIndex === -1) {
                 section.items.push(item);
                 navMenuConfig.sections.splice(sectionIndex, 1, section);
@@ -52,8 +63,4 @@ export function addNavMenuItem(item: NavMenuItem, sectionId: string) {
             navMenuConfig.sections.splice(sectionIndex, 1, item);
         }
     }
-}
-
-export function getNavMenuConfig() {
-    return navMenuConfig;
 }

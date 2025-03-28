@@ -40,7 +40,7 @@ export const useExtendedRouter = (router: Router<AnyRoute, any, any>) => {
                 continue;
             }
 
-            const newRoute = createRoute({
+            const newRoute: AnyRoute = createRoute({
                 path: `/${pathWithoutLeadingSlash}`,
                 getParentRoute: () => authenticatedRoute,
                 loader: config.loader,

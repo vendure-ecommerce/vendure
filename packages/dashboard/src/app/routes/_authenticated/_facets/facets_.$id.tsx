@@ -57,7 +57,7 @@ function FacetDetailPage() {
                     id: translation.id,
                     languageCode: translation.languageCode,
                     name: translation.name,
-                    customFields: translation.customFields,
+                    customFields: (translation as any).customFields,
                 })),
                 values: [],
                 customFields: entity.customFields,

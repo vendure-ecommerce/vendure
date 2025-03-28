@@ -1,7 +1,13 @@
 import { NEW_ENTITY_PATH } from '@/constants.js';
 import { api, Variables } from '@/graphql/api.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import { queryOptions, useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
+import {
+    DefinedInitialDataOptions,
+    queryOptions,
+    useMutation,
+    useQueryClient,
+    useSuspenseQuery,
+} from '@tanstack/react-query';
 import { ResultOf, VariablesOf } from 'gql.tada';
 import { DocumentNode } from 'graphql';
 import { FormEvent } from 'react';
@@ -77,12 +83,12 @@ export interface DetailPageOptions<
 export function getDetailQueryOptions<T, V extends Variables = Variables>(
     document: TypedDocumentNode<T, V> | DocumentNode,
     variables: V,
-) {
+): DefinedInitialDataOptions {
     const queryName = getQueryName(document);
     return queryOptions({
         queryKey: ['DetailPage', queryName, variables],
         queryFn: () => api.query(document, variables),
-    });
+    }) as DefinedInitialDataOptions;
 }
 
 /**
@@ -156,7 +162,9 @@ export function useDetailPage<
     });
     const detailQuery = useSuspenseQuery(detailQueryOptions);
     const entityQueryField = entityField ?? getQueryName(queryDocument);
-    const entity = detailQuery?.data[entityQueryField] as DetailPageEntity<T, EntityField> | undefined;
+    const entity = (detailQuery?.data as any)[entityQueryField] as
+        | DetailPageEntity<T, EntityField>
+        | undefined;
 
     const resetForm = () => {
         form.reset(form.getValues());

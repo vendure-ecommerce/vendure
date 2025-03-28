@@ -4,8 +4,8 @@ import {
     configurableOperationDefFragment,
     configurableOperationFragment,
 } from '@/graphql/fragments.js';
-import { graphql } from '@/graphql/graphql.js';
-import { queryOptions } from '@tanstack/react-query';
+import { graphql, ResultOf } from '@/graphql/graphql.js';
+import { DefinedInitialDataOptions, queryOptions } from '@tanstack/react-query';
 
 export const collectionListDocument = graphql(
     `
@@ -127,4 +127,4 @@ export const getCollectionFiltersDocument = graphql(
 export const getCollectionFiltersQueryOptions = queryOptions({
     queryKey: ['getCollectionFilters'],
     queryFn: () => api.query(getCollectionFiltersDocument),
-});
+}) as DefinedInitialDataOptions<ResultOf<typeof getCollectionFiltersDocument>>;

@@ -89,7 +89,7 @@ function ProductVariantDetailPage() {
                     id: translation.id,
                     languageCode: translation.languageCode,
                     name: translation.name,
-                    customFields: translation.customFields,
+                    customFields: (translation as any).customFields,
                 })),
                 customFields: entity.customFields,
             };
@@ -99,7 +99,7 @@ function ProductVariantDetailPage() {
             toast.success(i18n.t('Successfully updated product'));
             resetForm();
             if (creatingNewEntity) {
-                navigate({ to: `../${data?.[0]?.id}`, from: Route.id });
+                navigate({ to: `../${(data as any)?.[0]?.id}`, from: Route.id });
             }
         },
         onError: err => {
@@ -183,7 +183,7 @@ function ProductVariantDetailPage() {
                                 <VariantPriceDetail
                                     priceIncludesTax={activeChannel?.pricesIncludeTax ?? false}
                                     price={price}
-                                    currencyCode={entity?.currencyCode}
+                                    currencyCode={entity?.currencyCode ?? activeChannel?.defaultCurrencyCode ?? ''}
                                     taxCategoryId={taxCategoryId}
                                 />
                             </div>
@@ -191,7 +191,7 @@ function ProductVariantDetailPage() {
                     </PageBlock>
                     <PageBlock column="main" blockId="stock" title={<Trans>Stock</Trans>}>
                         <DetailFormGrid>
-                            {entity.stockLevels.map((stockLevel, index) => (
+                            {entity?.stockLevels.map((stockLevel, index) => (
                                 <Fragment key={stockLevel.id}>
                                     <FormFieldWrapper
                                         control={form.control}
@@ -314,11 +314,11 @@ function ProductVariantDetailPage() {
                                     compact={true}
                                     value={form.getValues()}
                                     onChange={value => {
-                                        form.setValue('featuredAssetId', value.featuredAssetId, {
+                                        form.setValue('featuredAssetId', value.featuredAssetId ?? undefined, {
                                             shouldDirty: true,
                                             shouldValidate: true,
                                         });
-                                        form.setValue('assetIds', value.assetIds, {
+                                        form.setValue('assetIds', value.assetIds ?? undefined, {
                                             shouldDirty: true,
                                             shouldValidate: true,
                                         });

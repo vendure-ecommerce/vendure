@@ -3,12 +3,16 @@ import path from 'path';
 import { pathToFileURL } from 'url';
 import { defineConfig } from 'vitest/config';
 
+process.env.IS_LOCAL_DEV = 'true';
+
+/**
+ * This config is used for local development
+ */
 export default defineConfig({
     test: {
         globals: true,
         environment: 'jsdom',
     },
-    assetsInclude: ['src/i18n/**/*'],
     plugins: [
         vendureDashboardPlugin({
             vendureConfigPath: pathToFileURL('./sample-vendure-config.ts'),

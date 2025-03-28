@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useDataService } from '@/framework/data-service/use-data-service.js';
 import { Trans } from '@lingui/react/macro';
 import { graphql } from '@/graphql/graphql.js';
 import { api } from '@/graphql/api.js';
@@ -70,7 +69,7 @@ export function VariantPriceDetail({
     }, [taxRatesData, activeChannel, taxCategoryId]);
 
     useEffect(() => {
-        setGrossPrice(Math.round(price * ((100 + taxRate) / 100)));
+        setGrossPrice(Math.round((price ?? 0) * ((100 + taxRate) / 100)));
     }, [price, taxRate]);
 
     return (

@@ -1,5 +1,5 @@
 import { api } from '@/graphql/api.js';
-import { graphql } from '@/graphql/graphql.js';
+import { graphql, ResultOf } from '@/graphql/graphql.js';
 import { useLingui } from '@lingui/react/macro';
 import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -41,7 +41,26 @@ const deleteCustomerNoteDocument = graphql(`
     }
 `);
 
-export function useCustomerHistory({ customerId, pageSize = 10 }: { customerId: string; pageSize?: number }) {
+export interface UseCustomerHistoryResult {
+    historyEntries: NonNullable<ResultOf<typeof customerHistoryDocument>['customer']>['history']['items'];
+    customer: ResultOf<typeof customerHistoryDocument>['customer'];
+    loading: boolean;
+    error: Error | null;
+    addNote: (note: string, isPrivate: boolean) => void;
+    updateNote: (noteId: string, note: string, isPrivate: boolean) => void;
+    deleteNote: (noteId: string) => void;
+    refetch: () => void;
+    fetchNextPage: () => void;
+    hasNextPage: boolean;
+}
+
+export function useCustomerHistory({
+    customerId,
+    pageSize = 10,
+}: {
+    customerId: string;
+    pageSize?: number;
+}): UseCustomerHistoryResult {
     const [isLoading, setIsLoading] = useState(false);
     const { i18n } = useLingui();
 
@@ -132,11 +151,12 @@ export function useCustomerHistory({ customerId, pageSize = 10 }: { customerId: 
         });
     };
 
-    const historyEntries = data?.pages.flatMap(page => page.customer?.history?.items).filter(x => x != null);
+    const historyEntries =
+        data?.pages.flatMap(page => page.customer?.history?.items).filter(x => x != null) ?? [];
 
     return {
         historyEntries,
-        customer: data?.pages[0]?.customer,
+        customer: data?.pages[0]?.customer ?? null,
         loading: isLoadingQuery || isLoading,
         error,
         addNote,

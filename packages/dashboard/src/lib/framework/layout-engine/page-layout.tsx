@@ -9,7 +9,7 @@ import { useMediaQuery } from '@uidotdev/usehooks';
 import React, { ComponentProps, createContext, useState } from 'react';
 import { Control, UseFormReturn } from 'react-hook-form';
 import { DashboardActionBarItem } from '../extension-api/extension-api-types.js';
-import { getDashboardActionBarItems, getDashboardPageBlocks } from './register.js';
+import { getDashboardActionBarItems, getDashboardPageBlocks } from './layout-extensions.js';
 import { LocationWrapper } from './location-wrapper.js';
 
 export interface PageProps extends ComponentProps<'div'> {
@@ -100,7 +100,9 @@ export function PageLayout({ children, className }: PageLayoutProps) {
         }
     }
 
-    const fullWidthBlocks = finalChildArray.filter(child => isPageBlock(child) && child.type === FullWidthPageBlock);
+    const fullWidthBlocks = finalChildArray.filter(
+        child => isPageBlock(child) && child.type === FullWidthPageBlock,
+    );
     const mainBlocks = finalChildArray.filter(child => isPageBlock(child) && child.props.column === 'main');
     const sideBlocks = finalChildArray.filter(child => isPageBlock(child) && child.props.column === 'side');
 
@@ -214,7 +216,7 @@ export type PageBlockProps = {
     className?: string;
 };
 
-export function PageBlock({ children, title, description, borderless, className, blockId }: PageBlockProps) {
+export function PageBlock({ children, title, description, className, blockId }: PageBlockProps) {
     return (
         <LocationWrapper blockId={blockId}>
             <Card className={cn('w-full', className)}>
@@ -224,9 +226,7 @@ export function PageBlock({ children, title, description, borderless, className,
                         {description && <CardDescription>{description}</CardDescription>}
                     </CardHeader>
                 ) : null}
-                <CardContent className={cn(!title ? 'pt-6' : '', borderless && 'p-0')}>
-                    {children}
-                </CardContent>
+                <CardContent className={cn(!title ? 'pt-6' : '')}>{children}</CardContent>
             </Card>
         </LocationWrapper>
     );

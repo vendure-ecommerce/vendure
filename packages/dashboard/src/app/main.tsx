@@ -3,16 +3,24 @@ import { setCustomFieldsMap } from '@/framework/document-introspection/add-custo
 import { useDashboardExtensions } from '@/framework/extension-api/use-dashboard-extensions.js';
 import { useExtendedRouter } from '@/framework/page/use-extended-router.js';
 import { useAuth } from '@/hooks/use-auth.js';
-
-import '@/framework/defaults.js';
 import { useServerConfig } from '@/hooks/use-server-config.js';
 import { defaultLocale, dynamicActivate } from '@/providers/i18n-provider.js';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
+import { registerDefaults } from '@/framework/defaults.js';
+import { executeDashboardExtensionCallbacks } from '@/framework/extension-api/define-dashboard-extension.js';
+
 import { AppProviders, queryClient } from './app-providers.js';
 import { routeTree } from './routeTree.gen.js';
 import './styles.css';
+
+// Register things for typesafety
+declare module '@tanstack/react-router' {
+    interface Register {
+        router: typeof router;
+    }
+}
 
 export const router = createRouter({
     routeTree,
@@ -57,7 +65,16 @@ function App() {
         dynamicActivate(defaultLocale, () => {
             setI18nLoaded(true);
         });
+        registerDefaults();
     }, []);
+
+    useEffect(() => {
+        console.log('extensionsLoaded', extensionsLoaded);
+        if (extensionsLoaded) {
+            executeDashboardExtensionCallbacks();
+        }
+    }, [extensionsLoaded]);
+
     return (
         i18nLoaded &&
         extensionsLoaded && (

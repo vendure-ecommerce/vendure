@@ -1,5 +1,5 @@
 import { api } from '@/graphql/api.js';
-import { graphql } from '@/graphql/graphql.js';
+import { graphql, ResultOf } from '@/graphql/graphql.js';
 import { useLingui } from '@lingui/react/macro';
 import { useMutation, useInfiniteQuery } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -42,7 +42,26 @@ const deleteOrderNoteDocument = graphql(`
     }
 `);
 
-export function useOrderHistory({ orderId, pageSize = 10 }: { orderId: string; pageSize?: number }) {
+export interface UseOrderHistoryResult {
+    historyEntries: NonNullable<ResultOf<typeof orderHistoryDocument>['order']>['history']['items'];
+    order: ResultOf<typeof orderHistoryDocument>['order'];
+    loading: boolean;
+    error: Error | null;
+    addNote: (note: string, isPrivate: boolean) => void;
+    updateNote: (noteId: string, note: string, isPrivate: boolean) => void;
+    deleteNote: (noteId: string) => void;
+    refetch: () => void;
+    fetchNextPage: () => void;
+    hasNextPage: boolean;
+}
+
+export function useOrderHistory({
+    orderId,
+    pageSize = 10,
+}: {
+    orderId: string;
+    pageSize?: number;
+}): UseOrderHistoryResult {
     const [isLoading, setIsLoading] = useState(false);
     const { i18n } = useLingui();
 
@@ -134,11 +153,12 @@ export function useOrderHistory({ orderId, pageSize = 10 }: { orderId: string; p
         });
     };
 
-    const historyEntries = data?.pages.flatMap(page => page.order?.history?.items).filter(x => x != null);
+    const historyEntries =
+        data?.pages.flatMap(page => page.order?.history?.items).filter(x => x != null) ?? [];
 
     return {
-        historyEntries,
-        order: data?.pages[0]?.order,
+        historyEntries: historyEntries as any,
+        order: data?.pages[0]?.order ?? null,
         loading: isLoadingQuery || isLoading,
         error,
         addNote,

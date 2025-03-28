@@ -102,11 +102,7 @@ export function CustomerAddressForm({ address, onSubmit, onCancel }: CustomerAdd
                     <FormField
                         control={form.control}
                         name="fullName"
-                        render={({
-                            field,
-                        }: {
-                            field: ControllerRenderProps<AddressFormValues, FieldPath<AddressFormValues>>;
-                        }) => (
+                        render={({ field }) => (
                             <FormItem>
                                 <FormLabel>
                                     <Trans>Full Name</Trans>
@@ -123,11 +119,7 @@ export function CustomerAddressForm({ address, onSubmit, onCancel }: CustomerAdd
                     <FormField
                         control={form.control}
                         name="company"
-                        render={({
-                            field,
-                        }: {
-                            field: ControllerRenderProps<AddressFormValues, FieldPath<AddressFormValues>>;
-                        }) => (
+                        render={({ field }) => (
                             <FormItem>
                                 <FormLabel>
                                     <Trans>Company</Trans>
@@ -148,11 +140,7 @@ export function CustomerAddressForm({ address, onSubmit, onCancel }: CustomerAdd
                     <FormField
                         control={form.control}
                         name="streetLine1"
-                        render={({
-                            field,
-                        }: {
-                            field: ControllerRenderProps<AddressFormValues, FieldPath<AddressFormValues>>;
-                        }) => (
+                        render={({ field }) => (
                             <FormItem>
                                 <FormLabel>
                                     <Trans>Street Address</Trans>
@@ -169,11 +157,7 @@ export function CustomerAddressForm({ address, onSubmit, onCancel }: CustomerAdd
                     <FormField
                         control={form.control}
                         name="streetLine2"
-                        render={({
-                            field,
-                        }: {
-                            field: ControllerRenderProps<AddressFormValues, FieldPath<AddressFormValues>>;
-                        }) => (
+                        render={({ field }) => (
                             <FormItem>
                                 <FormLabel>
                                     <Trans>Apartment, suite, etc.</Trans>
@@ -194,11 +178,7 @@ export function CustomerAddressForm({ address, onSubmit, onCancel }: CustomerAdd
                     <FormField
                         control={form.control}
                         name="city"
-                        render={({
-                            field,
-                        }: {
-                            field: ControllerRenderProps<AddressFormValues, FieldPath<AddressFormValues>>;
-                        }) => (
+                        render={({ field }) => (
                             <FormItem>
                                 <FormLabel>
                                     <Trans>City</Trans>
@@ -215,11 +195,7 @@ export function CustomerAddressForm({ address, onSubmit, onCancel }: CustomerAdd
                     <FormField
                         control={form.control}
                         name="province"
-                        render={({
-                            field,
-                        }: {
-                            field: ControllerRenderProps<AddressFormValues, FieldPath<AddressFormValues>>;
-                        }) => (
+                        render={({ field }) => (
                             <FormItem>
                                 <FormLabel>
                                     <Trans>State/Province</Trans>
@@ -240,11 +216,7 @@ export function CustomerAddressForm({ address, onSubmit, onCancel }: CustomerAdd
                     <FormField
                         control={form.control}
                         name="postalCode"
-                        render={({
-                            field,
-                        }: {
-                            field: ControllerRenderProps<AddressFormValues, FieldPath<AddressFormValues>>;
-                        }) => (
+                        render={({ field }) => (
                             <FormItem>
                                 <FormLabel>
                                     <Trans>Postal Code</Trans>
@@ -261,11 +233,7 @@ export function CustomerAddressForm({ address, onSubmit, onCancel }: CustomerAdd
                     <FormField
                         control={form.control}
                         name="countryCode"
-                        render={({
-                            field,
-                        }: {
-                            field: ControllerRenderProps<AddressFormValues, FieldPath<AddressFormValues>>;
-                        }) => (
+                        render={({ field }) => (
                             <FormItem>
                                 <FormLabel>
                                     <Trans>Country</Trans>
@@ -298,11 +266,7 @@ export function CustomerAddressForm({ address, onSubmit, onCancel }: CustomerAdd
                     <FormField
                         control={form.control}
                         name="phoneNumber"
-                        render={({
-                            field,
-                        }: {
-                            field: ControllerRenderProps<AddressFormValues, FieldPath<AddressFormValues>>;
-                        }) => (
+                        render={({ field }) => (
                             <FormItem>
                                 <FormLabel>
                                     <Trans>Phone Number</Trans>
@@ -325,11 +289,7 @@ export function CustomerAddressForm({ address, onSubmit, onCancel }: CustomerAdd
                     <FormField
                         control={form.control}
                         name="defaultShippingAddress"
-                        render={({
-                            field,
-                        }: {
-                            field: ControllerRenderProps<AddressFormValues, FieldPath<AddressFormValues>>;
-                        }) => (
+                        render={({ field }) => (
                             <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                                 <FormControl>
                                     <Checkbox checked={field.value} onCheckedChange={field.onChange} />
@@ -349,11 +309,7 @@ export function CustomerAddressForm({ address, onSubmit, onCancel }: CustomerAdd
                     <FormField
                         control={form.control}
                         name="defaultBillingAddress"
-                        render={({
-                            field,
-                        }: {
-                            field: ControllerRenderProps<AddressFormValues, FieldPath<AddressFormValues>>;
-                        }) => (
+                        render={({ field }) => (
                             <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                                 <FormControl>
                                     <Checkbox checked={field.value} onCheckedChange={field.onChange} />

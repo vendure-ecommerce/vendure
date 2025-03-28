@@ -7,7 +7,7 @@ import {
     SidebarHeader,
     SidebarRail,
 } from '@/components/ui/sidebar.js';
-import { getNavMenuConfig } from '@/framework/nav-menu/nav-menu.js';
+import { getNavMenuConfig } from '@/framework/nav-menu/nav-menu-extensions.js';
 import { useDashboardExtensions } from '@/framework/extension-api/use-dashboard-extensions.js';
 import * as React from 'react';
 import { ChannelSwitcher } from './channel-switcher.js';

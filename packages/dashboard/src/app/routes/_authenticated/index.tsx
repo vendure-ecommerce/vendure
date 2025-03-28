@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button.js';
-import { getDashboardWidget, getDashboardWidgetRegistry } from '@/framework/dashboard-widget/registry.js';
+import { getDashboardWidget, getDashboardWidgetRegistry } from '@/framework/dashboard-widget/widget-extensions.js';
 import { DashboardWidgetInstance } from '@/framework/dashboard-widget/types.js';
 import {
     FullWidthPageBlock,

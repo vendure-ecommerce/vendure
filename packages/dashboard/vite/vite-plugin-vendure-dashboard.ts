@@ -1,7 +1,6 @@
 import { lingui } from '@lingui/vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
-import { AdminUiConfig } from '@vendure/core';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { PluginOption } from 'vite';
@@ -35,6 +34,7 @@ export type VitePluginVendureDashboardOptions = {
      */
     gqlTadaOutputPath?: string;
     tempCompilationDir?: string;
+    disableTansStackRouterPlugin?: boolean;
 } & UiConfigPluginOptions;
 
 /**
@@ -46,16 +46,23 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
     const normalizedVendureConfigPath = getNormalizedVendureConfigPath(options.vendureConfigPath);
     const packageRoot = getDashboardPackageRoot();
     const linguiConfigPath = path.join(packageRoot, 'lingui.config.js');
-    // process.env.LINGUI_CONFIG = linguiConfigPath;
+
+    if (process.env.IS_LOCAL_DEV !== 'true') {
+        process.env.LINGUI_CONFIG = linguiConfigPath;
+    }
 
     return [
         lingui(),
-        TanStackRouterVite({
-            autoCodeSplitting: true,
-            routeFileIgnorePattern: '.graphql.ts|components',
-            routesDirectory: path.join(packageRoot, 'src/app/routes'),
-            generatedRouteTree: path.join(packageRoot, 'src/app/routeTree.gen.ts'),
-        }),
+        ...(options.disableTansStackRouterPlugin
+            ? []
+            : [
+                  TanStackRouterVite({
+                      autoCodeSplitting: true,
+                      routeFileIgnorePattern: '.graphql.ts|components',
+                      routesDirectory: path.join(packageRoot, 'src/app/routes'),
+                      generatedRouteTree: path.join(packageRoot, 'src/app/routeTree.gen.ts'),
+                  }),
+              ]),
         react({
             babel: {
                 plugins: ['@lingui/babel-plugin-lingui-macro'],
@@ -80,13 +87,13 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
 function getDashboardPackageRoot(): string {
     const fileUrl = import.meta.resolve('@vendure/dashboard');
     const packagePath = fileUrl.startsWith('file:') ? new URL(fileUrl).pathname : fileUrl;
-    return fixWindowsPath(path.join(packagePath, '../..'));
+    return fixWindowsPath(path.join(packagePath, '../../../'));
 }
 
 /**
  * Get the normalized path to the Vendure config file given either a string or URL.
  */
-function getNormalizedVendureConfigPath(vendureConfigPath: string | URL): string {
+export function getNormalizedVendureConfigPath(vendureConfigPath: string | URL): string {
     const stringPath = typeof vendureConfigPath === 'string' ? vendureConfigPath : vendureConfigPath.href;
     if (stringPath.startsWith('file:')) {
         return fixWindowsPath(new URL(stringPath).pathname);

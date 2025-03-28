@@ -10,5 +10,5 @@
     "declaration": true,
     "outDir": "./dist/lib"
   },
-  "include": ["src/**/*"],
+  "include": ["src/lib/*"],
 }

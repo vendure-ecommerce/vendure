@@ -49,6 +49,7 @@ export function DataTableFacetedFilter<TData, TValue>({
         options || [],
     );
     const [isLoading, setIsLoading] = React.useState(false);
+    const Icon = icon;
 
     React.useEffect(() => {
         if (optionsFn) {
@@ -72,8 +73,8 @@ export function DataTableFacetedFilter<TData, TValue>({
         <Popover>
             <PopoverTrigger asChild>
                 <Button variant="outline" size="sm" className="h-8 border-dashed">
-                    {icon && <icon />}
-                    {!icon && <FilterIcon />}
+                    {Icon && <Icon />}
+                    {!Icon && <FilterIcon />}
                     {title}
                     {selectedValues?.size > 0 && (
                         <>

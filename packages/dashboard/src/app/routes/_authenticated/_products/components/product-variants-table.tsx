@@ -32,9 +32,10 @@ export function ProductVariantsTable({ productId }: ProductVariantsTableProps) {
             name: {
                 header: 'Variant name',
                 cell: ({ row }) => {
+                    const variant = row.original as any;
                     return (
                         <Button asChild variant="ghost">
-                            <Link to={`../../product-variants/${row.original.id}`}>{row.original.name} </Link>
+                            <Link to={`../../product-variants/${variant.id}`}>{variant.name} </Link>
                         </Button>
                     );
                 },
@@ -47,8 +48,9 @@ export function ProductVariantsTable({ productId }: ProductVariantsTableProps) {
             },
             price: {
                 cell: ({ cell, row }) => {
+                    const variant = row.original as any;
                     const value = cell.getValue();
-                    const currencyCode = row.original.currencyCode;
+                    const currencyCode = variant.currencyCode;
                     if (typeof value === 'number') {
                         return <Money value={value} currency={currencyCode} />;
                     }
@@ -57,8 +59,9 @@ export function ProductVariantsTable({ productId }: ProductVariantsTableProps) {
             },
             priceWithTax: {
                 cell: ({ cell, row }) => {
+                    const variant = row.original as any;
                     const value = cell.getValue();
-                    const currencyCode = row.original.currencyCode;
+                    const currencyCode = variant.currencyCode;
                     if (typeof value === 'number') {
                         return <Money value={value} currency={currencyCode} />;
                     }

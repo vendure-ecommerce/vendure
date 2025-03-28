@@ -67,7 +67,7 @@ function ProductDetailPage() {
                     name: translation.name, 
                     slug: translation.slug,
                     description: translation.description,
-                    customFields: translation.customFields,
+                    customFields: (translation as any).customFields,
                 })),
                 customFields: entity.customFields,
             };

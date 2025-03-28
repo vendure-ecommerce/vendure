@@ -349,7 +349,7 @@ export function getTypeFieldInfo(typeName: string): FieldInfo[] {
             }
             return fieldInfo;
         })
-        .filter(x => !!x);
+        .filter(x => x != null) as FieldInfo[];
 }
 
 function getQueryInfo(name: string): FieldInfo {

@@ -8,7 +8,7 @@ import { useChannel, useLocalFormat } from '@/index.js';
 import { startOfDay, endOfDay, subDays, subMonths, startOfMonth, endOfMonth } from 'date-fns';
 import { AnimatedCurrency, AnimatedNumber } from '@/components/shared/animated-number.js';
 
-export const WIDGET_ID = 'orders-summary-widget';
+const WIDGET_ID = 'orders-summary-widget';
 
 enum Range {
     Today = 'today',

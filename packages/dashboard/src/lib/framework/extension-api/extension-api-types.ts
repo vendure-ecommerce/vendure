@@ -1,4 +1,4 @@
-import { NavMenuItem } from '@/framework/nav-menu/nav-menu.js';
+import { NavMenuItem } from '@/framework/nav-menu/nav-menu-extensions.js';
 import { AnyRoute, RouteOptions } from '@tanstack/react-router';
 import React from 'react';
 

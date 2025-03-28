@@ -9,7 +9,7 @@ import {
     SidebarMenuSubButton,
     SidebarMenuSubItem,
 } from '@/components/ui/sidebar.js';
-import { NavMenuSection, NavMenuItem } from '@/framework/nav-menu/nav-menu.js';
+import { NavMenuSection, NavMenuItem } from '@/framework/nav-menu/nav-menu-extensions.js';
 import { Link, rootRouteId, useLocation, useMatch } from '@tanstack/react-router';
 import { ChevronRight } from 'lucide-react';
 import * as React from 'react';
