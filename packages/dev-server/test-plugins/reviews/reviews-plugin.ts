@@ -1,14 +1,13 @@
 import { LanguageCode, PluginCommonModule, VendurePlugin } from '@vendure/core';
-import gql from 'graphql-tag';
+import { AdminUiExtension } from '@vendure/ui-devkit/compiler';
+import path from 'path';
 
-import { ProductReview } from './entities/product-review.entity';
 import { adminApiExtensions, shopApiExtensions } from './api/api-extensions';
 import { ProductEntityResolver } from './api/product-entity.resolver';
 import { ProductReviewAdminResolver } from './api/product-review-admin.resolver';
 import { ProductReviewEntityResolver } from './api/product-review-entity.resolver';
 import { ProductReviewShopResolver } from './api/product-review-shop.resolver';
-import path from 'path';
-import { AdminUiExtension } from '@vendure/ui-devkit/compiler';
+import { ProductReview } from './entities/product-review.entity';
 
 @VendurePlugin({
     imports: [PluginCommonModule],

@@ -58,7 +58,6 @@ function generateExports() {
 function generateIndexFile() {
     const exports = generateExports();
     const content = `// This file is auto-generated. Do not edit manually.
-// Generated on: ${new Date().toISOString()}
 
 ${exports}
 `;
