@@ -1,8 +1,9 @@
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AwesomeGraphQLClient } from 'awesome-graphql-client';
 import { DocumentNode, parse, print } from 'graphql';
+import { uiConfig } from 'virtual:vendure-ui-config';
 
-const API_URL = 'http://localhost:3000/admin-api';
+const API_URL = uiConfig.apiHost + (uiConfig.apiPort !== 'auto' ? `:${uiConfig.apiPort}` : '') + '/admin-api';
 
 export type Variables = object;
 export type RequestDocument = string | DocumentNode;
