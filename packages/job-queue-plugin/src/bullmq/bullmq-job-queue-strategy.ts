@@ -57,6 +57,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         this.options = {
             ...options,
             workerOptions: {
+                ...options.workerOptions,
                 removeOnComplete: options.workerOptions?.removeOnComplete ?? {
                     age: 60 * 60 * 24 * 30,
                     count: 5000,
