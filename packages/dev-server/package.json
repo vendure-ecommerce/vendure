@@ -22,7 +22,7 @@
         "@vendure/core": "^3.1.7",
         "@vendure/elasticsearch-plugin": "^3.1.7",
         "@vendure/email-plugin": "^3.1.7",
-        "typescript": "5.3.3"
+        "typescript": "5.8.2"
     },
     "devDependencies": {
         "@vendure/testing": "^3.1.7",
