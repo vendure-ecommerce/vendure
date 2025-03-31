@@ -27,7 +27,7 @@
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.4.0",
     "@tsconfig/docusaurus": "^1.0.5",
-    "typescript": "5.3.3"
+    "typescript": "5.8.2"
   },
   "browserslist": {
     "production": [
