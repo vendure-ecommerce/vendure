@@ -470,7 +470,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                     continue;
                 }
                 const relationMetadata = entityMetadata.findRelationWithPropertyPath(entityPart);
-                if (!relationMetadata ?? !relationMetadata?.propertyName) {
+                if (!relationMetadata || !relationMetadata?.propertyName) {
                     Logger.error(
                         `The customPropertyMap entry "${property}:${value}" could not be resolved to a related table`,
                     );

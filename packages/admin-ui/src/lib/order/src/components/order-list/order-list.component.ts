@@ -18,6 +18,7 @@ import { tap } from 'rxjs/operators';
     templateUrl: './order-list.component.html',
     styleUrls: ['./order-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OrderListComponent
     extends TypedBaseListComponent<typeof GetOrderListDocument, 'orders'>

@@ -20,6 +20,7 @@ import { LocaleBasePipe } from './locale-base.pipe';
 @Pipe({
     name: 'localeCurrency',
     pure: false,
+    standalone: false,
 })
 export class LocaleCurrencyPipe extends LocaleBasePipe implements PipeTransform {
     readonly precisionFactor: number;

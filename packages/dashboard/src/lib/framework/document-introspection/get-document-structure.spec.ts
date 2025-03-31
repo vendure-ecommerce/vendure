@@ -270,7 +270,7 @@ describe('getListQueryFields', () => {
         expect(fields).toEqual([]);
     });
 
-    it.only('should handle a fragment of a nested entity in the query', () => {
+    it('should handle a fragment of a nested entity in the query', () => {
         const doc = graphql(/* graphql*/ `
             query GetCollectionWithProductVariants {
                 collection {

@@ -36,6 +36,7 @@ export const GET_CUSTOMER_GROUP_LIST = gql`
     templateUrl: './customer-group-list.component.html',
     styleUrls: ['./customer-group-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class CustomerGroupListComponent
     extends TypedBaseListComponent<typeof GetCustomerGroupListDocument, 'customerGroups'>

@@ -27,6 +27,7 @@ export const FACET_LIST_QUERY = gql`
     selector: 'vdr-facet-list',
     templateUrl: './facet-list.component.html',
     styleUrls: ['./facet-list.component.scss'],
+    standalone: false
 })
 export class FacetListComponent
     extends TypedBaseListComponent<typeof GetFacetListDocument, 'facets'>

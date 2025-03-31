@@ -15,6 +15,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
     templateUrl: './order-state-label.component.html',
     styleUrls: ['./order-state-label.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OrderStateLabelComponent {
     @Input() state: string;

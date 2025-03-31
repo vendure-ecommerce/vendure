@@ -25,6 +25,7 @@ const HTML_TAG_RE = /<\/?[^>]+>?/g;
     templateUrl: './html-editor-form-input.component.html',
     styleUrls: ['./html-editor-form-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class HtmlEditorFormInputComponent
     extends BaseCodeEditorFormInputComponent

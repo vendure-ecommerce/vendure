@@ -20,6 +20,7 @@ import { FilterPresetService } from './filter-preset.service';
     templateUrl: './add-filter-preset-button.component.html',
     styleUrls: ['./add-filter-preset-button.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AddFilterPresetButtonComponent implements OnInit, OnDestroy {
     @Input({ required: true }) dataTableId: string;

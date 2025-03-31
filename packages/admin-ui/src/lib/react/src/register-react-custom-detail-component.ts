@@ -1,4 +1,4 @@
-import { APP_INITIALIZER } from '@angular/core';
+import { inject, provideAppInitializer } from '@angular/core';
 import { CustomDetailComponentLocationId, CustomDetailComponentService } from '@vendure/admin-ui/core';
 import { ElementType } from 'react';
 import {
@@ -38,10 +38,8 @@ export interface ReactCustomDetailComponentConfig {
  * @docsCategory react-extensions
  */
 export function registerReactCustomDetailComponent(config: ReactCustomDetailComponentConfig) {
-    return {
-        provide: APP_INITIALIZER,
-        multi: true,
-        useFactory: (customDetailComponentService: CustomDetailComponentService) => () => {
+    return provideAppInitializer(() => {
+        const initializerFn = ((customDetailComponentService: CustomDetailComponentService) => () => {
             customDetailComponentService.registerCustomDetailComponent({
                 component: ReactCustomDetailComponent,
                 locationId: config.locationId,
@@ -55,7 +53,7 @@ export function registerReactCustomDetailComponent(config: ReactCustomDetailComp
                     },
                 ],
             });
-        },
-        deps: [CustomDetailComponentService],
-    };
+        })(inject(CustomDetailComponentService));
+        return initializerFn();
+      });
 }

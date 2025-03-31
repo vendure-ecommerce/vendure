@@ -58,6 +58,7 @@ export const UPDATE_STOCK_LOCATION = gql`
     templateUrl: './stock-location-detail.component.html',
     styleUrls: ['./stock-location-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class StockLocationDetailComponent
     extends TypedBaseDetailComponent<typeof GetStockLocationDetailDocument, 'stockLocation'>

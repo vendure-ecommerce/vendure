@@ -37,6 +37,7 @@ export const GET_ZONE_MEMBERS = gql`
     templateUrl: './add-country-to-zone-dialog.component.html',
     styleUrls: ['./add-country-to-zone-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class AddCountryToZoneDialogComponent implements Dialog<string[]>, OnInit {
     resolveWith: (result?: string[]) => void;

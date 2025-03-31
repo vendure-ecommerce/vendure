@@ -89,6 +89,7 @@ import { DataTableColumnComponent } from './data-table-column.component';
     styleUrls: ['data-table.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [PaginationService],
+    standalone: false,
 })
 export class DataTableComponent<T> implements AfterContentInit, OnChanges, OnInit, OnDestroy {
     @Input() items: T[];

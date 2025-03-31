@@ -34,6 +34,7 @@ export const GET_TAX_RATE_DETAIL = gql`
     templateUrl: './tax-rate-detail.component.html',
     styleUrls: ['./tax-rate-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TaxRateDetailComponent
     extends TypedBaseDetailComponent<typeof GetTaxRateDetailDocument, 'taxRate'>

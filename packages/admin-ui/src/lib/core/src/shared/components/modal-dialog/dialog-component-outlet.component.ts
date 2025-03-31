@@ -6,6 +6,7 @@ import { Component, EventEmitter, Input, OnInit, Output, Type, ViewContainerRef 
 @Component({
     selector: 'vdr-dialog-component-outlet',
     template: ``,
+    standalone: false,
 })
 export class DialogComponentOutletComponent implements OnInit {
     @Input() component: Type<any>;
