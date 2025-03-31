@@ -6,6 +6,7 @@ import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { orderListDocument } from './orders.graphql.js';
+import { useServerConfig } from '@/hooks/use-server-config.js';
 
 export const Route = createFileRoute('/_authenticated/_orders/orders')({
     component: OrderListPage,
@@ -13,6 +14,7 @@ export const Route = createFileRoute('/_authenticated/_orders/orders')({
 });
 
 function OrderListPage() {
+    const serverConfig = useServerConfig();
     return (
         <ListPage
             pageId="order-list"
@@ -101,6 +103,17 @@ function OrderListPage() {
                 updatedAt: false,
                 type: false,
                 currencyCode: false,
+            }}
+            facetedFilters={{
+                state: {
+                    title: 'State',
+                    options: serverConfig?.orderProcess.map(state => {
+                        return {
+                            label: state.name,
+                            value: state.name,
+                        }
+                    }) ?? [],
+                },
             }}
         />
     );
