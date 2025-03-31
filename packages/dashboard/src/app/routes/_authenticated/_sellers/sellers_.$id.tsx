@@ -1,13 +1,14 @@
 import { ErrorPage } from '@/components/shared/error-page.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { Button } from '@/components/ui/button.js';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form.js';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form.js';
 import { Input } from '@/components/ui/input.js';
 import { NEW_ENTITY_PATH } from '@/constants.js';
 import {
     CustomFieldsPageBlock,
     Page,
     PageActionBar,
+    PageActionBarRight,
     PageBlock,
     PageLayout,
     PageTitle,
@@ -17,11 +18,7 @@ import { useDetailPage } from '@/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@/lib/trans.js';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
-import {
-    createSellerDocument,
-    sellerDetailDocument,
-    updateSellerDocument,
-} from './sellers.graphql.js';
+import { createSellerDocument, sellerDetailDocument, updateSellerDocument } from './sellers.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_sellers/sellers_/$id')({
     component: SellerDetailPage,
@@ -71,53 +68,44 @@ function SellerDetailPage() {
     });
 
     return (
-        <Page pageId="seller-detail">
-            <PageTitle>
-                {creatingNewEntity ? <Trans>New seller</Trans> : (entity?.name ?? '')}
-            </PageTitle>
-            <Form {...form}>
-                <form onSubmit={submitHandler} className="space-y-8">
-                    <PageActionBar>
-                        <div></div>
-                        <PermissionGuard requires={['UpdateSeller']}>
-                            <Button
-                                type="submit"
-                                disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
-                            >
-                                <Trans>Update</Trans>
-                            </Button>
-                        </PermissionGuard>
-                    </PageActionBar>
-                    <PageLayout>
-                        <PageBlock column="main" blockId="main-form">
-                            <div className="md:flex w-full gap-4">
-                                <div className="w-1/2">
-                                    <FormField
-                                        control={form.control}
-                                        name="name"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>
-                                                    <Trans>Name</Trans>
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input placeholder="" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                            </div>
-                        </PageBlock>
-                        <CustomFieldsPageBlock
-                            column="main"
-                            entityType="Seller"
-                            control={form.control}
-                        />
-                    </PageLayout>
-                </form>
-            </Form>
+        <Page pageId="seller-detail" form={form} submitHandler={submitHandler}>
+            <PageTitle>{creatingNewEntity ? <Trans>New seller</Trans> : (entity?.name ?? '')}</PageTitle>
+            <PageActionBar>
+                <PageActionBarRight>
+                    <PermissionGuard requires={['UpdateSeller']}>
+                        <Button
+                            type="submit"
+                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                        >
+                            <Trans>Update</Trans>
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
+            </PageActionBar>
+            <PageLayout>
+                <PageBlock column="main" blockId="main-form">
+                    <div className="md:flex w-full gap-4">
+                        <div className="w-1/2">
+                            <FormField
+                                control={form.control}
+                                name="name"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>
+                                            <Trans>Name</Trans>
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                    </div>
+                </PageBlock>
+                <CustomFieldsPageBlock column="main" entityType="Seller" control={form.control} />
+            </PageLayout>
         </Page>
     );
 }

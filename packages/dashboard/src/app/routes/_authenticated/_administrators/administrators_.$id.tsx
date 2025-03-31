@@ -11,7 +11,6 @@ import {
     PageActionBar,
     PageActionBarRight,
     PageBlock,
-    PageDetailForm,
     PageLayout,
     PageTitle,
 } from '@/framework/layout-engine/page-layout.js';
@@ -24,7 +23,7 @@ import {
     administratorDetailDocument,
     createAdministratorDocument,
     updateAdministratorDocument,
-} from './administrators.graphql.js'; 
+} from './administrators.graphql.js';
 import { RolePermissionsDisplay } from './components/role-permissions-display.js';
 
 export const Route = createFileRoute('/_authenticated/_administrators/administrators_/$id')({
@@ -91,67 +90,66 @@ function AdministratorDetailPage() {
     const roleIds = form.watch('roleIds');
 
     return (
-        <Page pageId="administrator-detail">
+        <Page pageId="administrator-detail" form={form} submitHandler={submitHandler}>
             <PageTitle>{creatingNewEntity ? <Trans>New administrator</Trans> : name}</PageTitle>
-            <PageDetailForm form={form} submitHandler={submitHandler}>
-                <PageActionBar>
-                    <PageActionBarRight>
-                        <PermissionGuard requires={['UpdateAdministrator']}>
-                            <Button
-                                type="submit"
-                                disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
-                            >
-                                <Trans>Update</Trans>
-                            </Button>
-                        </PermissionGuard>
-                    </PageActionBarRight>
-                </PageActionBar>
-                <PageLayout>
-                    <PageBlock column="main" blockId="main-form">
-                        <div className="md:grid md:grid-cols-2 gap-4">
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="firstName"
-                                label={<Trans>First name</Trans>}
-                                render={({ field }) => <Input placeholder="" {...field} />}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="lastName"
-                                label={<Trans>Last name</Trans>}
-                                render={({ field }) => <Input placeholder="" {...field} />}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="emailAddress"
-                                label={<Trans>Email Address or identifier</Trans>}
-                                render={({ field }) => <Input placeholder="" {...field} />}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="password"
-                                label={<Trans>Password</Trans>}
-                                render={({ field }) => <Input placeholder="" type="password" {...field} />}
-                            />
-                        </div>
-                    </PageBlock>
-                    <CustomFieldsPageBlock column="main" entityType="Administrator" control={form.control} />
-                    <PageBlock column="main" blockId="roles" title={<Trans>Roles</Trans>}>
+
+            <PageActionBar>
+                <PageActionBarRight>
+                    <PermissionGuard requires={['UpdateAdministrator']}>
+                        <Button
+                            type="submit"
+                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                        >
+                            <Trans>Update</Trans>
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
+            </PageActionBar>
+            <PageLayout>
+                <PageBlock column="main" blockId="main-form">
+                    <div className="md:grid md:grid-cols-2 gap-4">
                         <FormFieldWrapper
                             control={form.control}
-                            name="roleIds"
-                            render={({ field }) => (
-                                <RoleSelector
-                                    value={field.value ?? []}
-                                    onChange={field.onChange}
-                                    multiple={true}
-                                />
-                            )}
+                            name="firstName"
+                            label={<Trans>First name</Trans>}
+                            render={({ field }) => <Input placeholder="" {...field} />}
                         />
-                        <RolePermissionsDisplay value={roleIds ?? []} />
-                    </PageBlock>
-                </PageLayout>
-            </PageDetailForm>
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="lastName"
+                            label={<Trans>Last name</Trans>}
+                            render={({ field }) => <Input placeholder="" {...field} />}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="emailAddress"
+                            label={<Trans>Email Address or identifier</Trans>}
+                            render={({ field }) => <Input placeholder="" {...field} />}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="password"
+                            label={<Trans>Password</Trans>}
+                            render={({ field }) => <Input placeholder="" type="password" {...field} />}
+                        />
+                    </div>
+                </PageBlock>
+                <CustomFieldsPageBlock column="main" entityType="Administrator" control={form.control} />
+                <PageBlock column="main" blockId="roles" title={<Trans>Roles</Trans>}>
+                    <FormFieldWrapper
+                        control={form.control}
+                        name="roleIds"
+                        render={({ field }) => (
+                            <RoleSelector
+                                value={field.value ?? []}
+                                onChange={field.onChange}
+                                multiple={true}
+                            />
+                        )}
+                    />
+                    <RolePermissionsDisplay value={roleIds ?? []} />
+                </PageBlock>
+            </PageLayout>
         </Page>
     );
 }

@@ -13,7 +13,6 @@ import {
     PageActionBar,
     PageActionBarRight,
     PageBlock,
-    PageDetailForm,
     PageLayout,
     PageTitle,
 } from '@/framework/layout-engine/page-layout.js';
@@ -83,83 +82,80 @@ function GlobalSettingsPage() {
     });
 
     return (
-        <Page pageId="global-settings">
+        <Page pageId="global-settings" form={form} submitHandler={submitHandler}>
             <PageTitle>
                 <Trans>Global settings</Trans>
             </PageTitle>
-            <PageDetailForm form={form} submitHandler={submitHandler}>
-                <PageActionBar>
-                    <PageActionBarRight>
-                        <PermissionGuard requires={['UpdateSettings', 'UpdateGlobalSettings']}>
-                            <Button
-                                type="submit"
-                                disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
-                            >
-                                <Trans>Update</Trans>
-                            </Button>
-                        </PermissionGuard>
-                    </PageActionBarRight>
-                </PageActionBar>
-                <PageLayout>
-                    <PageBlock column="main" blockId="main-form">
-                        <DetailFormGrid>
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="availableLanguages"
-                                label={<Trans>Available languages</Trans>}
-                                description={
-                                    <Trans>
-                                        Sets the languages that are available for all channels. Individual
-                                        channels can then support a subset of these languages.
-                                    </Trans>
-                                }
-                                render={({ field }) => (
-                                    <LanguageSelector
-                                        value={field.value ?? []}
-                                        onChange={field.onChange}
-                                        multiple={true}
-                                    />
-                                )}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="outOfStockThreshold"
-                                label={<Trans>Global out of stock threshold</Trans>}
-                                description={
-                                    <Trans>
-                                        Sets the stock level at which this a variant is considered to be out
-                                        of stock. Using a negative value enables backorder support. Can be
-                                        overridden by product variants.
-                                    </Trans>
-                                }
-                                render={({ field }) => (
-                                    <Input
-                                        value={field.value ?? []}
-                                        onChange={e => field.onChange(Number(e.target.valueAsNumber))}
-                                        type="number"
-                                    />
-                                )}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="trackInventory"
-                                label={<Trans>Track inventory by default</Trans>}
-                                description={
-                                    <Trans>
-                                        When tracked, product variant stock levels will be automatically
-                                        adjusted when sold. This setting can be overridden by individual
-                                        product variants.
-                                    </Trans>
-                                }
-                                render={({ field }) => (
-                                    <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                )}
-                            />
-                        </DetailFormGrid>
-                    </PageBlock>
-                    <CustomFieldsPageBlock column="main" entityType="GlobalSettings" control={form.control} />
-                </PageLayout>
-            </PageDetailForm>
+            <PageActionBar>
+                <PageActionBarRight>
+                    <PermissionGuard requires={['UpdateSettings', 'UpdateGlobalSettings']}>
+                        <Button
+                            type="submit"
+                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                        >
+                            <Trans>Update</Trans>
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
+            </PageActionBar>
+            <PageLayout>
+                <PageBlock column="main" blockId="main-form">
+                    <DetailFormGrid>
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="availableLanguages"
+                            label={<Trans>Available languages</Trans>}
+                            description={
+                                <Trans>
+                                    Sets the languages that are available for all channels. Individual
+                                    channels can then support a subset of these languages.
+                                </Trans>
+                            }
+                            render={({ field }) => (
+                                <LanguageSelector
+                                    value={field.value ?? []}
+                                    onChange={field.onChange}
+                                    multiple={true}
+                                />
+                            )}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="outOfStockThreshold"
+                            label={<Trans>Global out of stock threshold</Trans>}
+                            description={
+                                <Trans>
+                                    Sets the stock level at which this a variant is considered to be out of
+                                    stock. Using a negative value enables backorder support. Can be overridden
+                                    by product variants.
+                                </Trans>
+                            }
+                            render={({ field }) => (
+                                <Input
+                                    value={field.value ?? []}
+                                    onChange={e => field.onChange(Number(e.target.valueAsNumber))}
+                                    type="number"
+                                />
+                            )}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="trackInventory"
+                            label={<Trans>Track inventory by default</Trans>}
+                            description={
+                                <Trans>
+                                    When tracked, product variant stock levels will be automatically adjusted
+                                    when sold. This setting can be overridden by individual product variants.
+                                </Trans>
+                            }
+                            render={({ field }) => (
+                                <Switch checked={field.value} onCheckedChange={field.onChange} />
+                            )}
+                        />
+                    </DetailFormGrid>
+                </PageBlock>
+                <CustomFieldsPageBlock column="main" entityType="GlobalSettings" control={form.control} />
+            </PageLayout>
         </Page>
     );
 }

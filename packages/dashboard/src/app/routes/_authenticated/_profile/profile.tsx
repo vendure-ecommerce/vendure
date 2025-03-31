@@ -9,7 +9,6 @@ import {
     PageActionBar,
     PageActionBarRight,
     PageBlock,
-    PageDetailForm,
     PageLayout,
     PageTitle,
 } from '@/framework/layout-engine/page-layout.js';
@@ -73,53 +72,51 @@ function ProfilePage() {
     });
 
     return (
-        <Page pageId="profile">
+        <Page pageId="profile" form={form} submitHandler={submitHandler}>
             <PageTitle>
                 <Trans>Profile</Trans>
             </PageTitle>
-            <PageDetailForm form={form} submitHandler={submitHandler}>
-                <PageActionBar>
-                    <PageActionBarRight>
-                        <Button
-                            type="submit"
-                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
-                        >
-                            <Trans>Update</Trans>
-                        </Button>
-                    </PageActionBarRight>
-                </PageActionBar>
-                <PageLayout>
-                    <PageBlock column="main" blockId="main-form">
-                        <DetailFormGrid>
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="firstName"
-                                label={<Trans>First name</Trans>}
-                                render={({ field }) => <Input {...field} />}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="lastName"
-                                label={<Trans>Last name</Trans>}
-                                render={({ field }) => <Input {...field} />}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="emailAddress"
-                                label={<Trans>Email Address or identifier</Trans>}
-                                render={({ field }) => <Input {...field} />}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="password"
-                                label={<Trans>Password</Trans>}
-                                render={({ field }) => <Input type="password" {...field} />}
-                            />
-                        </DetailFormGrid>
-                    </PageBlock>
-                    <CustomFieldsPageBlock column="main" entityType="Administrator" control={form.control} />
-                </PageLayout>
-            </PageDetailForm>
+            <PageActionBar>
+                <PageActionBarRight>
+                    <Button
+                        type="submit"
+                        disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                    >
+                        <Trans>Update</Trans>
+                    </Button>
+                </PageActionBarRight>
+            </PageActionBar>
+            <PageLayout>
+                <PageBlock column="main" blockId="main-form">
+                    <DetailFormGrid>
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="firstName"
+                            label={<Trans>First name</Trans>}
+                            render={({ field }) => <Input {...field} />}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="lastName"
+                            label={<Trans>Last name</Trans>}
+                            render={({ field }) => <Input {...field} />}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="emailAddress"
+                            label={<Trans>Email Address or identifier</Trans>}
+                            render={({ field }) => <Input {...field} />}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="password"
+                            label={<Trans>Password</Trans>}
+                            render={({ field }) => <Input type="password" {...field} />}
+                        />
+                    </DetailFormGrid>
+                </PageBlock>
+                <CustomFieldsPageBlock column="main" entityType="Administrator" control={form.control} />
+            </PageLayout>
         </Page>
     );
 }

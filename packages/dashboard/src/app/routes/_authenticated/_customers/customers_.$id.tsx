@@ -1,6 +1,7 @@
 import { CustomerGroupChip } from '@/components/shared/customer-group-chip.js';
 import { CustomerGroupSelector } from '@/components/shared/customer-group-selector.js';
 import { ErrorPage } from '@/components/shared/error-page.js';
+import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { Button } from '@/components/ui/button.js';
 import {
@@ -20,7 +21,6 @@ import {
     PageActionBar,
     PageActionBarRight,
     PageBlock,
-    PageDetailForm,
     PageLayout,
     PageTitle,
 } from '@/framework/layout-engine/page-layout.js';
@@ -46,7 +46,6 @@ import {
     removeCustomerFromGroupDocument,
     updateCustomerDocument,
 } from './customers.graphql.js';
-import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
 
 export const Route = createFileRoute('/_authenticated/_customers/customers_/$id')({
     component: CustomerDetailPage,
@@ -139,140 +138,138 @@ function CustomerDetailPage() {
     console.log(entity);
 
     return (
-        <Page pageId="customer-detail">
+        <Page pageId="customer-detail" form={form} submitHandler={submitHandler}>
             <PageTitle>{creatingNewEntity ? <Trans>New customer</Trans> : customerName}</PageTitle>
-            <PageDetailForm form={form} submitHandler={submitHandler}>
-                <PageActionBar>
-                    <PageActionBarRight>
-                        <PermissionGuard requires={['UpdateCustomer']}>
-                            <Button
-                                type="submit"
-                                disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+            <PageActionBar>
+                <PageActionBarRight>
+                    <PermissionGuard requires={['UpdateCustomer']}>
+                        <Button
+                            type="submit"
+                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                        >
+                            <Trans>Update</Trans>
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
+            </PageActionBar>
+            <PageLayout>
+                <PageBlock column="main" blockId="main-form">
+                    <DetailFormGrid>
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="title"
+                            label={<Trans>Title</Trans>}
+                            render={({ field }) => <Input {...field} />}
+                        />
+                        <div></div>
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="firstName"
+                            label={<Trans>First name</Trans>}
+                            render={({ field }) => <Input {...field} />}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="lastName"
+                            label={<Trans>Last name</Trans>}
+                            render={({ field }) => <Input {...field} />}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="emailAddress"
+                            label={<Trans>Email address</Trans>}
+                            render={({ field }) => <Input {...field} />}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="phoneNumber"
+                            label={<Trans>Phone number</Trans>}
+                            render={({ field }) => <Input {...field} />}
+                        />
+                    </DetailFormGrid>
+                </PageBlock>
+                <CustomFieldsPageBlock column="main" entityType="Customer" control={form.control} />
+
+                {entity && (
+                    <>
+                        <PageBlock column="main" blockId="addresses" title={<Trans>Addresses</Trans>}>
+                            <DetailFormGrid>
+                                {entity?.addresses?.map(address => (
+                                    <CustomerAddressCard
+                                        key={address.id}
+                                        address={address}
+                                        editable
+                                        deletable
+                                        onUpdate={() => {
+                                            refreshEntity();
+                                        }}
+                                        onDelete={() => {
+                                            refreshEntity();
+                                        }}
+                                    />
+                                ))}
+                            </DetailFormGrid>
+
+                            <Dialog open={newAddressOpen} onOpenChange={setNewAddressOpen}>
+                                <DialogTrigger asChild>
+                                    <Button variant="outline">
+                                        <Plus className="w-4 h-4" /> <Trans>Add new address</Trans>
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>
+                                            <Trans>Add new address</Trans>
+                                        </DialogTitle>
+                                        <DialogDescription>
+                                            <Trans>Add a new address to the customer.</Trans>
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <CustomerAddressForm
+                                        onSubmit={values => {
+                                            const { id, ...input } = values;
+                                            createAddress({
+                                                customerId: entity.id,
+                                                input,
+                                            });
+                                        }}
+                                    />
+                                </DialogContent>
+                            </Dialog>
+                        </PageBlock>
+
+                        <PageBlock column="main" blockId="orders" title={<Trans>Orders</Trans>}>
+                            <CustomerOrderTable customerId={entity.id} />
+                        </PageBlock>
+                        <PageBlock column="main" blockId="history" title={<Trans>Customer history</Trans>}>
+                            <CustomerHistoryContainer customerId={entity.id} />
+                        </PageBlock>
+                        <PageBlock column="side" blockId="status" title={<Trans>Status</Trans>}>
+                            <CustomerStatusBadge user={entity.user} />
+                        </PageBlock>
+                        <PageBlock column="side" blockId="groups" title={<Trans>Customer groups</Trans>}>
+                            <div
+                                className={`flex flex-col gap-2 ${entity?.groups?.length > 0 ? 'mb-2' : ''}`}
                             >
-                                <Trans>Update</Trans>
-                            </Button>
-                        </PermissionGuard>
-                    </PageActionBarRight>
-                </PageActionBar>
-                <PageLayout>
-                    <PageBlock column="main" blockId="main-form">
-                        <DetailFormGrid>
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="title"
-                                label={<Trans>Title</Trans>}
-                                render={({ field }) => <Input {...field} />}
+                                {entity?.groups?.map(group => (
+                                    <CustomerGroupChip
+                                        key={group.id}
+                                        group={group}
+                                        onRemove={groupId =>
+                                            removeCustomerFromGroup({ customerId: entity.id, groupId })
+                                        }
+                                    />
+                                ))}
+                            </div>
+                            <CustomerGroupSelector
+                                onSelect={group =>
+                                    addCustomerToGroup({ customerId: entity.id, groupId: group.id })
+                                }
                             />
-                            <div></div>
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="firstName"
-                                label={<Trans>First name</Trans>}
-                                render={({ field }) => <Input {...field} />}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="lastName"
-                                label={<Trans>Last name</Trans>}
-                                render={({ field }) => <Input {...field} />}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="emailAddress"
-                                label={<Trans>Email address</Trans>}
-                                render={({ field }) => <Input {...field} />}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="phoneNumber"
-                                label={<Trans>Phone number</Trans>}
-                                render={({ field }) => <Input {...field} />}
-                            />
-                        </DetailFormGrid>
-                    </PageBlock>
-                    <CustomFieldsPageBlock column="main" entityType="Customer" control={form.control} />
-
-                    {entity && (
-                        <>
-                            <PageBlock column="main" blockId="addresses" title={<Trans>Addresses</Trans>}>
-                                <DetailFormGrid>
-                                    {entity?.addresses?.map(address => (
-                                        <CustomerAddressCard
-                                            key={address.id}
-                                            address={address}
-                                            editable
-                                            deletable
-                                            onUpdate={() => {
-                                                refreshEntity();
-                                            }}
-                                            onDelete={() => {
-                                                refreshEntity();
-                                            }}
-                                        />
-                                    ))}
-                                </DetailFormGrid>
-
-                                <Dialog open={newAddressOpen} onOpenChange={setNewAddressOpen}>
-                                    <DialogTrigger asChild>
-                                        <Button variant="outline">
-                                            <Plus className="w-4 h-4" /> <Trans>Add new address</Trans>
-                                        </Button>
-                                    </DialogTrigger>
-                                    <DialogContent>
-                                        <DialogHeader>
-                                            <DialogTitle>
-                                                <Trans>Add new address</Trans>
-                                            </DialogTitle>
-                                            <DialogDescription>
-                                                <Trans>Add a new address to the customer.</Trans>
-                                            </DialogDescription>
-                                        </DialogHeader>
-                                        <CustomerAddressForm
-                                            onSubmit={values => {
-                                                const { id, ...input } = values;
-                                                createAddress({
-                                                    customerId: entity.id,
-                                                    input,
-                                                });
-                                            }}
-                                        />
-                                    </DialogContent>
-                                </Dialog>
-                            </PageBlock>
-
-                            <PageBlock column="main" blockId="orders" title={<Trans>Orders</Trans>}>
-                                <CustomerOrderTable customerId={entity.id} />
-                            </PageBlock>
-                            <PageBlock column="main" blockId="history" title={<Trans>Customer history</Trans>}>
-                                <CustomerHistoryContainer customerId={entity.id} />
-                            </PageBlock>
-                            <PageBlock column="side" blockId="status" title={<Trans>Status</Trans>}>
-                                <CustomerStatusBadge user={entity.user} />
-                            </PageBlock>
-                            <PageBlock column="side" blockId="groups" title={<Trans>Customer groups</Trans>}>
-                                <div
-                                    className={`flex flex-col gap-2 ${entity?.groups?.length > 0 ? 'mb-2' : ''}`}
-                                >
-                                    {entity?.groups?.map(group => (
-                                        <CustomerGroupChip
-                                            key={group.id}
-                                            group={group}
-                                            onRemove={groupId =>
-                                                removeCustomerFromGroup({ customerId: entity.id, groupId })
-                                            }
-                                        />
-                                    ))}
-                                </div>
-                                <CustomerGroupSelector
-                                    onSelect={group =>
-                                        addCustomerToGroup({ customerId: entity.id, groupId: group.id })
-                                    }
-                                />
-                            </PageBlock>
-                        </>
-                    )}
-                </PageLayout>
-            </PageDetailForm>
+                        </PageBlock>
+                    </>
+                )}
+            </PageLayout>
         </Page>
     );
 }

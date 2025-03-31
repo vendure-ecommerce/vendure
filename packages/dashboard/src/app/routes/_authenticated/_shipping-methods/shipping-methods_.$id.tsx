@@ -1,9 +1,7 @@
 import { ErrorPage } from '@/components/shared/error-page.js';
 import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import {
-    TranslatableFormFieldWrapper
-} from '@/components/shared/translatable-form-field.js';
+import { TranslatableFormFieldWrapper } from '@/components/shared/translatable-form-field.js';
 import { Button } from '@/components/ui/button.js';
 import { Input } from '@/components/ui/input.js';
 import { Textarea } from '@/components/ui/textarea.js';
@@ -15,7 +13,6 @@ import {
     PageActionBar,
     PageActionBarRight,
     PageBlock,
-    PageDetailForm,
     PageLayout,
     PageTitle,
 } from '@/framework/layout-engine/page-layout.js';
@@ -97,83 +94,78 @@ function ShippingMethodDetailPage() {
     });
 
     return (
-        <Page pageId="shipping-method-detail">
+        <Page pageId="shipping-method-detail" form={form} submitHandler={submitHandler}>
             <PageTitle>
                 {creatingNewEntity ? <Trans>New shipping method</Trans> : (entity?.name ?? '')}
             </PageTitle>
-            <PageDetailForm form={form} submitHandler={submitHandler}>
-                <PageActionBar>
-                    <PageActionBarRight>
-                        <PermissionGuard requires={['UpdateShippingMethod']}>
-                            <Button
-                                type="submit"
-                                disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
-                            >
-                                <Trans>Update</Trans>
-                            </Button>
-                        </PermissionGuard>
-                    </PageActionBarRight>
-                </PageActionBar>
-                <PageLayout>
-                    <PageBlock column="main" blockId="main-form">
-                        <DetailFormGrid>
-                            <TranslatableFormFieldWrapper
-                                control={form.control}
-                                name="name"
-                                label={<Trans>Name</Trans>}
-                                render={({ field }) => <Input {...field} />}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="code"
-                                label={<Trans>Code</Trans>}
-                                render={({ field }) => <Input {...field} />}
-                            />
-                        </DetailFormGrid>
+            <PageActionBar>
+                <PageActionBarRight>
+                    <PermissionGuard requires={['UpdateShippingMethod']}>
+                        <Button
+                            type="submit"
+                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                        >
+                            <Trans>Update</Trans>
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
+            </PageActionBar>
+            <PageLayout>
+                <PageBlock column="main" blockId="main-form">
+                    <DetailFormGrid>
                         <TranslatableFormFieldWrapper
                             control={form.control}
-                            name="description"
-                            label={<Trans>Description</Trans>}
-                            render={({ field }) => <Textarea {...field} />}
+                            name="name"
+                            label={<Trans>Name</Trans>}
+                            render={({ field }) => <Input {...field} />}
                         />
-                        <DetailFormGrid>
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="fulfillmentHandler"
-                                label={<Trans>Fulfillment handler</Trans>}
-                                render={({ field }) => (
-                                    <FulfillmentHandlerSelector
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                    />
-                                )}
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="code"
+                            label={<Trans>Code</Trans>}
+                            render={({ field }) => <Input {...field} />}
+                        />
+                    </DetailFormGrid>
+                    <TranslatableFormFieldWrapper
+                        control={form.control}
+                        name="description"
+                        label={<Trans>Description</Trans>}
+                        render={({ field }) => <Textarea {...field} />}
+                    />
+                    <DetailFormGrid>
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="fulfillmentHandler"
+                            label={<Trans>Fulfillment handler</Trans>}
+                            render={({ field }) => (
+                                <FulfillmentHandlerSelector value={field.value} onChange={field.onChange} />
+                            )}
+                        />
+                    </DetailFormGrid>
+                </PageBlock>
+                <CustomFieldsPageBlock column="main" entityType="Promotion" control={form.control} />
+                <PageBlock column="main" blockId="conditions" title={<Trans>Conditions</Trans>}>
+                    <FormFieldWrapper
+                        control={form.control}
+                        name="checker"
+                        render={({ field }) => (
+                            <ShippingEligibilityCheckerSelector
+                                value={field.value}
+                                onChange={field.onChange}
                             />
-                        </DetailFormGrid>
-                    </PageBlock>
-                    <CustomFieldsPageBlock column="main" entityType="Promotion" control={form.control} />
-                    <PageBlock column="main" blockId="conditions" title={<Trans>Conditions</Trans>}>
-                        <FormFieldWrapper
-                            control={form.control}
-                            name="checker"
-                            render={({ field }) => (
-                                <ShippingEligibilityCheckerSelector
-                                    value={field.value}
-                                    onChange={field.onChange}
-                                />
-                            )}
-                        />
-                    </PageBlock>
-                    <PageBlock column="main" blockId="calculator" title={<Trans>Calculator</Trans>}>
-                        <FormFieldWrapper
-                            control={form.control}
-                            name="calculator"
-                            render={({ field }) => (
-                                <ShippingCalculatorSelector value={field.value} onChange={field.onChange} />
-                            )}
-                        />
-                    </PageBlock>
-                </PageLayout>
-            </PageDetailForm>
+                        )}
+                    />
+                </PageBlock>
+                <PageBlock column="main" blockId="calculator" title={<Trans>Calculator</Trans>}>
+                    <FormFieldWrapper
+                        control={form.control}
+                        name="calculator"
+                        render={({ field }) => (
+                            <ShippingCalculatorSelector value={field.value} onChange={field.onChange} />
+                        )}
+                    />
+                </PageBlock>
+            </PageLayout>
         </Page>
     );
 }

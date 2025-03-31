@@ -1,11 +1,15 @@
 import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
 import { Input } from '@/components/ui/input.js';
 import { useDetailPage } from '@/framework/page/use-detail-page.js';
-import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { Trans } from '@/lib/trans.js';
+import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRoute } from '@tanstack/react-router';
 import { ResultOf, VariablesOf } from 'gql.tada';
 
+import { DateTimeInput } from '@/components/data-input/datetime-input.js';
+import { Button } from '@/components/ui/button.js';
+import { Checkbox } from '@/components/ui/checkbox.js';
+import { toast } from 'sonner';
 import { getOperationVariablesFields } from '../document-introspection/get-document-structure.js';
 import {
     DetailFormGrid,
@@ -14,15 +18,10 @@ import {
     PageActionBarLeft,
     PageActionBarRight,
     PageBlock,
-    PageDetailForm,
     PageLayout,
     PageTitle,
 } from '../layout-engine/page-layout.js';
 import { DetailEntityPath } from './page-types.js';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button.js';
-import { Checkbox } from '@/components/ui/checkbox.js';
-import { DateTimeInput } from '@/components/data-input/datetime-input.js';
 
 export interface DetailPageProps<
     T extends TypedDocumentNode<any, any>,
@@ -74,64 +73,60 @@ export function DetailPage<
     const updateFields = getOperationVariablesFields(updateDocument);
 
     return (
-        <Page pageId={pageId}>
-            <PageDetailForm form={form} submitHandler={submitHandler}>
-                <PageActionBar>
-                    <PageActionBarLeft>
-                        <PageTitle>{title(entity)}</PageTitle>
-                    </PageActionBarLeft>
-                    <PageActionBarRight>
-                        <Button
-                            type="submit"
-                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
-                        >
-                            <Trans>Update</Trans>
-                        </Button>
-                    </PageActionBarRight>
-                </PageActionBar>
-                <PageLayout>
-                    <PageBlock column="main" blockId="main-form">
-                        <DetailFormGrid>
-                            {updateFields.map(fieldInfo => {
-                                console.log(fieldInfo);
-                                if (fieldInfo.name === 'id' && fieldInfo.type === 'ID') {
-                                    return null;
-                                }
-                                return (
-                                    <FormFieldWrapper
-                                        key={fieldInfo.name}
-                                        control={form.control}
-                                        name={fieldInfo.name as never}
-                                        label={fieldInfo.name}
-                                        render={({ field }) => {
-                                            switch (fieldInfo.type) {
-                                                case 'Int':
-                                                case 'Float':
-                                                    return (
-                                                        <Input
-                                                            type="number"
-                                                            value={field.value}
-                                                            onChange={e =>
-                                                                field.onChange(e.target.valueAsNumber)
-                                                            }
-                                                        />
-                                                    );
-                                                case 'DateTime':
-                                                    return <DateTimeInput {...field} />;
-                                                case 'Boolean':
-                                                    return <Checkbox {...field} />;
-                                                case 'String':
-                                                default:
-                                                    return <Input {...field} />;
-                                            }
-                                        }}
-                                    />
-                                );
-                            })}
-                        </DetailFormGrid>
-                    </PageBlock>
-                </PageLayout>
-            </PageDetailForm>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler}>
+            <PageActionBar>
+                <PageActionBarLeft>
+                    <PageTitle>{title(entity)}</PageTitle>
+                </PageActionBarLeft>
+                <PageActionBarRight>
+                    <Button
+                        type="submit"
+                        disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                    >
+                        <Trans>Update</Trans>
+                    </Button>
+                </PageActionBarRight>
+            </PageActionBar>
+            <PageLayout>
+                <PageBlock column="main" blockId="main-form">
+                    <DetailFormGrid>
+                        {updateFields.map(fieldInfo => {
+                            console.log(fieldInfo);
+                            if (fieldInfo.name === 'id' && fieldInfo.type === 'ID') {
+                                return null;
+                            }
+                            return (
+                                <FormFieldWrapper
+                                    key={fieldInfo.name}
+                                    control={form.control}
+                                    name={fieldInfo.name as never}
+                                    label={fieldInfo.name}
+                                    render={({ field }) => {
+                                        switch (fieldInfo.type) {
+                                            case 'Int':
+                                            case 'Float':
+                                                return (
+                                                    <Input
+                                                        type="number"
+                                                        value={field.value}
+                                                        onChange={e => field.onChange(e.target.valueAsNumber)}
+                                                    />
+                                                );
+                                            case 'DateTime':
+                                                return <DateTimeInput {...field} />;
+                                            case 'Boolean':
+                                                return <Checkbox {...field} />;
+                                            case 'String':
+                                            default:
+                                                return <Input {...field} />;
+                                        }
+                                    }}
+                                />
+                            );
+                        })}
+                    </DetailFormGrid>
+                </PageBlock>
+            </PageLayout>
         </Page>
     );
 }

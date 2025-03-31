@@ -11,7 +11,6 @@ import {
     PageActionBar,
     PageActionBarRight,
     PageBlock,
-    PageDetailForm,
     PageLayout,
     PageTitle,
 } from '@/framework/layout-engine/page-layout.js';
@@ -72,74 +71,72 @@ function RoleDetailPage() {
     });
 
     return (
-        <Page pageId="role-detail">
+        <Page pageId="role-detail" form={form} submitHandler={submitHandler}>
             <PageTitle>{creatingNewEntity ? <Trans>New role</Trans> : (entity?.description ?? '')}</PageTitle>
-            <PageDetailForm form={form} submitHandler={submitHandler}>
-                <PageActionBar>
-                    <PageActionBarRight>
-                        <PermissionGuard requires={['UpdateAdministrator']}>
-                            <Button
-                                type="submit"
-                                disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
-                            >
-                                <Trans>Update</Trans>
-                            </Button>
-                        </PermissionGuard>
-                    </PageActionBarRight>
-                </PageActionBar>
-                <PageLayout>
-                    <PageBlock column="main" blockId="main-form">
-                        <DetailFormGrid>
+            <PageActionBar>
+                <PageActionBarRight>
+                    <PermissionGuard requires={['UpdateAdministrator']}>
+                        <Button
+                            type="submit"
+                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                        >
+                            <Trans>Update</Trans>
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
+            </PageActionBar>
+            <PageLayout>
+                <PageBlock column="main" blockId="main-form">
+                    <DetailFormGrid>
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="description"
+                            label={<Trans>Description</Trans>}
+                            render={({ field }) => <Input {...field} />}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="code"
+                            label={<Trans>Code</Trans>}
+                            render={({ field }) => <Input {...field} />}
+                        />
+                    </DetailFormGrid>
+                </PageBlock>
+                <PageBlock column="main" blockId="channels">
+                    <div className="space-y-8">
+                        <div className="md:grid md:grid-cols-2 gap-4">
                             <FormFieldWrapper
                                 control={form.control}
-                                name="description"
-                                label={<Trans>Description</Trans>}
-                                render={({ field }) => <Input {...field} />}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="code"
-                                label={<Trans>Code</Trans>}
-                                render={({ field }) => <Input {...field} />}
-                            />
-                        </DetailFormGrid>
-                    </PageBlock>
-                    <PageBlock column="main" blockId="channels">
-                        <div className="space-y-8">
-                            <div className="md:grid md:grid-cols-2 gap-4">
-                                <FormFieldWrapper
-                                    control={form.control}
-                                    name="channelIds"
-                                    label={<Trans>Channels</Trans>}
-                                    description={
-                                        <Trans>
-                                            The selected permissions will be applied to the these channels.
-                                        </Trans>
-                                    }
-                                    render={({ field }) => (
-                                        <ChannelSelector
-                                            multiple={true}
-                                            value={field.value ?? []}
-                                            onChange={value => field.onChange(value)}
-                                        />
-                                    )}
-                                />
-                            </div>
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="permissions"
-                                label={<Trans>Permissions</Trans>}
+                                name="channelIds"
+                                label={<Trans>Channels</Trans>}
+                                description={
+                                    <Trans>
+                                        The selected permissions will be applied to the these channels.
+                                    </Trans>
+                                }
                                 render={({ field }) => (
-                                    <PermissionsGrid
+                                    <ChannelSelector
+                                        multiple={true}
                                         value={field.value ?? []}
                                         onChange={value => field.onChange(value)}
                                     />
                                 )}
                             />
                         </div>
-                    </PageBlock>
-                </PageLayout>
-            </PageDetailForm>
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="permissions"
+                            label={<Trans>Permissions</Trans>}
+                            render={({ field }) => (
+                                <PermissionsGrid
+                                    value={field.value ?? []}
+                                    onChange={value => field.onChange(value)}
+                                />
+                            )}
+                        />
+                    </div>
+                </PageBlock>
+            </PageLayout>
         </Page>
     );
 }
