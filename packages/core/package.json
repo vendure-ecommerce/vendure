@@ -76,7 +76,7 @@
         "reflect-metadata": "^0.2.2",
         "rxjs": "^7.8.1",
         "semver": "^7.6.0",
-        "typeorm": "0.3.20"
+        "typeorm": "0.3.21"
     },
     "devDependencies": {
         "@nestjs/testing": "~10.4.12",
