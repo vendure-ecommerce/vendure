@@ -46,4 +46,7 @@ jobs:
               run: vercel deploy --archive=tgz --prebuilt --scope vendure  ${{ env.VERCEL_ENV == 'production' && '--prod' || '' }} --token=${{ secrets.VERCEL_TOKEN }} | awk 'END{print}' | awk '{print "URL="$1}' >> $GITHUB_OUTPUT
 
             - name: Print Vercel URL
-              run: echo "Vercel URL: ${{ steps.deploy_vercel.outputs.URL }}"
+              shell: bash
+              run: |
+                  echo "Vercel URL: ${{ steps.deploy_vercel.outputs.URL }}"
+                  echo "Vercel Environment: ${{ env.VERCEL_ENV }}"
