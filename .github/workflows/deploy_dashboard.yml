@@ -32,6 +32,9 @@ jobs:
             - name: Install Vercel CLI
               run: npm i -g vercel@latest
 
+            - name: Build common and core packages
+              run: npm run build:core-common
+
             - name: Link folder to project
               run: vercel link --yes --scope vendure --project=admin-dashboard --token=${{ secrets.VERCEL_TOKEN }}
 
