@@ -21,9 +21,9 @@ import { useServerConfig } from './use-server-config.js';
  * ```
  */
 export function useLocalFormat() {
-    const { i18n } = useLingui();
     const { moneyStrategyPrecision } = useServerConfig() ?? { moneyStrategyPrecision: 2 };
     const precisionFactor = useMemo(() => Math.pow(10, moneyStrategyPrecision), [moneyStrategyPrecision]);
+    const locale = 'en';
 
     const toMajorUnits = useCallback(
         (value: number): number => {
@@ -41,34 +41,42 @@ export function useLocalFormat() {
 
     const formatCurrency = useCallback(
         (value: number, currency: string, precision?: number) => {
-            return i18n.number(toMajorUnits(value), {
+            return new Intl.NumberFormat(locale, {
                 style: 'currency',
                 currency,
                 minimumFractionDigits: precision ?? moneyStrategyPrecision,
                 maximumFractionDigits: precision ?? moneyStrategyPrecision,
-            });
+            }).format(toMajorUnits(value));
         },
-        [i18n, moneyStrategyPrecision, toMajorUnits],
+        [locale, moneyStrategyPrecision, toMajorUnits],
     );
 
-    const formatNumber = (value: number) => {
-        return i18n.number(value);
-    };
+    const formatNumber = useCallback(
+        (value: number) => {
+            return new Intl.NumberFormat(locale).format(value);
+        },
+        [locale],
+    );
 
-    const formatDate = (value: string | Date, options?: Intl.DateTimeFormatOptions) => {
-        return i18n.date(value, options);
-    };
+    const formatDate = useCallback(
+        (value: string | Date, options?: Intl.DateTimeFormatOptions) => {
+            return new Intl.DateTimeFormat(locale, options).format(new Date(value));
+        },
+        [locale],
+    );
 
-    const formatLanguageName = (value: string): string => {
-        try {
-            return (
-                new Intl.DisplayNames([i18n.locale], { type: 'language' }).of(value.replace('_', '-')) ??
-                value
-            );
-        } catch (e: any) {
-            return value;
-        }
-    };
+    const formatLanguageName = useCallback(
+        (value: string): string => {
+            try {
+                return (
+                    new Intl.DisplayNames([locale], { type: 'language' }).of(value.replace('_', '-')) ?? value
+                );
+            } catch (e: any) {
+                return value;
+            }
+        },
+        [locale],
+    );
 
     const formatCurrencyName = useCallback(
         (currencyCode: string, display: 'full' | 'symbol' | 'name' = 'full'): string => {
@@ -77,12 +85,12 @@ export function useLocalFormat() {
             try {
                 const name =
                     display === 'full' || display === 'name'
-                        ? (new Intl.DisplayNames([i18n.locale], { type: 'currency' }).of(currencyCode) ?? '')
+                        ? (new Intl.DisplayNames([locale], { type: 'currency' }).of(currencyCode) ?? '')
                         : '';
 
                 const symbol =
                     display === 'full' || display === 'symbol'
-                        ? (new Intl.NumberFormat(i18n.locale, {
+                        ? (new Intl.NumberFormat(locale, {
                               style: 'currency',
                               currency: currencyCode,
                               currencyDisplay: 'symbol',
@@ -96,7 +104,7 @@ export function useLocalFormat() {
                 return currencyCode;
             }
         },
-        [i18n.locale],
+        [locale],
     );
 
     return {

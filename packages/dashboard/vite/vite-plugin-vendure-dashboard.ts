@@ -7,9 +7,9 @@ import { PluginOption } from 'vite';
 
 import { adminApiSchemaPlugin } from './vite-plugin-admin-api-schema.js';
 import { configLoaderPlugin } from './vite-plugin-config-loader.js';
+import { viteConfigPlugin } from './vite-plugin-config.js';
 import { dashboardMetadataPlugin } from './vite-plugin-dashboard-metadata.js';
 import { gqlTadaPlugin } from './vite-plugin-gql-tada.js';
-import { setRootPlugin } from './vite-plugin-set-root.js';
 import { UiConfigPluginOptions, uiConfigPlugin } from './vite-plugin-ui-config.js';
 
 /**
@@ -53,7 +53,7 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
 
     return [
         // TODO: solve https://github.com/kentcdodds/babel-plugin-macros/issues/87
-        lingui(),
+        // lingui(),
         ...(options.disableTansStackRouterPlugin
             ? []
             : [
@@ -65,13 +65,13 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
                   }),
               ]),
         react({
-            babel: {
-                plugins: ['@lingui/babel-plugin-lingui-macro'],
-            },
+            // babel: {
+            //     plugins: ['@lingui/babel-plugin-lingui-macro'],
+            // },
         }),
         tailwindcss(),
         configLoaderPlugin({ vendureConfigPath: normalizedVendureConfigPath, tempDir }),
-        setRootPlugin({ packageRoot }),
+        viteConfigPlugin({ packageRoot }),
         adminApiSchemaPlugin(),
         dashboardMetadataPlugin({ rootDir: tempDir }),
         uiConfigPlugin({ adminUiConfig: options.adminUiConfig }),
