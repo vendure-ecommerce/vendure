@@ -51,7 +51,11 @@ vendure/
 
 ### 1. Install top-level dependencies
 
-`npm install`
+`npm install --legacy-peer-deps`
+
+Note: the `--legacy-peer-deps` flag is necessary because in the dashboard package there is a dependency "react-day-picker" (from Shadcn/ui) which
+has a peer dependency on React v18, whereas we are using v19 in this repo. The latest version of that library is however not currently
+compatible with shadcn (https://github.com/shadcn-ui/ui/issues/4366).
 
 The root directory has a `package.json` which contains build-related dependencies for tasks including:
 
