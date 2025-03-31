@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button.js';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.js';
 import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
 import { graphql } from '@/graphql/graphql.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
 import { EditFacetValue } from './edit-facet-value.js';

@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dialog.js';
 import { Input } from '@/components/ui/input.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { Column } from '@tanstack/react-table';
 import React, { useState } from 'react';
 

@@ -1,6 +1,6 @@
 import { api } from '@/graphql/api.js';
 import { graphql } from '@/graphql/graphql.js';
-import { useLingui } from '@lingui/react/macro';
+import { useLingui } from '@/lib/trans.js';
 import { useQuery } from '@tanstack/react-query';
 import { MultiSelect } from './multi-select.js';
 import { ChannelCodeLabel } from './channel-code-label.js';

@@ -5,7 +5,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { api } from '@/graphql/api.js';
 import { graphql } from '@/graphql/graphql.js';
 import { useGroupedPermissions } from '@/hooks/use-grouped-permissions.js';
-import { useLingui } from '@lingui/react/macro';
+import { useLingui } from '@/lib/trans.js';
 import { useQuery } from '@tanstack/react-query';
 
 const rolesByIdDocument = graphql(`

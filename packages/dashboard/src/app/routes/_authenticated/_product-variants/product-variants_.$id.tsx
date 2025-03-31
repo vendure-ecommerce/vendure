@@ -35,7 +35,7 @@ import {
 import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/framework/page/use-detail-page.js';
 import { useChannel } from '@/hooks/use-channel.js';
-import { Trans, useLingui } from '@lingui/react/macro';
+import { Trans, useLingui } from '@/lib/trans.js';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { Fragment } from 'react/jsx-runtime';
 import { toast } from 'sonner';

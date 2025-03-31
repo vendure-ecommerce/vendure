@@ -4,7 +4,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { usePage } from '@/hooks/use-page.js';
 import { useUserSettings } from '@/hooks/use-user-settings.js';
 import { cn } from '@/lib/utils.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { CodeXmlIcon, InfoIcon } from 'lucide-react';
 import { createContext, useContext, useState } from 'react';
 

@@ -9,7 +9,7 @@ import { Switch } from '@/components/ui/switch.js';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip.js';
 import { useGroupedPermissions } from '@/hooks/use-grouped-permissions.js';
 import { ServerConfig } from '@/providers/server-config.js';
-import { Trans, useLingui } from '@lingui/react/macro';
+import { Trans, useLingui } from '@/lib/trans.js';
 import { useState } from 'react';
 
 interface PermissionsGridProps {

@@ -9,7 +9,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { useState } from 'react';
 
 export function ConfirmationDialog({

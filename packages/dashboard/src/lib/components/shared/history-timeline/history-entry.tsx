@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/dropdown-menu.js';
 import { Separator } from '@/components/ui/separator.js';
 import { useLocalFormat } from '@/hooks/use-local-format.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { MoreVerticalIcon, PencilIcon, TrashIcon } from 'lucide-react';
 import { useCallback } from 'react';
 import { useHistoryTimeline } from './history-timeline.js';

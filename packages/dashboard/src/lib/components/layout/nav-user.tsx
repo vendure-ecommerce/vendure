@@ -27,7 +27,7 @@ import { Dialog, DialogTrigger } from '../ui/dialog.js';
 import { LanguageDialog } from './language-dialog.js';
 import { Theme } from '@/providers/theme-provider.js';
 import { Badge } from '../ui/badge.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 
 export function NavUser() {
     const { isMobile } = useSidebar();

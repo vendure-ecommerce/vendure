@@ -1,6 +1,6 @@
 import { api } from '@/graphql/api.js';
 import { graphql, ResultOf } from '@/graphql/graphql.js';
-import { useLingui } from '@lingui/react/macro';
+import { useLingui } from '@/lib/trans.js';
 import { useMutation, useInfiniteQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';

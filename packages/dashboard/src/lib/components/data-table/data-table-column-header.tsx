@@ -16,7 +16,7 @@ import {
 import { DataTableFilterDialog } from '@/components/data-table/data-table-filter-dialog.js';
 import { FieldInfo } from '@/framework/document-introspection/get-document-structure.js';
 import { camelCaseToTitleCase } from '@/lib/utils.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { ColumnDef, HeaderContext } from '@tanstack/table-core';
 import { ArrowDown, ArrowUp, ArrowUpDown, EllipsisVertical, Filter } from 'lucide-react';
 import React from 'react';

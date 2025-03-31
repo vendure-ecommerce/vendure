@@ -1,6 +1,6 @@
 import { DetailPageButton } from '@/components/shared/detail-page-button.js';
 import { ListPage } from '@/framework/page/list-page.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { CustomerStatusBadge } from './components/customer-status-badge.js';
 import { customerListDocument, deleteCustomerDocument } from './customers.graphql.js';

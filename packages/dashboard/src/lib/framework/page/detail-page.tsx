@@ -2,7 +2,7 @@ import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
 import { Input } from '@/components/ui/input.js';
 import { useDetailPage } from '@/framework/page/use-detail-page.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { AnyRoute } from '@tanstack/react-router';
 import { ResultOf, VariablesOf } from 'gql.tada';
 

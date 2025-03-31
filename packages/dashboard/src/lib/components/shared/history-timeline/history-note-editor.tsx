@@ -8,7 +8,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog.js';
 import { Textarea } from '@/components/ui/textarea.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { useState } from 'react';
 import { HistoryNoteCheckbox } from './history-note-checkbox.js';
 

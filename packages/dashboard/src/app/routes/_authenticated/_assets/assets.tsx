@@ -1,6 +1,6 @@
 import { AssetGallery } from '@/components/shared/asset-gallery.js';
 import { Page, PageTitle, PageActionBar } from '@/framework/layout-engine/page-layout.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_authenticated/_assets/assets')({

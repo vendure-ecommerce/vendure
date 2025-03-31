@@ -1,6 +1,6 @@
 import { ResultOf } from '@/graphql/graphql.js';
 import { useLocalFormat } from '@/hooks/use-local-format.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { paymentWithRefundsFragment } from '../orders.graphql.js';
 
 type PaymentDetailsProps = {

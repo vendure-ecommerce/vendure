@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { graphql } from '@/graphql/graphql.js';
 import { api } from '@/graphql/api.js';
 import { useChannel } from '@/hooks/use-channel.js';

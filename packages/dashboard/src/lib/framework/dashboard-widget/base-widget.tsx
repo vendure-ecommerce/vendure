@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.js';
 import { cn } from '@/lib/utils.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { PropsWithChildren, useRef, useEffect, useState, createContext, useContext } from 'react';
 
 type WidgetDimensions = {

@@ -19,7 +19,7 @@ import {
     PageTitle,
 } from '@/framework/layout-engine/page-layout.js';
 import { useDetailPage } from '@/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@lingui/react/macro';
+import { Trans, useLingui } from '@/lib/trans.js';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { createTaxRateDocument, taxRateDetailQuery, updateTaxRateDocument } from './tax-rates.graphql.js';

@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { orderDetailDocument, orderLineFragment } from '../orders.graphql.js';
 import { VendureImage } from '@/components/shared/vendure-image.js';
 import { Money } from '@/components/data-display/money.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 
 type OrderFragment = NonNullable<ResultOf<typeof orderDetailDocument>['order']>;
 type OrderLineFragment = ResultOf<typeof orderLineFragment>;

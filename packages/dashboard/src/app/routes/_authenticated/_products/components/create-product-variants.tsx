@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { Plus, Trash2 } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form';

@@ -1,5 +1,5 @@
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table.js";
-import { Trans } from "@lingui/react/macro";
+import { Trans } from "@/lib/trans";
 import { orderDetailFragment } from "../orders.graphql.js";
 import { ResultOf } from "gql.tada";
 import { useLocalFormat } from "@/hooks/use-local-format.js";

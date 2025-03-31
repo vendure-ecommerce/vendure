@@ -19,7 +19,7 @@ import {
 import { DisplayComponent } from '@/framework/component-registry/dynamic-component.js';
 import { ResultOf } from '@/graphql/graphql.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import { Trans, useLingui } from '@lingui/react/macro';
+import { Trans, useLingui } from '@/lib/trans.js';
 import { useQuery } from '@tanstack/react-query';
 import {
     ColumnFiltersState,

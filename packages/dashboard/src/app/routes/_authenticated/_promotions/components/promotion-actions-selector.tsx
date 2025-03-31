@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu.js';
 import { Separator } from '@/components/ui/separator.js';
 import { Plus } from 'lucide-react';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { ConfigurableOperationInput } from '@/components/shared/configurable-operation-input.js';
 import { api } from '@/graphql/api.js';
 import { ConfigurableOperationInput as ConfigurableOperationInputType } from '@vendure/common/lib/generated-types';

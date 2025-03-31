@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button.js';
 import { PageActionBar, PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/framework/page/list-page.js';
 import { api } from '@/graphql/api.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { Link, createFileRoute } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { deleteTaxRateDocument, taxRateListQuery } from './tax-rates.graphql.js';

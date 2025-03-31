@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dropdown-menu.js';
 import { Separator } from '@/components/ui/separator.js';
 import { ConfigurableOperationDefFragment } from '@/graphql/fragments.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { useQuery } from '@tanstack/react-query';
 import { ConfigurableOperationInput as ConfigurableOperationInputType } from '@vendure/common/lib/generated-types';
 import { Plus } from 'lucide-react';

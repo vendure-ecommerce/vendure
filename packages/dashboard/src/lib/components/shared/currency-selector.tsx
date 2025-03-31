@@ -1,7 +1,7 @@
 import { useLocalFormat } from '@/hooks/use-local-format.js';
 import { CurrencyCode } from '@/constants.js';
 import { MultiSelect } from './multi-select.js';
-import { useLingui } from '@lingui/react/macro';
+import { useLingui } from '@/lib/trans.js';
 
 export interface CurrencySelectorProps<T extends boolean> {    
     value: T extends true ? string[] : string;

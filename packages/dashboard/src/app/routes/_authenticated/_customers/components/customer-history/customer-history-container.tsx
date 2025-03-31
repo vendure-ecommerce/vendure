@@ -1,6 +1,6 @@
 import { Alert, AlertDescription } from '@/components/ui/alert.js';
 import { Skeleton } from '@/components/ui/skeleton.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { TriangleAlert } from 'lucide-react';
 import { CustomerHistory } from './customer-history.js';
 import { useCustomerHistory } from './use-customer-history.js';

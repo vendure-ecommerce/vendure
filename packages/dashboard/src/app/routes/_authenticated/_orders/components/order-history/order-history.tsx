@@ -1,5 +1,5 @@
 import { Badge } from '@/components/ui/badge.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { ArrowRightToLine, CheckIcon, CreditCardIcon, SquarePen } from 'lucide-react';
 import { HistoryEntry, HistoryEntryItem } from '@/components/shared/history-timeline/history-entry.js';
 import { HistoryNoteInput } from '@/components/shared/history-timeline/history-note-input.js';

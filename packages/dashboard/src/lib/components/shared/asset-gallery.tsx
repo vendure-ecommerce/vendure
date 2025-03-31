@@ -17,7 +17,7 @@ import { api } from '@/graphql/api.js';
 import { assetFragment, AssetFragment } from '@/graphql/fragments.js';
 import { graphql } from '@/graphql/graphql.js';
 import { formatFileSize } from '@/lib/utils.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Loader2, Search, Upload, X } from 'lucide-react';
 import { useCallback, useState } from 'react';

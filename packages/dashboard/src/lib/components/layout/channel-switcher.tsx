@@ -11,7 +11,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.js';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { useChannel } from '@/hooks/use-channel.js';
 import { Link } from '@tanstack/react-router';
 import { ChannelCodeLabel } from '@/components/shared/channel-code-label.js';

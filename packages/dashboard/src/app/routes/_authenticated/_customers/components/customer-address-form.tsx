@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { api } from '@/graphql/api.js';
 import { graphql, ResultOf } from '@/graphql/graphql.js';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Trans, useLingui } from '@lingui/react/macro';
+import { Trans, useLingui } from '@/lib/trans.js';
 import { useQuery } from '@tanstack/react-query';
 import { ControllerRenderProps, FieldPath, useForm } from 'react-hook-form';
 import { z } from 'zod';

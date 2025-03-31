@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input.js';
 import { api } from '@/graphql/api.js';
 import { graphql } from '@/graphql/graphql.js';
 import { useUserSettings } from '@/hooks/use-user-settings.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 

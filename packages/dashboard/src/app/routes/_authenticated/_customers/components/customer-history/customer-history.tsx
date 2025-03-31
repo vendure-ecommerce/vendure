@@ -2,7 +2,7 @@ import { HistoryEntry, HistoryEntryItem } from '@/components/shared/history-time
 import { HistoryNoteInput } from '@/components/shared/history-timeline/history-note-input.js';
 import { HistoryTimeline } from '@/components/shared/history-timeline/history-timeline.js';
 import { Badge } from '@/components/ui/badge.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { CheckIcon, SquarePen } from 'lucide-react';
 
 interface CustomerHistoryProps {

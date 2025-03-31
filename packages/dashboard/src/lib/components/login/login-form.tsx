@@ -1,19 +1,17 @@
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.js';
-import { Trans } from '@lingui/react/macro';
-import { cn } from '@/lib/utils.js';
 import { Button } from '@/components/ui/button.js';
 import { Card, CardContent } from '@/components/ui/card.js';
 import { Input } from '@/components/ui/input.js';
-import { Label } from '@/components/ui/label.js';
-import { AlertCircle, Loader2 } from 'lucide-react';
-import * as React from 'react';
-import { uiConfig } from 'virtual:vendure-ui-config';
-import { LogoMark } from '../shared/logo-mark.js';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
+import { Trans } from '@/lib/trans.js';
+import { cn } from '@/lib/utils.js';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form.js';
+import { Loader2 } from 'lucide-react';
+import * as React from 'react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { uiConfig } from 'virtual:vendure-ui-config';
+import { z } from 'zod';
+import { LogoMark } from '../shared/logo-mark.js';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form.js';
 
 export interface LoginFormProps extends React.ComponentProps<'div'> {
     loginError?: string;

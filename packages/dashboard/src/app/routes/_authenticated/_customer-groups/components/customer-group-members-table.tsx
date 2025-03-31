@@ -4,14 +4,14 @@ import { Button } from '@/components/ui/button.js';
 import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
 import { api } from '@/graphql/api.js';
 import { graphql } from '@/graphql/graphql.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { Link } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { addCustomerToGroupDocument } from '../../_customers/customers.graphql.js';
 import { toast } from 'sonner';
-import { useLingui } from '@lingui/react';
+import { useLingui } from '@/lib/trans.js';
 
 export const customerGroupMemberListDocument = graphql(`
     query CustomerGroupMemberList($id: ID!, $options: CustomerListOptions) {

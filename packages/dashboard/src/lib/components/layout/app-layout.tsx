@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge.js';
 import { Separator } from '@/components/ui/separator.js';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar.js';
 import { useUserSettings } from '@/hooks/use-user-settings.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { Outlet } from '@tanstack/react-router';
 import { Alerts } from '../shared/alerts.js';
 

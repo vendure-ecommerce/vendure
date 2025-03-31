@@ -6,7 +6,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from '@/components/ui/sheet.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { PanelLeftOpen } from 'lucide-react';
 import { CustomerGroupMembersTable } from './customer-group-members-table.js';
 import { Button } from '@/components/ui/button.js';

@@ -3,7 +3,7 @@ import { Skeleton } from '@/components/ui/skeleton.js';
 import { TriangleAlert } from 'lucide-react';
 import { OrderHistory } from './order-history.js';
 import { useOrderHistory } from './use-order-history.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { Button } from '@/components/ui/button.js';
 interface OrderHistoryContainerProps {
   orderId: string;

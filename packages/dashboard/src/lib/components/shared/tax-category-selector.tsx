@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/select.js';
 import { api } from '@/graphql/api.js';
 import { graphql } from '@/graphql/graphql.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '../ui/skeleton.js';
 

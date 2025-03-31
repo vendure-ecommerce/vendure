@@ -3,7 +3,7 @@ import { DetailPageButton } from '@/components/shared/detail-page-button.js';
 import { Badge } from '@/components/ui/badge.js';
 import { Button } from '@/components/ui/button.js';
 import { ListPage } from '@/framework/page/list-page.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { orderListDocument } from './orders.graphql.js';
 

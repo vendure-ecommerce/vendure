@@ -9,7 +9,7 @@ import {
 import { api } from '@/graphql/api.js';
 import { configurableOperationDefFragment, ConfigurableOperationDefFragment } from '@/graphql/fragments.js';
 import { graphql } from '@/graphql/graphql.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { useQuery } from '@tanstack/react-query';
 import { ConfigurableOperationInput as ConfigurableOperationInputType } from '@vendure/common/lib/generated-types';
 import { Plus } from 'lucide-react';

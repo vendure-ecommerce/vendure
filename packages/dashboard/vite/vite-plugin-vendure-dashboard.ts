@@ -52,6 +52,7 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
     }
 
     return [
+        // TODO: solve https://github.com/kentcdodds/babel-plugin-macros/issues/87
         lingui(),
         ...(options.disableTansStackRouterPlugin
             ? []

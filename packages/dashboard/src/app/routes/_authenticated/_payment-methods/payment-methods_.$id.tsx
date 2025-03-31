@@ -20,7 +20,7 @@ import {
 } from '@/framework/layout-engine/page-layout.js';
 import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
 import { useDetailPage } from '@/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@lingui/react/macro';
+import { Trans, useLingui } from '@/lib/trans.js';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { PaymentEligibilityCheckerSelector } from './components/payment-eligibility-checker-selector.js';

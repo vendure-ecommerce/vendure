@@ -69,7 +69,6 @@ function App() {
     }, []);
 
     useEffect(() => {
-        console.log('extensionsLoaded', extensionsLoaded);
         if (extensionsLoaded) {
             executeDashboardExtensionCallbacks();
         }

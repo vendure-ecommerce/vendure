@@ -3,7 +3,7 @@ import { graphql } from '@/graphql/graphql.js';
 import { useQuery } from '@tanstack/react-query';
 import { useLocalFormat } from '@/hooks/use-local-format.js';
 import { MultiSelect } from './multi-select.js';
-import { useLingui } from '@lingui/react/macro';
+import { useLingui } from '@/lib/trans.js';
 
 const availableGlobalLanguages = graphql(`
     query AvailableGlobalLanguages {

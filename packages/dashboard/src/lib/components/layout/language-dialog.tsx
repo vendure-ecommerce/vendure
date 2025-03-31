@@ -1,7 +1,7 @@
 import { CurrencyCode } from '@/constants.js';
 import { useLocalFormat } from '@/hooks/use-local-format.js';
 import { useUserSettings } from '@/hooks/use-user-settings.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { useState } from 'react';
 import { uiConfig } from 'virtual:vendure-ui-config';
 import { Button } from '../ui/button.js';

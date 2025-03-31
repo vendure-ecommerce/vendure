@@ -9,8 +9,8 @@ import {
     DialogTitle,
     DialogDescription,
 } from '@/components/ui/dialog.js';
-import { Trans } from '@lingui/react/macro';
-import { useLingui } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
+import { useLingui } from '@/lib/trans.js';
 import { AddressFormValues, CustomerAddressForm } from './customer-address-form.js';
 import { EditIcon, TrashIcon } from 'lucide-react';
 import { useState } from 'react';

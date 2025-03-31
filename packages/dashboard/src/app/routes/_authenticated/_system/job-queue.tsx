@@ -1,5 +1,5 @@
 import { ListPage } from '@/framework/page/list-page.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { createFileRoute } from '@tanstack/react-router';
 import { jobListDocument, jobQueueListDocument } from './job-queue.graphql.js';
 import { Badge } from '@/components/ui/badge.js';

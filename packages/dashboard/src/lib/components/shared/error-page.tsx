@@ -1,5 +1,5 @@
 import { Page, PageBlock, PageLayout, PageTitle } from '@/framework/layout-engine/page-layout.js';
-import { Trans } from '@lingui/react/macro';
+import { Trans } from '@/lib/trans.js';
 import { AlertCircle } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '../ui/alert.js';
 
