@@ -6,7 +6,7 @@ import { useCustomFieldConfig } from '@/hooks/use-custom-field-config.js';
 import { usePage } from '@/hooks/use-page.js';
 import { cn } from '@/lib/utils.js';
 import { useMediaQuery } from '@uidotdev/usehooks';
-import React, { ComponentProps, createContext, useState } from 'react';
+import React, { ComponentProps, createContext } from 'react';
 import { Control, UseFormReturn } from 'react-hook-form';
 import { DashboardActionBarItem } from '../extension-api/extension-api-types.js';
 import { getDashboardActionBarItems, getDashboardPageBlocks } from './layout-extensions.js';
@@ -33,24 +33,31 @@ export function Page({ children, pageId, entity, form, submitHandler, ...props }
         child => React.isValidElement(child) && child.type !== PageTitle && child.type !== PageActionBar,
     );
 
+    const pageHeader = (
+        <div className="flex items-center justify-between">
+            {pageTitle}
+            {pageActionBar}
+        </div>
+    );
+
     const pageContentWithOptionalForm = form ? (
         <Form {...form}>
-            <form onSubmit={submitHandler} className="space-y-8">
+            <form onSubmit={submitHandler} className="space-y-4">
+                {pageHeader}
                 {pageContent}
             </form>
         </Form>
     ) : (
-        pageContent
+        <div className="space-y-4">
+            {pageHeader}
+            {pageContent}
+        </div>
     );
 
     return (
         <PageProvider value={{ pageId, form, entity }}>
             <LocationWrapper>
-                <div className={cn('m-4 space-y-4', props.className)} {...props}>
-                    <div className="flex items-center justify-between">
-                        {pageTitle}
-                        {pageActionBar}
-                    </div>
+                <div className={cn('m-4', props.className)} {...props}>
                     {pageContentWithOptionalForm}
                 </div>
             </LocationWrapper>
@@ -146,24 +153,6 @@ export function PageLayout({ children, className }: PageLayoutProps) {
                 <div className="md:hidden space-y-4">{children}</div>
             )}
         </div>
-    );
-}
-
-export function PageDetailForm({
-    children,
-    form,
-    submitHandler,
-}: {
-    children: React.ReactNode;
-    form: UseFormReturn<any>;
-    submitHandler: any;
-}) {
-    return (
-        <Form {...form}>
-            <form onSubmit={submitHandler} className="space-y-8">
-                {children}
-            </form>
-        </Form>
     );
 }
 

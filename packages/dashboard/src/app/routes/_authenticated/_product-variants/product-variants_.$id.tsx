@@ -5,9 +5,7 @@ import { ErrorPage } from '@/components/shared/error-page.js';
 import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { TaxCategorySelector } from '@/components/shared/tax-category-selector.js';
-import {
-    TranslatableFormFieldWrapper
-} from '@/components/shared/translatable-form-field.js';
+import { TranslatableFormFieldWrapper } from '@/components/shared/translatable-form-field.js';
 import { Button } from '@/components/ui/button.js';
 import {
     FormControl,
@@ -15,7 +13,7 @@ import {
     FormField,
     FormItem,
     FormLabel,
-    FormMessage
+    FormMessage,
 } from '@/components/ui/form.js';
 import { Input } from '@/components/ui/input.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.js';
@@ -28,7 +26,6 @@ import {
     PageActionBar,
     PageActionBarRight,
     PageBlock,
-    PageDetailForm,
     PageLayout,
     PageTitle,
 } from '@/framework/layout-engine/page-layout.js';
@@ -112,225 +109,223 @@ function ProductVariantDetailPage() {
     const [price, taxCategoryId] = form.watch(['price', 'taxCategoryId']);
 
     return (
-        <Page pageId="product-variant-detail">
+        <Page pageId="product-variant-detail" form={form} submitHandler={submitHandler}>
             <PageTitle>
                 {creatingNewEntity ? <Trans>New product variant</Trans> : (entity?.name ?? '')}
             </PageTitle>
-            <PageDetailForm form={form} submitHandler={submitHandler}>
-                <PageActionBar>
-                    <PageActionBarRight>
-                        <PermissionGuard requires={['UpdateProduct', 'UpdateCatalog']}>
-                            <Button
-                                type="submit"
-                                disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
-                            >
-                                <Trans>Update</Trans>
-                            </Button>
-                        </PermissionGuard>
-                    </PageActionBarRight>
-                </PageActionBar>
-                <PageLayout>
-                    <PageBlock column="side" blockId="enabled">
+            <PageActionBar>
+                <PageActionBarRight>
+                    <PermissionGuard requires={['UpdateProduct', 'UpdateCatalog']}>
+                        <Button
+                            type="submit"
+                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                        >
+                            <Trans>Update</Trans>
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
+            </PageActionBar>
+            <PageLayout>
+                <PageBlock column="side" blockId="enabled">
+                    <FormFieldWrapper
+                        control={form.control}
+                        name="enabled"
+                        label={<Trans>Enabled</Trans>}
+                        description={<Trans>When enabled, a product is available in the shop</Trans>}
+                        render={({ field }) => (
+                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                        )}
+                    />
+                </PageBlock>
+                <PageBlock column="main" blockId="main-form">
+                    <DetailFormGrid>
+                        <TranslatableFormFieldWrapper
+                            control={form.control}
+                            name="name"
+                            label={<Trans>Product name</Trans>}
+                            render={({ field }) => <Input {...field} />}
+                        />
+
                         <FormFieldWrapper
                             control={form.control}
-                            name="enabled"
-                            label={<Trans>Enabled</Trans>}
-                            description={<Trans>When enabled, a product is available in the shop</Trans>}
+                            name="sku"
+                            label={<Trans>SKU</Trans>}
+                            render={({ field }) => <Input {...field} />}
+                        />
+                    </DetailFormGrid>
+                </PageBlock>
+                <CustomFieldsPageBlock column="main" entityType="ProductVariant" control={form.control} />
+
+                <PageBlock column="main" blockId="price-and-tax" title={<Trans>Price and tax</Trans>}>
+                    <div className="grid grid-cols-2 gap-4 items-start">
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="taxCategoryId"
+                            label={<Trans>Tax category</Trans>}
                             render={({ field }) => (
-                                <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                <TaxCategorySelector value={field.value} onChange={field.onChange} />
                             )}
                         />
-                    </PageBlock>
-                    <PageBlock column="main" blockId="main-form">
-                        <DetailFormGrid>
-                            <TranslatableFormFieldWrapper
-                                control={form.control}
-                                name="name"
-                                label={<Trans>Product name</Trans>}
-                                render={({ field }) => <Input {...field} />}
-                            />
 
+                        <div>
                             <FormFieldWrapper
                                 control={form.control}
-                                name="sku"
-                                label={<Trans>SKU</Trans>}
-                                render={({ field }) => <Input {...field} />}
-                            />
-                        </DetailFormGrid>
-                    </PageBlock>
-                    <CustomFieldsPageBlock column="main" entityType="ProductVariant" control={form.control} />
-
-                    <PageBlock column="main" blockId="price-and-tax" title={<Trans>Price and tax</Trans>}>
-                        <div className="grid grid-cols-2 gap-4 items-start">
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="taxCategoryId"
-                                label={<Trans>Tax category</Trans>}
+                                name="price"
+                                label={<Trans>Price</Trans>}
                                 render={({ field }) => (
-                                    <TaxCategorySelector value={field.value} onChange={field.onChange} />
+                                    <MoneyInput {...field} currency={entity?.currencyCode} />
                                 )}
                             />
-
-                            <div>
+                            <VariantPriceDetail
+                                priceIncludesTax={activeChannel?.pricesIncludeTax ?? false}
+                                price={price}
+                                currencyCode={
+                                    entity?.currencyCode ?? activeChannel?.defaultCurrencyCode ?? ''
+                                }
+                                taxCategoryId={taxCategoryId}
+                            />
+                        </div>
+                    </div>
+                </PageBlock>
+                <PageBlock column="main" blockId="stock" title={<Trans>Stock</Trans>}>
+                    <DetailFormGrid>
+                        {entity?.stockLevels.map((stockLevel, index) => (
+                            <Fragment key={stockLevel.id}>
                                 <FormFieldWrapper
                                     control={form.control}
-                                    name="price"
-                                    label={<Trans>Price</Trans>}
+                                    name={`stockLevels.${index}.stockOnHand`}
                                     render={({ field }) => (
-                                        <MoneyInput {...field} currency={entity?.currencyCode} />
-                                    )}
-                                />
-                                <VariantPriceDetail
-                                    priceIncludesTax={activeChannel?.pricesIncludeTax ?? false}
-                                    price={price}
-                                    currencyCode={entity?.currencyCode ?? activeChannel?.defaultCurrencyCode ?? ''}
-                                    taxCategoryId={taxCategoryId}
-                                />
-                            </div>
-                        </div>
-                    </PageBlock>
-                    <PageBlock column="main" blockId="stock" title={<Trans>Stock</Trans>}>
-                        <DetailFormGrid>
-                            {entity?.stockLevels.map((stockLevel, index) => (
-                                <Fragment key={stockLevel.id}>
-                                    <FormFieldWrapper
-                                        control={form.control}
-                                        name={`stockLevels.${index}.stockOnHand`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>
-                                                    <Trans>Stock level</Trans>
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input type="number" {...field} />
-                                                </FormControl>
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <div>
                                         <FormItem>
                                             <FormLabel>
-                                                <Trans>Allocated</Trans>
+                                                <Trans>Stock level</Trans>
                                             </FormLabel>
-                                            <div className="text-sm pt-1.5">{stockLevel.stockAllocated}</div>
-                                        </FormItem>
-                                    </div>
-                                </Fragment>
-                            ))}
-
-                            <FormField
-                                control={form.control}
-                                name="trackInventory"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>
-                                            <Trans>Track inventory</Trans>
-                                        </FormLabel>
-                                        <Select onValueChange={field.onChange} value={field.value}>
                                             <FormControl>
-                                                <SelectTrigger className="">
-                                                    <SelectValue placeholder="Track inventory" />
-                                                </SelectTrigger>
+                                                <Input type="number" {...field} />
                                             </FormControl>
-                                            <SelectContent>
-                                                <SelectItem value="INHERIT">
-                                                    <Trans>Inherit from global settings</Trans>
-                                                </SelectItem>
-                                                <SelectItem value="TRUE">
-                                                    <Trans>Track</Trans>
-                                                </SelectItem>
-                                                <SelectItem value="FALSE">
-                                                    <Trans>Do not track</Trans>
-                                                </SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="outOfStockThreshold"
-                                render={({ field }) => (
+                                        </FormItem>
+                                    )}
+                                />
+                                <div>
                                     <FormItem>
                                         <FormLabel>
-                                            <Trans>Out-of-stock threshold</Trans>
+                                            <Trans>Allocated</Trans>
                                         </FormLabel>
-                                        <FormControl>
-                                            <Input type="number" {...field} />
-                                        </FormControl>
-                                        <FormDescription>
-                                            <Trans>
-                                                Sets the stock level at which this variant is considered to be
-                                                out of stock. Using a negative value enables backorder
-                                                support.
-                                            </Trans>
-                                        </FormDescription>
+                                        <div className="text-sm pt-1.5">{stockLevel.stockAllocated}</div>
                                     </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="useGlobalOutOfStockThreshold"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>
-                                            <Trans>Use global out-of-stock threshold</Trans>
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                        </FormControl>
-                                        <FormDescription>
-                                            <Trans>
-                                                Sets the stock level at which this variant is considered to be
-                                                out of stock. Using a negative value enables backorder
-                                                support.
-                                            </Trans>
-                                        </FormDescription>
-                                    </FormItem>
-                                )}
-                            />
-                        </DetailFormGrid>
-                    </PageBlock>
+                                </div>
+                            </Fragment>
+                        ))}
 
-                    <PageBlock column="side" blockId="facet-values">
-                        <FormFieldWrapper
+                        <FormField
                             control={form.control}
-                            name="facetValueIds"
-                            label={<Trans>Facet values</Trans>}
+                            name="trackInventory"
                             render={({ field }) => (
-                                <AssignedFacetValues facetValues={entity?.facetValues ?? []} {...field} />
+                                <FormItem>
+                                    <FormLabel>
+                                        <Trans>Track inventory</Trans>
+                                    </FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger className="">
+                                                <SelectValue placeholder="Track inventory" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="INHERIT">
+                                                <Trans>Inherit from global settings</Trans>
+                                            </SelectItem>
+                                            <SelectItem value="TRUE">
+                                                <Trans>Track</Trans>
+                                            </SelectItem>
+                                            <SelectItem value="FALSE">
+                                                <Trans>Do not track</Trans>
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </FormItem>
                             )}
                         />
-                    </PageBlock>
-                    <PageBlock column="side" blockId="assets">
-                        <FormItem>
-                            <FormLabel>
-                                <Trans>Assets</Trans>
-                            </FormLabel>
-                            <FormControl>
-                                <EntityAssets
-                                    assets={entity?.assets}
-                                    featuredAsset={entity?.featuredAsset}
-                                    compact={true}
-                                    value={form.getValues()}
-                                    onChange={value => {
-                                        form.setValue('featuredAssetId', value.featuredAssetId ?? undefined, {
-                                            shouldDirty: true,
-                                            shouldValidate: true,
-                                        });
-                                        form.setValue('assetIds', value.assetIds ?? undefined, {
-                                            shouldDirty: true,
-                                            shouldValidate: true,
-                                        });
-                                    }}
-                                />
-                            </FormControl>
-                            <FormDescription></FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    </PageBlock>
-                </PageLayout>
-            </PageDetailForm>
+                        <FormField
+                            control={form.control}
+                            name="outOfStockThreshold"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>
+                                        <Trans>Out-of-stock threshold</Trans>
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input type="number" {...field} />
+                                    </FormControl>
+                                    <FormDescription>
+                                        <Trans>
+                                            Sets the stock level at which this variant is considered to be out
+                                            of stock. Using a negative value enables backorder support.
+                                        </Trans>
+                                    </FormDescription>
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="useGlobalOutOfStockThreshold"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>
+                                        <Trans>Use global out-of-stock threshold</Trans>
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                    </FormControl>
+                                    <FormDescription>
+                                        <Trans>
+                                            Sets the stock level at which this variant is considered to be out
+                                            of stock. Using a negative value enables backorder support.
+                                        </Trans>
+                                    </FormDescription>
+                                </FormItem>
+                            )}
+                        />
+                    </DetailFormGrid>
+                </PageBlock>
+
+                <PageBlock column="side" blockId="facet-values">
+                    <FormFieldWrapper
+                        control={form.control}
+                        name="facetValueIds"
+                        label={<Trans>Facet values</Trans>}
+                        render={({ field }) => (
+                            <AssignedFacetValues facetValues={entity?.facetValues ?? []} {...field} />
+                        )}
+                    />
+                </PageBlock>
+                <PageBlock column="side" blockId="assets">
+                    <FormItem>
+                        <FormLabel>
+                            <Trans>Assets</Trans>
+                        </FormLabel>
+                        <FormControl>
+                            <EntityAssets
+                                assets={entity?.assets}
+                                featuredAsset={entity?.featuredAsset}
+                                compact={true}
+                                value={form.getValues()}
+                                onChange={value => {
+                                    form.setValue('featuredAssetId', value.featuredAssetId ?? undefined, {
+                                        shouldDirty: true,
+                                        shouldValidate: true,
+                                    });
+                                    form.setValue('assetIds', value.assetIds ?? undefined, {
+                                        shouldDirty: true,
+                                        shouldValidate: true,
+                                    });
+                                }}
+                            />
+                        </FormControl>
+                        <FormDescription></FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                </PageBlock>
+            </PageLayout>
         </Page>
     );
 }

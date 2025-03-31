@@ -12,7 +12,6 @@ import {
     PageActionBar,
     PageActionBarRight,
     PageBlock,
-    PageDetailForm,
     PageLayout,
     PageTitle,
 } from '@/framework/layout-engine/page-layout.js';
@@ -75,44 +74,42 @@ function StockLocationDetailPage() {
     });
 
     return (
-        <Page pageId="stock-location-detail">
+        <Page pageId="stock-location-detail" form={form} submitHandler={submitHandler}>
             <PageTitle>
                 {creatingNewEntity ? <Trans>New stock location</Trans> : (entity?.name ?? '')}
             </PageTitle>
-            <PageDetailForm form={form} submitHandler={submitHandler}>
-                <PageActionBar>
-                    <PageActionBarRight>
-                        <PermissionGuard requires={['UpdateStockLocation']}>
-                            <Button
-                                type="submit"
-                                disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
-                            >
-                                <Trans>Update</Trans>
-                            </Button>
-                        </PermissionGuard>
-                    </PageActionBarRight>
-                </PageActionBar>
-                <PageLayout>
-                    <PageBlock column="main" blockId="main-form">
-                        <DetailFormGrid>
-                            <FormFieldWrapper
-                                control={form.control}
-                                label={<Trans>Name</Trans>}
-                                name="name"
-                                render={({ field }) => <Input {...field} />}
-                            />
-                            <div></div>
-                        </DetailFormGrid>
+            <PageActionBar>
+                <PageActionBarRight>
+                    <PermissionGuard requires={['UpdateStockLocation']}>
+                        <Button
+                            type="submit"
+                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                        >
+                            <Trans>Update</Trans>
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
+            </PageActionBar>
+            <PageLayout>
+                <PageBlock column="main" blockId="main-form">
+                    <DetailFormGrid>
                         <FormFieldWrapper
                             control={form.control}
-                            name="description"
-                            label={<Trans>Description</Trans>}
-                            render={({ field }) => <Textarea {...field} />}
+                            label={<Trans>Name</Trans>}
+                            name="name"
+                            render={({ field }) => <Input {...field} />}
                         />
-                    </PageBlock>
-                    <CustomFieldsPageBlock column="main" entityType="StockLocation" control={form.control} />
-                </PageLayout>
-            </PageDetailForm>
+                        <div></div>
+                    </DetailFormGrid>
+                    <FormFieldWrapper
+                        control={form.control}
+                        name="description"
+                        label={<Trans>Description</Trans>}
+                        render={({ field }) => <Textarea {...field} />}
+                    />
+                </PageBlock>
+                <CustomFieldsPageBlock column="main" entityType="StockLocation" control={form.control} />
+            </PageLayout>
         </Page>
     );
 }

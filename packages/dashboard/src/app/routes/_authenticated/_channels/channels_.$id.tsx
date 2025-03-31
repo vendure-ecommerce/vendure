@@ -1,3 +1,4 @@
+import { ChannelCodeLabel } from '@/components/shared/channel-code-label.js';
 import { CurrencySelector } from '@/components/shared/currency-selector.js';
 import { ErrorPage } from '@/components/shared/error-page.js';
 import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
@@ -16,7 +17,6 @@ import {
     PageActionBar,
     PageActionBarRight,
     PageBlock,
-    PageDetailForm,
     PageLayout,
     PageTitle,
 } from '@/framework/layout-engine/page-layout.js';
@@ -25,7 +25,6 @@ import { useDetailPage } from '@/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@/lib/trans.js';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
-import { ChannelCodeLabel } from '@/components/shared/channel-code-label.js';
 import { channelDetailDocument, createChannelDocument, updateChannelDocument } from './channels.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_channels/channels_/$id')({
@@ -105,7 +104,7 @@ function ChannelDetailPage() {
     const codeIsDefault = entity?.code === DEFAULT_CHANNEL_CODE;
 
     return (
-        <Page pageId="channel-detail">
+        <Page pageId="channel-detail" form={form} submitHandler={submitHandler}>
             <PageTitle>
                 {creatingNewEntity ? (
                     <Trans>New channel</Trans>
@@ -113,143 +112,137 @@ function ChannelDetailPage() {
                     <ChannelCodeLabel code={entity?.code ?? ''} />
                 )}
             </PageTitle>
-            <PageDetailForm form={form} submitHandler={submitHandler}>
-                <PageActionBar>
-                    <PageActionBarRight>
-                        <PermissionGuard requires={['UpdateChannel']}>
-                            <Button
-                                type="submit"
-                                disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
-                            >
-                                <Trans>Update</Trans>
-                            </Button>
-                        </PermissionGuard>
-                    </PageActionBarRight>
-                </PageActionBar>
-                <PageLayout>
-                    <PageBlock column="main" blockId="main-form">
-                        <DetailFormGrid>
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="code"
-                                label={<Trans>Code</Trans>}
-                                render={({ field }) => (
-                                    <Input placeholder="" {...field} disabled={codeIsDefault} />
-                                )}
-                            />
-                            <div></div>
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="token"
-                                label={<Trans>Token</Trans>}
-                                description={
-                                    <Trans>
-                                        The token is used to specify the channel when making API requests.
-                                    </Trans>
-                                }
-                                render={({ field }) => <Input placeholder="" {...field} />}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="sellerId"
-                                label={<Trans>Seller</Trans>}
-                                render={({ field }) => (
-                                    <SellerSelector value={field.value ?? ''} onChange={field.onChange} />
-                                )}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="availableLanguageCodes"
-                                label={<Trans>Available languages</Trans>}
-                                render={({ field }) => (
-                                    <LanguageSelector
-                                        value={field.value ?? []}
-                                        onChange={field.onChange}
-                                        multiple={true}
-                                    />
-                                )}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="availableCurrencyCodes"
-                                label={<Trans>Available currencies</Trans>}
-                                render={({ field }) => (
-                                    <CurrencySelector
-                                        value={field.value ?? []}
-                                        onChange={field.onChange}
-                                        multiple={true}
-                                    />
-                                )}
-                            />
-                        </DetailFormGrid>
-                    </PageBlock>
-                    <PageBlock
-                        column="main"
-                        blockId="channel-defaults"
-                        title={<Trans>Channel defaults</Trans>}
-                    >
-                        <DetailFormGrid>
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="defaultLanguageCode"
-                                label={<Trans>Default language</Trans>}
-                                render={({ field }) => (
-                                    <LanguageSelector
-                                        value={field.value ?? ''}
-                                        onChange={field.onChange}
-                                        multiple={false}
-                                        availableLanguageCodes={availableLanguageCodes ?? []}
-                                    />
-                                )}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="defaultCurrencyCode"
-                                label={<Trans>Default currency</Trans>}
-                                render={({ field }) => (
-                                    <CurrencySelector
-                                        value={field.value ?? ''}
-                                        onChange={field.onChange}
-                                        multiple={false}
-                                        availableCurrencyCodes={availableCurrencyCodes ?? []}
-                                    />
-                                )}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="defaultTaxZoneId"
-                                label={<Trans>Default tax zone</Trans>}
-                                render={({ field }) => (
-                                    <ZoneSelector value={field.value ?? ''} onChange={field.onChange} />
-                                )}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="defaultShippingZoneId"
-                                label={<Trans>Default shipping zone</Trans>}
-                                render={({ field }) => (
-                                    <ZoneSelector value={field.value ?? ''} onChange={field.onChange} />
-                                )}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="pricesIncludeTax"
-                                label={<Trans>Prices include tax for default tax zone</Trans>}
-                                description={
-                                    <Trans>
-                                        When this is enabled, the prices entered in the product catalog will
-                                        be included in the tax for the default tax zone.
-                                    </Trans>
-                                }
-                                render={({ field }) => (
-                                    <Switch checked={field.value ?? false} onCheckedChange={field.onChange} />
-                                )}
-                            />
-                        </DetailFormGrid>
-                    </PageBlock>
-                    <CustomFieldsPageBlock column="main" entityType="Channel" control={form.control} />
-                </PageLayout>
-            </PageDetailForm>
+            <PageActionBar>
+                <PageActionBarRight>
+                    <PermissionGuard requires={['UpdateChannel']}>
+                        <Button
+                            type="submit"
+                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                        >
+                            <Trans>Update</Trans>
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
+            </PageActionBar>
+            <PageLayout>
+                <PageBlock column="main" blockId="main-form">
+                    <DetailFormGrid>
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="code"
+                            label={<Trans>Code</Trans>}
+                            render={({ field }) => (
+                                <Input placeholder="" {...field} disabled={codeIsDefault} />
+                            )}
+                        />
+                        <div></div>
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="token"
+                            label={<Trans>Token</Trans>}
+                            description={
+                                <Trans>
+                                    The token is used to specify the channel when making API requests.
+                                </Trans>
+                            }
+                            render={({ field }) => <Input placeholder="" {...field} />}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="sellerId"
+                            label={<Trans>Seller</Trans>}
+                            render={({ field }) => (
+                                <SellerSelector value={field.value ?? ''} onChange={field.onChange} />
+                            )}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="availableLanguageCodes"
+                            label={<Trans>Available languages</Trans>}
+                            render={({ field }) => (
+                                <LanguageSelector
+                                    value={field.value ?? []}
+                                    onChange={field.onChange}
+                                    multiple={true}
+                                />
+                            )}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="availableCurrencyCodes"
+                            label={<Trans>Available currencies</Trans>}
+                            render={({ field }) => (
+                                <CurrencySelector
+                                    value={field.value ?? []}
+                                    onChange={field.onChange}
+                                    multiple={true}
+                                />
+                            )}
+                        />
+                    </DetailFormGrid>
+                </PageBlock>
+                <PageBlock column="main" blockId="channel-defaults" title={<Trans>Channel defaults</Trans>}>
+                    <DetailFormGrid>
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="defaultLanguageCode"
+                            label={<Trans>Default language</Trans>}
+                            render={({ field }) => (
+                                <LanguageSelector
+                                    value={field.value ?? ''}
+                                    onChange={field.onChange}
+                                    multiple={false}
+                                    availableLanguageCodes={availableLanguageCodes ?? []}
+                                />
+                            )}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="defaultCurrencyCode"
+                            label={<Trans>Default currency</Trans>}
+                            render={({ field }) => (
+                                <CurrencySelector
+                                    value={field.value ?? ''}
+                                    onChange={field.onChange}
+                                    multiple={false}
+                                    availableCurrencyCodes={availableCurrencyCodes ?? []}
+                                />
+                            )}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="defaultTaxZoneId"
+                            label={<Trans>Default tax zone</Trans>}
+                            render={({ field }) => (
+                                <ZoneSelector value={field.value ?? ''} onChange={field.onChange} />
+                            )}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="defaultShippingZoneId"
+                            label={<Trans>Default shipping zone</Trans>}
+                            render={({ field }) => (
+                                <ZoneSelector value={field.value ?? ''} onChange={field.onChange} />
+                            )}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="pricesIncludeTax"
+                            label={<Trans>Prices include tax for default tax zone</Trans>}
+                            description={
+                                <Trans>
+                                    When this is enabled, the prices entered in the product catalog will be
+                                    included in the tax for the default tax zone.
+                                </Trans>
+                            }
+                            render={({ field }) => (
+                                <Switch checked={field.value ?? false} onCheckedChange={field.onChange} />
+                            )}
+                        />
+                    </DetailFormGrid>
+                </PageBlock>
+                <CustomFieldsPageBlock column="main" entityType="Channel" control={form.control} />
+            </PageLayout>
         </Page>
     );
 }

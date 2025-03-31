@@ -12,7 +12,6 @@ import {
     PageActionBar,
     PageActionBarRight,
     PageBlock,
-    PageDetailForm,
     PageLayout,
     PageTitle,
 } from '@/framework/layout-engine/page-layout.js';
@@ -73,42 +72,40 @@ function CustomerGroupDetailPage() {
     });
 
     return (
-        <Page pageId="customer-group-detail">
+        <Page pageId="customer-group-detail" form={form} submitHandler={submitHandler}>
             <PageTitle>
                 {creatingNewEntity ? <Trans>New customer group</Trans> : (entity?.name ?? '')}
             </PageTitle>
-            <PageDetailForm form={form} submitHandler={submitHandler}>
-                <PageActionBar>
-                    <PageActionBarRight>
-                        <PermissionGuard requires={['UpdateCustomerGroup']}>
-                            <Button
-                                type="submit"
-                                disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
-                            >
-                                <Trans>Update</Trans>
-                            </Button>
-                        </PermissionGuard>
-                    </PageActionBarRight>
-                </PageActionBar>
-                <PageLayout>
-                    <PageBlock column="main" blockId="main-form">
-                        <DetailFormGrid>
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="name"
-                                label={<Trans>Name</Trans>}
-                                render={({ field }) => <Input placeholder="" {...field} />}
-                            />
-                        </DetailFormGrid>
+            <PageActionBar>
+                <PageActionBarRight>
+                    <PermissionGuard requires={['UpdateCustomerGroup']}>
+                        <Button
+                            type="submit"
+                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                        >
+                            <Trans>Update</Trans>
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
+            </PageActionBar>
+            <PageLayout>
+                <PageBlock column="main" blockId="main-form">
+                    <DetailFormGrid>
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="name"
+                            label={<Trans>Name</Trans>}
+                            render={({ field }) => <Input placeholder="" {...field} />}
+                        />
+                    </DetailFormGrid>
+                </PageBlock>
+                <CustomFieldsPageBlock column="main" entityType="CustomerGroup" control={form.control} />
+                {entity && (
+                    <PageBlock column="main" blockId="customers" title={<Trans>Customers</Trans>}>
+                        <CustomerGroupMembersTable customerGroupId={entity?.id} />
                     </PageBlock>
-                    <CustomFieldsPageBlock column="main" entityType="CustomerGroup" control={form.control} />
-                    {entity && (
-                        <PageBlock column="main" blockId="customers" title={<Trans>Customers</Trans>}>
-                            <CustomerGroupMembersTable customerGroupId={entity?.id} />
-                        </PageBlock>
-                    )}
-                </PageLayout>
-            </PageDetailForm>
+                )}
+            </PageLayout>
         </Page>
     );
 }

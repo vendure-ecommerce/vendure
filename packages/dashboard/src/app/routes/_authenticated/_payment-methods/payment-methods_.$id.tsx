@@ -14,7 +14,6 @@ import {
     PageActionBar,
     PageActionBarRight,
     PageBlock,
-    PageDetailForm,
     PageLayout,
     PageTitle,
 } from '@/framework/layout-engine/page-layout.js';
@@ -59,14 +58,18 @@ function PaymentMethodDetailPage() {
                 name: entity.name,
                 code: entity.code,
                 description: entity.description,
-                    checker: entity.checker?.code ? {
-                    code: entity.checker?.code,
-                    arguments: entity.checker?.args,
-                } : null,
-                handler: entity.handler?.code ? {
-                    code: entity.handler?.code,
-                    arguments: entity.handler?.args,
-                } : null,
+                checker: entity.checker?.code
+                    ? {
+                          code: entity.checker?.code,
+                          arguments: entity.checker?.args,
+                      }
+                    : null,
+                handler: entity.handler?.code
+                    ? {
+                          code: entity.handler?.code,
+                          arguments: entity.handler?.args,
+                      }
+                    : null,
                 translations: entity.translations.map(translation => ({
                     id: translation.id,
                     languageCode: translation.languageCode,
@@ -99,81 +102,82 @@ function PaymentMethodDetailPage() {
     });
 
     return (
-        <Page pageId="payment-method-detail">
+        <Page pageId="payment-method-detail" form={form} submitHandler={submitHandler}>
             <PageTitle>
                 {creatingNewEntity ? <Trans>New payment method</Trans> : (entity?.name ?? '')}
             </PageTitle>
-            <PageDetailForm form={form} submitHandler={submitHandler}>
-                <PageActionBar>
-                    <PageActionBarRight>
-                        <PermissionGuard requires={['UpdatePaymentMethod']}>
-                            <Button
-                                type="submit"
-                                disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
-                            >
-                                <Trans>Update</Trans>
-                            </Button>
-                        </PermissionGuard>
-                    </PageActionBarRight>
-                </PageActionBar>
-                <PageLayout>
-                    <PageBlock column="side" blockId="enabled">
+            <PageActionBar>
+                <PageActionBarRight>
+                    <PermissionGuard requires={['UpdatePaymentMethod']}>
+                        <Button
+                            type="submit"
+                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                        >
+                            <Trans>Update</Trans>
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
+            </PageActionBar>
+            <PageLayout>
+                <PageBlock column="side" blockId="enabled">
+                    <FormFieldWrapper
+                        control={form.control}
+                        name="enabled"
+                        label={<Trans>Enabled</Trans>}
+                        render={({ field }) => (
+                            <Switch checked={field.value ?? false} onCheckedChange={field.onChange} />
+                        )}
+                    />
+                </PageBlock>
+                <PageBlock column="main" blockId="main-form">
+                    <DetailFormGrid>
+                        <TranslatableFormFieldWrapper
+                            control={form.control}
+                            name="name"
+                            label={<Trans>Name</Trans>}
+                            render={({ field }) => <Input {...field} />}
+                        />
                         <FormFieldWrapper
-                                control={form.control}
-                                name="enabled"
-                                label={<Trans>Enabled</Trans>}
-                                render={({ field }) => <Switch checked={field.value ?? false} onCheckedChange={field.onChange} />}
+                            control={form.control}
+                            name="code"
+                            label={<Trans>Code</Trans>}
+                            render={({ field }) => <Input {...field} />}
+                        />
+                    </DetailFormGrid>
+                    <TranslatableFormFieldWrapper
+                        control={form.control}
+                        name="description"
+                        label={<Trans>Description</Trans>}
+                        render={({ field }) => <RichTextInput {...field} />}
+                    />
+                </PageBlock>
+                <CustomFieldsPageBlock column="main" entityType="PaymentMethod" control={form.control} />
+                <PageBlock
+                    column="main"
+                    blockId="payment-eligibility-checker"
+                    title={<Trans>Payment eligibility checker</Trans>}
+                >
+                    <FormFieldWrapper
+                        control={form.control}
+                        name="checker"
+                        render={({ field }) => (
+                            <PaymentEligibilityCheckerSelector
+                                value={field.value}
+                                onChange={field.onChange}
                             />
-                        </PageBlock>
-                        <PageBlock column="main" blockId="main-form">
-                            <DetailFormGrid>
-                                <TranslatableFormFieldWrapper
-                                    control={form.control}
-                                    name="name"
-                                    label={<Trans>Name</Trans>}
-                                    render={({ field }) => <Input {...field} />}
-                                />
-                                <FormFieldWrapper
-                                    control={form.control}
-                                    name="code"
-                                    label={<Trans>Code</Trans>}
-                                    render={({ field }) => <Input {...field} />}
-                                />
-                            </DetailFormGrid>
-                            <TranslatableFormFieldWrapper
-                                control={form.control}
-                                name="description"
-                                label={<Trans>Description</Trans>}
-                                render={({ field }) => <RichTextInput {...field} />}
-                            />
-                        </PageBlock>
-                        <CustomFieldsPageBlock column="main" entityType="PaymentMethod" control={form.control} />
-                        <PageBlock column="main" blockId="payment-eligibility-checker" title={<Trans>Payment eligibility checker</Trans>}>
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="checker"
-                                render={({ field }) => (
-                                    <PaymentEligibilityCheckerSelector
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                    />
-                                )}
-                            />
-                        </PageBlock>
-                        <PageBlock column="main" blockId="payment-handler" title={<Trans>Calculator</Trans>}>
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="handler"
-                                render={({ field }) => (
-                                    <PaymentHandlerSelector
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                    />
-                                )}
-                            />
-                        </PageBlock>
-                    </PageLayout>
-                </PageDetailForm>
-            </Page>
+                        )}
+                    />
+                </PageBlock>
+                <PageBlock column="main" blockId="payment-handler" title={<Trans>Calculator</Trans>}>
+                    <FormFieldWrapper
+                        control={form.control}
+                        name="handler"
+                        render={({ field }) => (
+                            <PaymentHandlerSelector value={field.value} onChange={field.onChange} />
+                        )}
+                    />
+                </PageBlock>
+            </PageLayout>
+        </Page>
     );
 }

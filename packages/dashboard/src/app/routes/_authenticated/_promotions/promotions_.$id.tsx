@@ -15,7 +15,6 @@ import {
     PageActionBar,
     PageActionBarRight,
     PageBlock,
-    PageDetailForm,
     PageLayout,
     PageTitle,
 } from '@/framework/layout-engine/page-layout.js';
@@ -109,133 +108,128 @@ function PromotionDetailPage() {
     });
 
     return (
-        <Page pageId="promotion-detail">
+        <Page pageId="promotion-detail" form={form} submitHandler={submitHandler}>
             <PageTitle>{creatingNewEntity ? <Trans>New promotion</Trans> : (entity?.name ?? '')}</PageTitle>
-            <PageDetailForm form={form} submitHandler={submitHandler}>
-                <PageActionBar>
-                    <PageActionBarRight>
-                        <PermissionGuard requires={['UpdatePromotion']}>
-                            <Button
-                                type="submit"
-                                disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
-                            >
-                                <Trans>Update</Trans>
-                            </Button>
-                        </PermissionGuard>
-                    </PageActionBarRight>
-                </PageActionBar>
-                <PageLayout>
-                    <PageBlock column="side" blockId="enabled">
-                        <FormFieldWrapper
+            <PageActionBar>
+                <PageActionBarRight>
+                    <PermissionGuard requires={['UpdatePromotion']}>
+                        <Button
+                            type="submit"
+                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                        >
+                            <Trans>Update</Trans>
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
+            </PageActionBar>
+            <PageLayout>
+                <PageBlock column="side" blockId="enabled">
+                    <FormFieldWrapper
+                        control={form.control}
+                        name="enabled"
+                        label={<Trans>Enabled</Trans>}
+                        description={<Trans>When enabled, a promotion is available in the shop</Trans>}
+                        render={({ field }) => (
+                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                        )}
+                    />
+                </PageBlock>
+                <PageBlock column="main" blockId="main-form">
+                    <DetailFormGrid>
+                        <TranslatableFormFieldWrapper
                             control={form.control}
-                            name="enabled"
-                            label={<Trans>Enabled</Trans>}
-                            description={<Trans>When enabled, a promotion is available in the shop</Trans>}
-                            render={({ field }) => (
-                                <Switch checked={field.value} onCheckedChange={field.onChange} />
-                            )}
+                            name="name"
+                            label={<Trans>Name</Trans>}
+                            render={({ field }) => <Input {...field} />}
                         />
-                    </PageBlock>
-                    <PageBlock column="main" blockId="main-form">
-                        <DetailFormGrid>
-                            <TranslatableFormFieldWrapper
-                                control={form.control}
-                                name="name"
-                                label={<Trans>Name</Trans>}
-                                render={({ field }) => <Input {...field} />}
-                            />
-                            <div></div>
-                        </DetailFormGrid>
-                        <div className="mb-4">
-                            <TranslatableFormFieldWrapper
-                                control={form.control}
-                                name="description"
-                                label={<Trans>Description</Trans>}
-                                render={({ field }) => <RichTextInput {...field} />}
-                            />
-                        </div>
-                        <DetailFormGrid>
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="startsAt"
-                                label={<Trans>Starts at</Trans>}
-                                render={({ field }) => (
-                                    <DateTimeInput
-                                        value={field.value}
-                                        onChange={value => field.onChange(value.toISOString())}
-                                    />
-                                )}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="endsAt"
-                                label={<Trans>Ends at</Trans>}
-                                render={({ field }) => (
-                                    <DateTimeInput
-                                        value={field.value}
-                                        onChange={value => field.onChange(value.toISOString())}
-                                    />
-                                )}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="couponCode"
-                                label={<Trans>Coupon code</Trans>}
-                                render={({ field }) => <Input {...field} />}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="perCustomerUsageLimit"
-                                label={<Trans>Per customer usage limit</Trans>}
-                                render={({ field }) => (
-                                    <Input
-                                        type="number"
-                                        value={field.value ?? ''}
-                                        onChange={e => field.onChange(e.target.valueAsNumber)}
-                                    />
-                                )}
-                            />
-                            <FormFieldWrapper
-                                control={form.control}
-                                name="usageLimit"
-                                label={<Trans>Usage limit</Trans>}
-                                render={({ field }) => (
-                                    <Input
-                                        type="number"
-                                        value={field.value ?? ''}
-                                        onChange={e => field.onChange(e.target.valueAsNumber)}
-                                    />
-                                )}
-                            />
-                        </DetailFormGrid>
-                    </PageBlock>
-                    <CustomFieldsPageBlock column="main" entityType="Promotion" control={form.control} />
-                    <PageBlock column="main" blockId="conditions" title={<Trans>Conditions</Trans>}>
+                        <div></div>
+                    </DetailFormGrid>
+                    <div className="mb-4">
+                        <TranslatableFormFieldWrapper
+                            control={form.control}
+                            name="description"
+                            label={<Trans>Description</Trans>}
+                            render={({ field }) => <RichTextInput {...field} />}
+                        />
+                    </div>
+                    <DetailFormGrid>
                         <FormFieldWrapper
                             control={form.control}
-                            name="conditions"
+                            name="startsAt"
+                            label={<Trans>Starts at</Trans>}
                             render={({ field }) => (
-                                <PromotionConditionsSelector
-                                    value={field.value ?? []}
-                                    onChange={field.onChange}
+                                <DateTimeInput
+                                    value={field.value}
+                                    onChange={value => field.onChange(value.toISOString())}
                                 />
                             )}
                         />
-                    </PageBlock>
-                    <PageBlock column="main" blockId="actions" title={<Trans>Actions</Trans>}>
                         <FormFieldWrapper
                             control={form.control}
-                            name="actions"
+                            name="endsAt"
+                            label={<Trans>Ends at</Trans>}
                             render={({ field }) => (
-                                <PromotionActionsSelector
-                                    value={field.value ?? []}
-                                    onChange={field.onChange}
+                                <DateTimeInput
+                                    value={field.value}
+                                    onChange={value => field.onChange(value.toISOString())}
                                 />
                             )}
                         />
-                    </PageBlock>
-                </PageLayout>
-            </PageDetailForm>
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="couponCode"
+                            label={<Trans>Coupon code</Trans>}
+                            render={({ field }) => <Input {...field} />}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="perCustomerUsageLimit"
+                            label={<Trans>Per customer usage limit</Trans>}
+                            render={({ field }) => (
+                                <Input
+                                    type="number"
+                                    value={field.value ?? ''}
+                                    onChange={e => field.onChange(e.target.valueAsNumber)}
+                                />
+                            )}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="usageLimit"
+                            label={<Trans>Usage limit</Trans>}
+                            render={({ field }) => (
+                                <Input
+                                    type="number"
+                                    value={field.value ?? ''}
+                                    onChange={e => field.onChange(e.target.valueAsNumber)}
+                                />
+                            )}
+                        />
+                    </DetailFormGrid>
+                </PageBlock>
+                <CustomFieldsPageBlock column="main" entityType="Promotion" control={form.control} />
+                <PageBlock column="main" blockId="conditions" title={<Trans>Conditions</Trans>}>
+                    <FormFieldWrapper
+                        control={form.control}
+                        name="conditions"
+                        render={({ field }) => (
+                            <PromotionConditionsSelector
+                                value={field.value ?? []}
+                                onChange={field.onChange}
+                            />
+                        )}
+                    />
+                </PageBlock>
+                <PageBlock column="main" blockId="actions" title={<Trans>Actions</Trans>}>
+                    <FormFieldWrapper
+                        control={form.control}
+                        name="actions"
+                        render={({ field }) => (
+                            <PromotionActionsSelector value={field.value ?? []} onChange={field.onChange} />
+                        )}
+                    />
+                </PageBlock>
+            </PageLayout>
         </Page>
     );
 }
