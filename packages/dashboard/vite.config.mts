@@ -6,7 +6,7 @@ import { defineConfig } from 'vitest/config';
 process.env.IS_LOCAL_DEV = 'true';
 
 const adminApiHost = process.env.ADMIN_API_HOST || 'http://localhost';
-const adminApiPort = +(process.env.ADMIN_API_PORT || 3000);
+const adminApiPort = process.env.ADMIN_API_PORT ? +process.env.ADMIN_API_PORT : 'auto';
 
 /**
  * This config is used for local development
