@@ -1,13 +1,13 @@
 import { generateMigration, revertLastMigration, runMigrations } from '@vendure/core';
-import program from 'commander';
+import { program } from 'commander';
 
 import { devConfig } from './dev-config';
 
 program
     .command('generate <name>')
     .description('Generate a new migration file with the given name')
-    .action(name => {
-        return generateMigration(devConfig, { name, outputDir: './migrations' });
+    .action(async name => {
+        await generateMigration(devConfig, { name, outputDir: './migrations' });
     });
 
 program

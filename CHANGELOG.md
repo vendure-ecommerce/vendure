@@ -1,3 +1,32 @@
+## 3.2.0 (2025-03-27)
+
+
+#### Fixes
+
+* **admin-ui** Fix build error ([fbbcc3e](https://github.com/vendure-ecommerce/vendure/commit/fbbcc3e))
+* **core** Avoid variant options combination check on updateProductVariant mutation (#3361) ([c820f42](https://github.com/vendure-ecommerce/vendure/commit/c820f42)), closes [#3361](https://github.com/vendure-ecommerce/vendure/issues/3361)
+* **core** Fix progress reporting for collection filters job ([3976148](https://github.com/vendure-ecommerce/vendure/commit/3976148))
+* **core** Use correct precision for CacheItem.expiresAt ([12e2db0](https://github.com/vendure-ecommerce/vendure/commit/12e2db0))
+
+#### Features
+
+* **common** Add exports field to package.json for module resolution ([5623c2b](https://github.com/vendure-ecommerce/vendure/commit/5623c2b))
+* **core** Add updateProductVariant mutation ([0b854b4](https://github.com/vendure-ecommerce/vendure/commit/0b854b4))
+* **core** Add verification token strategy (#3294) ([9375ba2](https://github.com/vendure-ecommerce/vendure/commit/9375ba2)), closes [#3294](https://github.com/vendure-ecommerce/vendure/issues/3294)
+* **harden-plugin** Allow skipping complexity check in Harden Plugin (#3340) ([0bef00b](https://github.com/vendure-ecommerce/vendure/commit/0bef00b)), closes [#3340](https://github.com/vendure-ecommerce/vendure/issues/3340)
+* **job-queue-plugin** Add support for job options  Priority ([90b5e05](https://github.com/vendure-ecommerce/vendure/commit/90b5e05))
+
+#### Perf
+
+* **core** Remove duplicated calls to promotion checks ([e3508f3](https://github.com/vendure-ecommerce/vendure/commit/e3508f3))
+
+
+### BREAKING CHANGE
+
+* If you are using the DefaultCachePlugin, then
+you should generate a migration that adds `precision(3)` to the
+`expiresAt` column. This will only affect cache records so no prod
+data will be affected by it.
 ## <small>3.1.7 (2025-03-06)</small>
 
 

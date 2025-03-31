@@ -1,4 +1,4 @@
-export { bootstrap, bootstrapWorker } from './bootstrap';
+export * from './bootstrap';
 export { VENDURE_VERSION } from './version';
 export { generateMigration, revertLastMigration, runMigrations } from './migrate';
 export * from './api/index';

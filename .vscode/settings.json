@@ -18,5 +18,7 @@
         "ui-devkit",
         "repo"
     ],
-    "conventionalCommits.gitmoji": false
+    "conventionalCommits.gitmoji": false,
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "angular.enable-strict-mode-prompt": false
 }

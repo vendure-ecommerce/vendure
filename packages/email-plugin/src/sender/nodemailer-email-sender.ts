@@ -133,9 +133,9 @@ export class NodemailerEmailSender implements EmailSender {
         await this.writeStreamToFile(pathWithoutExt + '.txt', result);
     }
 
-    private async writeStreamToFile(filePath: string, info: StreamTransportInfo): Promise<string> {
+    private async writeStreamToFile(filePath: string, info: StreamTransportInfo): Promise<void> {
         const writeStream = fs.createWriteStream(filePath);
-        return new Promise<string>((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             writeStream.on('open', () => {
                 info.message.pipe(writeStream);
                 writeStream.on('close', resolve);

@@ -9,6 +9,7 @@
         "dev:server": "node -r ts-node/register -r dotenv/config index.ts",
         "dev:worker": "node -r ts-node/register -r dotenv/config index-worker.ts",
         "dev": "concurrently npm:dev:*",
+        "dashboard:dev": "vite dev",
         "load-test:1k": "node -r ts-node/register load-testing/run-load-test.ts 1000",
         "load-test:10k": "node -r ts-node/register load-testing/run-load-test.ts 10000",
         "load-test:100k": "node -r ts-node/register load-testing/run-load-test.ts 100000"
@@ -30,6 +31,7 @@
         "concurrently": "^8.2.2",
         "csv-stringify": "^6.4.6",
         "dayjs": "^1.11.10",
+        "jsdom": "^26.0.0",
         "progress": "^2.0.3"
     }
 }
