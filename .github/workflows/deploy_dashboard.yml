@@ -45,7 +45,7 @@ jobs:
               run: vercel link --yes --scope ${{ env.VERCEL_SCOPE }} --project=${{ env.VERCEL_PROJECT }} --token=${{ secrets.VERCEL_TOKEN }}
 
             - name: Pull Vercel Environment Information
-              run: vercel env pull --environment=${{ env.VERCEL_ENV }} --yes --scope ${{ env.VERCEL_SCOPE }} --token=${{ secrets.VERCEL_TOKEN }}
+              run: vercel env pull --cwd ./packages/dashboard --environment=${{ env.VERCEL_ENV }} --yes --scope ${{ env.VERCEL_SCOPE }} --token=${{ secrets.VERCEL_TOKEN }}
 
             - name: Build Project Artifacts
               run: vercel build --scope ${{ env.VERCEL_SCOPE }} --token=${{ secrets.VERCEL_TOKEN }} ${{ env.VERCEL_ENV == 'production' && '--prod' || '' }}
