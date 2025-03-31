@@ -83,7 +83,7 @@
         "cmdk": "^1.0.0",
         "date-fns": "^3.6.0",
         "gql.tada": "^1.8.10",
-        "graphql": "~16.10.0",
+        "graphql": "^16.10.0",
         "json-edit-react": "^1.23.1",
         "lucide-react": "^0.475.0",
         "motion": "^12.6.2",
