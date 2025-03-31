@@ -178,7 +178,7 @@ export class CatalogModule {
         });
         pageService.registerPageTab({
             priority: 0,
-            location: 'product-list',
+            location: 'product-variant-list',
             tab: _('catalog.product-variants'),
             route: 'variants',
             component: ProductVariantListComponent,
