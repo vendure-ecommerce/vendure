@@ -21,7 +21,8 @@ jobs:
     deploy:
         runs-on: ubuntu-latest
         env:
-            VERCEL_ENV: ${{ github.ref_name == 'minor' && 'development' || github.ref_name == 'major' && 'major' || 'production' }}
+            # VERCEL_ENV: ${{ github.ref_name == 'minor' && 'development' || github.ref_name == 'major' && 'major' || 'production' }}
+            VERCEL_ENV: production
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
