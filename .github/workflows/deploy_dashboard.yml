@@ -1,0 +1,49 @@
+name: '🚀 Deploy Dashboard'
+
+on:
+    push:
+        branches:
+            - minor
+            - major
+            - master
+
+env:
+    NEXT_TELEMETRY_DISABLED: 1
+    NODE_OPTIONS: '--max_old_space_size=4096'
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        env:
+            VERCEL_ENV: ${{ github.ref_name == 'minor' && 'minor' || github.ref_name == 'major' && 'major' || 'production' }}
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Install Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache: 'npm'
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Install Vercel CLI
+              run: npm i -g vercel@latest
+
+            - name: Link folder to project
+              run: vercel link --yes --scope vendure --project=admin-dashboard --token=${{ secrets.VERCEL_TOKEN }}
+
+            - name: Pull Vercel Environment Information
+              run: vercel pull --environment=${{ env.VERCEL_ENV }} --yes --scope vendure --token=${{ secrets.VERCEL_TOKEN }}
+
+            - name: Build Project Artifacts
+              run: vercel build --scope vendure --token=${{ secrets.VERCEL_TOKEN }} ${{ env.VERCEL_ENV == 'production' && '--prod' || '' }}
+
+            - name: Deploy Project Artifacts to Vercel
+              id: deploy_vercel
+              run: vercel deploy --archive=tgz --prebuilt --scope vendure  ${{ env.VERCEL_ENV == 'production' && '--prod' || '' }} --token=${{ secrets.VERCEL_TOKEN }} | awk 'END{print}' | awk '{print "URL="$1}' >> $GITHUB_OUTPUT
+
+            - name: Print Vercel URL
+              run: echo "Vercel URL: ${{ steps.deploy_vercel.outputs.URL }}"
