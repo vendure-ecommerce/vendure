@@ -5,6 +5,9 @@ import { defineConfig } from 'vitest/config';
 
 process.env.IS_LOCAL_DEV = 'true';
 
+const adminApiHost = process.env.ADMIN_API_HOST || 'http://localhost';
+const adminApiPort = +(process.env.ADMIN_API_PORT || 3000);
+
 /**
  * This config is used for local development
  */
@@ -16,7 +19,7 @@ export default defineConfig({
     plugins: [
         vendureDashboardPlugin({
             vendureConfigPath: pathToFileURL('./sample-vendure-config.ts'),
-            adminUiConfig: { apiHost: 'http://localhost', apiPort: 3000 },
+            adminUiConfig: { apiHost: adminApiHost, apiPort: adminApiPort },
             // gqlTadaOutputPath: path.resolve(__dirname, './graphql/'),
             tempCompilationDir: path.resolve(__dirname, './.temp'),
         }) as any,
