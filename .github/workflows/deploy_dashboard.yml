@@ -10,6 +10,8 @@ on:
 env:
     NEXT_TELEMETRY_DISABLED: 1
     NODE_OPTIONS: '--max_old_space_size=4096'
+    VERCEL_PROJECT: admin-dashboard
+    VERCEL_SCOPE: vendure
 
 jobs:
     deploy:
@@ -36,17 +38,17 @@ jobs:
               run: npm run build:core-common
 
             - name: Link folder to project
-              run: vercel link --yes --scope vendure --project=admin-dashboard --token=${{ secrets.VERCEL_TOKEN }}
+              run: vercel link --yes --scope ${{ env.VERCEL_SCOPE }} --project=${{ env.VERCEL_PROJECT }} --token=${{ secrets.VERCEL_TOKEN }}
 
             - name: Pull Vercel Environment Information
-              run: vercel pull --environment=${{ env.VERCEL_ENV }} --yes --scope vendure --token=${{ secrets.VERCEL_TOKEN }}
+              run: vercel pull --environment=${{ env.VERCEL_ENV }} --yes --scope ${{ env.VERCEL_SCOPE }} --token=${{ secrets.VERCEL_TOKEN }}
 
             - name: Build Project Artifacts
-              run: vercel build --scope vendure --token=${{ secrets.VERCEL_TOKEN }} ${{ env.VERCEL_ENV == 'production' && '--prod' || '' }}
+              run: vercel build --scope ${{ env.VERCEL_SCOPE }} --token=${{ secrets.VERCEL_TOKEN }} ${{ env.VERCEL_ENV == 'production' && '--prod' || '' }}
 
             - name: Deploy Project Artifacts to Vercel
               id: deploy_vercel
-              run: vercel deploy --archive=tgz --prebuilt --scope vendure  ${{ env.VERCEL_ENV == 'production' && '--prod' || '' }} --token=${{ secrets.VERCEL_TOKEN }} | awk 'END{print}' | awk '{print "URL="$1}' >> $GITHUB_OUTPUT
+              run: vercel deploy --archive=tgz --prebuilt --scope ${{ env.VERCEL_SCOPE }}  ${{ env.VERCEL_ENV == 'production' && '--prod' || '' }} --token=${{ secrets.VERCEL_TOKEN }} | awk 'END{print}' | awk '{print "URL="$1}' >> $GITHUB_OUTPUT
 
             - name: Print Vercel URL
               shell: bash
