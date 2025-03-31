@@ -13,6 +13,10 @@ env:
     VERCEL_PROJECT: admin-dashboard
     VERCEL_SCOPE: vendure
 
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
 jobs:
     deploy:
         runs-on: ubuntu-latest
