@@ -39,7 +39,7 @@ jobs:
               run: vercel link --yes --scope vendure --project=admin-dashboard --token=${{ secrets.VERCEL_TOKEN }}
 
             - name: Pull Vercel Environment Information
-              run: vercel pull --environment=${{ env.VERCEL_ENV }} --yes --scope vendure --token=${{ secrets.VERCEL_TOKEN }}
+              run: vercel pull --cwd ./packages/dashboard --environment=${{ env.VERCEL_ENV }} --yes --scope vendure --token=${{ secrets.VERCEL_TOKEN }}
 
             - name: Build Project Artifacts
               run: vercel build --scope vendure --token=${{ secrets.VERCEL_TOKEN }} ${{ env.VERCEL_ENV == 'production' && '--prod' || '' }}
