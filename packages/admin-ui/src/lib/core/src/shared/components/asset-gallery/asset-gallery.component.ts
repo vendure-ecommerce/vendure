@@ -19,6 +19,7 @@ import { AssetLike } from './asset-gallery.types';
     templateUrl: './asset-gallery.component.html',
     styleUrls: ['./asset-gallery.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AssetGalleryComponent implements OnChanges {
     @Input() assets: AssetLike[];

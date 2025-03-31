@@ -6,6 +6,7 @@ import { DataTableSort } from '../../../providers/data-table/data-table-sort';
     selector: 'vdr-dt2-column',
     template: ``,
     exportAs: 'row',
+    standalone: false,
 })
 export class DataTable2ColumnComponent<T> implements OnInit {
     @Input() id: string;

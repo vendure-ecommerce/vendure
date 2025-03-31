@@ -31,6 +31,7 @@ export interface AssetChange {
     templateUrl: './assets.component.html',
     styleUrls: ['./assets.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AssetsComponent {
     @Input('assets') set assetsSetter(val: Asset[]) {

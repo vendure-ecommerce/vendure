@@ -104,6 +104,7 @@ import { DataTable2SearchComponent } from './data-table-search.component';
     styleUrls: ['data-table2.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [PaginationService, FilterPresetService],
+    standalone: false,
 })
 export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
     @Input() id: DataTableLocationId;

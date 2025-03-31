@@ -9,6 +9,7 @@ import { BaseNavComponent } from '../base-nav/base-nav.component';
     templateUrl: './settings-nav.component.html',
     styleUrls: ['./settings-nav.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class SettingsNavComponent extends BaseNavComponent implements OnInit {
     settingsMenuConfig$: Observable<NavMenuSection[]>;

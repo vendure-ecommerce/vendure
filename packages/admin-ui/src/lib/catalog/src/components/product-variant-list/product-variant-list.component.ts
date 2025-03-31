@@ -12,6 +12,7 @@ import {
     selector: 'vdr-product-variant-list',
     templateUrl: './product-variant-list.component.html',
     styleUrls: ['./product-variant-list.component.scss'],
+    standalone: false
 })
 export class ProductVariantListComponent
     extends TypedBaseListComponent<typeof ProductVariantListQueryDocument, 'productVariants'>

@@ -31,6 +31,7 @@ export type CreateProductVariantsConfig = {
     selector: 'vdr-generate-product-variants',
     templateUrl: './generate-product-variants.component.html',
     styleUrls: ['./generate-product-variants.component.scss'],
+    standalone: false
 })
 export class GenerateProductVariantsComponent implements OnInit {
     @Output() variantsChange = new EventEmitter<CreateProductVariantsConfig>();

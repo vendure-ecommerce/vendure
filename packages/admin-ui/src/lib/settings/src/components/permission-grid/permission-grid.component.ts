@@ -16,6 +16,7 @@ export interface PermissionGridRow {
     templateUrl: './permission-grid.component.html',
     styleUrls: ['./permission-grid.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class PermissionGridComponent implements OnInit {
     @Input() permissionDefinitions: PermissionDefinition[];

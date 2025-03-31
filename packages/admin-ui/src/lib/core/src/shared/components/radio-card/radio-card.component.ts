@@ -18,12 +18,16 @@ import { RadioCardFieldsetComponent } from './radio-card-fieldset.component';
     styleUrls: ['./radio-card.component.scss'],
     exportAs: 'VdrRadioCard',
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RadioCardComponent<T = any> implements OnInit, OnDestroy {
     @Input() item: T;
     @ContentChild(TemplateRef) itemTemplate: TemplateRef<T>;
 
-    constructor(private fieldset: RadioCardFieldsetComponent, private changeDetector: ChangeDetectorRef) {}
+    constructor(
+        private fieldset: RadioCardFieldsetComponent,
+        private changeDetector: ChangeDetectorRef,
+    ) {}
 
     private idChange$ = new Subject<T>();
     private subscription: Subscription;

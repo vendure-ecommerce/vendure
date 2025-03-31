@@ -10,6 +10,7 @@ import { Dialog } from '../../../providers/modal/modal.types';
     templateUrl: './manage-tags-dialog.component.html',
     styleUrls: ['./manage-tags-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ManageTagsDialogComponent implements Dialog<boolean>, OnInit {
     resolveWith: (result: boolean | undefined) => void;

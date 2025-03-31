@@ -26,7 +26,7 @@
         "@vendure/core": "^3.1.7",
         "express": "^4.18.3",
         "rimraf": "^5.0.5",
-        "typescript": "5.4.2"
+        "typescript": "5.8.2"
     },
     "dependencies": {
         "date-fns": "^2.30.0",

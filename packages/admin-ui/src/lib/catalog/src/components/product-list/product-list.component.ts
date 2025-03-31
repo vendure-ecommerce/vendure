@@ -18,6 +18,7 @@ import { delay, switchMap } from 'rxjs/operators';
     selector: 'vdr-products-list',
     templateUrl: './product-list.component.html',
     styleUrls: ['./product-list.component.scss'],
+    standalone: false
 })
 export class ProductListComponent
     extends TypedBaseListComponent<typeof ProductListQueryDocument, 'products'>

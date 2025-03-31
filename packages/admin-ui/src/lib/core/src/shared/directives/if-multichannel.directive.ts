@@ -20,6 +20,7 @@ import { IfDirectiveBase } from './if-directive-base';
  */
 @Directive({
     selector: '[vdrIfMultichannel]',
+    standalone: false,
 })
 export class IfMultichannelDirective extends IfDirectiveBase<[]> {
     constructor(

@@ -17,6 +17,7 @@ import {
     templateUrl: './apply-facet-dialog.component.html',
     styleUrls: ['./apply-facet-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ApplyFacetDialogComponent implements Dialog<FacetValue[]>, AfterViewInit {
     @ViewChild(FacetValueSelectorComponent) private selector: FacetValueSelectorComponent;

@@ -36,6 +36,7 @@ const GET_PAYMENT_METHODS_FOR_MANUAL_ADD = gql`
     templateUrl: './add-manual-payment-dialog.component.html',
     styleUrls: ['./add-manual-payment-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AddManualPaymentDialogComponent implements OnInit, Dialog<Omit<ManualPaymentInput, 'orderId'>> {
     // populated by ModalService call
