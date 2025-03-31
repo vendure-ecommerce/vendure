@@ -15,17 +15,43 @@ import { LocationWrapper } from './location-wrapper.js';
 export interface PageProps extends ComponentProps<'div'> {
     pageId?: string;
     entity?: any;
+    form?: UseFormReturn<any>;
+    submitHandler?: any;
 }
 
 export const PageProvider = createContext<PageContext | undefined>(undefined);
 
-export function Page({ children, pageId, entity, ...props }: PageProps) {
-    const [form, setForm] = useState<UseFormReturn<any> | undefined>(undefined);
+export function Page({ children, pageId, entity, form, submitHandler, ...props }: PageProps) {
+    const childArray = React.Children.toArray(children);
+
+    const pageTitle = childArray.find(child => React.isValidElement(child) && child.type === PageTitle);
+    const pageActionBar = childArray.find(
+        child => React.isValidElement(child) && child.type === PageActionBar,
+    );
+
+    const pageContent = childArray.filter(
+        child => React.isValidElement(child) && child.type !== PageTitle && child.type !== PageActionBar,
+    );
+
+    const pageContentWithOptionalForm = form ? (
+        <Form {...form}>
+            <form onSubmit={submitHandler} className="space-y-8">
+                {pageContent}
+            </form>
+        </Form>
+    ) : (
+        pageContent
+    );
+
     return (
-        <PageProvider value={{ pageId, form, setForm, entity }}>
+        <PageProvider value={{ pageId, form, entity }}>
             <LocationWrapper>
-                <div className={cn('m-4', props.className)} {...props}>
-                    {children}
+                <div className={cn('m-4 space-y-4', props.className)} {...props}>
+                    <div className="flex items-center justify-between">
+                        {pageTitle}
+                        {pageActionBar}
+                    </div>
+                    {pageContentWithOptionalForm}
                 </div>
             </LocationWrapper>
         </PageProvider>
@@ -132,10 +158,6 @@ export function PageDetailForm({
     form: UseFormReturn<any>;
     submitHandler: any;
 }) {
-    const page = usePage();
-    if (!page.form && form) {
-        page.setForm(form);
-    }
     return (
         <Form {...form}>
             <form onSubmit={submitHandler} className="space-y-8">
@@ -153,30 +175,26 @@ export interface PageContext {
     pageId?: string;
     entity?: any;
     form?: UseFormReturn<any>;
-    setForm: (form: UseFormReturn<any>) => void;
 }
 
 export function PageTitle({ children }: { children: React.ReactNode }) {
-    return <h1 className="text-2xl font-semibold mb-4">{children}</h1>;
+    return <h1 className="text-2xl font-semibold">{children}</h1>;
 }
 
 export function PageActionBar({ children }: { children: React.ReactNode }) {
     let childArray = React.Children.toArray(children);
-    // For some reason, sometimes the `children` prop is passed as this component itself, so we need to unwrap it
-    // This is a bit of a hack, but it works
-    if (childArray.length === 1 && (childArray[0] as React.ReactElement).type === PageActionBar) {
-        childArray = React.Children.toArray((childArray[0] as any)?.props?.children);
-    }
+
     const leftContent = childArray.filter(
-        child => React.isValidElement(child) && (child.type as any)?.name === 'PageActionBarLeft',
+        child => React.isValidElement(child) && child.type === PageActionBarLeft,
     );
     const rightContent = childArray.filter(
-        child => React.isValidElement(child) && (child.type as any)?.name === 'PageActionBarRight',
+        child => React.isValidElement(child) && child.type === PageActionBarRight,
     );
+
     return (
-        <div className="flex justify-between gap-2">
-            <div className="flex justify-start gap-2">{leftContent}</div>
-            <div className="flex justify-end gap-2">{rightContent}</div>
+        <div className={cn('flex gap-2', leftContent.length > 0 ? 'justify-between' : 'justify-end')}>
+            {leftContent.length > 0 && <div className="flex justify-start gap-2">{leftContent}</div>}
+            {rightContent.length > 0 && <div className="flex justify-end gap-2">{rightContent}</div>}
         </div>
     );
 }

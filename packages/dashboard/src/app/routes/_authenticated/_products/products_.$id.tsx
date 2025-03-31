@@ -64,7 +64,7 @@ function ProductDetailPage() {
                 translations: entity.translations.map(translation => ({
                     id: translation.id,
                     languageCode: translation.languageCode,
-                    name: translation.name, 
+                    name: translation.name,
                     slug: translation.slug,
                     description: translation.description,
                     customFields: (translation as any).customFields,
@@ -88,112 +88,110 @@ function ProductDetailPage() {
     });
 
     return (
-        <Page pageId="product-detail" entity={entity}>
+        <Page pageId="product-detail" entity={entity} form={form} submitHandler={submitHandler}>
             <PageTitle>{creatingNewEntity ? <Trans>New product</Trans> : (entity?.name ?? '')}</PageTitle>
-            <PageDetailForm form={form} submitHandler={submitHandler}>
-                <PageActionBar>
-                    <PageActionBarRight>
-                        <PermissionGuard requires={['UpdateProduct', 'UpdateCatalog']}>
-                            <Button
-                                type="submit"
-                                disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
-                            >
-                                <Trans>Update</Trans>
-                            </Button>
-                        </PermissionGuard>
-                    </PageActionBarRight>
-                </PageActionBar>
-                <PageLayout>
-                    <PageBlock column="side" blockId="enabled-toggle">
-                        <FormFieldWrapper
-                            control={form.control}
-                            name="enabled"
-                            label={<Trans>Enabled</Trans>}
-                            description={<Trans>When enabled, a product is available in the shop</Trans>}
-                            render={({ field }) => (
-                                <Switch checked={field.value} onCheckedChange={field.onChange} />
-                            )}
-                        />
-                    </PageBlock>
-                    <PageBlock column="main" blockId="main-form">
-                        <DetailFormGrid>
-                            <TranslatableFormFieldWrapper
-                                control={form.control}
-                                name="name"
-                                label={<Trans>Product name</Trans>}
-                                render={({ field }) => <Input {...field} />}
-                            />
-                            <TranslatableFormFieldWrapper
-                                control={form.control}
-                                name="slug"
-                                label={<Trans>Slug</Trans>}
-                                render={({ field }) => <Input {...field} />}
-                            />
-                        </DetailFormGrid>
-
+            <PageActionBar>
+                <PageActionBarRight>
+                    <PermissionGuard requires={['UpdateProduct', 'UpdateCatalog']}>
+                        <Button
+                            type="submit"
+                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                        >
+                            <Trans>Update</Trans>
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
+            </PageActionBar>
+            <PageLayout>
+                <PageBlock column="side" blockId="enabled-toggle">
+                    <FormFieldWrapper
+                        control={form.control}
+                        name="enabled"
+                        label={<Trans>Enabled</Trans>}
+                        description={<Trans>When enabled, a product is available in the shop</Trans>}
+                        render={({ field }) => (
+                            <Switch checked={field.value} onCheckedChange={field.onChange} />
+                        )}
+                    />
+                </PageBlock>
+                <PageBlock column="main" blockId="main-form">
+                    <DetailFormGrid>
                         <TranslatableFormFieldWrapper
                             control={form.control}
-                            name="description"
-                            label={<Trans>Description</Trans>}
-                            render={({ field }) => <RichTextInput {...field} />}
+                            name="name"
+                            label={<Trans>Product name</Trans>}
+                            render={({ field }) => <Input {...field} />}
+                        />
+                        <TranslatableFormFieldWrapper
+                            control={form.control}
+                            name="slug"
+                            label={<Trans>Slug</Trans>}
+                            render={({ field }) => <Input {...field} />}
+                        />
+                    </DetailFormGrid>
+
+                    <TranslatableFormFieldWrapper
+                        control={form.control}
+                        name="description"
+                        label={<Trans>Description</Trans>}
+                        render={({ field }) => <RichTextInput {...field} />}
+                    />
+                </PageBlock>
+                <CustomFieldsPageBlock column="main" entityType="Product" control={form.control} />
+                {entity && entity.variantList.totalItems > 0 && (
+                    <PageBlock column="main" blockId="product-variants-table">
+                        <ProductVariantsTable productId={params.id} />
+                    </PageBlock>
+                )}
+                {entity && entity.variantList.totalItems === 0 && (
+                    <PageBlock column="main" blockId="create-product-variants-dialog">
+                        <CreateProductVariantsDialog
+                            productId={entity.id}
+                            productName={entity.name}
+                            onSuccess={() => {
+                                refreshEntity();
+                            }}
                         />
                     </PageBlock>
-                    <CustomFieldsPageBlock column="main" entityType="Product" control={form.control} />
-                    {entity && entity.variantList.totalItems > 0 && (
-                        <PageBlock column="main" blockId="product-variants-table">
-                            <ProductVariantsTable productId={params.id} />
-                        </PageBlock>
-                    )}
-                    {entity && entity.variantList.totalItems === 0 && (
-                        <PageBlock column="main" blockId="create-product-variants-dialog">
-                            <CreateProductVariantsDialog
-                                productId={entity.id}
-                                productName={entity.name}
-                                onSuccess={() => {
-                                    refreshEntity();
+                )}
+                <PageBlock column="side" blockId="facet-values">
+                    <FormFieldWrapper
+                        control={form.control}
+                        name="facetValueIds"
+                        label={<Trans>Facet values</Trans>}
+                        render={({ field }) => (
+                            <AssignedFacetValues facetValues={entity?.facetValues ?? []} {...field} />
+                        )}
+                    />
+                </PageBlock>
+                <PageBlock column="side" blockId="assets">
+                    <FormItem>
+                        <FormLabel>
+                            <Trans>Assets</Trans>
+                        </FormLabel>
+                        <FormControl>
+                            <EntityAssets
+                                assets={entity?.assets}
+                                featuredAsset={entity?.featuredAsset}
+                                compact={true}
+                                value={form.getValues()}
+                                onChange={value => {
+                                    form.setValue('featuredAssetId', value.featuredAssetId ?? undefined, {
+                                        shouldDirty: true,
+                                        shouldValidate: true,
+                                    });
+                                    form.setValue('assetIds', value.assetIds ?? [], {
+                                        shouldDirty: true,
+                                        shouldValidate: true,
+                                    });
                                 }}
                             />
-                        </PageBlock>
-                    )}
-                    <PageBlock column="side" blockId="facet-values">
-                        <FormFieldWrapper
-                            control={form.control}
-                            name="facetValueIds"
-                            label={<Trans>Facet values</Trans>}
-                            render={({ field }) => (
-                                <AssignedFacetValues facetValues={entity?.facetValues ?? []} {...field} />
-                            )}
-                        />
-                    </PageBlock>
-                    <PageBlock column="side" blockId="assets">
-                        <FormItem>
-                            <FormLabel>
-                                <Trans>Assets</Trans>
-                            </FormLabel>
-                            <FormControl>
-                                <EntityAssets
-                                    assets={entity?.assets}
-                                    featuredAsset={entity?.featuredAsset}
-                                    compact={true}
-                                    value={form.getValues()}
-                                    onChange={value => {
-                                        form.setValue('featuredAssetId', value.featuredAssetId ?? undefined, {
-                                            shouldDirty: true,
-                                            shouldValidate: true,
-                                        });
-                                        form.setValue('assetIds', value.assetIds ?? [], {
-                                            shouldDirty: true,
-                                            shouldValidate: true,
-                                        });
-                                    }}
-                                />
-                            </FormControl>
-                            <FormDescription></FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    </PageBlock>
-                </PageLayout>
-            </PageDetailForm>
+                        </FormControl>
+                        <FormDescription></FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                </PageBlock>
+            </PageLayout>
         </Page>
     );
 }
