@@ -1,6 +1,9 @@
 import { Button } from '@/components/ui/button.js';
-import { getDashboardWidget, getDashboardWidgetRegistry } from '@/framework/dashboard-widget/widget-extensions.js';
 import { DashboardWidgetInstance } from '@/framework/dashboard-widget/types.js';
+import {
+    getDashboardWidget,
+    getDashboardWidgetRegistry,
+} from '@/framework/dashboard-widget/widget-extensions.js';
 import {
     FullWidthPageBlock,
     Page,
@@ -10,8 +13,9 @@ import {
     PageTitle,
 } from '@/framework/layout-engine/page-layout.js';
 import { createFileRoute } from '@tanstack/react-router';
-import { useEffect, useMemo, useState } from 'react';
-import { Responsive as ResponsiveGridLayout, WidthProvider } from 'react-grid-layout';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Responsive as ResponsiveGridLayout } from 'react-grid-layout';
+
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
@@ -68,6 +72,24 @@ const findNextPosition = (
 function DashboardPage() {
     const [widgets, setWidgets] = useState<DashboardWidgetInstance[]>([]);
     const [editMode, setEditMode] = useState(false);
+    const [layoutWidth, setLayoutWidth] = useState<number | undefined>(undefined);
+    const layoutRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!layoutRef.current) return;
+
+        const resizeObserver = new ResizeObserver(entries => {
+            for (const entry of entries) {
+                setLayoutWidth(entry.contentRect.width);
+            }
+        });
+
+        resizeObserver.observe(layoutRef.current);
+
+        return () => {
+            resizeObserver.disconnect();
+        };
+    }, []);
 
     useEffect(() => {
         const initialWidgets = Array.from(getDashboardWidgetRegistry().entries()).reduce(
@@ -100,19 +122,55 @@ function DashboardPage() {
             [],
         );
 
+        console.log('initialWidgets', initialWidgets);
+
         setWidgets(initialWidgets);
     }, []);
 
     const handleLayoutChange = (layout: ReactGridLayout.Layout[]) => {
+        console.log('handleLayoutChange', layout);
         setWidgets(prev =>
             prev.map((widget, i) => ({
                 ...widget,
                 layout: layout[i],
             })),
         );
+        console.log('handleLayoutChange->widgets', widgets);
     };
 
-    const ResponsiveReactGridLayout = useMemo(() => WidthProvider(ResponsiveGridLayout), []);
+    const memoizedLayoutGrid = useMemo(() => {
+        console.log('memoizedLayoutGrid', layoutWidth, widgets, editMode);
+        return (
+            layoutWidth && (
+                <ResponsiveGridLayout
+                    className="overflow-hidden"
+                    key={layoutWidth}
+                    width={layoutWidth}
+                    layouts={{ lg: widgets.map(w => ({ ...w.layout, i: w.id })) }}
+                    onLayoutChange={handleLayoutChange}
+                    cols={{ lg: 12, md: 12, sm: 6, xs: 4, xxs: 2 }}
+                    rowHeight={100}
+                    isDraggable={editMode}
+                    isResizable={editMode}
+                    autoSize={true}
+                    innerRef={layoutRef}
+                    transformScale={0.9}
+                >
+                    {widgets.map(widget => {
+                        const definition = getDashboardWidget(widget.widgetId);
+                        if (!definition) return null;
+                        const WidgetComponent = definition.component;
+
+                        return (
+                            <div key={widget.id}>
+                                <WidgetComponent id={widget.id} config={widget.config} />
+                            </div>
+                        );
+                    })}
+                </ResponsiveGridLayout>
+            )
+        );
+    }, [layoutWidth, editMode, widgets]);
 
     return (
         <Page pageId="dashboard">
@@ -131,28 +189,9 @@ function DashboardPage() {
             </PageActionBar>
             <PageLayout>
                 <FullWidthPageBlock blockId="widgets">
-                    <ResponsiveReactGridLayout
-                        className="h-full w-full"
-                        layouts={{ lg: widgets.map(w => ({ ...w.layout, i: w.id })) }}
-                        onLayoutChange={handleLayoutChange}
-                        cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-                        rowHeight={100}
-                        isDraggable={editMode}
-                        isResizable={editMode}
-                        autoSize={true}
-                    >
-                        {widgets.map(widget => {
-                            const definition = getDashboardWidget(widget.widgetId);
-                            if (!definition) return null;
-                            const WidgetComponent = definition.component;
-
-                            return (
-                                <div key={widget.id}>
-                                    <WidgetComponent id={widget.id} config={widget.config} />
-                                </div>
-                            );
-                        })}
-                    </ResponsiveReactGridLayout>
+                    <div ref={layoutRef} className="h-full w-full">
+                        {memoizedLayoutGrid}
+                    </div>
                 </FullWidthPageBlock>
             </PageLayout>
         </Page>

@@ -74,3 +74,8 @@
 @utility col-side {
     grid-column: span 2 / span 2;
 }
+
+/* Overrides for the react-grid-layout library */
+.react-grid-item {
+    transition: none !important;
+}
