@@ -1,14 +1,14 @@
 import { DetailPageButton } from '@/components/shared/detail-page-button.js';
-import { ListPage } from '@/framework/page/list-page.js';
-import { Trans } from '@/lib/trans.js';
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { CustomerStatusBadge } from './components/customer-status-badge.js';
-import { customerListDocument, deleteCustomerDocument } from './customers.graphql.js';
-import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
-import { PlusIcon } from 'lucide-react';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { Button } from '@/components/ui/button.js';
 import { PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
+import { ListPage } from '@/framework/page/list-page.js';
+import { Trans } from '@/lib/trans.js';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { PlusIcon } from 'lucide-react';
+import { CustomerStatusBadge } from './components/customer-status-badge.js';
+import { customerListDocument, deleteCustomerDocument } from './customers.graphql.js';
+
 export const Route = createFileRoute('/_authenticated/_customers/customers')({
     component: CustomerListPage,
     loader: () => ({ breadcrumb: () => <Trans>Customers</Trans> }),
@@ -67,18 +67,16 @@ function CustomerListPage() {
                 lastName: false,
             }}
         >
-            <PageActionBar>
-                <PageActionBarRight>
-                    <PermissionGuard requires={['CreateCustomer']}>
-                        <Button asChild>
-                            <Link to="./new">
-                                <PlusIcon />
-                                <Trans>New Customer</Trans>
-                            </Link>
-                        </Button>
-                    </PermissionGuard>
-                </PageActionBarRight>
-            </PageActionBar>
+            <PageActionBarRight>
+                <PermissionGuard requires={['CreateCustomer']}>
+                    <Button asChild>
+                        <Link to="./new">
+                            <PlusIcon />
+                            <Trans>New Customer</Trans>
+                        </Link>
+                    </Button>
+                </PermissionGuard>
+            </PageActionBarRight>
         </ListPage>
     );
 }

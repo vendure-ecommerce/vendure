@@ -2,15 +2,15 @@ import { BooleanDisplayBadge } from '@/components/data-display/boolean.js';
 import { DetailPageButton } from '@/components/shared/detail-page-button.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { Button } from '@/components/ui/button.js';
-import { PageActionBar, PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
+import { PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/framework/page/list-page.js';
 import { api } from '@/graphql/api.js';
 import { Trans } from '@/lib/trans.js';
-import { Link, createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
-import { deleteTaxRateDocument, taxRateListQuery } from './tax-rates.graphql.js';
-import { zoneListQuery } from '../_zones/zones.graphql.js';
 import { taxCategoryListQuery } from '../_tax-categories/tax-categories.graphql.js';
+import { zoneListQuery } from '../_zones/zones.graphql.js';
+import { deleteTaxRateDocument, taxRateListQuery } from './tax-rates.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_tax-rates/tax-rates')({
     component: TaxRateListPage,
@@ -93,18 +93,16 @@ function TaxRateListPage() {
                 },
             }}
         >
-            <PageActionBar>
-                <PageActionBarRight>
-                    <PermissionGuard requires={['CreateTaxRate']}>
-                        <Button asChild>
-                            <Link to="./new">
-                                <PlusIcon />
-                                <Trans>New Tax Rate</Trans>
-                            </Link>
-                        </Button>
-                    </PermissionGuard>
-                </PageActionBarRight>
-            </PageActionBar>
+            <PageActionBarRight>
+                <PermissionGuard requires={['CreateTaxRate']}>
+                    <Button asChild>
+                        <Link to="./new">
+                            <PlusIcon />
+                            <Trans>New Tax Rate</Trans>
+                        </Link>
+                    </Button>
+                </PermissionGuard>
+            </PageActionBarRight>
         </ListPage>
     );
 }
