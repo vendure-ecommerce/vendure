@@ -57,7 +57,6 @@ function CountryDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            console.log('data', data);
             toast(i18n.t('Successfully updated country'), {
                 position: 'top-right',
             });

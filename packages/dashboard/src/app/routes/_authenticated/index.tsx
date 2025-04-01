@@ -122,24 +122,19 @@ function DashboardPage() {
             [],
         );
 
-        console.log('initialWidgets', initialWidgets);
-
         setWidgets(initialWidgets);
     }, []);
 
     const handleLayoutChange = (layout: ReactGridLayout.Layout[]) => {
-        console.log('handleLayoutChange', layout);
         setWidgets(prev =>
             prev.map((widget, i) => ({
                 ...widget,
                 layout: layout[i],
             })),
         );
-        console.log('handleLayoutChange->widgets', widgets);
     };
 
     const memoizedLayoutGrid = useMemo(() => {
-        console.log('memoizedLayoutGrid', layoutWidth, widgets, editMode);
         return (
             layoutWidth && (
                 <ResponsiveGridLayout
