@@ -3,10 +3,10 @@ import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { RoleCodeLabel } from '@/components/shared/role-code-label.js';
 import { Badge } from '@/components/ui/badge.js';
 import { Button } from '@/components/ui/button.js';
-import { PageActionBar, PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
+import { PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@/lib/trans.js';
-import { Link, createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { administratorListDocument, deleteAdministratorDocument } from './administrators.graphql.js';
 
@@ -71,18 +71,16 @@ function AdministratorListPage() {
             }}
             defaultColumnOrder={['name', 'emailAddress', 'roles']}
         >
-            <PageActionBar>
-                <PageActionBarRight>
-                    <PermissionGuard requires={['CreateAdministrator']}>
-                        <Button asChild>
-                            <Link to="./new">
+            <PageActionBarRight>
+                <PermissionGuard requires={['CreateAdministrator']}>
+                    <Button asChild>
+                        <Link to="./new">
                             <PlusIcon />
                             New Administrator
                         </Link>
-                        </Button>
-                    </PermissionGuard>
-                </PageActionBarRight>
-            </PageActionBar>
+                    </Button>
+                </PermissionGuard>
+            </PageActionBarRight>
         </ListPage>
     );
 }

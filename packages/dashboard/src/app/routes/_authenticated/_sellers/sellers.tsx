@@ -1,10 +1,10 @@
 import { DetailPageButton } from '@/components/shared/detail-page-button.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { Button } from '@/components/ui/button.js';
-import { PageActionBar, PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
+import { PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@/lib/trans.js';
-import { Link, createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { deleteSellerDocument, sellerListQuery } from './sellers.graphql.js';
 
@@ -36,18 +36,16 @@ function SellerListPage() {
                 },
             }}
         >
-            <PageActionBar>
-                <PageActionBarRight>    
-                    <PermissionGuard requires={['CreateSeller']}>
-                        <Button asChild>
-                            <Link to="./new">
+            <PageActionBarRight>
+                <PermissionGuard requires={['CreateSeller']}>
+                    <Button asChild>
+                        <Link to="./new">
                             <PlusIcon className="mr-2 h-4 w-4" />
                             New Seller
                         </Link>
                     </Button>
-                    </PermissionGuard>
-                </PageActionBarRight>
-            </PageActionBar>
+                </PermissionGuard>
+            </PageActionBarRight>
         </ListPage>
     );
 }

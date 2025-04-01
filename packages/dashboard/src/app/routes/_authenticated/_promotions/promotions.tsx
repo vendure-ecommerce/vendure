@@ -1,20 +1,20 @@
+import { BooleanDisplayBadge } from '@/components/data-display/boolean.js';
+import { DetailPageButton } from '@/components/shared/detail-page-button.js';
+import { PermissionGuard } from '@/components/shared/permission-guard.js';
+import { Button } from '@/components/ui/button.js';
+import { PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@/lib/trans.js';
-import { Link, createFileRoute } from '@tanstack/react-router';
-import { PageActionBar, PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
-import { DetailPageButton } from '@/components/shared/detail-page-button.js';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
-import { Button } from '@/components/ui/button.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { deletePromotionDocument, promotionListDocument } from './promotions.graphql.js';
-import { BooleanDisplayBadge } from '@/components/data-display/boolean.js';
 
 export const Route = createFileRoute('/_authenticated/_promotions/promotions')({
     component: PromotionListPage,
     loader: () => ({ breadcrumb: () => <Trans>Promotions</Trans> }),
 });
 
-function PromotionListPage() {  
+function PromotionListPage() {
     return (
         <ListPage
             pageId="promotion-list"
@@ -46,18 +46,16 @@ function PromotionListPage() {
                 },
             }}
         >
-            <PageActionBar>
-                <PageActionBarRight>
-                    <PermissionGuard requires={['CreatePromotion']}>
-                        <Button asChild>
-                            <Link to="./new">
+            <PageActionBarRight>
+                <PermissionGuard requires={['CreatePromotion']}>
+                    <Button asChild>
+                        <Link to="./new">
                             <PlusIcon className="mr-2 h-4 w-4" />
                             <Trans>New Promotion</Trans>
-                            </Link>
-                        </Button>
-                    </PermissionGuard>
-                </PageActionBarRight>
-            </PageActionBar>
+                        </Link>
+                    </Button>
+                </PermissionGuard>
+            </PageActionBarRight>
         </ListPage>
     );
 }

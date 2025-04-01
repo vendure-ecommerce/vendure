@@ -33,42 +33,38 @@ interface HistoryEntryProps {
     children: React.ReactNode;
 }
 
-export function HistoryEntry({
-    entry,
-    isNoteEntry,
-    timelineIcon,
-    title,
-    children,
-}: HistoryEntryProps) {
+export function HistoryEntry({ entry, isNoteEntry, timelineIcon, title, children }: HistoryEntryProps) {
     const { formatDate } = useLocalFormat();
     const { editNote, deleteNote } = useHistoryTimeline();
 
-
-    const formatDateTime = useCallback((date: string) => {
-        return formatDate(date, {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
-            second: 'numeric',
-        });
-    }, [formatDate]);
+    const formatDateTime = useCallback(
+        (date: string) => {
+            return formatDate(date, {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+            });
+        },
+        [formatDate],
+    );
 
     return (
         <div key={entry.id} className="relative mb-4 pl-11">
             <div className="absolute left-0 w-10 flex items-center justify-center">
                 <div className={`rounded-full flex items-center justify-center h-6 w-6`}>
                     <div
-                        className={`rounded-full bg-gray-200 text-muted-foreground flex items-center justify-center h-6 w-6`}
+                        className={`rounded-full bg-muted text-muted-foreground flex items-center justify-center h-6 w-6`}
                     >
                         {timelineIcon}
                     </div>
                 </div>
             </div>
 
-            <div className="bg-white px-4 rounded-md">
-                <div className="mt-2 text-sm text-gray-500 flex items-center">
+            <div className="px-4 rounded-md">
+                <div className="mt-2 text-sm text-muted-foreground flex items-center">
                     <span>{formatDateTime(entry.createdAt)}</span>
                     {entry.administrator && (
                         <span className="ml-2">

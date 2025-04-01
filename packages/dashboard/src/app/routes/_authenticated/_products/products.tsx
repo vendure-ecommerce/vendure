@@ -33,18 +33,16 @@ function ProductListPage() {
             }}
             route={Route}
         >
-            <PageActionBar>
-                <PageActionBarRight>
-                    <PermissionGuard requires={['CreateProduct', 'CreateCatalog']}>
-                        <Button asChild>
-                            <Link to="./new">
-                                <PlusIcon className="mr-2 h-4 w-4" />
-                                New Product
-                            </Link>
-                        </Button>
-                    </PermissionGuard>
-                </PageActionBarRight>
-            </PageActionBar>
+            <PageActionBarRight>
+                <PermissionGuard requires={['CreateProduct', 'CreateCatalog']}>
+                    <Button asChild>
+                        <Link to="./new">
+                            <PlusIcon className="mr-2 h-4 w-4" />
+                            New Product
+                        </Link>
+                    </Button>
+                </PermissionGuard>
+            </PageActionBarRight>
         </ListPage>
     );
 }

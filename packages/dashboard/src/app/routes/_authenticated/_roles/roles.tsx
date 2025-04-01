@@ -1,17 +1,18 @@
+import { ChannelCodeLabel } from '@/components/shared/channel-code-label.js';
 import { DetailPageButton } from '@/components/shared/detail-page-button.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { RoleCodeLabel } from '@/components/shared/role-code-label.js';
 import { Badge } from '@/components/ui/badge.js';
 import { Button } from '@/components/ui/button.js';
 import { CUSTOMER_ROLE_CODE, SUPER_ADMIN_ROLE_CODE } from '@/constants.js';
-import { PageActionBar, PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
+import { PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { LayersIcon, PlusIcon } from 'lucide-react';
-import { ChannelCodeLabel } from '@/components/shared/channel-code-label.js';
 import { ExpandablePermissions } from './components/expandable-permissions.js';
 import { deleteRoleDocument, roleListQuery } from './roles.graphql.js';
+
 export const Route = createFileRoute('/_authenticated/_roles/roles')({
     component: RoleListPage,
     loader: () => ({ breadcrumb: () => <Trans>Roles</Trans> }),
@@ -80,18 +81,16 @@ function RoleListPage() {
                 },
             }}
         >
-            <PageActionBar>
-                <PageActionBarRight>
-                    <PermissionGuard requires={['CreateAdministrator']}>
-                        <Button asChild>
-                            <Link to="./new">
-                                <PlusIcon className="mr-2 h-4 w-4" />
-                                New Role
-                            </Link>
-                        </Button>
-                    </PermissionGuard>
-                </PageActionBarRight>
-            </PageActionBar>
+            <PageActionBarRight>
+                <PermissionGuard requires={['CreateAdministrator']}>
+                    <Button asChild>
+                        <Link to="./new">
+                            <PlusIcon className="mr-2 h-4 w-4" />
+                            New Role
+                        </Link>
+                    </Button>
+                </PermissionGuard>
+            </PageActionBarRight>
         </ListPage>
     );
 }

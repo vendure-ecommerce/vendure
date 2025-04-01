@@ -1,7 +1,7 @@
 import { DetailPageButton } from '@/components/shared/detail-page-button.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { Button } from '@/components/ui/button.js';
-import { PageActionBar, PageActionBarLeft, PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
+import { PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
@@ -29,7 +29,9 @@ function CollectionListPage() {
                 breadcrumbs: {
                     cell: ({ cell }) => {
                         const value = cell.getValue();
-                        if (!Array.isArray(value)) return null;
+                        if (!Array.isArray(value)) {
+                            return null;
+                        }
                         return (
                             <div>
                                 {value
@@ -68,18 +70,16 @@ function CollectionListPage() {
             }}
             route={Route}
         >
-            <PageActionBar>
-                <PageActionBarRight>
-                    <PermissionGuard requires={['CreateCollection', 'CreateCatalog']}>
-                        <Button asChild>
-                            <Link to="./new">
+            <PageActionBarRight>
+                <PermissionGuard requires={['CreateCollection', 'CreateCatalog']}>
+                    <Button asChild>
+                        <Link to="./new">
                             <PlusIcon className="mr-2 h-4 w-4" />
                             <Trans>New Collection</Trans>
                         </Link>
-                        </Button>
-                    </PermissionGuard>
-                </PageActionBarRight>
-            </PageActionBar>
+                    </Button>
+                </PermissionGuard>
+            </PageActionBarRight>
         </ListPage>
     );
 }

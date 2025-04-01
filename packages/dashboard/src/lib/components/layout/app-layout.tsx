@@ -1,5 +1,6 @@
 import { AppSidebar } from '@/components/layout/app-sidebar.js';
 import { GeneratedBreadcrumbs } from '@/components/layout/generated-breadcrumbs.js';
+import { PrereleasePopup } from '@/components/layout/prerelease-popup.js';
 import { Badge } from '@/components/ui/badge.js';
 import { Separator } from '@/components/ui/separator.js';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar.js';
@@ -23,7 +24,11 @@ export function AppLayout() {
                                 <GeneratedBreadcrumbs />
                             </div>
                             <div className="flex items-center justify-end gap-2">
-                                {settings.devMode && <Badge variant="destructive"><Trans>Dev Mode</Trans></Badge>}
+                                {settings.devMode && (
+                                    <Badge variant="destructive">
+                                        <Trans>Dev Mode</Trans>
+                                    </Badge>
+                                )}
                                 <Alerts />
                             </div>
                         </div>
@@ -31,6 +36,7 @@ export function AppLayout() {
                     <Outlet />
                 </div>
             </SidebarInset>
+            <PrereleasePopup />
         </SidebarProvider>
     );
 }

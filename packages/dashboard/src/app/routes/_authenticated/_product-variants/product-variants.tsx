@@ -73,10 +73,6 @@ function ProductListPage() {
                 };
             }}
             route={Route}
-        >
-            <PageActionBar>
-                <div></div>
-            </PageActionBar>
-        </ListPage>
+        ></ListPage>
     );
 }
