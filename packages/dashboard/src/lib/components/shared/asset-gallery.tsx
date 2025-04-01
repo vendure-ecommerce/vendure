@@ -24,35 +24,41 @@ import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useDebounce } from '@uidotdev/usehooks';
 
-const getAssetListDocument = graphql(`
-    query GetAssetList($options: AssetListOptions) {
-        assets(options: $options) {
-            items {
-               ...Asset
+const getAssetListDocument = graphql(
+    `
+        query GetAssetList($options: AssetListOptions) {
+            assets(options: $options) {
+                items {
+                    ...Asset
+                }
+                totalItems
             }
-            totalItems
         }
-    }
-`, [assetFragment]);
+    `,
+    [assetFragment],
+);
 
-export const createAssetsDocument = graphql(`
-    mutation CreateAssets($input: [CreateAssetInput!]!) {
-        createAssets(input: $input) {
-            ...Asset
-            ... on Asset {
-                tags {
-                    id
-                    createdAt
-                    updatedAt
-                    value
+export const createAssetsDocument = graphql(
+    `
+        mutation CreateAssets($input: [CreateAssetInput!]!) {
+            createAssets(input: $input) {
+                ...Asset
+                ... on Asset {
+                    tags {
+                        id
+                        createdAt
+                        updatedAt
+                        value
+                    }
+                }
+                ... on ErrorResult {
+                    message
                 }
             }
-            ... on ErrorResult {
-                message
-            }
         }
-    }
-`, [assetFragment]);
+    `,
+    [assetFragment],
+);
 
 const AssetType = {
     ALL: 'ALL',
@@ -89,11 +95,10 @@ export function AssetGallery({
     // State
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState('');
-    const [debouncedSearch] = useDebounce(search, 500);
+    const debouncedSearch = useDebounce(search, 500);
     const [assetType, setAssetType] = useState<string>(AssetType.ALL);
     const [selected, setSelected] = useState<Asset[]>(initialSelectedAssets || []);
     const queryClient = useQueryClient();
-
 
     const queryKey = ['AssetGallery', page, pageSize, debouncedSearch, assetType];
 
@@ -128,11 +133,14 @@ export function AssetGallery({
             queryClient.invalidateQueries({ queryKey });
         },
     });
-    
+
     // Setup dropzone
-    const onDrop = useCallback((acceptedFiles: File[]) => {
-        createAssets({  input: acceptedFiles.map(file => ({ file })) });
-    }, [createAssets]);
+    const onDrop = useCallback(
+        (acceptedFiles: File[]) => {
+            createAssets({ input: acceptedFiles.map(file => ({ file })) });
+        },
+        [createAssets],
+    );
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, noClick: true });
 
@@ -183,7 +191,7 @@ export function AssetGallery({
         const fileInput = document.createElement('input');
         fileInput.type = 'file';
         fileInput.multiple = true;
-        fileInput.addEventListener('change', (event) => {
+        fileInput.addEventListener('change', event => {
             const target = event.target as HTMLInputElement;
             if (target.files) {
                 const filesList = Array.from(target.files);
@@ -192,7 +200,6 @@ export function AssetGallery({
         });
         fileInput.click();
     };
-
 
     return (
         <div className={`flex flex-col w-full ${fixedHeight ? 'h-[600px]' : ''} ${className}`}>
@@ -206,11 +213,16 @@ export function AssetGallery({
                             onChange={e => setSearch(e.target.value)}
                             className="pl-8"
                         />
-                         {(search || assetType !== AssetType.ALL) && (
-                        <Button variant="ghost" size="sm" onClick={clearFilters} className="absolute right-0">
-                            <X className="h-4 w-4 mr-1" /> Clear filters
-                        </Button>
-                    )}
+                        {(search || assetType !== AssetType.ALL) && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={clearFilters}
+                                className="absolute right-0"
+                            >
+                                <X className="h-4 w-4 mr-1" /> Clear filters
+                            </Button>
+                        )}
                     </div>
                     <Select value={assetType} onValueChange={setAssetType}>
                         <SelectTrigger className="w-full md:w-[180px]">
@@ -229,8 +241,8 @@ export function AssetGallery({
                 </div>
             )}
 
-            <div 
-                {...getRootProps()} 
+            <div
+                {...getRootProps()}
                 className={`
                     ${fixedHeight ? 'flex-grow overflow-y-auto' : ''}
                     ${isDragActive ? 'ring-2 ring-primary bg-primary/5' : ''}
@@ -238,7 +250,7 @@ export function AssetGallery({
                 `}
             >
                 <input {...getInputProps()} />
-                
+
                 {isDragActive && (
                     <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-md">
                         <Upload className="h-12 w-12 text-primary mb-2" />

@@ -25,6 +25,9 @@ export const collectionListDocument = graphql(
                         name
                         slug
                     }
+                    children {
+                        id
+                    }
                     position
                     isPrivate
                     parentId

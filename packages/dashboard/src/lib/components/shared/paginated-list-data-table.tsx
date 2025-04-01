@@ -14,7 +14,7 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuTrigger
+    DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.js';
 import { DisplayComponent } from '@/framework/component-registry/dynamic-component.js';
 import { ResultOf } from '@/graphql/graphql.js';
@@ -28,7 +28,7 @@ import {
     SortingState,
     Table,
 } from '@tanstack/react-table';
-import { AccessorKeyColumnDef, ColumnDef, Row } from '@tanstack/table-core';
+import { AccessorKeyColumnDef, ColumnDef, Row, TableOptions } from '@tanstack/table-core';
 import { EllipsisIcon, TrashIcon } from 'lucide-react';
 import React, { useMemo } from 'react';
 import { toast } from 'sonner';
@@ -199,6 +199,8 @@ export interface PaginatedListDataTableProps<
     facetedFilters?: FacetedFilterConfig<T>;
     rowActions?: RowAction<PaginatedListItemFields<T>>[];
     disableViewOptions?: boolean;
+    transformData?: (data: PaginatedListItemFields<T>[]) => PaginatedListItemFields<T>[];
+    setTableOptions?: (table: TableOptions<any>) => TableOptions<any>;
 }
 
 export const PaginatedListDataTableKey = 'PaginatedListDataTable';
@@ -228,9 +230,11 @@ export function PaginatedListDataTable<
     facetedFilters,
     rowActions,
     disableViewOptions,
+    setTableOptions,
+    transformData,
 }: PaginatedListDataTableProps<T, U, V, AC>) {
     const [searchTerm, setSearchTerm] = React.useState<string>('');
-    const [debouncedSearchTerm] = useDebounce(searchTerm, 500);
+    const debouncedSearchTerm = useDebounce(searchTerm, 500);
     const queryClient = useQueryClient();
 
     const sort = sorting?.reduce((acc: any, sort: ColumnSort) => {
@@ -323,6 +327,7 @@ export function PaginatedListDataTable<
             const enableColumnFilter = fieldInfo.isScalar && !facetedFilters?.[fieldInfo.name];
 
             return columnHelper.accessor(fieldInfo.name as any, {
+                id: fieldInfo.name,
                 meta: { fieldInfo, isCustomField },
                 enableColumnFilter,
                 enableSorting: fieldInfo.isScalar,
@@ -376,13 +381,13 @@ export function PaginatedListDataTable<
             // ensure the columns with ids matching the items in defaultColumnOrder
             // appear as the first columns in sequence, and leave the remainder in the
             // existing order
-            const orderedColumns = finalColumns.filter(
-                column => column.id && defaultColumnOrder.includes(column.id),
-            );
+            const orderedColumns = finalColumns
+                .filter(column => column.id && defaultColumnOrder.includes(column.id))
+                .sort((a, b) => defaultColumnOrder.indexOf(a.id) - defaultColumnOrder.indexOf(b.id));
             const remainingColumns = finalColumns.filter(
                 column => !column.id || !defaultColumnOrder.includes(column.id),
             );
-            finalColumns = [...orderedColumns];
+            finalColumns = [...orderedColumns, ...remainingColumns];
         }
 
         if (rowActions || deleteMutation) {
@@ -396,11 +401,13 @@ export function PaginatedListDataTable<
     }, [fields, customizeColumns, rowActions]);
 
     const columnVisibility = getColumnVisibility(fields, defaultVisibility, customFieldColumnNames);
+    const transformedData =
+        typeof transformData === 'function' ? transformData(listData?.items ?? []) : (listData?.items ?? []);
     return (
         <PaginatedListContext.Provider value={{ refetchPaginatedList }}>
             <DataTable
                 columns={columns}
-                data={listData?.items ?? []}
+                data={transformedData}
                 page={page}
                 itemsPerPage={itemsPerPage}
                 sorting={sorting}
@@ -413,6 +420,7 @@ export function PaginatedListDataTable<
                 defaultColumnVisibility={columnVisibility}
                 facetedFilters={facetedFilters}
                 disableViewOptions={disableViewOptions}
+                setTableOptions={setTableOptions}
             />
         </PaginatedListContext.Provider>
     );

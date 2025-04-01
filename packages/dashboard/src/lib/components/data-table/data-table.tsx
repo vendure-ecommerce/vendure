@@ -18,6 +18,7 @@ import {
     useReactTable,
     VisibilityState,
 } from '@tanstack/react-table';
+import { TableOptions } from '@tanstack/table-core';
 import { CircleX, Filter } from 'lucide-react';
 import React, { Suspense, useEffect } from 'react';
 import { DataTableFacetedFilter, DataTableFacetedFilterOption } from './data-table-faceted-filter.js';
@@ -44,6 +45,11 @@ interface DataTableProps<TData, TValue> {
     defaultColumnVisibility?: VisibilityState;
     facetedFilters?: { [key: string]: FacetedFilter | undefined };
     disableViewOptions?: boolean;
+    /**
+     * This property allows full control over _all_ features of TanStack Table
+     * when needed.
+     */
+    setTableOptions?: (table: TableOptions<TData>) => TableOptions<TData>;
 }
 
 export function DataTable<TData, TValue>({
@@ -61,6 +67,7 @@ export function DataTable<TData, TValue>({
     defaultColumnVisibility,
     facetedFilters,
     disableViewOptions,
+    setTableOptions,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>(sortingInitialState || []);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(filtersInitialState || []);
@@ -72,7 +79,7 @@ export function DataTable<TData, TValue>({
         defaultColumnVisibility ?? {},
     );
 
-    const table = useReactTable({
+    let tableOptions: TableOptions<TData> = {
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
@@ -91,7 +98,13 @@ export function DataTable<TData, TValue>({
             columnVisibility,
             columnFilters,
         },
-    });
+    };
+
+    if (typeof setTableOptions === 'function') {
+        tableOptions = setTableOptions(tableOptions);
+    }
+
+    const table = useReactTable(tableOptions);
 
     useEffect(() => {
         onPageChange?.(table, pagination.pageIndex + 1, pagination.pageSize);
@@ -104,7 +117,6 @@ export function DataTable<TData, TValue>({
     useEffect(() => {
         onFilterChange?.(table, columnFilters);
     }, [columnFilters]);
-
     return (
         <>
             <div className="flex justify-between items-start">
