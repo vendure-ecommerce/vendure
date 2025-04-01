@@ -10,6 +10,7 @@ export interface UserSettings {
     mainNavExpanded: boolean;
     activeChannelId: string;
     devMode: boolean;
+    hasSeenOnboarding: boolean;
 }
 
 const defaultSettings: UserSettings = {
@@ -21,6 +22,7 @@ const defaultSettings: UserSettings = {
     mainNavExpanded: true,
     activeChannelId: '',
     devMode: false,
+    hasSeenOnboarding: false,
 };
 
 export interface UserSettingsContextType {
@@ -33,6 +35,7 @@ export interface UserSettingsContextType {
     setMainNavExpanded: (expanded: boolean) => void;
     setActiveChannelId: (channelId: string) => void;
     setDevMode: (devMode: boolean) => void;
+    setHasSeenOnboarding: (hasSeen: boolean) => void;
 }
 
 export const UserSettingsContext = createContext<UserSettingsContextType | undefined>(undefined);
@@ -79,6 +82,7 @@ export const UserSettingsProvider: React.FC<React.PropsWithChildren<{}>> = ({ ch
         setMainNavExpanded: expanded => updateSetting('mainNavExpanded', expanded),
         setActiveChannelId: channelId => updateSetting('activeChannelId', channelId),
         setDevMode: devMode => updateSetting('devMode', devMode),
+        setHasSeenOnboarding: hasSeen => updateSetting('hasSeenOnboarding', hasSeen),
     };
 
     return <UserSettingsContext.Provider value={contextValue}>{children}</UserSettingsContext.Provider>;
