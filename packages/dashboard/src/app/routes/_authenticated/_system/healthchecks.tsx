@@ -27,7 +27,10 @@ function HealthchecksPage() {
     const { data, refetch, dataUpdatedAt } = useQuery({
         queryKey: ['healthchecks'],
         queryFn: async () => {
-            const res = await fetch(`${uiConfig.apiHost}:${uiConfig.apiPort}/health`);
+            const schemeAndHost =
+                uiConfig.apiHost + (uiConfig.apiPort !== 'auto' ? `:${uiConfig.apiPort}` : '');
+
+            const res = await fetch(`${schemeAndHost}/health`);
             return res.json() as Promise<HealthcheckResponse>;
         },
         refetchInterval: 5000,
