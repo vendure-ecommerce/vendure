@@ -463,6 +463,56 @@ describe('ShippingMethod resolver', () => {
             });
         });
     });
+
+    it('returns only active shipping methods', async () => {
+        // Arrange: Delete all existing shipping methods using deleteShippingMethod
+        const { shippingMethods } =
+            await adminClient.query<Codegen.GetShippingMethodListQuery>(GET_SHIPPING_METHOD_LIST);
+
+        for (const method of shippingMethods.items) {
+            await adminClient.query<
+                Codegen.DeleteShippingMethodMutation,
+                Codegen.DeleteShippingMethodMutationVariables
+            >(DELETE_SHIPPING_METHOD, {
+                id: method.id,
+            });
+        }
+
+        // Create a new active shipping method
+        const { createShippingMethod } = await adminClient.query<
+            Codegen.CreateShippingMethodMutation,
+            Codegen.CreateShippingMethodMutationVariables
+        >(CREATE_SHIPPING_METHOD, {
+            input: {
+                code: 'active-method',
+                fulfillmentHandler: manualFulfillmentHandler.code,
+                checker: {
+                    code: defaultShippingEligibilityChecker.code,
+                    arguments: [{ name: 'orderMinimum', value: '0' }],
+                },
+                calculator: {
+                    code: defaultShippingCalculator.code,
+                    arguments: [],
+                },
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'Active Method',
+                        description: 'This is an active shipping method',
+                    },
+                ],
+            },
+        });
+
+        // Act: Query active shipping methods
+        const { activeShippingMethods } = await shopClient.query(GET_ACTIVE_SHIPPING_METHODS);
+
+        // Assert: Ensure only the new active method is returned
+        expect(activeShippingMethods).toHaveLength(1);
+        expect(activeShippingMethods[0].code).toBe('active-method');
+        expect(activeShippingMethods[0].name).toBe('Active Method');
+        expect(activeShippingMethods[0].description).toBe('This is an active shipping method');
+    });
 });
 
 const GET_SHIPPING_METHOD = gql`
@@ -528,6 +578,22 @@ export const TEST_ELIGIBLE_SHIPPING_METHODS = gql`
             price
             priceWithTax
             metadata
+        }
+    }
+`;
+
+const GET_ACTIVE_SHIPPING_METHODS = gql`
+    query GetActiveShippingMethods {
+        activeShippingMethods {
+            id
+            code
+            name
+            description
+            translations {
+                languageCode
+                name
+                description
+            }
         }
     }
 `;
