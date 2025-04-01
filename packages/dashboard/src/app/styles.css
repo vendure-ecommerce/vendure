@@ -57,6 +57,7 @@
     --color-brand-darker: var(--brand-darker);
     --font-sans: var(--font-sans);
     --font-mono: var(--font-mono);
+    --color-vendure-brand: #17c1ff;
 }
 
 @layer base {

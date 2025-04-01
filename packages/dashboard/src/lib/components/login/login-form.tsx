@@ -61,13 +61,13 @@ export function LoginForm({ className, onFormSubmit, isVerifying, loginError, ..
                 <CardContent className="grid p-0 md:grid-cols-2">
                     <Form {...form}>
                         <form
-                            className="p-6 md:p-8"
+                            className="p-6 md:p-8 flex flex-col items-stretch justify-center"
                             onSubmit={form.handleSubmit(data => onFormSubmit?.(data.username, data.password))}
                         >
                             <div className="flex flex-col gap-6">
-                                <div className="flex flex-col items-center text-center space-y-2">
+                                <div className="flex flex-col items-start  space-y-4">
                                     {!uiConfig.hideVendureBranding && (
-                                        <LogoMark className="text-brand h-10 w-auto" />
+                                        <LogoMark className="text-vendure-brand h-6 w-auto" />
                                     )}
                                     <div>
                                         <h1 className="text-2xl font-medium">
@@ -130,13 +130,13 @@ export function LoginForm({ className, onFormSubmit, isVerifying, loginError, ..
                             </div>
                         </form>
                     </Form>
-                    <div className="bg-muted relative hidden md:block">
+                    <div className="bg-muted relative hidden md:block lg:min-h-[500px]">
                         {remoteLoginImage && (
                             <>
                                 <img
                                     src={remoteLoginImage.urls.regular}
                                     alt="Image"
-                                    className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+                                    className="absolute inset-0 h-full w-full object-cover"
                                 />
                                 <div className="absolute h-full w-full top-0 left-0 flex items-end justify-start bg-gradient-to-b from-transparent to-black/80 p-4 ">
                                     <div>
