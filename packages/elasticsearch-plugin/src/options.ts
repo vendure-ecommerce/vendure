@@ -7,7 +7,7 @@ import {
     LanguageCode,
     Product,
     ProductVariant,
-    RequestContext
+    RequestContext,
 } from '@vendure/core';
 import deepmerge from 'deepmerge';
 
@@ -240,7 +240,9 @@ export interface ElasticsearchOptions {
      * ```
      */
     customProductMappings?: {
-        [fieldName: string]: CustomMapping<[Product, ProductVariant[], LanguageCode, Injector, RequestContext]>;
+        [fieldName: string]: CustomMapping<
+            [Product, ProductVariant[], LanguageCode, Injector, RequestContext]
+        >;
     };
     /**
      * @description
@@ -487,8 +489,8 @@ export interface SearchConfig {
      *
      * @example
      * ```ts
-     * mapQuery: (query, input, searchConfig, channelId, enabledOnly){
-     *   if(query.bool.must){
+     * mapQuery: (query, input, searchConfig, channelId, enabledOnly, ctx) => {
+     *   if (query.bool.must) {
      *     delete query.bool.must;
      *   }
      *   query.bool.should = [
@@ -523,6 +525,7 @@ export interface SearchConfig {
         searchConfig: DeepRequired<SearchConfig>,
         channelId: ID,
         enabledOnly: boolean,
+        ctx: RequestContext,
     ) => any;
     /**
      * @description

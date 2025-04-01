@@ -189,6 +189,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             ctx.channelId,
             ctx.languageCode,
             enabledOnly,
+            ctx,
         );
         if (groupByProduct) {
             try {
@@ -256,6 +257,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             ctx.channelId,
             ctx.languageCode,
             enabledOnly,
+            ctx,
         );
         elasticSearchBody.from = 0;
         elasticSearchBody.size = 0;
@@ -367,6 +369,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             ctx.channelId,
             ctx.languageCode,
             enabledOnly,
+            ctx,
         );
         elasticSearchBody.from = 0;
         elasticSearchBody.size = 0;
@@ -412,6 +415,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             ctx.channelId,
             ctx.languageCode,
             true,
+            ctx,
         );
         elasticSearchBody.from = 0;
         elasticSearchBody.size = 0;
