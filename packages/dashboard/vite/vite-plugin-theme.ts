@@ -1,86 +1,54 @@
 import { Plugin } from 'vite';
 
+type ThemeColors = {
+    background?: string;
+    foreground?: string;
+    card?: string;
+    'card-foreground'?: string;
+    popover?: string;
+    'popover-foreground'?: string;
+    primary?: string;
+    'primary-foreground'?: string;
+    secondary?: string;
+    'secondary-foreground'?: string;
+    muted?: string;
+    'muted-foreground'?: string;
+    accent?: string;
+    'accent-foreground'?: string;
+    destructive?: string;
+    'destructive-foreground'?: string;
+    success?: string;
+    'success-foreground'?: string;
+    'dev-mode'?: string;
+    'dev-mode-foreground'?: string;
+    border?: string;
+    input?: string;
+    ring?: string;
+    'chart-1'?: string;
+    'chart-2'?: string;
+    'chart-3'?: string;
+    'chart-4'?: string;
+    'chart-5'?: string;
+    radius?: string;
+    sidebar?: string;
+    'sidebar-foreground'?: string;
+    'sidebar-primary'?: string;
+    'sidebar-primary-foreground'?: string;
+    'sidebar-accent'?: string;
+    'sidebar-accent-foreground'?: string;
+    'sidebar-border'?: string;
+    'sidebar-ring'?: string;
+    brand?: string;
+    'brand-lighter'?: string;
+    'brand-darker'?: string;
+    'font-sans'?: string;
+    'font-mono'?: string;
+    [key: string]: string | undefined;
+};
+
 export interface ThemeVariables {
-    light?: {
-        background?: string;
-        foreground?: string;
-        card?: string;
-        'card-foreground'?: string;
-        popover?: string;
-        'popover-foreground'?: string;
-        primary?: string;
-        'primary-foreground'?: string;
-        secondary?: string;
-        'secondary-foreground'?: string;
-        muted?: string;
-        'muted-foreground'?: string;
-        accent?: string;
-        'accent-foreground'?: string;
-        destructive?: string;
-        'destructive-foreground'?: string;
-        success?: string;
-        'success-foreground'?: string;
-        'dev-mode'?: string;
-        'dev-mode-foreground'?: string;
-        border?: string;
-        input?: string;
-        ring?: string;
-        'chart-1'?: string;
-        'chart-2'?: string;
-        'chart-3'?: string;
-        'chart-4'?: string;
-        'chart-5'?: string;
-        radius?: string;
-        sidebar?: string;
-        'sidebar-foreground'?: string;
-        'sidebar-primary'?: string;
-        'sidebar-primary-foreground'?: string;
-        'sidebar-accent'?: string;
-        'sidebar-accent-foreground'?: string;
-        'sidebar-border'?: string;
-        'sidebar-ring'?: string;
-        [key: string]: string | undefined;
-    };
-    dark?: {
-        background?: string;
-        foreground?: string;
-        card?: string;
-        'card-foreground'?: string;
-        popover?: string;
-        'popover-foreground'?: string;
-        primary?: string;
-        'primary-foreground'?: string;
-        secondary?: string;
-        'secondary-foreground'?: string;
-        muted?: string;
-        'muted-foreground'?: string;
-        accent?: string;
-        'accent-foreground'?: string;
-        destructive?: string;
-        'destructive-foreground'?: string;
-        success?: string;
-        'success-foreground'?: string;
-        'dev-mode'?: string;
-        'dev-mode-foreground'?: string;
-        border?: string;
-        input?: string;
-        ring?: string;
-        'chart-1'?: string;
-        'chart-2'?: string;
-        'chart-3'?: string;
-        'chart-4'?: string;
-        'chart-5'?: string;
-        radius?: string;
-        sidebar?: string;
-        'sidebar-foreground'?: string;
-        'sidebar-primary'?: string;
-        'sidebar-primary-foreground'?: string;
-        'sidebar-accent'?: string;
-        'sidebar-accent-foreground'?: string;
-        'sidebar-border'?: string;
-        'sidebar-ring'?: string;
-        [key: string]: string | undefined;
-    };
+    light?: ThemeColors;
+    dark?: ThemeColors;
 }
 
 const defaultVariables: ThemeVariables = {
@@ -122,6 +90,11 @@ const defaultVariables: ThemeVariables = {
         'sidebar-accent-foreground': 'hsl(240 5.9% 10%)',
         'sidebar-border': 'hsl(220 13% 91%)',
         'sidebar-ring': 'hsl(217.2 91.2% 59.8%)',
+        brand: '#17c1ff',
+        'brand-lighter': '#e6f9ff',
+        'brand-darker': '#0099ff',
+        'font-sans': "'Geist', sans-serif",
+        'font-mono': "'Geist Mono', monospace",
     },
     dark: {
         background: 'hsl(0 0% 3.9%)',
@@ -160,6 +133,11 @@ const defaultVariables: ThemeVariables = {
         'sidebar-accent-foreground': 'hsl(240 4.8% 95.9%)',
         'sidebar-border': 'hsl(240 3.7% 15.9%)',
         'sidebar-ring': 'hsl(217.2 91.2% 59.8%)',
+        brand: '#17c1ff',
+        'brand-lighter': '#e6f9ff',
+        'brand-darker': '#0099ff',
+        'font-sans': "'Geist', sans-serif",
+        'font-mono': "'Geist Mono', monospace",
     },
 };
 
