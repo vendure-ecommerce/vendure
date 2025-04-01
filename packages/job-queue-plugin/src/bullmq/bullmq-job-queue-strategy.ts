@@ -46,9 +46,9 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     private worker: Worker;
     private workerProcessor: Processor;
     private options: BullMQPluginOptions;
-    private queueNameProcessFnMap = new Map<string, (job: Job) => Promise<any>>();
+    private readonly queueNameProcessFnMap = new Map<string, (job: Job) => Promise<any>>();
     private cancellationSub: Redis;
-    private cancelRunningJob$ = new Subject<string>();
+    private readonly cancelRunningJob$ = new Subject<string>();
     private readonly CANCEL_JOB_CHANNEL = 'cancel-job';
     private readonly CANCELLED_JOB_LIST_NAME = 'vendure:cancelled-jobs';
 
@@ -145,12 +145,15 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     }
 
     async add<Data extends JobData<Data> = object>(job: Job<Data>): Promise<Job<Data>> {
-        const retries = this.options.setRetries?.(job.queueName, job) ?? job.retries ?? 0;
-        const backoff = this.options.setBackoff?.(job.queueName, job) ?? { delay: 1000, type: 'exponential' };
+        const retries = this.options.setJobOptions?.(job.queueName, job) ?? job.retries ?? 0;
+        const backoff = this.options.setJobOptions?.(job.queueName, job) ?? {
+            delay: 1000,
+            type: 'exponential',
+        };
         const customJobOptions = this.options.setJobOptions?.(job.queueName, job) ?? {};
         const bullJob = await this.queue.add(job.queueName, job.data, {
-            attempts: retries + 1,
-            backoff,
+            attempts: typeof retries === 'number' ? retries + 1 : 1,
+            backoff: typeof backoff === 'number' || 'type' in backoff ? backoff : undefined,
             ...customJobOptions,
         });
         return this.createVendureJob(bullJob);
@@ -296,7 +299,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         }
     }
 
-    private subscribeToCancellationEvents = (channel: string, jobId: string) => {
+    private readonly subscribeToCancellationEvents = (channel: string, jobId: string) => {
         if (channel === this.CANCEL_JOB_CHANNEL && jobId) {
             this.cancelRunningJob$.next(jobId);
         }
@@ -324,10 +327,14 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
                             } (${activeJobs.map(j => j.id).join(', ')})...`,
                             loggerCtx,
                         );
-                        timer = setTimeout(checkActive, 2000);
+                        timer = setTimeout(() => {
+                            void checkActive();
+                        }, 2000);
                     }
                 };
-                timer = setTimeout(checkActive, 2000);
+                timer = setTimeout(() => {
+                    void checkActive();
+                }, 2000);
 
                 await this.worker.close();
                 Logger.info(`Worker closed`, loggerCtx);
