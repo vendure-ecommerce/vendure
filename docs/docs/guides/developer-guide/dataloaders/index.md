@@ -3,11 +3,12 @@ title: "GraphQL Dataloaders"
 showtoc: true
 ---
 
-[Dataloaders](https://github.com/graphql/dataloader) are used in GraphQL to solve the so called N+1 problem.
+[Dataloaders](https://github.com/graphql/dataloader) are used in GraphQL to solve the so called N+1 problem. This is an advanced performance optimization technique you may
+want to use in your application if you find certain custom queries are slow or inefficient.
 
 ## N+1 problem
 
-Imagine a cart with 20 items. Your implementation requires you to perform an `async` calculation `isSubscription` for each cart item whih executes one or more queries each time it is called and it takes pretty long on each execution. It works fine for a cart with 1 or 2 items. But with more than 15 items, suddenly the cart takes a **lot** longer to load. Especially when the site is busy.
+Imagine a cart with 20 items. Your implementation requires you to perform an `async` calculation `isSubscription` for each cart item which executes one or more queries each time it is called, and it takes pretty long on each execution. It works fine for a cart with 1 or 2 items. But with more than 15 items, suddenly the cart takes a **lot** longer to load. Especially when the site is busy.
 
 The reason: the N+1 problem. Your cart is firing of 20 or more queries almost at the same time, adding **significantly** to the GraphQL request. It's like going to the McDonald's drive-in to get 10 hamburgers and getting in line 10 times to get 1 hamburger at a time. It's not efficient.
 
@@ -17,7 +18,7 @@ Dataloaders allow you to say: instead of loading each field in the `grapqhl` tre
 
 Dataloaders are generally used on `fieldResolver`s. Often, you will need a specific dataloader for each field resolver.
 
-A Dataloader can return anything: `boolean`, `ProductVariant`, `string`, etc
+A Dataloader can return anything: `boolean`, `ProductVariant`, `string`, etc.
 
 ## Performance implications
 
@@ -42,9 +43,15 @@ export const shopApiExtensions = gql`
 `
 ```
 
+This next part import the `dataloader` package, which you can install with
+
+```sh
+npm install dataloader
+```
+
 **Dataloader skeleton**
 
-```ts title="src/plugins/my-plugin/api/datalaoder.ts"
+```ts title="src/plugins/my-plugin/api/dataloader.ts"
 import DataLoader from 'dataloader'
 
 const LoggerCtx = 'SubscriptionDataloaderService'

@@ -14,7 +14,10 @@ import {
     TRANSITION_TO_STATE,
 } from '../graphql/shop-definitions';
 
-export async function proceedToArrangingPayment(shopClient: SimpleGraphQLClient): Promise<ID> {
+export async function proceedToArrangingPayment(
+    shopClient: SimpleGraphQLClient,
+    shippingMethodIdx = 1,
+): Promise<ID> {
     await shopClient.query<
         CodegenShop.SetShippingAddressMutation,
         CodegenShop.SetShippingAddressMutationVariables
@@ -36,7 +39,7 @@ export async function proceedToArrangingPayment(shopClient: SimpleGraphQLClient)
         CodegenShop.SetShippingMethodMutation,
         CodegenShop.SetShippingMethodMutationVariables
     >(SET_SHIPPING_METHOD, {
-        id: eligibleShippingMethods[1].id,
+        id: eligibleShippingMethods[shippingMethodIdx].id,
     });
 
     const { transitionOrderToState } = await shopClient.query<

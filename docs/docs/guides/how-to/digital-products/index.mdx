@@ -20,7 +20,7 @@ The complete source of the following example plugin can be found here: [example-
 
 If some products are digital and some are physical, we can distinguish between them by adding a customField to the ProductVariant entity.
 
-```ts title="src/plugins/digital-products/digital-products-plugin.ts"
+```ts title="src/plugins/digital-products/digital-products.plugin.ts"
 import { LanguageCode, PluginCommonModule, VendurePlugin } from '@vendure/core';
 
 @VendurePlugin({
@@ -41,9 +41,14 @@ import { LanguageCode, PluginCommonModule, VendurePlugin } from '@vendure/core';
 export class DigitalProductsPlugin {}
 ```
 
+:::note
+You will need to **create a migration** after adding this custom field.
+See the [Migrations](/guides/developer-guide/migrations/) guide for more information.
+:::
+
 We will also define a custom field on the `ShippingMethod` entity to indicate that this shipping method is only available for digital products:
 
-```ts title="src/plugins/digital-products/digital-products-plugin.ts"
+```ts title="src/plugins/digital-products/digital-products.plugin.ts"
 import { LanguageCode, PluginCommonModule, VendurePlugin } from '@vendure/core';
 
 @VendurePlugin({
@@ -67,7 +72,7 @@ import { LanguageCode, PluginCommonModule, VendurePlugin } from '@vendure/core';
 Lastly we will define a custom field on the `Fulfillment` entity where we can store download links for the digital products. If your own implementation you may
 wish to handle this part differently, e.g. storing download links on the `Order` entity or in a custom entity.
 
-```ts title="src/plugins/digital-products/digital-products-plugin.ts"
+```ts title="src/plugins/digital-products/digital-products.plugin.ts"
 import { LanguageCode, PluginCommonModule, VendurePlugin } from '@vendure/core';
 
 @VendurePlugin({
@@ -159,7 +164,7 @@ function generateDownloadUrl(orderLine: OrderLine) {
 
 This fulfillment handler should then be added to the `fulfillmentHandlers` array the config ShippingOptions:
 
-```ts title="src/plugins/digital-products/digital-products-plugin.ts"
+```ts title="src/plugins/digital-products/digital-products.plugin.ts"
 
 import { LanguageCode, PluginCommonModule, VendurePlugin } from '@vendure/core';
 import { digitalFulfillmentHandler } from './config/digital-fulfillment-handler';
@@ -283,7 +288,7 @@ We can now add the plugin to the VendureConfig:
 
 ```ts title="src/vendure-config.ts"
 import { VendureConfig } from '@vendure/core';
-import { DigitalProductsPlugin } from './plugins/digital-products/digital-products-plugin';
+import { DigitalProductsPlugin } from './plugins/digital-products/digital-products.plugin';
 
 const config: VendureConfig = {
     // ... other config omitted
