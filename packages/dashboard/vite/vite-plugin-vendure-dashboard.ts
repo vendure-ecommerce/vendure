@@ -10,6 +10,8 @@ import { configLoaderPlugin } from './vite-plugin-config-loader.js';
 import { viteConfigPlugin } from './vite-plugin-config.js';
 import { dashboardMetadataPlugin } from './vite-plugin-dashboard-metadata.js';
 import { gqlTadaPlugin } from './vite-plugin-gql-tada.js';
+import { themeVariablesPlugin } from './vite-plugin-theme.js';
+import { ThemeVariablesPluginOptions } from './vite-plugin-theme.js';
 import { UiConfigPluginOptions, uiConfigPlugin } from './vite-plugin-ui-config.js';
 
 /**
@@ -35,7 +37,8 @@ export type VitePluginVendureDashboardOptions = {
     gqlTadaOutputPath?: string;
     tempCompilationDir?: string;
     disableTansStackRouterPlugin?: boolean;
-} & UiConfigPluginOptions;
+} & UiConfigPluginOptions &
+    ThemeVariablesPluginOptions;
 
 /**
  * @description
@@ -69,6 +72,7 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
             //     plugins: ['@lingui/babel-plugin-lingui-macro'],
             // },
         }),
+        themeVariablesPlugin({ theme: options.theme }),
         tailwindcss(),
         configLoaderPlugin({ vendureConfigPath: normalizedVendureConfigPath, tempDir }),
         viteConfigPlugin({ packageRoot }),
