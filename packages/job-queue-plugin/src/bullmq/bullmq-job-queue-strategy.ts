@@ -62,19 +62,12 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
                     age: 60 * 60 * 24 * 30,
                     count: 5000,
                 },
-                removeOnFail: options.workerOptions?.removeOnFail ?? {
-                    age: 60 * 60 * 24 * 30,
-                    count: 5000,
-                },
+                removeOnFail: options.workerOptions?.removeOnFail ?? { age: 60 * 60 * 24 * 30, count: 5000 },
             },
         };
         this.connectionOptions =
             options.connection ??
-            ({
-                host: 'localhost',
-                port: 6379,
-                maxRetriesPerRequest: null,
-            } as RedisOptions);
+            ({ host: 'localhost', port: 6379, maxRetriesPerRequest: null } as RedisOptions);
 
         this.redisConnection =
             this.connectionOptions instanceof EventEmitter
@@ -92,10 +85,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             Logger.info('Connected to Redis ✔', loggerCtx);
         }
 
-        this.queue = new Queue(QUEUE_NAME, {
-            ...options.queueOptions,
-            connection: this.redisConnection,
-        })
+        this.queue = new Queue(QUEUE_NAME, { ...options.queueOptions, connection: this.redisConnection })
             .on('error', (e: any) =>
                 Logger.error(`BullMQ Queue error: ${JSON.stringify(e.message)}`, loggerCtx, e.stack),
             )
@@ -156,14 +146,8 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
 
     async add<Data extends JobData<Data> = object>(job: Job<Data>): Promise<Job<Data>> {
         const retries = this.options.setRetries?.(job.queueName, job) ?? job.retries ?? 0;
-        const backoff = this.options.setBackoff?.(job.queueName, job) ?? {
-            delay: 1000,
-            type: 'exponential',
-        };
-        const bullJob = await this.queue.add(job.queueName, job.data, {
-            attempts: retries + 1,
-            backoff,
-        });
+        const backoff = this.options.setBackoff?.(job.queueName, job) ?? { delay: 1000, type: 'exponential' };
+        const bullJob = await this.queue.add(job.queueName, job.data, { attempts: retries + 1, backoff });
         return this.createVendureJob(bullJob);
     }
 
@@ -244,10 +228,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             throw new InternalServerError(e.message);
         }
 
-        return {
-            items: await Promise.all(items.map(bullJob => this.createVendureJob(bullJob))),
-            totalItems,
-        };
+        return { items: await Promise.all(items.map(bullJob => this.createVendureJob(bullJob))), totalItems };
     }
 
     async findManyById(ids: ID[]): Promise<Job[]> {
@@ -414,8 +395,9 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         args: Args,
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
+            const prefix = this.options.workerOptions?.prefix ?? 'bull';
             (this.redisConnection as any)[scriptDef.name](
-                `bull:${this.queue.name}:`,
+                `${prefix}:${this.queue.name}:`,
                 ...args,
                 (err: any, result: any) => {
                     if (err) {
