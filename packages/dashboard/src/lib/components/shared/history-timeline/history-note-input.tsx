@@ -19,7 +19,7 @@ export function HistoryNoteInput({ onAddNote }: HistoryNoteInputProps) {
     };
 
     return (
-        <div className="border rounded-md p-4 bg-gray-50">
+        <div className="border rounded-md p-4">
             <div className="flex flex-col space-y-4">
                 <Textarea
                     placeholder="Add a note..."
@@ -36,4 +36,4 @@ export function HistoryNoteInput({ onAddNote }: HistoryNoteInputProps) {
             </div>
         </div>
     );
-} 
+}
