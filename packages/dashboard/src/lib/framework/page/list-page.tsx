@@ -10,7 +10,9 @@ import {
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRoute, AnyRouter, useNavigate } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
+import { TableOptions } from '@tanstack/table-core';
 import { ResultOf } from 'gql.tada';
+import { addCustomFields } from '../document-introspection/add-custom-fields.js';
 import {
     FullWidthPageBlock,
     Page,
@@ -18,7 +20,6 @@ import {
     PageLayout,
     PageTitle,
 } from '../layout-engine/page-layout.js';
-import { addCustomFields } from '../document-introspection/add-custom-fields.js';
 
 type ListQueryFields<T extends TypedDocumentNode<any, any>> = {
     [Key in keyof ResultOf<T>]: ResultOf<T>[Key] extends { items: infer U }
@@ -49,6 +50,8 @@ export interface ListPageProps<
     children?: React.ReactNode;
     facetedFilters?: FacetedFilterConfig<T>;
     rowActions?: RowAction<ListQueryFields<T>>[];
+    transformData?: (data: any[]) => any[];
+    setTableOptions?: (table: TableOptions<any>) => TableOptions<any>;
 }
 
 export function ListPage<
@@ -72,6 +75,8 @@ export function ListPage<
     facetedFilters,
     children,
     rowActions,
+    transformData,
+    setTableOptions,
 }: ListPageProps<T, U, V, AC>) {
     const route = typeof routeOrFn === 'function' ? routeOrFn() : routeOrFn;
     const routeSearch = route.useSearch();
@@ -151,6 +156,8 @@ export function ListPage<
                         }}
                         facetedFilters={facetedFilters}
                         rowActions={rowActions}
+                        setTableOptions={setTableOptions}
+                        transformData={transformData}
                     />
                 </FullWidthPageBlock>
             </PageLayout>
