@@ -318,4 +318,11 @@ export class PaymentMethodService {
             this.configArgService.getByCode('PaymentMethodEligibilityChecker', paymentMethod.checker.code);
         return { paymentMethod, handler, checker };
     }
+
+    async getActivePaymentMethods(ctx: RequestContext): Promise<PaymentMethod[]> {
+        const paymentMethods = await this.connection
+            .getRepository(ctx, PaymentMethod)
+            .find({ where: { enabled: true, channels: { id: ctx.channelId } }, relations: ['channels'] });
+        return paymentMethods.map(p => this.translator.translate(p, ctx));
+    }
 }

@@ -53,6 +53,7 @@ export type DropdownPosition = 'top-left' | 'top-right' | 'bottom-left' | 'botto
     `,
     styleUrls: ['./dropdown-menu.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DropdownMenuComponent implements AfterViewInit, OnInit, OnDestroy {
     direction$: LocalizationDirectionType;

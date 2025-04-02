@@ -104,6 +104,7 @@ import { DataTable2SearchComponent } from './data-table-search.component';
     styleUrls: ['data-table2.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [PaginationService, FilterPresetService],
+    standalone: false,
 })
 export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDestroy {
     @Input() id: DataTableLocationId;
@@ -196,8 +197,9 @@ export class DataTable2Component<T> implements AfterContentInit, OnChanges, OnDe
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.items) {
-            this.currentStart = this.itemsPerPage * (this.currentPage - 1);
-            this.currentEnd = this.currentStart + changes.items.currentValue?.length;
+            const startIndex = this.itemsPerPage * (this.currentPage - 1);
+            this.currentStart = startIndex + 1;
+            this.currentEnd = startIndex + changes.items.currentValue?.length;
             this.selectionManager?.setCurrentItems(this.items);
         }
     }

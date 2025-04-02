@@ -65,9 +65,8 @@ describe('ShippingMethod resolver', () => {
     });
 
     it('shippingEligibilityCheckers', async () => {
-        const { shippingEligibilityCheckers } = await adminClient.query<Codegen.GetEligibilityCheckersQuery>(
-            GET_ELIGIBILITY_CHECKERS,
-        );
+        const { shippingEligibilityCheckers } =
+            await adminClient.query<Codegen.GetEligibilityCheckersQuery>(GET_ELIGIBILITY_CHECKERS);
 
         expect(shippingEligibilityCheckers).toEqual([
             {
@@ -151,9 +150,8 @@ describe('ShippingMethod resolver', () => {
     });
 
     it('shippingMethods', async () => {
-        const { shippingMethods } = await adminClient.query<Codegen.GetShippingMethodListQuery>(
-            GET_SHIPPING_METHOD_LIST,
-        );
+        const { shippingMethods } =
+            await adminClient.query<Codegen.GetShippingMethodListQuery>(GET_SHIPPING_METHOD_LIST);
         expect(shippingMethods.totalItems).toEqual(3);
         expect(shippingMethods.items[0].code).toBe('standard-shipping');
         expect(shippingMethods.items[1].code).toBe('express-shipping');
@@ -319,9 +317,8 @@ describe('ShippingMethod resolver', () => {
     });
 
     it('deleteShippingMethod', async () => {
-        const listResult1 = await adminClient.query<Codegen.GetShippingMethodListQuery>(
-            GET_SHIPPING_METHOD_LIST,
-        );
+        const listResult1 =
+            await adminClient.query<Codegen.GetShippingMethodListQuery>(GET_SHIPPING_METHOD_LIST);
         expect(listResult1.shippingMethods.items.map(i => i.id)).toEqual(['T_1', 'T_2', 'T_3', 'T_4']);
 
         const { deleteShippingMethod } = await adminClient.query<
@@ -336,9 +333,8 @@ describe('ShippingMethod resolver', () => {
             message: null,
         });
 
-        const listResult2 = await adminClient.query<Codegen.GetShippingMethodListQuery>(
-            GET_SHIPPING_METHOD_LIST,
-        );
+        const listResult2 =
+            await adminClient.query<Codegen.GetShippingMethodListQuery>(GET_SHIPPING_METHOD_LIST);
         expect(listResult2.shippingMethods.items.map(i => i.id)).toEqual(['T_1', 'T_2', 'T_3']);
     });
 
@@ -467,6 +463,56 @@ describe('ShippingMethod resolver', () => {
             });
         });
     });
+
+    it('returns only active shipping methods', async () => {
+        // Arrange: Delete all existing shipping methods using deleteShippingMethod
+        const { shippingMethods } =
+            await adminClient.query<Codegen.GetShippingMethodListQuery>(GET_SHIPPING_METHOD_LIST);
+
+        for (const method of shippingMethods.items) {
+            await adminClient.query<
+                Codegen.DeleteShippingMethodMutation,
+                Codegen.DeleteShippingMethodMutationVariables
+            >(DELETE_SHIPPING_METHOD, {
+                id: method.id,
+            });
+        }
+
+        // Create a new active shipping method
+        const { createShippingMethod } = await adminClient.query<
+            Codegen.CreateShippingMethodMutation,
+            Codegen.CreateShippingMethodMutationVariables
+        >(CREATE_SHIPPING_METHOD, {
+            input: {
+                code: 'active-method',
+                fulfillmentHandler: manualFulfillmentHandler.code,
+                checker: {
+                    code: defaultShippingEligibilityChecker.code,
+                    arguments: [{ name: 'orderMinimum', value: '0' }],
+                },
+                calculator: {
+                    code: defaultShippingCalculator.code,
+                    arguments: [],
+                },
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'Active Method',
+                        description: 'This is an active shipping method',
+                    },
+                ],
+            },
+        });
+
+        // Act: Query active shipping methods
+        const { activeShippingMethods } = await shopClient.query(GET_ACTIVE_SHIPPING_METHODS);
+
+        // Assert: Ensure only the new active method is returned
+        expect(activeShippingMethods).toHaveLength(1);
+        expect(activeShippingMethods[0].code).toBe('active-method');
+        expect(activeShippingMethods[0].name).toBe('Active Method');
+        expect(activeShippingMethods[0].description).toBe('This is an active shipping method');
+    });
 });
 
 const GET_SHIPPING_METHOD = gql`
@@ -532,6 +578,22 @@ export const TEST_ELIGIBLE_SHIPPING_METHODS = gql`
             price
             priceWithTax
             metadata
+        }
+    }
+`;
+
+const GET_ACTIVE_SHIPPING_METHODS = gql`
+    query GetActiveShippingMethods {
+        activeShippingMethods {
+            id
+            code
+            name
+            description
+            translations {
+                languageCode
+                name
+                description
+            }
         }
     }
 `;

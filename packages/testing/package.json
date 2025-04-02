@@ -41,7 +41,7 @@
         "@vendure/common": "^3.1.8",
         "faker": "^4.1.0",
         "form-data": "^4.0.0",
-        "graphql": "~16.9.0",
+        "graphql": "^16.10.0",
         "graphql-tag": "^2.12.6",
         "node-fetch": "^2.7.0",
         "sql.js": "1.8.0"
@@ -55,6 +55,6 @@
         "mysql": "^2.18.1",
         "pg": "^8.11.3",
         "rimraf": "^5.0.5",
-        "typescript": "5.3.3"
+        "typescript": "5.8.2"
     }
 }

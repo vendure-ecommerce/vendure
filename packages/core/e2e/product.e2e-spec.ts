@@ -1736,22 +1736,28 @@ describe('Product resolver', () => {
                     }, 'ProductVariant optionIds must include one optionId from each of the groups: group-2, group-3'),
                 );
 
-                it(
-                    'passing optionIds that match an existing variant throws',
-                    assertThrowsWithMessage(async () => {
-                        await adminClient.query<
-                            Codegen.UpdateProductVariantsMutation,
-                            Codegen.UpdateProductVariantsMutationVariables
-                        >(UPDATE_PRODUCT_VARIANTS, {
-                            input: [
-                                {
-                                    id: variantToModify.id,
-                                    optionIds: variants[1]!.options.map(o => o.id),
-                                },
-                            ],
-                        });
-                    }, 'A ProductVariant with the selected options already exists: Variant 3'),
-                );
+                it('passing optionIds that match an existing variant should not throw', async () => {
+                    const { updateProductVariants } = await adminClient.query<
+                        Codegen.UpdateProductVariantsMutation,
+                        Codegen.UpdateProductVariantsMutationVariables
+                    >(UPDATE_PRODUCT_VARIANTS, {
+                        input: [
+                            {
+                                id: variantToModify.id,
+                                optionIds: variantToModify!.options.map(o => o.id),
+                                sku: 'ABC',
+                                price: 432,
+                            },
+                        ],
+                    });
+                    const updatedVariant = updateProductVariants[0];
+                    if (!updatedVariant) {
+                        fail('no updated variant returned.');
+                        return;
+                    }
+                    expect(updatedVariant.sku).toBe('ABC');
+                    expect(updatedVariant.price).toBe(432);
+                });
 
                 it('addOptionGroupToProduct and then update existing ProductVariant with a new option', async () => {
                     const optionGroup4 = await createOptionGroup('group-4', [

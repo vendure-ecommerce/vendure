@@ -4,9 +4,13 @@ import { DropdownComponent } from './dropdown.component';
 
 @Directive({
     selector: '[vdrDropdownTrigger]',
+    standalone: false,
 })
 export class DropdownTriggerDirective {
-    constructor(private dropdown: DropdownComponent, private elementRef: ElementRef) {
+    constructor(
+        private dropdown: DropdownComponent,
+        private elementRef: ElementRef,
+    ) {
         dropdown.setTriggerElement(this.elementRef);
     }
 

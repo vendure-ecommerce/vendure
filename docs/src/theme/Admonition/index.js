@@ -1,27 +1,5 @@
 import React from 'react';
 import Admonition from '@theme-original/Admonition';
-import Link from '@docusaurus/Link';
-
-export default function AdmonitionWrapper(props) {
-    if (props.type !== 'cli') {
-        return <Admonition {...props} />;
-    }
-    return (
-        <Admonition
-            icon={<CliIcon />}
-            title={'Vendure CLI'}
-            {...props}
-            children={
-                <>
-                    {props.children}
-                    <div style={{ fontSize: '12px' }}>
-                        Learn more about the <Link href={'/guides/developer-guide/cli/'}>Vendure CLI</Link>
-                    </div>
-                </>
-            }
-        />
-    );
-}
 
 function CliIcon() {
     return (
@@ -40,4 +18,11 @@ function CliIcon() {
             />
         </svg>
     );
+}
+
+export default function AdmonitionWrapper(props) {
+    if (props.type === 'cli') {
+        return <Admonition title="Vendure CLI" icon={<CliIcon />} {...props} />;
+    }
+    return <Admonition {...props} />;
 }

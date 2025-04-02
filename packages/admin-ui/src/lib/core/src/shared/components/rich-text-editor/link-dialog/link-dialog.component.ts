@@ -14,6 +14,7 @@ export interface LinkAttrs {
     templateUrl: './link-dialog.component.html',
     styleUrls: ['./link-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class LinkDialogComponent implements OnInit, Dialog<LinkAttrs> {
     form: UntypedFormGroup;

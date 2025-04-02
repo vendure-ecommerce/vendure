@@ -7,6 +7,7 @@ import { AddressFragment, OrderAddress } from '../../../common/generated-types';
     templateUrl: './formatted-address.component.html',
     styleUrls: ['./formatted-address.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class FormattedAddressComponent {
     @Input() address: AddressFragment | OrderAddress;

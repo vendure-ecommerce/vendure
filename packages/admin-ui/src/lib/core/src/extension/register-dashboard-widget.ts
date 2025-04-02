@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, FactoryProvider } from '@angular/core';
+import { inject, provideAppInitializer } from '@angular/core';
 
 import {
     DashboardWidgetConfig,
@@ -13,15 +13,13 @@ import { DashboardWidgetService } from '../providers/dashboard-widget/dashboard-
  *
  * @docsCategory dashboard-widgets
  */
-export function registerDashboardWidget(id: string, config: DashboardWidgetConfig): FactoryProvider {
-    return {
-        provide: APP_INITIALIZER,
-        multi: true,
-        useFactory: (dashboardWidgetService: DashboardWidgetService) => () => {
+export function registerDashboardWidget(id: string, config: DashboardWidgetConfig) {
+    return provideAppInitializer(() => {
+        const initializerFn = ((dashboardWidgetService: DashboardWidgetService) => () => {
             dashboardWidgetService.registerWidget(id, config);
-        },
-        deps: [DashboardWidgetService],
-    };
+        })(inject(DashboardWidgetService));
+        return initializerFn();
+    });
 }
 
 /**
@@ -30,13 +28,11 @@ export function registerDashboardWidget(id: string, config: DashboardWidgetConfi
  *
  * @docsCategory dashboard-widgets
  */
-export function setDashboardWidgetLayout(layoutDef: WidgetLayoutDefinition): FactoryProvider {
-    return {
-        provide: APP_INITIALIZER,
-        multi: true,
-        useFactory: (dashboardWidgetService: DashboardWidgetService) => () => {
+export function setDashboardWidgetLayout(layoutDef: WidgetLayoutDefinition) {
+    return provideAppInitializer(() => {
+        const initializerFn = ((dashboardWidgetService: DashboardWidgetService) => () => {
             dashboardWidgetService.setDefaultLayout(layoutDef);
-        },
-        deps: [DashboardWidgetService],
-    };
+        })(inject(DashboardWidgetService));
+        return initializerFn();
+    });
 }

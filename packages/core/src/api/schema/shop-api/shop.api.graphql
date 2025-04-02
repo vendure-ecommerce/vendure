@@ -45,6 +45,26 @@ type Query {
     products(options: ProductListOptions): ProductList!
     "Search Products based on the criteria set by the `SearchInput`"
     search(input: SearchInput!): SearchResponse!
+    "Get active payment methods"
+    activePaymentMethods: [PublicPaymentMethod]!
+    "Get active shipping methods"
+    activeShippingMethods: [PublicShippingMethod]!
+}
+
+type PublicPaymentMethod {
+    id: ID!
+    code: String!
+    name: String!
+    description: String
+    translations: [PaymentMethodTranslation!]!
+}
+
+type PublicShippingMethod {
+    id: ID!
+    code: String!
+    name: String!
+    description: String
+    translations: [ShippingMethodTranslation!]!
 }
 
 type Mutation {

@@ -18,6 +18,7 @@ import {
     templateUrl: './fulfill-order-dialog.component.html',
     styleUrls: ['./fulfill-order-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class FulfillOrderDialogComponent implements Dialog<FulfillOrderInput>, OnInit {
     resolveWith: (result?: FulfillOrderInput) => void;
@@ -29,7 +30,10 @@ export class FulfillOrderDialogComponent implements Dialog<FulfillOrderInput>, O
     // Provided by modalService.fromComponent() call
     order: OrderDetailFragment;
 
-    constructor(private dataService: DataService, private changeDetector: ChangeDetectorRef) {}
+    constructor(
+        private dataService: DataService,
+        private changeDetector: ChangeDetectorRef,
+    ) {}
 
     ngOnInit(): void {
         this.dataService.settings.getGlobalSettings().single$.subscribe(({ globalSettings }) => {

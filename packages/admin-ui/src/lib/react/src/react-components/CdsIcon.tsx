@@ -15,7 +15,7 @@ export interface CdsIconProps {
     badge: 'info' | 'success' | 'warning' | 'danger';
 }
 
-declare global {
+declare module 'react' {
     namespace JSX {
         interface IntrinsicElements {
             ['cds-icon']: CustomElement<CdsIconProps>;

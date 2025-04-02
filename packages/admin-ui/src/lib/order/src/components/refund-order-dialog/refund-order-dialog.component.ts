@@ -21,6 +21,7 @@ type SelectionLine = { quantity: number; cancel: boolean };
     templateUrl: './refund-order-dialog.component.html',
     styleUrls: ['./refund-order-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class RefundOrderDialogComponent
     implements OnInit, Dialog<{ cancel: CancelOrderInput; refunds: RefundOrderInput[] }>

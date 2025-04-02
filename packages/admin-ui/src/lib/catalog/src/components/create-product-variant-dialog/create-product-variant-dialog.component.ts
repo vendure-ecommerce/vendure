@@ -13,6 +13,7 @@ import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
     templateUrl: './create-product-variant-dialog.component.html',
     styleUrls: ['./create-product-variant-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CreateProductVariantDialogComponent implements Dialog<CreateProductVariantInput>, OnInit {
     resolveWith: (result?: CreateProductVariantInput) => void;

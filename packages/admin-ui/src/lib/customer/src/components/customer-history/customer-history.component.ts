@@ -13,6 +13,7 @@ import {
     templateUrl: './customer-history.component.html',
     styleUrls: ['./customer-history.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class CustomerHistoryComponent {
     @Input() customer: CustomerFragment;

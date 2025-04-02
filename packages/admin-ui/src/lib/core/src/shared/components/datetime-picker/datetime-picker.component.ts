@@ -49,6 +49,7 @@ export type CurrentView = {
             multi: true,
         },
     ],
+    standalone: false,
 })
 export class DatetimePickerComponent implements ControlValueAccessor, AfterViewInit, OnInit, OnDestroy {
     /**
