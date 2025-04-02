@@ -57,7 +57,7 @@ export function NavMain({ items }: { items: Array<NavMenuSection | NavMenuItem> 
         if ('url' in item) {
             return (
                 <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton tooltip={item.title} asChild>
+                    <SidebarMenuButton tooltip={item.title} asChild isActive={location.pathname === item.url}>
                         <Link to={item.url}>
                             {item.icon && <item.icon />}
                             <span>{item.title}</span>
@@ -111,7 +111,7 @@ export function NavMain({ items }: { items: Array<NavMenuSection | NavMenuItem> 
         if ('url' in item) {
             return (
                 <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton tooltip={item.title} asChild>
+                    <SidebarMenuButton tooltip={item.title} asChild isActive={location.pathname === item.url}>
                         <Link to={item.url}>
                             {item.icon && <item.icon />}
                             <span>{item.title}</span>

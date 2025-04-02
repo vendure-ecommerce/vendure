@@ -135,7 +135,6 @@ function CustomerDetailPage() {
     });
 
     const customerName = entity ? `${entity.firstName} ${entity.lastName}` : '';
-    console.log(entity);
 
     return (
         <Page pageId="customer-detail" form={form} submitHandler={submitHandler}>

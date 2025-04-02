@@ -91,7 +91,6 @@ export function DetailPage<
                 <PageBlock column="main" blockId="main-form">
                     <DetailFormGrid>
                         {updateFields.map(fieldInfo => {
-                            console.log(fieldInfo);
                             if (fieldInfo.name === 'id' && fieldInfo.type === 'ID') {
                                 return null;
                             }
