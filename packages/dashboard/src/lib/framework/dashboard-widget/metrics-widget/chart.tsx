@@ -14,16 +14,11 @@ export function MetricsChart({
 
     return (
         <AreaChart width={width} height={height} data={chartData}>
-            <CartesianGrid strokeDasharray="4 4" />
-            <XAxis className="text-xs text-muted-foreground" dataKey="name" interval={2} />
-            <YAxis className="text-xs text-muted-foreground" tickFormatter={formatValue} />
+            <CartesianGrid strokeDasharray="4 4" stroke="var(--color-border)" />
+            <XAxis className="text-xs" color="var(--color-foreground)" dataKey="name" interval={2} />
+            <YAxis className="text-xs" color="var(--color-foreground)" tickFormatter={formatValue} />
             <Tooltip formatter={formatValue} />
-            <Area
-                type="monotone"
-                dataKey="sales"
-                stroke="var(--color-brand)"
-                fill="var(--color-brand-lighter)"
-            />
+            <Area type="monotone" dataKey="sales" stroke="var(--color-brand)" strokeWidth={2} />
         </AreaChart>
     );
 }
