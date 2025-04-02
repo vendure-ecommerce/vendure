@@ -18,6 +18,7 @@ import { AuthenticationStrategy } from './auth/authentication-strategy';
 import { PasswordHashingStrategy } from './auth/password-hashing-strategy';
 import { PasswordValidationStrategy } from './auth/password-validation-strategy';
 import { RolePermissionResolverStrategy } from './auth/role-permission-resolver-strategy';
+import { VerificationTokenStrategy } from './auth/verification-token-strategy';
 import { CollectionFilter } from './catalog/collection-filter';
 import { ProductVariantPriceCalculationStrategy } from './catalog/product-variant-price-calculation-strategy';
 import { ProductVariantPriceSelectionStrategy } from './catalog/product-variant-price-selection-strategy';
@@ -477,6 +478,14 @@ export interface AuthOptions {
      * @default DefaultPasswordValidationStrategy
      */
     passwordValidationStrategy?: PasswordValidationStrategy;
+    /**
+     * @description
+     * Allows you to customize the way verification tokens are generated.
+     *
+     * @default DefaultVerificationTokenStrategy
+     * @since 3.2.0
+     */
+    verificationTokenStrategy?: VerificationTokenStrategy;
     /**
      * @description
      * Allows you to customize the way permissions resolve for your users.

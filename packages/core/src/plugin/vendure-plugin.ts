@@ -43,6 +43,7 @@ export interface VendurePluginMetadata extends ModuleMetadata {
      * The plugin may define custom [TypeORM database entities](https://typeorm.io/#/entities).
      */
     entities?: Array<Type<any>> | (() => Array<Type<any>>);
+    dashboard?: DashboardExtension;
     /**
      * @description
      * The plugin should define a valid [semver version string](https://www.npmjs.com/package/semver) to indicate which versions of
@@ -117,6 +118,12 @@ export interface APIExtensionDefinition {
 export type PluginConfigurationFn = (
     config: RuntimeVendureConfig,
 ) => RuntimeVendureConfig | Promise<RuntimeVendureConfig>;
+
+export type DashboardExtension =
+    | string
+    | {
+          location: string;
+      };
 
 /**
  * @description

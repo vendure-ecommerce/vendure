@@ -18,13 +18,13 @@ import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storag
 import { BcryptPasswordHashingStrategy } from './auth/bcrypt-password-hashing-strategy';
 import { DefaultPasswordValidationStrategy } from './auth/default-password-validation-strategy';
 import { DefaultRolePermissionResolverStrategy } from './auth/default-role-permission-resolver-strategy';
+import { DefaultVerificationTokenStrategy } from './auth/default-verification-token-strategy';
 import { NativeAuthenticationStrategy } from './auth/native-authentication-strategy';
 import { defaultCollectionFilters } from './catalog/default-collection-filters';
 import { DefaultProductVariantPriceCalculationStrategy } from './catalog/default-product-variant-price-calculation-strategy';
 import { DefaultProductVariantPriceSelectionStrategy } from './catalog/default-product-variant-price-selection-strategy';
 import { DefaultProductVariantPriceUpdateStrategy } from './catalog/default-product-variant-price-update-strategy';
 import { DefaultStockDisplayStrategy } from './catalog/default-stock-display-strategy';
-import { DefaultStockLocationStrategy } from './catalog/default-stock-location-strategy';
 import { MultiChannelStockLocationStrategy } from './catalog/multi-channel-stock-location-strategy';
 import { AutoIncrementIdStrategy } from './entity/auto-increment-id-strategy';
 import { DefaultMoneyStrategy } from './entity/default-money-strategy';
@@ -112,6 +112,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         customPermissions: [],
         passwordHashingStrategy: new BcryptPasswordHashingStrategy(),
         passwordValidationStrategy: new DefaultPasswordValidationStrategy({ minLength: 4 }),
+        verificationTokenStrategy: new DefaultVerificationTokenStrategy(),
         rolePermissionResolverStrategy: new DefaultRolePermissionResolverStrategy(),
     },
     catalogOptions: {

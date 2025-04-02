@@ -3,6 +3,7 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 
 @Pipe({
     name: 'stateI18nToken',
+    standalone: false,
 })
 export class StateI18nTokenPipe implements PipeTransform {
     private readonly stateI18nTokens = {

@@ -7,6 +7,7 @@ import {
     DefaultLogger,
     DefaultSearchPlugin,
     dummyPaymentHandler,
+    LanguageCode,
     LogLevel,
     VendureConfig,
 } from '@vendure/core';
@@ -14,6 +15,8 @@ import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@ven
 import 'dotenv/config';
 import path from 'path';
 import { DataSourceOptions } from 'typeorm';
+
+import { ReviewsPlugin } from './test-plugins/reviews/reviews-plugin';
 
 /**
  * Config settings used during development
@@ -55,7 +58,34 @@ export const devConfig: VendureConfig = {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
 
-    customFields: {},
+    customFields: {
+        Product: [
+            {
+                name: 'infoUrl',
+                type: 'string',
+                label: [{ languageCode: LanguageCode.en, value: 'Info URL' }],
+                description: [{ languageCode: LanguageCode.en, value: 'Info URL' }],
+            },
+            {
+                name: 'downloadable',
+                type: 'boolean',
+                label: [{ languageCode: LanguageCode.en, value: 'Downloadable' }],
+                description: [{ languageCode: LanguageCode.en, value: 'Downloadable' }],
+            },
+            {
+                name: 'shortName',
+                type: 'localeString',
+                label: [{ languageCode: LanguageCode.en, value: 'Short Name' }],
+                description: [{ languageCode: LanguageCode.en, value: 'Short Name' }],
+            },
+            {
+                name: 'lastUpdated',
+                type: 'datetime',
+                label: [{ languageCode: LanguageCode.en, value: 'Last Updated' }],
+                description: [{ languageCode: LanguageCode.en, value: 'Last Updated' }],
+            },
+        ],
+    },
     // TODO remove if this feature is closer to merging
     logger: new DefaultLogger({ level: LogLevel.Debug }),
     importExportOptions: {
@@ -66,6 +96,7 @@ export const devConfig: VendureConfig = {
         //     platformFeePercent: 10,
         //     platformFeeSKU: 'FEE',
         // }),
+        ReviewsPlugin,
         // ChannelRolePlugin.init({}),
         AssetServerPlugin.init({
             route: 'assets',
@@ -96,6 +127,7 @@ export const devConfig: VendureConfig = {
         AdminUiPlugin.init({
             route: 'admin',
             port: 5001,
+            adminUiConfig: {},
             // Un-comment to compile a custom admin ui
             // app: compileUiExtensions({
             //     outputPath: path.join(__dirname, './custom-admin-ui'),

@@ -33,6 +33,7 @@ export type ZoneMember = { id: string; name: string; code: string };
     templateUrl: './zone-member-list.component.html',
     styleUrls: ['./zone-member-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ZoneMemberListComponent implements OnInit, OnChanges, OnDestroy {
     @Input() locationId: BulkActionLocationId;

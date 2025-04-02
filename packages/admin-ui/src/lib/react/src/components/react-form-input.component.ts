@@ -14,8 +14,7 @@ export const REACT_INPUT_COMPONENT_OPTIONS = new InjectionToken<{
     template: ` <div [vdrReactComponentHost]="reactComponent" [context]="context" [props]="context"></div> `,
     styleUrls: ['./react-global-styles.scss'],
     encapsulation: ViewEncapsulation.None,
-    standalone: true,
-    imports: [ReactComponentHostDirective],
+    imports: [ReactComponentHostDirective]
 })
 export class ReactFormInputComponent implements FormInputComponent, OnInit {
     static readonly id: string = 'react-form-input-component';

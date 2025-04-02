@@ -27,6 +27,7 @@ export const GET_PROMOTION_LIST = gql`
     templateUrl: './promotion-list.component.html',
     styleUrls: ['./promotion-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class PromotionListComponent
     extends TypedBaseListComponent<typeof GetPromotionListDocument, 'promotions'>

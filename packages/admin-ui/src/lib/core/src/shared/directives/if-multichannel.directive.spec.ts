@@ -76,6 +76,7 @@ describe('vdrIfMultichannel directive', () => {
             <span class="then"></span>
         </div>
     `,
+    standalone: false,
 })
 export class TestComponentSimple {
     constructor(public dataService: DataService) {}
@@ -89,6 +90,7 @@ export class TestComponentSimple {
         </ng-template>
         <ng-template #not><span class="else"></span></ng-template>
     `,
+    standalone: false,
 })
 export class TestComponentIfElse {
     constructor(public dataService: DataService) {}

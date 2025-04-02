@@ -47,6 +47,7 @@ export const GET_SHIPPING_METHOD_DETAIL = gql`
     templateUrl: './shipping-method-detail.component.html',
     styleUrls: ['./shipping-method-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ShippingMethodDetailComponent
     extends TypedBaseDetailComponent<typeof GetShippingMethodDetailDocument, 'shippingMethod'>

@@ -39,6 +39,7 @@ export const GET_PROMOTION_DETAIL = gql`
     templateUrl: './promotion-detail.component.html',
     styleUrls: ['./promotion-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class PromotionDetailComponent
     extends TypedBaseDetailComponent<typeof GetPromotionDetailDocument, 'promotion'>

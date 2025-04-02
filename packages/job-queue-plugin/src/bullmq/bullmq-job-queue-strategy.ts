@@ -57,6 +57,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         this.options = {
             ...options,
             workerOptions: {
+                ...options.workerOptions,
                 removeOnComplete: options.workerOptions?.removeOnComplete ?? {
                     age: 60 * 60 * 24 * 30,
                     count: 5000,
@@ -159,9 +160,11 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             delay: 1000,
             type: 'exponential',
         };
+        const customJobOptions = this.options.setJobOptions?.(job.queueName, job) ?? {};
         const bullJob = await this.queue.add(job.queueName, job.data, {
             attempts: retries + 1,
             backoff,
+            ...customJobOptions,
         });
         return this.createVendureJob(bullJob);
     }
@@ -194,7 +197,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         if (stateFilter?.eq) {
             switch (stateFilter.eq) {
                 case 'PENDING':
-                    jobTypes = ['wait'];
+                    jobTypes = ['wait', 'waiting-children', 'prioritized'];
                     break;
                 case 'RUNNING':
                     jobTypes = ['active'];
@@ -218,7 +221,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             jobTypes =
                 settledFilter.eq === true
                     ? ['completed', 'failed']
-                    : ['wait', 'waiting-children', 'active', 'repeat', 'delayed', 'paused'];
+                    : ['wait', 'waiting-children', 'active', 'repeat', 'delayed', 'paused', 'prioritized'];
         }
 
         let items: Bull.Job[] = [];
@@ -382,30 +385,27 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
 
     private async getState(bullJob: Bull.Job): Promise<JobState> {
         const jobId = bullJob.id?.toString();
-
-        if ((await bullJob.isWaiting()) || (await bullJob.isWaitingChildren())) {
-            return JobState.PENDING;
-        }
-        if (await bullJob.isActive()) {
-            const isCancelled =
-                jobId && (await this.redisConnection.sismember(this.CANCELLED_JOB_LIST_NAME, jobId));
-            if (isCancelled) {
-                return JobState.CANCELLED;
-            } else {
-                return JobState.RUNNING;
+        const state = await bullJob.getState();
+        switch (state) {
+            case 'completed':
+                return JobState.COMPLETED;
+            case 'failed':
+                return JobState.FAILED;
+            case 'waiting':
+            case 'waiting-children':
+            case 'prioritized':
+                return JobState.PENDING;
+            case 'delayed':
+                return JobState.RETRYING;
+            case 'active': {
+                const isCancelled =
+                    jobId && (await this.redisConnection.sismember(this.CANCELLED_JOB_LIST_NAME, jobId));
+                return isCancelled ? JobState.CANCELLED : JobState.RUNNING;
             }
+            case 'unknown':
+            default:
+                throw new InternalServerError(`Could not determine job state: ${state}`);
         }
-        if (await bullJob.isDelayed()) {
-            return JobState.RETRYING;
-        }
-        if (await bullJob.isFailed()) {
-            return JobState.FAILED;
-        }
-        if (await bullJob.isCompleted()) {
-            return JobState.COMPLETED;
-        }
-        throw new InternalServerError('Could not determine job state');
-        // TODO: how to handle "cancelled" state? Currently when we cancel a job, we simply remove all record of it.
     }
 
     private callCustomScript<T, Args extends any[]>(

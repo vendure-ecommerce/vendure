@@ -6,6 +6,7 @@ import { Dialog } from '@vendure/admin-ui/core';
     templateUrl: './order-state-select-dialog.component.html',
     styleUrls: ['./order-state-select-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OrderStateSelectDialogComponent implements Dialog<string> {
     resolveWith: (result?: string) => void;

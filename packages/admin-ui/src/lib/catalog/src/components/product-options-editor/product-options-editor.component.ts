@@ -32,6 +32,7 @@ type ProductWithOptions = NonNullable<GetProductVariantOptionsQuery['product']>;
     templateUrl: './product-options-editor.component.html',
     styleUrls: ['./product-options-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ProductOptionsEditorComponent extends BaseDetailComponent<ProductWithOptions> implements OnInit {
     detailForm: UntypedFormGroup;

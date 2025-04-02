@@ -5,6 +5,7 @@ import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core'
     template: `
         <ng-template><ng-content></ng-content></ng-template>
     `,
+    standalone: false,
 })
 export class DataTableColumnComponent {
     /**

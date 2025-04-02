@@ -1,6 +1,6 @@
 {
     "name": "@vendure/common",
-    "version": "3.1.7",
+    "version": "3.2.0",
     "main": "index.js",
     "license": "GPL-3.0-or-later",
     "scripts": {
@@ -18,8 +18,12 @@
     "files": [
         "lib/**/*"
     ],
+    "exports": {
+        ".": "./lib/index.js",
+        "./lib/*": "./lib/*.js"
+    },
     "devDependencies": {
         "rimraf": "^5.0.5",
-        "typescript": "5.3.3"
+        "typescript": "5.8.2"
     }
 }

@@ -15,6 +15,7 @@ import { RelationSelectorDialogComponent } from '../relation-selector-dialog/rel
     templateUrl: './relation-product-input.component.html',
     styleUrls: ['./relation-product-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RelationProductInputComponent implements OnInit {
     @Input() readonly: boolean;
@@ -28,7 +29,10 @@ export class RelationProductInputComponent implements OnInit {
     results$: Observable<Codegen.GetProductListQuery['products']['items']>;
     product$: Observable<Codegen.GetProductSimpleQuery['product'] | undefined>;
 
-    constructor(private modalService: ModalService, private dataService: DataService) {}
+    constructor(
+        private modalService: ModalService,
+        private dataService: DataService,
+    ) {}
 
     ngOnInit() {
         this.product$ = this.parentFormControl.valueChanges.pipe(

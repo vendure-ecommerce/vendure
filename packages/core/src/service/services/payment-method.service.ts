@@ -307,6 +307,7 @@ export class PaymentMethodService {
             .leftJoin('method.channels', 'channel')
             .where('method.code = :code', { code: method })
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
+            .andWhere('method.enabled IS true')
             .getOne();
         if (!paymentMethod) {
             throw new UserInputError('error.payment-method-not-found', { method });
@@ -316,5 +317,12 @@ export class PaymentMethodService {
             paymentMethod.checker &&
             this.configArgService.getByCode('PaymentMethodEligibilityChecker', paymentMethod.checker.code);
         return { paymentMethod, handler, checker };
+    }
+
+    async getActivePaymentMethods(ctx: RequestContext): Promise<PaymentMethod[]> {
+        const paymentMethods = await this.connection
+            .getRepository(ctx, PaymentMethod)
+            .find({ where: { enabled: true, channels: { id: ctx.channelId } }, relations: ['channels'] });
+        return paymentMethods.map(p => this.translator.translate(p, ctx));
     }
 }

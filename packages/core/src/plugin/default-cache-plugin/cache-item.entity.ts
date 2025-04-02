@@ -19,6 +19,6 @@ export class CacheItem extends VendureEntity {
     @Column('text')
     value: string;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, precision: 3 })
     expiresAt?: Date;
 }

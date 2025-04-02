@@ -209,9 +209,8 @@ describe('PaymentMethod resolver', () => {
     });
 
     it('paymentMethodHandlers', async () => {
-        const { paymentMethodHandlers } = await adminClient.query<Codegen.GetPaymentMethodHandlersQuery>(
-            GET_PAYMENT_METHOD_HANDLERS,
-        );
+        const { paymentMethodHandlers } =
+            await adminClient.query<Codegen.GetPaymentMethodHandlersQuery>(GET_PAYMENT_METHOD_HANDLERS);
         expect(paymentMethodHandlers).toEqual([
             {
                 code: dummyPaymentHandler.code,
@@ -383,9 +382,8 @@ describe('PaymentMethod resolver', () => {
 
         it('method is listed in channel2', async () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { paymentMethods } = await adminClient.query<Codegen.GetPaymentMethodListQuery>(
-                GET_PAYMENT_METHOD_LIST,
-            );
+            const { paymentMethods } =
+                await adminClient.query<Codegen.GetPaymentMethodListQuery>(GET_PAYMENT_METHOD_LIST);
 
             expect(paymentMethods.totalItems).toBe(1);
             expect(paymentMethods.items[0].code).toBe('channel-2-method');
@@ -393,18 +391,16 @@ describe('PaymentMethod resolver', () => {
 
         it('method is not listed in channel3', async () => {
             adminClient.setChannelToken(THIRD_CHANNEL_TOKEN);
-            const { paymentMethods } = await adminClient.query<Codegen.GetPaymentMethodListQuery>(
-                GET_PAYMENT_METHOD_LIST,
-            );
+            const { paymentMethods } =
+                await adminClient.query<Codegen.GetPaymentMethodListQuery>(GET_PAYMENT_METHOD_LIST);
 
             expect(paymentMethods.totalItems).toBe(0);
         });
 
         it('method is listed in default channel', async () => {
             adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-            const { paymentMethods } = await adminClient.query<Codegen.GetPaymentMethodListQuery>(
-                GET_PAYMENT_METHOD_LIST,
-            );
+            const { paymentMethods } =
+                await adminClient.query<Codegen.GetPaymentMethodListQuery>(GET_PAYMENT_METHOD_LIST);
 
             expect(paymentMethods.totalItems).toBe(4);
             expect(paymentMethods.items.map(i => i.code).sort()).toEqual([
@@ -417,9 +413,8 @@ describe('PaymentMethod resolver', () => {
 
         it('delete from channel', async () => {
             adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { paymentMethods } = await adminClient.query<Codegen.GetPaymentMethodListQuery>(
-                GET_PAYMENT_METHOD_LIST,
-            );
+            const { paymentMethods } =
+                await adminClient.query<Codegen.GetPaymentMethodListQuery>(GET_PAYMENT_METHOD_LIST);
 
             expect(paymentMethods.totalItems).toBe(1);
 
@@ -478,9 +473,8 @@ describe('PaymentMethod resolver', () => {
                 'The selected PaymentMethod is assigned to the following Channels: second-channel. Set "force: true" to delete from all Channels.',
             );
 
-            const { paymentMethods: check1 } = await adminClient.query<Codegen.GetPaymentMethodListQuery>(
-                GET_PAYMENT_METHOD_LIST,
-            );
+            const { paymentMethods: check1 } =
+                await adminClient.query<Codegen.GetPaymentMethodListQuery>(GET_PAYMENT_METHOD_LIST);
             expect(check1.totalItems).toBe(5);
 
             const { deletePaymentMethod: delete2 } = await adminClient.query<
@@ -493,9 +487,8 @@ describe('PaymentMethod resolver', () => {
 
             expect(delete2.result).toBe(DeletionResult.DELETED);
 
-            const { paymentMethods: check2 } = await adminClient.query<Codegen.GetPaymentMethodListQuery>(
-                GET_PAYMENT_METHOD_LIST,
-            );
+            const { paymentMethods: check2 } =
+                await adminClient.query<Codegen.GetPaymentMethodListQuery>(GET_PAYMENT_METHOD_LIST);
             expect(check2.totalItems).toBe(4);
         });
     });
@@ -546,6 +539,60 @@ describe('PaymentMethod resolver', () => {
                 },
             ],
         });
+    });
+
+    it('returns only active payment methods', async () => {
+        // Cleanup: Remove all existing payment methods
+        const { paymentMethods } = await adminClient.query(GET_PAYMENT_METHOD_LIST);
+        for (const method of paymentMethods.items) {
+            await adminClient.query(DELETE_PAYMENT_METHOD, { id: method.id, force: true });
+        }
+
+        // Arrange: Create both enabled and disabled payment methods
+        await adminClient.query(CREATE_PAYMENT_METHOD, {
+            input: {
+                code: 'active-method',
+                enabled: true,
+                handler: {
+                    code: 'dummy-payment-handler',
+                    arguments: [{ name: 'automaticSettle', value: 'true' }],
+                },
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'Active Method',
+                        description: 'This is an active method',
+                    },
+                ],
+            },
+        });
+
+        await adminClient.query(CREATE_PAYMENT_METHOD, {
+            input: {
+                code: 'inactive-method',
+                enabled: false,
+                handler: {
+                    code: 'dummy-payment-handler',
+                    arguments: [{ name: 'automaticSettle', value: 'true' }],
+                },
+                translations: [
+                    {
+                        languageCode: LanguageCode.en,
+                        name: 'Inactive Method',
+                        description: 'This is an inactive method',
+                    },
+                ],
+            },
+        });
+
+        // Act: Query active payment methods
+        const { activePaymentMethods } = await shopClient.query(ACTIVE_PAYMENT_METHODS_QUERY);
+
+        // Assert: Ensure only the active payment method is returned
+        expect(activePaymentMethods).toHaveLength(1);
+        expect(activePaymentMethods[0].code).toBe('active-method');
+        expect(activePaymentMethods[0].name).toBe('Active Method');
+        expect(activePaymentMethods[0].description).toBe('This is an active method');
     });
 });
 
@@ -647,6 +694,22 @@ export const DELETE_PAYMENT_METHOD = gql`
         deletePaymentMethod(id: $id, force: $force) {
             message
             result
+        }
+    }
+`;
+
+const ACTIVE_PAYMENT_METHODS_QUERY = gql`
+    query ActivePaymentMethods {
+        activePaymentMethods {
+            id
+            code
+            name
+            description
+            translations {
+                languageCode
+                name
+                description
+            }
         }
     }
 `;
