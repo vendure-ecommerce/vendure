@@ -3,6 +3,15 @@
     "private": false,
     "version": "3.2.1",
     "type": "module",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/vendure-ecommerce/vendure"
+    },
+    "homepage": "https://www.vendure.io",
+    "funding": "https://github.com/sponsors/michaelbromley",
+    "publishConfig": {
+        "access": "public"
+    },
     "scripts": {
         "dev": "vite",
         "build:lib": "vite build --config vite.config.lib.mts",

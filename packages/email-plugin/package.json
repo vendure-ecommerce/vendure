@@ -9,6 +9,10 @@
         "templates/**/*",
         "dev-mailbox.html"
     ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/vendure-ecommerce/vendure"
+    },
     "scripts": {
         "watch": "tsc -p ./tsconfig.build.json --watch",
         "build": "rimraf lib && tsc -p ./tsconfig.build.json",

@@ -8,7 +8,7 @@
         "extensions"
     ],
     "author": "Michael Bromley <michael@michaelbromley.co.uk>",
-    "homepage": "https://www.vendure.io/",
+    "homepage": "https://www.vendure.io",
     "license": "GPL-3.0-or-later",
     "files": [
         "client",
@@ -23,7 +23,7 @@
     "types": "client/index.d.ts",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/vendure-ecommerce/vendure.git"
+        "url": "https://github.com/vendure-ecommerce/vendure"
     },
     "scripts": {
         "build:client": "rimraf ./client && rollup -c rollup.config.mjs --configProduction",
