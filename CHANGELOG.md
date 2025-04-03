@@ -1,3 +1,12 @@
+## <small>3.2.1 (2025-04-03)</small>
+
+
+#### Fixes
+
+* **job-queue-plugin** Respect custom prefix for BullMQ Redis keys ([40f1cb8](https://github.com/vendure-ecommerce/vendure/commit/40f1cb8))
+* **ui-devkit** Silence sass warnings during compilation ([724e849](https://github.com/vendure-ecommerce/vendure/commit/724e849))
+* **ui-devkit** Update angular.json for v19 compatibility ([1ac69a7](https://github.com/vendure-ecommerce/vendure/commit/1ac69a7))
+
 ## 3.2.0 (2025-04-02)
 
 
