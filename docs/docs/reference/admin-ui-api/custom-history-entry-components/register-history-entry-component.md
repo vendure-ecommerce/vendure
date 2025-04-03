@@ -73,7 +73,7 @@ export default [
 ```
 
 ```ts title="Signature"
-function registerHistoryEntryComponent(config: HistoryEntryConfig): Provider
+function registerHistoryEntryComponent(config: HistoryEntryConfig): void
 ```
 Parameters
 

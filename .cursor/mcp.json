@@ -1,7 +1,0 @@
-{
-  "mcpServers": {
-    "nx-mcp": {
-      "url": "http://localhost:9921/sse"
-    }
-  }
-}

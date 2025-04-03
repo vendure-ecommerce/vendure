@@ -1,13 +1,22 @@
 {
     "name": "@vendure/dashboard",
     "private": false,
-    "version": "3.2.0",
+    "version": "3.2.2",
     "type": "module",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/vendure-ecommerce/vendure"
+    },
+    "homepage": "https://www.vendure.io",
+    "funding": "https://github.com/sponsors/michaelbromley",
+    "publishConfig": {
+        "access": "public"
+    },
     "scripts": {
         "dev": "vite",
-        "build:lib": "vite build --config vite.config.lib.mts",
-        "build:plugin": "tsc --project tsconfig.plugin.json",
-        "watch:plugin": "tsc --project tsconfig.plugin.json --watch",
+        "build:standalone": "vite build",
+        "build": "tsc --project tsconfig.plugin.json",
+        "watch": "tsc --project tsconfig.plugin.json --watch",
         "test": "vitest run",
         "lint": "eslint .",
         "preview": "vite preview",
@@ -76,6 +85,8 @@
         "@types/react-dom": "^19.0.4",
         "@types/react-grid-layout": "^1.3.5",
         "@uidotdev/usehooks": "^2.4.1",
+        "@vendure/common": "3.2.2",
+        "@vendure/core": "3.2.2",
         "@vitejs/plugin-react": "^4.3.4",
         "awesome-graphql-client": "^2.1.0",
         "class-variance-authority": "^0.7.1",

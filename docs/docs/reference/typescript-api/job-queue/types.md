@@ -23,7 +23,7 @@ type BackoffStrategy = (queueName: string, attemptsMade: number, job: Job) => nu
 
 ## JobUpdate
 
-<GenerationInfo sourceFile="packages/core/src/job-queue/subscribable-job.ts" sourceLine="22" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/job-queue/subscribable-job.ts" sourceLine="23" packageName="@vendure/core" />
 
 Job update status as returned from the <a href='/reference/typescript-api/job-queue/subscribable-job#subscribablejob'>SubscribableJob</a>'s `update()` method.
 
@@ -37,7 +37,7 @@ type JobUpdate<T extends JobData<T>> = Pick<
 
 ## JobUpdateOptions
 
-<GenerationInfo sourceFile="packages/core/src/job-queue/subscribable-job.ts" sourceLine="34" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/job-queue/subscribable-job.ts" sourceLine="35" packageName="@vendure/core" />
 
 Job update options, that you can specify by calling <a href='/reference/typescript-api/job-queue/subscribable-job#subscribablejob'>SubscribableJob</a> `updates` method.
 
