@@ -31,7 +31,9 @@ interface ElasticsearchOptions {
     reindexBulkOperationSizeLimit?: number;
     searchConfig?: SearchConfig;
     customProductMappings?: {
-        [fieldName: string]: CustomMapping<[Product, ProductVariant[], LanguageCode, Injector, RequestContext]>;
+        [fieldName: string]: CustomMapping<
+            [Product, ProductVariant[], LanguageCode, Injector, RequestContext]
+        >;
     };
     customProductVariantMappings?: {
         [fieldName: string]: CustomMapping<[ProductVariant, LanguageCode, Injector, RequestContext]>;
@@ -177,7 +179,7 @@ bulk operation is executed.
 Configuration of the internal Elasticsearch query.
 ### customProductMappings
 
-<MemberInfo kind="property" type={`{         [fieldName: string]: CustomMapping&#60;[<a href='/reference/typescript-api/entities/product#product'>Product</a>, <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[], <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>, <a href='/reference/typescript-api/common/injector#injector'>Injector</a>, <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>]&#62;;     }`}   />
+<MemberInfo kind="property" type={`{         [fieldName: string]: CustomMapping&#60;             [<a href='/reference/typescript-api/entities/product#product'>Product</a>, <a href='/reference/typescript-api/entities/product-variant#productvariant'>ProductVariant</a>[], <a href='/reference/typescript-api/common/language-code#languagecode'>LanguageCode</a>, <a href='/reference/typescript-api/common/injector#injector'>Injector</a>, <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>]         &#62;;     }`}   />
 
 Custom mappings may be defined which will add the defined data to the
 Elasticsearch index and expose that data via the SearchResult GraphQL type,
@@ -372,7 +374,7 @@ extend input SearchResultSortParameter {
 
 ## SearchConfig
 
-<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="395" packageName="@vendure/elasticsearch-plugin" />
+<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="397" packageName="@vendure/elasticsearch-plugin" />
 
 Configuration options for the internal Elasticsearch query which is generated when performing a search.
 
@@ -390,6 +392,7 @@ interface SearchConfig {
         searchConfig: DeepRequired<SearchConfig>,
         channelId: ID,
         enabledOnly: boolean,
+        ctx: RequestContext,
     ) => any;
     scriptFields?: { [fieldName: string]: CustomScriptMapping<[ElasticSearchInput]> };
     mapSort?: (sort: ElasticSearchSortInput, input: ElasticSearchInput) => ElasticSearchSortInput;
@@ -469,7 +472,7 @@ The interval used to group search results into buckets according to price range.
 ```
 ### mapQuery
 
-<MemberInfo kind="property" type={`(         query: any,         input: ElasticSearchInput,         searchConfig: DeepRequired&#60;<a href='/reference/core-plugins/elasticsearch-plugin/elasticsearch-options#searchconfig'>SearchConfig</a>&#62;,         channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>,         enabledOnly: boolean,     ) =&#62; any`}   />
+<MemberInfo kind="property" type={`(         query: any,         input: ElasticSearchInput,         searchConfig: DeepRequired&#60;<a href='/reference/core-plugins/elasticsearch-plugin/elasticsearch-options#searchconfig'>SearchConfig</a>&#62;,         channelId: <a href='/reference/typescript-api/common/id#id'>ID</a>,         enabledOnly: boolean,         ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>,     ) =&#62; any`}   />
 
 This config option allows the the modification of the whole (already built) search query. This allows
 for e.g. wildcard / fuzzy searches on the index.
@@ -477,8 +480,8 @@ for e.g. wildcard / fuzzy searches on the index.
 *Example*
 
 ```ts
-mapQuery: (query, input, searchConfig, channelId, enabledOnly){
-  if(query.bool.must){
+mapQuery: (query, input, searchConfig, channelId, enabledOnly, ctx) => {
+  if (query.bool.must) {
     delete query.bool.must;
   }
   query.bool.should = [
@@ -653,7 +656,7 @@ searchConfig: {
 
 ## BoostFieldsConfig
 
-<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="680" packageName="@vendure/elasticsearch-plugin" />
+<GenerationInfo sourceFile="packages/elasticsearch-plugin/src/options.ts" sourceLine="683" packageName="@vendure/elasticsearch-plugin" />
 
 Configuration for [boosting](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-multi-match-query.html#field-boost)
 the scores of given fields when performing a search against a term.

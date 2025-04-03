@@ -17,7 +17,7 @@ Registers a dashboard widget. Once registered, the widget can be set as part of 
 (using <a href='/reference/admin-ui-api/dashboard-widgets/set-dashboard-widget-layout#setdashboardwidgetlayout'>setDashboardWidgetLayout</a>).
 
 ```ts title="Signature"
-function registerDashboardWidget(id: string, config: DashboardWidgetConfig): FactoryProvider
+function registerDashboardWidget(id: string, config: DashboardWidgetConfig): void
 ```
 Parameters
 

@@ -22,7 +22,7 @@ interface InitialData {
     roles?: RoleDefinition[];
     countries: CountryDefinition[];
     taxRates: Array<{ name: string; percentage: number }>;
-    shippingMethods: Array<{ name: string; price: number }>;
+    shippingMethods: Array<{ name: string; price: number; taxRate?: number }>;
     paymentMethods: Array<{ name: string; handler: ConfigurableOperationInput }>;
     collections: CollectionDefinition[];
 }
@@ -57,7 +57,7 @@ interface InitialData {
 
 ### shippingMethods
 
-<MemberInfo kind="property" type={`Array&#60;{ name: string; price: number }&#62;`}   />
+<MemberInfo kind="property" type={`Array&#60;{ name: string; price: number; taxRate?: number }&#62;`}   />
 
 
 ### paymentMethods
