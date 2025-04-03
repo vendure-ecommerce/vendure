@@ -5,6 +5,11 @@
   "engines": {
     "node": ">= 18"
   },
+  "homepage": "https://www.vendure.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vendure-ecommerce/vendure"
+  },
   "scripts": {
     "watch": "lerna run watch --parallel",
     "watch:core-common": "lerna run --scope @vendure/common --scope @vendure/core watch --parallel",
