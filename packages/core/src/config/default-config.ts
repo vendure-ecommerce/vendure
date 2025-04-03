@@ -1,9 +1,9 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import {
     DEFAULT_AUTH_TOKEN_HEADER_KEY,
+    DEFAULT_CHANNEL_TOKEN_KEY,
     SUPER_ADMIN_USER_IDENTIFIER,
     SUPER_ADMIN_USER_PASSWORD,
-    DEFAULT_CHANNEL_TOKEN_KEY,
 } from '@vendure/common/lib/shared-constants';
 import { randomBytes } from 'crypto';
 
@@ -17,6 +17,7 @@ import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-previe
 import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storage-strategy';
 import { BcryptPasswordHashingStrategy } from './auth/bcrypt-password-hashing-strategy';
 import { DefaultPasswordValidationStrategy } from './auth/default-password-validation-strategy';
+import { DefaultRolePermissionResolverStrategy } from './auth/default-role-permission-resolver-strategy';
 import { DefaultVerificationTokenStrategy } from './auth/default-verification-token-strategy';
 import { NativeAuthenticationStrategy } from './auth/native-authentication-strategy';
 import { defaultCollectionFilters } from './catalog/default-collection-filters';
@@ -24,7 +25,6 @@ import { DefaultProductVariantPriceCalculationStrategy } from './catalog/default
 import { DefaultProductVariantPriceSelectionStrategy } from './catalog/default-product-variant-price-selection-strategy';
 import { DefaultProductVariantPriceUpdateStrategy } from './catalog/default-product-variant-price-update-strategy';
 import { DefaultStockDisplayStrategy } from './catalog/default-stock-display-strategy';
-import { DefaultStockLocationStrategy } from './catalog/default-stock-location-strategy';
 import { MultiChannelStockLocationStrategy } from './catalog/multi-channel-stock-location-strategy';
 import { AutoIncrementIdStrategy } from './entity/auto-increment-id-strategy';
 import { DefaultMoneyStrategy } from './entity/default-money-strategy';
@@ -113,6 +113,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         passwordHashingStrategy: new BcryptPasswordHashingStrategy(),
         passwordValidationStrategy: new DefaultPasswordValidationStrategy({ minLength: 4 }),
         verificationTokenStrategy: new DefaultVerificationTokenStrategy(),
+        rolePermissionResolverStrategy: new DefaultRolePermissionResolverStrategy(),
     },
     catalogOptions: {
         collectionFilters: defaultCollectionFilters,
