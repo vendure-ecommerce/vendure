@@ -55,7 +55,10 @@
               "includePaths": [
                 "./src/styles",
                 "./src/fonts"
-              ]
+              ],
+              "sass": {
+                "silenceDeprecations": ["mixed-decls", "color-functions", "global-builtin", "import"]
+              }
             },
             "allowedCommonJsDependencies": [
               "graphql-tag",

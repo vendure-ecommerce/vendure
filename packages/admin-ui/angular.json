@@ -40,7 +40,10 @@
               "includePaths": [
                 "./src/lib/static/styles",
                 "./src/lib/static/fonts"
-              ]
+              ],
+              "sass": {
+                "silenceDeprecations": ["mixed-decls", "color-functions", "global-builtin", "import"]
+              }
             },
             "allowedCommonJsDependencies": [
               "graphql-tag",
