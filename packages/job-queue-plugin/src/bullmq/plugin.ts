@@ -169,6 +169,22 @@ import { BullMQPluginOptions } from './types';
  * };
  * ```
  *
+ * ## Setting Redis Prefix
+ *
+ * By default, the underlying BullMQ library will use the default Redis key prefix of `bull`. This can be changed by setting the `prefix` option
+ * in the `queueOptions` and `workerOptions` objects:
+ *
+ * ```ts
+ * BullMQJobQueuePlugin.init({
+ *   workerOptions: {
+ *     prefix: 'my-prefix'
+ *   },
+ *   queueOptions: {
+ *     prefix: 'my-prefix'
+ *   }
+ * }),
+ * ```
+ *
  * @docsCategory core plugins/JobQueuePlugin
  */
 @VendurePlugin({
