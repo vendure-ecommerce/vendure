@@ -19,6 +19,7 @@ import { DefaultSchedulerPluginOptions } from './types';
             useValue: DefaultSchedulerPlugin.options,
         },
     ],
+    compatibility: '>0.0.0',
 })
 export class DefaultSchedulerPlugin {
     static options: DefaultSchedulerPluginOptions = {

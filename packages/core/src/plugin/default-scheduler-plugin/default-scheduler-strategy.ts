@@ -6,7 +6,7 @@ import { Logger } from '../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../connection';
 import { ProcessContext } from '../../process-context';
 import { ScheduledTask } from '../../scheduler/scheduled-task';
-import { SchedulerStrategy } from '../../scheduler/scheduler-strategy';
+import { SchedulerStrategy, TaskReport } from '../../scheduler/scheduler-strategy';
 
 import { DEFAULT_SCHEDULER_PLUGIN_OPTIONS } from './constants';
 import { ScheduledTaskRecord } from './scheduled-task-record.entity';
@@ -68,7 +68,7 @@ export class DefaultSchedulerStrategy implements SchedulerStrategy {
                     {
                         lastExecutedAt: new Date(),
                         lockedAt: null,
-                        lastResult: result,
+                        lastResult: result ?? '',
                     },
                 );
             } catch (error) {
@@ -87,6 +87,35 @@ export class DefaultSchedulerStrategy implements SchedulerStrategy {
                     },
                 );
             }
+        };
+    }
+
+    getTasks(): Promise<TaskReport[]> {
+        return this.connection.rawConnection
+            .getRepository(ScheduledTaskRecord)
+            .createQueryBuilder('task')
+            .getMany()
+            .then(tasks => {
+                return tasks.map(task => this.entityToReport(task));
+            });
+    }
+
+    getTask(id: string): Promise<TaskReport | undefined> {
+        return this.connection.rawConnection
+            .getRepository(ScheduledTaskRecord)
+            .createQueryBuilder('task')
+            .where('task.taskId = :id', { id })
+            .getOne()
+            .then(task => (task ? this.entityToReport(task) : undefined));
+    }
+
+    private entityToReport(task: ScheduledTaskRecord): TaskReport {
+        return {
+            id: task.taskId,
+            lastExecutedAt: task.lastExecutedAt,
+            isRunning: task.lockedAt !== null,
+            lastResult: task.lastResult,
+            enabled: task.enabled,
         };
     }
 
