@@ -964,12 +964,19 @@ export interface JobQueueOptions {
     prefix?: string;
 }
 
+/**
+ * @description
+ * Options related to scheduled tasks..
+ *
+ * @since 3.3.0
+ * @docsCategory scheduled-tasks
+ */
 export interface SchedulerOptions {
     /**
      * @description
-     * The strategy used to execute scheduled tasks.
-     *
-     * @default DefaultSchedulerStrategy
+     * The strategy used to execute scheduled tasks. If you are using the
+     * {@link DefaultSchedulerPlugin} (which is recommended) then this will be set to the
+     * {@link DefaultSchedulerStrategy}.
      */
     schedulerStrategy?: SchedulerStrategy;
 

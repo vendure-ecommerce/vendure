@@ -12,6 +12,15 @@ import { DEFAULT_SCHEDULER_PLUGIN_OPTIONS } from './constants';
 import { ScheduledTaskRecord } from './scheduled-task-record.entity';
 import { DefaultSchedulerPluginOptions } from './types';
 
+/**
+ * @description
+ * The default {@link SchedulerStrategy} implementation that uses the database to
+ * execute scheduled tasks. This strategy is configured when you use the
+ * {@link DefaultSchedulerPlugin}.
+ *
+ * @since 3.3.0
+ * @docsCategory scheduled-tasks
+ */
 export class DefaultSchedulerStrategy implements SchedulerStrategy {
     private connection: TransactionalConnection;
     private injector: Injector;
@@ -43,6 +52,8 @@ export class DefaultSchedulerStrategy implements SchedulerStrategy {
             if (!taskEntity.affected) {
                 return;
             }
+
+            Logger.verbose(`Executing scheduled task "${task.id}"`);
             try {
                 const timeout = task.options.timeout ?? (this.pluginOptions.defaultTimeout as number);
                 const timeoutMs = typeof timeout === 'number' ? timeout : ms(timeout);
@@ -71,12 +82,13 @@ export class DefaultSchedulerStrategy implements SchedulerStrategy {
                         lastResult: result ?? '',
                     },
                 );
+                Logger.verbose(`Scheduled task "${task.id}" completed successfully`);
             } catch (error) {
                 let errorMessage = 'Unknown error';
                 if (error instanceof Error) {
                     errorMessage = error.message;
                 }
-                Logger.error(`Scheduled task ${task.id} failed with error: ${errorMessage}`);
+                Logger.error(`Scheduled task "${task.id}" failed with error: ${errorMessage}`);
                 await this.connection.rawConnection.getRepository(ScheduledTaskRecord).update(
                     {
                         taskId: task.id,

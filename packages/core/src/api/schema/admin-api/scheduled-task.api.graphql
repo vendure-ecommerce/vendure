@@ -4,6 +4,7 @@ type Query {
 
 type ScheduledTask {
     id: String!
+    description: String!
     schedule: String!
     scheduleDescription: String!
     lastExecutedAt: DateTime

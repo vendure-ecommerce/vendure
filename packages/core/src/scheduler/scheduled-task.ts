@@ -7,12 +7,22 @@ import { Injector } from '../common/index';
  *
  * @since 3.3.0
  */
-export interface ScheduledTaskConfig {
+export interface ScheduledTaskConfig<C extends Record<string, any> = Record<string, any>> {
     /**
      * @description
      * The unique identifier for the scheduled task.
      */
     id: string;
+    /**
+     * @description
+     * The description for the scheduled task.
+     */
+    description?: string;
+    /**
+     * @description
+     * Optional parameters that will be passed to the `execute` function.
+     */
+    params?: C;
     /**
      * @description
      * The cron schedule for the scheduled task. This can be a standard cron expression or
@@ -50,7 +60,7 @@ export interface ScheduledTaskConfig {
      * @description
      * The function that will be executed when the scheduled task is run.
      */
-    execute(injector: Injector): Promise<any>;
+    execute(injector: Injector, config: C): Promise<any>;
 }
 
 /**
@@ -58,9 +68,10 @@ export interface ScheduledTaskConfig {
  * A scheduled task that will be executed at a given cron schedule.
  *
  * @since 3.3.0
+ * @docsCategory scheduled-tasks
  */
-export class ScheduledTask {
-    constructor(private readonly config: ScheduledTaskConfig) {}
+export class ScheduledTask<C extends Record<string, any> = Record<string, any>> {
+    constructor(private readonly config: ScheduledTaskConfig<C>) {}
 
     get id() {
         return this.config.id;
@@ -71,6 +82,40 @@ export class ScheduledTask {
     }
 
     async execute(injector: Injector) {
-        return this.config.execute(injector);
+        return this.config.execute(injector, this.config.params ?? ({} as any));
+    }
+
+    /**
+     * @description
+     * This method allows you to further configure existing scheduled tasks. For example, you may
+     * wish to change the schedule or timeout of a task, without having to define a new task.
+     *
+     * @example
+     * ```ts
+     * import { ScheduledTask } from '\@vendure/core';
+     *
+     * const task = new ScheduledTask({
+     *     id: 'test-job',
+     *     schedule: cron => cron.every(2).minutes(),
+     *     execute: async (injector, params) => {
+     *         // some logic here
+     *     },
+     * });
+     *
+     * // later, you can configure the task
+     * task.configure({ schedule: cron => cron.every(5).minutes() });
+     * ```
+     */
+    configure(additionalConfig: Partial<Pick<ScheduledTaskConfig<C>, 'schedule' | 'timeout' | 'params'>>) {
+        if (additionalConfig.schedule) {
+            this.config.schedule = additionalConfig.schedule;
+        }
+        if (additionalConfig.timeout) {
+            this.config.timeout = additionalConfig.timeout;
+        }
+        if (additionalConfig.params) {
+            this.config.params = additionalConfig.params;
+        }
+        return this;
     }
 }

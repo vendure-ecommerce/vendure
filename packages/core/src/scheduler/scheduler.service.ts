@@ -11,6 +11,7 @@ import { ScheduledTask } from './scheduled-task';
 
 export interface TaskInfo {
     id: string;
+    description: string;
     schedule: string;
     scheduleDescription: string;
     lastExecutedAt: Date | null;
@@ -19,6 +20,13 @@ export interface TaskInfo {
     lastResult: any;
 }
 
+/**
+ * @description
+ * The service that is responsible for setting up and querying the scheduled tasks.
+ *
+ * @since 3.3.0
+ * @docsCategory scheduled-tasks
+ */
 @Injectable()
 export class SchedulerService implements OnApplicationBootstrap {
     private jobs: Map<string, { task: ScheduledTask; job: Cron }> = new Map();
@@ -41,23 +49,29 @@ export class SchedulerService implements OnApplicationBootstrap {
         }
     }
 
+    /**
+     * @description
+     * Returns a list of all the scheduled tasks and their current status.
+     */
     getTaskList(): Promise<TaskInfo[]> {
-        return this.configService.schedulerOptions.schedulerStrategy.getTasks().then(tasks =>
-            tasks
-                .map(task => {
-                    const job = this.jobs.get(task.id)?.job;
-                    if (!job) {
+        return this.configService.schedulerOptions.schedulerStrategy.getTasks().then(taskReports =>
+            taskReports
+                .map(taskReport => {
+                    const job = this.jobs.get(taskReport.id)?.job;
+                    const task = this.jobs.get(taskReport.id)?.task;
+                    if (!job || !task) {
                         return;
                     }
                     const pattern = job.getPattern();
                     return {
-                        id: task.id,
+                        id: taskReport.id,
+                        description: task.options.description ?? '',
                         schedule: pattern ?? 'unknown',
                         scheduleDescription: pattern ? cronstrue.toString(pattern) : 'unknown',
-                        lastExecutedAt: task.lastExecutedAt,
+                        lastExecutedAt: taskReport.lastExecutedAt,
                         nextExecutionAt: job.nextRun(),
-                        isRunning: task.isRunning,
-                        lastResult: task.lastResult,
+                        isRunning: taskReport.isRunning,
+                        lastResult: taskReport.lastResult,
                     };
                 })
                 .filter(x => x !== undefined),
