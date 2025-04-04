@@ -9,6 +9,8 @@ import { DataSourceOptions } from 'typeorm';
 import { Middleware } from '../common';
 import { PermissionDefinition } from '../common/permission-definition';
 import { JobBufferStorageStrategy } from '../job-queue/job-buffer/job-buffer-storage-strategy';
+import { ScheduledTask } from '../scheduler/scheduled-task';
+import { SchedulerStrategy } from '../scheduler/scheduler-strategy';
 
 import { AssetImportStrategy } from './asset-import-strategy/asset-import-strategy';
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
@@ -962,6 +964,22 @@ export interface JobQueueOptions {
     prefix?: string;
 }
 
+export interface SchedulerOptions {
+    /**
+     * @description
+     * The strategy used to execute scheduled tasks.
+     *
+     * @default DefaultSchedulerStrategy
+     */
+    schedulerStrategy?: SchedulerStrategy;
+
+    /**
+     * @description
+     * The tasks to be executed.
+     */
+    tasks?: ScheduledTask[];
+}
+
 /**
  * @description
  * Options relating to the internal handling of entities.
@@ -1213,6 +1231,13 @@ export interface VendureConfig {
     jobQueueOptions?: JobQueueOptions;
     /**
      * @description
+     * Configures the scheduler mechanism and tasks.
+     *
+     * @since 3.3.0
+     */
+    schedulerOptions?: SchedulerOptions;
+    /**
+     * @description
      * Configures system options
      *
      * @since 1.6.0
@@ -1236,6 +1261,7 @@ export interface RuntimeVendureConfig extends Required<VendureConfig> {
     entityOptions: Required<Omit<EntityOptions, 'entityIdStrategy'>> & EntityOptions;
     importExportOptions: Required<ImportExportOptions>;
     jobQueueOptions: Required<JobQueueOptions>;
+    schedulerOptions: Required<SchedulerOptions>;
     orderOptions: Required<OrderOptions>;
     promotionOptions: Required<PromotionOptions>;
     shippingOptions: Required<ShippingOptions>;
