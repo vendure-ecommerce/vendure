@@ -9,6 +9,8 @@ import { DataSourceOptions } from 'typeorm';
 import { Middleware } from '../common';
 import { PermissionDefinition } from '../common/permission-definition';
 import { JobBufferStorageStrategy } from '../job-queue/job-buffer/job-buffer-storage-strategy';
+import { ScheduledTask } from '../scheduler/scheduled-task';
+import { SchedulerStrategy } from '../scheduler/scheduler-strategy';
 
 import { AssetImportStrategy } from './asset-import-strategy/asset-import-strategy';
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
@@ -964,6 +966,29 @@ export interface JobQueueOptions {
 
 /**
  * @description
+ * Options related to scheduled tasks..
+ *
+ * @since 3.3.0
+ * @docsCategory scheduled-tasks
+ */
+export interface SchedulerOptions {
+    /**
+     * @description
+     * The strategy used to execute scheduled tasks. If you are using the
+     * {@link DefaultSchedulerPlugin} (which is recommended) then this will be set to the
+     * {@link DefaultSchedulerStrategy}.
+     */
+    schedulerStrategy?: SchedulerStrategy;
+
+    /**
+     * @description
+     * The tasks to be executed.
+     */
+    tasks?: ScheduledTask[];
+}
+
+/**
+ * @description
  * Options relating to the internal handling of entities.
  *
  * @since 1.3.0
@@ -1213,6 +1238,13 @@ export interface VendureConfig {
     jobQueueOptions?: JobQueueOptions;
     /**
      * @description
+     * Configures the scheduler mechanism and tasks.
+     *
+     * @since 3.3.0
+     */
+    schedulerOptions?: SchedulerOptions;
+    /**
+     * @description
      * Configures system options
      *
      * @since 1.6.0
@@ -1236,6 +1268,7 @@ export interface RuntimeVendureConfig extends Required<VendureConfig> {
     entityOptions: Required<Omit<EntityOptions, 'entityIdStrategy'>> & EntityOptions;
     importExportOptions: Required<ImportExportOptions>;
     jobQueueOptions: Required<JobQueueOptions>;
+    schedulerOptions: Required<SchedulerOptions>;
     orderOptions: Required<OrderOptions>;
     promotionOptions: Required<PromotionOptions>;
     shippingOptions: Required<ShippingOptions>;

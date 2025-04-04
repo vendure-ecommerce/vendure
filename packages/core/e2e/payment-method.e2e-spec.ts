@@ -24,7 +24,12 @@ import * as Codegen from './graphql/generated-e2e-admin-types';
 import { ErrorCode } from './graphql/generated-e2e-shop-types';
 import * as CodegenShop from './graphql/generated-e2e-shop-types';
 import { CREATE_CHANNEL } from './graphql/shared-definitions';
-import { ADD_ITEM_TO_ORDER, ADD_PAYMENT, GET_ELIGIBLE_PAYMENT_METHODS } from './graphql/shop-definitions';
+import {
+    ACTIVE_PAYMENT_METHODS_QUERY,
+    ADD_ITEM_TO_ORDER,
+    ADD_PAYMENT,
+    GET_ELIGIBLE_PAYMENT_METHODS,
+} from './graphql/shop-definitions';
 import { proceedToArrangingPayment } from './utils/test-order-utils';
 
 const checkerSpy = vi.fn();
@@ -694,22 +699,6 @@ export const DELETE_PAYMENT_METHOD = gql`
         deletePaymentMethod(id: $id, force: $force) {
             message
             result
-        }
-    }
-`;
-
-const ACTIVE_PAYMENT_METHODS_QUERY = gql`
-    query ActivePaymentMethods {
-        activePaymentMethods {
-            id
-            code
-            name
-            description
-            translations {
-                languageCode
-                name
-                description
-            }
         }
     }
 `;

@@ -19,7 +19,7 @@ input ProvinceTranslationInput {
     languageCode: LanguageCode!
     name: String
 }
-
+ 
 input CreateProvinceInput {
     code: String!
     translations: [ProvinceTranslationInput!]!

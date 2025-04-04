@@ -1,0 +1,14 @@
+type Query {
+    scheduledTasks: [ScheduledTask!]!
+}
+
+type ScheduledTask {
+    id: String!
+    description: String!
+    schedule: String!
+    scheduleDescription: String!
+    lastExecutedAt: DateTime
+    nextExecutionAt: DateTime
+    isRunning: Boolean!
+    lastResult: JSON
+}

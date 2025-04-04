@@ -5147,6 +5147,7 @@ export type Query = {
   provinces: ProvinceList;
   role?: Maybe<Role>;
   roles: RoleList;
+  scheduledTasks: Array<ScheduledTask>;
   search: SearchResponse;
   seller?: Maybe<Seller>;
   sellers: SellerList;
@@ -5704,6 +5705,17 @@ export type Sale = Node & StockMovement & {
   quantity: Scalars['Int']['output'];
   type: StockMovementType;
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type ScheduledTask = {
+  __typename?: 'ScheduledTask';
+  id: Scalars['String']['output'];
+  isRunning: Scalars['Boolean']['output'];
+  lastExecutedAt?: Maybe<Scalars['DateTime']['output']>;
+  lastResult?: Maybe<Scalars['JSON']['output']>;
+  nextExecutionAt?: Maybe<Scalars['DateTime']['output']>;
+  schedule: Scalars['String']['output'];
+  scheduleDescription: Scalars['String']['output'];
 };
 
 export type SearchInput = {
