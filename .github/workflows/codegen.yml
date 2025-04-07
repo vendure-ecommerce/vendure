@@ -1,5 +1,8 @@
 name: Codegen
 
+on:
+    workflow_call:
+
 env:
     CI: true
 
