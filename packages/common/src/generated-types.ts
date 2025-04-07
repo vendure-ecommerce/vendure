@@ -3041,6 +3041,7 @@ export type Mutation = {
   updateProvince: Province;
   /** Update an existing Role */
   updateRole: Role;
+  updateScheduledTask: ScheduledTask;
   /** Update an existing Seller */
   updateSeller: Seller;
   /** Update an existing ShippingMethod */
@@ -3857,6 +3858,11 @@ export type MutationUpdateProvinceArgs = {
 
 export type MutationUpdateRoleArgs = {
   input: UpdateRoleInput;
+};
+
+
+export type MutationUpdateScheduledTaskArgs = {
+  input: UpdateScheduledTaskInput;
 };
 
 
@@ -5709,6 +5715,7 @@ export type Sale = Node & StockMovement & {
 
 export type ScheduledTask = {
   __typename?: 'ScheduledTask';
+  description: Scalars['String']['output'];
   id: Scalars['String']['output'];
   isRunning: Scalars['Boolean']['output'];
   lastExecutedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -6672,6 +6679,11 @@ export type UpdateRoleInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
   permissions?: InputMaybe<Array<Permission>>;
+};
+
+export type UpdateScheduledTaskInput = {
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  id: Scalars['String']['input'];
 };
 
 export type UpdateSellerInput = {

@@ -1,3 +1,4 @@
+import { UpdateScheduledTaskInput } from '@vendure/common/lib/generated-types';
 import { Cron } from 'croner';
 
 import { InjectableStrategy } from '../common';
@@ -32,4 +33,5 @@ export interface SchedulerStrategy extends InjectableStrategy {
     executeTask(task: ScheduledTask): (job: Cron) => Promise<any> | any;
     getTasks(): Promise<TaskReport[]>;
     getTask(id: string): Promise<TaskReport | undefined>;
+    updateTask(input: UpdateScheduledTaskInput): Promise<TaskReport>;
 }

@@ -1,4 +1,5 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { UpdateScheduledTaskInput } from '@vendure/common/lib/generated-types';
 import CronTime from 'cron-time-generator';
 import { Cron } from 'croner';
 import cronstrue from 'cronstrue';
@@ -8,6 +9,7 @@ import { Logger } from '../config/logger/vendure-logger';
 
 import { NoopSchedulerStrategy } from './noop-scheduler-strategy';
 import { ScheduledTask } from './scheduled-task';
+import { TaskReport } from './scheduler-strategy';
 
 export interface TaskInfo {
     id: string;
@@ -18,6 +20,7 @@ export interface TaskInfo {
     nextExecutionAt: Date | null;
     isRunning: boolean;
     lastResult: any;
+    enabled: boolean;
 }
 
 /**
@@ -45,7 +48,15 @@ export class SchedulerService implements OnApplicationBootstrap {
 
         for (const task of scheduledTasks) {
             const job = this.createCronJob(task);
-            this.jobs.set(task.id, { task, job });
+            const pattern = job.getPattern();
+            if (!pattern) {
+                Logger.warn(`Invalid cron pattern for task ${task.id}`);
+                continue;
+            } else {
+                const schedule = cronstrue.toString(pattern);
+                Logger.info(`Registered scheduled task: ${task.id} - ${schedule}`);
+                this.jobs.set(task.id, { task, job });
+            }
         }
     }
 
@@ -54,28 +65,42 @@ export class SchedulerService implements OnApplicationBootstrap {
      * Returns a list of all the scheduled tasks and their current status.
      */
     getTaskList(): Promise<TaskInfo[]> {
-        return this.configService.schedulerOptions.schedulerStrategy.getTasks().then(taskReports =>
-            taskReports
-                .map(taskReport => {
-                    const job = this.jobs.get(taskReport.id)?.job;
-                    const task = this.jobs.get(taskReport.id)?.task;
-                    if (!job || !task) {
-                        return;
-                    }
-                    const pattern = job.getPattern();
-                    return {
-                        id: taskReport.id,
-                        description: task.options.description ?? '',
-                        schedule: pattern ?? 'unknown',
-                        scheduleDescription: pattern ? cronstrue.toString(pattern) : 'unknown',
-                        lastExecutedAt: taskReport.lastExecutedAt,
-                        nextExecutionAt: job.nextRun(),
-                        isRunning: taskReport.isRunning,
-                        lastResult: taskReport.lastResult,
-                    };
-                })
-                .filter(x => x !== undefined),
-        );
+        return this.configService.schedulerOptions.schedulerStrategy
+            .getTasks()
+            .then(taskReports =>
+                taskReports.map(taskReport => this.createTaskInfo(taskReport)).filter(x => x !== undefined),
+            );
+    }
+
+    updateTask(input: UpdateScheduledTaskInput): Promise<TaskInfo> {
+        return this.configService.schedulerOptions.schedulerStrategy.updateTask(input).then(taskReport => {
+            const taskInfo = this.createTaskInfo(taskReport);
+            if (!taskInfo) {
+                throw new Error(`Task ${input.id} not found`);
+            }
+            return taskInfo;
+        });
+    }
+
+    private createTaskInfo(taskReport: TaskReport): TaskInfo | undefined {
+        const job = this.jobs.get(taskReport.id)?.job;
+        const task = this.jobs.get(taskReport.id)?.task;
+        if (!job || !task) {
+            return;
+        }
+
+        const pattern = job.getPattern();
+        return {
+            id: taskReport.id,
+            description: task.options.description ?? '',
+            schedule: pattern ?? 'unknown',
+            scheduleDescription: pattern ? cronstrue.toString(pattern) : 'unknown',
+            lastExecutedAt: taskReport.lastExecutedAt,
+            nextExecutionAt: job.nextRun(),
+            isRunning: taskReport.isRunning,
+            lastResult: taskReport.lastResult,
+            enabled: taskReport.enabled,
+        };
     }
 
     private createCronJob(task: ScheduledTask) {

@@ -1,5 +1,5 @@
-import { Query, Resolver } from '@nestjs/graphql';
-import { Permission } from '@vendure/common/lib/generated-types';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { MutationUpdateScheduledTaskArgs, Permission } from '@vendure/common/lib/generated-types';
 
 import { SchedulerService } from '../../../scheduler/scheduler.service';
 import { Allow } from '../../decorators/allow.decorator';
@@ -12,5 +12,11 @@ export class ScheduledTaskResolver {
     @Allow(Permission.ReadSettings, Permission.ReadSystem)
     scheduledTasks() {
         return this.schedulerService.getTaskList();
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateSettings, Permission.UpdateSystem)
+    updateScheduledTask(@Args() { input }: MutationUpdateScheduledTaskArgs) {
+        return this.schedulerService.updateTask(input);
     }
 }
