@@ -22,6 +22,7 @@ import {
     GET_SHIPPING_METHOD_LIST,
     UPDATE_SHIPPING_METHOD,
 } from './graphql/shared-definitions';
+import { GET_ACTIVE_SHIPPING_METHODS } from './graphql/shop-definitions';
 
 const TEST_METADATA = {
     foo: 'bar',
@@ -578,22 +579,6 @@ export const TEST_ELIGIBLE_SHIPPING_METHODS = gql`
             price
             priceWithTax
             metadata
-        }
-    }
-`;
-
-const GET_ACTIVE_SHIPPING_METHODS = gql`
-    query GetActiveShippingMethods {
-        activeShippingMethods {
-            id
-            code
-            name
-            description
-            translations {
-                languageCode
-                name
-                description
-            }
         }
     }
 `;
