@@ -5471,6 +5471,7 @@ export type Sale = Node &
 
 export type ScheduledTask = {
     description: Scalars['String']['output'];
+    enabled: Scalars['Boolean']['output'];
     id: Scalars['String']['output'];
     isRunning: Scalars['Boolean']['output'];
     lastExecutedAt?: Maybe<Scalars['DateTime']['output']>;

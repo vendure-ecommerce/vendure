@@ -14,7 +14,6 @@ import { NotificationService } from '../../providers/notification/notification.s
 
 @Directive({
     selector: '[vdrBaseNav]',
-    standalone: false,
 })
 // eslint-disable-next-line @angular-eslint/directive-class-suffix
 export class BaseNavComponent implements OnInit, OnDestroy {
@@ -315,6 +314,12 @@ export class BaseNavComponent implements OnInit, OnDestroy {
                                 propagateToSection: status === 'error',
                             })),
                         ),
+                    },
+                    {
+                        id: 'scheduled-tasks',
+                        label: _('nav.scheduled-tasks'),
+                        routerLink: ['/system', 'scheduled-tasks'],
+                        icon: 'clock',
                     },
                 ],
             },
