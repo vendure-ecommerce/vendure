@@ -1,8 +1,7 @@
-import { Options, parse, transform } from '@swc/core';
-import { BindingIdentifier, ModuleItem, Pattern, Statement } from '@swc/types';
 import { VendureConfig } from '@vendure/core';
 import fs from 'fs-extra';
 import path from 'path';
+import * as ts from 'typescript';
 import { pathToFileURL } from 'url';
 
 export interface ConfigLoaderOptions {
@@ -23,9 +22,9 @@ export interface ConfigLoaderOptions {
  * internally uses esbuild to temporarily compile that TypeScript code. Unfortunately, esbuild does not support
  * these experimental decorators, errors will be thrown as soon as e.g. a TypeORM column decorator is encountered.
  *
- * To work around this, we compile the Vendure config file and all its imports using SWC, which does support
- * these experimental decorators. The compiled files are then loaded by Vite, which is able to handle the compiled
- * JavaScript output.
+ * To work around this, we compile the Vendure config file and all its imports using the TypeScript compiler,
+ * which fully supports these experimental decorators. The compiled files are then loaded by Vite, which is able
+ * to handle the compiled JavaScript output.
  */
 export async function loadVendureConfig(
     options: ConfigLoaderOptions,
@@ -45,11 +44,13 @@ export async function loadVendureConfig(
 
     // We need to figure out the symbol exported by the config file by
     // analyzing the AST and finding an export with the type "VendureConfig"
-    const ast = await parse(await fs.readFile(vendureConfigPath, 'utf-8'), {
-        syntax: 'typescript',
-        decorators: true,
-    });
-    const detectedExportedSymbolName = findConfigExport(ast.body);
+    const sourceFile = ts.createSourceFile(
+        vendureConfigPath,
+        await fs.readFile(vendureConfigPath, 'utf-8'),
+        ts.ScriptTarget.Latest,
+        true,
+    );
+    const detectedExportedSymbolName = findConfigExport(sourceFile);
     const configExportedSymbolName = detectedExportedSymbolName || vendureConfigExport;
     if (!configExportedSymbolName) {
         throw new Error(
@@ -68,31 +69,33 @@ export async function loadVendureConfig(
 /**
  * Given the AST of a TypeScript file, finds the name of the variable exported as VendureConfig.
  */
-function findConfigExport(statements: ModuleItem[]): string | undefined {
-    for (const statement of statements) {
-        if (statement.type === 'ExportDeclaration') {
-            if (statement.declaration.type === 'VariableDeclaration') {
-                for (const declaration of statement.declaration.declarations) {
-                    if (isBindingIdentifier(declaration.id)) {
-                        const typeRef = declaration.id.typeAnnotation?.typeAnnotation;
-                        if (typeRef?.type === 'TsTypeReference') {
-                            if (
-                                typeRef.typeName.type === 'Identifier' &&
-                                typeRef.typeName.value === 'VendureConfig'
-                            ) {
-                                return declaration.id.value;
+function findConfigExport(sourceFile: ts.SourceFile): string | undefined {
+    let exportedSymbolName: string | undefined;
+
+    function visit(node: ts.Node) {
+        if (
+            ts.isVariableStatement(node) &&
+            node.modifiers?.some(m => m.kind === ts.SyntaxKind.ExportKeyword)
+        ) {
+            node.declarationList.declarations.forEach(declaration => {
+                if (ts.isVariableDeclaration(declaration)) {
+                    const typeNode = declaration.type;
+                    if (typeNode && ts.isTypeReferenceNode(typeNode)) {
+                        const typeName = typeNode.typeName;
+                        if (ts.isIdentifier(typeName) && typeName.text === 'VendureConfig') {
+                            if (ts.isIdentifier(declaration.name)) {
+                                exportedSymbolName = declaration.name.text;
                             }
                         }
                     }
                 }
-            }
+            });
         }
+        ts.forEachChild(node, visit);
     }
-    return undefined;
-}
 
-function isBindingIdentifier(id: Pattern): id is BindingIdentifier {
-    return id.type === 'Identifier' && !!(id as BindingIdentifier).typeAnnotation;
+    visit(sourceFile);
+    return exportedSymbolName;
 }
 
 export async function compileFile(
@@ -100,6 +103,7 @@ export async function compileFile(
     inputPath: string,
     outputDir: string,
     compiledFiles = new Set<string>(),
+    isRoot = true,
 ): Promise<void> {
     if (compiledFiles.has(inputPath)) {
         return;
@@ -112,70 +116,63 @@ export async function compileFile(
     // Read the source file
     const source = await fs.readFile(inputPath, 'utf-8');
 
-    // Transform config
-    const config: Options = {
-        filename: inputPath,
-        sourceMaps: true,
-        jsc: {
-            parser: {
-                syntax: 'typescript',
-                tsx: false,
-                decorators: true,
-            },
-            target: 'es2020',
-            loose: false,
-            transform: {
-                legacyDecorator: true,
-                decoratorMetadata: true,
-            },
-        },
-        module: {
-            type: 'commonjs',
-            strict: true,
-            strictMode: true,
-            lazy: false,
-            noInterop: false,
-        },
-    };
-
-    // Transform the code using SWC
-    const result = await transform(source, config);
-
-    // Generate output file path
-    const relativePath = path.relative(inputRootDir, inputPath);
-    const outputPath = path.join(outputDir, relativePath).replace(/\.ts$/, '.js');
-
-    // Ensure the subdirectory for the output file exists
-    await fs.ensureDir(path.dirname(outputPath));
-
-    // Write the transformed code
-    await fs.writeFile(outputPath, result.code);
-
-    // Write source map if available
-    if (result.map) {
-        await fs.writeFile(`${outputPath}.map`, JSON.stringify(result.map));
-    }
-
     // Parse the source to find relative imports
-    const ast = await parse(source, { syntax: 'typescript', decorators: true });
+    const sourceFile = ts.createSourceFile(inputPath, source, ts.ScriptTarget.Latest, true);
+
     const importPaths = new Set<string>();
 
-    function collectImports(node: any) {
-        if (node.type === 'ImportDeclaration' && node.source.value.startsWith('.')) {
-            const importPath = path.resolve(path.dirname(inputPath), node.source.value);
-            importPaths.add(importPath + '.ts');
-        }
-        for (const key in node) {
-            if (node[key] && typeof node[key] === 'object') {
-                collectImports(node[key]);
+    function collectImports(node: ts.Node) {
+        if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
+            const importPath = node.moduleSpecifier.text;
+            if (importPath.startsWith('.')) {
+                const resolvedPath = path.resolve(path.dirname(inputPath), importPath);
+                importPaths.add(resolvedPath + '.ts');
             }
         }
+        ts.forEachChild(node, collectImports);
     }
 
-    collectImports(ast);
+    collectImports(sourceFile);
 
-    // Recursively compile all relative imports
+    // Recursively collect all files that need to be compiled
     for (const importPath of importPaths) {
-        await compileFile(inputRootDir, importPath, outputDir, compiledFiles);
+        await compileFile(inputRootDir, importPath, outputDir, compiledFiles, false);
+    }
+
+    // If this is the root file (the one that started the compilation),
+    // transpile all files
+    if (isRoot) {
+        const allFiles = Array.from(compiledFiles);
+        for (const file of allFiles) {
+            const fileSource = await fs.readFile(file, 'utf-8');
+            const result = ts.transpileModule(fileSource, {
+                compilerOptions: {
+                    target: ts.ScriptTarget.ES2020,
+                    module: ts.ModuleKind.CommonJS,
+                    experimentalDecorators: true,
+                    emitDecoratorMetadata: true,
+                    sourceMap: true,
+                    esModuleInterop: true,
+                    skipLibCheck: true,
+                    forceConsistentCasingInFileNames: true,
+                },
+                fileName: file,
+            });
+
+            // Generate output file path
+            const relativePath = path.relative(inputRootDir, file);
+            const outputPath = path.join(outputDir, relativePath).replace(/\.ts$/, '.js');
+
+            // Ensure the subdirectory for the output file exists
+            await fs.ensureDir(path.dirname(outputPath));
+
+            // Write the transpiled code
+            await fs.writeFile(outputPath, result.outputText);
+
+            // Write source map if available
+            if (result.sourceMapText) {
+                await fs.writeFile(`${outputPath}.map`, result.sourceMapText);
+            }
+        }
     }
 }

@@ -19,15 +19,22 @@ export function configLoaderPlugin(options: ConfigLoaderOptions): Plugin {
     return {
         name: configLoaderName,
         async buildStart() {
-            this.info(`Loading Vendure config...`);
+            this.info(
+                `Loading Vendure config. This can take a short while depending on the size of your project...`,
+            );
             try {
+                const startTime = Date.now();
                 const result = await loadVendureConfig({
                     tempDir: options.tempDir,
                     vendureConfigPath: options.vendureConfigPath,
                     vendureConfigExport: options.vendureConfigExport,
                 });
                 vendureConfig = result.vendureConfig;
-                this.info(`Vendure config loaded (using export "${result.exportedSymbolName}")`);
+                const endTime = Date.now();
+                const duration = endTime - startTime;
+                this.info(
+                    `Vendure config loaded (using export "${result.exportedSymbolName}") in ${duration}ms`,
+                );
             } catch (e: unknown) {
                 if (e instanceof Error) {
                     this.error(`Error loading Vendure config: ${e.message}`);
