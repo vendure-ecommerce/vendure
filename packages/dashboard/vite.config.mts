@@ -11,7 +11,7 @@ export default ({ mode }: { mode: string }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
 
     const adminApiHost = process.env.VITE_ADMIN_API_HOST || 'http://localhost';
-    const adminApiPort = process.env.VITE_ADMIN_API_PORT ? +process.env.VITE_ADMIN_API_PORT : 'auto';
+    const adminApiPort = process.env.VITE_ADMIN_API_PORT ? +process.env.VITE_ADMIN_API_PORT : '3000';
 
     process.env.IS_LOCAL_DEV = adminApiHost.includes('localhost') ? 'true' : 'false';
 
