@@ -11,6 +11,7 @@ import { TypeORMHealthCheckStrategy } from '../health-check/typeorm-health-check
 import { InMemoryJobQueueStrategy } from '../job-queue/in-memory-job-queue-strategy';
 import { InMemoryJobBufferStorageStrategy } from '../job-queue/job-buffer/in-memory-job-buffer-storage-strategy';
 import { NoopSchedulerStrategy } from '../scheduler/noop-scheduler-strategy';
+import { cleanSessionsTask } from '../scheduler/tasks/clean-sessions-task';
 
 import { DefaultAssetImportStrategy } from './asset-import-strategy/default-asset-import-strategy';
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
@@ -196,7 +197,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     },
     schedulerOptions: {
         schedulerStrategy: new NoopSchedulerStrategy(),
-        tasks: [],
+        tasks: [cleanSessionsTask],
     },
     customFields: {
         Address: [],
