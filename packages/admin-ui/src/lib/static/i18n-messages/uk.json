@@ -6,7 +6,6 @@
     "add-asset": "Додати медіа-об'єкт",
     "add-asset-with-count": "Додати {count, plural, =0 {медіа-об'єктів} one {1 медіа-об'єкт} other {{count} медіа-об'єктів}}",
     "assets-selected-count": "Вибрано { count } медіа-об'єктів",
-    "change-asset": "Змінити медіа-об'єкт",
     "dimensions": "Розміри",
     "focal-point": "Точка фокусу",
     "notify-create-assets-success": "Створено {count, plural, one {новий медіа-об'єкт} other {{count} нових медіа-об'єктів}}",
@@ -17,7 +16,6 @@
     "select-assets": "Вибрати медіа-об'єкты",
     "set-as-featured-asset": "Встановити як обраний медіа-об'єкт",
     "set-focal-point": "Встановити точку фокусу",
-    "size": "Розмір",
     "source-file": "Початковий файл",
     "unset-focal-point": "Видалити точку фокусу",
     "update-focal-point": "Оновити точку фокусу",
@@ -47,7 +45,6 @@
     "profile": "Профіль",
     "promotions": "Акції",
     "roles": "Ролі",
-    "scheduled-tasks": "Завдання",
     "seller-orders": "Замовлення продавця",
     "sellers": "Продавці",
     "shipping-methods": "Способи доставки",
@@ -240,14 +237,12 @@
     "delete": "Видалити",
     "description": "Опис",
     "details": "Подробиці",
-    "disable": "Виключити",
     "disabled": "Виключений",
     "discard-changes": "Скасувати зміни",
     "duplicate": "Дублювати",
     "edit": "Редагувати",
     "edit-field": "Редагувати поле",
     "edit-note": "Редагувати замітку",
-    "enable": "Включити",
     "enabled": "Включений",
     "end-date": "Дата закінчення",
     "expand-entries": "Розгорнути записи",
@@ -279,7 +274,7 @@
     "name": "Ім'я",
     "no-alerts": "Немає сповіщень",
     "no-bulk-actions-available": "Масові дії недоступні",
-    "no-channel-selected": "Не вибрано канал",
+    "no-channel-selected": "",
     "no-results": "Немає результатів",
     "not-applicable": "Не застосовно",
     "not-set": "Не задано",
@@ -480,7 +475,6 @@
     "year": "рік"
   },
   "editor": {
-    "height": "Висота",
     "image-alt": "Опис (alt)",
     "image-src": "Джерело",
     "image-title": "Заголовок",
@@ -489,8 +483,7 @@
     "link-target": "Ціль посилання",
     "link-title": "Заголовок посилання",
     "remove-link": "Удалить",
-    "set-link": "Встановити посилання",
-    "width": "Ширина"
+    "set-link": "Встановити посилання"
   },
   "error": {
     "403-forbidden": "В даний час у вас немає прав доступу \"{ path }\". Або у вас немає дозволів на перегляд, або термін вашого сеансу минув.",
@@ -535,7 +528,6 @@
     "promotions": "Промо-акції",
     "roles": "Ролі",
     "sales": "Продажі",
-    "scheduled-tasks": "Завдання",
     "sellers": "Продавці",
     "settings": "Налаштування",
     "shipping-methods": "Способи доставки",
@@ -683,7 +675,7 @@
     "set-billing-address": "Встановити адресу для рахунків",
     "set-coupon-codes": "Встановити промокоди",
     "set-customer-for-order": "Встановити клієнта",
-    "set-customer-success": "Клієнт успішно встановлений",
+    "set-customer-success": "",
     "set-fulfillment-state": "Помітити як {state}",
     "set-shipping-address": "Встановити адресу доставки",
     "set-shipping-method": "Встановити спосіб доставки",
@@ -817,11 +809,6 @@
     "job-state-completed": "Завершено",
     "job-state-failed": "Не вдалося",
     "job-state-pending": "В очікуванні",
-    "job-state-running": "Виконується",
-    "last-executed-at": "Останнє виконання",
-    "last-result": "Останній результат",
-    "next-execution-at": "Наступне виконання",
-    "schedule": "Розклад",
-    "task-id": "ID завдання"
+    "job-state-running": "Виконується"
   }
 }

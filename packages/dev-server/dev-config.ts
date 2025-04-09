@@ -3,22 +3,25 @@ import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
+    Asset,
     DefaultJobQueuePlugin,
     DefaultLogger,
     DefaultSearchPlugin,
     dummyPaymentHandler,
+    FacetValue,
     LanguageCode,
     LogLevel,
-    DefaultSchedulerPlugin,
     VendureConfig,
-    cleanSessionsTask,
 } from '@vendure/core';
-import { ScheduledTask } from '@vendure/core/dist/scheduler/scheduled-task';
+import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
+import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
 import 'dotenv/config';
+import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
 import path from 'path';
 import { DataSourceOptions } from 'typeorm';
 
+import { MultivendorPlugin } from './example-plugins/multivendor-plugin/multivendor.plugin';
 import { ReviewsPlugin } from './test-plugins/reviews/reviews-plugin';
 
 /**
@@ -89,28 +92,9 @@ export const devConfig: VendureConfig = {
             },
         ],
     },
-    logger: new DefaultLogger({ level: LogLevel.Verbose }),
+    logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
-    },
-    schedulerOptions: {
-        tasks: [
-            new ScheduledTask({
-                id: 'test-job',
-                description: 'A test job that doesn\'t do anything',
-                schedule: '*/20 * * * * *',
-                async execute(injector) {
-                    await new Promise(resolve => setTimeout(resolve, 10_000));
-                    return { success: true };
-                },
-            }),
-            // cleanSessionsTask.configure({
-            //     schedule: cron => cron.every(1).minutes(),
-            //     params: {
-            //         batchSize: 10,
-            //     },
-            // }),
-        ],
     },
     plugins: [
         // MultivendorPlugin.init({
@@ -132,7 +116,6 @@ export const devConfig: VendureConfig = {
         //     port: 9200,
         //     bufferUpdates: true,
         // }),
-        DefaultSchedulerPlugin.init({}),
         EmailPlugin.init({
             devMode: true,
             route: 'mailbox',

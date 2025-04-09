@@ -520,15 +520,6 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
-## scheduledTasks
-<div class="graphql-code-block">
-<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span> &#123;</div>
-<div class="graphql-code-line ">scheduledTasks: [<a href="/reference/graphql-api/admin/object-types#scheduledtask">ScheduledTask</a>!]!</div>
-
-
-<div class="graphql-code-line top-level">&#125;</div>
-</div>
-
 ## search
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span> &#123;</div>

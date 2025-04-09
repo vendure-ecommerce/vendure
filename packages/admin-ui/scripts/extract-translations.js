@@ -50,11 +50,11 @@ async function extractTranslations() {
 }
 
 function runExtraction(locale) {
-    const command = 'npx';
+    const command = 'npm';
     const args = getNgxTranslateExtractCommand(locale);
     return new Promise((resolve, reject) => {
         try {
-            const child = spawn(command, args, { stdio: ['inherit', 'inherit', 'inherit'] });
+            const child = spawn(`yarnpkg`, args, { stdio: ['inherit', 'inherit', 'inherit'] });
             child.on('close', x => {
                 resolve();
             });

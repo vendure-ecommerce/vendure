@@ -6,7 +6,6 @@
     "add-asset": "Dodaj medij",
     "add-asset-with-count": "Dodaj {count, plural, =0 {medija} one {1 medij} few {{count} medija} other {{count} medija}}",
     "assets-selected-count": "Odabrano {count} medija",
-    "change-asset": "Promijeni medij",
     "dimensions": "Dimenzije",
     "focal-point": "Fokalna točka",
     "notify-create-assets-success": "Kreirano {count, plural, one {1 novo sredstvo} few {{count} nova sredstva} other {{count} novih sredstava}}",
@@ -17,7 +16,6 @@
     "select-assets": "Odaberi medije",
     "set-as-featured-asset": "Postavi kao istaknuti medij",
     "set-focal-point": "Postavi fokalnu točku",
-    "size": "Veličina",
     "source-file": "Izvorna datoteka",
     "unset-focal-point": "Poništi",
     "update-focal-point": "Ažuriraj točku",
@@ -47,7 +45,6 @@
     "profile": "Profil",
     "promotions": "Promocije",
     "roles": "Uloge",
-    "scheduled-tasks": "Zakazane zadatke",
     "seller-orders": "Narudžbe prodavača",
     "sellers": "Prodavači",
     "shipping-methods": "Načini dostave",
@@ -240,14 +237,12 @@
     "delete": "Izbriši",
     "description": "Opis",
     "details": "Detalji",
-    "disable": "Onemogućeno",
     "disabled": "Onemogućeno",
     "discard-changes": "Odbaci promjene",
     "duplicate": "Duplicirati",
     "edit": "Uredi",
     "edit-field": "Uredi polje",
     "edit-note": "Uredi bilješku",
-    "enable": "Omogućeno",
     "enabled": "Omogućeno",
     "end-date": "Datum završetka",
     "expand-entries": "Proširi unose",
@@ -279,7 +274,7 @@
     "name": "Ime",
     "no-alerts": "Nema upozorenja",
     "no-bulk-actions-available": "Nema dostupnih grupnih radnji",
-    "no-channel-selected": "Nije odabran kanal",
+    "no-channel-selected": "",
     "no-results": "Nema rezultata",
     "not-applicable": "Nije primjenjivo",
     "not-set": "Nije postavljeno",
@@ -480,7 +475,6 @@
     "year": "godina"
   },
   "editor": {
-    "height": "Visina",
     "image-alt": "Opis (alt)",
     "image-src": "Izvor",
     "image-title": "Naziv",
@@ -489,8 +483,7 @@
     "link-target": "Target linka",
     "link-title": "Naziv linka",
     "remove-link": "Ukloni",
-    "set-link": "Postavi link",
-    "width": "Širina"
+    "set-link": "Postavi link"
   },
   "error": {
     "403-forbidden": "Trenutno nemate ovlaštenje za pristup \"{ path }\". Ili vam nedostaju ovlasti ili je vaša sesija istekla.",
@@ -535,7 +528,6 @@
     "promotions": "Promocije",
     "roles": "Uloge",
     "sales": "Prodaja",
-    "scheduled-tasks": "Zakazane zadatke",
     "sellers": "Prodavači",
     "settings": "Postavke",
     "shipping-methods": "Načini dostave",
@@ -683,7 +675,7 @@
     "set-billing-address": "Postavi adresu za naplatu",
     "set-coupon-codes": "Postavi kôdove kupona",
     "set-customer-for-order": "Postavi kupca",
-    "set-customer-success": "Kupac postavljen",
+    "set-customer-success": "",
     "set-fulfillment-state": "Označi kao {state}",
     "set-shipping-address": "Postavi adresu za dostavu",
     "set-shipping-method": "Postavi metodu dostave",
@@ -817,11 +809,6 @@
     "job-state-completed": "Završeno",
     "job-state-failed": "Neuspjelo",
     "job-state-pending": "Na čekanju",
-    "job-state-running": "U tijeku",
-    "last-executed-at": "Poslednja izvršenja",
-    "last-result": "Poslednji rezultat",
-    "next-execution-at": "Sljedeće izvršenje",
-    "schedule": "Planiranje",
-    "task-id": "ID zadatka"
+    "job-state-running": "U tijeku"
   }
 }

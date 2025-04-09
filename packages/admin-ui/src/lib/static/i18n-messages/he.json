@@ -6,7 +6,6 @@
     "add-asset": "הוסף נכס",
     "add-asset-with-count": "הוסף {count, plural, =0 {נכסים} one {1 נכס} other {{count} נכסים}}",
     "assets-selected-count": "{ count } נכסים נבחרו",
-    "change-asset": "שנה נכס",
     "dimensions": "ממדים",
     "focal-point": "נקודת מוקד",
     "notify-create-assets-success": "נוצר {count, plural, one {נכס חדש} other {{count} נכסים חדשים}}",
@@ -17,7 +16,6 @@
     "select-assets": "בחר נכסים",
     "set-as-featured-asset": "סמן כנכס מובחר",
     "set-focal-point": "קבע נקודת מוקד",
-    "size": "גודל",
     "source-file": "קובץ מקור",
     "unset-focal-point": "בטל קביעת נקודת מוקד",
     "update-focal-point": "עדכן נקודת מוקד",
@@ -47,7 +45,6 @@
     "profile": "פרופיל",
     "promotions": "מבצעים",
     "roles": "תפקידים",
-    "scheduled-tasks": "משימות מתוכנות",
     "seller-orders": "הזמנות מוכר",
     "sellers": "מוכרים",
     "shipping-methods": "שיטות משלוח",
@@ -240,14 +237,12 @@
     "delete": "מחק",
     "description": "תיאור",
     "details": "פרטים",
-    "disable": "מספר",
     "disabled": "מושבת",
     "discard-changes": "בטל שינויים",
     "duplicate": "שכפול",
     "edit": "ערוך",
     "edit-field": "ערוך שדה",
     "edit-note": "ערוך הערה",
-    "enable": "אפשר",
     "enabled": "מאופשר",
     "end-date": "תאריך סיום",
     "expand-entries": "הרחב רשומות",
@@ -279,7 +274,7 @@
     "name": "שם",
     "no-alerts": "אין התראות",
     "no-bulk-actions-available": "אין פעולות גורפות זמינות",
-    "no-channel-selected": "אין ערוץ נבחר",
+    "no-channel-selected": "",
     "no-results": "אין תוצאות",
     "not-applicable": "לא רלוונטי",
     "not-set": "לא מוגדר",
@@ -480,7 +475,6 @@
     "year": "שנה"
   },
   "editor": {
-    "height": "גובה",
     "image-alt": "תיאור (טקסט חלופי)",
     "image-src": "מקור (כתובת)",
     "image-title": "כותרת",
@@ -489,8 +483,7 @@
     "link-target": "יעד הקישור",
     "link-title": "כותרת הקישור",
     "remove-link": "הסר",
-    "set-link": "הגדר קישור",
-    "width": "רוחב"
+    "set-link": "הגדר קישור"
   },
   "error": {
     "403-forbidden": "אין לך הרשאות לגשת כרגע ל \"{path}\". יתכן כי אין לך הרשאות מתאימות או שהפעלת ההפעלה שלך פגה.",
@@ -535,7 +528,6 @@
     "promotions": "מבצעים",
     "roles": "תפקידים",
     "sales": "מכירות",
-    "scheduled-tasks": "משימות מתוכנות",
     "sellers": "מוכרים",
     "settings": "הגדרות",
     "shipping-methods": "אמצעי משלוח",
@@ -683,7 +675,7 @@
     "set-billing-address": "קבע כתובת לחיוב",
     "set-coupon-codes": "קבע קודי קופון",
     "set-customer-for-order": "קבע לקוח",
-    "set-customer-success": "לקוח נקבע בהצלחה",
+    "set-customer-success": "",
     "set-fulfillment-state": "סמן כ{state}",
     "set-shipping-address": "קבע כתובת למשלוח",
     "set-shipping-method": "קבע שיטת משלוח",
@@ -817,11 +809,6 @@
     "job-state-completed": "הושלם",
     "job-state-failed": "נכשל",
     "job-state-pending": "ממתין",
-    "job-state-running": "רץ",
-    "last-executed-at": "התבצע לאחרונה בתאריך",
-    "last-result": "תוצאה אחרונה",
-    "next-execution-at": "התבצע הבא בתאריך",
-    "schedule": "תיקון",
-    "task-id": "מזהה משימה"
+    "job-state-running": "רץ"
   }
 }
