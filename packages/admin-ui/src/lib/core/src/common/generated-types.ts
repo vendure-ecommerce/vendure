@@ -3064,6 +3064,7 @@ export type Mutation = {
   updateProvince: Province;
   /** Update an existing Role */
   updateRole: Role;
+  updateScheduledTask: ScheduledTask;
   /** Update an existing Seller */
   updateSeller: Seller;
   /** Update an existing ShippingMethod */
@@ -3921,6 +3922,11 @@ export type MutationUpdateProvinceArgs = {
 
 export type MutationUpdateRoleArgs = {
   input: UpdateRoleInput;
+};
+
+
+export type MutationUpdateScheduledTaskArgs = {
+  input: UpdateScheduledTaskInput;
 };
 
 
@@ -5223,6 +5229,7 @@ export type Query = {
   provinces: ProvinceList;
   role?: Maybe<Role>;
   roles: RoleList;
+  scheduledTasks: Array<ScheduledTask>;
   search: SearchResponse;
   seller?: Maybe<Seller>;
   sellers: SellerList;
@@ -5782,6 +5789,19 @@ export type Sale = Node & StockMovement & {
   quantity: Scalars['Int']['output'];
   type: StockMovementType;
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type ScheduledTask = {
+  __typename?: 'ScheduledTask';
+  description: Scalars['String']['output'];
+  enabled: Scalars['Boolean']['output'];
+  id: Scalars['String']['output'];
+  isRunning: Scalars['Boolean']['output'];
+  lastExecutedAt?: Maybe<Scalars['DateTime']['output']>;
+  lastResult?: Maybe<Scalars['JSON']['output']>;
+  nextExecutionAt?: Maybe<Scalars['DateTime']['output']>;
+  schedule: Scalars['String']['output'];
+  scheduleDescription: Scalars['String']['output'];
 };
 
 export type SearchInput = {
@@ -6748,6 +6768,11 @@ export type UpdateRoleInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
   permissions?: InputMaybe<Array<Permission>>;
+};
+
+export type UpdateScheduledTaskInput = {
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  id: Scalars['String']['input'];
 };
 
 export type UpdateSellerInput = {
@@ -9096,6 +9121,18 @@ export type GetZoneListQuery = { zones: { __typename?: 'ZoneList', totalItems: n
 
 export type ZoneListItemFragment = { __typename?: 'Zone', id: string, createdAt: any, updatedAt: any, name: string };
 
+export type GetAllScheduledTasksQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllScheduledTasksQuery = { scheduledTasks: Array<{ __typename?: 'ScheduledTask', id: string, description: string, schedule: string, scheduleDescription: string, lastExecutedAt?: any | null, nextExecutionAt?: any | null, isRunning: boolean, lastResult?: any | null, enabled: boolean }> };
+
+export type ToggleScheduledTaskEnabledMutationVariables = Exact<{
+  input: UpdateScheduledTaskInput;
+}>;
+
+
+export type ToggleScheduledTaskEnabledMutation = { updateScheduledTask: { __typename?: 'ScheduledTask', id: string, enabled: boolean } };
+
 export const ProductListQueryProductFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProductListQueryProductFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Product"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"enabled"}},{"kind":"Field","name":{"kind":"Name","value":"languageCode"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"featuredAsset"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"preview"}},{"kind":"Field","name":{"kind":"Name","value":"focalPoint"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"x"}},{"kind":"Field","name":{"kind":"Name","value":"y"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"variantList"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalItems"}}]}}]}}]} as unknown as DocumentNode<ProductListQueryProductFragmentFragment, unknown>;
 export const ProductVariantPriceFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProductVariantPrice"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProductVariantPrice"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"currencyCode"}}]}}]} as unknown as DocumentNode<ProductVariantPriceFragment, unknown>;
 export const ProductOptionFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProductOption"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProductOption"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"languageCode"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"groupId"}},{"kind":"Field","name":{"kind":"Name","value":"translations"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"languageCode"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<ProductOptionFragment, unknown>;
@@ -9447,3 +9484,5 @@ export const GetTaxRateDetailDocument = {"kind":"Document","definitions":[{"kind
 export const GetTaxRateListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetTaxRateList"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"options"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"TaxRateListOptions"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"taxRates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"options"},"value":{"kind":"Variable","name":{"kind":"Name","value":"options"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TaxRate"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalItems"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TaxRate"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"TaxRate"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"enabled"}},{"kind":"Field","name":{"kind":"Name","value":"value"}},{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"zone"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"customerGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<GetTaxRateListQuery, GetTaxRateListQueryVariables>;
 export const GetZoneDetailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetZoneDetail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"zone"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ZoneDetail"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ZoneDetail"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Zone"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<GetZoneDetailQuery, GetZoneDetailQueryVariables>;
 export const GetZoneListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetZoneList"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"options"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"ZoneListOptions"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"zones"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"options"},"value":{"kind":"Variable","name":{"kind":"Name","value":"options"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ZoneListItem"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalItems"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ZoneListItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Zone"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]} as unknown as DocumentNode<GetZoneListQuery, GetZoneListQueryVariables>;
+export const GetAllScheduledTasksDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAllScheduledTasks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"scheduledTasks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"schedule"}},{"kind":"Field","name":{"kind":"Name","value":"scheduleDescription"}},{"kind":"Field","name":{"kind":"Name","value":"lastExecutedAt"}},{"kind":"Field","name":{"kind":"Name","value":"nextExecutionAt"}},{"kind":"Field","name":{"kind":"Name","value":"isRunning"}},{"kind":"Field","name":{"kind":"Name","value":"lastResult"}},{"kind":"Field","name":{"kind":"Name","value":"enabled"}}]}}]}}]} as unknown as DocumentNode<GetAllScheduledTasksQuery, GetAllScheduledTasksQueryVariables>;
+export const ToggleScheduledTaskEnabledDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ToggleScheduledTaskEnabled"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateScheduledTaskInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateScheduledTask"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"enabled"}}]}}]}}]} as unknown as DocumentNode<ToggleScheduledTaskEnabledMutation, ToggleScheduledTaskEnabledMutationVariables>;
