@@ -5,6 +5,7 @@ import { ConfigModule } from '../config/config.module';
 import { ConnectionModule } from '../connection/connection.module';
 import { EventBusModule } from '../event-bus/event-bus.module';
 import { JobQueueModule } from '../job-queue/job-queue.module';
+import { SchedulerModule } from '../scheduler/scheduler.module';
 
 import { ActiveOrderService } from './helpers/active-order/active-order.service';
 import { ConfigArgService } from './helpers/config-arg/config-arg.service';
@@ -140,7 +141,7 @@ const helpers = [
  * only run a single time.
  */
 @Module({
-    imports: [ConnectionModule, ConfigModule, EventBusModule, CacheModule, JobQueueModule],
+    imports: [ConnectionModule, ConfigModule, EventBusModule, CacheModule, JobQueueModule, SchedulerModule],
     providers: [...services, ...helpers, InitializerService],
     exports: [...services, ...helpers],
 })

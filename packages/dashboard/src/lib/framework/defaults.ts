@@ -122,6 +122,11 @@ export function registerDefaults() {
                         title: 'Healthchecks',
                         url: '/healthchecks',
                     },
+                    {
+                        id: 'scheduled-tasks',
+                        title: 'Scheduled Tasks',
+                        url: '/scheduled-tasks',
+                    },
                 ],
             },
             {
