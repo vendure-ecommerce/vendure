@@ -30,8 +30,8 @@ export interface FacetedFilter {
     options?: DataTableFacetedFilterOption[];
 }
 
-interface DataTableProps<TData> {
-    columns: ColumnDef<TData, any>[];
+interface DataTableProps<TData, TValue> {
+    columns: ColumnDef<TData, TValue>[];
     data: TData[];
     totalItems: number;
     page?: number;
@@ -52,7 +52,7 @@ interface DataTableProps<TData> {
     setTableOptions?: (table: TableOptions<TData>) => TableOptions<TData>;
 }
 
-export function DataTable<TData>({
+export function DataTable<TData, TValue>({
     columns,
     data,
     totalItems,
@@ -68,7 +68,7 @@ export function DataTable<TData>({
     facetedFilters,
     disableViewOptions,
     setTableOptions,
-}: DataTableProps<TData>) {
+}: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>(sortingInitialState || []);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(filtersInitialState || []);
     const [pagination, setPagination] = React.useState<PaginationState>({

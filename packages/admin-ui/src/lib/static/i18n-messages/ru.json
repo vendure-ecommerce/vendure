@@ -6,7 +6,6 @@
     "add-asset": "Добавить медиафайл",
     "add-asset-with-count": "Добавить {count, plural, =0 {медиафайлов} one {1 медиафайл} other {{count} медиафайлов}}",
     "assets-selected-count": "Выбрано { count } медиафайлов",
-    "change-asset": "Изменить медиафайл",
     "dimensions": "Размеры",
     "focal-point": "Точка фокуса",
     "notify-create-assets-success": "Создано {count, plural, one {1 новый медиафайл} other {{count} новых медиафайлов}}",
@@ -17,7 +16,6 @@
     "select-assets": "Выбрать медиафайлы",
     "set-as-featured-asset": "Установить как основной медиафайл",
     "set-focal-point": "Установить точку фокуса",
-    "size": "Размер",
     "source-file": "Исходный файл",
     "unset-focal-point": "Удалить точку фокуса",
     "update-focal-point": "Обновить точку фокуса",
@@ -47,7 +45,6 @@
     "profile": "Профиль",
     "promotions": "Акции",
     "roles": "Роли",
-    "scheduled-tasks": "Задачи",
     "seller-orders": "Заказы продавца",
     "sellers": "Продавцы",
     "shipping-methods": "Способы доставки",
@@ -240,14 +237,12 @@
     "delete": "Удалить",
     "description": "Описание",
     "details": "Детали",
-    "disable": "Выключить",
     "disabled": "Выключен",
     "discard-changes": "Отменить изменения",
     "duplicate": "Дублировать",
     "edit": "Редактировать",
     "edit-field": "Редактировать поле",
     "edit-note": "Редактировать заметку",
-    "enable": "Включить",
     "enabled": "Включен",
     "end-date": "Дата окончания",
     "expand-entries": "Развернуть записи",
@@ -279,7 +274,7 @@
     "name": "Имя",
     "no-alerts": "Нет уведомлений",
     "no-bulk-actions-available": "Нет доступных массовых действий",
-    "no-channel-selected": "Не выбран канал",
+    "no-channel-selected": "",
     "no-results": "Нет результатов",
     "not-applicable": "Непригодный",
     "not-set": "Не задано",
@@ -480,7 +475,6 @@
     "year": "год"
   },
   "editor": {
-    "height": "Высота",
     "image-alt": "Описание (alt)",
     "image-src": "Источник",
     "image-title": "Заголовок",
@@ -489,8 +483,7 @@
     "link-target": "Целевая ссылка",
     "link-title": "Заголовок ссылки",
     "remove-link": "Удалять",
-    "set-link": "Установить ссылку",
-    "width": "Ширина"
+    "set-link": "Установить ссылку"
   },
   "error": {
     "403-forbidden": "В настоящее время у вас нет прав доступа \"{ path }\". Либо у вас нет разрешений на просмотр, либо срок вашего сеанса истек.",
@@ -535,7 +528,6 @@
     "promotions": "Промо-акции",
     "roles": "Роли",
     "sales": "Продажи",
-    "scheduled-tasks": "Задачи",
     "sellers": "Продавцы",
     "settings": "Настройки",
     "shipping-methods": "Способы доставки",
@@ -683,7 +675,7 @@
     "set-billing-address": "Установить платёжный адрес",
     "set-coupon-codes": "Применить код купона",
     "set-customer-for-order": "Выбрать клиента для заказа",
-    "set-customer-success": "Клиент успешно установлен",
+    "set-customer-success": "",
     "set-fulfillment-state": "Отметить как {state}",
     "set-shipping-address": "Установить адрес доставки",
     "set-shipping-method": "Установить метод доставки",
@@ -817,11 +809,6 @@
     "job-state-completed": "Завершено",
     "job-state-failed": "Не удалось",
     "job-state-pending": "В ожидании",
-    "job-state-running": "Выполняется",
-    "last-executed-at": "Последнее выполнение",
-    "last-result": "Последний результат",
-    "next-execution-at": "Следующее выполнение",
-    "schedule": "Расписание",
-    "task-id": "ID задачи"
+    "job-state-running": "Выполняется"
   }
 }

@@ -2435,42 +2435,6 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
-## PublicPaymentMethod
-
-<div class="graphql-code-block">
-<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">PublicPaymentMethod</span> &#123;</div>
-<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
-
-<div class="graphql-code-line ">code: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
-
-<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
-
-<div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
-
-<div class="graphql-code-line ">translations: [<a href="/reference/graphql-api/shop/object-types#paymentmethodtranslation">PaymentMethodTranslation</a>!]!</div>
-
-
-<div class="graphql-code-line top-level">&#125;</div>
-</div>
-
-## PublicShippingMethod
-
-<div class="graphql-code-block">
-<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">PublicShippingMethod</span> &#123;</div>
-<div class="graphql-code-line ">id: <a href="/reference/graphql-api/shop/object-types#id">ID</a>!</div>
-
-<div class="graphql-code-line ">code: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
-
-<div class="graphql-code-line ">name: <a href="/reference/graphql-api/shop/object-types#string">String</a>!</div>
-
-<div class="graphql-code-line ">description: <a href="/reference/graphql-api/shop/object-types#string">String</a></div>
-
-<div class="graphql-code-line ">translations: [<a href="/reference/graphql-api/shop/object-types#shippingmethodtranslation">ShippingMethodTranslation</a>!]!</div>
-
-
-<div class="graphql-code-line top-level">&#125;</div>
-</div>
-
 ## RefreshCustomerVerificationResult
 
 <div class="graphql-code-block">

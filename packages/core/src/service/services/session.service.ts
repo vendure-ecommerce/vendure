@@ -1,11 +1,10 @@
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ID } from '@vendure/common/lib/shared-types';
 import crypto from 'crypto';
 import ms from 'ms';
-import { Brackets, EntitySubscriberInterface, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
+import { EntitySubscriberInterface, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { Logger } from '../../config';
 import { ConfigService } from '../../config/config.service';
 import { CachedSession, SessionCacheStrategy } from '../../config/session-cache/session-cache-strategy';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -16,12 +15,10 @@ import { AnonymousSession } from '../../entity/session/anonymous-session.entity'
 import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
 import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
-import { JobQueue } from '../../job-queue/job-queue';
-import { JobQueueService } from '../../job-queue/job-queue.service';
-import { RequestContextService } from '../helpers/request-context/request-context.service';
 import { getUserChannelsPermissions } from '../helpers/utils/get-user-channels-permissions';
 
 import { OrderService } from './order.service';
+
 /**
  * @description
  * Contains methods relating to {@link Session} entities.
@@ -29,9 +26,8 @@ import { OrderService } from './order.service';
  * @docsCategory services
  */
 @Injectable()
-export class SessionService implements EntitySubscriberInterface, OnApplicationBootstrap {
+export class SessionService implements EntitySubscriberInterface {
     private sessionCacheStrategy: SessionCacheStrategy;
-    private cleanSessionsJobQueue: JobQueue<{ batchSize: number }>;
     private readonly sessionDurationInMs: number;
     private readonly sessionCacheTimeoutMs = 50;
 
@@ -39,8 +35,6 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
         private connection: TransactionalConnection,
         private configService: ConfigService,
         private orderService: OrderService,
-        private jobQueueService: JobQueueService,
-        private requestContextService: RequestContextService,
     ) {
         this.sessionCacheStrategy = this.configService.authOptions.sessionCacheStrategy;
 
@@ -51,22 +45,6 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
         // This allows us to register this class as a TypeORM Subscriber while also allowing
         // the injection on dependencies. See https://docs.nestjs.com/techniques/database#subscribers
         this.connection.rawConnection.subscribers.push(this);
-    }
-
-    async onApplicationBootstrap() {
-        this.cleanSessionsJobQueue = await this.jobQueueService.createQueue({
-            name: 'clean-sessions',
-            process: async job => {
-                const ctx = await this.requestContextService.create({
-                    apiType: 'admin',
-                });
-                const result = await this.cleanExpiredSessions(ctx, job.data.batchSize);
-                return {
-                    batchSize: job.data.batchSize,
-                    sessionsRemoved: result,
-                };
-            },
-        });
     }
 
     /** @internal */
@@ -320,42 +298,6 @@ export class SessionService implements EntitySubscriberInterface, OnApplicationB
         }
     }
 
-    /**
-     * @description
-     * Triggers the clean sessions job.
-     */
-    async triggerCleanSessionsJob(batchSize: number) {
-        await this.cleanSessionsJobQueue.add({ batchSize });
-    }
-
-    /**
-     * @description
-     * Cleans expired sessions from the database & the session cache.
-     */
-    async cleanExpiredSessions(ctx: RequestContext, batchSize: number) {
-        const sessions = await this.connection
-            .getRepository(ctx, Session)
-            .createQueryBuilder('session')
-            .where('session.expires < :now', { now: new Date() })
-            .orWhere(
-                new Brackets(qb1 => {
-                    qb1.where('session.userId IS NULL')
-                        .andWhere('session.activeOrderId IS NULL')
-                        .andWhere('session.updatedAt < :updatedAt', {
-                            updatedAt: new Date(Date.now() - ms('7d')),
-                        });
-                }),
-            )
-            .take(batchSize)
-            .getMany();
-        Logger.verbose(`Cleaning ${sessions.length} expired sessions`);
-        await this.connection.getRepository(ctx, Session).remove(sessions);
-        for (const session of sessions) {
-            await this.withTimeout(this.sessionCacheStrategy.delete(session.token));
-        }
-        Logger.verbose(`Cleaned ${sessions.length} expired sessions`);
-        return sessions.length;
-    }
     /**
      * If we are over half way to the current session's expiry date, then we update it.
      *

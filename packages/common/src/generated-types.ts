@@ -3041,7 +3041,6 @@ export type Mutation = {
   updateProvince: Province;
   /** Update an existing Role */
   updateRole: Role;
-  updateScheduledTask: ScheduledTask;
   /** Update an existing Seller */
   updateSeller: Seller;
   /** Update an existing ShippingMethod */
@@ -3858,11 +3857,6 @@ export type MutationUpdateProvinceArgs = {
 
 export type MutationUpdateRoleArgs = {
   input: UpdateRoleInput;
-};
-
-
-export type MutationUpdateScheduledTaskArgs = {
-  input: UpdateScheduledTaskInput;
 };
 
 
@@ -5153,7 +5147,6 @@ export type Query = {
   provinces: ProvinceList;
   role?: Maybe<Role>;
   roles: RoleList;
-  scheduledTasks: Array<ScheduledTask>;
   search: SearchResponse;
   seller?: Maybe<Seller>;
   sellers: SellerList;
@@ -5711,19 +5704,6 @@ export type Sale = Node & StockMovement & {
   quantity: Scalars['Int']['output'];
   type: StockMovementType;
   updatedAt: Scalars['DateTime']['output'];
-};
-
-export type ScheduledTask = {
-  __typename?: 'ScheduledTask';
-  description: Scalars['String']['output'];
-  enabled: Scalars['Boolean']['output'];
-  id: Scalars['String']['output'];
-  isRunning: Scalars['Boolean']['output'];
-  lastExecutedAt?: Maybe<Scalars['DateTime']['output']>;
-  lastResult?: Maybe<Scalars['JSON']['output']>;
-  nextExecutionAt?: Maybe<Scalars['DateTime']['output']>;
-  schedule: Scalars['String']['output'];
-  scheduleDescription: Scalars['String']['output'];
 };
 
 export type SearchInput = {
@@ -6680,11 +6660,6 @@ export type UpdateRoleInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
   permissions?: InputMaybe<Array<Permission>>;
-};
-
-export type UpdateScheduledTaskInput = {
-  enabled?: InputMaybe<Scalars['Boolean']['input']>;
-  id: Scalars['String']['input'];
 };
 
 export type UpdateSellerInput = {

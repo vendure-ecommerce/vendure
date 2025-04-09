@@ -6,7 +6,6 @@ import { ConnectionModule } from '../connection/connection.module';
 import { DataImportModule } from '../data-import/data-import.module';
 import { JobQueueModule } from '../job-queue/job-queue.module';
 import { createDynamicGraphQlModulesForPlugins } from '../plugin/dynamic-plugin-api.module';
-import { SchedulerModule } from '../scheduler/scheduler.module';
 import { ServiceModule } from '../service/service.module';
 
 import { ConfigurableOperationCodec } from './common/configurable-operation-codec';
@@ -32,7 +31,6 @@ import { ProductOptionResolver } from './resolvers/admin/product-option.resolver
 import { ProductResolver } from './resolvers/admin/product.resolver';
 import { PromotionResolver } from './resolvers/admin/promotion.resolver';
 import { RoleResolver } from './resolvers/admin/role.resolver';
-import { ScheduledTaskResolver } from './resolvers/admin/scheduled-task.resolver';
 import { SearchResolver } from './resolvers/admin/search.resolver';
 import { SellerResolver } from './resolvers/admin/seller.resolver';
 import { ShippingMethodResolver } from './resolvers/admin/shipping-method.resolver';
@@ -114,7 +112,6 @@ const adminResolvers = [
     PromotionResolver,
     RoleResolver,
     SearchResolver,
-    ScheduledTaskResolver,
     ShippingMethodResolver,
     StockLocationResolver,
     TagResolver,
@@ -200,7 +197,6 @@ export class ApiSharedModule {}
     imports: [
         ApiSharedModule,
         JobQueueModule,
-        SchedulerModule,
         DataImportModule,
         ...createDynamicGraphQlModulesForPlugins('admin'),
     ],
