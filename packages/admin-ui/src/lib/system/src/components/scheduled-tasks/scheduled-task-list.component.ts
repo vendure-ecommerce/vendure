@@ -39,6 +39,7 @@ const TOGGLE_SCHEDULED_TASK_ENABLED = gql`
     templateUrl: './scheduled-task-list.component.html',
     styleUrls: ['./scheduled-task-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ScheduledTaskListComponent implements OnInit {
     tasks$: Observable<GetAllScheduledTasksQuery['scheduledTasks']>;
