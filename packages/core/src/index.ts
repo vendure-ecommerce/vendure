@@ -24,3 +24,4 @@ export {
     AssetType,
     AdjustmentType,
 } from '@vendure/common/lib/generated-types';
+export * from './plugin/plain-description/plain-description.plugin';

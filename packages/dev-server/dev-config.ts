@@ -1,5 +1,9 @@
 /* eslint-disable no-console */
+
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
+
+import { PlainDescriptionPlugin } from '@vendure/core/src';
+
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
@@ -12,6 +16,7 @@ import {
     LanguageCode,
     LogLevel,
     VendureConfig,
+    
 } from '@vendure/core';
 import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
@@ -69,6 +74,7 @@ export const devConfig: VendureConfig = {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
     plugins: [
+        PlainDescriptionPlugin,
         // MultivendorPlugin.init({
         //     platformFeePercent: 10,
         //     platformFeeSKU: 'FEE',
