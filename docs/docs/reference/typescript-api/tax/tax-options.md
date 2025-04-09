@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TaxOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="886" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="888" packageName="@vendure/core" />
 
 
 

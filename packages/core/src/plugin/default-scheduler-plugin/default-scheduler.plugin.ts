@@ -29,6 +29,8 @@ import { DefaultSchedulerPluginOptions } from './types';
  *
  * @since 3.3.0
  * @docsCategory scheduled-tasks
+ * @docsPage DefaultSchedulerPlugin
+ * @docsWeight 0
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
@@ -50,8 +52,8 @@ export class DefaultSchedulerPlugin {
         defaultTimeout: DEFAULT_TIMEOUT,
     };
 
-    static init(config: DefaultSchedulerPluginOptions) {
-        this.options = { ...this.options, ...config };
+    static init(config?: DefaultSchedulerPluginOptions) {
+        this.options = { ...this.options, ...(config || {}) };
         return this;
     }
 }

@@ -1841,6 +1841,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
+## updateScheduledTask
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>
+<div class="graphql-code-line ">updateScheduledTask(input: <a href="/reference/graphql-api/admin/input-types#updatescheduledtaskinput">UpdateScheduledTaskInput</a>!): <a href="/reference/graphql-api/admin/object-types#scheduledtask">ScheduledTask</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
 ## updateSeller
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level comment">"""</div>

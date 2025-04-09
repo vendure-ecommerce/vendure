@@ -4,6 +4,7 @@
  *
  * @since 3.3.0
  * @docsCategory scheduled-tasks
+ * @docsPage DefaultSchedulerPlugin
  */
 export interface DefaultSchedulerPluginOptions {
     /**

@@ -6,6 +6,8 @@ import { Injector } from '../common/index';
  * The configuration for a scheduled task.
  *
  * @since 3.3.0
+ * @docsCategory scheduled-tasks
+ * @docsPage ScheduledTask
  */
 export interface ScheduledTaskConfig<C extends Record<string, any> = Record<string, any>> {
     /**
@@ -65,10 +67,25 @@ export interface ScheduledTaskConfig<C extends Record<string, any> = Record<stri
 
 /**
  * @description
- * A scheduled task that will be executed at a given cron schedule.
+ * Use this class to define a scheduled task that will be executed at a given cron schedule.
+ *
+ * @example
+ * ```ts
+ * import { ScheduledTask } from '\@vendure/core';
+ *
+ * const task = new ScheduledTask({
+ *     id: 'test-job',
+ *     schedule: cron => cron.every(2).minutes(),
+ *     execute: async (injector, params) => {
+ *         // some logic here
+ *     },
+ * });
+ * ```
  *
  * @since 3.3.0
  * @docsCategory scheduled-tasks
+ * @docsPage ScheduledTask
+ * @docsWeight 0
  */
 export class ScheduledTask<C extends Record<string, any> = Record<string, any>> {
     constructor(private readonly config: ScheduledTaskConfig<C>) {}
