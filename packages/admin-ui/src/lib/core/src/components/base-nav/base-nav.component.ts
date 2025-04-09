@@ -14,6 +14,7 @@ import { NotificationService } from '../../providers/notification/notification.s
 
 @Directive({
     selector: '[vdrBaseNav]',
+    standalone: false,
 })
 // eslint-disable-next-line @angular-eslint/directive-class-suffix
 export class BaseNavComponent implements OnInit, OnDestroy {
