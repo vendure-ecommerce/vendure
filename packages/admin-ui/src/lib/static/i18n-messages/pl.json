@@ -6,7 +6,6 @@
     "add-asset": "Dodaj zasób",
     "add-asset-with-count": "Dodaj {count, plural, =0 {assets} one {1 zasób} other {{count} zasobów}}",
     "assets-selected-count": "Zaznaczono { count } zasobów",
-    "change-asset": "Zmień zasób",
     "dimensions": "Wymiary",
     "focal-point": "Punkt centralny",
     "notify-create-assets-success": "Utworzono {count, plural, one {nowy zasób} other {{count} nowych zasobów}}",
@@ -17,7 +16,6 @@
     "select-assets": "Wybierz zasoby",
     "set-as-featured-asset": "Ustaw jako polecany",
     "set-focal-point": "Ustaw punk centralny",
-    "size": "Rozmiar",
     "source-file": "Plik źródłowy",
     "unset-focal-point": "Usuń punkt centralny",
     "update-focal-point": "Zaktualizuj punkt centralny",
@@ -47,7 +45,6 @@
     "profile": "Profil",
     "promotions": "Promocje",
     "roles": "Role",
-    "scheduled-tasks": "Zadania planowane",
     "seller-orders": "Zamówienia sprzedawcy",
     "sellers": "Sprzedawcy",
     "shipping-methods": "Metody wysyłki",
@@ -240,15 +237,13 @@
     "delete": "Usuń",
     "description": "Opis",
     "details": "Szczegóły",
-    "disable": "Wyłącz",
     "disabled": "Wyłączony",
     "discard-changes": "Odrzuć zmiany",
     "duplicate": "Zduplikować",
     "edit": "Edytuj",
     "edit-field": "Edytuj pole",
     "edit-note": "Edytuj notatkę",
-    "enable": "Włącz",
-    "enabled": "Włączony",
+    "enabled": "Aktywny",
     "end-date": "Data zakończenia",
     "expand-entries": "Rozwiń wpisy",
     "extension-running-in-separate-window": "Rozszerzenie jest włączone w innym oknie",
@@ -279,7 +274,7 @@
     "name": "Nazwa",
     "no-alerts": "Brak alertów",
     "no-bulk-actions-available": "Brak dostępnych akcji zbiorowych",
-    "no-channel-selected": "Brak wybranego kanału",
+    "no-channel-selected": "",
     "no-results": "Brak wyników",
     "not-applicable": "Nie dotyczy",
     "not-set": "Nie ustawione",
@@ -480,7 +475,6 @@
     "year": "rok"
   },
   "editor": {
-    "height": "Wysokość",
     "image-alt": "Opis (alt)",
     "image-src": "Źródło",
     "image-title": "Tytuł",
@@ -489,8 +483,7 @@
     "link-target": "Otwórz w nowym oknie",
     "link-title": "Tytuł linku",
     "remove-link": "Usuń",
-    "set-link": "Ustaw link",
-    "width": "Szerokość"
+    "set-link": "Ustaw link"
   },
   "error": {
     "403-forbidden": "Brak autoryzacji dla \"{ path }\". Brak uprawnień lub wygasła sesja.",
@@ -535,7 +528,6 @@
     "promotions": "Promocje",
     "roles": "Role",
     "sales": "Sprzedaż",
-    "scheduled-tasks": "Zadania planowane",
     "sellers": "Sprzedawcy",
     "settings": "Ustawienia",
     "shipping-methods": "Metody wysyłki",
@@ -817,11 +809,6 @@
     "job-state-completed": "Ukończono",
     "job-state-failed": "Nie powiodło się",
     "job-state-pending": "Oczekujące",
-    "job-state-running": "Uruchomione",
-    "last-executed-at": "Ostatnio wykonano",
-    "last-result": "Ostatni wynik",
-    "next-execution-at": "Następne wykonanie",
-    "schedule": "Harmonogram",
-    "task-id": "ID zadania"
+    "job-state-running": "Uruchomione"
   }
 }

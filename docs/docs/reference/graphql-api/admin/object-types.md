@@ -3522,32 +3522,6 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
-## ScheduledTask
-
-<div class="graphql-code-block">
-<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">ScheduledTask</span> &#123;</div>
-<div class="graphql-code-line ">id: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
-
-<div class="graphql-code-line ">description: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
-
-<div class="graphql-code-line ">schedule: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
-
-<div class="graphql-code-line ">scheduleDescription: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
-
-<div class="graphql-code-line ">lastExecutedAt: <a href="/reference/graphql-api/admin/object-types#datetime">DateTime</a></div>
-
-<div class="graphql-code-line ">nextExecutionAt: <a href="/reference/graphql-api/admin/object-types#datetime">DateTime</a></div>
-
-<div class="graphql-code-line ">isRunning: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a>!</div>
-
-<div class="graphql-code-line ">lastResult: <a href="/reference/graphql-api/admin/object-types#json">JSON</a></div>
-
-<div class="graphql-code-line ">enabled: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a>!</div>
-
-
-<div class="graphql-code-line top-level">&#125;</div>
-</div>
-
 ## SearchReindexResponse
 
 <div class="graphql-code-block">
