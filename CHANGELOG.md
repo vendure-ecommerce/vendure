@@ -1,3 +1,9 @@
+## <small>3.2.2 (2025-04-03)</small>
+
+#### Fixes
+
+* **dashboard** Fix dashboard plugin publishing ([65281e5f](https://github.com/vendure-ecommerce/vendure/commit/65281e5f))
+
 ## <small>3.2.1 (2025-04-03)</small>
 
 
