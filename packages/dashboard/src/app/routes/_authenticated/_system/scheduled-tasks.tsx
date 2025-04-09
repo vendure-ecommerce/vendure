@@ -143,8 +143,8 @@ function ScheduledTasksPage() {
                 return row.original.lastResult ? (
                     <PayloadDialog
                         payload={row.original.lastResult}
-                        title={<Trans>View job result</Trans>}
-                        description={<Trans>The result of the job</Trans>}
+                        title={<Trans>View task result</Trans>}
+                        description={<Trans>The result of the task</Trans>}
                         trigger={
                             <Button size="sm" variant="secondary">
                                 View result
