@@ -28,6 +28,11 @@ export function configLoaderPlugin(options: ConfigLoaderOptions): Plugin {
                     tempDir: options.tempDir,
                     vendureConfigPath: options.vendureConfigPath,
                     vendureConfigExport: options.vendureConfigExport,
+                    logger: {
+                        info: (message: string) => this.info(message),
+                        warn: (message: string) => this.warn(message),
+                        debug: (message: string) => this.debug(message),
+                    },
                 });
                 vendureConfig = result.vendureConfig;
                 const endTime = Date.now();
