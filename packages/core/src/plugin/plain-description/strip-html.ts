@@ -1,3 +1,6 @@
 export function stripHtmlTags(input: string): string {
-    return input ? input.replace(/<\/?[a-zA-Z][^>\s]*[^>]*>/g, '') : '';
+    if (!input) return '';
+    const div = document.createElement('div');
+    div.innerHTML = input;
+    return div.textContent || '';
 }
