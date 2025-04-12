@@ -42,6 +42,14 @@ export const devConfig: VendureConfig = {
             },
         },
         shopApiDebug: true,
+        driverConfigs: {
+            subscriptions: {
+                'graphql-ws': {
+                    connectionInitWaitTimeout: Infinity,
+                },
+            },
+            allowBatchedHttpRequests: true
+        }
     },
     authOptions: {
         disableAuth: false,
