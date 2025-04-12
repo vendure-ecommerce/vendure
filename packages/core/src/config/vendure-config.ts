@@ -1,5 +1,6 @@
 import { ApolloServerPlugin } from '@apollo/server';
 import { RenderPageOptions } from '@apollographql/graphql-playground-html';
+import { ApolloDriverConfig } from '@nestjs/apollo';
 import { DynamicModule, Type } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
@@ -215,6 +216,35 @@ export interface ApiOptions {
      * @since 1.5.0
      */
     introspection?: boolean;
+    /**
+     * @description
+     * Allows arbitrary configuration options to be passed directly to the underlying
+     * Apollo Driver. This is useful for configuring driver-specific features not
+     * explicitly exposed by Vendure's `ApiOptions`.
+     *
+     * @example
+     * ```ts
+     * // Example: Enable subscriptions using graphql-ws
+     * driverConfigs: {
+     *   subscriptions: {
+     *     'graphql-ws': {
+     *       path: '/subscriptions' // Or your desired path
+     *     },
+     *   },
+     *   // You can combine this with other driver configs, e.g., landing pages
+     *   playground: false, // Disable default playground if using landing page plugin
+     *   plugins: [
+     *     process.env.NODE_ENV === 'production'
+     *       ? ApolloServerPluginLandingPageProductionDefault({ footer: false })
+     *       : ApolloServerPluginLandingPageLocalDefault({ footer: false }),
+     *   ],
+     * }
+     * ```
+     *
+     * @default {}
+     * @since 3.2.2
+     */
+    driverConfigs?: ApolloDriverConfig;
 }
 
 /**
