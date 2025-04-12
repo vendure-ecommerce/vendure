@@ -35,10 +35,10 @@
         <div class="card-block">
             <div class="clr-row">
                 <div class="clr-col-sm-4">
-                    <vdr-labeled-data [label]="'common.medium-date' | translate">
+                    <vdr-labeled-data  class="mediumDate" [label]="'common.medium-date' | translate">
                         {{ now | localeDate : 'medium' : previewLocale }}
                     </vdr-labeled-data>
-                    <vdr-labeled-data [label]="'common.short-date' | translate">
+                    <vdr-labeled-data  class="shortDate" [label]="'common.short-date' | translate">
                         {{ now | localeDate : 'short' : previewLocale }}
                     </vdr-labeled-data>
                 </div>
@@ -50,7 +50,7 @@
                     </select>
                 </div>
                 <div class="clr-col-sm-4">
-                    <vdr-labeled-data [label]="'common.price' | translate">
+                    <vdr-labeled-data  class="price" [label]="'common.price' | translate">
                         {{ 12345 | localeCurrency : selectedCurrencyCode : previewLocale }}
                     </vdr-labeled-data>
                 </div>

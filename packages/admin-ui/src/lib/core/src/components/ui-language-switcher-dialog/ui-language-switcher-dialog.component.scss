@@ -1,3 +1,4 @@
+@import 'variables';
 :host {
 }
 
@@ -7,4 +8,13 @@ select.currency {
 
 input.locale {
     text-transform: uppercase;
+}
+.mediumDate{
+    color: var(--medium-date-color);
+}
+.shortDate{
+    color: var(--short-date-color);
+}
+.price {
+    color: var(--price-color);
 }
