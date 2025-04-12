@@ -13,7 +13,7 @@ import { InternalServerError } from './common/error/errors';
 import { getConfig, setConfig } from './config/config-helpers';
 import { DefaultLogger } from './config/logger/default-logger';
 import { Logger } from './config/logger/vendure-logger';
-import { RuntimeVendureConfig, VendureConfig } from './config/vendure-config';
+import { PartialVendureConfig, RuntimeVendureConfig, VendureConfig } from './config/vendure-config';
 import { Administrator } from './entity/administrator/administrator.entity';
 import { coreEntitiesMap } from './entity/entities';
 import { registerCustomEntityFields } from './entity/register-custom-entity-fields';
@@ -254,7 +254,7 @@ export async function preBootstrapConfig(
     userConfig: Partial<VendureConfig>,
 ): Promise<Readonly<RuntimeVendureConfig>> {
     if (userConfig) {
-        await setConfig(userConfig);
+        await setConfig(userConfig as PartialVendureConfig);
     }
 
     const entities = getAllEntities(userConfig);
