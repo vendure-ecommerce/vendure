@@ -116,6 +116,7 @@ async function createGraphQLOptions(
         plugins: apolloServerPlugins,
         validationRules: options.validationRules,
         introspection: configService.apiOptions.introspection ?? true,
+        ...configService.apiOptions.driverConfigs,
     } as ApolloDriverConfig;
 
     /**

@@ -91,7 +91,7 @@ export class BaseAuthResolver {
             }
         }
         const user = userId && (await this.userService.getUserById(ctx, userId));
-        return user ? this.publiclyAccessibleUser(user) : null;
+        return user ? this.publiclyAccessibleUser(user, '') : null;
     }
 
     /**
@@ -122,7 +122,7 @@ export class BaseAuthResolver {
             rememberMe: args.rememberMe || false,
             sessionToken: session.token,
         });
-        return this.publiclyAccessibleUser(session.user);
+        return this.publiclyAccessibleUser(session.user, session.token);
     }
 
     /**
@@ -143,11 +143,12 @@ export class BaseAuthResolver {
     /**
      * Exposes a subset of the User properties which we want to expose to the public API.
      */
-    protected publiclyAccessibleUser(user: User): CurrentUser {
+    protected publiclyAccessibleUser(user: User, token: string): CurrentUser {
         return {
             id: user.id,
             identifier: user.identifier,
             channels: getUserChannelsPermissions(user) as CurrentUserChannel[],
+            sessionToken: token,
         };
     }
 }

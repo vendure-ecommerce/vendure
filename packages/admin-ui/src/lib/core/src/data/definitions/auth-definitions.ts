@@ -12,6 +12,7 @@ export const CURRENT_USER_FRAGMENT = gql`
             token
             permissions
         }
+        sessionToken
     }
 `;
 

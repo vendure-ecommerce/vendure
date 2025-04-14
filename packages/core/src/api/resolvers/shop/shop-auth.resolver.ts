@@ -173,7 +173,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
             rememberMe: true,
             sessionToken: session.token,
         });
-        return this.publiclyAccessibleUser(session.user);
+        return this.publiclyAccessibleUser(session.user, session.token);
     }
 
     @Transaction()

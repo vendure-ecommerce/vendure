@@ -1309,6 +1309,7 @@ export type CurrentUser = {
     channels: Array<CurrentUserChannel>;
     id: Scalars['ID']['output'];
     identifier: Scalars['String']['output'];
+    sessionToken: Scalars['String']['output'];
 };
 
 export type CurrentUserChannel = {

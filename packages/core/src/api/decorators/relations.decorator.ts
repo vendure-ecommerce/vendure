@@ -142,16 +142,19 @@ export const Relations: <T extends VendureEntity>(data: FieldsDecoratorConfig<T>
         if (!isGraphQLResolveInfo(info)) {
             return [];
         }
-        const cacheKey = info.fieldName + '__' + (ctx.getArgByIndex(2).req.body.query as string);
+        // Calculate fields first
+        const fields = graphqlFields(info);
+        // Generate cache key based on field name and the requested fields,
+        // avoiding reliance on req.body which might not exist in WebSocket context.
+        const cacheKey = info.fieldName + '__' + JSON.stringify(fields);
         const cachedResult = cache.get(cacheKey);
         if (cachedResult) {
             return cachedResult;
         }
-        const fields = graphqlFields(info);
-        const targetFields = isPaginatedListQuery(info) ? fields.items ?? {} : fields;
+        const targetFields = isPaginatedListQuery(info) ? (fields.items ?? {}) : fields;
         const entity = typeof data === 'function' ? data : data.entity;
-        const maxDepth = typeof data === 'function' ? DEFAULT_DEPTH : data.depth ?? DEFAULT_DEPTH;
-        const omit = typeof data === 'function' ? [] : data.omit ?? [];
+        const maxDepth = typeof data === 'function' ? DEFAULT_DEPTH : (data.depth ?? DEFAULT_DEPTH);
+        const omit = typeof data === 'function' ? [] : (data.omit ?? []);
         const relationFields = getRelationPaths(targetFields, entity, maxDepth);
         let result = unique(relationFields);
         for (const omitPath of omit) {

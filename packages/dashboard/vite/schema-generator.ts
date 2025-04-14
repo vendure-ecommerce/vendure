@@ -7,6 +7,7 @@ import {
     getFinalVendureSchema,
     VENDURE_ADMIN_API_TYPE_PATHS,
     VendureConfig,
+    PartialVendureConfig,
 } from '@vendure/core';
 import { buildSchema } from 'graphql';
 import { GraphQLSchema } from 'graphql';
@@ -21,7 +22,7 @@ export async function generateSchema({
     if (!schemaPromise) {
         schemaPromise = new Promise(async (resolve, reject) => {
             resetConfig();
-            await setConfig(vendureConfig ?? {});
+            await setConfig((vendureConfig as PartialVendureConfig) ?? {});
 
             const runtimeConfig = await runPluginConfigurations(getConfig() as any);
             const typesLoader = new GraphQLTypesLoader();
