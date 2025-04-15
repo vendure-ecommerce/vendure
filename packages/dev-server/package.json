@@ -6,7 +6,7 @@
     "private": true,
     "scripts": {
         "populate": "node -r ts-node/register -r dotenv/config populate-dev-server.ts",
-        "dev:server": "node -r ts-node/register -r dotenv/config index.ts",
+        "dev:server": "node -r ts-node/register -r dotenv/config -r @vendure/core/dist/instrumentation index.ts",
         "dev:worker": "node -r ts-node/register -r dotenv/config index-worker.ts",
         "dev": "concurrently npm:dev:*",
         "dashboard:dev": "vite dev",

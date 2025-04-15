@@ -1,5 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule, OnApplicationShutdown } from '@nestjs/common';
 import cookieSession from 'cookie-session';
+import { OpenTelemetryModule, Span, TraceService } from 'nestjs-otel';
 
 import { ApiModule } from './api/api.module';
 import { Middleware, MiddlewareHandler } from './common';
@@ -24,15 +25,26 @@ import { ServiceModule } from './service/service.module';
         HealthCheckModule,
         ServiceModule,
         ConnectionModule,
+        OpenTelemetryModule.forRoot({
+            metrics: {
+                hostMetrics: true, // Includes Host Metrics
+                apiMetrics: {
+                    enable: true, // Includes api metrics
+                },
+            },
+        }),
     ],
 })
 export class AppModule implements NestModule, OnApplicationShutdown {
     constructor(
         private configService: ConfigService,
         private i18nService: I18nService,
+        private traceService: TraceService,
     ) {}
 
+    @Span()
     configure(consumer: MiddlewareConsumer) {
+        const currentSpan = this.traceService.getSpan();
         const { adminApiPath, shopApiPath, middleware } = this.configService.apiOptions;
         const { cookieOptions } = this.configService.authOptions;
 
@@ -41,6 +53,10 @@ export class AppModule implements NestModule, OnApplicationShutdown {
             { handler: i18nextHandler, route: adminApiPath },
             { handler: i18nextHandler, route: shopApiPath },
         ];
+        currentSpan?.addEvent('setup_middleware', {
+            adminApiPath,
+            shopApiPath,
+        });
 
         const allMiddleware = defaultMiddleware.concat(middleware);
 
@@ -64,6 +80,7 @@ export class AppModule implements NestModule, OnApplicationShutdown {
         for (const [route, handlers] of Object.entries(middlewareByRoute)) {
             consumer.apply(...handlers).forRoutes(route);
         }
+        currentSpan?.end();
     }
 
     async onApplicationShutdown(signal?: string) {
