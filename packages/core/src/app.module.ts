@@ -42,7 +42,7 @@ export class AppModule implements NestModule, OnApplicationShutdown {
         private traceService: TraceService,
     ) {}
 
-    @Span()
+    @Span('vendure.app-module.configure')
     configure(consumer: MiddlewareConsumer) {
         const currentSpan = this.traceService.getSpan();
         const { adminApiPath, shopApiPath, middleware } = this.configService.apiOptions;
@@ -53,10 +53,9 @@ export class AppModule implements NestModule, OnApplicationShutdown {
             { handler: i18nextHandler, route: adminApiPath },
             { handler: i18nextHandler, route: shopApiPath },
         ];
-        currentSpan?.addEvent('setup_middleware', {
-            adminApiPath,
-            shopApiPath,
-        });
+
+        currentSpan?.setAttribute('middleware.adminApiPath', adminApiPath);
+        currentSpan?.setAttribute('middleware.shopApiPath', shopApiPath);
 
         const allMiddleware = defaultMiddleware.concat(middleware);
 
