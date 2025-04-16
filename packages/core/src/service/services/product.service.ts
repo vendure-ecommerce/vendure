@@ -196,6 +196,10 @@ export class ProductService {
             .select('_product_translation.baseId')
             .andWhere('_product_translation.slug = :slug', { slug });
 
+        // Add channel join to ensure we're only getting products from this channel
+        qb.innerJoin('product.channels', 'channel', 'channel.id = :channelId', {
+            channelId: ctx.channelId,
+        })
         qb.leftJoin('product.translations', 'translation')
             .andWhere('product.deletedAt IS NULL')
             .andWhere('product.id IN (' + translationQb.getQuery() + ')')
