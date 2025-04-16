@@ -1,4 +1,5 @@
 import { JsonCompatible } from '@vendure/common/lib/shared-types';
+import { Span, TraceService } from 'nestjs-otel';
 
 import { CacheTtlProvider, DefaultCacheTtlProvider } from '../../cache/cache-ttl-provider';
 import { Injector } from '../../common/injector';
@@ -20,6 +21,7 @@ import { CacheTag } from './cache-tag.entity';
 export class SqlCacheStrategy implements CacheStrategy {
     protected cacheSize = 10_000;
     protected ttlProvider: CacheTtlProvider;
+    protected traceService: TraceService;
 
     constructor(config?: { cacheSize?: number; cacheTtlProvider?: CacheTtlProvider }) {
         if (config?.cacheSize) {
@@ -34,9 +36,14 @@ export class SqlCacheStrategy implements CacheStrategy {
     init(injector: Injector) {
         this.connection = injector.get(TransactionalConnection);
         this.configService = injector.get(ConfigService);
+        this.traceService = injector.get(TraceService);
     }
 
+    @Span('vendure.sql-cache-strategy.get')
     async get<T extends JsonCompatible<T>>(key: string): Promise<T | undefined> {
+        const span = this.traceService.getSpan();
+        span?.setAttribute('cache.key', key);
+
         const hit = await this.connection.rawConnection.getRepository(CacheItem).findOne({
             where: {
                 key,
@@ -46,16 +53,24 @@ export class SqlCacheStrategy implements CacheStrategy {
         if (hit) {
             if (!hit.expiresAt || (hit.expiresAt && this.ttlProvider.getTime() < hit.expiresAt.getTime())) {
                 try {
+                    span?.setAttribute('cache.hit', true);
+                    span?.setAttribute('cache.hit.expiresAt', hit.expiresAt?.toISOString() ?? 'never');
+                    span?.end();
                     return JSON.parse(hit.value);
                 } catch (e: any) {
                     /* */
                 }
             } else {
+                span?.setAttribute('cache.hit', false);
+                span?.addEvent('cache.delete', {
+                    key,
+                });
                 await this.connection.rawConnection.getRepository(CacheItem).delete({
                     key,
                 });
             }
         }
+        span?.end();
     }
 
     async set<T extends JsonCompatible<T>>(key: string, value: T, options?: SetCacheKeyOptions) {

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JsonCompatible } from '@vendure/common/lib/shared-types';
+import { Span, TraceService } from 'nestjs-otel';
 
 import { ConfigService } from '../config/config.service';
 import { Logger } from '../config/index';
@@ -20,7 +21,10 @@ import { Cache, CacheConfig } from './cache';
 @Injectable()
 export class CacheService {
     protected cacheStrategy: CacheStrategy;
-    constructor(private configService: ConfigService) {
+    constructor(
+        private configService: ConfigService,
+        private traceService: TraceService,
+    ) {
         this.cacheStrategy = this.configService.systemOptions.cacheStrategy;
     }
 
@@ -31,7 +35,10 @@ export class CacheService {
      * The `Cache` instance provides a convenience wrapper around the `CacheService`
      * methods.
      */
+    @Span('vendure.cache.create-cache')
     createCache(config: CacheConfig): Cache {
+        const span = this.traceService.getSpan();
+        span?.setAttribute('cache.config', JSON.stringify(config));
         return new Cache(config, this);
     }
 
@@ -40,12 +47,17 @@ export class CacheService {
      * Gets an item from the cache, or returns undefined if the key is not found, or the
      * item has expired.
      */
+    @Span('vendure.cache.get')
     async get<T extends JsonCompatible<T>>(key: string): Promise<T | undefined> {
+        const span = this.traceService.getSpan();
+        span?.setAttribute('cache.key', key);
         try {
             const result = await this.cacheStrategy.get(key);
             if (result) {
+                span?.setAttribute('cache.hit', true);
                 Logger.debug(`CacheService hit for key [${key}]`);
             }
+            span?.end();
             return result as T;
         } catch (e: any) {
             Logger.error(`Could not get key [${key}] from CacheService`, undefined, e.stack);
@@ -60,15 +72,22 @@ export class CacheService {
      * Optionally a "time to live" (ttl) can be specified, which means that the key will
      * be considered stale after that many milliseconds.
      */
+    @Span('vendure.cache.set')
     async set<T extends JsonCompatible<T>>(
         key: string,
         value: T,
         options?: SetCacheKeyOptions,
     ): Promise<void> {
+        const span = this.traceService.getSpan();
+        span?.setAttribute('cache.key', key);
         try {
             await this.cacheStrategy.set(key, value, options);
+            span?.setAttribute('cache.set', true);
+            span?.end();
             Logger.debug(`Set key [${key}] in CacheService`);
         } catch (e: any) {
+            span?.setAttribute('cache.set', false);
+            span?.end();
             Logger.error(`Could not set key [${key}] in CacheService`, undefined, e.stack);
         }
     }
@@ -77,11 +96,18 @@ export class CacheService {
      * @description
      * Deletes an item from the cache.
      */
+    @Span('vendure.cache.delete')
     async delete(key: string): Promise<void> {
+        const span = this.traceService.getSpan();
+        span?.setAttribute('cache.key', key);
         try {
             await this.cacheStrategy.delete(key);
+            span?.setAttribute('cache.deleted', true);
+            span?.end();
             Logger.debug(`Deleted key [${key}] from CacheService`);
         } catch (e: any) {
+            span?.setAttribute('cache.deleted', false);
+            span?.end();
             Logger.error(`Could not delete key [${key}] from CacheService`, undefined, e.stack);
         }
     }
@@ -90,11 +116,18 @@ export class CacheService {
      * @description
      * Deletes all items from the cache which contain at least one matching tag.
      */
+    @Span('vendure.cache.invalidate-tags')
     async invalidateTags(tags: string[]): Promise<void> {
+        const span = this.traceService.getSpan();
+        span?.setAttribute('cache.tags', tags.join(', '));
         try {
             await this.cacheStrategy.invalidateTags(tags);
+            span?.setAttribute('cache.invalidated', true);
+            span?.end();
             Logger.debug(`Invalidated tags [${tags.join(', ')}] from CacheService`);
         } catch (e: any) {
+            span?.setAttribute('cache.invalidated', false);
+            span?.end();
             Logger.error(
                 `Could not invalidate tags [${tags.join(', ')}] from CacheService`,
                 undefined,
