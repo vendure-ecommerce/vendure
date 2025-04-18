@@ -1,5 +1,12 @@
 // packages/tracing-utils/createSpanDecorator.ts
-import { context, SpanStatusCode, trace, Tracer } from '@opentelemetry/api';
+import { Span as ApiSpan, SpanOptions, SpanStatusCode, Tracer } from '@opentelemetry/api';
+
+import { copyMetadata } from '../utils/metadata';
+
+const recordException = (span: ApiSpan, error: any) => {
+    span.recordException(error);
+    span.setStatus({ code: SpanStatusCode.ERROR, message: error.message });
+};
 
 /**
  * @description
@@ -11,33 +18,47 @@ import { context, SpanStatusCode, trace, Tracer } from '@opentelemetry/api';
  * @since 3.3.0
  */
 export function createSpanDecorator(tracer: Tracer) {
-    return function Span(name?: string): MethodDecorator {
-        return (target, propertyKey, descriptor: PropertyDescriptor) => {
-            // Original method or handler
-            const original = descriptor.value;
+    return function Span(name?: string, options: SpanOptions = {}): MethodDecorator {
+        return (target: any, propertyKey: PropertyKey, propertyDescriptor: PropertyDescriptor) => {
+            const originalFunction = propertyDescriptor.value;
+            const wrappedFunction = function PropertyDescriptor(...args: any[]) {
+                const spanName = name || `${String(target.constructor.name)}.${String(propertyKey)}`;
 
-            // Default to the method name if none supplied
-            const spanName = name ?? String(propertyKey);
+                return tracer.startActiveSpan(spanName, options, span => {
+                    if (originalFunction.constructor.name === 'AsyncFunction') {
+                        return (
+                            originalFunction
+                                // @ts-expect-error
+                                .apply(this, args)
+                                // @ts-expect-error
+                                .catch(error => {
+                                    recordException(span, error);
+                                    // Throw error to propagate it further
+                                    throw error;
+                                })
+                                .finally(() => {
+                                    span.end();
+                                })
+                        );
+                    }
 
-            descriptor.value = function (...args: unknown[]) {
-                const span = tracer.startSpan(spanName);
-
-                // Make the new span the *active* span for anything called inside
-                return context.with(trace.setSpan(context.active(), span), async () => {
                     try {
-                        // Support sync & async transparently
-                        const result = await original.apply(this, args);
-                        span.setStatus({ code: SpanStatusCode.OK });
-                        return result;
-                    } catch (err) {
-                        span.recordException(err as Error);
-                        span.setStatus({ code: SpanStatusCode.ERROR, message: String(err) });
-                        throw err;
+                        // @ts-expect-error
+                        return originalFunction.apply(this, args);
+                    } catch (error) {
+                        recordException(span, error);
+
+                        // throw for further propagation
+                        throw error;
                     } finally {
                         span.end();
                     }
                 });
             };
+
+            propertyDescriptor.value = wrappedFunction;
+
+            copyMetadata(originalFunction, wrappedFunction);
         };
     };
 }
