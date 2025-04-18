@@ -49,7 +49,7 @@ import { ProductReviewTranslation } from './entities/product-review-translation.
         });
         return config;
     },
-    dashboard: './dashboard',
+    dashboard: './dashboard/index.tsx',
 })
 export class ReviewsPlugin {
     static uiExtensions: AdminUiExtension = {

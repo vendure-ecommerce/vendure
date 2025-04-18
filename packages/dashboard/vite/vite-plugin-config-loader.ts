@@ -1,10 +1,9 @@
-import { VendureConfig } from '@vendure/core';
 import { Plugin } from 'vite';
 
-import { ConfigLoaderOptions, loadVendureConfig } from './config-loader.js';
+import { ConfigLoaderOptions, loadVendureConfig, LoadVendureConfigResult } from './utils/config-loader.js';
 
 export interface ConfigLoaderApi {
-    getVendureConfig(): Promise<VendureConfig>;
+    getVendureConfig(): Promise<LoadVendureConfigResult>;
 }
 
 export const configLoaderName = 'vendure:config-loader';
@@ -14,7 +13,7 @@ export const configLoaderName = 'vendure:config-loader';
  * makes it available to other plugins via the `ConfigLoaderApi`.
  */
 export function configLoaderPlugin(options: ConfigLoaderOptions): Plugin {
-    let vendureConfig: VendureConfig;
+    let result: LoadVendureConfigResult;
     const onConfigLoaded: Array<() => void> = [];
     return {
         name: configLoaderName,
@@ -24,7 +23,7 @@ export function configLoaderPlugin(options: ConfigLoaderOptions): Plugin {
             );
             try {
                 const startTime = Date.now();
-                const result = await loadVendureConfig({
+                result = await loadVendureConfig({
                     tempDir: options.tempDir,
                     vendureConfigPath: options.vendureConfigPath,
                     vendureConfigExport: options.vendureConfigExport,
@@ -34,9 +33,10 @@ export function configLoaderPlugin(options: ConfigLoaderOptions): Plugin {
                         debug: (message: string) => this.debug(message),
                     },
                 });
-                vendureConfig = result.vendureConfig;
                 const endTime = Date.now();
                 const duration = endTime - startTime;
+                const pluginNames = result.pluginInfo.map(p => p.name).join(', ');
+                this.info(`Found ${result.pluginInfo.length} plugins: ${pluginNames}`);
                 this.info(
                     `Vendure config loaded (using export "${result.exportedSymbolName}") in ${duration}ms`,
                 );
@@ -48,13 +48,13 @@ export function configLoaderPlugin(options: ConfigLoaderOptions): Plugin {
             onConfigLoaded.forEach(fn => fn());
         },
         api: {
-            getVendureConfig(): Promise<VendureConfig> {
-                if (vendureConfig) {
-                    return Promise.resolve(vendureConfig);
+            getVendureConfig(): Promise<LoadVendureConfigResult> {
+                if (result) {
+                    return Promise.resolve(result);
                 } else {
-                    return new Promise<VendureConfig>(resolve => {
+                    return new Promise<LoadVendureConfigResult>(resolve => {
                         onConfigLoaded.push(() => {
-                            resolve(vendureConfig);
+                            resolve(result);
                         });
                     });
                 }

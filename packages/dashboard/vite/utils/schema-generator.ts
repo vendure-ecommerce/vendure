@@ -11,14 +11,20 @@ import {
 import { buildSchema } from 'graphql';
 import { GraphQLSchema } from 'graphql';
 
-let schemaPromise: Promise<GraphQLSchema>;
+let schemaPromise: Promise<GraphQLSchema> | undefined;
 
+/**
+ * @description
+ * This function generates a GraphQL schema from the Vendure config.
+ * It is used to generate the schema for the dashboard.
+ */
 export async function generateSchema({
     vendureConfig,
 }: {
     vendureConfig: VendureConfig;
 }): Promise<GraphQLSchema> {
     if (!schemaPromise) {
+        /* eslint-disable-next-line @typescript-eslint/no-misused-promises */
         schemaPromise = new Promise(async (resolve, reject) => {
             resetConfig();
             await setConfig(vendureConfig ?? {});

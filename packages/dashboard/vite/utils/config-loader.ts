@@ -5,10 +5,18 @@ import tsConfigPaths from 'tsconfig-paths';
 import * as ts from 'typescript';
 import { pathToFileURL } from 'url';
 
+import { findConfigExport, getPluginInfo } from './ast-utils.js';
+
 type Logger = {
     info: (message: string) => void;
     warn: (message: string) => void;
     debug: (message: string) => void;
+};
+
+export type PluginInfo = {
+    name: string;
+    pluginPath: string;
+    dashboardEntryPath: string | undefined;
 };
 
 const defaultLogger: Logger = {
@@ -30,6 +38,12 @@ export interface ConfigLoaderOptions {
     logger?: Logger;
 }
 
+export interface LoadVendureConfigResult {
+    vendureConfig: VendureConfig;
+    exportedSymbolName: string;
+    pluginInfo: PluginInfo[];
+}
+
 /**
  * @description
  * This function compiles the given Vendure config file and any imported relative files (i.e.
@@ -46,16 +60,14 @@ export interface ConfigLoaderOptions {
  * which fully supports these experimental decorators. The compiled files are then loaded by Vite, which is able
  * to handle the compiled JavaScript output.
  */
-export async function loadVendureConfig(
-    options: ConfigLoaderOptions,
-): Promise<{ vendureConfig: VendureConfig; exportedSymbolName: string }> {
+export async function loadVendureConfig(options: ConfigLoaderOptions): Promise<LoadVendureConfigResult> {
     const { vendureConfigPath, vendureConfigExport, tempDir } = options;
     const logger = options.logger || defaultLogger;
     const outputPath = tempDir;
     const configFileName = path.basename(vendureConfigPath);
     const inputRootDir = path.dirname(vendureConfigPath);
     await fs.remove(outputPath);
-    await compileFile(inputRootDir, vendureConfigPath, outputPath, logger);
+    const pluginInfo = await compileFile(inputRootDir, vendureConfigPath, outputPath, logger);
     const compiledConfigFilePath = pathToFileURL(path.join(outputPath, configFileName)).href.replace(
         /.ts$/,
         '.js',
@@ -94,39 +106,7 @@ export async function loadVendureConfig(
             `Could not find a variable exported as VendureConfig with the name "${configExportedSymbolName}".`,
         );
     }
-    return { vendureConfig: config, exportedSymbolName: configExportedSymbolName };
-}
-
-/**
- * Given the AST of a TypeScript file, finds the name of the variable exported as VendureConfig.
- */
-function findConfigExport(sourceFile: ts.SourceFile): string | undefined {
-    let exportedSymbolName: string | undefined;
-
-    function visit(node: ts.Node) {
-        if (
-            ts.isVariableStatement(node) &&
-            node.modifiers?.some(m => m.kind === ts.SyntaxKind.ExportKeyword)
-        ) {
-            node.declarationList.declarations.forEach(declaration => {
-                if (ts.isVariableDeclaration(declaration)) {
-                    const typeNode = declaration.type;
-                    if (typeNode && ts.isTypeReferenceNode(typeNode)) {
-                        const typeName = typeNode.typeName;
-                        if (ts.isIdentifier(typeName) && typeName.text === 'VendureConfig') {
-                            if (ts.isIdentifier(declaration.name)) {
-                                exportedSymbolName = declaration.name.text;
-                            }
-                        }
-                    }
-                }
-            });
-        }
-        ts.forEachChild(node, visit);
-    }
-
-    visit(sourceFile);
-    return exportedSymbolName;
+    return { vendureConfig: config, exportedSymbolName: configExportedSymbolName, pluginInfo };
 }
 
 /**
@@ -194,10 +174,11 @@ export async function compileFile(
     logger: Logger = defaultLogger,
     compiledFiles = new Set<string>(),
     isRoot = true,
-): Promise<void> {
+    pluginInfo: PluginInfo[] = [],
+): Promise<PluginInfo[]> {
     const absoluteInputPath = path.resolve(inputPath);
     if (compiledFiles.has(absoluteInputPath)) {
-        return;
+        return pluginInfo;
     }
     compiledFiles.add(absoluteInputPath);
 
@@ -333,13 +314,18 @@ export async function compileFile(
     // Start collecting imports from the source file
     await collectImports(sourceFile);
 
+    const extractedPluginInfo = getPluginInfo(sourceFile);
+    if (extractedPluginInfo) {
+        pluginInfo.push(extractedPluginInfo);
+    }
+
     // Store the tsConfigInfo on the first call if found
     const rootTsConfigInfo = isRoot ? tsConfigInfo : undefined;
 
     // Recursively collect all files that need to be compiled
     for (const importPath of importPaths) {
         // Pass rootTsConfigInfo down, but set isRoot to false
-        await compileFile(inputRootDir, importPath, outputDir, logger, compiledFiles, false);
+        await compileFile(inputRootDir, importPath, outputDir, logger, compiledFiles, false, pluginInfo);
     }
 
     // If this is the root file (the one that started the compilation),
@@ -381,38 +367,10 @@ export async function compileFile(
 
         // Create a Program to represent the compilation context
         const program = ts.createProgram(allFiles, compilerOptions);
-
-        // Perform the compilation and emit files
         logger.info(`Emitting compiled files to ${outputDir}`);
         const emitResult = program.emit();
 
-        // Report diagnostics (errors and warnings)
-        const allDiagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics);
-
-        let hasEmitErrors = emitResult.emitSkipped;
-        allDiagnostics.forEach(diagnostic => {
-            if (diagnostic.file && diagnostic.start) {
-                const { line, character } = ts.getLineAndCharacterOfPosition(
-                    diagnostic.file,
-                    diagnostic.start,
-                );
-                const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
-                const logFn = diagnostic.category === ts.DiagnosticCategory.Error ? logger.warn : logger.info;
-                logFn(
-                    `TS${diagnostic.code} ${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`,
-                );
-                if (diagnostic.category === ts.DiagnosticCategory.Error) {
-                    hasEmitErrors = true;
-                }
-            } else {
-                const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
-                const logFn = diagnostic.category === ts.DiagnosticCategory.Error ? logger.warn : logger.info;
-                logFn(`TS${diagnostic.code}: ${message}`);
-                if (diagnostic.category === ts.DiagnosticCategory.Error) {
-                    hasEmitErrors = true;
-                }
-            }
-        });
+        const hasEmitErrors = reportDiagnostics(program, emitResult, logger);
 
         if (hasEmitErrors) {
             throw new Error('TypeScript compilation failed with errors.');
@@ -420,4 +378,31 @@ export async function compileFile(
 
         logger.info(`Successfully compiled ${allFiles.length} files to ${outputDir}`);
     }
+    return pluginInfo;
+}
+
+function reportDiagnostics(program: ts.Program, emitResult: ts.EmitResult, logger: Logger) {
+    const allDiagnostics = ts.getPreEmitDiagnostics(program).concat(emitResult.diagnostics);
+    let hasEmitErrors = emitResult.emitSkipped;
+    allDiagnostics.forEach(diagnostic => {
+        if (diagnostic.file && diagnostic.start) {
+            const { line, character } = ts.getLineAndCharacterOfPosition(diagnostic.file, diagnostic.start);
+            const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
+            const logFn = diagnostic.category === ts.DiagnosticCategory.Error ? logger.warn : logger.info;
+            logFn(
+                `TS${diagnostic.code} ${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`,
+            );
+            if (diagnostic.category === ts.DiagnosticCategory.Error) {
+                hasEmitErrors = true;
+            }
+        } else {
+            const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
+            const logFn = diagnostic.category === ts.DiagnosticCategory.Error ? logger.warn : logger.info;
+            logFn(`TS${diagnostic.code}: ${message}`);
+            if (diagnostic.category === ts.DiagnosticCategory.Error) {
+                hasEmitErrors = true;
+            }
+        }
+    });
+    return hasEmitErrors;
 }
