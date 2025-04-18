@@ -11,7 +11,6 @@ import { ServiceModule } from '../../service/service.module';
 import { ApiSharedModule } from '../api-internal-modules';
 import { CustomFieldRelationResolverService } from '../common/custom-field-relation-resolver.service';
 import { IdCodecService } from '../common/id-codec.service';
-import { AssetInterceptorPlugin } from '../middleware/asset-interceptor-plugin';
 import { IdCodecPlugin } from '../middleware/id-codec-plugin';
 import { TranslateErrorsPlugin } from '../middleware/translate-errors-plugin';
 
@@ -82,7 +81,6 @@ async function createGraphQLOptions(
 
     const apolloServerPlugins = [
         new TranslateErrorsPlugin(i18nService),
-        new AssetInterceptorPlugin(configService),
         ...configService.apiOptions.apolloServerPlugins,
     ];
     // We only need to add the IdCodecPlugin if the user has configured
