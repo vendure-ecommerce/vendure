@@ -11,6 +11,7 @@ import {
     UpdateFacetInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { getActiveSpan } from '@vendure/telemetry';
 import { In } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -21,11 +22,12 @@ import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
+import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { FacetTranslation } from '../../entity/facet/facet-translation.entity';
 import { Facet } from '../../entity/facet/facet.entity';
-import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { EventBus } from '../../event-bus';
 import { FacetEvent } from '../../event-bus/events/facet-event';
+import { Span } from '../../instrumentation';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
@@ -57,6 +59,7 @@ export class FacetService {
         private roleService: RoleService,
     ) {}
 
+    @Span('FacetService.findAll')
     findAll(
         ctx: RequestContext,
         options?: ListQueryOptions<Facet>,
@@ -80,6 +83,7 @@ export class FacetService {
             });
     }
 
+    @Span('FacetService.findOne')
     findOne(
         ctx: RequestContext,
         facetId: ID,
@@ -105,6 +109,7 @@ export class FacetService {
         facetCode: string,
         lang: LanguageCode,
     ): Promise<Translated<Facet> | undefined>;
+    @Span('FacetService.findByCode')
     findByCode(
         ctxOrFacetCode: RequestContext | string,
         facetCodeOrLang: string | LanguageCode,
@@ -140,6 +145,7 @@ export class FacetService {
      * @description
      * Returns the Facet which contains the given FacetValue id.
      */
+    @Span('FacetService.findByFacetValueId')
     async findByFacetValueId(ctx: RequestContext, id: ID): Promise<Translated<Facet> | undefined> {
         const facet = await this.connection
             .getRepository(ctx, Facet)
@@ -153,6 +159,7 @@ export class FacetService {
         }
     }
 
+    @Span('FacetService.create')
     async create(ctx: RequestContext, input: CreateFacetInput): Promise<Translated<Facet>> {
         const facet = await this.translatableSaver.create({
             ctx,
@@ -174,6 +181,7 @@ export class FacetService {
         return assertFound(this.findOne(ctx, facet.id));
     }
 
+    @Span('FacetService.update')
     async update(ctx: RequestContext, input: UpdateFacetInput): Promise<Translated<Facet>> {
         const facet = await this.translatableSaver.update({
             ctx,
@@ -191,7 +199,11 @@ export class FacetService {
         return assertFound(this.findOne(ctx, facet.id));
     }
 
+    @Span('FacetService.delete')
     async delete(ctx: RequestContext, id: ID, force: boolean = false): Promise<DeletionResponse> {
+        const span = getActiveSpan();
+        span?.setAttribute('force', force.toString());
+
         const facet = await this.connection.getEntityOrThrow(ctx, Facet, id, {
             relations: ['values'],
             channelId: ctx.channelId,
@@ -218,14 +230,29 @@ export class FacetService {
             await this.connection.getRepository(ctx, Facet).remove(facet);
             await this.eventBus.publish(new FacetEvent(ctx, deletedFacet, 'deleted', id));
             result = DeletionResult.DELETED;
+            span?.addEvent('facet-deleted', {
+                facetCode: facet.code,
+                productCount,
+                variantCount,
+            });
         } else if (force) {
             await this.connection.getRepository(ctx, Facet).remove(facet);
             await this.eventBus.publish(new FacetEvent(ctx, deletedFacet, 'deleted', id));
             message = ctx.translate('message.facet-force-deleted', i18nVars);
             result = DeletionResult.DELETED;
+            span?.addEvent('facet-deleted', {
+                facetCode: facet.code,
+                productCount,
+                variantCount,
+            });
         } else {
             message = ctx.translate('message.facet-used', i18nVars);
             result = DeletionResult.NOT_DELETED;
+            span?.addEvent('facet-not-deleted', {
+                facetCode: facet.code,
+                productCount,
+                variantCount,
+            });
         }
 
         return {
@@ -266,6 +293,7 @@ export class FacetService {
      * @description
      * Assigns Facets to the specified Channel
      */
+    @Span('FacetService.assignFacetsToChannel')
     async assignFacetsToChannel(
         ctx: RequestContext,
         input: AssignFacetsToChannelInput,
@@ -293,6 +321,13 @@ export class FacetService {
                 this.channelService.assignToChannels(ctx, FacetValue, value.id, [input.channelId]),
             ),
         ]);
+
+        const span = getActiveSpan();
+
+        span?.addEvent('facets-assigned-to-channel', {
+            facetIds: facetsToAssign.map(f => f.id).join(','),
+            channelId: input.channelId,
+        });
 
         return this.connection
             .findByIdsInChannel(

@@ -34,7 +34,7 @@ export class CacheService {
      * The `Cache` instance provides a convenience wrapper around the `CacheService`
      * methods.
      */
-    @Span('vendure.cache.create-cache')
+    @Span('CacheService.createCache')
     createCache(config: CacheConfig): Cache {
         const span = getActiveSpan();
         span?.setAttribute('cache.config', JSON.stringify(config));
@@ -46,7 +46,7 @@ export class CacheService {
      * Gets an item from the cache, or returns undefined if the key is not found, or the
      * item has expired.
      */
-    @Span('vendure.cache.get')
+    @Span('CacheService.get')
     async get<T extends JsonCompatible<T>>(key: string): Promise<T | undefined> {
         const span = getActiveSpan();
         span?.setAttribute('cache.key', key);
@@ -71,7 +71,7 @@ export class CacheService {
      * Optionally a "time to live" (ttl) can be specified, which means that the key will
      * be considered stale after that many milliseconds.
      */
-    @Span('vendure.cache.set')
+    @Span('CacheService.set')
     async set<T extends JsonCompatible<T>>(
         key: string,
         value: T,
@@ -95,7 +95,7 @@ export class CacheService {
      * @description
      * Deletes an item from the cache.
      */
-    @Span('vendure.cache.delete')
+    @Span('CacheService.delete')
     async delete(key: string): Promise<void> {
         const span = getActiveSpan();
         span?.setAttribute('cache.key', key);
@@ -115,7 +115,7 @@ export class CacheService {
      * @description
      * Deletes all items from the cache which contain at least one matching tag.
      */
-    @Span('vendure.cache.invalidate-tags')
+    @Span('CacheService.invalidateTags')
     async invalidateTags(tags: string[]): Promise<void> {
         const span = getActiveSpan();
         span?.setAttribute('cache.tags', tags.join(', '));

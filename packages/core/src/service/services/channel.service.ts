@@ -11,6 +11,7 @@ import {
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
+import { getActiveSpan } from '@vendure/telemetry';
 import { FindOptionsWhere } from 'typeorm';
 
 import { RelationPaths } from '../../api';
@@ -270,12 +271,16 @@ export class ChannelService {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             ctxOrToken instanceof RequestContext ? [ctxOrToken, token!] : [undefined, ctxOrToken];
 
+        const span = getActiveSpan();
         const allChannels = await this.allChannels.value(ctx);
 
         if (allChannels.length === 1 || channelToken === '') {
             // there is only the default channel, so return it
+            span?.setAttribute('channel.token', 'default');
             return this.getDefaultChannel(ctx);
         }
+
+        span?.setAttribute('channel.token', channelToken);
         const channel = allChannels.find(c => c.token === channelToken);
         if (!channel) {
             throw new ChannelNotFoundError(channelToken);
