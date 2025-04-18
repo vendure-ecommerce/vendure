@@ -50,6 +50,7 @@
         "@nestjs/terminus": "~11.0.0",
         "@nestjs/typeorm": "~11.0.0",
         "@vendure/common": "3.2.2",
+        "@vendure/telemetry": "3.2.2",
         "bcrypt": "^5.1.1",
         "body-parser": "^1.20.2",
         "cookie-session": "^2.1.0",

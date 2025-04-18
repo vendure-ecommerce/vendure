@@ -1,8 +1,8 @@
 import { trace } from '@opentelemetry/api';
 import { createSpanDecorator } from '@vendure/telemetry';
 
-import pkg from '../package.json';
+import { VENDURE_VERSION } from './version';
 
-export const tracer = trace.getTracer(pkg.name, pkg.version);
+export const tracer = trace.getTracer('@vendure/core', VENDURE_VERSION);
 
 export const Span = createSpanDecorator(tracer);

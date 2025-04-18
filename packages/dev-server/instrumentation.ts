@@ -6,8 +6,8 @@ const traceExporter = new OTLPTraceExporter({
     url: 'http://localhost:4318/v1/traces',
 });
 
-const config = getSdkConfiguration(true, true);
+const config = getSdkConfiguration(true);
 
 const sdk = new NodeSDK(config);
 
-sdk.start();
+//sdk.start();
