@@ -101,6 +101,23 @@ services:
             - ALLOW_EMPTY_PASSWORD=yes
         ports:
             - '6379:6379'
+
+    zipkin:
+        image: openzipkin/zipkin:latest
+        container_name: zipkin
+        # Environment settings are defined here https://github.com/openzipkin/zipkin/blob/master/zipkin-server/README.md#environment-variables
+        environment:
+            - STORAGE_TYPE=mem
+        # Uncomment to enable self-tracing
+        # - SELF_TRACING_ENABLED=true
+        # Uncomment to increase heap size
+        # - JAVA_OPTS=-Xms128m -Xmx128m -XX:+ExitOnOutOfMemoryError
+        ports:
+            # Port used for the Zipkin UI and HTTP Api
+            - 9411:9411
+        # Uncomment to enable debug logging
+        # command: --logging.level.zipkin2=DEBUG
+
 volumes:
     postgres_16_data:
         driver: local

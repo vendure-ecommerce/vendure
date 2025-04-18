@@ -1,15 +1,12 @@
-import { JobState } from '@vendure/common/lib/generated-types';
-import { Span, TraceService } from 'nestjs-otel';
-import { Subject, Subscription } from 'rxjs';
-import { throttleTime } from 'rxjs/operators';
+import { getActiveSpan } from '@vendure/telemetry';
 
 import { JobQueueStrategy } from '../config';
-import { Logger } from '../config/logger/vendure-logger';
+import { Span } from '../instrumentation';
 
 import { Job } from './job';
 import { JobBufferService } from './job-buffer/job-buffer.service';
 import { SubscribableJob } from './subscribable-job';
-import { CreateQueueOptions, JobConfig, JobData, JobOptions } from './types';
+import { CreateQueueOptions, JobData, JobOptions } from './types';
 
 /**
  * @description
@@ -38,7 +35,6 @@ export class JobQueue<Data extends JobData<Data> = object> {
         private options: CreateQueueOptions<Data>,
         private jobQueueStrategy: JobQueueStrategy,
         private jobBufferService: JobBufferService,
-        private traceService: TraceService,
     ) {}
 
     /** @internal */
@@ -99,7 +95,7 @@ export class JobQueue<Data extends JobData<Data> = object> {
             queueName: this.options.name,
             retries: options?.retries ?? 0,
         });
-        const span = this.traceService.getSpan();
+        const span = getActiveSpan();
         span?.setAttribute('job.data', JSON.stringify(data));
         span?.setAttribute('job.retries', options?.retries ?? 0);
         span?.setAttribute('job.queueName', this.options.name);

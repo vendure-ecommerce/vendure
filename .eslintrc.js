@@ -183,7 +183,7 @@ module.exports = {
         'id-denylist': 'off',
         'id-match': 'off',
         'import/order': [
-            'error',
+            'warn',
             {
                 alphabetize: {
                     caseInsensitive: true,

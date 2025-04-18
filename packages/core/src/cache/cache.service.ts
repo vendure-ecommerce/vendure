@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { JsonCompatible } from '@vendure/common/lib/shared-types';
-import { Span, TraceService } from 'nestjs-otel';
+import { getActiveSpan } from '@vendure/telemetry';
 
 import { ConfigService } from '../config/config.service';
 import { Logger } from '../config/index';
 import { CacheStrategy, SetCacheKeyOptions } from '../config/system/cache-strategy';
+import { Span } from '../instrumentation';
 
 import { Cache, CacheConfig } from './cache';
 
@@ -21,10 +22,8 @@ import { Cache, CacheConfig } from './cache';
 @Injectable()
 export class CacheService {
     protected cacheStrategy: CacheStrategy;
-    constructor(
-        private configService: ConfigService,
-        private traceService: TraceService,
-    ) {
+
+    constructor(private configService: ConfigService) {
         this.cacheStrategy = this.configService.systemOptions.cacheStrategy;
     }
 
@@ -37,7 +36,7 @@ export class CacheService {
      */
     @Span('vendure.cache.create-cache')
     createCache(config: CacheConfig): Cache {
-        const span = this.traceService.getSpan();
+        const span = getActiveSpan();
         span?.setAttribute('cache.config', JSON.stringify(config));
         return new Cache(config, this);
     }
@@ -49,7 +48,7 @@ export class CacheService {
      */
     @Span('vendure.cache.get')
     async get<T extends JsonCompatible<T>>(key: string): Promise<T | undefined> {
-        const span = this.traceService.getSpan();
+        const span = getActiveSpan();
         span?.setAttribute('cache.key', key);
         try {
             const result = await this.cacheStrategy.get(key);
@@ -78,7 +77,7 @@ export class CacheService {
         value: T,
         options?: SetCacheKeyOptions,
     ): Promise<void> {
-        const span = this.traceService.getSpan();
+        const span = getActiveSpan();
         span?.setAttribute('cache.key', key);
         try {
             await this.cacheStrategy.set(key, value, options);
@@ -98,7 +97,7 @@ export class CacheService {
      */
     @Span('vendure.cache.delete')
     async delete(key: string): Promise<void> {
-        const span = this.traceService.getSpan();
+        const span = getActiveSpan();
         span?.setAttribute('cache.key', key);
         try {
             await this.cacheStrategy.delete(key);
@@ -118,7 +117,7 @@ export class CacheService {
      */
     @Span('vendure.cache.invalidate-tags')
     async invalidateTags(tags: string[]): Promise<void> {
-        const span = this.traceService.getSpan();
+        const span = getActiveSpan();
         span?.setAttribute('cache.tags', tags.join(', '));
         try {
             await this.cacheStrategy.invalidateTags(tags);

@@ -16,12 +16,6 @@
     },
     "dependencies": {
         "@nestjs/axios": "^4.0.0",
-        "@opentelemetry/instrumentation-express": "^0.48.0",
-        "@opentelemetry/instrumentation-graphql": "^0.48.0",
-        "@opentelemetry/instrumentation-http": "^0.200.0",
-        "@opentelemetry/instrumentation-ioredis": "^0.48.0",
-        "@opentelemetry/instrumentation-nestjs-core": "^0.46.0",
-        "@opentelemetry/instrumentation-pg": "^0.52.0",
         "@vendure/admin-ui-plugin": "3.2.2",
         "@vendure/asset-server-plugin": "3.2.2",
         "@vendure/common": "3.2.2",

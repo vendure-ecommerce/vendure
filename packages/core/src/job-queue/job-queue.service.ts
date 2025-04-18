@@ -1,8 +1,9 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { JobQueue as GraphQlJobQueue } from '@vendure/common/lib/generated-types';
-import { Span, TraceService } from 'nestjs-otel';
+import { getActiveSpan } from '@vendure/telemetry';
 
 import { ConfigService, JobQueueStrategy, Logger } from '../config';
+import { Span } from '../instrumentation';
 
 import { loggerCtx } from './constants';
 import { Job } from './job';
@@ -58,7 +59,6 @@ export class JobQueueService implements OnModuleDestroy {
     constructor(
         private configService: ConfigService,
         private jobBufferService: JobBufferService,
-        private traceService: TraceService,
     ) {}
 
     /** @internal */
@@ -81,10 +81,10 @@ export class JobQueueService implements OnModuleDestroy {
         const wrappedProcessFn = this.createWrappedProcessFn(options.process);
         options = { ...options, process: wrappedProcessFn };
 
-        const span = this.traceService.getSpan();
+        const span = getActiveSpan();
         span?.setAttribute('job-queue.name', options.name);
 
-        const queue = new JobQueue(options, this.jobQueueStrategy, this.jobBufferService, this.traceService);
+        const queue = new JobQueue(options, this.jobQueueStrategy, this.jobBufferService);
         if (this.hasStarted && this.shouldStartQueue(queue.name)) {
             await queue.start();
         }
@@ -102,7 +102,7 @@ export class JobQueueService implements OnModuleDestroy {
             if (!queue.started && this.shouldStartQueue(queue.name)) {
                 Logger.info(`Starting queue: ${queue.name}`, loggerCtx);
                 await queue.start();
-                const span = this.traceService.getSpan();
+                const span = getActiveSpan();
                 span?.setAttribute('job-queue.name', queue.name);
             }
         }

@@ -1,7 +1,9 @@
 import { DynamicModule, Injectable, Type } from '@nestjs/common';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { Span, TraceService } from 'nestjs-otel';
+import { getActiveSpan } from '@vendure/telemetry';
 import { DataSourceOptions, getMetadataArgsStorage } from 'typeorm';
+
+import { Span } from '../instrumentation';
 
 import { getConfig } from './config-helpers';
 import { CustomFields } from './custom-field/custom-field-types';
@@ -30,7 +32,7 @@ export class ConfigService implements VendureConfig {
     private activeConfig: RuntimeVendureConfig;
     private allCustomFieldsConfig: Required<CustomFields> | undefined;
 
-    constructor(private readonly traceService: TraceService) {
+    constructor() {
         this.activeConfig = getConfig();
         if (this.activeConfig.authOptions.disableAuth) {
             // eslint-disable-next-line
@@ -125,7 +127,7 @@ export class ConfigService implements VendureConfig {
     private getCustomFieldsForAllEntities(): Required<CustomFields> {
         const definedCustomFields = this.activeConfig.customFields;
         const metadataArgsStorage = getMetadataArgsStorage();
-        const span = this.traceService.getSpan();
+        const span = getActiveSpan();
         span?.setAttribute('customFields', JSON.stringify(definedCustomFields));
         // We need to check for any entities which have a "customFields" property but which are not
         // explicitly defined in the customFields config. This is because the customFields object

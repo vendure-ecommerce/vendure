@@ -63,7 +63,6 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
-
     customFields: {
         Product: [
             {

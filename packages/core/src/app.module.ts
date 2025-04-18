@@ -1,6 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule, OnApplicationShutdown } from '@nestjs/common';
+import { getActiveSpan } from '@vendure/telemetry';
 import cookieSession from 'cookie-session';
-import { OpenTelemetryModule, Span, TraceService } from 'nestjs-otel';
 
 import { ApiModule } from './api/api.module';
 import { Middleware, MiddlewareHandler } from './common';
@@ -11,6 +11,7 @@ import { ConnectionModule } from './connection/connection.module';
 import { HealthCheckModule } from './health-check/health-check.module';
 import { I18nModule } from './i18n/i18n.module';
 import { I18nService } from './i18n/i18n.service';
+import { Span } from './instrumentation';
 import { PluginModule } from './plugin/plugin.module';
 import { ProcessContextModule } from './process-context/process-context.module';
 import { ServiceModule } from './service/service.module';
@@ -25,26 +26,17 @@ import { ServiceModule } from './service/service.module';
         HealthCheckModule,
         ServiceModule,
         ConnectionModule,
-        OpenTelemetryModule.forRoot({
-            metrics: {
-                hostMetrics: true, // Includes Host Metrics
-                apiMetrics: {
-                    enable: true, // Includes api metrics
-                },
-            },
-        }),
     ],
 })
 export class AppModule implements NestModule, OnApplicationShutdown {
     constructor(
         private configService: ConfigService,
         private i18nService: I18nService,
-        private traceService: TraceService,
     ) {}
 
     @Span('vendure.app-module.configure')
     configure(consumer: MiddlewareConsumer) {
-        const currentSpan = this.traceService.getSpan();
+        const currentSpan = getActiveSpan();
         const { adminApiPath, shopApiPath, middleware } = this.configService.apiOptions;
         const { cookieOptions } = this.configService.authOptions;
 

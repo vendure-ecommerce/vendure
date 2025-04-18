@@ -1,11 +1,12 @@
 import { JsonCompatible } from '@vendure/common/lib/shared-types';
-import { Span, TraceService } from 'nestjs-otel';
+import { getActiveSpan } from '@vendure/telemetry';
 
 import { CacheTtlProvider, DefaultCacheTtlProvider } from '../../cache/cache-ttl-provider';
 import { Injector } from '../../common/injector';
 import { ConfigService, Logger } from '../../config/index';
 import { CacheStrategy, SetCacheKeyOptions } from '../../config/system/cache-strategy';
 import { TransactionalConnection } from '../../connection/index';
+import { Span } from '../../instrumentation';
 
 import { CacheItem } from './cache-item.entity';
 import { CacheTag } from './cache-tag.entity';
@@ -21,7 +22,6 @@ import { CacheTag } from './cache-tag.entity';
 export class SqlCacheStrategy implements CacheStrategy {
     protected cacheSize = 10_000;
     protected ttlProvider: CacheTtlProvider;
-    protected traceService: TraceService;
 
     constructor(config?: { cacheSize?: number; cacheTtlProvider?: CacheTtlProvider }) {
         if (config?.cacheSize) {
@@ -36,12 +36,11 @@ export class SqlCacheStrategy implements CacheStrategy {
     init(injector: Injector) {
         this.connection = injector.get(TransactionalConnection);
         this.configService = injector.get(ConfigService);
-        this.traceService = injector.get(TraceService);
     }
 
     @Span('vendure.sql-cache-strategy.get')
     async get<T extends JsonCompatible<T>>(key: string): Promise<T | undefined> {
-        const span = this.traceService.getSpan();
+        const span = getActiveSpan();
         span?.setAttribute('cache.key', key);
 
         const hit = await this.connection.rawConnection.getRepository(CacheItem).findOne({
@@ -73,7 +72,10 @@ export class SqlCacheStrategy implements CacheStrategy {
         span?.end();
     }
 
+    @Span('vendure.sql-cache-strategy.set')
     async set<T extends JsonCompatible<T>>(key: string, value: T, options?: SetCacheKeyOptions) {
+        const span = getActiveSpan();
+        span?.setAttribute('cache.key', key);
         const cacheSize = await this.connection.rawConnection.getRepository(CacheItem).count();
         if (cacheSize >= this.cacheSize) {
             // evict oldest
@@ -128,13 +130,21 @@ export class SqlCacheStrategy implements CacheStrategy {
         }
     }
 
+    @Span('vendure.sql-cache-strategy.delete')
     async delete(key: string) {
+        const span = getActiveSpan();
+        span?.setAttribute('cache.key', key);
+
         await this.connection.rawConnection.getRepository(CacheItem).delete({
             key,
         });
     }
 
+    @Span('vendure.sql-cache-strategy.invalidate-tags')
     async invalidateTags(tags: string[]) {
+        const span = getActiveSpan();
+        span?.setAttribute('cache.tags', tags.join(', '));
+
         await this.connection.withTransaction(async ctx => {
             const itemIds = await this.connection
                 .getRepository(ctx, CacheTag)

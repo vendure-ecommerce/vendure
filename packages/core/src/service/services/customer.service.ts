@@ -11,7 +11,6 @@ import {
     CreateCustomerInput,
     CreateCustomerResult,
     CustomerFilterParameter,
-    CustomerListOptions,
     DeletionResponse,
     DeletionResult,
     HistoryEntryType,
@@ -46,8 +45,8 @@ import { TransactionalConnection } from '../../connection/transactional-connecti
 import { Address } from '../../entity/address/address.entity';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
 import { Channel } from '../../entity/channel/channel.entity';
-import { Customer } from '../../entity/customer/customer.entity';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
+import { Customer } from '../../entity/customer/customer.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
 import { Order } from '../../entity/order/order.entity';
 import { User } from '../../entity/user/user.entity';
@@ -60,6 +59,7 @@ import { IdentifierChangeEvent } from '../../event-bus/events/identifier-change-
 import { IdentifierChangeRequestEvent } from '../../event-bus/events/identifier-change-request-event';
 import { PasswordResetEvent } from '../../event-bus/events/password-reset-event';
 import { PasswordResetVerifiedEvent } from '../../event-bus/events/password-reset-verified-event';
+import { Span } from '../../instrumentation';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatorService } from '../helpers/translator/translator.service';
@@ -92,6 +92,7 @@ export class CustomerService {
         private translator: TranslatorService,
     ) {}
 
+    @Span('CustomerService.findAll')
     findAll(
         ctx: RequestContext,
         options: ListQueryOptions<Customer> | undefined,
@@ -118,6 +119,7 @@ export class CustomerService {
             .then(([items, totalItems]) => ({ items, totalItems }));
     }
 
+    @Span('CustomerService.findOne')
     findOne(
         ctx: RequestContext,
         id: ID,
