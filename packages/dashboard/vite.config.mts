@@ -28,7 +28,7 @@ export default ({ mode }: { mode: string }) => {
         },
         plugins: [
             vendureDashboardPlugin({
-                vendureConfigPath: pathToFileURL('./sample-vendure-config.ts'),
+                vendureConfigPath: pathToFileURL('../dev-server/dev-config.ts'),
                 adminUiConfig: { apiHost: adminApiHost, apiPort: adminApiPort },
                 // gqlTadaOutputPath: path.resolve(__dirname, './graphql/'),
                 tempCompilationDir: path.resolve(__dirname, './.temp'),
