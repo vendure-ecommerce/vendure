@@ -102,21 +102,16 @@ services:
         ports:
             - '6379:6379'
 
-    zipkin:
-        image: openzipkin/zipkin:latest
-        container_name: zipkin
-        # Environment settings are defined here https://github.com/openzipkin/zipkin/blob/master/zipkin-server/README.md#environment-variables
-        environment:
-            - STORAGE_TYPE=mem
-        # Uncomment to enable self-tracing
-        # - SELF_TRACING_ENABLED=true
-        # Uncomment to increase heap size
-        # - JAVA_OPTS=-Xms128m -Xmx128m -XX:+ExitOnOutOfMemoryError
+    jaeger:
+        image: jaegertracing/all-in-one:latest
+        container_name: jaeger
         ports:
-            # Port used for the Zipkin UI and HTTP Api
-            - 9411:9411
-        # Uncomment to enable debug logging
-        # command: --logging.level.zipkin2=DEBUG
+            - '4318:4318' # OTLP HTTP receiver
+            - '16686:16686' # Web UI
+        environment:
+            - COLLECTOR_OTLP_ENABLED=true
+        volumes:
+            - jaeger_data:/badger
 
 volumes:
     postgres_16_data:
@@ -130,4 +125,6 @@ volumes:
     keycloak_data:
         driver: local
     esdata:
+        driver: local
+    jaeger_data:
         driver: local
