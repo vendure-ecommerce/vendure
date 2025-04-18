@@ -63,7 +63,6 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
-
     customFields: {
         Product: [
             {
@@ -108,8 +107,9 @@ export const devConfig: VendureConfig = {
         }),
         DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: false }),
         // Enable if you need to debug the job queue
-        // BullMQJobQueuePlugin.init({}),
-        DefaultJobQueuePlugin.init({}),
+
+        BullMQJobQueuePlugin.init({}),
+        //DefaultJobQueuePlugin.init({}),
         // JobQueueTestPlugin.init({ queueCount: 10 }),
         // ElasticsearchPlugin.init({
         //     host: 'http://localhost',

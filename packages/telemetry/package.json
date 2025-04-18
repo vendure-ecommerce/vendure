@@ -1,0 +1,37 @@
+{
+    "name": "@vendure/telemetry",
+    "version": "3.2.2",
+    "description": "Telemetry for Vendure",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/vendure-ecommerce/vendure/"
+    },
+    "homepage": "https://www.vendure.io",
+    "funding": "https://github.com/sponsors/michaelbromley",
+    "private": false,
+    "license": "GPL-3.0-or-later",
+    "type": "commonjs",
+    "scripts": {
+        "build": "rimraf dist && tsc -p ./tsconfig.build.json",
+        "watch": "tsc -p ./tsconfig.build.json --watch"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist/**/*"
+    ],
+    "dependencies": {
+        "@opentelemetry/auto-instrumentations-node": "^0.58.0",
+        "@opentelemetry/api": "^1.9.0",
+        "@opentelemetry/resources": "^2.0.0",
+        "@opentelemetry/sdk-node": "^0.200.0",
+        "@opentelemetry/context-async-hooks": "^2.0.0",
+        "@vendure/common": "3.2.2"
+    },
+    "devDependencies": {
+        "typescript": "5.8.2"
+    }
+}

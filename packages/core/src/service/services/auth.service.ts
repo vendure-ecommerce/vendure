@@ -6,14 +6,14 @@ import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
 import { InvalidCredentialsError } from '../../common/error/generated-graphql-admin-errors';
 import {
-    InvalidCredentialsError as ShopInvalidCredentialsError,
     NotVerifiedError,
+    InvalidCredentialsError as ShopInvalidCredentialsError,
 } from '../../common/error/generated-graphql-shop-errors';
 import { AuthenticationStrategy } from '../../config/auth/authentication-strategy';
 import {
+    NATIVE_AUTH_STRATEGY_NAME,
     NativeAuthenticationData,
     NativeAuthenticationStrategy,
-    NATIVE_AUTH_STRATEGY_NAME,
 } from '../../config/auth/native-authentication-strategy';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -24,6 +24,7 @@ import { EventBus } from '../../event-bus/event-bus';
 import { AttemptedLoginEvent } from '../../event-bus/events/attempted-login-event';
 import { LoginEvent } from '../../event-bus/events/login-event';
 import { LogoutEvent } from '../../event-bus/events/logout-event';
+import { Span } from '../../instrumentation';
 
 import { SessionService } from './session.service';
 
@@ -46,6 +47,7 @@ export class AuthService {
      * @description
      * Authenticates a user's credentials and if okay, creates a new {@link AuthenticatedSession}.
      */
+    @Span('AuthService.authenticate')
     async authenticate(
         ctx: RequestContext,
         apiType: ApiType,
@@ -72,6 +74,7 @@ export class AuthService {
         return this.createAuthenticatedSessionForUser(ctx, authenticateResult, authenticationStrategy.name);
     }
 
+    @Span('AuthService.createAuthenticatedSessionForUser')
     async createAuthenticatedSessionForUser(
         ctx: RequestContext,
         user: User,
@@ -113,6 +116,7 @@ export class AuthService {
      * Verify the provided password against the one we have for the given user. Requires
      * the {@link NativeAuthenticationStrategy} to be configured.
      */
+    @Span('AuthService.verifyUserPassword')
     async verifyUserPassword(
         ctx: RequestContext,
         userId: ID,
@@ -133,6 +137,7 @@ export class AuthService {
      * @description
      * Deletes all sessions for the user associated with the given session token.
      */
+    @Span('AuthService.destroyAuthenticatedSession')
     async destroyAuthenticatedSession(ctx: RequestContext, sessionToken: string): Promise<void> {
         const session = await this.connection.getRepository(ctx, AuthenticatedSession).findOne({
             where: { token: sessionToken },
@@ -157,6 +162,7 @@ export class AuthService {
         method: typeof NATIVE_AUTH_STRATEGY_NAME,
     ): NativeAuthenticationStrategy;
     private getAuthenticationStrategy(apiType: ApiType, method: string): AuthenticationStrategy;
+    @Span('AuthService.getAuthenticationStrategy')
     private getAuthenticationStrategy(apiType: ApiType, method: string): AuthenticationStrategy {
         const { authOptions } = this.configService;
         const strategies =

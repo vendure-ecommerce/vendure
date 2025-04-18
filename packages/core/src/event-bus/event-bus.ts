@@ -1,6 +1,7 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Type } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { getActiveSpan } from '@vendure/telemetry';
 import { Observable, Subject } from 'rxjs';
 import { filter, mergeMap, takeUntil } from 'rxjs/operators';
 import { EntityManager } from 'typeorm';
@@ -9,6 +10,7 @@ import { RequestContext } from '../api/common/request-context';
 import { TRANSACTION_MANAGER_KEY } from '../common/constants';
 import { Logger } from '../config/logger/vendure-logger';
 import { TransactionSubscriber, TransactionSubscriberError } from '../connection/transaction-subscriber';
+import { Span } from '../instrumentation';
 
 import { VendureEvent } from './vendure-event';
 
@@ -111,9 +113,14 @@ export class EventBus implements OnModuleDestroy {
      * await eventBus.publish(new SomeEvent());
      * ```
      */
+    @Span('vendure.event-bus publish')
     async publish<T extends VendureEvent>(event: T): Promise<void> {
+        const span = getActiveSpan();
+        span?.setAttribute('event', event.constructor.name);
+        span?.setAttribute('event-timestamp', event.createdAt.toISOString());
         this.eventStream.next(event);
         await this.executeBlockingEventHandlers(event);
+        span?.end();
     }
 
     /**

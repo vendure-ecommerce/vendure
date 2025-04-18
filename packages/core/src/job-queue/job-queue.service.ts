@@ -1,7 +1,9 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { JobQueue as GraphQlJobQueue } from '@vendure/common/lib/generated-types';
+import { getActiveSpan } from '@vendure/telemetry';
 
 import { ConfigService, JobQueueStrategy, Logger } from '../config';
+import { Span } from '../instrumentation';
 
 import { loggerCtx } from './constants';
 import { Job } from './job';
@@ -54,7 +56,10 @@ export class JobQueueService implements OnModuleDestroy {
         return this.configService.jobQueueOptions.jobQueueStrategy;
     }
 
-    constructor(private configService: ConfigService, private jobBufferService: JobBufferService) {}
+    constructor(
+        private configService: ConfigService,
+        private jobBufferService: JobBufferService,
+    ) {}
 
     /** @internal */
     onModuleDestroy() {
@@ -66,6 +71,7 @@ export class JobQueueService implements OnModuleDestroy {
      * @description
      * Configures and creates a new {@link JobQueue} instance.
      */
+    @Span('vendure.job-queue.create-queue')
     async createQueue<Data extends JobData<Data>>(
         options: CreateQueueOptions<Data>,
     ): Promise<JobQueue<Data>> {
@@ -74,20 +80,30 @@ export class JobQueueService implements OnModuleDestroy {
         }
         const wrappedProcessFn = this.createWrappedProcessFn(options.process);
         options = { ...options, process: wrappedProcessFn };
+
+        const span = getActiveSpan();
+        span?.setAttribute('job-queue.name', options.name);
+
         const queue = new JobQueue(options, this.jobQueueStrategy, this.jobBufferService);
         if (this.hasStarted && this.shouldStartQueue(queue.name)) {
             await queue.start();
         }
         this.queues.push(queue);
+
+        span?.end();
+
         return queue;
     }
 
+    @Span('vendure.job-queue.start')
     async start(): Promise<void> {
         this.hasStarted = true;
         for (const queue of this.queues) {
             if (!queue.started && this.shouldStartQueue(queue.name)) {
                 Logger.info(`Starting queue: ${queue.name}`, loggerCtx);
                 await queue.start();
+                const span = getActiveSpan();
+                span?.setAttribute('job-queue.name', queue.name);
             }
         }
     }
