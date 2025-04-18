@@ -7,6 +7,7 @@ import ms from 'ms';
 
 import { ApiType, getApiType } from '../../../api/common/get-api-type';
 import { RequestContext } from '../../../api/common/request-context';
+import { WebSocketRequest } from '../../../api/common/websocket-type';
 import { UserInputError } from '../../../common/error/errors';
 import { idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
@@ -121,15 +122,29 @@ export class RequestContextService {
         });
     }
 
-    private getChannelToken(req: Request<any, any, any, { [key: string]: any }>): string {
+    private getChannelToken(req: Request | WebSocketRequest): string {
         const tokenKey = this.configService.apiOptions.channelTokenKey;
         let channelToken = '';
 
-        if (req && req.query && req.query[tokenKey]) {
-            channelToken = req.query[tokenKey];
-        } else if (req && req.headers && req.headers[tokenKey]) {
-            channelToken = req.headers[tokenKey] as string;
+        // Check if it's an Express Request (has 'query' property)
+        if ('query' in req) {
+            if (req.query && req.query[tokenKey]) {
+                channelToken = req.query[tokenKey] as string;
+            } else if (req.get) {
+                // Use req.get() for headers in Express requests
+                const headerToken = req.get(tokenKey);
+                if (headerToken) {
+                    channelToken = headerToken;
+                }
+            }
         }
+        // Check if it's a WebSocketRequest (has 'connectionParams' property)
+        else if ('connectionParams' in req) {
+            if (req.connectionParams && req.connectionParams[tokenKey]) {
+                channelToken = req.connectionParams[tokenKey] as string;
+            }
+        }
+
         return channelToken;
     }
 
