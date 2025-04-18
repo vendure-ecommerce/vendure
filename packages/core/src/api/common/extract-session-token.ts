@@ -2,12 +2,7 @@ import { Request } from 'express';
 
 import { AuthOptions } from '../../config/vendure-config';
 
-interface WebSocketConnectionContext {
-    connectionParams: {
-        Authorization: string;
-        [key: string]: any;
-    };
-}
+import { WebSocketRequest } from './websocket-type';
 
 /**
  * Get the session token from either the cookie or the Authorization header, depending
@@ -39,15 +34,15 @@ function getFromCookie(req: Request): string | undefined {
     }
 }
 
-function getFromHeader(req: Request | WebSocketConnectionContext): string | undefined {
+function getFromHeader(req: Request | WebSocketRequest): string | undefined {
     let authHeader: string | undefined;
     // Check if running in an HTTP context with Express Request object
     if (req && typeof (req as Request).get === 'function') {
         authHeader = (req as Request).get('Authorization');
     }
     // Otherwise, assume a WebSocket context and check connectionParams
-    if ((req as WebSocketConnectionContext).connectionParams?.Authorization) {
-        authHeader = (req as WebSocketConnectionContext).connectionParams.Authorization;
+    if ((req as WebSocketRequest).connectionParams?.Authorization) {
+        authHeader = (req as WebSocketRequest).connectionParams.Authorization;
     }
     if (authHeader) {
         const matches = authHeader.trim().match(/^bearer\s(.+)$/i);
