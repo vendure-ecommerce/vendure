@@ -50,6 +50,30 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
+## activePaymentMethods
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Get active payment methods</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span> &#123;</div>
+<div class="graphql-code-line ">activePaymentMethods: [<a href="/reference/graphql-api/shop/object-types#publicpaymentmethod">PublicPaymentMethod</a>]!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
+## activeShippingMethods
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level comment">Get active shipping methods</div>
+<div class="graphql-code-line top-level comment">"""</div>
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Query</span> &#123;</div>
+<div class="graphql-code-line ">activeShippingMethods: [<a href="/reference/graphql-api/shop/object-types#publicshippingmethod">PublicShippingMethod</a>]!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
 ## availableCountries
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level comment">"""</div>

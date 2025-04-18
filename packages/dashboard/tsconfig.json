@@ -12,7 +12,7 @@
       {
         "name": "gql.tada/ts-plugin",
         "schema": "http://localhost:3000/admin-api",
-        "tadaOutputLocation": "./src/graphql/graphql-env.d.ts"
+        "tadaOutputLocation": "./src/lib/graphql/graphql-env.d.ts"
       }
     ]
   },

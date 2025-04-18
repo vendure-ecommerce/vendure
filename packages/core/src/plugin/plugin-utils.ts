@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
-import { Logger } from '../config';
+import { Logger, RuntimeVendureConfig, VendureConfig } from '../config';
 
 /**
  * @description
@@ -43,22 +43,24 @@ export function createProxyHandler(options: ProxyOptions): RequestHandler {
         pathRewrite: {
             [`^${route}`]: '/' + (options.basePath || ''),
         },
-        logger: {
-            log(message: string) {
-                Logger.debug(message, options.label);
-            },
-            debug(message: string) {
-                Logger.debug(message, options.label);
-            },
-            info(message: string) {
-                Logger.debug(message, options.label);
-            },
-            warn(message: string) {
-                Logger.warn(message, options.label);
-            },
-            error(message: string) {
-                Logger.error(message, options.label);
-            },
+        logProvider(provider) {
+            return {
+                log(message: string) {
+                    Logger.debug(message, options.label);
+                },
+                debug(message: string) {
+                    Logger.debug(message, options.label);
+                },
+                info(message: string) {
+                    Logger.debug(message, options.label);
+                },
+                warn(message: string) {
+                    Logger.warn(message, options.label);
+                },
+                error(message: string) {
+                    Logger.error(message, options.label);
+                },
+            };
         },
     });
     return middleware;
