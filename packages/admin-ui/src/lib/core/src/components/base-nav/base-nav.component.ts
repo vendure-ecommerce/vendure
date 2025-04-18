@@ -316,6 +316,12 @@ export class BaseNavComponent implements OnInit, OnDestroy {
                             })),
                         ),
                     },
+                    {
+                        id: 'scheduled-tasks',
+                        label: _('nav.scheduled-tasks'),
+                        routerLink: ['/system', 'scheduled-tasks'],
+                        icon: 'clock',
+                    },
                 ],
             },
         ]);

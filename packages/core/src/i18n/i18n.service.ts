@@ -75,9 +75,7 @@ export class I18nService implements OnModuleInit {
      * @internal
      */
     handle(): Handler {
-        // Explicit cast due to type mismatch between express v5 (Vendure core)
-        // and express v4 (several transitive dependencies)
-        return i18nextMiddleware.handle(i18next) as unknown as Handler;
+        return i18nextMiddleware.handle(i18next);
     }
 
     /**
