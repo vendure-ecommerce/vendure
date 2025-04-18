@@ -357,10 +357,16 @@ export async function compileFile(
             skipLibCheck: true, // Faster compilation
             forceConsistentCasingInFileNames: true,
             moduleResolution: ts.ModuleResolutionKind.NodeJs, // Use Node.js module resolution
+            incremental: false, // No need for incremental compilation
+            noEmitOnError: false, // Continue emitting even with errors
+            isolatedModules: true, // Treat files as separate modules
+            strict: false, // Disable strict type checking for speed
+            noUnusedLocals: false, // Skip unused locals check
+            noUnusedParameters: false, // Skip unused parameters check
 
             // Output options
             outDir: outputDir, // Output directory for all compiled files
-            sourceMap: true, // Generate source maps
+            sourceMap: false, // Generate source maps
             declaration: false, // Don't generate .d.ts files
 
             // Path resolution options - use info found from tsconfig
