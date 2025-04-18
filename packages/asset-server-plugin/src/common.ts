@@ -7,10 +7,7 @@ export function getAssetUrlPrefixFn(options: AssetServerOptions) {
     const { assetUrlPrefix, route } = options;
     if (assetUrlPrefix == null) {
         return (request: Request, identifier: string) => {
-            const protocol = request.headers['x-forwarded-proto'] ?? request.protocol;
-            return `${Array.isArray(protocol) ? protocol[0] : protocol}://${
-                request.get('host') ?? 'could-not-determine-host'
-            }/${route}/`;
+            return `/${route}/`;
         };
     }
     if (typeof assetUrlPrefix === 'string') {
