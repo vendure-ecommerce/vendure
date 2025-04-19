@@ -111,29 +111,48 @@ export class FacetService {
         lang?: LanguageCode,
     ): Promise<Translated<Facet> | undefined> {
         const relations = ['values', 'values.facet'];
-        const [repository, facetCode, languageCode] =
-            ctxOrFacetCode instanceof RequestContext
-                ? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  [this.connection.getRepository(ctxOrFacetCode, Facet), facetCodeOrLang, lang!]
-                : [
-                      this.connection.rawConnection.getRepository(Facet),
-                      ctxOrFacetCode,
-                      facetCodeOrLang as LanguageCode,
-                  ];
+        if (ctxOrFacetCode instanceof RequestContext) {
+            // New method using channel-aware query
+            return this.connection
+                .getRepository(ctxOrFacetCode, Facet)
+                .createQueryBuilder('facet')
+                .leftJoinAndSelect('facet.values', 'values')
+                .leftJoinAndSelect('values.facet', 'facetValue')
+                .where('facet.code = :code', { code: facetCodeOrLang })
+                .andWhere('facet.channels.id = :channelId', { channelId: ctxOrFacetCode.channelId })
+                .getOne()
+                .then(facet => {
+                    if (facet) {
+                        const channelLanguageCode = ctxOrFacetCode.languageCode;
+                        return translateDeep(facet, lang || channelLanguageCode, [
+                            'values',
+                            ['values', 'facet'],
+                        ]);
+                    }
+                    return undefined;
+                });
+        } else {
+            // Old method
+            const [repository, facetCode, languageCode] = [
+                this.connection.rawConnection.getRepository(Facet),
+                ctxOrFacetCode,
+                facetCodeOrLang as LanguageCode,
+            ];
 
-        // TODO: Implement usage of channelLanguageCode
-        return repository
-            .findOne({
-                where: {
-                    code: facetCode,
-                },
-                relations,
-            })
-            .then(
-                facet =>
-                    (facet && translateDeep(facet, languageCode, ['values', ['values', 'facet']])) ??
-                    undefined,
-            );
+            return repository
+                .findOne({
+                    where: {
+                        code: facetCode,
+                    },
+                    relations,
+                })
+                .then(facet => {
+                    if (facet) {
+                        return translateDeep(facet, languageCode, ['values', ['values', 'facet']]);
+                    }
+                    return undefined;
+                });
+        }
     }
 
     /**
