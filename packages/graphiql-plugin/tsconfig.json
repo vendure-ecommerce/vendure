@@ -1,0 +1,11 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "jsx": "react",
+        "esModuleInterop": true,
+        "types": ["node"]
+    },
+    "include": ["src/**/*"]
+}
