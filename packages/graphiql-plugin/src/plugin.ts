@@ -60,10 +60,7 @@ import { GraphiQLPluginOptions } from './types';
 export class GraphiQLPlugin implements NestModule {
     private static options: GraphiQLPluginOptions;
 
-    constructor(
-        private readonly configService: ConfigService,
-        private readonly processContext: ProcessContext,
-    ) {}
+    constructor(private readonly processContext: ProcessContext) {}
 
     /**
      * Initialize the plugin with the given options.
