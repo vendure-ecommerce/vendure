@@ -51,8 +51,7 @@ If you need to override these paths, you can specify them explicitly:
 
 ```typescript
 GraphiQLPlugin.init({
-    adminApiPath: 'custom-admin-api',
-    shopApiPath: 'custom-shop-api',
+    route: 'my-custom-route', // defaults to `graphiql`
 });
 ```
 
