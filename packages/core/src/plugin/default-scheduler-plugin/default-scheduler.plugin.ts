@@ -1,7 +1,11 @@
 import { PluginCommonModule } from '../../plugin/plugin-common.module';
 import { VendurePlugin } from '../../plugin/vendure-plugin';
 
-import { DEFAULT_SCHEDULER_PLUGIN_OPTIONS, DEFAULT_TIMEOUT } from './constants';
+import {
+    DEFAULT_SCHEDULER_PLUGIN_OPTIONS,
+    DEFAULT_TIMEOUT,
+    DEFAULT_MANUAL_TRIGGER_CHECK_INTERVAL,
+} from './constants';
 import { DefaultSchedulerStrategy } from './default-scheduler-strategy';
 import { ScheduledTaskRecord } from './scheduled-task-record.entity';
 import { DefaultSchedulerPluginOptions } from './types';
@@ -50,6 +54,7 @@ import { DefaultSchedulerPluginOptions } from './types';
 export class DefaultSchedulerPlugin {
     static options: DefaultSchedulerPluginOptions = {
         defaultTimeout: DEFAULT_TIMEOUT,
+        manualTriggerCheckInterval: DEFAULT_MANUAL_TRIGGER_CHECK_INTERVAL,
     };
 
     static init(config?: DefaultSchedulerPluginOptions) {

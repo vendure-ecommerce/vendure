@@ -42,6 +42,13 @@ export interface TaskReport {
 export interface SchedulerStrategy extends InjectableStrategy {
     /**
      * @description
+     * An optional method that may be used by the strategy to register all the configured
+     * tasks ahead of time. This can be useful for keeping an internal reference of
+     * all the tasks to aid in the specific strategy implemetation.
+     */
+    registerTask?(task: ScheduledTask): void;
+    /**
+     * @description
      * Execute a scheduled task. This method must also take care of
      * ensuring that the task is executed exactly once at the scheduled time,
      * even if there are multiple instances of the worker running.
@@ -51,8 +58,12 @@ export interface SchedulerStrategy extends InjectableStrategy {
      * SchedulerStrategy, you must use some other form of shared locking mechanism
      * that could make use of something like Redis etc. to ensure that the task
      * is executed exactly once at the scheduled time.
+     *
+     * The function returned is then called in order to execture the task. The
+     * `job` argument is an instance of the croner `Cron` class, except when
+     * the task has been manually triggered, in which case it will be undefined.
      */
-    executeTask(task: ScheduledTask): (job: Cron) => Promise<any> | any;
+    executeTask(task: ScheduledTask): (job?: Cron) => Promise<any> | any;
     /**
      * @description
      * Get all scheduled tasks.
@@ -63,6 +74,19 @@ export interface SchedulerStrategy extends InjectableStrategy {
      * Get a single scheduled task by its id.
      */
     getTask(id: string): Promise<TaskReport | undefined>;
+    /**
+     * @description
+     * Manually trigger a given task. This method is not used to actually invoke the
+     * task function itself, since that would cause the task to run on the server
+     * instance which we typically do not want. Instead, it should be used
+     * to signal to the strategy that this specific task needs to be invoked
+     * at the soonest opportunity.
+     *
+     * For instance, in the {@link DefaultSchedulerStrategy} this is done by setting
+     * a flag in the database table which is checked periodically and causes those tasks
+     * to get immediately invoked.
+     */
+    triggerTask(task: ScheduledTask): Promise<void>;
     /**
      * @description
      * Update a scheduled task.

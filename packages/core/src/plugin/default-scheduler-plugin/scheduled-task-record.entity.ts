@@ -21,6 +21,9 @@ export class ScheduledTaskRecord extends VendureEntity {
     @Column({ nullable: true, type: 'datetime', precision: 3 })
     lastExecutedAt: Date | null;
 
+    @Column({ nullable: true, type: 'datetime', precision: 3 })
+    manuallyTriggeredAt: Date | null;
+
     @Column({ type: 'json', nullable: true })
     lastResult: Record<string, any> | string | number | null;
 }

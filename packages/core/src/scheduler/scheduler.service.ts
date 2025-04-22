@@ -1,11 +1,12 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import { UpdateScheduledTaskInput } from '@vendure/common/lib/generated-types';
+import { Success, UpdateScheduledTaskInput } from '@vendure/common/lib/generated-types';
 import CronTime from 'cron-time-generator';
 import { Cron } from 'croner';
 import cronstrue from 'cronstrue';
 
 import { ConfigService } from '../config/config.service';
 import { Logger } from '../config/logger/vendure-logger';
+import { ProcessContext } from '../process-context';
 
 import { NoopSchedulerStrategy } from './noop-scheduler-strategy';
 import { ScheduledTask } from './scheduled-task';
@@ -33,7 +34,10 @@ export interface TaskInfo {
 @Injectable()
 export class SchedulerService implements OnApplicationBootstrap {
     private jobs: Map<string, { task: ScheduledTask; job: Cron }> = new Map();
-    constructor(private configService: ConfigService) {}
+    constructor(
+        private configService: ConfigService,
+        private processContext: ProcessContext,
+    ) {}
 
     onApplicationBootstrap() {
         const schedulerStrategy = this.configService.schedulerOptions.schedulerStrategy;
@@ -51,12 +55,14 @@ export class SchedulerService implements OnApplicationBootstrap {
             const pattern = job.getPattern();
             if (!pattern) {
                 Logger.warn(`Invalid cron pattern for task ${task.id}`);
-                continue;
             } else {
-                const schedule = cronstrue.toString(pattern);
-                Logger.info(`Registered scheduled task: ${task.id} - ${schedule}`);
+                if (this.processContext.isWorker) {
+                    const schedule = cronstrue.toString(pattern);
+                    Logger.info(`Registered scheduled task: ${task.id} - ${schedule}`);
+                }
                 this.jobs.set(task.id, { task, job });
             }
+            schedulerStrategy.registerTask?.(task);
         }
     }
 
@@ -80,6 +86,26 @@ export class SchedulerService implements OnApplicationBootstrap {
             }
             return taskInfo;
         });
+    }
+
+    async runTask(taskId: string): Promise<Success> {
+        const task = this.jobs.get(taskId);
+        if (!task) {
+            return {
+                success: false,
+            };
+        }
+        try {
+            await this.configService.schedulerOptions.schedulerStrategy.triggerTask(task.task);
+            return {
+                success: true,
+            };
+        } catch (e: any) {
+            Logger.error(`Could not trigger task: ` + (e.message as string));
+            return {
+                success: false,
+            };
+        }
     }
 
     private createTaskInfo(taskReport: TaskReport): TaskInfo | undefined {
@@ -125,8 +151,16 @@ export class SchedulerService implements OnApplicationBootstrap {
                 name: task.id,
                 protect: task.options.preventOverlap ? protectCallback : undefined,
             },
-            () => schedulerStrategy.executeTask(task)(job),
+            () => {
+                if (this.processContext.isWorker) {
+                    // Only execute the cron task on the worker process
+                    // so that any expensive logic does not affect
+                    // the responsiveness of server processes
+                    schedulerStrategy.executeTask(task)(job);
+                }
+            },
         );
+
         return job;
     }
 }

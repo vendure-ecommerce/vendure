@@ -22,4 +22,8 @@ export class NoopSchedulerStrategy implements SchedulerStrategy {
     updateTask(input: UpdateScheduledTaskInput): Promise<TaskReport> {
         throw new Error(`Not implemented`);
     }
+
+    triggerTask(task: ScheduledTask): Promise<void> {
+        throw new Error(`Not implemented`);
+    }
 }
