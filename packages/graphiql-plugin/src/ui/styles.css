@@ -5,13 +5,14 @@ body {
 }
 
 .graphiql-container {
-    height: 100vh;
+    height: calc(100vh - 40px);
 }
 
 .vendure-header {
     background-color: #13b7f3;
     color: white;
-    padding: 8px 16px;
+    height: 40px;
+    padding: 0 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;

@@ -86,8 +86,8 @@ export class GraphiQLPlugin implements NestModule {
         const adminRoute = GraphiQLPlugin.options.route + '/admin';
         const shopRoute = GraphiQLPlugin.options.route + '/shop';
 
-        consumer.apply(this.createStaticServer(adminRoute, 'admin')).forRoutes(adminRoute);
-        consumer.apply(this.createStaticServer(shopRoute, 'shop')).forRoutes(shopRoute);
+        consumer.apply(this.createStaticServer()).forRoutes(adminRoute);
+        consumer.apply(this.createStaticServer()).forRoutes(shopRoute);
 
         // Add middleware for serving assets
         consumer.apply(this.createAssetsServer()).forRoutes('/graphiql/assets/*path');
@@ -96,22 +96,13 @@ export class GraphiQLPlugin implements NestModule {
         registerPluginStartupMessage('GraphiQL Shop', shopRoute);
     }
 
-    private createStaticServer(basePath: string, subPath: string) {
+    private createStaticServer() {
         const distDir = path.join(__dirname, '../dist/graphiql');
 
         const adminApiUrl = this.graphiQLService.getAdminApiUrl();
         const shopApiUrl = this.graphiQLService.getShopApiUrl();
 
-        // Configure rate limiter: maximum of 100 requests per 15 minutes
-        const limiter = rateLimit({
-            windowMs: 15 * 60 * 1000, // 15 minutes
-            max: 100, // limit each IP to 100 requests per windowMs
-        });
-
-        const graphiqlServer = express.Router();
-        graphiqlServer.use(express.static(`${basePath}/${subPath}`));
-        graphiqlServer.use(limiter);
-        graphiqlServer.use((req, res) => {
+        return (req: express.Request, res: express.Response) => {
             try {
                 const indexHtmlPath = path.join(distDir, 'index.html');
 
@@ -123,12 +114,12 @@ export class GraphiQLPlugin implements NestModule {
                     html = html.replace(
                         '</head>',
                         `<script>
-                            window.GRAPHIQL_SETTINGS = {
-                                adminApiUrl: "${adminApiUrl}",
-                                shopApiUrl: "${shopApiUrl}"
-                            };
-                        </script>
-                        </head>`,
+                                window.GRAPHIQL_SETTINGS = {
+                                    adminApiUrl: "${adminApiUrl}",
+                                    shopApiUrl: "${shopApiUrl}"
+                                };
+                            </script>
+                            </head>`,
                     );
 
                     return res.send(html);
@@ -140,9 +131,7 @@ export class GraphiQLPlugin implements NestModule {
                 Logger.error(`Error serving GraphiQL: ${errorMessage}`, 'GraphiQLPlugin');
                 return res.status(500).send('An error occurred while rendering GraphiQL');
             }
-        });
-
-        return graphiqlServer;
+        };
     }
 
     private createAssetsServer() {
