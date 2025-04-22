@@ -29,7 +29,7 @@ describe('getPluginInfo', () => {
         const result = getPluginInfo(sourceFile);
         expect(result).toEqual({
             name: 'TestPlugin',
-            path: 'path/to',
+            pluginPath: 'path/to',
             dashboardEntryPath: undefined,
         });
     });
@@ -56,7 +56,7 @@ describe('getPluginInfo', () => {
         const result = getPluginInfo(sourceFile);
         expect(result).toEqual({
             name: 'TestPlugin',
-            path: 'path/to',
+            pluginPath: 'path/to',
             dashboardEntryPath: undefined,
         });
     });
@@ -76,7 +76,7 @@ describe('getPluginInfo', () => {
         const result = getPluginInfo(sourceFile);
         expect(result).toEqual({
             name: 'TestPlugin',
-            path: 'path/to',
+            pluginPath: 'path/to',
             dashboardEntryPath: './dashboard/index.tsx',
         });
     });
@@ -97,7 +97,7 @@ describe('findConfigExport', () => {
     it('should find exported variable with VendureConfig type', () => {
         const sourceText = `
             import { VendureConfig } from '@vendure/core';
-            
+
             export const config: VendureConfig = {
                 authOptions: {
                     tokenMethod: 'bearer'
@@ -112,7 +112,7 @@ describe('findConfigExport', () => {
     it('should find exported variable with VendureConfig type among other exports', () => {
         const sourceText = `
             import { VendureConfig } from '@vendure/core';
-            
+
             export const otherExport = 'value';
             export const config: VendureConfig = {
                 authOptions: {
