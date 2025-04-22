@@ -8,10 +8,11 @@ import { ProductReviewAdminResolver } from './api/product-review-admin.resolver'
 import { ProductReviewEntityResolver } from './api/product-review-entity.resolver';
 import { ProductReviewShopResolver } from './api/product-review-shop.resolver';
 import { ProductReview } from './entities/product-review.entity';
+import { ProductReviewTranslation } from './entities/product-review-translation.entity';
 
 @VendurePlugin({
     imports: [PluginCommonModule],
-    entities: [ProductReview],
+    entities: [ProductReview, ProductReviewTranslation],
     adminApiExtensions: {
         schema: adminApiExtensions,
         resolvers: [ProductEntityResolver, ProductReviewAdminResolver, ProductReviewEntityResolver],
@@ -48,7 +49,7 @@ import { ProductReview } from './entities/product-review.entity';
         });
         return config;
     },
-    dashboard: path.join(__dirname, './dashboard/index.tsx'),
+    dashboard: './dashboard/index.tsx',
 })
 export class ReviewsPlugin {
     static uiExtensions: AdminUiExtension = {

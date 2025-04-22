@@ -19,7 +19,8 @@ import 'dotenv/config';
 import path from 'path';
 import { DataSourceOptions } from 'typeorm';
 
-import { ReviewsPlugin } from './test-plugins/reviews/reviews-plugin';
+import { MultivendorPlugin } from './example-plugins/multivendor-plugin/multivendor.plugin';
+import { ReviewsPlugin } from '@plugins/test-plugins/reviews/reviews-plugin';
 
 /**
  * Config settings used during development
