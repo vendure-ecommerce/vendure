@@ -13,13 +13,12 @@ import fs from 'fs';
 import path from 'path';
 
 import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
-import { GraphiQLController } from './graphiql.controller';
 import { GraphiQLService } from './graphiql.service';
 import { GraphiQLPluginOptions } from './types';
 
 /**
  * @description
- * This plugin provides a GraphQL playground UI for exploring and testing the Vendure GraphQL APIs.
+ * This plugin provides a GraphiQL UI for exploring and testing the Vendure GraphQL APIs.
  *
  * It adds routes `/graphiql/admin` and `/graphiql/shop` which serve the GraphiQL interface
  * for the respective APIs.
@@ -43,7 +42,6 @@ import { GraphiQLPluginOptions } from './types';
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
-    controllers: [GraphiQLController],
     providers: [
         GraphiQLService,
         {
