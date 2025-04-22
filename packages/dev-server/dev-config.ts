@@ -20,7 +20,7 @@ import path from 'path';
 import { DataSourceOptions } from 'typeorm';
 
 import { MultivendorPlugin } from './example-plugins/multivendor-plugin/multivendor.plugin';
-import { ReviewsPlugin } from '@plugins/test-plugins/reviews/reviews-plugin';
+import { ReviewsPlugin } from '@plugins/reviews/reviews-plugin';
 
 /**
  * Config settings used during development
