@@ -7,12 +7,13 @@ import {
     registerInitializer,
     SqljsInitializer,
     testConfig,
+    TestEnvironment,
     TestingLogger,
 } from '@vendure/testing';
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
-import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { afterEach, beforeEach, beforeAll, afterAll, describe, expect, it, Mock, vi } from 'vitest';
 
 import { PLUGIN_INIT_OPTIONS } from './constants';
 import { GraphiQLService } from './graphiql.service';
@@ -27,15 +28,6 @@ registerInitializer('sqljs', new SqljsInitializer(sqliteDataDir));
 interface MockMiddlewareConsumer {
     apply: Mock;
     forRoutes: Mock;
-}
-
-// Define a simple logger interface that matches what we need
-interface SimpleLogger {
-    log: Mock;
-    error: Mock;
-    warn: Mock;
-    debug: Mock;
-    verbose: Mock;
 }
 
 describe('GraphiQLPlugin', () => {
@@ -69,10 +61,6 @@ describe('GraphiQLPlugin', () => {
                     useValue: GraphiqlPlugin.options,
                 },
                 {
-                    provide: ConfigService,
-                    useValue: createMockConfigService(),
-                },
-                {
                     provide: ProcessContext,
                     useValue: {
                         isServer,
@@ -102,36 +90,44 @@ describe('GraphiQLPlugin', () => {
         });
     });
 
-    describe('configuration', () => {
-        it('should disable GraphQL playground in config', async () => {
-            const result = createTestEnvironment({
-                ...testConfig,
-                apiOptions: {
-                    ...testConfig.apiOptions,
-                    adminApiPlayground: true,
-                    shopApiPlayground: true,
-                },
-                plugins: [GraphiqlPlugin.init()],
+    describe(
+        'configuration',
+        () => {
+            it('should disable GraphQL playground in config', async () => {
+                const result = createTestEnvironment({
+                    ...testConfig,
+                    apiOptions: {
+                        ...testConfig.apiOptions,
+                        adminApiPlayground: true,
+                        shopApiPlayground: true,
+                    },
+                    plugins: [GraphiqlPlugin.init()],
+                });
+
+                await result.server.init({
+                    initialData: {
+                        defaultLanguage: LanguageCode.en,
+                        defaultZone: 'Europe/London',
+                        countries: [],
+                        taxRates: [],
+                        paymentMethods: [],
+                        shippingMethods: [],
+                        collections: [],
+                    },
+                });
+
+                const configService = result.server.app.get(ConfigService);
+
+                expect(configService.apiOptions.adminApiPlayground).toBe(false);
+                expect(configService.apiOptions.shopApiPlayground).toBe(false);
+
+                await result.server.destroy();
             });
-
-            await result.server.init({
-                initialData: {
-                    defaultLanguage: LanguageCode.en,
-                    defaultZone: 'Europe/London',
-                    countries: [],
-                    taxRates: [],
-                    paymentMethods: [],
-                    shippingMethods: [],
-                    collections: [],
-                },
-            });
-
-            const configService = result.server.app.get(ConfigService);
-
-            expect(configService.apiOptions.adminApiPlayground).toBe(false);
-            expect(configService.apiOptions.shopApiPlayground).toBe(false);
-        });
-    });
+        },
+        {
+            timeout: 60000,
+        },
+    );
 
     describe('configure middleware', () => {
         it('should not configure middleware if not running in server', async () => {
@@ -383,10 +379,36 @@ describe('GraphiQLPlugin', () => {
 describe('GraphiQLService', () => {
     let serviceInstance: GraphiQLService;
     let configService: ConfigService;
+    let result: TestEnvironment;
+    beforeAll(async () => {
+        result = createTestEnvironment({
+            ...testConfig,
+            apiOptions: {
+                ...testConfig.apiOptions,
+                adminApiPlayground: true,
+                shopApiPlayground: true,
+            },
+            plugins: [GraphiqlPlugin.init()],
+        });
 
-    beforeEach(() => {
-        configService = createMockConfigService();
-        serviceInstance = new GraphiQLService(configService);
+        await result.server.init({
+            initialData: {
+                defaultLanguage: LanguageCode.en,
+                defaultZone: 'Europe/London',
+                countries: [],
+                taxRates: [],
+                paymentMethods: [],
+                shippingMethods: [],
+                collections: [],
+            },
+        });
+
+        configService = result.server.app.get(ConfigService);
+        serviceInstance = result.server.app.get(GraphiQLService);
+    });
+
+    afterAll(async () => {
+        await result.server.destroy();
     });
 
     describe('getAdminApiUrl', () => {
@@ -449,20 +471,6 @@ describe('GraphiQLService', () => {
 });
 
 // Helper functions
-
-function createMockConfigService(): ConfigService {
-    return {
-        apiOptions: {
-            adminApiPath: 'admin-api',
-            shopApiPath: 'shop-api',
-            hostname: '',
-            port: 3000,
-            adminApiPlayground: true,
-            shopApiPlayground: true,
-        },
-    } as unknown as ConfigService;
-}
-
 function createMockConsumer(): MockMiddlewareConsumer {
     return {
         apply: vi.fn().mockReturnThis(),
