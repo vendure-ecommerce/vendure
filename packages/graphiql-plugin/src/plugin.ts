@@ -2,12 +2,15 @@ import { MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { Type } from '@vendure/common/lib/shared-types';
 import {
     ConfigService,
+    createProxyHandler,
     Logger,
     PluginCommonModule,
     ProcessContext,
     registerPluginStartupMessage,
     VendurePlugin,
 } from '@vendure/core';
+import express from 'express';
+import fs from 'fs';
 import path from 'path';
 
 import { PLUGIN_INIT_OPTIONS, loggerCtx } from './constants';
@@ -58,9 +61,13 @@ import { GraphiQLPluginOptions } from './types';
     compatibility: '^3.0.0',
 })
 export class GraphiQLPlugin implements NestModule {
-    private static options: GraphiQLPluginOptions;
+    private static options: Required<GraphiQLPluginOptions>;
 
-    constructor(private readonly processContext: ProcessContext) {}
+    constructor(
+        private readonly processContext: ProcessContext,
+        private readonly configService: ConfigService,
+        private readonly graphiQLService: GraphiQLService,
+    ) {}
 
     /**
      * Initialize the plugin with the given options.
@@ -78,7 +85,56 @@ export class GraphiQLPlugin implements NestModule {
             return;
         }
 
+        consumer
+            .apply(this.createStaticServer(GraphiQLPlugin.options.route, 'admin'))
+            .forRoutes(GraphiQLPlugin.options.route + '/admin');
+        consumer
+            .apply(this.createStaticServer(GraphiQLPlugin.options.route, 'shop'))
+            .forRoutes(GraphiQLPlugin.options.route + '/shop');
+
         registerPluginStartupMessage('GraphiQL Admin', `graphiql/admin`);
         registerPluginStartupMessage('GraphiQL Shop', `graphiql/shop`);
+    }
+
+    private createStaticServer(basePath: string, subPath: string) {
+        const distDir = path.join(__dirname, '../dist/graphiql');
+
+        const adminApiUrl = this.graphiQLService.getAdminApiUrl();
+        const shopApiUrl = this.graphiQLService.getShopApiUrl();
+
+        const graphiqlServer = express.Router();
+        graphiqlServer.use(express.static(`${basePath}/${subPath}`));
+        graphiqlServer.use((req, res) => {
+            try {
+                const indexHtmlPath = path.join(distDir, 'index.html');
+
+                if (fs.existsSync(indexHtmlPath)) {
+                    // Read the HTML file
+                    let html = fs.readFileSync(indexHtmlPath, 'utf-8');
+
+                    // Inject API URLs
+                    html = html.replace(
+                        '</head>',
+                        `<script>
+                            window.GRAPHIQL_SETTINGS = {
+                                adminApiUrl: "${adminApiUrl}",
+                                shopApiUrl: "${shopApiUrl}"
+                            };
+                        </script>
+                        </head>`,
+                    );
+
+                    return res.send(html);
+                }
+
+                throw new Error(`GraphiQL UI not found: ${indexHtmlPath}`);
+            } catch (e) {
+                const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+                Logger.error(`Error serving GraphiQL: ${errorMessage}`, 'GraphiQLPlugin');
+                return res.status(500).send('An error occurred while rendering GraphiQL');
+            }
+        });
+
+        return graphiqlServer;
     }
 }

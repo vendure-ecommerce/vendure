@@ -120,9 +120,7 @@ export const devConfig: VendureConfig = {
         //     platformFeeSKU: 'FEE',
         // }),
         //ReviewsPlugin,
-        GraphiQLPlugin.init({
-            route: 'test',
-        }),
+        GraphiQLPlugin.init(),
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
