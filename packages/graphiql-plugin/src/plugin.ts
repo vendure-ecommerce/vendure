@@ -2,7 +2,6 @@ import { MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { Type } from '@vendure/common/lib/shared-types';
 import {
     ConfigService,
-    createProxyHandler,
     Logger,
     PluginCommonModule,
     ProcessContext,
@@ -13,7 +12,7 @@ import express from 'express';
 import fs from 'fs';
 import path from 'path';
 
-import { PLUGIN_INIT_OPTIONS, loggerCtx } from './constants';
+import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
 import { GraphiQLController } from './graphiql.controller';
 import { GraphiQLService } from './graphiql.service';
 import { GraphiQLPluginOptions } from './types';
@@ -85,15 +84,17 @@ export class GraphiQLPlugin implements NestModule {
             return;
         }
 
-        consumer
-            .apply(this.createStaticServer(GraphiQLPlugin.options.route, 'admin'))
-            .forRoutes(GraphiQLPlugin.options.route + '/admin');
-        consumer
-            .apply(this.createStaticServer(GraphiQLPlugin.options.route, 'shop'))
-            .forRoutes(GraphiQLPlugin.options.route + '/shop');
+        const adminRoute = GraphiQLPlugin.options.route + '/admin';
+        const shopRoute = GraphiQLPlugin.options.route + '/shop';
 
-        registerPluginStartupMessage('GraphiQL Admin', `graphiql/admin`);
-        registerPluginStartupMessage('GraphiQL Shop', `graphiql/shop`);
+        consumer.apply(this.createStaticServer(adminRoute, 'admin')).forRoutes(adminRoute);
+        consumer.apply(this.createStaticServer(shopRoute, 'shop')).forRoutes(shopRoute);
+
+        // Add middleware for serving assets
+        consumer.apply(this.createAssetsServer()).forRoutes('/graphiql/assets/*path');
+
+        registerPluginStartupMessage('GraphiQL Admin', adminRoute);
+        registerPluginStartupMessage('GraphiQL Shop', shopRoute);
     }
 
     private createStaticServer(basePath: string, subPath: string) {
@@ -136,5 +137,27 @@ export class GraphiQLPlugin implements NestModule {
         });
 
         return graphiqlServer;
+    }
+
+    private createAssetsServer() {
+        const distDir = path.join(__dirname, '../dist/graphiql');
+
+        return (req: express.Request, res: express.Response, next: express.NextFunction) => {
+            try {
+                // Extract asset path from URL
+                const assetPath = req.params[0] || req.params.path || '';
+                const filePath = path.join(distDir, 'assets', assetPath.toString());
+
+                if (fs.existsSync(filePath)) {
+                    return res.sendFile(filePath);
+                } else {
+                    return res.status(404).send('Asset not found');
+                }
+            } catch (e: unknown) {
+                const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+                Logger.error(`Error serving static asset: ${errorMessage}`, loggerCtx);
+                return res.status(500).send('An error occurred while serving static asset');
+            }
+        };
     }
 }
