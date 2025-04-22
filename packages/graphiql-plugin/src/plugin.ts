@@ -39,7 +39,7 @@ import { GraphiQLPluginOptions } from './types';
  * };
  * ```
  *
- * @docsCategory GraphiQLPlugin
+ * @docsCategory core plugins/GraphiQLPlugin
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
