@@ -27,7 +27,7 @@ import { GraphiQLPluginOptions } from './types';
  * ## Installation
  *
  * ```ts
- * import { GraphiQLPlugin } from '@vendure/graphiql-plugin';
+ * import { GraphiQLPlugin } from '\@vendure/graphiql-plugin';
  *
  * const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array
