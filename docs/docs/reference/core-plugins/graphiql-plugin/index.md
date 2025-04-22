@@ -1,5 +1,5 @@
 ---
-title: "GraphiQLPlugin"
+title: "GraphiqlPlugin"
 isDefaultIndex: false
 generated: true
 ---
@@ -9,7 +9,7 @@ import GenerationInfo from '@site/src/components/GenerationInfo';
 import MemberDescription from '@site/src/components/MemberDescription';
 
 
-## GraphiQLPlugin
+## GraphiqlPlugin
 
 <GenerationInfo sourceFile="packages/graphiql-plugin/src/plugin.ts" sourceLine="44" packageName="@vendure/graphiql-plugin" />
 
@@ -34,9 +34,9 @@ const config: VendureConfig = {
 ```
 
 ```ts title="Signature"
-class GraphiQLPlugin implements NestModule {
+class GraphiqlPlugin implements NestModule {
     constructor(processContext: ProcessContext, configService: ConfigService, graphiQLService: GraphiQLService)
-    init(options: GraphiQLPluginOptions = {}) => Type<GraphiQLPlugin>;
+    init(options: GraphiqlPluginOptions = {}) => Type<GraphiqlPlugin>;
     configure(consumer: MiddlewareConsumer) => ;
 }
 ```
@@ -48,12 +48,12 @@ class GraphiQLPlugin implements NestModule {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(processContext: <a href='/reference/typescript-api/common/process-context#processcontext'>ProcessContext</a>, configService: ConfigService, graphiQLService: GraphiQLService) => GraphiQLPlugin`}   />
+<MemberInfo kind="method" type={`(processContext: <a href='/reference/typescript-api/common/process-context#processcontext'>ProcessContext</a>, configService: ConfigService, graphiQLService: GraphiQLService) => GraphiqlPlugin`}   />
 
 
 ### init
 
-<MemberInfo kind="method" type={`(options: GraphiQLPluginOptions = {}) => Type&#60;<a href='/reference/core-plugins/graphi-qlplugin/#graphiqlplugin'>GraphiQLPlugin</a>&#62;`}   />
+<MemberInfo kind="method" type={`(options: GraphiqlPluginOptions = {}) => Type&#60;<a href='/reference/core-plugins/graphiql-plugin/#graphiqlplugin'>GraphiqlPlugin</a>&#62;`}   />
 
 
 ### configure

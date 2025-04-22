@@ -15,7 +15,7 @@ import path from 'path';
 
 import { loggerCtx, PLUGIN_INIT_OPTIONS } from './constants';
 import { GraphiQLService } from './graphiql.service';
-import { GraphiQLPluginOptions } from './types';
+import { GraphiqlPluginOptions } from './types';
 
 /**
  * @description
@@ -39,7 +39,7 @@ import { GraphiQLPluginOptions } from './types';
  * };
  * ```
  *
- * @docsCategory core plugins/GraphiQLPlugin
+ * @docsCategory core plugins/GraphiqlPlugin
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
@@ -47,7 +47,7 @@ import { GraphiQLPluginOptions } from './types';
         GraphiQLService,
         {
             provide: PLUGIN_INIT_OPTIONS,
-            useFactory: () => GraphiQLPlugin.options,
+            useFactory: () => GraphiqlPlugin.options,
         },
     ],
     configuration: config => {
@@ -58,8 +58,8 @@ import { GraphiQLPluginOptions } from './types';
     },
     compatibility: '^3.0.0',
 })
-export class GraphiQLPlugin implements NestModule {
-    private static options: Required<GraphiQLPluginOptions>;
+export class GraphiqlPlugin implements NestModule {
+    private static options: Required<GraphiqlPluginOptions>;
 
     constructor(
         private readonly processContext: ProcessContext,
@@ -70,7 +70,7 @@ export class GraphiQLPlugin implements NestModule {
     /**
      * Initialize the plugin with the given options.
      */
-    static init(options: GraphiQLPluginOptions = {}): Type<GraphiQLPlugin> {
+    static init(options: GraphiqlPluginOptions = {}): Type<GraphiqlPlugin> {
         this.options = {
             ...options,
             route: options.route || 'graphiql',
@@ -83,8 +83,8 @@ export class GraphiQLPlugin implements NestModule {
             return;
         }
 
-        const adminRoute = GraphiQLPlugin.options.route + '/admin';
-        const shopRoute = GraphiQLPlugin.options.route + '/shop';
+        const adminRoute = GraphiqlPlugin.options.route + '/admin';
+        const shopRoute = GraphiqlPlugin.options.route + '/shop';
 
         consumer.apply(this.createStaticServer()).forRoutes(adminRoute);
         consumer.apply(this.createStaticServer()).forRoutes(shopRoute);

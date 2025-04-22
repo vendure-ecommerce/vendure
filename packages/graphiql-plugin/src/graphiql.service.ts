@@ -1,10 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService, Logger } from '@vendure/core';
-import fs from 'fs';
-import path from 'path';
-
-import { PLUGIN_INIT_OPTIONS, loggerCtx } from './constants';
-import { GraphiQLPluginOptions } from './types';
+import { ConfigService } from '@vendure/core';
 
 /**
  * This service is responsible for providing GraphiQL configuration

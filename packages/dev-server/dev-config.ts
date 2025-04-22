@@ -16,7 +16,7 @@ import {
 import { ScheduledTask } from '@vendure/core/dist/scheduler/scheduled-task';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
 import 'dotenv/config';
-import { GraphiQLPlugin } from '@vendure/graphiql-plugin';
+import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
 import path from 'path';
 import { DataSourceOptions } from 'typeorm';
 
@@ -118,7 +118,7 @@ export const devConfig: VendureConfig = {
         //     platformFeePercent: 10,
         //     platformFeeSKU: 'FEE',
         // }),
-        GraphiQLPlugin.init(),
+        GraphiqlPlugin.init(),
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),

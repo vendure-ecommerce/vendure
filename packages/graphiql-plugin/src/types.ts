@@ -1,7 +1,7 @@
 /**
  * Configuration options for the GraphiQL plugin.
  */
-export interface GraphiQLPluginOptions {
+export interface GraphiqlPluginOptions {
     /**
      * @description
      * The route to the GraphiQL UI.
