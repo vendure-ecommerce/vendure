@@ -4,6 +4,7 @@ import ms from 'ms';
 
 import { Injector } from '../../common';
 import { assertFound } from '../../common/utils';
+import { ConfigService } from '../../config/config.service';
 import { Logger } from '../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../connection';
 import { ProcessContext } from '../../process-context';
@@ -36,7 +37,11 @@ export class DefaultSchedulerStrategy implements SchedulerStrategy {
         this.pluginOptions = injector.get(DEFAULT_SCHEDULER_PLUGIN_OPTIONS);
         this.injector = injector;
 
-        if (injector.get(ProcessContext).isWorker) {
+        const runTriggerCheck =
+            injector.get(ConfigService).schedulerOptions.runTasksInWorkerOnly === false ||
+            injector.get(ProcessContext).isWorker;
+
+        if (runTriggerCheck) {
             this.intervalRef = setInterval(
                 () => this.checkForManuallyTriggeredTasks(),
                 this.pluginOptions.manualTriggerCheckInterval as number,
@@ -131,7 +136,8 @@ export class DefaultSchedulerStrategy implements SchedulerStrategy {
         };
     }
 
-    getTasks(): Promise<TaskReport[]> {
+    async getTasks(): Promise<TaskReport[]> {
+        await this.ensureAllTasksAreRegistered();
         return this.connection.rawConnection
             .getRepository(ScheduledTaskRecord)
             .createQueryBuilder('task')
@@ -141,7 +147,8 @@ export class DefaultSchedulerStrategy implements SchedulerStrategy {
             });
     }
 
-    getTask(id: string): Promise<TaskReport | undefined> {
+    async getTask(id: string): Promise<TaskReport | undefined> {
+        await this.ensureTaskIsRegistered(id);
         return this.connection.rawConnection
             .getRepository(ScheduledTaskRecord)
             .createQueryBuilder('task')
@@ -205,18 +212,26 @@ export class DefaultSchedulerStrategy implements SchedulerStrategy {
         };
     }
 
-    private async ensureTaskIsRegistered(task: ScheduledTask) {
-        if (!this.tasks.get(task.id)?.isRegistered) {
+    private async ensureAllTasksAreRegistered() {
+        for (const task of this.tasks.values()) {
+            await this.ensureTaskIsRegistered(task.task);
+        }
+    }
+
+    private async ensureTaskIsRegistered(taskOrId: ScheduledTask | string) {
+        const taskId = typeof taskOrId === 'string' ? taskOrId : taskOrId.id;
+        const task = this.tasks.get(taskId);
+        if (task && !task.isRegistered) {
             await this.connection.rawConnection
                 .getRepository(ScheduledTaskRecord)
                 .createQueryBuilder()
                 .insert()
                 .into(ScheduledTaskRecord)
-                .values({ taskId: task.id })
+                .values({ taskId })
                 .orIgnore()
                 .execute();
 
-            this.tasks.set(task.id, { task, isRegistered: true });
+            this.tasks.set(taskId, { task: task.task, isRegistered: true });
         }
     }
 }

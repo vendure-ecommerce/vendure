@@ -46,7 +46,7 @@ import { DefaultSchedulerPluginOptions } from './types';
     providers: [
         {
             provide: DEFAULT_SCHEDULER_PLUGIN_OPTIONS,
-            useValue: DefaultSchedulerPlugin.options,
+            useFactory: () => DefaultSchedulerPlugin.options,
         },
     ],
     compatibility: '>0.0.0',

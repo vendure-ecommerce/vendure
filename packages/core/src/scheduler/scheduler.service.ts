@@ -1,4 +1,4 @@
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable, OnApplicationBootstrap, OnApplicationShutdown } from '@nestjs/common';
 import { Success, UpdateScheduledTaskInput } from '@vendure/common/lib/generated-types';
 import CronTime from 'cron-time-generator';
 import { Cron } from 'croner';
@@ -32,8 +32,9 @@ export interface TaskInfo {
  * @docsCategory scheduled-tasks
  */
 @Injectable()
-export class SchedulerService implements OnApplicationBootstrap {
+export class SchedulerService implements OnApplicationBootstrap, OnApplicationShutdown {
     private jobs: Map<string, { task: ScheduledTask; job: Cron }> = new Map();
+    private shouldRunTasks = false;
     constructor(
         private configService: ConfigService,
         private processContext: ProcessContext,
@@ -48,6 +49,9 @@ export class SchedulerService implements OnApplicationBootstrap {
             );
             return;
         }
+        this.shouldRunTasks =
+            this.configService.schedulerOptions.runTasksInWorkerOnly === false ||
+            this.processContext.isWorker;
         const scheduledTasks = this.configService.schedulerOptions.tasks ?? [];
 
         for (const task of scheduledTasks) {
@@ -56,13 +60,19 @@ export class SchedulerService implements OnApplicationBootstrap {
             if (!pattern) {
                 Logger.warn(`Invalid cron pattern for task ${task.id}`);
             } else {
-                if (this.processContext.isWorker) {
+                if (this.shouldRunTasks) {
                     const schedule = cronstrue.toString(pattern);
                     Logger.info(`Registered scheduled task: ${task.id} - ${schedule}`);
                 }
                 this.jobs.set(task.id, { task, job });
             }
             schedulerStrategy.registerTask?.(task);
+        }
+    }
+
+    onApplicationShutdown(signal?: string) {
+        for (const job of this.jobs.values()) {
+            job.job.stop();
         }
     }
 
@@ -152,7 +162,7 @@ export class SchedulerService implements OnApplicationBootstrap {
                 protect: task.options.preventOverlap ? protectCallback : undefined,
             },
             () => {
-                if (this.processContext.isWorker) {
+                if (this.shouldRunTasks) {
                     // Only execute the cron task on the worker process
                     // so that any expensive logic does not affect
                     // the responsiveness of server processes
