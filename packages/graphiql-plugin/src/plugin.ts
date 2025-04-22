@@ -59,7 +59,7 @@ import { GraphiqlPluginOptions } from './types';
     compatibility: '^3.0.0',
 })
 export class GraphiqlPlugin implements NestModule {
-    private static options: Required<GraphiqlPluginOptions>;
+    static options: Required<GraphiqlPluginOptions>;
 
     constructor(
         private readonly processContext: ProcessContext,

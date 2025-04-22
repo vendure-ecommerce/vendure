@@ -1,11 +1,11 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
-        "outDir": "./dist",
-        "rootDir": "./src",
-        "jsx": "react",
-        "esModuleInterop": true,
-        "types": ["node"]
-    },
-    "include": ["src/**/*"]
+        "declaration": true,
+        "removeComments": false,
+        "noLib": false,
+        "skipLibCheck": true,
+        "sourceMap": true,
+        "lib": ["dom"]
+    }
 }

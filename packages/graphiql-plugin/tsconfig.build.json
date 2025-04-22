@@ -1,5 +1,5 @@
 {
-    "extends": "../../tsconfig.json",
+    "extends": "./tsconfig.json",
     "compilerOptions": {
         "outDir": "./dist",
         "rootDir": "./src",
@@ -10,6 +10,5 @@
         "jsx": "react",
         "lib": ["dom"]
     },
-    "include": ["src/**/*"],
-    "exclude": ["src/**/*.spec.ts", "vite.config.ts"]
+    "files": ["./src/index.ts"]
 }
