@@ -118,12 +118,7 @@ export const devConfig: VendureConfig = {
         //     platformFeePercent: 10,
         //     platformFeeSKU: 'FEE',
         // }),
-<<<<<<< HEAD
-        //ReviewsPlugin,
         GraphiQLPlugin.init(),
-=======
-        // ReviewsPlugin,
->>>>>>> minor
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
