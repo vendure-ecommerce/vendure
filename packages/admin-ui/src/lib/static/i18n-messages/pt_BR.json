@@ -798,6 +798,7 @@
   },
   "system": {
     "all-job-queues": "Todas as filas de trabalhos",
+    "could-not-trigger-task": "Não foi possível ativar a tarefa",
     "health-all-systems-up": "Todos os sistemas ativos",
     "health-error": "Erro: um ou mais sistemas estão inoperantes!",
     "health-last-checked": "Última verificação",
@@ -821,7 +822,9 @@
     "last-executed-at": "Última execução",
     "last-result": "Último resultado",
     "next-execution-at": "Próxima execução",
+    "run-task": "Executar tarefa",
     "schedule": "Agendamento",
-    "task-id": "ID da tarefa"
+    "task-id": "ID da tarefa",
+    "task-will-be-triggered": "A tarefa será executada"
   }
 }

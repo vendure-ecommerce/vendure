@@ -798,6 +798,7 @@
   },
   "system": {
     "all-job-queues": "All job queues",
+    "could-not-trigger-task": "Could not trigger task",
     "health-all-systems-up": "All systems up",
     "health-error": "Error: one or more systems are down!",
     "health-last-checked": "Last checked",
@@ -821,7 +822,9 @@
     "last-executed-at": "Last executed",
     "last-result": "Last result",
     "next-execution-at": "Next execution",
+    "run-task": "Run task",
     "schedule": "Schedule",
-    "task-id": "Task ID"
+    "task-id": "Task ID",
+    "task-will-be-triggered": "Task will be triggered"
   }
 }

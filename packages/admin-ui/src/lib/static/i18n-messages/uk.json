@@ -798,6 +798,7 @@
   },
   "system": {
     "all-job-queues": "Всі черги завдань",
+    "could-not-trigger-task": "Не вдалося активувати завдання",
     "health-all-systems-up": "Всі системи включені",
     "health-error": "Помилка: одна або кілька систем не працюють!",
     "health-last-checked": "Останній раз перевірено",
@@ -821,7 +822,9 @@
     "last-executed-at": "Останнє виконання",
     "last-result": "Останній результат",
     "next-execution-at": "Наступне виконання",
+    "run-task": "Виконати завдання",
     "schedule": "Розклад",
-    "task-id": "ID завдання"
+    "task-id": "ID завдання",
+    "task-will-be-triggered": "Завдання буде виконано"
   }
 }

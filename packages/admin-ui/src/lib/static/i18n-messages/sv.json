@@ -798,6 +798,7 @@
   },
   "system": {
     "all-job-queues": "Alla köer",
+    "could-not-trigger-task": "Kunde inte aktivera uppgiften",
     "health-all-systems-up": "Alla system är uppe",
     "health-error": "Fel: Ett eller flera system är nere!",
     "health-last-checked": "Senast kontrollerad",
@@ -821,7 +822,9 @@
     "last-executed-at": "Senast körd",
     "last-result": "Senaste resultat",
     "next-execution-at": "Nästa körning",
+    "run-task": "Kör uppgift",
     "schedule": "Schema",
-    "task-id": "Jobb-ID"
+    "task-id": "Jobb-ID",
+    "task-will-be-triggered": "Uppgiften kommer att köras"
   }
 }

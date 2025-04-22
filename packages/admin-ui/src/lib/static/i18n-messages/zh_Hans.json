@@ -798,6 +798,7 @@
   },
   "system": {
     "all-job-queues": "所有任务",
+    "could-not-trigger-task": "无法触发任务",
     "health-all-systems-up": "所以系统正常运行",
     "health-error": "错误：一个或多个系统启动失败！",
     "health-last-checked": "上次检查",
@@ -821,7 +822,9 @@
     "last-executed-at": "最后执行时间",
     "last-result": "最后结果",
     "next-execution-at": "下次执行时间",
+    "run-task": "运行任务",
     "schedule": "计划",
-    "task-id": "任务ID"
+    "task-id": "任务ID",
+    "task-will-be-triggered": "任务将被触发"
   }
 }

@@ -798,6 +798,7 @@
   },
   "system": {
     "all-job-queues": "Všechny fronty úloh",
+    "could-not-trigger-task": "Nelze spustit úlohu",
     "health-all-systems-up": "Všechny systémy běží",
     "health-error": "Chyba: jeden nebo více systému neběží!",
     "health-last-checked": "Poslední kontrola",
@@ -821,7 +822,9 @@
     "last-executed-at": "Poslední spuštění",
     "last-result": "Poslední výsledek",
     "next-execution-at": "Další spuštění",
+    "run-task": "Spustit úlohu",
     "schedule": "Plán",
-    "task-id": "ID úlohy"
+    "task-id": "ID úlohy",
+    "task-will-be-triggered": "Úloha bude spuštěna"
   }
 }

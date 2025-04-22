@@ -798,6 +798,7 @@
   },
   "system": {
     "all-job-queues": "Toute la file de tâches",
+    "could-not-trigger-task": "Impossible de déclencher la tâche",
     "health-all-systems-up": "Tous les système en route",
     "health-error": "Erreur: un ou plusieurs systèmes sont en pannes!",
     "health-last-checked": "Dernière vérification",
@@ -821,7 +822,9 @@
     "last-executed-at": "Dernière exécution",
     "last-result": "Dernier résultat",
     "next-execution-at": "Prochaine exécution",
+    "run-task": "Exécuter la tâche",
     "schedule": "Programmation",
-    "task-id": "ID de la tâche"
+    "task-id": "ID de la tâche",
+    "task-will-be-triggered": "La tâche sera exécutée"
   }
 }

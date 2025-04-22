@@ -798,6 +798,7 @@
   },
   "system": {
     "all-job-queues": "כל התורים של משימות",
+    "could-not-trigger-task": "לא ניתן להפעיל את המשימה",
     "health-all-systems-up": "כל המערכות פועלות",
     "health-error": "שגיאה: יש תקלות באחת או יותר מהמערכות!",
     "health-last-checked": "נבדק לאחרונה בתאריך",
@@ -821,7 +822,9 @@
     "last-executed-at": "התבצע לאחרונה בתאריך",
     "last-result": "תוצאה אחרונה",
     "next-execution-at": "התבצע הבא בתאריך",
+    "run-task": "הפעל משימה",
     "schedule": "תיקון",
-    "task-id": "מזהה משימה"
+    "task-id": "מזהה משימה",
+    "task-will-be-triggered": "המשימה תתבצע"
   }
 }

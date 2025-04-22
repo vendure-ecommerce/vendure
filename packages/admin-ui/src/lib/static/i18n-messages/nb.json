@@ -798,6 +798,7 @@
   },
   "system": {
     "all-job-queues": "Alle jobbkøer",
+    "could-not-trigger-task": "Kunne ikke aktivere jobben",
     "health-all-systems-up": "Alle systemer er oppe",
     "health-error": "Feil: ett eller flere systemer er nede!",
     "health-last-checked": "Sist sjekket",
@@ -821,7 +822,9 @@
     "last-executed-at": "Sist kjørt",
     "last-result": "Siste resultat",
     "next-execution-at": "Neste kjøring",
+    "run-task": "Kjør jobb",
     "schedule": "Plan",
-    "task-id": "Jobb-ID"
+    "task-id": "Jobb-ID",
+    "task-will-be-triggered": "Jobben vil bli kjørt"
   }
 }

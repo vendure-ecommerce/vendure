@@ -798,6 +798,7 @@
   },
   "system": {
     "all-job-queues": "Sve redove zadataka",
+    "could-not-trigger-task": "Nije moguće aktivirati zadatak",
     "health-all-systems-up": "Svi sistemi su dostupni",
     "health-error": "Greška: jedan ili više sistema je nedostupno!",
     "health-last-checked": "Poslednja provera",
@@ -821,7 +822,9 @@
     "last-executed-at": "Poslednja izvršenja",
     "last-result": "Poslednji rezultat",
     "next-execution-at": "Sljedeće izvršenje",
+    "run-task": "Izvrši zadatak",
     "schedule": "Planiranje",
-    "task-id": "ID zadatka"
+    "task-id": "ID zadatka",
+    "task-will-be-triggered": "Zadatak će biti izvršen"
   }
 }

@@ -798,6 +798,7 @@
   },
   "system": {
     "all-job-queues": "所有任務隊列",
+    "could-not-trigger-task": "無法觸發任務",
     "health-all-systems-up": "所有系統正常運行",
     "health-error": "系統錯誤",
     "health-last-checked": "上次檢查",
@@ -821,7 +822,9 @@
     "last-executed-at": "上次執行",
     "last-result": "上次結果",
     "next-execution-at": "下次執行",
+    "run-task": "執行任務",
     "schedule": "計劃",
-    "task-id": "任務ID"
+    "task-id": "任務ID",
+    "task-will-be-triggered": "任務將被觸發"
   }
 }
