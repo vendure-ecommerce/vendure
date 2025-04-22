@@ -9,6 +9,7 @@ input UpdateScheduledTaskInput {
 
 type Mutation {
     updateScheduledTask(input: UpdateScheduledTaskInput!): ScheduledTask!
+    runScheduledTask(id: String!): Success!
 }
 
 type ScheduledTask {

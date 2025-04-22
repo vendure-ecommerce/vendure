@@ -13,6 +13,7 @@ import { SchedulerStrategy, TaskReport } from '../../scheduler/scheduler-strateg
 import { DEFAULT_SCHEDULER_PLUGIN_OPTIONS } from './constants';
 import { ScheduledTaskRecord } from './scheduled-task-record.entity';
 import { DefaultSchedulerPluginOptions } from './types';
+
 /**
  * @description
  * The default {@link SchedulerStrategy} implementation that uses the database to
@@ -25,19 +26,28 @@ import { DefaultSchedulerPluginOptions } from './types';
 export class DefaultSchedulerStrategy implements SchedulerStrategy {
     private connection: TransactionalConnection;
     private injector: Injector;
-    private processContext: ProcessContext;
+    private intervalRef: NodeJS.Timeout | undefined;
     private tasks: Map<string, { task: ScheduledTask; isRegistered: boolean }> = new Map();
     private pluginOptions: DefaultSchedulerPluginOptions;
     private runningTasks: ScheduledTask[] = [];
 
     init(injector: Injector) {
         this.connection = injector.get(TransactionalConnection);
-        this.processContext = injector.get(ProcessContext);
         this.pluginOptions = injector.get(DEFAULT_SCHEDULER_PLUGIN_OPTIONS);
         this.injector = injector;
+
+        if (injector.get(ProcessContext).isWorker) {
+            this.intervalRef = setInterval(
+                () => this.checkForManuallyTriggeredTasks(),
+                this.pluginOptions.manualTriggerCheckInterval as number,
+            );
+        }
     }
 
     async destroy() {
+        if (this.intervalRef) {
+            clearInterval(this.intervalRef);
+        }
         for (const task of this.runningTasks) {
             await this.connection.rawConnection
                 .getRepository(ScheduledTaskRecord)
@@ -46,11 +56,15 @@ export class DefaultSchedulerStrategy implements SchedulerStrategy {
         }
     }
 
+    registerTask(task: ScheduledTask): void {
+        this.tasks.set(task.id, {
+            task,
+            isRegistered: false,
+        });
+    }
+
     executeTask(task: ScheduledTask) {
-        return async (job: Cron) => {
-            if (this.processContext.isServer) {
-                return;
-            }
+        return async (job?: Cron) => {
             await this.ensureTaskIsRegistered(task);
             const taskEntity = await this.connection.rawConnection
                 .getRepository(ScheduledTaskRecord)
@@ -145,6 +159,40 @@ export class DefaultSchedulerStrategy implements SchedulerStrategy {
             .where('taskId = :id', { id: input.id })
             .execute();
         return assertFound(this.getTask(input.id));
+    }
+
+    async triggerTask(task: ScheduledTask): Promise<void> {
+        Logger.info(`Triggering task: ${task.id}`);
+        await this.ensureTaskIsRegistered(task);
+        await this.connection.rawConnection
+            .getRepository(ScheduledTaskRecord)
+            .createQueryBuilder('task')
+            .update()
+            .set({ manuallyTriggeredAt: new Date() })
+            .where('taskId = :id', { id: task.id })
+            .execute();
+    }
+
+    private async checkForManuallyTriggeredTasks() {
+        const taskEntities = await this.connection.rawConnection
+            .getRepository(ScheduledTaskRecord)
+            .createQueryBuilder('task')
+            .where('task.manuallyTriggeredAt IS NOT NULL')
+            .getMany();
+
+        Logger.debug(`Checking for manually triggered tasks: ${taskEntities.length}`);
+
+        for (const taskEntity of taskEntities) {
+            await this.connection.rawConnection
+                .getRepository(ScheduledTaskRecord)
+                .update({ taskId: taskEntity.taskId }, { manuallyTriggeredAt: null });
+
+            const task = this.tasks.get(taskEntity.taskId);
+            if (task) {
+                Logger.info(`Executing manually triggered task: ${task.task.id}`);
+                void this.executeTask(task.task)();
+            }
+        }
     }
 
     private entityToReport(task: ScheduledTaskRecord): TaskReport {

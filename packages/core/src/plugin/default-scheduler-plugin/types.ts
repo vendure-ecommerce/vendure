@@ -14,4 +14,11 @@ export interface DefaultSchedulerPluginOptions {
      * @default 60_000ms
      */
     defaultTimeout?: string | number;
+    /**
+     * @description
+     * The interval at which the plugin will check for manually triggered tasks.
+     *
+     * @default 10_000ms
+     */
+    manualTriggerCheckInterval?: string | number;
 }

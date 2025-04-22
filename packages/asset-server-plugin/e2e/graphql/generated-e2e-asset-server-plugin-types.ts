@@ -2925,6 +2925,7 @@ export type Mutation = {
     /** Removes StockLocations from the specified Channel */
     removeStockLocationsFromChannel: Array<StockLocation>;
     runPendingSearchIndexUpdates: Success;
+    runScheduledTask: Success;
     setCustomerForDraftOrder: SetCustomerForDraftOrderResult;
     /** Sets the billing address for a draft Order */
     setDraftOrderBillingAddress: Order;
@@ -3492,6 +3493,10 @@ export type MutationRemoveShippingMethodsFromChannelArgs = {
 
 export type MutationRemoveStockLocationsFromChannelArgs = {
     input: RemoveStockLocationsFromChannelInput;
+};
+
+export type MutationRunScheduledTaskArgs = {
+    id: Scalars['String']['input'];
 };
 
 export type MutationSetCustomerForDraftOrderArgs = {
