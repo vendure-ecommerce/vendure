@@ -104,6 +104,7 @@ export interface ApiOptions {
      * The playground config to the admin GraphQL API
      * [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
      *
+     * @deprecated Use `\@vendure/graphiql-plugin` instead.
      * @default false
      */
     adminApiPlayground?: boolean | RenderPageOptions;
@@ -112,6 +113,7 @@ export interface ApiOptions {
      * The playground config to the shop GraphQL API
      * [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
      *
+     * @deprecated Use `\@vendure/graphiql-plugin` instead.
      * @default false
      */
     shopApiPlayground?: boolean | RenderPageOptions;
