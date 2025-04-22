@@ -798,6 +798,7 @@
   },
   "system": {
     "all-job-queues": "全てのジョブキュー",
+    "could-not-trigger-task": "タスクを実行できませんでした",
     "health-all-systems-up": "全システム稼働中",
     "health-error": "エラー: 1つ以上のシステムがダウンしています！",
     "health-last-checked": "最終チェック日時",
@@ -821,7 +822,9 @@
     "last-executed-at": "最後の実行日時",
     "last-result": "最後の結果",
     "next-execution-at": "次回の実行日時",
+    "run-task": "タスクを実行",
     "schedule": "スケジュール",
-    "task-id": "タスクID"
+    "task-id": "タスクID",
+    "task-will-be-triggered": "タスクが実行されます"
   }
 }

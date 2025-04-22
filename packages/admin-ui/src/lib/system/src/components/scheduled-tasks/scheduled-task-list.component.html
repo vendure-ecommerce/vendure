@@ -75,6 +75,19 @@
                     <vdr-dropdown-menu vdrPosition="bottom-right">
                         <button
                             type="button"
+                            *ngIf="task.enabled"
+                            class=""
+                            (click)="runTask(task)"
+                            [disabled]="!(['UpdateSettings', 'UpdateSystem'] | hasPermission)"
+                            vdrDropdownItem
+                        >
+                            <clr-icon shape="play" class=""></clr-icon>
+                            <div>
+                                {{ 'system.run-task' | translate }}
+                            </div>
+                        </button>
+                        <button
+                            type="button"
                             class="delete-button"
                             (click)="toggleEnabled(task)"
                             [disabled]="!(['UpdateSettings', 'UpdateSystem'] | hasPermission)"

@@ -1,8 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { _ } from '@ngx-translate/core';
 import {
     DataService,
     GetAllScheduledTasksQuery,
+    NotificationService,
+    RunTaskMutation,
+    RunTaskMutationVariables,
     ToggleScheduledTaskEnabledMutation,
     ToggleScheduledTaskEnabledMutationVariables,
 } from '@vendure/admin-ui/core';
@@ -34,6 +38,14 @@ const TOGGLE_SCHEDULED_TASK_ENABLED = gql`
     }
 `;
 
+const RUN_TASK = gql`
+    mutation RunTask($id: String!) {
+        runScheduledTask(id: $id) {
+            success
+        }
+    }
+`;
+
 @Component({
     selector: 'vdr-scheduled-task-list',
     templateUrl: './scheduled-task-list.component.html',
@@ -45,7 +57,10 @@ export class ScheduledTaskListComponent implements OnInit {
     tasks$: Observable<GetAllScheduledTasksQuery['scheduledTasks']>;
     liveUpdate = new FormControl(true);
 
-    constructor(private dataService: DataService) {}
+    constructor(
+        private dataService: DataService,
+        private notificationService: NotificationService,
+    ) {}
 
     ngOnInit(): void {
         this.tasks$ = this.dataService
@@ -68,5 +83,19 @@ export class ScheduledTaskListComponent implements OnInit {
                 },
             )
             .subscribe();
+    }
+
+    runTask(task: GetAllScheduledTasksQuery['scheduledTasks'][0]) {
+        this.dataService
+            .mutate<RunTaskMutation, RunTaskMutationVariables>(RUN_TASK, {
+                id: task.id,
+            })
+            .subscribe(result => {
+                if (result.runScheduledTask.success) {
+                    this.notificationService.success(_('system.task-will-be-triggered'));
+                } else {
+                    this.notificationService.error(_('system.could-not-trigger-task'));
+                }
+            });
     }
 }

@@ -798,6 +798,7 @@
   },
   "system": {
     "all-job-queues": "جميع قوائم انتظار الوظائف",
+    "could-not-trigger-task": "لم يتم تنفيذ المهمة",
     "health-all-systems-up": "جميع الأنظمة",
     "health-error": "خطأ: نظام واحد أو أكثر من الانخفاض!",
     "health-last-checked": "آخر فحص",
@@ -821,7 +822,9 @@
     "last-executed-at": "آخر تنفيذ",
     "last-result": "آخر نتيجة",
     "next-execution-at": "التالي",
+    "run-task": "تنفيذ المهمة",
     "schedule": "الجدول",
-    "task-id": "معرف المهمة"
+    "task-id": "معرف المهمة",
+    "task-will-be-triggered": "سيتم تنفيذ المهمة"
   }
 }

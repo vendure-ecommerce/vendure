@@ -798,6 +798,7 @@
   },
   "system": {
     "all-job-queues": "Todas las colas de trabajo",
+    "could-not-trigger-task": "No se pudo activar la tarea",
     "health-all-systems-up": "Todos los sistemas activos",
     "health-error": "Error: uno o más sistemas inactivos",
     "health-last-checked": "Última revisión",
@@ -821,7 +822,9 @@
     "last-executed-at": "Última ejecución",
     "last-result": "Último resultado",
     "next-execution-at": "Próxima ejecución",
+    "run-task": "Ejecutar tarea",
     "schedule": "Programación",
-    "task-id": "ID de la tarea"
+    "task-id": "ID de la tarea",
+    "task-will-be-triggered": "Se ejecutará la tarea"
   }
 }

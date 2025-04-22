@@ -798,6 +798,7 @@
   },
   "system": {
     "all-job-queues": "صف صف های وظایف",
+    "could-not-trigger-task": "نمی تواند وظیفه را اجرا کند",
     "health-all-systems-up": "همه بخش ها بدرستی کار میکند.",
     "health-error": "خطا! یک بخش یا بیشتر از سیستم از دسترس خارج شده است.",
     "health-last-checked": "زمان آخرین بررسی",
@@ -821,7 +822,9 @@
     "last-executed-at": "آخرین اجرا",
     "last-result": "آخرین نتیجه",
     "next-execution-at": "تالی",
+    "run-task": "اجرا کار",
     "schedule": "جدول",
-    "task-id": "شناسه کار"
+    "task-id": "شناسه کار",
+    "task-will-be-triggered": "کار اجرا خواهد شد"
   }
 }

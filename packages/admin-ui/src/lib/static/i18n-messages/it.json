@@ -798,6 +798,7 @@
   },
   "system": {
     "all-job-queues": "Tutte le operazioni",
+    "could-not-trigger-task": "Non è stato possibile attivare la task",
     "health-all-systems-up": "I sistemi sono attivi",
     "health-error": "Errore: uno o più sistemi sono inattivi!",
     "health-last-checked": "Ultimo controllo",
@@ -821,7 +822,9 @@
     "last-executed-at": "Ultimo esecuzione",
     "last-result": "Ultimo risultato",
     "next-execution-at": "Prossima esecuzione",
+    "run-task": "Esegui task",
     "schedule": "Programmazione",
-    "task-id": "ID attività"
+    "task-id": "ID attività",
+    "task-will-be-triggered": "La task sarà eseguita"
   }
 }

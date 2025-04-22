@@ -798,6 +798,7 @@
   },
   "system": {
     "all-job-queues": "Alle Job-Warteschlangen",
+    "could-not-trigger-task": "Konnte Aufgabe nicht ausführen",
     "health-all-systems-up": "Alle Systeme betriebsbereit",
     "health-error": "Fehler: Ein oder mehrere Systeme sind ausgefallen!",
     "health-last-checked": "Zuletzt überprüft",
@@ -821,7 +822,9 @@
     "last-executed-at": "Letzte Ausführung",
     "last-result": "Letztes Ergebnis",
     "next-execution-at": "Nächste Ausführung",
+    "run-task": "Aufgabe ausführen",
     "schedule": "Plan",
-    "task-id": "Aufgaben-ID"
+    "task-id": "Aufgaben-ID",
+    "task-will-be-triggered": "Aufgabe wird ausgeführt"
   }
 }

@@ -798,6 +798,7 @@
   },
   "system": {
     "all-job-queues": "Kolejka wszystkich zadań",
+    "could-not-trigger-task": "Nie można uruchomić zadania",
     "health-all-systems-up": "Wszystkie systemy działają",
     "health-error": "Błąd: jeden lub więcej systemów nie działa!",
     "health-last-checked": "Ostatnio sprawdzono",
@@ -821,7 +822,9 @@
     "last-executed-at": "Ostatnio wykonano",
     "last-result": "Ostatni wynik",
     "next-execution-at": "Następne wykonanie",
+    "run-task": "Uruchom zadanie",
     "schedule": "Harmonogram",
-    "task-id": "ID zadania"
+    "task-id": "ID zadania",
+    "task-will-be-triggered": "Zadanie zostanie uruchomione"
   }
 }

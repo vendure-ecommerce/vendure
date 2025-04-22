@@ -798,6 +798,7 @@
   },
   "system": {
     "all-job-queues": "Tüm görev kuyrukları",
+    "could-not-trigger-task": "Görevi tetikleyemedik",
     "health-all-systems-up": "Tüm sistemler çalışıyor",
     "health-error": "Hata: bir veya daha fazla sistem arızalı!",
     "health-last-checked": "Son kontrol",
@@ -821,7 +822,9 @@
     "last-executed-at": "Son çalıştırma",
     "last-result": "Son sonuç",
     "next-execution-at": "Sonraki çalıştırma",
+    "run-task": "Görevi çalıştır",
     "schedule": "Plan",
-    "task-id": "Görev ID"
+    "task-id": "Görev ID",
+    "task-will-be-triggered": "Görev çalıştırılacak"
   }
 }

@@ -798,6 +798,7 @@
   },
   "system": {
     "all-job-queues": "Все очереди заданий",
+    "could-not-trigger-task": "Не удалось активировать задачу",
     "health-all-systems-up": "Все системы включены",
     "health-error": "Ошибка: одна или несколько систем не работают!",
     "health-last-checked": "Последний раз проверено",
@@ -821,7 +822,9 @@
     "last-executed-at": "Последнее выполнение",
     "last-result": "Последний результат",
     "next-execution-at": "Следующее выполнение",
+    "run-task": "Выполнить задачу",
     "schedule": "Расписание",
-    "task-id": "ID задачи"
+    "task-id": "ID задачи",
+    "task-will-be-triggered": "Задача будет выполнена"
   }
 }
