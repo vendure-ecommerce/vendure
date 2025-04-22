@@ -985,6 +985,18 @@ export interface SchedulerOptions {
      * The tasks to be executed.
      */
     tasks?: ScheduledTask[];
+
+    /**
+     * @description
+     * Whether to run tasks only in the worker process. Generally this should
+     * be left as true, since tasks may involve expensive operations that should
+     * not be allowed to interfere with the server responsiveness.
+     *
+     * This option mainly exists for testing purposes.
+     *
+     * @default true
+     */
+    runTasksInWorkerOnly?: boolean;
 }
 
 /**
