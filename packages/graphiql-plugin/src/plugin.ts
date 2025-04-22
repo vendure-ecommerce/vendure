@@ -9,6 +9,7 @@ import {
     VendurePlugin,
 } from '@vendure/core';
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import fs from 'fs';
 import path from 'path';
 
@@ -101,8 +102,15 @@ export class GraphiQLPlugin implements NestModule {
         const adminApiUrl = this.graphiQLService.getAdminApiUrl();
         const shopApiUrl = this.graphiQLService.getShopApiUrl();
 
+        // Configure rate limiter: maximum of 100 requests per 15 minutes
+        const limiter = rateLimit({
+            windowMs: 15 * 60 * 1000, // 15 minutes
+            max: 100, // limit each IP to 100 requests per windowMs
+        });
+
         const graphiqlServer = express.Router();
         graphiqlServer.use(express.static(`${basePath}/${subPath}`));
+        graphiqlServer.use(limiter);
         graphiqlServer.use((req, res) => {
             try {
                 const indexHtmlPath = path.join(distDir, 'index.html');
