@@ -9,6 +9,7 @@ import {
     Users,
 } from 'lucide-react';
 
+import { registerAlert } from './alert/alert-extensions.js';
 import { LatestOrdersWidget } from './dashboard-widget/latest-orders-widget/index.js';
 import { MetricsWidget } from './dashboard-widget/metrics-widget/index.js';
 import { OrdersSummaryWidget } from './dashboard-widget/orders-summary/index.js';
@@ -221,4 +222,33 @@ export function registerDefaults() {
         component: OrdersSummaryWidget,
         defaultSize: { w: 6, h: 3, x: 6, y: 0 },
     });
+
+    // registerAlert<boolean>({
+    //     id: 'test-alert',
+    //     title: data => `Test Alert ${String(data)}`,
+    //     description: 'This is a test alert',
+    //     severity: 'info',
+    //     check: () => Promise.resolve(true),
+    //     actions: [
+    //         {
+    //             label: 'Test Action',
+    //             onClick: () => console.log('Test Action'),
+    //         },
+    //     ],
+    // });
+
+    // registerAlert<boolean>({
+    //     id: 'test-alert-2',
+    //     title: 'Test Alert 2',
+    //     description: 'This is a test alert 2',
+    //     severity: 'info',
+    //     check: () => Promise.resolve(true),
+    //     shouldShow: data => data === true,
+    //     actions: [
+    //         {
+    //             label: 'Test Action',
+    //             onClick: () => console.log('Test Action'),
+    //         },
+    //     ],
+    // });
 }

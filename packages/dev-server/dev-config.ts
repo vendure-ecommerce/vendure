@@ -97,7 +97,7 @@ export const devConfig: VendureConfig = {
         tasks: [
             new ScheduledTask({
                 id: 'test-job',
-                description: 'A test job that doesn\'t do anything',
+                description: "A test job that doesn't do anything",
                 schedule: '*/20 * * * * *',
                 async execute(injector) {
                     await new Promise(resolve => setTimeout(resolve, 10_000));
@@ -117,7 +117,7 @@ export const devConfig: VendureConfig = {
         //     platformFeePercent: 10,
         //     platformFeeSKU: 'FEE',
         // }),
-        ReviewsPlugin,
+        // ReviewsPlugin,
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),

@@ -2,6 +2,7 @@ import { NavMenuItem } from '@/framework/nav-menu/nav-menu-extensions.js';
 import { AnyRoute, RouteOptions } from '@tanstack/react-router';
 import React from 'react';
 
+import { DashboardAlertDefinition } from '../alert/types.js';
 import { DashboardWidgetDefinition } from '../dashboard-widget/types.js';
 import { PageContext } from '../layout-engine/page-layout.js';
 
@@ -55,4 +56,5 @@ export interface DashboardExtension {
     widgets: DashboardWidgetDefinition[];
     actionBarItems: DashboardActionBarItem[];
     pageBlocks: DashboardPageBlockDefinition[];
+    alerts: DashboardAlertDefinition[];
 }
