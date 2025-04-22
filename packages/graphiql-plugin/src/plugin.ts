@@ -50,6 +50,9 @@ import { GraphiQLPluginOptions } from './types';
         },
     ],
     configuration: config => {
+        // disable GraphQL playground in config
+        config.apiOptions.adminApiPlayground = false;
+        config.apiOptions.shopApiPlayground = false;
         return config;
     },
     compatibility: '^3.0.0',
