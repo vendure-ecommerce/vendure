@@ -7,7 +7,7 @@ interface AlertItemProps extends ComponentProps<'div'> {
     alert: DashboardAlertDefinition;
 }
 
-export function AlertItem({ alert, className, ...props }: AlertItemProps) {
+export function AlertItem({ alert, className, ...props }: Readonly<AlertItemProps>) {
     const { data } = useQuery({
         queryKey: ['alert', alert.id],
         queryFn: () => alert.check(),
