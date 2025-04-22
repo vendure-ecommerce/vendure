@@ -198,6 +198,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     schedulerOptions: {
         schedulerStrategy: new NoopSchedulerStrategy(),
         tasks: [cleanSessionsTask],
+        runTasksInWorkerOnly: true,
     },
     customFields: {
         Address: [],
