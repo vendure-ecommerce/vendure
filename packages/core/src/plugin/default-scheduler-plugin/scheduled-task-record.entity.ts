@@ -15,13 +15,13 @@ export class ScheduledTaskRecord extends VendureEntity {
     @Column({ default: true })
     enabled: boolean;
 
-    @Column({ nullable: true, type: 'datetime', precision: 3 })
+    @Column({ type: Date, nullable: true, precision: 3 })
     lockedAt: Date | null;
 
-    @Column({ nullable: true, type: 'datetime', precision: 3 })
+    @Column({ type: Date, nullable: true, precision: 3 })
     lastExecutedAt: Date | null;
 
-    @Column({ nullable: true, type: 'datetime', precision: 3 })
+    @Column({ type: Date, nullable: true, precision: 3 })
     manuallyTriggeredAt: Date | null;
 
     @Column({ type: 'json', nullable: true })
