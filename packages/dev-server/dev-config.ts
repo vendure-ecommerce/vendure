@@ -3,11 +3,10 @@ import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
-    DefaultLogger,
     DefaultSearchPlugin,
     dummyPaymentHandler,
     LanguageCode,
-    LogLevel,
+    OtelLogger,
     VendureConfig,
 } from '@vendure/core';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
@@ -84,7 +83,7 @@ export const devConfig: VendureConfig = {
             },
         ],
     },
-    logger: new DefaultLogger({ level: LogLevel.Info }),
+    logger: new OtelLogger(),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },

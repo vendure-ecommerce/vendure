@@ -29,7 +29,9 @@
         "@opentelemetry/resources": "^2.0.0",
         "@opentelemetry/sdk-node": "^0.200.0",
         "@opentelemetry/context-async-hooks": "^2.0.0",
-        "@vendure/common": "3.2.2"
+        "@vendure/common": "3.2.2",
+        "@opentelemetry/exporter-logs-otlp-proto": "^0.200.0",
+        "@opentelemetry/sdk-logs": "^0.200.0"
     },
     "devDependencies": {
         "typescript": "5.8.2"

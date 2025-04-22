@@ -32,6 +32,7 @@
         "csv-stringify": "^6.4.6",
         "dayjs": "^1.11.10",
         "jsdom": "^26.0.0",
-        "progress": "^2.0.3"
+        "progress": "^2.0.3",
+        "@opentelemetry/exporter-logs-otlp-proto": "^0.200.0"
     }
 }
