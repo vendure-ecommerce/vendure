@@ -1,0 +1,32 @@
+{
+    "name": "@vendure/dashboard-plugin",
+    "version": "3.2.3",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist/**/*"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/vendure-ecommerce/vendure"
+    },
+    "license": "GPL-3.0-or-later",
+    "scripts": {
+        "build": "rimraf dist && node -r ts-node/register build.ts && npm run compile",
+        "watch": "tsc -p ./tsconfig.build.json --watch",
+        "lint": "eslint --fix .",
+        "compile": "tsc -p ./tsconfig.build.json"
+    },
+    "homepage": "https://www.vendure.io",
+    "funding": "https://github.com/sponsors/michaelbromley",
+    "publishConfig": {
+        "access": "public"
+    },
+    "devDependencies": {
+        "@vendure/common": "3.2.3",
+        "@vendure/core": "3.2.3",
+        "rimraf": "^5.0.5",
+        "typescript": "5.8.2"
+    },
+    "dependencies": {}
+}
