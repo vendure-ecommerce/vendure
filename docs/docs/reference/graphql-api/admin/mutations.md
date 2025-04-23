@@ -1418,6 +1418,15 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
+## runScheduledTask
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>
+<div class="graphql-code-line ">runScheduledTask(id: <a href="/reference/graphql-api/admin/object-types#string">String</a>!): <a href="/reference/graphql-api/admin/object-types#success">Success</a>!</div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
 ## setCustomerForDraftOrder
 <div class="graphql-code-block">
 <div class="graphql-code-line top-level">type <span class="graphql-code-identifier">Mutation</span> &#123;</div>

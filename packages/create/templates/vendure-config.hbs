@@ -8,6 +8,7 @@ import {
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
+import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
 import 'dotenv/config';
 import path from 'path';
 
@@ -23,13 +24,7 @@ export const config: VendureConfig = {
         // but are best turned off for production for security
         // reasons.
         ...(IS_DEV ? {
-            adminApiPlayground: {
-                settings: { 'request.credentials': 'include' },
-            },
             adminApiDebug: true,
-            shopApiPlayground: {
-                settings: { 'request.credentials': 'include' },
-            },
             shopApiDebug: true,
         } : {}),
     },
@@ -75,6 +70,7 @@ export const config: VendureConfig = {
     // need to be updated. See the "Migrations" section in README.md.
     customFields: {},
     plugins: [
+        GraphiqlPlugin.init(),
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, '../static/assets'),

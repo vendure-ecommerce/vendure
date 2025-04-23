@@ -58,6 +58,10 @@ const sections: DocsSectionConfig[] = [
         outputPath: '',
     },
     {
+        sourceDirs: ['packages/graphiql-plugin/src/'],
+        outputPath: '',
+    },
+    {
         sourceDirs: ['packages/admin-ui/src/lib/', 'packages/ui-devkit/src/'],
         exclude: [/generated-types/],
         outputPath: 'admin-ui-api',

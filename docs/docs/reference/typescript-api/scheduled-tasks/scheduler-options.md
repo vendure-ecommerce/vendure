@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SchedulerOptions
 
-<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="974" packageName="@vendure/core" since="3.3.0" />
+<GenerationInfo sourceFile="packages/core/src/config/vendure-config.ts" sourceLine="976" packageName="@vendure/core" since="3.3.0" />
 
 Options related to scheduled tasks..
 
@@ -19,6 +19,7 @@ Options related to scheduled tasks..
 interface SchedulerOptions {
     schedulerStrategy?: SchedulerStrategy;
     tasks?: ScheduledTask[];
+    runTasksInWorkerOnly?: boolean;
 }
 ```
 
@@ -36,6 +37,15 @@ The strategy used to execute scheduled tasks. If you are using the
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/scheduled-tasks/scheduled-task#scheduledtask'>ScheduledTask</a>[]`}   />
 
 The tasks to be executed.
+### runTasksInWorkerOnly
+
+<MemberInfo kind="property" type={`boolean`} default={`true`}   />
+
+Whether to run tasks only in the worker process. Generally this should
+be left as true, since tasks may involve expensive operations that should
+not be allowed to interfere with the server responsiveness.
+
+This option mainly exists for testing purposes.
 
 
 </div>
