@@ -389,7 +389,8 @@ function reportDiagnostics(program: ts.Program, emitResult: ts.EmitResult, logge
             const { line, character } = ts.getLineAndCharacterOfPosition(diagnostic.file, diagnostic.start);
             const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
             const logFn = diagnostic.category === ts.DiagnosticCategory.Error ? logger.warn : logger.info;
-            logFn(
+            // eslint-disable-next-line no-console
+            console.log(
                 `TS${diagnostic.code} ${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`,
             );
             if (diagnostic.category === ts.DiagnosticCategory.Error) {
@@ -398,7 +399,8 @@ function reportDiagnostics(program: ts.Program, emitResult: ts.EmitResult, logge
         } else {
             const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
             const logFn = diagnostic.category === ts.DiagnosticCategory.Error ? logger.warn : logger.info;
-            logFn(`TS${diagnostic.code}: ${message}`);
+            // eslint-disable-next-line no-console
+            console.log(`TS${diagnostic.code}: ${message}`);
             if (diagnostic.category === ts.DiagnosticCategory.Error) {
                 hasEmitErrors = true;
             }

@@ -21,6 +21,12 @@ export default ({ mode }: { mode: string }) => {
         isLocalDev: process.env.IS_LOCAL_DEV,
     });
 
+    const vendureConfigPath = process.env.VITEST ?
+        // This should always be used for running the tests
+        './sample-vendure-config.ts'
+        // This one might be changed to '../dev-server/dev-config.ts' to test ui extensions
+        : './sample-vendure-config.ts';
+
     return defineConfig({
         test: {
             globals: true,
@@ -28,7 +34,7 @@ export default ({ mode }: { mode: string }) => {
         },
         plugins: [
             vendureDashboardPlugin({
-                vendureConfigPath: pathToFileURL('../dev-server/dev-config.ts'),
+                vendureConfigPath: pathToFileURL(vendureConfigPath),
                 adminUiConfig: { apiHost: adminApiHost, apiPort: adminApiPort },
                 // gqlTadaOutputPath: path.resolve(__dirname, './graphql/'),
                 tempCompilationDir: path.resolve(__dirname, './.temp'),
