@@ -79,6 +79,9 @@ export class ProductService {
     ): Promise<PaginatedList<Translated<Product>>> {
         const span = getActiveSpan();
         span?.setAttribute('channelId', ctx.channelId.toString());
+        span?.addEvent('channelId', {
+            channelId: ctx.channelId.toString(),
+        });
 
         const effectiveRelations = relations || this.relations.slice();
         const customPropertyMap: { [name: string]: string } = {};

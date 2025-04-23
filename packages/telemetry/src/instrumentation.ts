@@ -1,6 +1,7 @@
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { AsyncLocalStorageContextManager } from '@opentelemetry/context-async-hooks';
 import { resourceFromAttributes } from '@opentelemetry/resources';
+import { ConsoleLogRecordExporter, SimpleLogRecordProcessor } from '@opentelemetry/sdk-logs';
 import { NodeSDKConfiguration } from '@opentelemetry/sdk-node';
 import { ConsoleSpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
 
@@ -8,14 +9,16 @@ export function getSdkConfiguration(
     devMode: boolean = false,
     config: Partial<NodeSDKConfiguration> = {},
 ): Partial<NodeSDKConfiguration> {
-    const { spanProcessors, ...rest } = config;
+    const { spanProcessors, logRecordProcessors, ...rest } = config;
 
     const devModeAwareConfig: Partial<NodeSDKConfiguration> = devMode
         ? {
               spanProcessors: [new SimpleSpanProcessor(new ConsoleSpanExporter())],
+              logRecordProcessors: [new SimpleLogRecordProcessor(new ConsoleLogRecordExporter())],
           }
         : {
               spanProcessors,
+              logRecordProcessors,
           };
 
     return {

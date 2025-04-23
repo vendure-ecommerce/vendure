@@ -49,16 +49,18 @@ export class CacheService {
     @Span('CacheService.get')
     async get<T extends JsonCompatible<T>>(key: string): Promise<T | undefined> {
         const span = getActiveSpan();
-        span?.setAttribute('cache.key', key);
+
         try {
             const result = await this.cacheStrategy.get(key);
             if (result) {
                 span?.setAttribute('cache.hit', true);
+                span?.addEvent('cache.hit', { key });
                 Logger.debug(`CacheService hit for key [${key}]`);
             }
-            span?.end();
             return result as T;
         } catch (e: any) {
+            span?.setAttribute('cache.hit', false);
+            span?.addEvent('cache.miss', { key });
             Logger.error(`Could not get key [${key}] from CacheService`, undefined, e.stack);
         }
     }

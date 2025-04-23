@@ -15,9 +15,9 @@ process.env.OTEL_LOGS_EXPORTER = 'otlp';
 
 const logExporter = new OTLPLogExporter();
 
-const config = getSdkConfiguration(false, {
+const config = getSdkConfiguration(true, {
     spanProcessors: [new BatchSpanProcessor(traceExporter)],
-    logRecordProcessor: new BatchLogRecordProcessor(logExporter),
+    logRecordProcessors: [new BatchLogRecordProcessor(logExporter)],
     resource: resourceFromAttributes({
         'service.name': 'vendure-dev-server',
     }),
