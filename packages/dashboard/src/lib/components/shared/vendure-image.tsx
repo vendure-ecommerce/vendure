@@ -70,7 +70,7 @@ export function VendureImage({
     }
 
     // Apply focal point if available and requested
-    if (useFocalPoint && asset.focalPoint && mode === 'crop') {
+    if (useFocalPoint && asset.focalPoint) {
         url.searchParams.set('fpx', asset.focalPoint.x.toString());
         url.searchParams.set('fpy', asset.focalPoint.y.toString());
     }

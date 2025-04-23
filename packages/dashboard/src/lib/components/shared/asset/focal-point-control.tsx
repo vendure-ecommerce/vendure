@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils.js';
 
-interface Point {
+export interface Point {
     x: number;
     y: number;
 }
