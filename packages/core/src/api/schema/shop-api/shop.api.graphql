@@ -71,7 +71,7 @@ type Mutation {
     "Adds an item to the Order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available."
     addItemToOrder(productVariantId: ID!, quantity: Int!): UpdateOrderItemsResult!
     "Adds mutliple items to the Order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available."
-    addItemsToOrder(productVariantId: ID!, quantity: Int!): UpdateOrderItemsResult!
+    addItemsToOrder(inputs: [AddItemInput!]!): UpdateMultipleOrderItemsResult!
     "Remove an OrderLine from the Order"
     removeOrderLine(orderLineId: ID!): RemoveOrderItemsResult!
     "Remove all OrderLine from the Order"
