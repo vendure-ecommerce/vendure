@@ -11,7 +11,9 @@ import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRoute, AnyRouter, useNavigate } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
 import { TableOptions } from '@tanstack/table-core';
+import { useUserSettings } from '@/hooks/use-user-settings.js';
 import { ResultOf } from 'gql.tada';
+
 import { addCustomFields } from '../document-introspection/add-custom-fields.js';
 import {
     FullWidthPageBlock,
@@ -81,11 +83,16 @@ export function ListPage<
     const route = typeof routeOrFn === 'function' ? routeOrFn() : routeOrFn;
     const routeSearch = route.useSearch();
     const navigate = useNavigate<AnyRouter>({ from: route.fullPath });
+    const { setTableSettings, settings } = useUserSettings();
+    const tableSettings = pageId ? settings.tableSettings?.[pageId] : undefined;
 
     const pagination = {
         page: routeSearch.page ? parseInt(routeSearch.page) : 1,
-        itemsPerPage: routeSearch.perPage ? parseInt(routeSearch.perPage) : 10,
+        itemsPerPage: routeSearch.perPage ? parseInt(routeSearch.perPage) : tableSettings?.pageSize ?? 10,
     };
+
+    const columnVisibility = pageId ? tableSettings?.columnVisibility : defaultVisibility;
+    const columnOrder = pageId ? tableSettings?.columnOrder : defaultColumnOrder;
 
     const sorting: SortingState = (routeSearch.sort ?? '')
         .split(',')
@@ -138,8 +145,8 @@ export function ListPage<
                         transformVariables={transformVariables}
                         customizeColumns={customizeColumns as any}
                         additionalColumns={additionalColumns as any}
-                        defaultColumnOrder={defaultColumnOrder}
-                        defaultVisibility={defaultVisibility}
+                        defaultColumnOrder={columnOrder as any}
+                        defaultVisibility={columnVisibility as any}
                         onSearchTermChange={onSearchTermChange}
                         page={pagination.page}
                         itemsPerPage={pagination.itemsPerPage}
@@ -147,12 +154,20 @@ export function ListPage<
                         columnFilters={routeSearch.filters}
                         onPageChange={(table, page, perPage) => {
                             persistListStateToUrl(table, { page, perPage });
+                            if (pageId) {
+                                setTableSettings(pageId, 'pageSize', perPage);
+                            }
                         }}
                         onSortChange={(table, sorting) => {
                             persistListStateToUrl(table, { sort: sorting });
                         }}
                         onFilterChange={(table, filters) => {
                             persistListStateToUrl(table, { filters });
+                        }}
+                        onColumnVisibilityChange={(table, columnVisibility) => {
+                            if (pageId) {
+                                setTableSettings(pageId, 'columnVisibility', columnVisibility);
+                            }
                         }}
                         facetedFilters={facetedFilters}
                         rowActions={rowActions}

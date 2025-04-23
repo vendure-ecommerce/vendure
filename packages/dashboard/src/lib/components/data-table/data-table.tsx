@@ -41,6 +41,7 @@ interface DataTableProps<TData, TValue> {
     onPageChange?: (table: TableType<TData>, page: number, itemsPerPage: number) => void;
     onSortChange?: (table: TableType<TData>, sorting: SortingState) => void;
     onFilterChange?: (table: TableType<TData>, columnFilters: ColumnFilter[]) => void;
+    onColumnVisibilityChange?: (table: TableType<TData>, columnVisibility: VisibilityState) => void;
     onSearchTermChange?: (searchTerm: string) => void;
     defaultColumnVisibility?: VisibilityState;
     facetedFilters?: { [key: string]: FacetedFilter | undefined };
@@ -64,6 +65,7 @@ export function DataTable<TData, TValue>({
     onSortChange,
     onFilterChange,
     onSearchTermChange,
+    onColumnVisibilityChange,
     defaultColumnVisibility,
     facetedFilters,
     disableViewOptions,
@@ -117,6 +119,11 @@ export function DataTable<TData, TValue>({
     useEffect(() => {
         onFilterChange?.(table, columnFilters);
     }, [columnFilters]);
+
+    useEffect(() => {
+        onColumnVisibilityChange?.(table, columnVisibility);
+    }, [columnVisibility]);
+
     return (
         <>
             <div className="flex justify-between items-start">
