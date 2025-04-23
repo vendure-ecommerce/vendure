@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DefaultSchedulerPlugin
 
-<GenerationInfo sourceFile="packages/core/src/plugin/default-scheduler-plugin/default-scheduler.plugin.ts" sourceLine="35" packageName="@vendure/core" since="3.3.0" />
+<GenerationInfo sourceFile="packages/core/src/plugin/default-scheduler-plugin/default-scheduler.plugin.ts" sourceLine="39" packageName="@vendure/core" since="3.3.0" />
 
 This plugin configures a default scheduling strategy that executes scheduled
 tasks using the database to ensure that each task is executed exactly once
@@ -37,8 +37,9 @@ export const config: VendureConfig = {
 class DefaultSchedulerPlugin {
     static options: DefaultSchedulerPluginOptions = {
         defaultTimeout: DEFAULT_TIMEOUT,
+        manualTriggerCheckInterval: DEFAULT_MANUAL_TRIGGER_CHECK_INTERVAL,
     };
-    init(config: DefaultSchedulerPluginOptions) => ;
+    init(config?: DefaultSchedulerPluginOptions) => ;
 }
 ```
 
@@ -51,7 +52,7 @@ class DefaultSchedulerPlugin {
 
 ### init
 
-<MemberInfo kind="method" type={`(config: <a href='/reference/typescript-api/scheduled-tasks/default-scheduler-plugin#defaultschedulerpluginoptions'>DefaultSchedulerPluginOptions</a>) => `}   />
+<MemberInfo kind="method" type={`(config?: <a href='/reference/typescript-api/scheduled-tasks/default-scheduler-plugin#defaultschedulerpluginoptions'>DefaultSchedulerPluginOptions</a>) => `}   />
 
 
 
@@ -68,6 +69,7 @@ The options for the <a href='/reference/typescript-api/scheduled-tasks/default-s
 ```ts title="Signature"
 interface DefaultSchedulerPluginOptions {
     defaultTimeout?: string | number;
+    manualTriggerCheckInterval?: string | number;
 }
 ```
 
@@ -78,6 +80,11 @@ interface DefaultSchedulerPluginOptions {
 <MemberInfo kind="property" type={`string | number`} default={`60_000ms`}   />
 
 The default timeout for scheduled tasks.
+### manualTriggerCheckInterval
+
+<MemberInfo kind="property" type={`string | number`} default={`10_000ms`}   />
+
+The interval at which the plugin will check for manually triggered tasks.
 
 
 </div>

@@ -26,9 +26,11 @@ this functionality.
 
 ```ts title="Signature"
 interface SchedulerStrategy extends InjectableStrategy {
-    executeTask(task: ScheduledTask): (job: Cron) => Promise<any> | any;
+    registerTask?(task: ScheduledTask): void;
+    executeTask(task: ScheduledTask): (job?: Cron) => Promise<any> | any;
     getTasks(): Promise<TaskReport[]>;
     getTask(id: string): Promise<TaskReport | undefined>;
+    triggerTask(task: ScheduledTask): Promise<void>;
     updateTask(input: UpdateScheduledTaskInput): Promise<TaskReport>;
 }
 ```
@@ -38,9 +40,16 @@ interface SchedulerStrategy extends InjectableStrategy {
 
 <div className="members-wrapper">
 
+### registerTask
+
+<MemberInfo kind="method" type={`(task: <a href='/reference/typescript-api/scheduled-tasks/scheduled-task#scheduledtask'>ScheduledTask</a>) => void`}   />
+
+An optional method that may be used by the strategy to register all the configured
+tasks ahead of time. This can be useful for keeping an internal reference of
+all the tasks to aid in the specific strategy implemetation.
 ### executeTask
 
-<MemberInfo kind="method" type={`(task: <a href='/reference/typescript-api/scheduled-tasks/scheduled-task#scheduledtask'>ScheduledTask</a>) => (job: Cron) =&#62; Promise&#60;any&#62; | any`}   />
+<MemberInfo kind="method" type={`(task: <a href='/reference/typescript-api/scheduled-tasks/scheduled-task#scheduledtask'>ScheduledTask</a>) => (job?: Cron) =&#62; Promise&#60;any&#62; | any`}   />
 
 Execute a scheduled task. This method must also take care of
 ensuring that the task is executed exactly once at the scheduled time,
@@ -51,6 +60,10 @@ dedicated database table and a locking mechansim. If you implement a custom
 SchedulerStrategy, you must use some other form of shared locking mechanism
 that could make use of something like Redis etc. to ensure that the task
 is executed exactly once at the scheduled time.
+
+The function returned is then called in order to execture the task. The
+`job` argument is an instance of the croner `Cron` class, except when
+the task has been manually triggered, in which case it will be undefined.
 ### getTasks
 
 <MemberInfo kind="method" type={`() => Promise&#60;<a href='/reference/typescript-api/scheduled-tasks/scheduler-strategy#taskreport'>TaskReport</a>[]&#62;`}   />
@@ -61,6 +74,19 @@ Get all scheduled tasks.
 <MemberInfo kind="method" type={`(id: string) => Promise&#60;<a href='/reference/typescript-api/scheduled-tasks/scheduler-strategy#taskreport'>TaskReport</a> | undefined&#62;`}   />
 
 Get a single scheduled task by its id.
+### triggerTask
+
+<MemberInfo kind="method" type={`(task: <a href='/reference/typescript-api/scheduled-tasks/scheduled-task#scheduledtask'>ScheduledTask</a>) => Promise&#60;void&#62;`}   />
+
+Manually trigger a given task. This method is not used to actually invoke the
+task function itself, since that would cause the task to run on the server
+instance which we typically do not want. Instead, it should be used
+to signal to the strategy that this specific task needs to be invoked
+at the soonest opportunity.
+
+For instance, in the <a href='/reference/typescript-api/scheduled-tasks/default-scheduler-strategy#defaultschedulerstrategy'>DefaultSchedulerStrategy</a> this is done by setting
+a flag in the database table which is checked periodically and causes those tasks
+to get immediately invoked.
 ### updateTask
 
 <MemberInfo kind="method" type={`(input: UpdateScheduledTaskInput) => Promise&#60;<a href='/reference/typescript-api/scheduled-tasks/scheduler-strategy#taskreport'>TaskReport</a>&#62;`}   />

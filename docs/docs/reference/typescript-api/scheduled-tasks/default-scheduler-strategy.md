@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DefaultSchedulerStrategy
 
-<GenerationInfo sourceFile="packages/core/src/plugin/default-scheduler-plugin/default-scheduler-strategy.ts" sourceLine="25" packageName="@vendure/core" since="3.3.0" />
+<GenerationInfo sourceFile="packages/core/src/plugin/default-scheduler-plugin/default-scheduler-strategy.ts" sourceLine="27" packageName="@vendure/core" since="3.3.0" />
 
 The default <a href='/reference/typescript-api/scheduled-tasks/scheduler-strategy#schedulerstrategy'>SchedulerStrategy</a> implementation that uses the database to
 execute scheduled tasks. This strategy is configured when you use the
@@ -21,10 +21,12 @@ execute scheduled tasks. This strategy is configured when you use the
 class DefaultSchedulerStrategy implements SchedulerStrategy {
     init(injector: Injector) => ;
     destroy() => ;
+    registerTask(task: ScheduledTask) => void;
     executeTask(task: ScheduledTask) => ;
     getTasks() => Promise<TaskReport[]>;
     getTask(id: string) => Promise<TaskReport | undefined>;
     updateTask(input: UpdateScheduledTaskInput) => Promise<TaskReport>;
+    triggerTask(task: ScheduledTask) => Promise<void>;
 }
 ```
 * Implements: <code><a href='/reference/typescript-api/scheduled-tasks/scheduler-strategy#schedulerstrategy'>SchedulerStrategy</a></code>
@@ -41,6 +43,11 @@ class DefaultSchedulerStrategy implements SchedulerStrategy {
 ### destroy
 
 <MemberInfo kind="method" type={`() => `}   />
+
+
+### registerTask
+
+<MemberInfo kind="method" type={`(task: <a href='/reference/typescript-api/scheduled-tasks/scheduled-task#scheduledtask'>ScheduledTask</a>) => void`}   />
 
 
 ### executeTask
@@ -61,6 +68,11 @@ class DefaultSchedulerStrategy implements SchedulerStrategy {
 ### updateTask
 
 <MemberInfo kind="method" type={`(input: UpdateScheduledTaskInput) => Promise&#60;<a href='/reference/typescript-api/scheduled-tasks/scheduler-strategy#taskreport'>TaskReport</a>&#62;`}   />
+
+
+### triggerTask
+
+<MemberInfo kind="method" type={`(task: <a href='/reference/typescript-api/scheduled-tasks/scheduled-task#scheduledtask'>ScheduledTask</a>) => Promise&#60;void&#62;`}   />
 
 
 
