@@ -5,7 +5,7 @@ import { assetDetailDocument, assetUpdateDocument } from './assets.graphql.js';
 import { Trans, useLingui } from '@/lib/trans.js';
 import { ErrorPage } from '@/components/shared/error-page.js';
 import { toast } from 'sonner';
-import { Page, PageTitle, PageActionBar, PageActionBarRight, PageBlock, PageLayout } from '@/framework/layout-engine/page-layout.js'
+import { Page, PageTitle, PageActionBar, PageActionBarRight, PageBlock, PageLayout, CustomFieldsPageBlock } from '@/framework/layout-engine/page-layout.js'
 import { useDetailPage } from '@/framework/page/use-detail-page.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { Button } from '@/components/ui/button.js';
@@ -51,7 +51,7 @@ function AssetDetailPage() {
                 focalPoint: entity.focalPoint,
                 name: entity.name,
                 tags: entity.tags?.map(tag => tag.value) ?? [],
-                // customFields: entity.customFields,
+                customFields: entity.customFields,
             };
         },
         params: { id: params.id },
@@ -124,6 +124,11 @@ function AssetDetailPage() {
                         </AssetFocalPointEditor>
                     </div>
                 </PageBlock>
+                <CustomFieldsPageBlock
+                    column="main"
+                    entityType={'Asset'}
+                    control={form.control}
+                />
                 <PageBlock column="side" blockId="asset-properties">
                     <AssetProperties asset={entity} />
                 </PageBlock>
@@ -137,7 +142,9 @@ function AssetDetailPage() {
                             <div className="text-sm text-muted-foreground">
                                 <Label><Trans>Focal Point</Trans></Label>
                                 <div className="text-sm text-muted-foreground">
-                                    {form.getValues().focalPoint?.x && form.getValues().focalPoint?.y ? `${form.getValues().focalPoint?.x.toFixed(2)}, ${form.getValues().focalPoint?.y.toFixed(2)}` : <Trans>Not set</Trans>}
+                                    {form.getValues().focalPoint?.x && form.getValues().focalPoint?.y
+                                        ? `${form.getValues().focalPoint?.x.toFixed(2)}, ${form.getValues().focalPoint?.y.toFixed(2)}`
+                                        : <Trans>Not set</Trans>}
                                 </div>
                             </div>
                         </div>
