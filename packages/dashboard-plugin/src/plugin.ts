@@ -6,8 +6,8 @@ import { PLUGIN_INIT_OPTIONS } from './constants';
 import { GlobalSearchIndexItem } from './entities/global-search-index-item';
 import { IndexingService } from './service/indexing.service';
 import { SearchService } from './service/search.service';
+import { buildIndexTask } from './tasks/build-index.task';
 import { DashboardPluginOptions } from './types';
-
 /**
  * @description
  * This plugin adds functionality specifically required by the Vendure Admin Dashboard.
@@ -44,6 +44,7 @@ import { DashboardPluginOptions } from './types';
     entities: [GlobalSearchIndexItem],
     configuration: config => {
         // Plugin configuration logic here
+        config.schedulerOptions.tasks.push(buildIndexTask);
         return config;
     },
     compatibility: '^3.0.0',
