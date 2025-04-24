@@ -1,6 +1,11 @@
 import { PluginCommonModule, VendurePlugin } from '@vendure/core';
 
-import { PLUGIN_INIT_OPTIONS, loggerCtx } from './constants';
+import { adminApiExtensions } from './api/api-extensions';
+import { GlobalSearchResolver } from './api/global-search.resolver';
+import { PLUGIN_INIT_OPTIONS } from './constants';
+import { GlobalSearchIndexItem } from './entities/global-search-index-item';
+import { IndexingService } from './service/indexing.service';
+import { SearchService } from './service/search.service';
 import { DashboardPluginOptions } from './types';
 
 /**
@@ -29,7 +34,14 @@ import { DashboardPluginOptions } from './types';
             provide: PLUGIN_INIT_OPTIONS,
             useFactory: () => DashboardPlugin.options,
         },
+        SearchService,
+        IndexingService,
     ],
+    adminApiExtensions: {
+        schema: adminApiExtensions,
+        resolvers: [GlobalSearchResolver],
+    },
+    entities: [GlobalSearchIndexItem],
     configuration: config => {
         // Plugin configuration logic here
         return config;
@@ -39,7 +51,7 @@ import { DashboardPluginOptions } from './types';
 export class DashboardPlugin {
     static options: DashboardPluginOptions;
 
-    static init(options: DashboardPluginOptions = {}) {
+    static init(options: DashboardPluginOptions) {
         this.options = {
             ...options,
         };

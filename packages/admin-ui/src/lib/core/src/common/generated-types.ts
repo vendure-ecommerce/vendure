@@ -1975,6 +1975,42 @@ export enum GlobalFlag {
   TRUE = 'TRUE'
 }
 
+export type GlobalSearchInput = {
+  enabledOnly?: InputMaybe<Scalars['Boolean']['input']>;
+  entityTypes?: InputMaybe<Array<Scalars['String']['input']>>;
+  query: Scalars['String']['input'];
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  sortDirection?: InputMaybe<GlobalSearchSortDirection>;
+  sortField?: InputMaybe<GlobalSearchSortField>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type GlobalSearchResult = {
+  __typename?: 'GlobalSearchResult';
+  items: Array<GlobalSearchResultItem>;
+  totalItems: Scalars['Int']['output'];
+};
+
+export type GlobalSearchResultItem = {
+  __typename?: 'GlobalSearchResultItem';
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  metadata?: Maybe<Scalars['JSON']['output']>;
+  name: Scalars['String']['output'];
+};
+
+export enum GlobalSearchSortDirection {
+  ASC = 'ASC',
+  DESC = 'DESC'
+}
+
+export enum GlobalSearchSortField {
+  CREATED_AT = 'CREATED_AT',
+  ID = 'ID',
+  NAME = 'NAME',
+  UPDATED_AT = 'UPDATED_AT'
+}
+
 export type GlobalSettings = {
   __typename?: 'GlobalSettings';
   availableLanguages: Array<LanguageCode>;
@@ -5198,6 +5234,7 @@ export type Query = {
   facetValues: FacetValueList;
   facets: FacetList;
   fulfillmentHandlers: Array<ConfigurableOperationDefinition>;
+  globalSearch: GlobalSearchResult;
   globalSettings: GlobalSettings;
   job?: Maybe<Job>;
   jobBufferSize: Array<JobBufferSize>;
@@ -5348,6 +5385,11 @@ export type QueryFacetValuesArgs = {
 
 export type QueryFacetsArgs = {
   options?: InputMaybe<FacetListOptions>;
+};
+
+
+export type QueryGlobalSearchArgs = {
+  input: GlobalSearchInput;
 };
 
 

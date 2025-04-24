@@ -3,5 +3,5 @@
     "compilerOptions": {
         "outDir": "./dist"
     },
-    "files": ["./index.ts"]
+    "files": ["./src/index.ts"]
 }
