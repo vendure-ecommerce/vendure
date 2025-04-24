@@ -1,21 +1,61 @@
 import { Injectable } from '@nestjs/common';
-import { GlobalSearchInput, GlobalSearchResult } from '@vendure/common/lib/generated-types';
-import { Injector, RequestContext, TransactionalConnection } from '@vendure/core';
+import { GlobalSearchInput, GlobalSearchResultItem } from '@vendure/common/lib/generated-types';
+import { Injector, ListQueryBuilder, Logger, PaginatedList, RequestContext } from '@vendure/core';
+
+import { loggerCtx } from '../constants';
+import { GlobalSearchIndexItem } from '../entities/global-search-index-item';
 
 import { GlobalSearchStrategy } from './global-search-strategy';
 
 @Injectable()
 export class DbSearchStrategy implements GlobalSearchStrategy {
-    private connection: TransactionalConnection;
-
+    private listQueryBuilder: ListQueryBuilder;
     init(injector: Injector): void | Promise<void> {
-        this.connection = injector.get(TransactionalConnection);
+        this.listQueryBuilder = injector.get(ListQueryBuilder);
     }
 
-    getSearchResults(ctx: RequestContext, input: GlobalSearchInput): Promise<GlobalSearchResult[]> {
-        throw new Error('Method not implemented.');
-    }
-    getTotalCount(ctx: RequestContext, input: GlobalSearchInput): Promise<number> {
-        throw new Error('Method not implemented.');
+    async getSearchResults(
+        ctx: RequestContext,
+        input: GlobalSearchInput,
+    ): Promise<PaginatedList<GlobalSearchResultItem>> {
+        const filter = {
+            _or: [
+                {
+                    name: {
+                        contains: input.query,
+                    },
+                },
+                {
+                    data: {
+                        contains: input.query,
+                    },
+                },
+            ],
+            languageCode: {
+                eq: ctx.languageCode,
+            },
+            ...(input.enabledOnly ? { enabled: input.enabledOnly } : {}),
+            ...(input.entityTypes && input.entityTypes.length > 0
+                ? { entityType: { in: input.entityTypes } }
+                : {}),
+        };
+
+        Logger.info(`Filter: ${JSON.stringify(filter)}`, loggerCtx);
+
+        const [items, totalItems] = await this.listQueryBuilder
+            .build(GlobalSearchIndexItem, {
+                take: input.take,
+                skip: input.skip,
+                sort: {
+                    [input.sortField ?? 'entityUpdatedAt']: input.sortDirection ?? 'DESC',
+                },
+                filter,
+            })
+            .getManyAndCount();
+
+        return {
+            items,
+            totalItems,
+        };
     }
 }

@@ -4,8 +4,12 @@ export const adminApiExtensions = gql`
     type GlobalSearchResultItem {
         id: ID!
         name: String!
-        description: String
-        metadata: JSON
+        data: JSON
+        entityType: String!
+        entityId: ID!
+        entityCreatedAt: DateTime!
+        entityUpdatedAt: DateTime!
+        languageCode: LanguageCode!
     }
 
     type GlobalSearchResult {
@@ -14,10 +18,10 @@ export const adminApiExtensions = gql`
     }
 
     enum GlobalSearchSortField {
-        ID
-        NAME
-        CREATED_AT
-        UPDATED_AT
+        id
+        name
+        entityCreatedAt
+        entityUpdatedAt
     }
 
     enum GlobalSearchSortDirection {
@@ -26,7 +30,7 @@ export const adminApiExtensions = gql`
     }
 
     input GlobalSearchInput {
-        query: String!
+        query: String
         enabledOnly: Boolean
         entityTypes: [String!]
         sortField: GlobalSearchSortField
@@ -37,5 +41,10 @@ export const adminApiExtensions = gql`
 
     extend type Query {
         globalSearch(input: GlobalSearchInput!): GlobalSearchResult!
+    }
+
+    extend type Mutation {
+        triggerGlobalSearchBuildIndex: Boolean!
+        triggerGlobalSearchRebuildIndex: Boolean!
     }
 `;

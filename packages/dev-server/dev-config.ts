@@ -5,22 +5,20 @@ import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/sha
 import {
     DefaultJobQueuePlugin,
     DefaultLogger,
+    DefaultSchedulerPlugin,
     DefaultSearchPlugin,
     dummyPaymentHandler,
     LanguageCode,
     LogLevel,
-    DefaultSchedulerPlugin,
     VendureConfig,
-    cleanSessionsTask,
 } from '@vendure/core';
 import { ScheduledTask } from '@vendure/core/dist/scheduler/scheduled-task';
+import { DashboardPlugin, DbIndexingStrategy, DbSearchStrategy } from '@vendure/dashboard-plugin';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
-import 'dotenv/config';
 import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
+import 'dotenv/config';
 import path from 'path';
 import { DataSourceOptions } from 'typeorm';
-
-import { MultivendorPlugin } from './example-plugins/multivendor-plugin/multivendor.plugin';
 
 /**
  * Config settings used during development
@@ -169,6 +167,10 @@ export const devConfig: VendureConfig = {
             //     ],
             //     devMode: true,
             // }),
+        }),
+        DashboardPlugin.init({
+            searchStrategy: new DbSearchStrategy(),
+            indexingStrategy: new DbIndexingStrategy(),
         }),
     ],
 };

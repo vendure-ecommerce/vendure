@@ -1,5 +1,5 @@
 import { ID } from '@vendure/common/lib/shared-types';
-import { EntityId, VendureEntity } from '@vendure/core';
+import { EntityId, LanguageCode, VendureEntity } from '@vendure/core';
 import { Column, Entity, Index } from 'typeorm';
 
 @Entity()
@@ -20,6 +20,9 @@ export class GlobalSearchIndexItem extends VendureEntity {
 
     @Column()
     name: string;
+
+    @Column()
+    languageCode: LanguageCode;
 
     @Column({ nullable: true })
     entityCreatedAt: Date;

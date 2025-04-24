@@ -1936,7 +1936,7 @@ export enum GlobalFlag {
 export type GlobalSearchInput = {
     enabledOnly?: InputMaybe<Scalars['Boolean']['input']>;
     entityTypes?: InputMaybe<Array<Scalars['String']['input']>>;
-    query: Scalars['String']['input'];
+    query?: InputMaybe<Scalars['String']['input']>;
     skip?: InputMaybe<Scalars['Int']['input']>;
     sortDirection?: InputMaybe<GlobalSearchSortDirection>;
     sortField?: InputMaybe<GlobalSearchSortField>;
@@ -1949,9 +1949,13 @@ export type GlobalSearchResult = {
 };
 
 export type GlobalSearchResultItem = {
-    description?: Maybe<Scalars['String']['output']>;
+    data?: Maybe<Scalars['JSON']['output']>;
+    entityCreatedAt: Scalars['DateTime']['output'];
+    entityId: Scalars['ID']['output'];
+    entityType: Scalars['String']['output'];
+    entityUpdatedAt: Scalars['DateTime']['output'];
     id: Scalars['ID']['output'];
-    metadata?: Maybe<Scalars['JSON']['output']>;
+    languageCode: LanguageCode;
     name: Scalars['String']['output'];
 };
 
@@ -1961,10 +1965,10 @@ export enum GlobalSearchSortDirection {
 }
 
 export enum GlobalSearchSortField {
-    CREATED_AT = 'CREATED_AT',
-    ID = 'ID',
-    NAME = 'NAME',
-    UPDATED_AT = 'UPDATED_AT',
+    entityCreatedAt = 'entityCreatedAt',
+    entityUpdatedAt = 'entityUpdatedAt',
+    id = 'id',
+    name = 'name',
 }
 
 export type GlobalSettings = {
@@ -3043,6 +3047,8 @@ export type Mutation = {
     transitionFulfillmentToState: TransitionFulfillmentToStateResult;
     transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
     transitionPaymentToState: TransitionPaymentToStateResult;
+    triggerGlobalSearchBuildIndex: Scalars['Boolean']['output'];
+    triggerGlobalSearchRebuildIndex: Scalars['Boolean']['output'];
     /** Unsets the billing address for a draft Order */
     unsetDraftOrderBillingAddress: Order;
     /** Unsets the shipping address for a draft Order */

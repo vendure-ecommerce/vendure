@@ -1,7 +1,7 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { JobQueue, RequestContext, JobQueueService, SerializedRequestContext } from '@vendure/core';
+import { JobQueue, RequestContext, JobQueueService, SerializedRequestContext, Logger } from '@vendure/core';
 
-import { PLUGIN_INIT_OPTIONS } from '../constants';
+import { loggerCtx, PLUGIN_INIT_OPTIONS } from '../constants';
 import { DashboardPluginOptions } from '../types';
 
 @Injectable()
@@ -32,10 +32,15 @@ export class IndexingService implements OnModuleInit {
     }
 
     async triggerBuildIndex(ctx: RequestContext) {
-        await this.jobQueue.add({
-            operation: 'build',
-            ctx: ctx.serialize(),
-        });
+        await this.jobQueue.add(
+            {
+                operation: 'build',
+                ctx: ctx.serialize(),
+            },
+            {
+                retries: 3,
+            },
+        );
     }
 
     async triggerRebuildIndex(ctx: RequestContext) {
@@ -47,11 +52,13 @@ export class IndexingService implements OnModuleInit {
 
     async buildIndex(ctx: RequestContext) {
         const indexingStrategy = this.options.indexingStrategy;
+        Logger.info(`Building global search index with ${indexingStrategy.constructor.name}`, loggerCtx);
         await indexingStrategy.buildIndex(ctx);
     }
 
     async rebuildIndex(ctx: RequestContext) {
         const indexingStrategy = this.options.indexingStrategy;
+        Logger.info(`Rebuilding global search index with ${indexingStrategy.constructor.name}`, loggerCtx);
         await indexingStrategy.rebuildIndex(ctx);
     }
 
