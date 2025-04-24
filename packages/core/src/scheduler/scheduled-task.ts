@@ -1,6 +1,36 @@
 import CronTime from 'cron-time-generator';
 
+import { RequestContext } from '../api';
 import { Injector } from '../common/index';
+import { RequestContextService } from '../service/helpers/request-context/request-context.service';
+import { ChannelService } from '../service/services/channel.service';
+
+/**
+ * @description
+ * The arguments passed to the execute method of a scheduled task.
+ *
+ * @since 3.3.0
+ * @docsCategory scheduled-tasks
+ * @docsPage ScheduledTask
+ */
+export interface ScheduledTaskExecutionArgs<C extends Record<string, any> = Record<string, any>> {
+    /**
+     * @description
+     * The injector instance.
+     */
+    injector: Injector;
+    /**
+     * @description
+     * A RequestContext instance that is configured for the scheduled task.
+     */
+    scheduledContext: RequestContext;
+    /**
+     * @description
+     * The parameters for the scheduled task.
+     */
+    params: C;
+}
+
 /**
  * @description
  * The configuration for a scheduled task.
@@ -62,7 +92,7 @@ export interface ScheduledTaskConfig<C extends Record<string, any> = Record<stri
      * @description
      * The function that will be executed when the scheduled task is run.
      */
-    execute(injector: Injector, config: C): Promise<any>;
+    execute(args: ScheduledTaskExecutionArgs<C>): Promise<any>;
 }
 
 /**
@@ -76,7 +106,7 @@ export interface ScheduledTaskConfig<C extends Record<string, any> = Record<stri
  * const task = new ScheduledTask({
  *     id: 'test-job',
  *     schedule: cron => cron.every(2).minutes(),
- *     execute: async (injector, params) => {
+ *     execute: async ({ injector, scheduledContext, params }) => {
  *         // some logic here
  *     },
  * });
@@ -99,7 +129,20 @@ export class ScheduledTask<C extends Record<string, any> = Record<string, any>> 
     }
 
     async execute(injector: Injector) {
-        return this.config.execute(injector, this.config.params ?? ({} as any));
+        const requestContextService = injector.get(RequestContextService);
+        const channelService = injector.get(ChannelService);
+        const defaultChannel = await channelService.getDefaultChannel();
+
+        const scheduledContext = await requestContextService.create({
+            apiType: 'admin',
+            channelOrToken: defaultChannel,
+        });
+
+        return this.config.execute({
+            injector,
+            scheduledContext,
+            params: this.config.params ?? ({} as any),
+        });
     }
 
     /**
@@ -114,7 +157,7 @@ export class ScheduledTask<C extends Record<string, any> = Record<string, any>> 
      * const task = new ScheduledTask({
      *     id: 'test-job',
      *     schedule: cron => cron.every(2).minutes(),
-     *     execute: async (injector, params) => {
+     *     execute: async ({ injector, scheduledContext, params }) => {
      *         // some logic here
      *     },
      * });

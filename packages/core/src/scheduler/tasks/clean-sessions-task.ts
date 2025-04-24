@@ -41,7 +41,7 @@ export const cleanSessionsTask = new ScheduledTask({
         batchSize: 10_000,
     },
     schedule: cron => cron.everyDayAt(0, 0),
-    async execute(injector, params) {
+    async execute({ injector, params }) {
         const sessionService = injector.get(SessionService);
         await sessionService.triggerCleanSessionsJob(params.batchSize);
         return { result: 'Triggered clean sessions job' };
