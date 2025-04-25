@@ -11,9 +11,7 @@ module.exports = function (context) {
             const contentDir = siteDir;
             const allMdx = [];
 
-            console.log('contentDir', contentDir);
-
-            // recursive function to get all mdx files
+            // recursive function to get all mdx and md files
             const getMdxFiles = async dir => {
                 const entries = await fs.promises.readdir(dir, { withFileTypes: true });
 
@@ -34,9 +32,12 @@ module.exports = function (context) {
         postBuild: async ({ content, routes, outDir }) => {
             const { allMdx } = content;
 
-            // Write concatenated MDX content
+            // Remove the README.md file of the docs
+            const filteredMdx = allMdx.slice(1);
+
+            // Write concatenated MD and MDX content
             const concatenatedPath = path.join(outDir, 'llms-full.txt');
-            await fs.promises.writeFile(concatenatedPath, allMdx.join('\n\n---\n\n'));
+            await fs.promises.writeFile(concatenatedPath, filteredMdx.join('\n\n---\n\n'));
 
             // we need to dig down several layers:
             // find PluginRouteConfig marked by plugin.name === "docusaurus-plugin-content-docs"
@@ -56,9 +57,11 @@ module.exports = function (context) {
             const currentVersionDocsRoutes = allDocsRouteConfig.props.version.docs;
 
             // for every single docs route we now parse a path (which is the key) and a title
-            const docsRecords = Object.entries(currentVersionDocsRoutes).map(([path, record]) => {
-                return `- [${record.title}](${DOCS_BASE_URL}/${path}): ${record.description}`;
-            });
+            const docsRecords = Object.entries(currentVersionDocsRoutes)
+                .filter(([path, record]) => record.id !== 'TODO')
+                .map(([path, record]) => {
+                    return `- [${record.title}](${DOCS_BASE_URL}/${path}): ${record.description}`;
+                });
 
             // Build up llms.txt file
             const llmsTxt = `# ${context.siteConfig.title}\n\n## Docs\n\n${docsRecords.join('\n')}`;
