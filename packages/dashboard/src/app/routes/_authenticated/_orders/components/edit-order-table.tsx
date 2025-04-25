@@ -18,6 +18,8 @@ import { draftOrderEligibleShippingMethodsDocument, orderDetailDocument, orderLi
 import { MoneyGrossNet } from './money-gross-net.js';
 import { OrderTableTotals } from './order-table-totals.js';
 import { ShippingMethodSelector } from './shipping-method-selector.js';
+import { OrderLineCustomFieldsForm } from './order-line-custom-fields-form.js';
+import { UseFormReturn } from 'react-hook-form';
 
 type OrderFragment = NonNullable<ResultOf<typeof orderDetailDocument>['order']>;
 type OrderLineFragment = ResultOf<typeof orderLineFragment>;
@@ -28,14 +30,17 @@ export interface OrderTableProps {
     order: OrderFragment;
     eligibleShippingMethods: ShippingMethodQuote[];
     onAddItem: (event: { productVariantId: string; }) => void;
-    onAdjustLine: (event: { lineId: string; quantity: number }) => void;
+    onAdjustLine: (event: { lineId: string; quantity: number; customFields: Record<string, any> }) => void;
     onRemoveLine: (event: { lineId: string }) => void;
     onSetShippingMethod: (event: { shippingMethodId: string }) => void;
     onApplyCouponCode: (event: { couponCode: string }) => void;
     onRemoveCouponCode: (event: { couponCode: string }) => void;
+    orderLineForm: UseFormReturn<any>;
 }
 
-export function EditOrderTable({ order, eligibleShippingMethods, onAddItem, onAdjustLine, onRemoveLine, onSetShippingMethod, onApplyCouponCode, onRemoveCouponCode }: OrderTableProps) {
+export function EditOrderTable({ order, eligibleShippingMethods, onAddItem, onAdjustLine, onRemoveLine,
+    onSetShippingMethod, onApplyCouponCode, onRemoveCouponCode, orderLineForm }: OrderTableProps) {
+
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
     const [couponCode, setCouponCode] = useState('');
 
@@ -72,10 +77,19 @@ export function EditOrderTable({ order, eligibleShippingMethods, onAddItem, onAd
             accessorKey: 'quantity',
             cell: ({ row }) => {
                 return <div className="flex gap-2">
-                    <Input type="number" value={row.original.quantity} onChange={e => onAdjustLine({ lineId: row.original.id, quantity: e.target.valueAsNumber })} />
+                    <Input type="number" value={row.original.quantity} onChange={e => onAdjustLine({ lineId: row.original.id, quantity: e.target.valueAsNumber, customFields: row.original.customFields })} />
                     <Button variant="outline" size="icon" onClick={() => onRemoveLine({ lineId: row.original.id })}>
                         <Trash2 />
                     </Button>
+                    {row.original.customFields &&
+                        <OrderLineCustomFieldsForm onUpdate={(customFields) => {
+                            
+                            onAdjustLine({
+                                lineId: row.original.id,
+                                quantity: row.original.quantity,
+                                customFields: customFields
+                            });
+                        }} form={orderLineForm} />}
                 </div>;
             },
         },

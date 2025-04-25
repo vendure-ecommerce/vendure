@@ -163,6 +163,7 @@ export const orderLineFragment = graphql(
             linePriceWithTax
             discountedLinePrice
             discountedLinePriceWithTax
+            customFields
         }
     `,
     [assetFragment],
@@ -333,17 +334,14 @@ export const createDraftOrderDocument = graphql(`
     }
 `);
 
-export const deleteDraftOrderDocument = graphql(
-    `
-        mutation DeleteDraftOrder($orderId: ID!) {
-            deleteDraftOrder(orderId: $orderId) {
-                result
-                message
-            }
+export const deleteDraftOrderDocument = graphql(`
+    mutation DeleteDraftOrder($orderId: ID!) {
+        deleteDraftOrder(orderId: $orderId) {
+            result
+            message
         }
-    `,
-    [errorResultFragment],
-);
+    }
+`);
 
 export const addItemToDraftOrderDocument = graphql(
     `
@@ -488,6 +486,14 @@ export const setDraftOrderShippingMethodDocument = graphql(
     `,
     [errorResultFragment],
 );
+
+export const setDraftOrderCustomFieldsDocument = graphql(`
+    mutation SetDraftOrderCustomFields($orderId: ID!, $input: UpdateOrderInput!) {
+        setDraftOrderCustomFields(orderId: $orderId, input: $input) {
+            id
+        }
+    }
+`);
 
 export const transitionOrderToStateDocument = graphql(
     `

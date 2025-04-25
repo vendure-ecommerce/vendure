@@ -1,23 +1,25 @@
+import { ConfirmationDialog } from '@/components/shared/confirmation-dialog.js';
 import { CustomerSelector } from '@/components/shared/customer-selector.js';
 import { ErrorPage } from '@/components/shared/error-page.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { Button } from '@/components/ui/button.js';
+import { Form } from '@/components/ui/form.js';
 import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
-import { Page, PageActionBar, PageActionBarRight, PageBlock, PageLayout, PageTitle } from '@/framework/layout-engine/page-layout.js';
+import { useGeneratedForm } from '@/framework/form-engine/use-generated-form.js';
+import { CustomFieldsPageBlock, Page, PageActionBar, PageActionBarRight, PageBlock, PageLayout, PageTitle } from '@/framework/layout-engine/page-layout.js';
 import { getDetailQueryOptions, useDetailPage } from '@/framework/page/use-detail-page.js';
 import { api } from '@/graphql/api.js';
 import { Trans, useLingui } from '@/lib/trans.js';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router';
 import { ResultOf } from 'gql.tada';
-import { User, Trash2 } from 'lucide-react';
+import { User } from 'lucide-react';
 import { toast } from 'sonner';
 import { CustomerAddressSelector } from './components/customer-address-selector.js';
 import { EditOrderTable } from './components/edit-order-table.js';
 import { OrderAddress } from './components/order-address.js';
-import { addItemToDraftOrderDocument, adjustDraftOrderLineDocument, applyCouponCodeToDraftOrderDocument, draftOrderEligibleShippingMethodsDocument, orderDetailDocument, removeCouponCodeFromDraftOrderDocument, removeDraftOrderLineDocument, setBillingAddressForDraftOrderDocument, setCustomerForDraftOrderDocument, setDraftOrderShippingMethodDocument, setShippingAddressForDraftOrderDocument, transitionOrderToStateDocument, unsetBillingAddressForDraftOrderDocument, unsetShippingAddressForDraftOrderDocument } from './orders.graphql.js';
-import { Input } from '@/components/ui/input.js';
-import { useState } from 'react';
+import { addItemToDraftOrderDocument, adjustDraftOrderLineDocument, applyCouponCodeToDraftOrderDocument, deleteDraftOrderDocument, draftOrderEligibleShippingMethodsDocument, orderDetailDocument, removeCouponCodeFromDraftOrderDocument, removeDraftOrderLineDocument, setBillingAddressForDraftOrderDocument, setCustomerForDraftOrderDocument, setDraftOrderCustomFieldsDocument, setDraftOrderShippingMethodDocument, setShippingAddressForDraftOrderDocument, transitionOrderToStateDocument, unsetBillingAddressForDraftOrderDocument, unsetShippingAddressForDraftOrderDocument } from './orders.graphql.js';
+import { CustomFieldsForm } from '@/components/shared/custom-fields-form.js';
 
 export const Route = createFileRoute('/_authenticated/_orders/orders_/draft/$id')({
     component: DraftOrderPage,
@@ -56,8 +58,8 @@ function DraftOrderPage() {
     const { i18n } = useLingui();
     const navigate = useNavigate();
 
-    const { entity, refreshEntity } = useDetailPage({
-        queryDocument: orderDetailDocument,
+    const { entity, refreshEntity, form } = useDetailPage({
+        queryDocument: addCustomFields(orderDetailDocument),
         setValuesForUpdate: entity => {
             return {
                 id: entity.id,
@@ -65,6 +67,44 @@ function DraftOrderPage() {
             };
         },
         params: { id: params.id },
+    });
+
+    const { form: orderLineForm } = useGeneratedForm({
+        document: addCustomFields(adjustDraftOrderLineDocument),
+        varName: undefined,
+        entity: entity?.lines[0],
+        setValues: entity => {
+            return {
+                orderId: entity.id,
+                input: {
+                    quantity: entity.quantity,
+                    orderLineId: entity.id,
+                    customFields: entity.customFields,
+                }
+            };
+        },
+    });
+
+    const { form: orderCustomFieldsForm } = useGeneratedForm({
+        document: setDraftOrderCustomFieldsDocument,
+        varName: undefined,
+        entity: entity,
+        setValues: entity => {
+            return {
+                orderId: entity.id,
+                input: {
+                    id: entity.id,
+                    customFields: entity.customFields,
+                }
+            };
+        },
+    });
+
+    const { mutate: setDraftOrderCustomFields } = useMutation({
+        mutationFn: api.mutate(setDraftOrderCustomFieldsDocument),
+        onSuccess: (result: ResultOf<typeof setDraftOrderCustomFieldsDocument>) => {
+            refreshEntity();
+        },
     });
 
     const { data: eligibleShippingMethods } = useQuery({
@@ -185,7 +225,6 @@ function DraftOrderPage() {
         },
     });
 
-    // coupon code
     const { mutate: setCouponCodeForDraftOrder } = useMutation({
         mutationFn: api.mutate(applyCouponCodeToDraftOrderDocument),
         onSuccess: (result: ResultOf<typeof applyCouponCodeToDraftOrderDocument>) => {
@@ -230,15 +269,45 @@ function DraftOrderPage() {
         },
     });
 
+    const { mutate: deleteDraftOrder } = useMutation({
+        mutationFn: api.mutate(deleteDraftOrderDocument),
+        onSuccess: (result: ResultOf<typeof deleteDraftOrderDocument>) => {
+            if (result.deleteDraftOrder.result === 'DELETED') {
+                toast.success(i18n.t('Draft order deleted'));
+                navigate({ to: '/orders' });
+            } else {
+                toast.error(result.deleteDraftOrder.message);
+            }
+        },
+    });
+
     if (!entity) {
         return null;
     }
 
+    const onSaveCustomFields = (values: any) => {
+        setDraftOrderCustomFields({ input: { id: entity.id, customFields: values.input?.customFields }, orderId: entity.id });
+    }
+
     return (
-        <Page pageId="order-detail">
+        <Page pageId="draft-order-detail" form={form}>
             <PageTitle><Trans>Draft order</Trans>: {entity?.code ?? ''}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>
+                    <PermissionGuard requires={['DeleteOrder']}>
+                        <ConfirmationDialog
+                            title={i18n.t('Delete draft order')}
+                            description={i18n.t('Are you sure you want to delete this draft order?')}
+                            onConfirm={() => {
+                                deleteDraftOrder({ orderId: entity.id });
+                            }}
+                        >
+                            <Button variant="destructive">
+                                <Trans>Delete draft</Trans>
+                            </Button>
+                        </ConfirmationDialog>
+
+                    </PermissionGuard>
                     <PermissionGuard requires={['UpdateOrder']}>
                         <Button type="submit"
                             disabled={!entity.customer || entity.lines.length === 0 || entity.shippingLines.length === 0 || entity.state !== 'Draft'}
@@ -255,11 +324,28 @@ function DraftOrderPage() {
                         eligibleShippingMethods={eligibleShippingMethods?.eligibleShippingMethodsForDraftOrder ?? []}
                         onSetShippingMethod={(e) => setShippingMethodForDraftOrder({ orderId: entity.id, shippingMethodId: e.shippingMethodId })}
                         onAddItem={(e) => addItemToDraftOrder({ orderId: entity.id, input: { productVariantId: e.productVariantId, quantity: 1 } })}
-                        onAdjustLine={(e) => adjustDraftOrderLine({ orderId: entity.id, input: { orderLineId: e.lineId, quantity: e.quantity } })}
+                        onAdjustLine={(e) => adjustDraftOrderLine({ orderId: entity.id, input: { orderLineId: e.lineId, quantity: e.quantity, customFields: e.customFields } as any })}
                         onRemoveLine={(e) => removeDraftOrderLine({ orderId: entity.id, orderLineId: e.lineId })}
                         onApplyCouponCode={(e) => setCouponCodeForDraftOrder({ orderId: entity.id, couponCode: e.couponCode })}
                         onRemoveCouponCode={(e) => removeCouponCodeForDraftOrder({ orderId: entity.id, couponCode: e.couponCode })}
+                        orderLineForm={orderLineForm}
                     />
+                </PageBlock>
+                <PageBlock column="main" blockId="order-custom-fields" title={<Trans>Custom fields</Trans>}>
+                    <Form {...orderCustomFieldsForm}>
+                        <CustomFieldsForm entityType="Order" control={orderCustomFieldsForm.control} formPathPrefix='input' />
+                        <div className="mt-4">
+                            <Button type="submit" className=""
+                                disabled={!orderCustomFieldsForm.formState.isValid || !orderCustomFieldsForm.formState.isDirty}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    orderCustomFieldsForm.handleSubmit(onSaveCustomFields)();
+                                }}>
+                                <Trans>Set custom fields</Trans>
+                            </Button>
+                        </div>
+                    </Form>
                 </PageBlock>
                 <PageBlock column="side" blockId="customer" title={<Trans>Customer</Trans>}>
                     {entity?.customer?.id ? <Button variant="ghost" asChild className="mb-4">
