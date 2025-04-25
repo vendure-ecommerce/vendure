@@ -23,6 +23,7 @@ import { Loader2, Search, Upload, X } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useDebounce } from '@uidotdev/usehooks';
+import { DetailPageButton } from '../detail-page-button.js';
 
 const getAssetListDocument = graphql(
     `
@@ -72,7 +73,14 @@ export type Asset = AssetFragment;
 export interface AssetGalleryProps {
     onSelect?: (assets: Asset[]) => void;
     selectable?: boolean;
-    multiSelect?: boolean;
+    /**
+     * @description
+     * Defines whether multiple assets can be selected.
+     * 
+     * If set to 'auto', the asset selection will be toggled when the user clicks on an asset.
+     * If set to 'manual', multiple selection will occur only if the user holds down the control/cmd key.
+     */
+    multiSelect?: 'auto' | 'manual';
     initialSelectedAssets?: Asset[];
     pageSize?: number;
     fixedHeight?: boolean;
@@ -84,7 +92,7 @@ export interface AssetGalleryProps {
 export function AssetGallery({
     onSelect,
     selectable = true,
-    multiSelect = false,
+    multiSelect = undefined,
     initialSelectedAssets = [],
     pageSize = 24,
     fixedHeight = false,
@@ -149,24 +157,44 @@ export function AssetGallery({
     const totalPages = Math.ceil(totalItems / pageSize);
 
     // Handle selection
-    const handleSelect = (asset: Asset) => {
-        if (!multiSelect) {
-            setSelected([asset]);
-            onSelect?.([asset]);
+    const handleSelect = (asset: Asset, event: React.MouseEvent) => {
+        if (multiSelect === 'auto') {
+            const isSelected = selected.some(a => a.id === asset.id);
+            let newSelected: Asset[];
+
+            if (isSelected) {
+                newSelected = selected.filter(a => a.id !== asset.id);
+            } else {
+                newSelected = [...selected, asset];
+            }
+
+            setSelected(newSelected);
+            onSelect?.(newSelected);
             return;
         }
 
-        const isSelected = selected.some(a => a.id === asset.id);
-        let newSelected: Asset[];
 
-        if (isSelected) {
-            newSelected = selected.filter(a => a.id !== asset.id);
+        // Manual mode - check for modifier key
+        const isModifierKeyPressed = event.metaKey || event.ctrlKey;
+
+        if (multiSelect === 'manual' && isModifierKeyPressed) {
+            // Toggle selection
+            const isSelected = selected.some(a => a.id === asset.id);
+            let newSelected: Asset[];
+
+            if (isSelected) {
+                newSelected = selected.filter(a => a.id !== asset.id);
+            } else {
+                newSelected = [...selected, asset];
+            }
+
+            setSelected(newSelected);
+            onSelect?.(newSelected);
         } else {
-            newSelected = [...selected, asset];
+            // No modifier key - single select
+            setSelected([asset]);
+            onSelect?.([asset]);
         }
-
-        setSelected(newSelected);
-        onSelect?.(newSelected);
     };
 
     // Check if an asset is selected
@@ -272,7 +300,7 @@ export function AssetGallery({
                                     ${isSelected(asset as Asset) ? 'ring-2 ring-primary' : ''}
                                     flex flex-col min-w-[120px]
                                 `}
-                                onClick={() => handleSelect(asset as Asset)}
+                                onClick={(e) => handleSelect(asset as Asset, e)}
                             >
                                 <div
                                     className="relative w-full bg-muted/30"
@@ -296,11 +324,14 @@ export function AssetGallery({
                                     <p className="text-xs line-clamp-2 min-h-[2.5rem]" title={asset.name}>
                                         {asset.name}
                                     </p>
-                                    {asset.fileSize && (
-                                        <p className="text-xs text-muted-foreground mt-1">
-                                            {formatFileSize(asset.fileSize)}
-                                        </p>
-                                    )}
+                                    <div className='flex justify-between items-center'>
+                                        {asset.fileSize && (
+                                            <p className="text-xs text-muted-foreground mt-1">
+                                                {formatFileSize(asset.fileSize)}
+                                            </p>
+                                        )}
+                                        <DetailPageButton id={asset.id} label={<Trans>Edit</Trans>} />
+                                    </div>
                                 </CardContent>
                             </Card>
                         ))

@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router';
+import { ChevronRight } from 'lucide-react';
 import { Button } from '../ui/button.js';
-import { SquareArrowOutUpRightIcon } from 'lucide-react';
 
 export function DetailPageButton({
     id,
@@ -15,7 +15,7 @@ export function DetailPageButton({
         <Button asChild variant="ghost" disabled={disabled}>
             <Link to={`./${id}`}>
                 {label}
-                {!disabled && <SquareArrowOutUpRightIcon className="h-3 w-3 text-muted-foreground" />}
+                {!disabled && <ChevronRight className="h-3 w-3 text-muted-foreground" />}
             </Link>
         </Button>
     );

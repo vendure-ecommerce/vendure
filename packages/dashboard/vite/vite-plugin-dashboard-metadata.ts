@@ -1,8 +1,7 @@
-import { VendureConfig } from '@vendure/core';
-import { getPluginDashboardExtensions } from '@vendure/core';
 import path from 'path';
 import { Plugin } from 'vite';
 
+import { LoadVendureConfigResult } from './utils/config-loader.js';
 import { ConfigLoaderApi, getConfigLoaderApi } from './vite-plugin-config-loader.js';
 
 const virtualModuleId = 'virtual:dashboard-extensions';
@@ -15,7 +14,7 @@ const resolvedVirtualModuleId = `\0${virtualModuleId}`;
  */
 export function dashboardMetadataPlugin(options: { rootDir: string }): Plugin {
     let configLoaderApi: ConfigLoaderApi;
-    let vendureConfig: VendureConfig;
+    let loadVendureConfigResult: LoadVendureConfigResult;
     return {
         name: 'vendure:dashboard-extensions-metadata',
         configResolved({ plugins }) {
@@ -28,22 +27,27 @@ export function dashboardMetadataPlugin(options: { rootDir: string }): Plugin {
         },
         async load(id) {
             if (id === resolvedVirtualModuleId) {
-                if (!vendureConfig) {
-                    vendureConfig = await configLoaderApi.getVendureConfig();
+                if (!loadVendureConfigResult) {
+                    loadVendureConfigResult = await configLoaderApi.getVendureConfig();
                 }
-                const extensions = getPluginDashboardExtensions(vendureConfig.plugins ?? []);
-                const extensionData: Array<{ importPath: string }> = extensions.map(extension => {
-                    const providedPath = typeof extension === 'string' ? extension : extension.location;
-                    const jsPath = normalizeImportPath(options.rootDir, providedPath);
-                    return { importPath: `./${jsPath}` };
-                });
+                const { pluginInfo } = loadVendureConfigResult;
+                const pluginsWithExtensions =
+                    pluginInfo
+                        ?.map(
+                            ({ dashboardEntryPath, pluginPath }) =>
+                                dashboardEntryPath && path.join(pluginPath, dashboardEntryPath),
+                        )
+                        .filter(x => x != null) ?? [];
 
-                this.info(`Found ${extensionData.length} Dashboard extensions`);
+                this.info(`Found ${pluginsWithExtensions.length} Dashboard extensions`);
                 return `
                     export async function runDashboardExtensions() {
-                        ${extensionData.map(extension => `await import('${extension.importPath}');`).join('\n')}
-                    }
-                `;
+                        ${pluginsWithExtensions
+                            .map(extension => {
+                                return `await import('${extension}');`;
+                            })
+                            .join('\n')}
+                }`;
             }
         },
     };

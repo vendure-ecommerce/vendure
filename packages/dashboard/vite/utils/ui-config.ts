@@ -6,8 +6,8 @@ import {
 import { AdminUiConfig } from '@vendure/common/lib/shared-types';
 import { VendureConfig } from '@vendure/core';
 
-import { defaultAvailableLocales } from './constants.js';
-import { defaultLocale, defaultLanguage, defaultAvailableLanguages } from './constants.js';
+import { defaultAvailableLocales } from '../constants.js';
+import { defaultLocale, defaultLanguage, defaultAvailableLanguages } from '../constants.js';
 
 export function getAdminUiConfig(
     config: VendureConfig,

@@ -14,6 +14,8 @@ env:
     CI: true
 
 jobs:
+    codegen:
+        uses: ./.github/workflows/codegen.yml
     build:
         name: build
         runs-on: ubuntu-latest

@@ -253,7 +253,10 @@ export class AdminUiPlugin implements NestModule {
         });
 
         const adminUiServer = express.Router();
-        adminUiServer.use(limiter);
+        // This is a workaround for a type mismatch between express v5 (Vendure core)
+        // and express v4 (several transitive dependencies). Can be removed once the
+        // ecosystem has more significantly shifted to v5.
+        adminUiServer.use(limiter as any);
         adminUiServer.use(express.static(adminUiAppPath));
         adminUiServer.use((req, res) => {
             res.sendFile(path.join(adminUiAppPath, 'index.html'));

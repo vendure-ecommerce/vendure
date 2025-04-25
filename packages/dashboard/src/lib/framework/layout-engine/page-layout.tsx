@@ -5,10 +5,13 @@ import { Form } from '@/components/ui/form.js';
 import { useCustomFieldConfig } from '@/hooks/use-custom-field-config.js';
 import { usePage } from '@/hooks/use-page.js';
 import { cn } from '@/lib/utils.js';
+import { NavigationConfirmation } from '@/components/shared/navigation-confirmation.js';
 import { useMediaQuery } from '@uidotdev/usehooks';
 import React, { ComponentProps, createContext } from 'react';
 import { Control, UseFormReturn } from 'react-hook-form';
+
 import { DashboardActionBarItem } from '../extension-api/extension-api-types.js';
+
 import { getDashboardActionBarItems, getDashboardPageBlocks } from './layout-extensions.js';
 import { LocationWrapper } from './location-wrapper.js';
 
@@ -42,6 +45,7 @@ export function Page({ children, pageId, entity, form, submitHandler, ...props }
 
     const pageContentWithOptionalForm = form ? (
         <Form {...form}>
+            <NavigationConfirmation form={form} />
             <form onSubmit={submitHandler} className="space-y-4">
                 {pageHeader}
                 {pageContent}

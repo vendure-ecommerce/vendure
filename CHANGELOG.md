@@ -1,3 +1,12 @@
+## <small>3.2.3 (2025-04-17)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix missing product variant list tab ([047eaa5](https://github.com/vendure-ecommerce/vendure/commit/047eaa5))
+* **core** Align Express & types versions ([ba4111b](https://github.com/vendure-ecommerce/vendure/commit/ba4111b))
+* **core** Relax some express typings to prevent v4/v5 types conflicts ([97e53d5](https://github.com/vendure-ecommerce/vendure/commit/97e53d5))
+
 ## <small>3.2.2 (2025-04-03)</small>
 
 #### Fixes

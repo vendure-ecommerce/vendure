@@ -16,7 +16,7 @@ import 'dotenv/config';
 import path from 'path';
 import { DataSourceOptions } from 'typeorm';
 
-import { ReviewsPlugin } from './test-plugins/reviews/reviews-plugin';
+import { ReviewsPlugin } from '@plugins/reviews/reviews-plugin';
 
 /**
  * Config settings used during development
