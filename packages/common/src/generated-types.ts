@@ -5166,6 +5166,7 @@ export type Query = {
   facets: FacetList;
   fulfillmentHandlers: Array<ConfigurableOperationDefinition>;
   globalSearch: GlobalSearchResult;
+  globalSearchIndexableEntities: Array<Scalars['String']['output']>;
   globalSettings: GlobalSettings;
   job?: Maybe<Job>;
   jobBufferSize: Array<JobBufferSize>;

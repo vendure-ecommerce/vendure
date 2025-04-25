@@ -19,28 +19,30 @@ export class DbSearchStrategy implements GlobalSearchStrategy {
         input: GlobalSearchInput,
     ): Promise<PaginatedList<GlobalSearchResultItem>> {
         const filter = {
-            _or: [
-                {
-                    name: {
-                        contains: input.query,
-                    },
-                },
-                {
-                    data: {
-                        contains: input.query,
-                    },
-                },
-            ],
+            ...(input.query
+                ? {
+                      _or: [
+                          {
+                              name: {
+                                  contains: input.query,
+                              },
+                          },
+                          {
+                              data: {
+                                  contains: input.query,
+                              },
+                          },
+                      ],
+                  }
+                : {}),
             languageCode: {
                 eq: ctx.languageCode,
             },
-            ...(input.enabledOnly ? { enabled: input.enabledOnly } : {}),
+            ...(input.enabledOnly === true ? { enabled: { eq: true, isNull: true } } : {}),
             ...(input.entityTypes && input.entityTypes.length > 0
                 ? { entityType: { in: input.entityTypes } }
                 : {}),
         };
-
-        Logger.info(`Filter: ${JSON.stringify(filter)}`, loggerCtx);
 
         const [items, totalItems] = await this.listQueryBuilder
             .build(GlobalSearchIndexItem, {

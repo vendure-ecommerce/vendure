@@ -21,4 +21,9 @@ export interface GlobalIndexingStrategy extends InjectableStrategy {
      * Rebuild the entire index
      */
     rebuildIndex(ctx: RequestContext): Promise<boolean>;
+
+    /**
+     * Get all indexable entities
+     */
+    getIndexableEntities(ctx: RequestContext): Promise<string[]> | string[];
 }

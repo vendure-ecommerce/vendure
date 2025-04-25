@@ -1,4 +1,4 @@
-import { Mutation, Resolver } from '@nestjs/graphql';
+import { Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Ctx, RequestContext } from '@vendure/core';
 
 import { IndexingService } from '../service/indexing.service';
@@ -17,5 +17,10 @@ export class IndexResolver {
     async triggerGlobalSearchRebuildIndex(@Ctx() ctx: RequestContext) {
         await this.indexingService.triggerRebuildIndex(ctx);
         return true;
+    }
+
+    @Query()
+    globalSearchIndexableEntities(@Ctx() ctx: RequestContext) {
+        return this.indexingService.getIndexableEntities(ctx);
     }
 }

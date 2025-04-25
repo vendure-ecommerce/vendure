@@ -62,6 +62,7 @@ export class DbIndexingStrategy implements GlobalIndexingStrategy {
                     data: JSON.stringify(this.getEntityData(entity)),
                     entityCreatedAt: entity.createdAt,
                     entityUpdatedAt: entity.updatedAt,
+                    enabled: this.getEntityEnabled(entity),
                 },
             ],
             ['entityType', 'entityId'],
@@ -78,26 +79,11 @@ export class DbIndexingStrategy implements GlobalIndexingStrategy {
     }
 
     async buildIndex(ctx: RequestContext): Promise<boolean> {
-        const entityMetadatas = this.connection.rawConnection.entityMetadatas;
+        const entityMetadatas = this.getIndexableEntities(ctx);
         let entitiesIndexed = 0;
 
-        for (const entityMetadata of entityMetadatas) {
-            const entityType = entityMetadata.targetName;
-
-            if (entityType === '') {
-                Logger.info(`Skipping because it is not a valid entity`, loggerCtx);
-                continue;
-            }
-
-            if (notIndexableEntities.includes(entityType)) {
-                Logger.info(`Skipping ${entityType} because it is not indexable`, loggerCtx);
-                continue;
-            }
-
-            if (entityType.includes('Translation')) {
-                Logger.info(`Skipping ${entityType} because it is a translation`, loggerCtx);
-                continue;
-            }
+        for (const entityType of entityMetadatas) {
+            const entityMetadata = this.connection.rawConnection.getMetadata(entityType);
 
             await this.loopAvailableLanguages(ctx, async languageCode => {
                 Logger.info(`Processing ${entityType} for language ${languageCode}`, loggerCtx);
@@ -150,6 +136,7 @@ export class DbIndexingStrategy implements GlobalIndexingStrategy {
                                 entityCreatedAt: entity.createdAt,
                                 entityUpdatedAt: entity.updatedAt,
                                 languageCode,
+                                enabled: this.getEntityEnabled(entity),
                             });
                         }),
                     );
@@ -175,6 +162,15 @@ export class DbIndexingStrategy implements GlobalIndexingStrategy {
         return true;
     }
 
+    getIndexableEntities(ctx: RequestContext): string[] {
+        const entityMetadatas = this.connection.rawConnection.entityMetadatas;
+        return entityMetadatas
+            .map(entityMetadata => entityMetadata.targetName)
+            .filter(entityType => !notIndexableEntities.includes(entityType))
+            .filter(entityType => !entityType.includes('Translation'))
+            .filter(entityType => entityType !== '');
+    }
+
     private getEntityName(entity: VendureEntity): string | number {
         if ('name' in entity && typeof entity.name === 'string') {
             return entity.name;
@@ -187,6 +183,13 @@ export class DbIndexingStrategy implements GlobalIndexingStrategy {
         }
 
         return entity.id;
+    }
+
+    private getEntityEnabled(entity: VendureEntity): boolean | null {
+        if ('enabled' in entity && typeof entity.enabled === 'boolean') {
+            return entity.enabled;
+        }
+        return null;
     }
 
     private getEntityData(entity: VendureEntity): Record<string, unknown> {

@@ -1,17 +1,20 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { JobQueue, RequestContext, JobQueueService, SerializedRequestContext, Logger } from '@vendure/core';
+import { JobQueue, JobQueueService, Logger, RequestContext, SerializedRequestContext } from '@vendure/core';
 
 import { loggerCtx, PLUGIN_INIT_OPTIONS } from '../constants';
+import { GlobalIndexingStrategy } from '../indexing-strategy/global-indexing-strategy';
 import { DashboardPluginOptions } from '../types';
-
 @Injectable()
 export class IndexingService implements OnModuleInit {
     private jobQueue: JobQueue<{ operation: 'build' | 'rebuild'; ctx: SerializedRequestContext }>;
+    private indexingStrategy: GlobalIndexingStrategy;
 
     constructor(
         @Inject(PLUGIN_INIT_OPTIONS) private readonly options: DashboardPluginOptions,
         private readonly jobQueueService: JobQueueService,
-    ) {}
+    ) {
+        this.indexingStrategy = options.indexingStrategy;
+    }
 
     async onModuleInit() {
         this.jobQueue = await this.jobQueueService.createQueue({
@@ -51,24 +54,27 @@ export class IndexingService implements OnModuleInit {
     }
 
     async buildIndex(ctx: RequestContext) {
-        const indexingStrategy = this.options.indexingStrategy;
-        Logger.info(`Building global search index with ${indexingStrategy.constructor.name}`, loggerCtx);
-        await indexingStrategy.buildIndex(ctx);
+        Logger.info(`Building global search index with ${this.indexingStrategy.constructor.name}`, loggerCtx);
+        await this.indexingStrategy.buildIndex(ctx);
     }
 
     async rebuildIndex(ctx: RequestContext) {
-        const indexingStrategy = this.options.indexingStrategy;
-        Logger.info(`Rebuilding global search index with ${indexingStrategy.constructor.name}`, loggerCtx);
-        await indexingStrategy.rebuildIndex(ctx);
+        Logger.info(
+            `Rebuilding global search index with ${this.indexingStrategy.constructor.name}`,
+            loggerCtx,
+        );
+        await this.indexingStrategy.rebuildIndex(ctx);
     }
 
     async updateIndex(ctx: RequestContext, entityType: string, entityId: string) {
-        const indexingStrategy = this.options.indexingStrategy;
-        await indexingStrategy.updateIndex(ctx, entityType, entityId);
+        await this.indexingStrategy.updateIndex(ctx, entityType, entityId);
     }
 
     async removeFromIndex(ctx: RequestContext, entityType: string, entityId: string) {
-        const indexingStrategy = this.options.indexingStrategy;
-        await indexingStrategy.removeFromIndex(ctx, entityType, entityId);
+        await this.indexingStrategy.removeFromIndex(ctx, entityType, entityId);
+    }
+
+    getIndexableEntities(ctx: RequestContext) {
+        return this.indexingStrategy.getIndexableEntities(ctx);
     }
 }

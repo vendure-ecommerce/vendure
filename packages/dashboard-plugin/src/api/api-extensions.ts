@@ -41,6 +41,7 @@ export const adminApiExtensions = gql`
 
     extend type Query {
         globalSearch(input: GlobalSearchInput!): GlobalSearchResult!
+        globalSearchIndexableEntities: [String!]!
     }
 
     extend type Mutation {

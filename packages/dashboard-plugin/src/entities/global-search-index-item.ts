@@ -3,6 +3,7 @@ import { EntityId, LanguageCode, VendureEntity } from '@vendure/core';
 import { Column, Entity, Index } from 'typeorm';
 
 @Entity()
+@Index(['entityType', 'languageCode', 'entityId'])
 export class GlobalSearchIndexItem extends VendureEntity {
     constructor(input?: Partial<GlobalSearchIndexItem>) {
         super(input);
@@ -21,7 +22,11 @@ export class GlobalSearchIndexItem extends VendureEntity {
     @Column()
     name: string;
 
+    @Column({ type: 'boolean', nullable: true })
+    enabled: boolean | null;
+
     @Column()
+    @Index()
     languageCode: LanguageCode;
 
     @Column({ nullable: true })
