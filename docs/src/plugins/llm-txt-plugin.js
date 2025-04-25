@@ -55,8 +55,6 @@ module.exports = function (context) {
             // this route config has a `props` property that contains the current documentation.
             const currentVersionDocsRoutes = allDocsRouteConfig.props.version.docs;
 
-            console.log('currentVersionDocsRoutes', currentVersionDocsRoutes);
-
             // for every single docs route we now parse a path (which is the key) and a title
             const docsRecords = Object.entries(currentVersionDocsRoutes).map(([path, record]) => {
                 return `- [${record.title}](${DOCS_BASE_URL}/${path}): ${record.description}`;
