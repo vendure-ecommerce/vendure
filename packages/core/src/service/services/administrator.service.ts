@@ -185,20 +185,21 @@ export class AdministratorService {
                 await this.connection.getRepository(ctx, NativeAuthenticationMethod).save(nativeAuthMethod);
             }
         }
-        if (input.roleIds) {
+
+        const channelRoles =
+            await this.configService.authOptions.rolePermissionResolverStrategy.getChannelIdsFromAdministratorMutationInput(
+                ctx,
+                input,
+            );
+        if (channelRoles.length > 0) {
             const isSoleSuperAdmin = await this.isSoleSuperadmin(ctx, input.id);
             if (isSoleSuperAdmin) {
                 const superAdminRole = await this.roleService.getSuperAdminRole(ctx);
-                if (!input.roleIds.find(id => idsAreEqual(id, superAdminRole.id))) {
+                if (!channelRoles.find(entry => idsAreEqual(entry.roleId, superAdminRole.id))) {
                     throw new InternalServerError('error.superadmin-must-have-superadmin-role');
                 }
             }
 
-            const channelRoles =
-                await this.configService.authOptions.rolePermissionResolverStrategy.getChannelIdsFromAdministratorMutationInput(
-                    ctx,
-                    input,
-                );
             await this.configService.authOptions.rolePermissionResolverStrategy.saveUserRoles(
                 ctx,
                 administrator.user,
@@ -215,7 +216,8 @@ export class AdministratorService {
             updatedAdministrator,
         );
 
-        if (input.roleIds) {
+        // TODO channel role events
+        if (channelRoles.length > 0) {
             const roleIdsAdded = (input.roleIds as ID[]).filter(
                 roleId => !administrator.user.roles.some(role => role.id === roleId),
             );

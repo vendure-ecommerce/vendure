@@ -93,7 +93,7 @@ export interface ChannelRoleOptions {}
                 # roleIds: [ID!] @deprecated(reason: "Use \`channelRoles\` due to ChannelRolePlugin")
             }
             extend input UpdateAdministratorInput {
-                channelRoles: [ChannelRoleInput!]!
+                channelRoles: [ChannelRoleInput!]
             }
         `,
     },

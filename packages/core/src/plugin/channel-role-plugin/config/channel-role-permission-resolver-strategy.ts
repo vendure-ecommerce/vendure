@@ -33,7 +33,7 @@ export class ChannelRolePermissionResolverStrategy implements RolePermissionReso
         /**
          * I dislike how the property on input is hardcoded and must conform to the api extension of the plugin
          */
-        return input.channelRoles;
+        return input.channelRoles ?? [];
     }
 
     /**
