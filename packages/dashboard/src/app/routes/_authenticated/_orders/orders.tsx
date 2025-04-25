@@ -4,9 +4,14 @@ import { Badge } from '@/components/ui/badge.js';
 import { Button } from '@/components/ui/button.js';
 import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@/lib/trans.js';
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { orderListDocument } from './orders.graphql.js';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { createDraftOrderDocument, orderListDocument } from './orders.graphql.js';
 import { useServerConfig } from '@/hooks/use-server-config.js';
+import { PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
+import { PlusIcon } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
+import { api } from '@/graphql/api.js';
+import { ResultOf } from '@/graphql/graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_orders/orders')({
     component: OrderListPage,
@@ -15,6 +20,13 @@ export const Route = createFileRoute('/_authenticated/_orders/orders')({
 
 function OrderListPage() {
     const serverConfig = useServerConfig();
+    const navigate = useNavigate();
+    const { mutate: createDraftOrder } = useMutation({
+        mutationFn: api.mutate(createDraftOrderDocument),
+        onSuccess: (result: ResultOf<typeof createDraftOrderDocument>) => {
+            navigate({ to: '/orders/draft/$id', params: { id: result.createDraftOrder.id } });
+        }
+    })
     return (
         <ListPage
             pageId="order-list"
@@ -35,8 +47,10 @@ function OrderListPage() {
             defaultSort={[{ id: 'orderPlacedAt', desc: true }]}
             transformVariables={variables => {
                 return {
-                    ...variables,
-                    filterOperator: 'OR',
+                    options: {
+                        ...variables.options,
+                        filterOperator: 'OR',
+                    }
                 };
             }}
             listQuery={orderListDocument}
@@ -115,6 +129,13 @@ function OrderListPage() {
                     }) ?? [],
                 },
             }}
-        />
+        >
+            <PageActionBarRight>
+                <Button onClick={() => createDraftOrder({})}>
+                    <PlusIcon className="mr-2 h-4 w-4" />
+                    <Trans>Draft order</Trans>
+                </Button>
+            </PageActionBarRight>
+        </ListPage>
     );
 }

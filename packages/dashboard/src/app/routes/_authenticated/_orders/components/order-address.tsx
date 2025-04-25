@@ -32,7 +32,8 @@ export function OrderAddress({ address }: { address?: OrderAddress }) {
             <div className="text-sm">
                 {streetLine1 && <p>{streetLine1}</p>}
                 {streetLine2 && <p>{streetLine2}</p>}
-                <p>{[city, province, postalCode].filter(Boolean).join(', ')}</p>
+                <p>{[city, province].filter(Boolean).join(', ')}</p>
+                {postalCode && <p>{postalCode}</p>}
                 {country && (
                     <div className="flex items-center gap-1.5 mt-1">
                         <Globe className="h-3 w-3 text-muted-foreground" />
