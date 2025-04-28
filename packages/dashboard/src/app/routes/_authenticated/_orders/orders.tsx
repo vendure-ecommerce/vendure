@@ -33,26 +33,26 @@ function OrderListPage() {
             title="Orders"
             onSearchTermChange={searchTerm => {
                 return {
-                    code: {
-                        contains: searchTerm,
-                    },
-                    customerLastName: {
-                        contains: searchTerm,
-                    },
-                    transactionId: {
-                        contains: searchTerm,
-                    },
+                    _or: [
+                        {
+                            code: {
+                                contains: searchTerm,
+                            },
+                        },
+                        {
+                            customerLastName: {
+                                contains: searchTerm,
+                            },
+                        },
+                        {
+                            transactionId: {
+                                contains: searchTerm,
+                            },
+                        },
+                    ],
                 };
             }}
             defaultSort={[{ id: 'orderPlacedAt', desc: true }]}
-            transformVariables={variables => {
-                return {
-                    options: {
-                        ...variables.options,
-                        filterOperator: 'OR',
-                    }
-                };
-            }}
             listQuery={orderListDocument}
             route={Route}
             customizeColumns={{

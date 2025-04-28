@@ -302,14 +302,14 @@ function DraftOrderPage() {
                                 deleteDraftOrder({ orderId: entity.id });
                             }}
                         >
-                            <Button variant="destructive">
+                            <Button variant="destructive" type="button">
                                 <Trans>Delete draft</Trans>
                             </Button>
                         </ConfirmationDialog>
 
                     </PermissionGuard>
                     <PermissionGuard requires={['UpdateOrder']}>
-                        <Button type="submit"
+                        <Button type="button"
                             disabled={!entity.customer || entity.lines.length === 0 || entity.shippingLines.length === 0 || entity.state !== 'Draft'}
                             onClick={() => completeDraftOrder({ id: entity.id, state: 'ArrangingPayment' })}
                         >
@@ -361,8 +361,9 @@ function DraftOrderPage() {
                 <PageBlock column="side" blockId="shipping-address" title={<Trans>Shipping address</Trans>}>
                     <div className="flex flex-col">
                         <OrderAddress address={entity.shippingAddress ?? undefined} />
-                        {entity.shippingAddress?.streetLine1 ?
-                            <RemoveAddressButton onClick={() => unsetShippingAddressForDraftOrder({ orderId: entity.id })} /> : <CustomerAddressSelector customerId={entity.customer?.id} onSelect={address => {
+                        {entity.shippingAddress?.streetLine1
+                            ? <RemoveAddressButton onClick={() => unsetShippingAddressForDraftOrder({ orderId: entity.id })} />
+                            : <CustomerAddressSelector customerId={entity.customer?.id} onSelect={address => {
                                 setShippingAddressForDraftOrder({
                                     orderId: entity.id, input: {
                                         fullName: address.fullName,
@@ -383,21 +384,23 @@ function DraftOrderPage() {
                 <PageBlock column="side" blockId="billing-address" title={<Trans>Billing address</Trans>}>
                     <div className="flex flex-col">
                         <OrderAddress address={entity.billingAddress ?? undefined} />
-                        {entity.billingAddress?.streetLine1 ? <RemoveAddressButton onClick={() => unsetBillingAddressForDraftOrder({ orderId: entity.id })} /> : <CustomerAddressSelector customerId={entity.customer?.id} onSelect={address => {
-                            setBillingAddressForDraftOrder({
-                                orderId: entity.id, input: {
-                                    fullName: address.fullName,
-                                    company: address.company,
-                                    streetLine1: address.streetLine1,
-                                    streetLine2: address.streetLine2,
-                                    city: address.city,
-                                    province: address.province,
-                                    postalCode: address.postalCode,
-                                    countryCode: address.country.code,
-                                    phoneNumber: address.phoneNumber,
-                                }
-                            });
-                        }} />
+                        {entity.billingAddress?.streetLine1
+                            ? <RemoveAddressButton onClick={() => unsetBillingAddressForDraftOrder({ orderId: entity.id })} />
+                            : <CustomerAddressSelector customerId={entity.customer?.id} onSelect={address => {
+                                setBillingAddressForDraftOrder({
+                                    orderId: entity.id, input: {
+                                        fullName: address.fullName,
+                                        company: address.company,
+                                        streetLine1: address.streetLine1,
+                                        streetLine2: address.streetLine2,
+                                        city: address.city,
+                                        province: address.province,
+                                        postalCode: address.postalCode,
+                                        countryCode: address.country.code,
+                                        phoneNumber: address.phoneNumber,
+                                    }
+                                });
+                            }} />
                         }
                     </div>
                 </PageBlock>

@@ -78,7 +78,7 @@ export function EditOrderTable({ order, eligibleShippingMethods, onAddItem, onAd
             cell: ({ row }) => {
                 return <div className="flex gap-2">
                     <Input type="number" value={row.original.quantity} onChange={e => onAdjustLine({ lineId: row.original.id, quantity: e.target.valueAsNumber, customFields: row.original.customFields })} />
-                    <Button variant="outline" size="icon" onClick={() => onRemoveLine({ lineId: row.original.id })}>
+                    <Button variant="outline" type="button" size="icon" onClick={() => onRemoveLine({ lineId: row.original.id })}>
                         <Trash2 />
                     </Button>
                     {row.original.customFields &&
@@ -188,6 +188,7 @@ export function EditOrderTable({ order, eligibleShippingMethods, onAddItem, onAd
                                             }}
                                         />
                                         <Button
+                                            type="button"
                                             onClick={() => onApplyCouponCode({ couponCode })}
                                             disabled={!couponCode}
                                         >
@@ -203,6 +204,7 @@ export function EditOrderTable({ order, eligibleShippingMethods, onAddItem, onAd
                                                 >
                                                     <span>{code}</span>
                                                     <Button
+                                                        type="button"
                                                         variant="ghost"
                                                         size="sm"
                                                         className="h-6 w-6 p-0"

@@ -48,7 +48,7 @@ export function CustomerAddressSelector({ customerId, onSelect }: CustomerAddres
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" className="" disabled={!customerId}>
+                    <Button variant="outline" size="sm" type="button" className="" disabled={!customerId}>
                         <Plus className="h-4 w-4" />
                         <Trans>Select address</Trans>
                     </Button>
