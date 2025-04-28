@@ -93,6 +93,7 @@ export function ListPage<
 
     const columnVisibility = pageId ? tableSettings?.columnVisibility : defaultVisibility;
     const columnOrder = pageId ? tableSettings?.columnOrder : defaultColumnOrder;
+    const columnFilters = pageId ? tableSettings?.columnFilters : routeSearch.filters;
 
     const sorting: SortingState = (routeSearch.sort ?? '')
         .split(',')
@@ -151,7 +152,7 @@ export function ListPage<
                         page={pagination.page}
                         itemsPerPage={pagination.itemsPerPage}
                         sorting={sorting}
-                        columnFilters={routeSearch.filters}
+                        columnFilters={columnFilters}
                         onPageChange={(table, page, perPage) => {
                             persistListStateToUrl(table, { page, perPage });
                             if (pageId) {
@@ -163,6 +164,9 @@ export function ListPage<
                         }}
                         onFilterChange={(table, filters) => {
                             persistListStateToUrl(table, { filters });
+                            if (pageId) {
+                                setTableSettings(pageId, 'columnFilters', filters);
+                            }
                         }}
                         onColumnVisibilityChange={(table, columnVisibility) => {
                             if (pageId) {
