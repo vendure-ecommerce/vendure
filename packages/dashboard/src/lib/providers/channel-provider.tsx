@@ -73,6 +73,7 @@ export function ChannelProvider({ children }: { children: React.ReactNode }) {
     const { data: channelsData, isLoading: isChannelsLoading } = useQuery({
         queryKey: ['channels'],
         queryFn: () => api.query(ChannelsQuery),
+        retry: false,
     });
 
     // Set the selected channel and update localStorage
