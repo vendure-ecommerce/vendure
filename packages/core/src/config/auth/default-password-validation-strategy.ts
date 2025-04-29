@@ -16,12 +16,17 @@ import { PasswordValidationStrategy } from './password-validation-strategy';
  * @since 1.5.0
  */
 export class DefaultPasswordValidationStrategy implements PasswordValidationStrategy {
-    constructor(private options: { minLength?: number; regexp?: RegExp }) {}
+    constructor(private options: { minLength?: number; maxLength?: number; regexp?: RegExp }) {}
 
     validate(ctx: RequestContext, password: string): boolean | string {
-        const { minLength, regexp } = this.options;
+        const { minLength, maxLength, regexp } = this.options;
         if (minLength != null) {
             if (password.length < minLength) {
+                return false;
+            }
+        }
+        if (maxLength != null) {
+            if (password.length > maxLength) {
                 return false;
             }
         }

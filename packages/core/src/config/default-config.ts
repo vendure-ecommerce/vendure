@@ -111,7 +111,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         adminAuthenticationStrategy: [new NativeAuthenticationStrategy()],
         customPermissions: [],
         passwordHashingStrategy: new BcryptPasswordHashingStrategy(),
-        passwordValidationStrategy: new DefaultPasswordValidationStrategy({ minLength: 4 }),
+        passwordValidationStrategy: new DefaultPasswordValidationStrategy({ minLength: 4, maxLength: 72 }),
         verificationTokenStrategy: new DefaultVerificationTokenStrategy(),
     },
     catalogOptions: {
