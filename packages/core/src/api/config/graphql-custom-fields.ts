@@ -249,6 +249,36 @@ export function addGraphQLCustomFields(
                 }
             }
         }
+
+        const publicEntityName = `Public${entityName}`;
+
+        if (schema.getType(publicEntityName)) {
+            if (customEntityFields.length) {
+                for (const structCustomField of structCustomFields) {
+                    customFieldTypeDefs += `
+                        type ${getStructTypeName(publicEntityName, structCustomField)} {
+                            ${mapToStructFields(structCustomField.fields, wrapListType(getGraphQlTypeForStructField))}
+                        }
+                    `;
+                }
+
+                customFieldTypeDefs += `
+                    type ${publicEntityName}CustomFields {
+                        ${mapToFields(customEntityFields, wrapListType(getGraphQlType(entityName)))}
+                    }
+
+                    extend type ${publicEntityName} {
+                        customFields: ${publicEntityName}CustomFields
+                    }
+                `;
+            } else {
+                customFieldTypeDefs += `
+                    extend type ${publicEntityName} {
+                        customFields: JSON
+                    }
+                `;
+            }
+        }
     }
 
     const publicAddressFields = customFieldConfig.Address?.filter(
@@ -634,7 +664,6 @@ function getFilterOperator(config: CustomFieldConfig): string | undefined {
         default:
             assertNever(config);
     }
-    return 'String';
 }
 
 function getGraphQlInputType(entityName: string) {
@@ -685,7 +714,6 @@ function getGraphQlType(entityName: string) {
             default:
                 assertNever(config);
         }
-        return 'String';
     };
 }
 
@@ -705,7 +733,6 @@ function getGraphQlTypeForStructField(config: StructFieldConfig): string {
         default:
             assertNever(config);
     }
-    return 'String';
 }
 
 function getStructTypeName(entityName: string, fieldDef: StructCustomFieldConfig): string {
