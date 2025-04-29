@@ -267,7 +267,7 @@ export class ShippingMethodService {
 
     async getActiveShippingMethods(ctx: RequestContext): Promise<ShippingMethod[]> {
         const shippingMethods = await this.connection.getRepository(ctx, ShippingMethod).find({
-            relations: ['channels'],
+            relations: ['channels', 'customFields'],
             where: { deletedAt: IsNull() },
         });
         return shippingMethods
