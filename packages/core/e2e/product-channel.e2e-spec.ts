@@ -376,6 +376,8 @@ describe('ChannelAware Products and ProductVariants', () => {
 
             expect(defaultProductRes.product).toBeDefined();
             expect(secondProductRes.product).toBeDefined();
+            expect(defaultProductRes.product).not.toBeNull();
+            expect(secondProductRes.product).not.toBeNull();
             expect(defaultProductRes.product.name).toBe('Channel Product1');
             expect(secondProductRes.product.name).toBe('Channel Product2');
             expect(defaultProductRes.product.slug).toBe('channel-product-test');
