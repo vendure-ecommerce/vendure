@@ -316,6 +316,71 @@ describe('ChannelAware Products and ProductVariants', () => {
                 );
             }
         });
+
+        // https://github.com/vendure-ecommerce/vendure/pull/3486
+        it('retrieves the correct product when identical slugs exist in multiple channels', async () => {
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            // create product in the default channel
+            const createProduct1 = await adminClient.query(CreateProductDocument, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'Channel Product1',
+                            slug: 'channel-product-test',
+                            description: 'Default Channel product',
+                        },
+                    ],
+                },
+            });
+            // create product in the second channel
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const createProduct2 = await adminClient.query(CreateProductDocument, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'Channel Product2',
+                            slug: 'channel-product-test',
+                            description: 'Second Channel product',
+                        },
+                    ],
+                },
+            });
+
+            expect(createProduct1).toBeDefined();
+            expect(createProduct2).toBeDefined();
+
+            const GET_PRODUCT_BY_SLUG = `
+                query Product {
+                    product(slug: "channel-product-test") {
+                        id
+                        createdAt
+                        updatedAt
+                        languageCode
+                        name
+                        slug
+                        description
+                        enabled
+                        customFields
+                    }
+                }
+            `;
+            // retrieve product from the default channel
+            shopClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const defaultProductRes = await shopClient.query(gql(GET_PRODUCT_BY_SLUG));
+
+            // retrieve product from the second channel
+            shopClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const secondProductRes = await shopClient.query(gql(GET_PRODUCT_BY_SLUG));
+
+            expect(defaultProductRes.product).toBeDefined();
+            expect(secondProductRes.product).toBeDefined();
+            expect(defaultProductRes.product.name).toBe('Channel Product1');
+            expect(secondProductRes.product.name).toBe('Channel Product2');
+            expect(defaultProductRes.product.slug).toBe('channel-product-test');
+            expect(secondProductRes.product.slug).toBe('channel-product-test');
+        });
     });
 
     describe('assigning ProductVariant to Channels', () => {
