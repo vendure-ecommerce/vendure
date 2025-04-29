@@ -1,17 +1,17 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { Customer, DeepPartial, Product, ProductVariant, VendureEntity } from '@vendure/core';
-import { Column, Entity, ManyToOne } from 'typeorm';
-
+import { Customer, DeepPartial, LocaleString, Product, ProductVariant, Translatable, Translation, VendureEntity } from '@vendure/core';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { ReviewState } from '../types';
+import { ProductReviewTranslation } from './product-review-translation.entity';
 
 @Entity()
-export class ProductReview extends VendureEntity {
+export class ProductReview extends VendureEntity implements Translatable {
     constructor(input?: DeepPartial<ProductReview>) {
         super(input);
     }
-
     @ManyToOne(type => Product)
     product: Product;
+
+    text: LocaleString;
 
     @ManyToOne(type => ProductVariant)
     productVariant: ProductVariant | null;
@@ -48,4 +48,7 @@ export class ProductReview extends VendureEntity {
 
     @Column({ nullable: true, default: null })
     responseCreatedAt: Date;
+
+    @OneToMany(() => ProductReviewTranslation, translation => translation.base, { eager: true })
+    translations: Array<Translation<ProductReview>>;
 }

@@ -24,6 +24,7 @@ import {
     templateUrl: './object-tree.component.html',
     styleUrls: ['./object-tree.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ObjectTreeComponent implements OnChanges {
     @Input() value: { [key: string]: any } | string;

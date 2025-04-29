@@ -9,6 +9,7 @@ import { BreadcrumbService } from '../../../providers/breadcrumb/breadcrumb.serv
     templateUrl: './page-title.component.html',
     styleUrls: [`./page-title.component.scss`],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class PageTitleComponent implements OnInit, OnChanges {
     @Input() title = '';

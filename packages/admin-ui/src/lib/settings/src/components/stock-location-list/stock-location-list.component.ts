@@ -26,6 +26,7 @@ export const GET_STOCK_LOCATION_LIST = gql`
     templateUrl: './stock-location-list.component.html',
     styleUrls: ['./stock-location-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class StockLocationListComponent
     extends TypedBaseListComponent<typeof GetStockLocationListDocument, 'stockLocations'>

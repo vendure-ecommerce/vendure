@@ -61,7 +61,7 @@ args: {
 ```
 
 ```ts title="Signature"
-function registerFormInputComponent(id: string, component: Type<FormInputComponent>): FactoryProvider
+function registerFormInputComponent(id: string, component: Type<FormInputComponent>): void
 ```
 Parameters
 

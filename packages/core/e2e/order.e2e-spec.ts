@@ -221,6 +221,32 @@ describe('Orders resolver', () => {
             expect(result.orders.items.map(o => o.id).sort()).toEqual(['T_1', 'T_2']);
         });
 
+        it('filtering by total', async () => {
+            const result = await adminClient.query<
+                Codegen.GetOrderListQuery,
+                Codegen.GetOrderListQueryVariables
+            >(GET_ORDERS_LIST, {
+                options: {
+                    filter: { total: { gt: 1000_00 } },
+                },
+            });
+            expect(result.orders.items.map(o => o.id).sort()).toEqual(['T_1', 'T_2']);
+        });
+
+        it('filtering by total using boolean expression', async () => {
+            const result = await adminClient.query<
+                Codegen.GetOrderListQuery,
+                Codegen.GetOrderListQueryVariables
+            >(GET_ORDERS_LIST, {
+                options: {
+                    filter: {
+                        _and: [{ total: { gt: 1000_00 } }],
+                    },
+                },
+            });
+            expect(result.orders.items.map(o => o.id).sort()).toEqual(['T_1', 'T_2']);
+        });
+
         it('order', async () => {
             const result = await adminClient.query<Codegen.GetOrderQuery, Codegen.GetOrderQueryVariables>(
                 GET_ORDER,
@@ -1079,9 +1105,8 @@ describe('Orders resolver', () => {
         });
 
         it('order.fulfillments resolver for order list', async () => {
-            const { orders } = await adminClient.query<Codegen.GetOrderListFulfillmentsQuery>(
-                GET_ORDER_LIST_FULFILLMENTS,
-            );
+            const { orders } =
+                await adminClient.query<Codegen.GetOrderListFulfillmentsQuery>(GET_ORDER_LIST_FULFILLMENTS);
 
             expect(orders.items[0].fulfillments).toEqual([]);
             expect(orders.items[1].fulfillments?.sort(sortById)).toEqual([

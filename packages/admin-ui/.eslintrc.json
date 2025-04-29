@@ -39,6 +39,9 @@
             "style": "kebab-case"
           }
         ],
+        "@angular-eslint/prefer-standalone": [
+          "off"
+        ],
         "@angular-eslint/no-input-rename": "off",
         "@typescript-eslint/array-type": [
           "error",

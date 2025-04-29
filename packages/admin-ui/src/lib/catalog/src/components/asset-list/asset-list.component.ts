@@ -23,6 +23,7 @@ import { debounceTime, finalize, map, switchMap, takeUntil } from 'rxjs/operator
     selector: 'vdr-asset-list',
     templateUrl: './asset-list.component.html',
     styleUrls: ['./asset-list.component.scss'],
+    standalone: false
 })
 export class AssetListComponent
     extends BaseListComponent<

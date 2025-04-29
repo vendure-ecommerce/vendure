@@ -1,3 +1,70 @@
+## <small>3.2.3 (2025-04-17)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix missing product variant list tab ([047eaa5](https://github.com/vendure-ecommerce/vendure/commit/047eaa5))
+* **core** Align Express & types versions ([ba4111b](https://github.com/vendure-ecommerce/vendure/commit/ba4111b))
+* **core** Relax some express typings to prevent v4/v5 types conflicts ([97e53d5](https://github.com/vendure-ecommerce/vendure/commit/97e53d5))
+
+## <small>3.2.2 (2025-04-03)</small>
+
+#### Fixes
+
+* **dashboard** Fix dashboard plugin publishing ([65281e5f](https://github.com/vendure-ecommerce/vendure/commit/65281e5f))
+
+## <small>3.2.1 (2025-04-03)</small>
+
+
+#### Fixes
+
+* **job-queue-plugin** Respect custom prefix for BullMQ Redis keys ([40f1cb8](https://github.com/vendure-ecommerce/vendure/commit/40f1cb8))
+* **ui-devkit** Silence sass warnings during compilation ([724e849](https://github.com/vendure-ecommerce/vendure/commit/724e849))
+* **ui-devkit** Update angular.json for v19 compatibility ([1ac69a7](https://github.com/vendure-ecommerce/vendure/commit/1ac69a7))
+
+## 3.2.0 (2025-04-02)
+
+
+#### Fixes
+
+* **admin-ui** Fix build error ([fbbcc3e](https://github.com/vendure-ecommerce/vendure/commit/fbbcc3e))
+* **admin-ui** Fix incorrect pagination range (#3404) ([1ee2d45](https://github.com/vendure-ecommerce/vendure/commit/1ee2d45)), closes [#3404](https://github.com/vendure-ecommerce/vendure/issues/3404)
+* **core** Avoid variant options combination check on updateProductVariant mutation (#3361) ([c820f42](https://github.com/vendure-ecommerce/vendure/commit/c820f42)), closes [#3361](https://github.com/vendure-ecommerce/vendure/issues/3361)
+* **core** Fix progress reporting for collection filters job ([3976148](https://github.com/vendure-ecommerce/vendure/commit/3976148))
+* **core** Use correct precision for CacheItem.expiresAt ([12e2db0](https://github.com/vendure-ecommerce/vendure/commit/12e2db0))
+
+#### Features
+
+* **admin-ui** Add Japanese UI translations (#3400) ([d24964a](https://github.com/vendure-ecommerce/vendure/commit/d24964a)), closes [#3400](https://github.com/vendure-ecommerce/vendure/issues/3400)
+* **common** Add exports field to package.json for module resolution ([5623c2b](https://github.com/vendure-ecommerce/vendure/commit/5623c2b))
+* **core** Add two new queries to get public payment and shipping methods ([1aa75d5](https://github.com/vendure-ecommerce/vendure/commit/1aa75d5))
+* **core** Add two new queries to get public payment and shipping methods ([5c7fe42](https://github.com/vendure-ecommerce/vendure/commit/5c7fe42))
+* **core** Add updateProductVariant mutation ([0b854b4](https://github.com/vendure-ecommerce/vendure/commit/0b854b4))
+* **core** Add verification token strategy (#3294) ([9375ba2](https://github.com/vendure-ecommerce/vendure/commit/9375ba2)), closes [#3294](https://github.com/vendure-ecommerce/vendure/issues/3294)
+* **core** Update all major dependencies (#3445) ([d376d83](https://github.com/vendure-ecommerce/vendure/commit/d376d83)), closes [#3445](https://github.com/vendure-ecommerce/vendure/issues/3445)
+* **harden-plugin** Allow skipping complexity check in Harden Plugin (#3340) ([0bef00b](https://github.com/vendure-ecommerce/vendure/commit/0bef00b)), closes [#3340](https://github.com/vendure-ecommerce/vendure/issues/3340)
+* **job-queue-plugin** Add support for job options  Priority ([90b5e05](https://github.com/vendure-ecommerce/vendure/commit/90b5e05))
+
+#### Perf
+
+* **core** Remove duplicated calls to promotion checks ([e3508f3](https://github.com/vendure-ecommerce/vendure/commit/e3508f3))
+
+
+### BREAKING CHANGE
+
+* If you are using the DefaultCachePlugin, then
+you should generate a migration that adds `precision(3)` to the
+`expiresAt` column. This will only affect cache records so no prod
+data will be affected by it.
+## <small>3.1.8 (2025-03-31)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix product variant list location (#3410) ([5082cc9](https://github.com/vendure-ecommerce/vendure/commit/5082cc9)), closes [#3410](https://github.com/vendure-ecommerce/vendure/issues/3410)
+* **core** Eligible payment methods must be enabled (#3406) ([45852ea](https://github.com/vendure-ecommerce/vendure/commit/45852ea)), closes [#3406](https://github.com/vendure-ecommerce/vendure/issues/3406)
+* **job-queue-plugin** Fix ignored values from BullMQ workerOptions (#3440) ([a9aea24](https://github.com/vendure-ecommerce/vendure/commit/a9aea24)), closes [#3440](https://github.com/vendure-ecommerce/vendure/issues/3440)
+
 ## <small>3.1.7 (2025-03-06)</small>
 
 

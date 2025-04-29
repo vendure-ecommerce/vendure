@@ -141,7 +141,10 @@ describe('CurrencyInputComponent', () => {
 
 @Component({
     selector: 'vdr-test-component',
-    template: ` <vdr-currency-input [(ngModel)]="price"></vdr-currency-input> `,
+    template: `
+        <vdr-currency-input [(ngModel)]="price"></vdr-currency-input>
+    `,
+    standalone: false,
 })
 class TestControlValueAccessorComponent {
     price = 123;
@@ -149,7 +152,10 @@ class TestControlValueAccessorComponent {
 
 @Component({
     selector: 'vdr-test-component',
-    template: ` <vdr-currency-input [value]="price" [currencyCode]="currencyCode"></vdr-currency-input> `,
+    template: `
+        <vdr-currency-input [value]="price" [currencyCode]="currencyCode"></vdr-currency-input>
+    `,
+    standalone: false,
 })
 class TestSimpleComponent {
     currencyCode = '';

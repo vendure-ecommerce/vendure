@@ -20,6 +20,7 @@ import { DataService } from '../../../data/providers/data.service';
     templateUrl: './struct-form-input.component.html',
     styleUrls: ['./struct-form-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class StructFormInputComponent implements FormInputComponent, OnInit, OnDestroy {
     static readonly id: DefaultFormComponentId = 'struct-form-input';

@@ -42,6 +42,7 @@ type OrderEditResult =
     templateUrl: './order-edits-preview-dialog.component.html',
     styleUrls: ['./order-edits-preview-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OrderEditsPreviewDialogComponent implements OnInit, Dialog<OrderEditResult> {
     // Passed in via the modalService

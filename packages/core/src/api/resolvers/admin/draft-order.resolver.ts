@@ -24,6 +24,7 @@ import {
     Permission,
     QueryEligibleShippingMethodsForDraftOrderArgs,
     ShippingMethodQuote,
+    MutationSetDraftOrderCustomFieldsArgs,
 } from '@vendure/common/lib/generated-types';
 
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../../common/error/error-result';
@@ -123,6 +124,16 @@ export class DraftOrderResolver {
         @Args() args: MutationRemoveDraftOrderLineArgs,
     ): Promise<ErrorResultUnion<RemoveOrderItemsResult, Order>> {
         return this.orderService.removeItemFromOrder(ctx, args.orderId, args.orderLineId);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.CreateOrder)
+    async setDraftOrderCustomFields(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationSetDraftOrderCustomFieldsArgs,
+    ): Promise<ErrorResultUnion<RemoveOrderItemsResult, Order>> {
+        return this.orderService.updateCustomFields(ctx, args.orderId, args.input.customFields ?? {});
     }
 
     @Transaction()

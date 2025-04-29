@@ -19,6 +19,7 @@ import { ConfigurableInputComponent } from '../../components/configurable-input/
     templateUrl: './combination-mode-form-input.component.html',
     styleUrls: ['./combination-mode-form-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class CombinationModeFormInputComponent implements FormInputComponent, OnInit {
     static readonly id: DefaultFormComponentId = 'combination-mode-form-input';

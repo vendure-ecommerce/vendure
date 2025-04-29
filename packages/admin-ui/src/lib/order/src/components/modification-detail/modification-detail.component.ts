@@ -6,6 +6,7 @@ import { OrderDetailFragment } from '@vendure/admin-ui/core';
     templateUrl: './modification-detail.component.html',
     styleUrls: ['./modification-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ModificationDetailComponent implements OnChanges {
     @Input() order: OrderDetailFragment;

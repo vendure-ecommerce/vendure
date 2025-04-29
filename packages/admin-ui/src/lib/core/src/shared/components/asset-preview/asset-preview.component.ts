@@ -30,6 +30,7 @@ export type PreviewPreset = 'tiny' | 'thumb' | 'small' | 'medium' | 'large' | ''
     templateUrl: './asset-preview.component.html',
     styleUrls: ['./asset-preview.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AssetPreviewComponent implements OnInit, OnDestroy {
     @Input() asset: AssetLike;
@@ -66,7 +67,7 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
         private notificationService: NotificationService,
         private changeDetector: ChangeDetectorRef,
         private modalService: ModalService,
-    ) { }
+    ) {}
 
     get fpx(): number | null {
         return this.asset.focalPoint ? this.asset.focalPoint.x : null;
@@ -240,5 +241,4 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
         this.disableNextButton = this.assets?.[this.previewAssetIndex + 1]?.id ? false : true;
         this.disablePreviousButton = this.assets?.[this.previewAssetIndex - 1]?.id ? false : true;
     }
-
 }

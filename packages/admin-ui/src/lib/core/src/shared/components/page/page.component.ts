@@ -10,13 +10,17 @@ import { HeaderTab } from '../page-header-tabs/page-header-tabs.component';
     templateUrl: './page.component.html',
     styleUrls: ['./page.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class PageComponent {
     headerTabs: HeaderTab[] = [];
     @Input() protected locationId: PageLocationId;
     @Input() protected description: string;
     entity$: Observable<{ id: string; createdAt?: string; updatedAt?: string } | undefined>;
-    constructor(private route: ActivatedRoute, private pageService: PageService) {
+    constructor(
+        private route: ActivatedRoute,
+        private pageService: PageService,
+    ) {
         this.locationId = this.route.snapshot.data.locationId;
         this.description = this.route.snapshot.data.description ?? '';
         this.headerTabs = this.pageService.getPageTabs(this.locationId).map(tab => ({

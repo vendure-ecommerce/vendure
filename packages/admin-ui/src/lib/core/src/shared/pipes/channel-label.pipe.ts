@@ -4,6 +4,7 @@ import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 
 @Pipe({
     name: 'channelCodeToLabel',
+    standalone: false,
 })
 export class ChannelLabelPipe implements PipeTransform {
     transform(value: any, ...args: any[]): any {

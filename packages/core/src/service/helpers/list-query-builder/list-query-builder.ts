@@ -470,7 +470,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                     continue;
                 }
                 const relationMetadata = entityMetadata.findRelationWithPropertyPath(entityPart);
-                if (!relationMetadata ?? !relationMetadata?.propertyName) {
+                if (!relationMetadata || !relationMetadata?.propertyName) {
                     Logger.error(
                         `The customPropertyMap entry "${property}:${value}" could not be resolved to a related table`,
                     );
@@ -505,10 +505,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         options: ListQueryOptions<T>,
     ) {
         const calculatedColumns = getCalculatedColumns(entity);
-        const filterAndSortFields = unique([
-            ...Object.keys(options.filter || {}),
-            ...Object.keys(options.sort || {}),
-        ]);
+        const filterAndSortFields = this.getFilterAndSortFields(options);
         const alias = getEntityAlias(this.connection.rawConnection, entity);
         for (const field of filterAndSortFields) {
             const calculatedColumnDef = calculatedColumns.find(c => c.name === field);
@@ -532,6 +529,34 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                 }
             }
         }
+    }
+
+    private getFilterAndSortFields<T extends VendureEntity>(options: ListQueryOptions<T>): string[] {
+        const sortFields = Object.keys(options.sort || {});
+        // filter fields can be immediate children of the filter object
+        // or nested inside _and or _or
+        const filterFields = this.getFilterFields(options.filter);
+        return unique([...sortFields, ...filterFields]);
+    }
+
+    private getFilterFields<T extends VendureEntity>(
+        filter?: NullOptionals<FilterParameter<T>> | null,
+    ): string[] {
+        if (!filter) {
+            return [];
+        }
+        const filterFields: string[] = [];
+        for (const key in filter) {
+            if (key === '_and' || key === '_or') {
+                const value = filter[key] as Array<FilterParameter<T>>;
+                for (const condition of value) {
+                    filterFields.push(...this.getFilterFields(condition));
+                }
+            } else if (filter[key as keyof FilterParameter<T>]) {
+                filterFields.push(key);
+            }
+        }
+        return unique(filterFields);
     }
 
     /**

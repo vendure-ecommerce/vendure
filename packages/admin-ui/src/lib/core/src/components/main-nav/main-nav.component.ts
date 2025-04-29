@@ -8,6 +8,7 @@ import { BaseNavComponent } from '../base-nav/base-nav.component';
     selector: 'vdr-main-nav',
     templateUrl: './main-nav.component.html',
     styleUrls: ['./main-nav.component.scss'],
+    standalone: false,
 })
 export class MainNavComponent extends BaseNavComponent implements OnInit {
     @Input() displayMode: string | undefined;

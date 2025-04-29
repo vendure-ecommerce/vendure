@@ -13,12 +13,14 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
+    codegen:
+        uses: ./.github/workflows/codegen.yml
     build:
         name: build
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                node: [18.x, 20.x, 22.x]
+                node: [20.x, 22.x]
         steps:
             - uses: actions/checkout@v4
             - name: Use Node.js ${{ matrix.node }}
@@ -36,7 +38,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                node: [18.x, 20.x, 22.x]
+                node: [20.x, 22.x]
         steps:
             - uses: actions/checkout@v4
             - name: Use Node.js ${{ matrix.node }}
@@ -105,7 +107,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                node: [18.x, 20.x, 22.x]
+                node: [20.x, 22.x]
                 db: [sqljs, mariadb, mysql, postgres]
         steps:
             - uses: actions/checkout@v4

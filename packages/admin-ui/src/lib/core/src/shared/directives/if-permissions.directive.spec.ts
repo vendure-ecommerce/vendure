@@ -74,6 +74,7 @@ describe('vdrIfPermissions directive', () => {
         </div>
         <ng-template #noPerms><span class="else"></span></ng-template>
     `,
+    standalone: false,
 })
 export class TestComponent {
     @Input() permissionToTest: string | string[] | null = '';

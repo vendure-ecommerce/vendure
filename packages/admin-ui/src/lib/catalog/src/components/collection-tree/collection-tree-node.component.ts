@@ -25,6 +25,7 @@ import { CollectionPartial } from './collection-tree.types';
     templateUrl: './collection-tree-node.component.html',
     styleUrls: ['./collection-tree-node.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class CollectionTreeNodeComponent implements OnInit, OnChanges, OnDestroy {
     depth = 0;
