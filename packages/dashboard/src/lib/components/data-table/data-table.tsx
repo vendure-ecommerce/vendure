@@ -2,7 +2,6 @@
 
 import { DataTablePagination } from '@/components/data-table/data-table-pagination.js';
 import { DataTableViewOptions } from '@/components/data-table/data-table-view-options.js';
-import { Badge } from '@/components/ui/badge.js';
 import { Input } from '@/components/ui/input.js';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.js';
 import {
@@ -19,9 +18,11 @@ import {
     VisibilityState,
 } from '@tanstack/react-table';
 import { TableOptions } from '@tanstack/table-core';
-import { CircleX, Filter } from 'lucide-react';
 import React, { Suspense, useEffect } from 'react';
+import { AddFilterMenu } from './add-filter-menu.js';
 import { DataTableFacetedFilter, DataTableFacetedFilterOption } from './data-table-faceted-filter.js';
+import { DataTableFilterBadge } from './data-table-filter-badge.js';
+import { useChannel } from '@/hooks/use-channel.js';
 
 export interface FacetedFilter {
     title: string;
@@ -73,6 +74,7 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>(sortingInitialState || []);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(filtersInitialState || []);
+    const { activeChannel } = useChannel();
     const [pagination, setPagination] = React.useState<PaginationState>({
         pageIndex: (page ?? 1) - 1,
         pageSize: itemsPerPage ?? 10,
@@ -149,30 +151,20 @@ export function DataTable<TData, TValue>({
                                 />
                             ))}
                         </Suspense>
+                        <AddFilterMenu columns={table.getAllColumns()} />
                     </div>
                     <div className="flex gap-1">
                         {columnFilters
                             .filter(f => !facetedFilters?.[f.id])
                             .map(f => {
-                                const [operator, value] = Object.entries(
-                                    f.value as Record<string, string>,
-                                )[0];
-                                return (
-                                    <Badge key={f.id} className="flex gap-1 items-center" variant="secondary">
-                                        <Filter size="12" className="opacity-50" />
-                                        <div>{f.id}</div>
-                                        <div>{operator}</div>
-                                        <div>{value}</div>
-                                        <button
-                                            className="cursor-pointer"
-                                            onClick={() =>
-                                                setColumnFilters(old => old.filter(x => x.id !== f.id))
-                                            }
-                                        >
-                                            <CircleX size="14" />
-                                        </button>
-                                    </Badge>
-                                );
+                                const column = table.getColumn(f.id);
+                                const currency = activeChannel?.defaultCurrencyCode ?? 'USD';
+                                return <DataTableFilterBadge
+                                            key={f.id}
+                                            filter={f}
+                                            currencyCode={currency}
+                                            dataType={(column?.columnDef.meta as any)?.fieldInfo?.type ?? 'String'}
+                                            onRemove={() => setColumnFilters(old => old.filter(x => x.id !== f.id))} />;
                             })}
                     </div>
                 </div>
@@ -189,9 +181,9 @@ export function DataTable<TData, TValue>({
                                             {header.isPlaceholder
                                                 ? null
                                                 : flexRender(
-                                                      header.column.columnDef.header,
-                                                      header.getContext(),
-                                                  )}
+                                                    header.column.columnDef.header,
+                                                    header.getContext(),
+                                                )}
                                         </TableHead>
                                     );
                                 })}

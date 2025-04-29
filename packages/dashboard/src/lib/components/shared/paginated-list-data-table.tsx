@@ -333,6 +333,10 @@ export function PaginatedListDataTable<
                 meta: { fieldInfo, isCustomField },
                 enableColumnFilter,
                 enableSorting: fieldInfo.isScalar,
+                // Filtering is done on the server side, but we set this to 'equalsString' because
+                // otherwise the TanStack Table with apply an "auto" function which somehow
+                // prevents certain filters from working.
+                filterFn: 'equalsString',
                 cell: ({ cell, row }) => {
                     const value = !isCustomField
                         ? cell.getValue()
@@ -437,6 +441,7 @@ function getRowActions(
         id: 'actions',
         accessorKey: 'actions',
         header: 'Actions',
+        enableColumnFilter: false,
         cell: ({ row }) => {
             return (
                 <DropdownMenu>
