@@ -1115,6 +1115,23 @@ describe('ListQueryBuilder', () => {
             expect(getItemLabels(testEntities.items)).toEqual(['A', 'B']);
         });
 
+        it('filter by calculated property with boolean expression', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        _and: [
+                            {
+                                descriptionLength: {
+                                    lt: 12,
+                                },
+                            },
+                        ],
+                    },
+                },
+            });
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B']);
+        });
+
         it('filter by calculated property with join', async () => {
             const { testEntities } = await adminClient.query(GET_LIST, {
                 options: {
@@ -1122,6 +1139,23 @@ describe('ListQueryBuilder', () => {
                         price: {
                             lt: 14,
                         },
+                    },
+                },
+            });
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'E']);
+        });
+
+        it('filter by calculated property with join and boolean expression', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        _and: [
+                            {
+                                price: {
+                                    lt: 14,
+                                },
+                            },
+                        ],
                     },
                 },
             });
