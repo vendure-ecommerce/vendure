@@ -358,8 +358,6 @@ export class ShopOrderResolver {
     async addItemsToOrder(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationAddItemsToOrderArgs & ActiveOrderArgs,
-        @Relations({ entity: Order, omit: ['aggregateOrder', 'sellerOrders'] })
-        relations: RelationPaths<Order>,
     ): Promise<{ 
         order: Order; 
         errorResults: UpdateMultipleOrderItemsResult['errorResults'] 
@@ -369,7 +367,7 @@ export class ShopOrderResolver {
             args[ACTIVE_ORDER_INPUT_FIELD_NAME],
             true,
         );
-        const result = await this.orderService.addItemsToOrder(ctx, order.id, args.inputs, relations);
+        const result = await this.orderService.addItemsToOrder(ctx, order.id, args.inputs);
         return {
             order: result.order,
             errorResults: result.errorResults,

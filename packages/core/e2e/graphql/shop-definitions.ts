@@ -129,6 +129,25 @@ export const ADD_ITEM_TO_ORDER = gql`
     }
     ${UPDATED_ORDER_FRAGMENT}
 `;
+
+export const ADD_MULTIPLE_ITEMS_TO_ORDER = gql`
+    mutation AddItemsToOrder($inputs: [AddItemInput!]!) {
+        addItemsToOrder(inputs: $inputs) {
+            order {
+                ...UpdatedOrder
+            }
+            errorResults {
+                ...on ErrorResult {
+                    errorCode
+                    message
+                }
+            }
+            
+        }
+    }
+    ${UPDATED_ORDER_FRAGMENT}
+`;
+
 export const SEARCH_PRODUCTS_SHOP = gql`
     query SearchProductsShop($input: SearchInput!) {
         search(input: $input) {
