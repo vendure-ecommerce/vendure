@@ -70,7 +70,7 @@ type PublicShippingMethod {
 type Mutation {
     "Adds an item to the Order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available."
     addItemToOrder(productVariantId: ID!, quantity: Int!): UpdateOrderItemsResult!
-    "Adds mutliple items to the Order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available."
+    "Adds mutliple items to the Order. Returns a list of errors for each item that failed to add. It will still add successful items."
     addItemsToOrder(inputs: [AddItemInput!]!): UpdateMultipleOrderItemsResult!
     "Remove an OrderLine from the Order"
     removeOrderLine(orderLineId: ID!): RemoveOrderItemsResult!
