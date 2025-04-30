@@ -119,10 +119,10 @@ export const devConfig: VendureConfig = {
         //     platformFeeSKU: 'FEE',
         // }),
         GraphiqlPlugin.init(),
-        AssetServerPlugin.init({
-            route: 'assets',
-            assetUploadDir: path.join(__dirname, 'assets'),
-        }),
+        // AssetServerPlugin.init({
+        //     route: 'assets',
+        //     assetUploadDir: path.join(__dirname, 'assets'),
+        // }),
         DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: false }),
         // Enable if you need to debug the job queue
         // BullMQJobQueuePlugin.init({}),

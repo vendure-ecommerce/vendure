@@ -115,12 +115,3 @@ union UpdateOrderItemErrorResult =
     | NegativeQuantityError
     | InsufficientStockError
     | OrderInterceptorError
-"""
-Returned when multiple items are added to an Order and one or more of the items could be added.
-`errorCode` and `message` are from the first error that occurred, `errors` contains the full list of errors.
-"""
-type AddMultipleItemsToOrderError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-    errors: [UpdateOrderItemsErrorResult!]!
-}

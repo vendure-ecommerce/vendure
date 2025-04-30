@@ -270,11 +270,11 @@ type PaymentMethodQuote {
 
 union UpdateOrderItemsResult =
       Order
-    | UpdateOrderItemErrorResult
-
-union UpdateMultipleOrderItemsResult =
-      Order
-    | AddMultipleItemsToOrderError
+    | OrderModificationError
+    | OrderLimitError
+    | NegativeQuantityError
+    | InsufficientStockError
+    | OrderInterceptorError
 
 union RemoveOrderItemsResult = Order | OrderModificationError | OrderInterceptorError
 union SetOrderShippingMethodResult =

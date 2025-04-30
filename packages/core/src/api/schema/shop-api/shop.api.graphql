@@ -287,3 +287,17 @@ union NativeAuthenticationResult =
     | NativeAuthStrategyError
 union AuthenticationResult = CurrentUser | InvalidCredentialsError | NotVerifiedError
 union ActiveOrderResult = Order | NoActiveOrderError
+
+"""
+Returned when multiple items are added to an Order.
+The errorResults array contains the errors that occurred for each item, if any.
+"""
+type UpdateMultipleOrderItemsResult  {
+    order: Order!
+    errorResults: [UpdateOrderItemErrorResult!]!
+}
+
+input AddItemInput {
+    productVariantId: ID!
+    quantity: Int!
+}
