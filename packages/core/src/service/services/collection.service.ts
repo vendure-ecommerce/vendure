@@ -177,7 +177,7 @@ export class CollectionService implements OnModuleInit {
                             // To avoid performance issues on huge collections we first split the affected variant ids into chunks
                             this.chunkArray(affectedVariantIds, 50000).map(chunk =>
                                 this.eventBus.publish(
-                                    new CollectionModificationEvent(ctx, collection as Collection, chunk),
+                                    new CollectionModificationEvent(ctx, collection, chunk),
                                 ),
                             );
                         }
@@ -412,6 +412,12 @@ export class CollectionService implements OnModuleInit {
                 .loadOne();
             if (parent) {
                 if (!parent.isRoot) {
+                    if (idsAreEqual(parent.id, id)) {
+                        Logger.error(
+                            `Circular reference detected in Collection tree: Collection ${id} is its own parent`,
+                        );
+                        return _ancestors;
+                    }
                     _ancestors.push(parent);
                     return getParent(parent.id, _ancestors);
                 }
@@ -464,8 +470,8 @@ export class CollectionService implements OnModuleInit {
         for (const filterType of collectionFilters) {
             const filtersOfType = applicableFilters.filter(f => f.code === filterType.code);
             if (filtersOfType.length) {
-                for (const filter of filtersOfType) {
-                    qb = filterType.apply(qb, filter.args);
+                for (const collectionFilter of filtersOfType) {
+                    qb = filterType.apply(qb, collectionFilter.args);
                 }
             }
         }
@@ -654,8 +660,8 @@ export class CollectionService implements OnModuleInit {
     ): ConfigurableOperation[] {
         const filters: ConfigurableOperation[] = [];
         if (input.filters) {
-            for (const filter of input.filters) {
-                filters.push(this.configArgService.parseInput('CollectionFilter', filter));
+            for (const filterInput of input.filters) {
+                filters.push(this.configArgService.parseInput('CollectionFilter', filterInput));
             }
         }
         return filters;
@@ -699,8 +705,8 @@ export class CollectionService implements OnModuleInit {
         for (const filterType of collectionFilters) {
             const filtersOfType = filters.filter(f => f.code === filterType.code);
             if (filtersOfType.length) {
-                for (const filter of filtersOfType) {
-                    filteredQb = filterType.apply(filteredQb, filter.args);
+                for (const collectionFilter of filtersOfType) {
+                    filteredQb = filterType.apply(filteredQb, collectionFilter.args);
                 }
             }
         }
