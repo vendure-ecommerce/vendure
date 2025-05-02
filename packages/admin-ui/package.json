@@ -78,7 +78,7 @@
         "prosemirror-tables": "^1.6.4",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
-        "rxjs": "7.8.1",
+        "rxjs": "^7.8.1",
         "tslib": "^2.6.2",
         "zone.js": "~0.15.0"
     },
