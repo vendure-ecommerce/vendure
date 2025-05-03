@@ -51,4 +51,12 @@ export const configurableOperationDefFragment = graphql(`
     }
 `);
 
+export const errorResultFragment = graphql(`
+    fragment ErrorResult on ErrorResult {
+        errorCode
+        message
+    }
+`);
+
+
 export type ConfigurableOperationDefFragment = ResultOf<typeof configurableOperationDefFragment>;

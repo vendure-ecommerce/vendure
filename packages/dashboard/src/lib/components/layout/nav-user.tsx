@@ -44,13 +44,13 @@ export function NavUser() {
         });
     };
 
+    const avatarFallback = useMemo(() => {
+        return user?.firstName?.charAt(0) ?? '' + user?.lastName?.charAt(0) ?? '';
+    }, [user]);
+
     if (!user) {
         return <></>;
     }
-
-    const avatarFallback = useMemo(() => {
-        return user.firstName.charAt(0) + user.lastName.charAt(0);
-    }, [user]);
 
     const isDevMode = (import.meta as any).env?.MODE === 'development';
 

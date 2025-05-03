@@ -1,7 +1,8 @@
 import { AppLayout } from '@/components/layout/app-layout.js';
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { AUTHENTICATED_ROUTE_PREFIX } from '@/constants.js';
 import * as React from 'react';
+import { useAuth } from '@/hooks/use-auth.js';
 
 export const Route = createFileRoute(AUTHENTICATED_ROUTE_PREFIX)({
     beforeLoad: ({ context, location }) => {
@@ -21,5 +22,15 @@ export const Route = createFileRoute(AUTHENTICATED_ROUTE_PREFIX)({
 });
 
 function AuthLayout() {
+    const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
+
+    if (!isAuthenticated) {
+        navigate({
+            to: '/login'
+        });
+        return <></>;
+    }
+
     return <AppLayout />;
 }

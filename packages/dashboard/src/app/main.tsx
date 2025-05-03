@@ -46,7 +46,7 @@ function InnerApp() {
         }
         setCustomFieldsMap(serverConfig.entityCustomFields);
         setHasSetCustomFieldsMap(true);
-    }, [serverConfig?.entityCustomFields]);
+    }, [serverConfig?.entityCustomFields.length]);
 
     return (
         <>

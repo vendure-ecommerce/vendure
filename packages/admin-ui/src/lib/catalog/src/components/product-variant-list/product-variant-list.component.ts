@@ -12,7 +12,7 @@ import {
     selector: 'vdr-product-variant-list',
     templateUrl: './product-variant-list.component.html',
     styleUrls: ['./product-variant-list.component.scss'],
-    standalone: false
+    standalone: false,
 })
 export class ProductVariantListComponent
     extends TypedBaseListComponent<typeof ProductVariantListQueryDocument, 'productVariants'>
@@ -20,6 +20,7 @@ export class ProductVariantListComponent
 {
     @Input() productId?: string;
     @Input() hideLanguageSelect = false;
+    pageLocationId = 'product-variant-list' as const;
     @Input() dataTableId: DataTableLocationId | undefined;
     readonly customFields = this.getCustomFieldConfig('ProductVariant');
     readonly filters = this.createFilterCollection()
