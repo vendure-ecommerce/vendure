@@ -2,6 +2,7 @@ import { ErrorPage } from '@/components/shared/error-page.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { Badge } from '@/components/ui/badge.js';
 import { Button } from '@/components/ui/button.js';
+import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
 import {
     CustomFieldsPageBlock,
     Page,
@@ -11,10 +12,10 @@ import {
     PageLayout,
     PageTitle,
 } from '@/framework/layout-engine/page-layout.js';
-import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
-import { useDetailPage } from '@/framework/page/use-detail-page.js';
+import { getDetailQueryOptions, useDetailPage } from '@/framework/page/use-detail-page.js';
+import { ResultOf } from '@/graphql/graphql.js';
 import { Trans, useLingui } from '@/lib/trans.js';
-import { Link, createFileRoute } from '@tanstack/react-router';
+import { Link, createFileRoute, redirect } from '@tanstack/react-router';
 import { User } from 'lucide-react';
 import { toast } from 'sonner';
 import { OrderAddress } from './components/order-address.js';
@@ -26,12 +27,33 @@ import { orderDetailDocument } from './orders.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_orders/orders_/$id')({
     component: OrderDetailPage,
-    loader: detailPageRouteLoader({
-        queryDocument: orderDetailDocument,
-        breadcrumb(_isNew, entity) {
-            return [{ path: '/orders', label: 'Orders' }, entity?.code];
-        },
-    }),
+    loader: async ({
+        context,
+        params,
+    }) => {
+        if (!params.id) {
+            throw new Error('ID param is required');
+        }
+
+        const result: ResultOf<typeof orderDetailDocument> = await context.queryClient.ensureQueryData(
+            getDetailQueryOptions(addCustomFields(orderDetailDocument), { id: params.id }),
+            { id: params.id },
+        );
+
+        if (!result.order) {
+            throw new Error(`Order with the ID ${params.id} was not found`);
+        }
+
+        if (result.order.state === 'Draft') {
+            throw redirect({
+                to: `/orders/draft/${params.id}`,
+            });
+        }
+
+        return {
+            breadcrumb: [{ path: '/orders', label: 'Orders' }, result.order.code],
+        };
+    },
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,
 });
 

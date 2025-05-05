@@ -1,7 +1,7 @@
 import { graphql } from 'gql.tada';
 import { describe, expect, it, vi } from 'vitest';
 
-import { getListQueryFields } from './get-document-structure.js';
+import { getListQueryFields, getOperationVariablesFields } from './get-document-structure.js';
 
 vi.mock('virtual:admin-api-schema', () => {
     return {
@@ -12,7 +12,10 @@ vi.mock('virtual:admin-api-schema', () => {
                     product: ['Product', false, false, false],
                     collection: ['Collection', false, false, false],
                 },
-                Mutation: {},
+                Mutation: {
+                    updateProduct: ['Product', false, false, false],
+                    adjustDraftOrderLine: ['Order', false, false, false],
+                },
 
                 Collection: {
                     id: ['ID', false, false, false],
@@ -126,8 +129,25 @@ vi.mock('virtual:admin-api-schema', () => {
                     languageCode: ['LanguageCode', false, false, false],
                     name: ['String', false, false, false],
                 },
+                Order: {
+                    id: ['ID', false, false, false],
+                    lines: ['OrderLine', false, true, false],
+                },
+                OrderLine: {
+                    id: ['ID', false, false, false],
+                    quantity: ['Int', false, false, false],
+                },
             },
-            inputs: {},
+            inputs: {
+                UpdateProductInput: {
+                    id: ['ID', false, false, false],
+                    name: ['String', false, false, false],
+                },
+                AdjustDraftOrderLineInput: {
+                    orderLineId: ['ID', false, false, false],
+                    quantity: ['Int', false, false, false],
+                },
+            },
             scalars: ['ID', 'String', 'Int', 'Boolean', 'Float', 'JSON', 'DateTime', 'Upload', 'Money'],
             enums: {},
         },
@@ -304,6 +324,96 @@ describe('getListQueryFields', () => {
                 name: 'sku',
                 nullable: false,
                 type: 'String',
+            },
+        ]);
+    });
+});
+
+describe('getOperationVariablesFields', () => {
+    it('should extract fields from a simple mutation', () => {
+        const doc = graphql(`
+            mutation UpdateProduct($input: UpdateProductInput!) {
+                updateProduct(input: $input) {
+                    ...ProductDetail
+                }
+            }
+
+            fragment ProductDetail on Product {
+                id
+                name
+            }
+        `);
+
+        const fields = getOperationVariablesFields(doc, 'input');
+        expect(fields).toEqual([
+            {
+                isPaginatedList: false,
+                isScalar: true,
+                list: false,
+                name: 'id',
+                nullable: false,
+                type: 'ID',
+                typeInfo: undefined,
+            },
+            {
+                isPaginatedList: false,
+                isScalar: true,
+                list: false,
+                name: 'name',
+                nullable: false,
+                type: 'String',
+                typeInfo: undefined,
+            },
+        ]);
+    });
+
+    it('should handle a mutation with a nested input', () => {
+        const doc = graphql(`
+            mutation AdjustDraftOrderLine($orderId: ID!, $input: AdjustDraftOrderLineInput!) {
+                adjustDraftOrderLine(orderId: $orderId, input: $input) {
+                    id
+                }
+            }
+        `);
+
+        const fields = getOperationVariablesFields(doc, undefined);
+        expect(fields).toEqual([
+            {
+                name: 'orderId',
+                isPaginatedList: false,
+                isScalar: true,
+                list: false,
+                nullable: false,
+                type: 'ID',
+                typeInfo: undefined,
+            },
+            {
+                name: 'input',
+                isPaginatedList: false,
+                isScalar: false,
+                list: false,
+                nullable: true,
+                type: 'AdjustDraftOrderLineInput',
+                typeInfo: [
+                    {
+                        name: 'orderLineId',
+                        isPaginatedList: false,
+                        isScalar: true,
+                        list: false,
+                        nullable: false,
+                        type: 'ID',
+                        typeInfo: undefined,
+                    },
+                    {
+                        name: 'quantity',
+                        isPaginatedList: false,
+                        isScalar: true,
+                        list: false,
+                        nullable: false,
+                        type: 'Int',
+                        typeInfo: undefined,
+                    },
+                ],
             },
         ]);
     });

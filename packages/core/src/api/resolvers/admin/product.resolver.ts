@@ -135,7 +135,6 @@ export class ProductResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateProductsArgs,
     ): Promise<Array<Translated<Product>>> {
-        const { input } = args;
         return await Promise.all(args.input.map(i => this.productService.update(ctx, i)));
     }
 

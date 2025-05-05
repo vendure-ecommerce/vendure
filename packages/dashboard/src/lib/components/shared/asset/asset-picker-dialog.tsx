@@ -47,7 +47,7 @@ export function AssetPickerDialog({
         <div className="flex-grow py-4">
           <AssetGallery 
             onSelect={handleAssetSelect}
-            multiSelect={multiSelect}
+            multiSelect='manual'
             initialSelectedAssets={initialSelectedAssets}
             fixedHeight={true}
           />

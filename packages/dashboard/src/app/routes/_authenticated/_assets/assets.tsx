@@ -1,4 +1,4 @@
-import { AssetGallery } from '@/components/shared/asset-gallery.js';
+import { AssetGallery } from '@/components/shared/asset/asset-gallery.js';
 import { Page, PageTitle, PageActionBar } from '@/framework/layout-engine/page-layout.js';
 import { Trans } from '@/lib/trans.js';
 import { createFileRoute } from '@tanstack/react-router';
@@ -13,7 +13,7 @@ function RouteComponent() {
             <PageTitle>
                 <Trans>Assets</Trans>
             </PageTitle>
-            <AssetGallery selectable={false} />
+            <AssetGallery selectable={true} multiSelect='manual' />
         </Page>
     );
 }

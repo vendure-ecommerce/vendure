@@ -17,6 +17,10 @@ Some use-cases for custom fields include:
 * Storing an external identifier (e.g. from a payment provider) on the `Customer` entity.
 * Adding a longitude and latitude to the `StockLocation` for use in selecting the closest location to a customer.
 
+:::note
+Custom fields are not solely restricted to Vendure's native entities though, it's also possible to add support for custom fields to your own custom entities. See: [Supporting custom fields](/guides/developer-guide/database-entity/#supporting-custom-fields) 
+:::
+
 ## Defining custom fields
 
 Custom fields are specified in the VendureConfig:
