@@ -31,6 +31,11 @@ export function setSessionToken(options: {
         }
     }
     if (usingBearer) {
-        res.set(authOptions.authTokenHeaderKey, sessionToken);
+        // Only attempt to set the header if `res` is a valid Response object
+        // This prevents errors in contexts like WebSockets where `res` might not exist
+        // or have the `set` method.
+        if (typeof res?.set === 'function') {
+            res.set(authOptions.authTokenHeaderKey, sessionToken);
+        }
     }
 }

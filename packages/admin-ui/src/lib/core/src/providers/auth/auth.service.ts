@@ -4,11 +4,12 @@ import { Observable, of } from 'rxjs';
 import { catchError, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 
 import { AttemptLoginMutation, CurrentUserFragment } from '../../common/generated-types';
+import { wsClient } from '../../data/data.module';
 import { DataService } from '../../data/providers/data.service';
 import { ServerConfigService } from '../../data/server-config';
+import { AlertsService } from '../alerts/alerts.service';
 import { LocalStorageService } from '../local-storage/local-storage.service';
 import { PermissionsService } from '../permissions/permissions.service';
-import { AlertsService } from '../alerts/alerts.service';
 
 /**
  * This service handles logic relating to authentication of the current user.
@@ -37,7 +38,9 @@ export class AuthService {
         return this.dataService.auth.attemptLogin(username, password, rememberMe).pipe(
             switchMap(response => {
                 if (response.login.__typename === 'CurrentUser') {
+                    this.setAuthToken(response.login.sessionToken);
                     this.setChannelToken(response.login.channels);
+                    wsClient.terminate();
                 }
                 return this.serverConfigService.getServerConfig().then(() => response.login);
             }),
@@ -153,5 +156,9 @@ export class AuthService {
 
     private setChannelToken(userChannels: CurrentUserFragment['channels']) {
         this.localStorageService.set('activeChannelToken', this.getActiveChannel(userChannels).token);
+    }
+
+    private setAuthToken(token: string) {
+        this.localStorageService.set('authToken', token);
     }
 }

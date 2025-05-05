@@ -61,6 +61,7 @@
         "codejar": "^4.2.0",
         "dayjs": "^1.11.10",
         "graphql": "^16.10.0",
+        "graphql-ws": "^6.0.4",
         "just-extend": "^6.2.0",
         "messageformat": "2.3.0",
         "ngx-pagination": "^6.0.3",

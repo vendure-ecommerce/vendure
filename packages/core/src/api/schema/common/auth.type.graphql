@@ -2,6 +2,7 @@ type CurrentUser {
     id: ID!
     identifier: String!
     channels: [CurrentUserChannel!]!
+    sessionToken: String!
 }
 
 type CurrentUserChannel {

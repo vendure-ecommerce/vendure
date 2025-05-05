@@ -88,6 +88,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         middleware: [],
         introspection: true,
         apolloServerPlugins: [],
+        driverConfigs: {},
     },
     entityIdStrategy: new AutoIncrementIdStrategy(),
     authOptions: {
