@@ -16,7 +16,8 @@ jobs:
         with:
           node-version: '22.x'
           registry-url: 'https://registry.npmjs.org'
-      - run: npm install
+      # Install  dependencies without modifying package-lock.json file
+      - run: npm install --no-save
       - run: npm run build
       - run: lerna publish from-package --yes
         env:
