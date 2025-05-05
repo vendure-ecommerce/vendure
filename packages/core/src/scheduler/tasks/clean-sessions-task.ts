@@ -3,7 +3,7 @@ import { ScheduledTask } from '../scheduled-task';
 
 /**
  * @description
- * A scheduled task that cleans expired & inactive sessions from the database.
+ * A {@link ScheduledTask} that cleans expired & inactive sessions from the database.
  *
  * @example
  * ```ts

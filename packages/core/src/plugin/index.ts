@@ -12,3 +12,4 @@ export * from './vendure-plugin';
 export * from './plugin-common.module';
 export * from './plugin-utils';
 export * from './plugin-metadata';
+export * from './default-job-queue-plugin/types';
