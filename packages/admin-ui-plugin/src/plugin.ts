@@ -259,7 +259,7 @@ export class AdminUiPlugin implements NestModule {
         adminUiServer.use(limiter as any);
         adminUiServer.use(express.static(adminUiAppPath));
         adminUiServer.use((req, res) => {
-            res.sendFile(path.join(adminUiAppPath, 'index.html'));
+            res.sendFile('index.html', { root: adminUiAppPath });
         });
 
         return adminUiServer;
