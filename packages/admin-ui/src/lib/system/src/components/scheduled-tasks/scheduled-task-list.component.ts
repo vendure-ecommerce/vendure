@@ -66,7 +66,6 @@ export class ScheduledTaskListComponent implements OnInit {
         this.tasks$ = this.dataService
             .query<GetAllScheduledTasksQuery>(GET_SCHEDULED_TASKS_LIST)
             .mapStream(res => {
-                console.log(res.scheduledTasks);
                 return res.scheduledTasks;
             });
     }
