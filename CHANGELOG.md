@@ -1,3 +1,33 @@
+## <small>3.2.4 (2025-05-05)</small>
+
+
+#### Fixes
+
+* **admin-ui-plugin** Fix issue with sendFile and absolute paths (#3499) ([62664cb](https://github.com/vendure-ecommerce/vendure/commit/62664cb)), closes [#3499](https://github.com/vendure-ecommerce/vendure/issues/3499)
+* **admin-ui-plugin** Fix proxy-middleware v2 to v3 issue (#3507) ([ae20be1](https://github.com/vendure-ecommerce/vendure/commit/ae20be1)), closes [#3507](https://github.com/vendure-ecommerce/vendure/issues/3507)
+* **admin-ui-plugin** proxy target template string (#3514) ([8e6a991](https://github.com/vendure-ecommerce/vendure/commit/8e6a991)), closes [#3514](https://github.com/vendure-ecommerce/vendure/issues/3514)
+* **admin-ui** Relax rxjs dependency version ([01b7375](https://github.com/vendure-ecommerce/vendure/commit/01b7375))
+* **core** Detect circular reference in collection ancestor tree ([c427d8e](https://github.com/vendure-ecommerce/vendure/commit/c427d8e))
+* **core** Enhance password validation strategy with maxLength option and set default maxLength ([fbd3a94](https://github.com/vendure-ecommerce/vendure/commit/fbd3a94))
+* **core** Fix PaginatedList filtering by calculated property ([7966978](https://github.com/vendure-ecommerce/vendure/commit/7966978))
+* **dashboard** Fix several issues related to login/logout ([7b3b917](https://github.com/vendure-ecommerce/vendure/commit/7b3b917))
+* **dashboard** Fix some issues on order list/detail pages ([fe0ceb4](https://github.com/vendure-ecommerce/vendure/commit/fe0ceb4))
+* **dashboard** Improve compatibility of config loading ([7cb3624](https://github.com/vendure-ecommerce/vendure/commit/7cb3624))
+
+#### Features
+
+* **dashboard** Add support for custom fields on asset detail ([745250c](https://github.com/vendure-ecommerce/vendure/commit/745250c))
+* **dashboard** Draft order view ([1644ec6](https://github.com/vendure-ecommerce/vendure/commit/1644ec6))
+* **dashboard** Implement asset detail view ([0bbcdb4](https://github.com/vendure-ecommerce/vendure/commit/0bbcdb4))
+* **dashboard** Implement column reordering ([186d325](https://github.com/vendure-ecommerce/vendure/commit/186d325))
+* **dashboard** Implement navigation confirmation ([76a53b0](https://github.com/vendure-ecommerce/vendure/commit/76a53b0))
+* **dashboard** Improve support for dashboard extensions ([8763eb7](https://github.com/vendure-ecommerce/vendure/commit/8763eb7))
+* **dashboard** Improve support for data table filtering ([d8729cf](https://github.com/vendure-ecommerce/vendure/commit/d8729cf))
+* **dashboard** Persist list filter settings to userSettings ([33c0dc3](https://github.com/vendure-ecommerce/vendure/commit/33c0dc3))
+* **dashboard** Persist table config to userSettings ([363e167](https://github.com/vendure-ecommerce/vendure/commit/363e167))
+* **dashboard** Support custom fields in draft orders ([6c16147](https://github.com/vendure-ecommerce/vendure/commit/6c16147))
+* **dashboard** Support tsconfig path mappings when loading config ([ce79025](https://github.com/vendure-ecommerce/vendure/commit/ce79025))
+
 ## <small>3.2.3 (2025-04-17)</small>
 
 
