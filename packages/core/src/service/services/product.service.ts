@@ -19,6 +19,7 @@ import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { ErrorResultUnion } from '../../common/error/error-result';
 import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
 import { ProductOptionInUseError } from '../../common/error/generated-graphql-admin-errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -33,7 +34,6 @@ import { EventBus } from '../../event-bus/event-bus';
 import { ProductChannelEvent } from '../../event-bus/events/product-channel-event';
 import { ProductEvent } from '../../event-bus/events/product-event';
 import { ProductOptionGroupChangeEvent } from '../../event-bus/events/product-option-group-change-event';
-import { Span } from '../../instrumentation';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { SlugValidator } from '../helpers/slug-validator/slug-validator';
@@ -53,6 +53,7 @@ import { ProductVariantService } from './product-variant.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class ProductService {
     private readonly relations = ['featuredAsset', 'assets', 'channels', 'facetValues', 'facetValues.facet'];
 
@@ -71,7 +72,6 @@ export class ProductService {
         private productOptionGroupService: ProductOptionGroupService,
     ) {}
 
-    @Span('ProductService.findAll')
     async findAll(
         ctx: RequestContext,
         options?: ListQueryOptions<Product>,
@@ -127,7 +127,6 @@ export class ProductService {
             });
     }
 
-    @Span('ProductService.findOne')
     async findOne(
         ctx: RequestContext,
         productId: ID,
@@ -157,7 +156,6 @@ export class ProductService {
         return this.translator.translate(product, ctx, ['facetValues', ['facetValues', 'facet']]);
     }
 
-    @Span('ProductService.findByIds')
     async findByIds(
         ctx: RequestContext,
         productIds: ID[],
@@ -191,7 +189,6 @@ export class ProductService {
      * @description
      * Returns all Channels to which the Product is assigned.
      */
-    @Span('ProductService.getProductChannels')
     async getProductChannels(ctx: RequestContext, productId: ID): Promise<Channel[]> {
         const span = getActiveSpan();
         span?.setAttribute('productId', productId.toString());
@@ -204,7 +201,6 @@ export class ProductService {
         return product.channels;
     }
 
-    @Span('ProductService.getFacetValuesForProduct')
     getFacetValuesForProduct(ctx: RequestContext, productId: ID): Promise<Array<Translated<FacetValue>>> {
         const span = getActiveSpan();
         span?.setAttribute('productId', productId.toString());
@@ -226,7 +222,6 @@ export class ProductService {
             });
     }
 
-    @Span('ProductService.findOneBySlug')
     async findOneBySlug(
         ctx: RequestContext,
         slug: string,
@@ -267,7 +262,6 @@ export class ProductService {
         }
     }
 
-    @Span('ProductService.create')
     async create(ctx: RequestContext, input: CreateProductInput): Promise<Translated<Product>> {
         const span = getActiveSpan();
         span?.setAttribute('productName', input.translations?.[0]?.name || 'unnamed');
@@ -294,7 +288,6 @@ export class ProductService {
         return assertFound(this.findOne(ctx, product.id));
     }
 
-    @Span('ProductService.update')
     async update(ctx: RequestContext, input: UpdateProductInput): Promise<Translated<Product>> {
         const span = getActiveSpan();
         span?.setAttribute('productId', input.id.toString());
@@ -329,7 +322,6 @@ export class ProductService {
         return assertFound(this.findOne(ctx, updatedProduct.id));
     }
 
-    @Span('ProductService.softDelete')
     async softDelete(ctx: RequestContext, productId: ID): Promise<DeletionResponse> {
         const span = getActiveSpan();
         span?.setAttribute('productId', productId.toString());
@@ -379,7 +371,6 @@ export class ProductService {
      * Internally, this method will also call {@link ProductVariantService} `assignProductVariantsToChannel()` for
      * each of the Product's variants, and will assign the Product's Assets to the Channel too.
      */
-    @Span('ProductService.assignProductsToChannel')
     async assignProductsToChannel(
         ctx: RequestContext,
         input: AssignProductsToChannelInput,
@@ -416,7 +407,6 @@ export class ProductService {
         );
     }
 
-    @Span('ProductService.removeProductsFromChannel')
     async removeProductsFromChannel(
         ctx: RequestContext,
         input: RemoveProductsFromChannelInput,
@@ -448,7 +438,6 @@ export class ProductService {
         );
     }
 
-    @Span('ProductService.addOptionGroupToProduct')
     async addOptionGroupToProduct(
         ctx: RequestContext,
         productId: ID,
@@ -487,7 +476,6 @@ export class ProductService {
         return assertFound(this.findOne(ctx, productId));
     }
 
-    @Span('ProductService.removeOptionGroupFromProduct')
     async removeOptionGroupFromProduct(
         ctx: RequestContext,
         productId: ID,
@@ -543,7 +531,6 @@ export class ProductService {
         return assertFound(this.findOne(ctx, productId));
     }
 
-    @Span('ProductService.getProductWithOptionGroups')
     private async getProductWithOptionGroups(ctx: RequestContext, productId: ID): Promise<Product> {
         const span = getActiveSpan();
         span?.setAttribute('productId', productId.toString());

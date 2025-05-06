@@ -15,7 +15,7 @@ process.env.OTEL_LOGS_EXPORTER = 'otlp';
 
 const logExporter = new OTLPLogExporter();
 
-const config = getSdkConfiguration(true, {
+const config = getSdkConfiguration(false, {
     spanProcessors: [new BatchSpanProcessor(traceExporter)],
     logRecordProcessors: [new BatchLogRecordProcessor(logExporter)],
     resource: resourceFromAttributes({

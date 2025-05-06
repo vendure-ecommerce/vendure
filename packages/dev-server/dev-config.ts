@@ -8,6 +8,8 @@ import {
     LanguageCode,
     OtelLogger,
     VendureConfig,
+    InstrumentationStrategy,
+    WrappedMethodArgs,
 } from '@vendure/core';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
 import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
@@ -15,6 +17,20 @@ import 'dotenv/config';
 import path from 'path';
 import { DataSourceOptions } from 'typeorm';
 import { ReviewsPlugin } from './test-plugins/reviews/reviews-plugin';
+import { TelemetryPlugin } from '@vendure/telemetry';
+
+class TestInstrumentationStrategy implements InstrumentationStrategy {
+    wrapMethod({
+                   target,
+                   methodName,
+                   args,
+                   applyOriginalFunction,
+               }: WrappedMethodArgs) {
+        console.log(`Executing method: ${target.name}.${methodName}`);
+        applyOriginalFunction();
+        console.log(`Method ${target.name}.${methodName} completed`);
+    }
+}
 
 /**
  * Config settings used during development
@@ -55,6 +71,9 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
+    // systemOptions: {
+    //   instrumentationStrategy: new TestInstrumentationStrategy(),
+    // },
     customFields: {
         Product: [
             {
@@ -92,6 +111,7 @@ export const devConfig: VendureConfig = {
         //     platformFeePercent: 10,
         //     platformFeeSKU: 'FEE',
         // }),
+        TelemetryPlugin,
         ReviewsPlugin,
         AssetServerPlugin.init({
             route: 'assets',

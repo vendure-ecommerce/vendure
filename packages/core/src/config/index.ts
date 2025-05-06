@@ -91,6 +91,7 @@ export * from './shipping-method/shipping-eligibility-checker';
 export * from './shipping-method/shipping-line-assignment-strategy';
 export * from './system/error-handler-strategy';
 export * from './system/health-check-strategy';
+export * from './system/instrumentation-strategy';
 export * from './tax/address-based-tax-zone-strategy';
 export * from './tax/default-tax-line-calculation-strategy';
 export * from './tax/default-tax-zone-strategy';

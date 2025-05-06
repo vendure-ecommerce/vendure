@@ -25,10 +25,10 @@ import { ProductVariantPriceUpdateStrategy } from './catalog/product-variant-pri
 import { StockDisplayStrategy } from './catalog/stock-display-strategy';
 import { StockLocationStrategy } from './catalog/stock-location-strategy';
 import { CustomFields } from './custom-field/custom-field-types';
+import { EntityMetadataModifier } from './entity-metadata/entity-metadata-modifier';
 import { EntityDuplicator } from './entity/entity-duplicator';
 import { EntityIdStrategy } from './entity/entity-id-strategy';
 import { MoneyStrategy } from './entity/money-strategy';
-import { EntityMetadataModifier } from './entity-metadata/entity-metadata-modifier';
 import { FulfillmentHandler } from './fulfillment/fulfillment-handler';
 import { FulfillmentProcess } from './fulfillment/fulfillment-process';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
@@ -58,6 +58,7 @@ import { ShippingLineAssignmentStrategy } from './shipping-method/shipping-line-
 import { CacheStrategy } from './system/cache-strategy';
 import { ErrorHandlerStrategy } from './system/error-handler-strategy';
 import { HealthCheckStrategy } from './system/health-check-strategy';
+import { InstrumentationStrategy } from './system/instrumentation-strategy';
 import { TaxLineCalculationStrategy } from './tax/tax-line-calculation-strategy';
 import { TaxZoneStrategy } from './tax/tax-zone-strategy';
 
@@ -1088,6 +1089,7 @@ export interface SystemOptions {
      * @default InMemoryCacheStrategy
      */
     cacheStrategy?: CacheStrategy;
+    instrumentationStrategy?: InstrumentationStrategy | undefined;
 }
 
 /**
