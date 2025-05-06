@@ -1,1 +1,1 @@
-export interface TracingPluginOptions {}
+export interface TelemetryPluginOptions {}

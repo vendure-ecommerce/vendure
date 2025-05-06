@@ -132,10 +132,6 @@ export class ProductService {
         productId: ID,
         relations?: RelationPaths<Product>,
     ): Promise<Translated<Product> | undefined> {
-        const span = getActiveSpan();
-        span?.setAttribute('productId', productId.toString());
-        span?.setAttribute('channelId', ctx.channelId.toString());
-
         const effectiveRelations = relations ?? this.relations.slice();
         if (relations && effectiveRelations.includes('facetValues')) {
             // We need the facet to determine with the FacetValues are public
@@ -149,10 +145,8 @@ export class ProductService {
             },
         });
         if (!product) {
-            span?.setAttribute('found', 'false');
             return;
         }
-        span?.setAttribute('found', 'true');
         return this.translator.translate(product, ctx, ['facetValues', ['facetValues', 'facet']]);
     }
 
