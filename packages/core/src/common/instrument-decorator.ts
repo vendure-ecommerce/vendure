@@ -4,11 +4,42 @@ export const ENABLE_INSTRUMENTATION_ENV_VAR = 'VENDURE_ENABLE_INSTRUMENTATION';
 
 const INSTRUMENTED_CLASS = Symbol('InstrumentedClassTarget');
 
+/**
+ * @description
+ * This decorator is used to apply instrumentation to a class. It is intended to be used in conjunction
+ * with an {@link InstrumentationStrategy} which defines how the instrumentation should be applied.
+ *
+ * In order for the instrumentation to be applied, the `VENDURE_ENABLE_INSTRUMENTATION` environment
+ * variable (exported from the `@vendure/core` package as `ENABLE_INSTRUMENTATION_ENV_VAR`) must be set to `true`.
+ * This is done to avoid the overhead of instrumentation in environments where it is not needed.
+ *
+ * For more information on how instrumentation is used, see docs on the TelemetryPlugin.
+ *
+ * @example
+ * ```ts
+ * import { Instrument } from '\@vendure/core';
+ * import { Injectable } from '\@nestjs/common';
+ *
+ * \@Injectable()
+ * // highlight-next-line
+ * \@Instrument()
+ * export class MyService {
+ *
+ *   // Calls to this method will be instrumented
+ *   myMethod() {
+ *     // ...
+ *   }
+ * }
+ * ```
+ *
+ * @since 3.3.0
+ * @docsCategory telemetry
+ */
 export function Instrument(): ClassDecorator {
     return function (target: any) {
         // Since the instrumentation is not "free" (it will wrap all instrumented classes in a
         // Proxy, which has some overhead), we will only do this if explicitly requested by the
-        // presence of this env var. The `@vendure/telemetry` package sets this in its configuration,
+        // presence of this env var. The `@vendure/telemetry-plugin` package sets this in its configuration,
         // which will be run before any of the Vendure code is loaded.
         if (process.env[ENABLE_INSTRUMENTATION_ENV_VAR] == null) {
             return target;
@@ -57,6 +88,13 @@ export function Instrument(): ClassDecorator {
     };
 }
 
-export function getInstrumentedClassTarget(input: any) {
-    return input[INSTRUMENTED_CLASS];
+/**
+ * @description
+ * This function is used to retrieve the original class of an instrumented class. It is intended for
+ * use in an {@link InstrumentationStrategy} only, and should not generally be used in application code.
+ *
+ * @since 3.3.0
+ */
+export function getInstrumentedClassTarget<T>(input: T): T | undefined {
+    return input[INSTRUMENTED_CLASS as keyof T] as T | undefined;
 }
