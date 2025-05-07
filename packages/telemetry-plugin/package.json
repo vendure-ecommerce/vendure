@@ -1,5 +1,5 @@
 {
-    "name": "@vendure/telemetry",
+    "name": "@vendure/telemetry-plugin",
     "version": "3.2.2",
     "description": "Telemetry for Vendure",
     "repository": {
@@ -23,15 +23,27 @@
     "files": [
         "dist/**/*"
     ],
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        },
+        "./preload": {
+            "types": "./dist/instrumentation.d.ts",
+            "default": "./dist/instrumentation.js"
+        }
+    },
     "dependencies": {
-        "@opentelemetry/auto-instrumentations-node": "^0.58.0",
         "@opentelemetry/api": "^1.9.0",
-        "@opentelemetry/resources": "^2.0.0",
-        "@opentelemetry/sdk-node": "^0.200.0",
+        "@opentelemetry/auto-instrumentations-node": "^0.58.0",
         "@opentelemetry/context-async-hooks": "^2.0.0",
-        "@vendure/common": "3.2.2",
         "@opentelemetry/exporter-logs-otlp-proto": "^0.200.0",
-        "@opentelemetry/sdk-logs": "^0.200.0"
+        "@opentelemetry/exporter-trace-otlp-http": "^0.200.0",
+        "@opentelemetry/resources": "^2.0.0",
+        "@opentelemetry/sdk-logs": "^0.200.0",
+        "@opentelemetry/sdk-node": "^0.200.0",
+        "@vendure/common": "3.2.2",
+        "javascript-stringify": "^2.1.0"
     },
     "devDependencies": {
         "typescript": "5.8.2"
