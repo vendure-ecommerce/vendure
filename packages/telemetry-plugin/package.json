@@ -42,10 +42,11 @@
         "@opentelemetry/resources": "^2.0.0",
         "@opentelemetry/sdk-logs": "^0.200.0",
         "@opentelemetry/sdk-node": "^0.200.0",
-        "@vendure/common": "3.2.2",
         "javascript-stringify": "^2.1.0"
     },
     "devDependencies": {
+        "@vendure/common": "3.2.4",
+        "@vendure/core": "3.2.4",
         "typescript": "5.8.2"
     }
 }
