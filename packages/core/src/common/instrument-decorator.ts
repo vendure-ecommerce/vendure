@@ -4,6 +4,8 @@ export const ENABLE_INSTRUMENTATION_ENV_VAR = 'VENDURE_ENABLE_INSTRUMENTATION';
 
 const INSTRUMENTED_CLASS = Symbol('InstrumentedClassTarget');
 
+type Constructor<T = any> = new (...args: any[]) => T;
+
 /**
  * @description
  * This decorator is used to apply instrumentation to a class. It is intended to be used in conjunction
@@ -44,7 +46,11 @@ export function Instrument(): ClassDecorator {
         if (process.env[ENABLE_INSTRUMENTATION_ENV_VAR] == null) {
             return target;
         }
-        const InstrumentedClass = class extends (target as new (...args: any[]) => any) {
+        // Add type guard to ensure target is a constructor
+        if (typeof target !== 'function') {
+            return target;
+        }
+        const InstrumentedClass = class extends (target as Constructor<any>) {
             constructor(...args: any[]) {
                 // eslint-disable-next-line constructor-super
                 super(...args);

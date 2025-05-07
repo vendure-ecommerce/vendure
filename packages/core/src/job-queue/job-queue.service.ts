@@ -95,8 +95,6 @@ export class JobQueueService implements OnModuleDestroy {
             if (!queue.started && this.shouldStartQueue(queue.name)) {
                 Logger.info(`Starting queue: ${queue.name}`, loggerCtx);
                 await queue.start();
-                // const span = getActiveSpan();
-                // span?.setAttribute('job-queue.name', queue.name);
             }
         }
     }

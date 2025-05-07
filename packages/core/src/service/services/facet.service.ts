@@ -193,9 +193,6 @@ export class FacetService {
     }
 
     async delete(ctx: RequestContext, id: ID, force: boolean = false): Promise<DeletionResponse> {
-        // const span = getActiveSpan();
-        // span?.setAttribute('force', force.toString());
-
         const facet = await this.connection.getEntityOrThrow(ctx, Facet, id, {
             relations: ['values'],
             channelId: ctx.channelId,
@@ -222,29 +219,14 @@ export class FacetService {
             await this.connection.getRepository(ctx, Facet).remove(facet);
             await this.eventBus.publish(new FacetEvent(ctx, deletedFacet, 'deleted', id));
             result = DeletionResult.DELETED;
-            // span?.addEvent('facet-deleted', {
-            //     facetCode: facet.code,
-            //     productCount,
-            //     variantCount,
-            // });
         } else if (force) {
             await this.connection.getRepository(ctx, Facet).remove(facet);
             await this.eventBus.publish(new FacetEvent(ctx, deletedFacet, 'deleted', id));
             message = ctx.translate('message.facet-force-deleted', i18nVars);
             result = DeletionResult.DELETED;
-            // span?.addEvent('facet-deleted', {
-            //     facetCode: facet.code,
-            //     productCount,
-            //     variantCount,
-            // });
         } else {
             message = ctx.translate('message.facet-used', i18nVars);
             result = DeletionResult.NOT_DELETED;
-            // span?.addEvent('facet-not-deleted', {
-            //     facetCode: facet.code,
-            //     productCount,
-            //     variantCount,
-            // });
         }
 
         return {
@@ -312,14 +294,6 @@ export class FacetService {
                 this.channelService.assignToChannels(ctx, FacetValue, value.id, [input.channelId]),
             ),
         ]);
-
-        // const span = getActiveSpan();
-
-        // span?.addEvent('facets-assigned-to-channel', {
-        //     facetIds: facetsToAssign.map(f => f.id).join(','),
-        //     channelId: input.channelId,
-        // });
-
         return this.connection
             .findByIdsInChannel(
                 ctx,

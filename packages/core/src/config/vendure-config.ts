@@ -1128,7 +1128,7 @@ export interface SystemOptions {
      * @default InMemoryCacheStrategy
      */
     cacheStrategy?: CacheStrategy;
-    instrumentationStrategy?: InstrumentationStrategy | undefined;
+    instrumentationStrategy?: InstrumentationStrategy;
 }
 
 /**

@@ -33,11 +33,11 @@ export interface TaskInfo {
  */
 @Injectable()
 export class SchedulerService implements OnApplicationBootstrap, OnApplicationShutdown {
-    private jobs: Map<string, { task: ScheduledTask; job: Cron }> = new Map();
+    private readonly jobs: Map<string, { task: ScheduledTask; job: Cron }> = new Map();
     private shouldRunTasks = false;
     constructor(
-        private configService: ConfigService,
-        private processContext: ProcessContext,
+        private readonly configService: ConfigService,
+        private readonly processContext: ProcessContext,
     ) {}
 
     onApplicationBootstrap() {
