@@ -17,7 +17,8 @@
         "build:app": "vite build",
         "dev": "vite",
         "lint": "eslint --fix .",
-        "test": "vitest --config vitest.config.mts --run"
+        "test": "vitest --config vitest.config.mts --run",
+        "e2e": "cross-env PACKAGE=graphiql-plugin vitest --config ../../e2e-common/vitest.config.mts --run"
     },
     "homepage": "https://www.vendure.io/",
     "funding": "https://github.com/sponsors/michaelbromley",
@@ -32,8 +33,8 @@
         "@types/express": "^5.0.0",
         "@types/react": "^19.0.0",
         "@types/react-dom": "^19.0.0",
-        "@vendure/common": "3.2.3",
-        "@vendure/core": "3.2.3",
+        "@vendure/common": "3.2.4",
+        "@vendure/core": "3.2.4",
         "@vitejs/plugin-react": "^4.3.4",
         "graphiql": "^3.8.3",
         "react": "^19.0.0",

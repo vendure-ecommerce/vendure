@@ -55,6 +55,7 @@ import { GraphiqlPluginOptions } from './types';
         config.apiOptions.shopApiPlayground = false;
         return config;
     },
+    exports: [GraphiQLService],
     compatibility: '^3.0.0',
 })
 export class GraphiqlPlugin implements NestModule {
@@ -74,7 +75,7 @@ export class GraphiqlPlugin implements NestModule {
             ...options,
             route: options.route || 'graphiql',
         };
-        return this;
+        return GraphiqlPlugin;
     }
 
     configure(consumer: MiddlewareConsumer) {
