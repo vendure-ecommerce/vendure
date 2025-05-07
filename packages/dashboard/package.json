@@ -113,7 +113,7 @@
         "tailwindcss-animate": "^1.0.7",
         "tsconfig-paths": "^4.2.0",
         "tw-animate-css": "^1.2.9",
-        "vite": "^6.1.0",
+        "vite": "^6.3.5",
         "zod": "^3.24.2"
     },
     "devDependencies": {
