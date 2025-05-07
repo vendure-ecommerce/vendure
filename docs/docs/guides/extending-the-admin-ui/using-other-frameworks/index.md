@@ -27,7 +27,7 @@ npm install @vendure/ui-devkit
 
 ## 2. Create the folder structure
 
-In this example, we will work with the following folder structure, and use Create React App our example.
+In this example, we will work with the following folder structure, and use Create Vue app our example.
 
 ```text
 src
@@ -58,7 +58,7 @@ export default [
         // parameter.
 
         breadcrumbLabel: 'Vue App',
-        // This is the URL to the compiled React app index.
+        // This is the URL to the compiled Vue app index.
         // The next step will explain the "assets/react-app" path.
         extensionUrl: './assets/vue-app/index.html',
         openInNewTab: false,
