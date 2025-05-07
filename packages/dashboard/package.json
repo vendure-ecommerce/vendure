@@ -71,7 +71,7 @@
         "@radix-ui/react-switch": "^1.1.3",
         "@radix-ui/react-tabs": "^1.1.3",
         "@radix-ui/react-tooltip": "^1.1.8",
-        "@tailwindcss/vite": "^4.0.7",
+        "@tailwindcss/vite": "^4.1.5",
         "@tanstack/eslint-plugin-query": "^5.66.1",
         "@tanstack/react-query": "^5.66.7",
         "@tanstack/react-query-devtools": "^5.68.0",
@@ -108,11 +108,11 @@
         "react-hook-form": "^7.54.2",
         "recharts": "^2.15.1",
         "sonner": "^2.0.1",
-        "tailwind-merge": "^3.0.1",
-        "tailwindcss": "^4.0.6",
+        "tailwind-merge": "^3.2.0",
+        "tailwindcss": "^4.1.5",
         "tailwindcss-animate": "^1.0.7",
         "tsconfig-paths": "^4.2.0",
-        "tw-animate-css": "^1.2.4",
+        "tw-animate-css": "^1.2.9",
         "vite": "^6.1.0",
         "zod": "^3.24.2"
     },
@@ -125,5 +125,9 @@
         "eslint-plugin-react-refresh": "^0.4.18",
         "globals": "^15.14.0",
         "vite-plugin-dts": "^4.5.3"
+    },
+    "optionalDependencies": {
+        "lightningcss-linux-arm64-musl": "^1.29.3",
+        "lightningcss-linux-x64-musl": "^1.29.1"
     }
 }
