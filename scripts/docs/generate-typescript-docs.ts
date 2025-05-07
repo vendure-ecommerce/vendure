@@ -58,6 +58,10 @@ const sections: DocsSectionConfig[] = [
         outputPath: '',
     },
     {
+        sourceDirs: ['packages/graphiql-plugin/src/'],
+        outputPath: '',
+    },
+    {
         sourceDirs: ['packages/telemetry-plugin/src/'],
         outputPath: '',
     },

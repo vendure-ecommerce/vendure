@@ -5,6 +5,7 @@ import { api } from '@/graphql/api.js';
 import { graphql } from '@/graphql/graphql.js';
 import { Trans } from '@/lib/trans.js';
 import { useQuery } from '@tanstack/react-query';
+import { useDebounce } from '@uidotdev/usehooks';
 import { Plus, Search } from 'lucide-react';
 import { useState } from 'react';
 
@@ -38,19 +39,20 @@ export interface CustomerSelectorProps {
 export function CustomerSelector(props: CustomerSelectorProps) {
     const [open, setOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
     const { data, isLoading } = useQuery({
-        queryKey: ['customers', searchTerm],
+        queryKey: ['customers', debouncedSearchTerm],
         queryFn: () =>
             api.query(customersDocument, {
                 options: {
                     sort: { lastName: 'ASC' },
-                    filter: searchTerm ? {
-                        firstName: { contains: searchTerm },
-                        lastName: { contains: searchTerm },
-                        emailAddress: { contains: searchTerm },
+                    filter: debouncedSearchTerm ? {
+                        firstName: { contains: debouncedSearchTerm },
+                        lastName: { contains: debouncedSearchTerm },
+                        emailAddress: { contains: debouncedSearchTerm },
                     } : undefined,
-                    filterOperator: searchTerm ? 'OR' : undefined,
+                    filterOperator: debouncedSearchTerm ? 'OR' : undefined,
                 },
             }),
         staleTime: 1000 * 60, // 1 minute
@@ -70,14 +72,11 @@ export function CustomerSelector(props: CustomerSelectorProps) {
             </PopoverTrigger>
             <PopoverContent className="p-0 w-[350px]" align="start">
                 <Command shouldFilter={false}>
-                    <div className="flex items-center border-b px-3">
-                        <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-                        <CommandInput 
-                            placeholder="Search customers..." 
-                            onValueChange={handleSearch}
-                            className="h-10 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
-                        />
-                    </div>
+                    <CommandInput
+                        placeholder="Search customers..."
+                        onValueChange={handleSearch}
+                        className="h-10 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
+                    />
                     <CommandList>
                         <CommandEmpty>
                             {isLoading ? (

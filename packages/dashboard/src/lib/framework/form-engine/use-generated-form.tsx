@@ -13,13 +13,14 @@ import { useForm } from 'react-hook-form';
 
 export interface GeneratedFormOptions<
     T extends TypedDocumentNode<any, any>,
-    VarName extends keyof VariablesOf<T> = 'input',
+    VarName extends (keyof VariablesOf<T>) | undefined = 'input',
     E extends Record<string, any> = Record<string, any>,
 > {
     document?: T;
+    varName?: VarName;
     entity: E | null | undefined;
-    setValues: (entity: NonNullable<E>) => VariablesOf<T>[VarName];
-    onSubmit?: (values: VariablesOf<T>[VarName]) => void;
+    setValues: (entity: NonNullable<E>) => VarName extends keyof VariablesOf<T> ? VariablesOf<T>[VarName] : VariablesOf<T>;
+    onSubmit?: (values: VarName extends keyof VariablesOf<T> ? VariablesOf<T>[VarName] : VariablesOf<T>) => void;
 }
 
 /**
@@ -31,13 +32,13 @@ export interface GeneratedFormOptions<
  */
 export function useGeneratedForm<
     T extends TypedDocumentNode<any, any>,
-    VarName extends keyof VariablesOf<T> = 'input',
+    VarName extends keyof VariablesOf<T> | undefined,
     E extends Record<string, any> = Record<string, any>,
 >(options: GeneratedFormOptions<T, VarName, E>) {
-    const { document, entity, setValues, onSubmit } = options;
+    const { document, entity, setValues, onSubmit, varName } = options;
     const { activeChannel } = useChannel();
     const availableLanguages = useServerConfig()?.availableLanguages || [];
-    const updateFields = document ? getOperationVariablesFields(document) : [];
+    const updateFields = document ? getOperationVariablesFields(document, varName) : [];
     const schema = createFormSchemaFromFields(updateFields);
     const defaultValues = getDefaultValuesFromFields(updateFields, activeChannel?.defaultLanguageCode);
     const processedEntity = ensureTranslationsForAllLanguages(entity, availableLanguages);
@@ -58,7 +59,7 @@ export function useGeneratedForm<
     };
     if (onSubmit) {
         submitHandler = (event: FormEvent) => {
-            form.handleSubmit(onSubmit)(event);
+            form.handleSubmit(onSubmit as any)(event);
         };
     }
 

@@ -3,34 +3,25 @@ import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
+    DefaultJobQueuePlugin,
+    DefaultLogger,
     DefaultSearchPlugin,
     dummyPaymentHandler,
     LanguageCode,
-    OtelLogger,
+    LogLevel,
+    DefaultSchedulerPlugin,
     VendureConfig,
-    InstrumentationStrategy,
-    WrappedMethodArgs,
+    cleanSessionsTask,
 } from '@vendure/core';
+import { ScheduledTask } from '@vendure/core/dist/scheduler/scheduled-task';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
 import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
 import 'dotenv/config';
+import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
 import path from 'path';
 import { DataSourceOptions } from 'typeorm';
-import { ReviewsPlugin } from './test-plugins/reviews/reviews-plugin';
-import { TelemetryPlugin } from '@vendure/telemetry';
 
-class TestInstrumentationStrategy implements InstrumentationStrategy {
-    wrapMethod({
-                   target,
-                   methodName,
-                   args,
-                   applyOriginalFunction,
-               }: WrappedMethodArgs) {
-        console.log(`Executing method: ${target.name}.${methodName}`);
-        applyOriginalFunction();
-        console.log(`Method ${target.name}.${methodName} completed`);
-    }
-}
+import { MultivendorPlugin } from './example-plugins/multivendor-plugin/multivendor.plugin';
 
 /**
  * Config settings used during development
@@ -71,9 +62,7 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
-    // systemOptions: {
-    //   instrumentationStrategy: new TestInstrumentationStrategy(),
-    // },
+
     customFields: {
         Product: [
             {
@@ -102,7 +91,7 @@ export const devConfig: VendureConfig = {
             },
         ],
     },
-    logger: new OtelLogger(),
+    logger: new DefaultLogger({ level: LogLevel.Verbose }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
@@ -111,23 +100,22 @@ export const devConfig: VendureConfig = {
         //     platformFeePercent: 10,
         //     platformFeeSKU: 'FEE',
         // }),
-        TelemetryPlugin,
-        ReviewsPlugin,
+        GraphiqlPlugin.init(),
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
         }),
         DefaultSearchPlugin.init({ bufferUpdates: false, indexStockStatus: false }),
         // Enable if you need to debug the job queue
-
-        BullMQJobQueuePlugin.init({}),
-        //DefaultJobQueuePlugin.init({}),
+        // BullMQJobQueuePlugin.init({}),
+        DefaultJobQueuePlugin.init({}),
         // JobQueueTestPlugin.init({ queueCount: 10 }),
         // ElasticsearchPlugin.init({
         //     host: 'http://localhost',
         //     port: 9200,
         //     bufferUpdates: true,
         // }),
+        DefaultSchedulerPlugin.init({}),
         EmailPlugin.init({
             devMode: true,
             route: 'mailbox',

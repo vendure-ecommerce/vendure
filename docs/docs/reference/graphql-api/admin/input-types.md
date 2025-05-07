@@ -4324,6 +4324,18 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <div class="graphql-code-line top-level">&#125;</div>
 </div>
 
+## UpdateScheduledTaskInput
+
+<div class="graphql-code-block">
+<div class="graphql-code-line top-level">input <span class="graphql-code-identifier">UpdateScheduledTaskInput</span> &#123;</div>
+<div class="graphql-code-line ">id: <a href="/reference/graphql-api/admin/object-types#string">String</a>!</div>
+
+<div class="graphql-code-line ">enabled: <a href="/reference/graphql-api/admin/object-types#boolean">Boolean</a></div>
+
+
+<div class="graphql-code-line top-level">&#125;</div>
+</div>
+
 ## UpdateSellerInput
 
 <div class="graphql-code-block">

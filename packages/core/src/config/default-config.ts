@@ -10,6 +10,8 @@ import { randomBytes } from 'crypto';
 import { TypeORMHealthCheckStrategy } from '../health-check/typeorm-health-check-strategy';
 import { InMemoryJobQueueStrategy } from '../job-queue/in-memory-job-queue-strategy';
 import { InMemoryJobBufferStorageStrategy } from '../job-queue/job-buffer/in-memory-job-buffer-storage-strategy';
+import { NoopSchedulerStrategy } from '../scheduler/noop-scheduler-strategy';
+import { cleanSessionsTask } from '../scheduler/tasks/clean-sessions-task';
 
 import { DefaultAssetImportStrategy } from './asset-import-strategy/default-asset-import-strategy';
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
@@ -111,7 +113,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         adminAuthenticationStrategy: [new NativeAuthenticationStrategy()],
         customPermissions: [],
         passwordHashingStrategy: new BcryptPasswordHashingStrategy(),
-        passwordValidationStrategy: new DefaultPasswordValidationStrategy({ minLength: 4 }),
+        passwordValidationStrategy: new DefaultPasswordValidationStrategy({ minLength: 4, maxLength: 72 }),
         verificationTokenStrategy: new DefaultVerificationTokenStrategy(),
     },
     catalogOptions: {
@@ -193,6 +195,11 @@ export const defaultConfig: RuntimeVendureConfig = {
         jobBufferStorageStrategy: new InMemoryJobBufferStorageStrategy(),
         activeQueues: [],
         prefix: '',
+    },
+    schedulerOptions: {
+        schedulerStrategy: new NoopSchedulerStrategy(),
+        tasks: [cleanSessionsTask],
+        runTasksInWorkerOnly: true,
     },
     customFields: {
         Address: [],

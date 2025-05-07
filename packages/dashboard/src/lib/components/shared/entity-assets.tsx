@@ -24,9 +24,9 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { EllipsisIcon, ImageIcon, PaperclipIcon } from 'lucide-react';
-import React, { useCallback, useEffect, useState } from 'react';
-import { AssetPickerDialog } from './asset-picker-dialog.js';
-import { AssetPreviewDialog } from './asset-preview-dialog.js';
+import { useCallback, useEffect, useState } from 'react';
+import { AssetPickerDialog } from './asset/asset-picker-dialog.js';
+import { AssetPreviewDialog } from './asset/asset-preview-dialog.js';
 import { VendureImage } from './vendure-image.js';
 
 type Asset = AssetFragment;

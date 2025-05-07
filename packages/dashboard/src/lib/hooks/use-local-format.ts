@@ -1,4 +1,3 @@
-import { useLingui } from '@lingui/react';
 import { useCallback, useMemo } from 'react';
 
 import { useServerConfig } from './use-server-config.js';
@@ -65,6 +64,29 @@ export function useLocalFormat() {
         [locale],
     );
 
+    const formatRelativeDate = useCallback(
+        (value: string | Date, options?: Intl.RelativeTimeFormatOptions) => {
+            const now = new Date();
+            const date = new Date(value);
+            const diffSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+            // if less than 1 minute, use seconds. Else use minutes, hours, days, months, years
+            if (diffSeconds < 60) {
+                return new Intl.RelativeTimeFormat(locale, options).format(diffSeconds * -1, 'seconds');
+            } else if (diffSeconds < 3600) {
+                return new Intl.RelativeTimeFormat(locale, options).format(diffSeconds * -1, 'minutes');
+            } else if (diffSeconds < 86400) {
+                return new Intl.RelativeTimeFormat(locale, options).format(diffSeconds * -1, 'hours');
+            } else if (diffSeconds < 2592000) {
+                return new Intl.RelativeTimeFormat(locale, options).format(diffSeconds * -1, 'days');
+            } else if (diffSeconds < 31536000) {
+                return new Intl.RelativeTimeFormat(locale, options).format(diffSeconds * -1, 'months');
+            } else {
+                return new Intl.RelativeTimeFormat(locale, options).format(diffSeconds * -1, 'years');
+            }
+        },
+        [locale],
+    );
+
     const formatLanguageName = useCallback(
         (value: string): string => {
             try {
@@ -111,6 +133,7 @@ export function useLocalFormat() {
         formatCurrency,
         formatNumber,
         formatDate,
+        formatRelativeDate,
         formatLanguageName,
         formatCurrencyName,
         toMajorUnits,

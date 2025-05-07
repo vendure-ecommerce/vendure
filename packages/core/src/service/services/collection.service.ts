@@ -414,6 +414,12 @@ export class CollectionService implements OnModuleInit {
                 .loadOne();
             if (parent) {
                 if (!parent.isRoot) {
+                    if (idsAreEqual(parent.id, id)) {
+                        Logger.error(
+                            `Circular reference detected in Collection tree: Collection ${id} is its own parent`,
+                        );
+                        return _ancestors;
+                    }
                     _ancestors.push(parent);
                     return getParent(parent.id, _ancestors);
                 }
@@ -466,8 +472,8 @@ export class CollectionService implements OnModuleInit {
         for (const filterType of collectionFilters) {
             const filtersOfType = applicableFilters.filter(f => f.code === filterType.code);
             if (filtersOfType.length) {
-                for (const f of filtersOfType) {
-                    qb = filterType.apply(qb, f.args);
+                for (const collectionFilter of filtersOfType) {
+                    qb = filterType.apply(qb, collectionFilter.args);
                 }
             }
         }
@@ -656,8 +662,8 @@ export class CollectionService implements OnModuleInit {
     ): ConfigurableOperation[] {
         const filters: ConfigurableOperation[] = [];
         if (input.filters) {
-            for (const f of input.filters) {
-                filters.push(this.configArgService.parseInput('CollectionFilter', f));
+            for (const filterInput of input.filters) {
+                filters.push(this.configArgService.parseInput('CollectionFilter', filterInput));
             }
         }
         return filters;
@@ -701,8 +707,8 @@ export class CollectionService implements OnModuleInit {
         for (const filterType of collectionFilters) {
             const filtersOfType = filters.filter(f => f.code === filterType.code);
             if (filtersOfType.length) {
-                for (const f of filtersOfType) {
-                    filteredQb = filterType.apply(filteredQb, f.args);
+                for (const collectionFilter of filtersOfType) {
+                    filteredQb = filterType.apply(filteredQb, collectionFilter.args);
                 }
             }
         }

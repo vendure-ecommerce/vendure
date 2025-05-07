@@ -195,6 +195,7 @@ export function useDetailPage<
     const document = isNew ? (createDocument ?? updateDocument) : updateDocument;
     const { form, submitHandler } = useGeneratedForm({
         document,
+        varName: 'input',
         entity,
         setValues: setValuesForUpdate,
         onSubmit(values: any) {

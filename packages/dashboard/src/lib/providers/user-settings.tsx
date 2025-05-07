@@ -1,5 +1,13 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { Theme } from './theme-provider.js';
+import { ColumnFiltersState } from '@tanstack/react-table';
+
+export interface TableSettings {
+    columnVisibility?: Record<string, boolean>;
+    columnOrder?: string[];
+    columnFilters?: ColumnFiltersState;
+    pageSize?: number;
+}
 
 export interface UserSettings {
     displayLanguage: string;
@@ -11,6 +19,7 @@ export interface UserSettings {
     activeChannelId: string;
     devMode: boolean;
     hasSeenOnboarding: boolean;
+    tableSettings?: Record<string, TableSettings>;
 }
 
 const defaultSettings: UserSettings = {
@@ -23,6 +32,7 @@ const defaultSettings: UserSettings = {
     activeChannelId: '',
     devMode: false,
     hasSeenOnboarding: false,
+    tableSettings: {},
 };
 
 export interface UserSettingsContextType {
@@ -36,6 +46,11 @@ export interface UserSettingsContextType {
     setActiveChannelId: (channelId: string) => void;
     setDevMode: (devMode: boolean) => void;
     setHasSeenOnboarding: (hasSeen: boolean) => void;
+    setTableSettings: <K extends keyof TableSettings>(
+        tableId: string,
+        key: K,
+        value: TableSettings[K],
+    ) => void;
 }
 
 export const UserSettingsContext = createContext<UserSettingsContextType | undefined>(undefined);
@@ -83,6 +98,15 @@ export const UserSettingsProvider: React.FC<React.PropsWithChildren<{}>> = ({ ch
         setActiveChannelId: channelId => updateSetting('activeChannelId', channelId),
         setDevMode: devMode => updateSetting('devMode', devMode),
         setHasSeenOnboarding: hasSeen => updateSetting('hasSeenOnboarding', hasSeen),
+        setTableSettings: (tableId, key, value) => {
+            setSettings(prev => ({
+                ...prev,
+                tableSettings: {
+                    ...prev.tableSettings,
+                    [tableId]: { ...(prev.tableSettings?.[tableId] || {}), [key]: value },
+                },
+            }));
+        },
     };
 
     return <UserSettingsContext.Provider value={contextValue}>{children}</UserSettingsContext.Provider>;

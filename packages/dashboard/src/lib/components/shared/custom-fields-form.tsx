@@ -22,9 +22,10 @@ type CustomFieldConfig = ResultOf<typeof customFieldConfigFragment>;
 interface CustomFieldsFormProps {
     entityType: string;
     control: Control<any, any>;
+    formPathPrefix?: string;
 }
 
-export function CustomFieldsForm({ entityType, control }: CustomFieldsFormProps) {
+export function CustomFieldsForm({ entityType, control, formPathPrefix }: CustomFieldsFormProps) {
     const {
         settings: { displayLanguage },
     } = useUserSettings();
@@ -39,7 +40,7 @@ export function CustomFieldsForm({ entityType, control }: CustomFieldsFormProps)
                     {fieldDef.type === 'localeString' || fieldDef.type === 'localeText' ? (
                         <TranslatableFormField
                             control={control}
-                            name={`customFields.${fieldDef.name}`}
+                            name={formPathPrefix ? `${formPathPrefix}.customFields.${fieldDef.name}` : `customFields.${fieldDef.name}`}
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>{getTranslation(fieldDef.label) ?? field.name}</FormLabel>
@@ -52,7 +53,7 @@ export function CustomFieldsForm({ entityType, control }: CustomFieldsFormProps)
                     ) : (
                         <FormField
                             control={control}
-                            name={`customFields.${fieldDef.name}`}
+                            name={formPathPrefix ? `${formPathPrefix}.customFields.${fieldDef.name}` : `customFields.${fieldDef.name}`}
                             render={({ field }) => (
                             <FormItem>
                                 <FormLabel>{getTranslation(fieldDef.label) ?? field.name}</FormLabel>
