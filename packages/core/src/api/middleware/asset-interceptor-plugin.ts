@@ -1,16 +1,16 @@
 import { ApolloServerPlugin, GraphQLRequestListener, GraphQLServerContext } from '@apollo/server';
-import { getActiveSpan } from '@vendure/telemetry';
 import { DocumentNode, GraphQLNamedType, isUnionType } from 'graphql';
 
+import { Instrument } from '../../common/instrument-decorator';
 import { AssetStorageStrategy } from '../../config/asset-storage-strategy/asset-storage-strategy';
 import { ConfigService } from '../../config/config.service';
-import { Span } from '../../instrumentation';
 import { GraphqlValueTransformer } from '../common/graphql-value-transformer';
 
 /**
  * Transforms outputs so that any Asset instances are run through the {@link AssetStorageStrategy.toAbsoluteUrl}
  * method before being returned in the response.
  */
+@Instrument()
 export class AssetInterceptorPlugin implements ApolloServerPlugin {
     private graphqlValueTransformer: GraphqlValueTransformer;
     private readonly toAbsoluteUrl: AssetStorageStrategy['toAbsoluteUrl'] | undefined;
@@ -43,14 +43,10 @@ export class AssetInterceptorPlugin implements ApolloServerPlugin {
         };
     }
 
-    @Span('vendure.asset-interceptor-plugin.prefix-asset-urls')
     private prefixAssetUrls(request: any, document: DocumentNode, data?: Record<string, unknown> | null) {
-        const span = getActiveSpan();
         const typeTree = this.graphqlValueTransformer.getOutputTypeTree(document);
         const toAbsoluteUrl = this.toAbsoluteUrl;
         if (!toAbsoluteUrl || !data) {
-            span?.addEvent('no-data');
-            span?.end();
             return;
         }
         this.graphqlValueTransformer.transformValues(typeTree, data, (value, type) => {
@@ -62,18 +58,13 @@ export class AssetInterceptorPlugin implements ApolloServerPlugin {
             if (isAssetType || isUnionWithAssetType) {
                 if (value && !Array.isArray(value)) {
                     if (value.preview) {
-                        span?.setAttribute('preview_relative_url', value.preview);
                         value.preview = toAbsoluteUrl(request, value.preview);
-                        span?.setAttribute('preview_absolute_url', value.preview);
                     }
                     if (value.source) {
-                        span?.setAttribute('source_relative_url', value.source);
                         value.source = toAbsoluteUrl(request, value.source);
-                        span?.setAttribute('source_absolute_url', value.source);
                     }
                 }
             }
-            span?.end();
             return value;
         });
     }

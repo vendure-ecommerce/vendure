@@ -25,6 +25,7 @@ import { In, IsNull } from 'typeorm';
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { ForbiddenError, IllegalOperationError, UserInputError } from '../../common/error/errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -39,7 +40,6 @@ import { CollectionEvent } from '../../event-bus/events/collection-event';
 import { CollectionModificationEvent } from '../../event-bus/events/collection-modification-event';
 import { ProductEvent } from '../../event-bus/events/product-event';
 import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
-import { Span } from '../../instrumentation';
 import { JobQueue } from '../../job-queue/job-queue';
 import { JobQueueService } from '../../job-queue/job-queue.service';
 import { ConfigArgService } from '../helpers/config-arg/config-arg.service';
@@ -75,6 +75,7 @@ export type ApplyCollectionFiltersJobData = {
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class CollectionService implements OnModuleInit {
     private rootCollection: Translated<Collection> | undefined;
     private applyFiltersQueue: JobQueue<ApplyCollectionFiltersJobData>;
@@ -189,7 +190,6 @@ export class CollectionService implements OnModuleInit {
         });
     }
 
-    @Span('CollectionService.findAll')
     async findAll(
         ctx: RequestContext,
         options?: ListQueryOptions<Collection> & { topLevelOnly?: boolean },
@@ -220,7 +220,6 @@ export class CollectionService implements OnModuleInit {
         });
     }
 
-    @Span('CollectionService.findOne')
     async findOne(
         ctx: RequestContext,
         collectionId: ID,
@@ -242,7 +241,6 @@ export class CollectionService implements OnModuleInit {
         return this.translator.translate(collection, ctx, ['parent']);
     }
 
-    @Span('CollectionService.findByIds')
     async findByIds(
         ctx: RequestContext,
         ids: ID[],
@@ -257,7 +255,6 @@ export class CollectionService implements OnModuleInit {
         );
     }
 
-    @Span('CollectionService.findOneBySlug')
     async findOneBySlug(
         ctx: RequestContext,
         slug: string,
@@ -289,12 +286,10 @@ export class CollectionService implements OnModuleInit {
      * @description
      * Returns all configured CollectionFilters, as specified by the {@link CatalogOptions}.
      */
-    @Span('CollectionService.getAvailableFilters')
     getAvailableFilters(ctx: RequestContext): ConfigurableOperationDefinition[] {
         return this.configService.catalogOptions.collectionFilters.map(f => f.toGraphQlType(ctx));
     }
 
-    @Span('CollectionService.getParent')
     async getParent(ctx: RequestContext, collectionId: ID): Promise<Collection | undefined> {
         const parent = await this.connection
             .getRepository(ctx, Collection)
@@ -318,7 +313,6 @@ export class CollectionService implements OnModuleInit {
      * @description
      * Returns all child Collections of the Collection with the given id.
      */
-    @Span('CollectionService.getChildren')
     async getChildren(ctx: RequestContext, collectionId: ID): Promise<Collection[]> {
         return this.getDescendants(ctx, collectionId, 1);
     }
@@ -328,7 +322,6 @@ export class CollectionService implements OnModuleInit {
      * Returns an array of name/id pairs representing all ancestor Collections up
      * to the Root Collection.
      */
-    @Span('CollectionService.getBreadcrumbs')
     async getBreadcrumbs(
         ctx: RequestContext,
         collection: Collection,
@@ -352,7 +345,6 @@ export class CollectionService implements OnModuleInit {
      * @description
      * Returns all Collections which are associated with the given Product ID.
      */
-    @Span('CollectionService.getCollectionsByProductId')
     async getCollectionsByProductId(
         ctx: RequestContext,
         productId: ID,
@@ -380,7 +372,6 @@ export class CollectionService implements OnModuleInit {
      * Returns the descendants of a Collection as a flat array. The depth of the traversal can be limited
      * with the maxDepth argument. So to get only the immediate children, set maxDepth = 1.
      */
-    @Span('CollectionService.getDescendants')
     async getDescendants(
         ctx: RequestContext,
         rootId: ID,
@@ -446,7 +437,6 @@ export class CollectionService implements OnModuleInit {
             });
     }
 
-    @Span('CollectionService.previewCollectionVariants')
     async previewCollectionVariants(
         ctx: RequestContext,
         input: PreviewCollectionVariantsInput,
@@ -487,7 +477,6 @@ export class CollectionService implements OnModuleInit {
         }));
     }
 
-    @Span('CollectionService.create')
     async create(ctx: RequestContext, input: CreateCollectionInput): Promise<Translated<Collection>> {
         await this.slugValidator.validateSlugs(ctx, input, CollectionTranslation);
         const collection = await this.translatableSaver.create({
@@ -520,7 +509,6 @@ export class CollectionService implements OnModuleInit {
         return assertFound(this.findOne(ctx, collection.id));
     }
 
-    @Span('CollectionService.update')
     async update(ctx: RequestContext, input: UpdateCollectionInput): Promise<Translated<Collection>> {
         await this.slugValidator.validateSlugs(ctx, input, CollectionTranslation);
         const collection = await this.translatableSaver.update({
@@ -550,7 +538,6 @@ export class CollectionService implements OnModuleInit {
         return assertFound(this.findOne(ctx, collection.id));
     }
 
-    @Span('CollectionService.delete')
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         const collection = await this.connection.getEntityOrThrow(ctx, Collection, id, {
             channelId: ctx.channelId,
@@ -586,7 +573,6 @@ export class CollectionService implements OnModuleInit {
      * Moves a Collection by specifying the parent Collection ID, and an index representing the order amongst
      * its siblings.
      */
-    @Span('CollectionService.move')
     async move(ctx: RequestContext, input: MoveCollectionInput): Promise<Translated<Collection>> {
         const target = await this.connection.getEntityOrThrow(ctx, Collection, input.collectionId, {
             channelId: ctx.channelId,
@@ -635,7 +621,6 @@ export class CollectionService implements OnModuleInit {
      *
      * @since 3.1.3
      */
-    @Span('CollectionService.setApplyAllFiltersOnProductUpdates')
     setApplyAllFiltersOnProductUpdates(applyAllFiltersOnProductUpdates: boolean) {
         this.applyAllFiltersOnProductUpdates = applyAllFiltersOnProductUpdates;
     }
@@ -649,7 +634,6 @@ export class CollectionService implements OnModuleInit {
      *
      * @since 3.1.3
      */
-    @Span('CollectionService.triggerApplyFiltersJob')
     async triggerApplyFiltersJob(
         ctx: RequestContext,
         options?: { collectionIds?: ID[]; applyToChangedVariantsOnly?: boolean },
@@ -667,7 +651,6 @@ export class CollectionService implements OnModuleInit {
         );
     }
 
-    @Span('CollectionService.getCollectionFiltersFromInput')
     private getCollectionFiltersFromInput(
         input: CreateCollectionInput | UpdateCollectionInput | PreviewCollectionVariantsInput,
     ): ConfigurableOperation[] {
@@ -692,7 +675,6 @@ export class CollectionService implements OnModuleInit {
     /**
      * Applies the CollectionFilters and returns the IDs of ProductVariants that need to be added or removed.
      */
-    @Span('CollectionService.applyCollectionFiltersInternal')
     private async applyCollectionFiltersInternal(
         collection: Collection,
         applyToChangedVariantsOnly = true,
@@ -808,7 +790,6 @@ export class CollectionService implements OnModuleInit {
      * Gets all filters of ancestor Collections while respecting the `inheritFilters` setting of each.
      * As soon as `inheritFilters === false` is encountered, the collected filters are returned.
      */
-    @Span('CollectionService.getAncestorFilters')
     private async getAncestorFilters(collection: Collection): Promise<ConfigurableOperation[]> {
         const ancestorFilters: ConfigurableOperation[] = [];
         if (collection.inheritFilters) {
@@ -826,7 +807,6 @@ export class CollectionService implements OnModuleInit {
     /**
      * Returns the IDs of the Collection's ProductVariants.
      */
-    @Span('CollectionService.getCollectionProductVariantIds')
     async getCollectionProductVariantIds(collection: Collection, ctx?: RequestContext): Promise<ID[]> {
         if (collection.productVariants) {
             return collection.productVariants.map(v => v.id);
@@ -845,7 +825,6 @@ export class CollectionService implements OnModuleInit {
     /**
      * Returns the next position value in the given parent collection.
      */
-    @Span('CollectionService.getNextPositionInParent')
     private async getNextPositionInParent(ctx: RequestContext, maybeParentId?: ID): Promise<number> {
         const parentId = maybeParentId || (await this.getRootCollection(ctx)).id;
         const result = await this.connection
@@ -877,7 +856,6 @@ export class CollectionService implements OnModuleInit {
         }
     }
 
-    @Span('CollectionService.getRootCollection')
     private async getRootCollection(ctx: RequestContext): Promise<Collection> {
         const cachedRoot = this.rootCollection;
 
@@ -928,7 +906,6 @@ export class CollectionService implements OnModuleInit {
      * @description
      * Assigns Collections to the specified Channel
      */
-    @Span('CollectionService.assignCollectionsToChannel')
     async assignCollectionsToChannel(
         ctx: RequestContext,
         input: AssignCollectionsToChannelInput,
@@ -973,7 +950,6 @@ export class CollectionService implements OnModuleInit {
      * @description
      * Remove Collections from the specified Channel
      */
-    @Span('CollectionService.removeCollectionsFromChannel')
     async removeCollectionsFromChannel(
         ctx: RequestContext,
         input: RemoveCollectionsFromChannelInput,

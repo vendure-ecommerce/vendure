@@ -37,6 +37,7 @@ import {
     PasswordResetTokenInvalidError,
     PasswordValidationError,
 } from '../../common/error/generated-graphql-shop-errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/utils';
 import { NATIVE_AUTH_STRATEGY_NAME } from '../../config/auth/native-authentication-strategy';
@@ -59,7 +60,6 @@ import { IdentifierChangeEvent } from '../../event-bus/events/identifier-change-
 import { IdentifierChangeRequestEvent } from '../../event-bus/events/identifier-change-request-event';
 import { PasswordResetEvent } from '../../event-bus/events/password-reset-event';
 import { PasswordResetVerifiedEvent } from '../../event-bus/events/password-reset-verified-event';
-import { Span } from '../../instrumentation';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatorService } from '../helpers/translator/translator.service';
@@ -78,6 +78,7 @@ import { UserService } from './user.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class CustomerService {
     constructor(
         private connection: TransactionalConnection,
@@ -92,7 +93,6 @@ export class CustomerService {
         private translator: TranslatorService,
     ) {}
 
-    @Span('CustomerService.findAll')
     findAll(
         ctx: RequestContext,
         options: ListQueryOptions<Customer> | undefined,
@@ -119,7 +119,6 @@ export class CustomerService {
             .then(([items, totalItems]) => ({ items, totalItems }));
     }
 
-    @Span('CustomerService.findOne')
     findOne(
         ctx: RequestContext,
         id: ID,

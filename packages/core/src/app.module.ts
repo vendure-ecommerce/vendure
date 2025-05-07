@@ -1,5 +1,4 @@
 import { MiddlewareConsumer, Module, NestModule, OnApplicationShutdown } from '@nestjs/common';
-import { getActiveSpan } from '@vendure/telemetry';
 import cookieSession from 'cookie-session';
 
 import { ApiModule } from './api/api.module';
@@ -11,7 +10,6 @@ import { ConnectionModule } from './connection/connection.module';
 import { HealthCheckModule } from './health-check/health-check.module';
 import { I18nModule } from './i18n/i18n.module';
 import { I18nService } from './i18n/i18n.service';
-import { Span } from './instrumentation';
 import { PluginModule } from './plugin/plugin.module';
 import { ProcessContextModule } from './process-context/process-context.module';
 import { ServiceModule } from './service/service.module';
@@ -34,9 +32,7 @@ export class AppModule implements NestModule, OnApplicationShutdown {
         private i18nService: I18nService,
     ) {}
 
-    @Span('vendure.app-module.configure')
     configure(consumer: MiddlewareConsumer) {
-        const currentSpan = getActiveSpan();
         const { adminApiPath, shopApiPath, middleware } = this.configService.apiOptions;
         const { cookieOptions } = this.configService.authOptions;
 
@@ -45,9 +41,6 @@ export class AppModule implements NestModule, OnApplicationShutdown {
             { handler: i18nextHandler, route: adminApiPath },
             { handler: i18nextHandler, route: shopApiPath },
         ];
-
-        currentSpan?.setAttribute('middleware.adminApiPath', adminApiPath);
-        currentSpan?.setAttribute('middleware.shopApiPath', shopApiPath);
 
         const allMiddleware = defaultMiddleware.concat(middleware);
 
@@ -71,7 +64,6 @@ export class AppModule implements NestModule, OnApplicationShutdown {
         for (const [route, handlers] of Object.entries(middlewareByRoute)) {
             consumer.apply(...handlers).forRoutes(route);
         }
-        currentSpan?.end();
     }
 
     async onApplicationShutdown(signal?: string) {

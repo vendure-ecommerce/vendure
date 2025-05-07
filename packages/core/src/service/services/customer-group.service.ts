@@ -15,6 +15,7 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { UserInputError } from '../../common/error/errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
@@ -22,7 +23,6 @@ import { Customer } from '../../entity/customer/customer.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { CustomerGroupChangeEvent } from '../../event-bus/events/customer-group-change-event';
 import { CustomerGroupEvent } from '../../event-bus/events/customer-group-event';
-import { Span } from '../../instrumentation';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -36,6 +36,7 @@ import { HistoryService } from './history.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class CustomerGroupService {
     constructor(
         private connection: TransactionalConnection,
@@ -45,7 +46,6 @@ export class CustomerGroupService {
         private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
-    @Span('CustomerGroupService.findAll')
     findAll(
         ctx: RequestContext,
         options?: CustomerGroupListOptions,
@@ -57,7 +57,6 @@ export class CustomerGroupService {
             .then(([items, totalItems]) => ({ items, totalItems }));
     }
 
-    @Span('CustomerGroupService.findOne')
     findOne(
         ctx: RequestContext,
         customerGroupId: ID,
@@ -73,7 +72,6 @@ export class CustomerGroupService {
      * @description
      * Returns a {@link PaginatedList} of all the Customers in the group.
      */
-    @Span('CustomerGroupService.getGroupCustomers')
     getGroupCustomers(
         ctx: RequestContext,
         customerGroupId: ID,
@@ -90,7 +88,6 @@ export class CustomerGroupService {
             .then(([items, totalItems]) => ({ items, totalItems }));
     }
 
-    @Span('CustomerGroupService.create')
     async create(ctx: RequestContext, input: CreateCustomerGroupInput): Promise<CustomerGroup> {
         const customerGroup = new CustomerGroup(input);
 
@@ -116,7 +113,6 @@ export class CustomerGroupService {
         return assertFound(this.findOne(ctx, savedCustomerGroup.id));
     }
 
-    @Span('CustomerGroupService.update')
     async update(ctx: RequestContext, input: UpdateCustomerGroupInput): Promise<CustomerGroup> {
         const customerGroup = await this.connection.getEntityOrThrow(ctx, CustomerGroup, input.id);
         const updatedCustomerGroup = patchEntity(customerGroup, input);
@@ -131,7 +127,6 @@ export class CustomerGroupService {
         return assertFound(this.findOne(ctx, customerGroup.id));
     }
 
-    @Span('CustomerGroupService.delete')
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         const group = await this.connection.getEntityOrThrow(ctx, CustomerGroup, id);
         try {
@@ -149,7 +144,6 @@ export class CustomerGroupService {
         }
     }
 
-    @Span('CustomerGroupService.addCustomersToGroup')
     async addCustomersToGroup(
         ctx: RequestContext,
         input: MutationAddCustomersToGroupArgs,
@@ -176,7 +170,6 @@ export class CustomerGroupService {
         return assertFound(this.findOne(ctx, group.id));
     }
 
-    @Span('CustomerGroupService.removeCustomersFromGroup')
     async removeCustomersFromGroup(
         ctx: RequestContext,
         input: MutationRemoveCustomersFromGroupArgs,
@@ -202,7 +195,6 @@ export class CustomerGroupService {
         return assertFound(this.findOne(ctx, group.id));
     }
 
-    @Span('CustomerGroupService.getCustomersFromIds')
     private getCustomersFromIds(ctx: RequestContext, ids: ID[]): Promise<Customer[]> | Customer[] {
         if (ids.length === 0) {
             return new Array<Customer>();

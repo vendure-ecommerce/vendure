@@ -19,6 +19,7 @@ import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { RequestContextCacheService } from '../../cache/request-context-cache.service';
 import { ForbiddenError, UserInputError } from '../../common/error/errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { roundMoney } from '../../common/round-money';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
@@ -43,7 +44,6 @@ import { EventBus } from '../../event-bus/event-bus';
 import { ProductVariantChannelEvent } from '../../event-bus/events/product-variant-channel-event';
 import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
 import { ProductVariantPriceEvent } from '../../event-bus/events/product-variant-price-event';
-import { Span } from '../../instrumentation';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { ProductPriceApplicator } from '../helpers/product-price-applicator/product-price-applicator';
@@ -68,6 +68,7 @@ import { TaxCategoryService } from './tax-category.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class ProductVariantService {
     constructor(
         private connection: TransactionalConnection,
@@ -89,7 +90,6 @@ export class ProductVariantService {
         private translator: TranslatorService,
     ) {}
 
-    @Span('ProductVariantService.findAll')
     async findAll(
         ctx: RequestContext,
         options?: ListQueryOptions<ProductVariant>,
@@ -123,7 +123,6 @@ export class ProductVariantService {
             });
     }
 
-    @Span('ProductVariantService.findOne')
     findOne(
         ctx: RequestContext,
         productVariantId: ID,
@@ -146,7 +145,6 @@ export class ProductVariantService {
             });
     }
 
-    @Span('ProductVariantService.findByIds')
     findByIds(ctx: RequestContext, ids: ID[]): Promise<Array<Translated<ProductVariant>>> {
         return this.connection
             .findByIdsInChannel(ctx, ProductVariant, ids, ctx.channelId, {
@@ -162,7 +160,6 @@ export class ProductVariantService {
             .then(variants => this.applyPricesAndTranslateVariants(ctx, variants));
     }
 
-    @Span('ProductVariantService.getVariantsByProductId')
     getVariantsByProductId(
         ctx: RequestContext,
         productId: ID,
@@ -209,7 +206,6 @@ export class ProductVariantService {
      * @description
      * Returns a {@link PaginatedList} of all ProductVariants associated with the given Collection.
      */
-    @Span('ProductVariantService.getVariantsByCollectionId')
     getVariantsByCollectionId(
         ctx: RequestContext,
         collectionId: ID,
@@ -245,7 +241,6 @@ export class ProductVariantService {
      * @description
      * Returns all Channels to which the ProductVariant is assigned.
      */
-    @Span('ProductVariantService.getProductVariantChannels')
     async getProductVariantChannels(ctx: RequestContext, productVariantId: ID): Promise<Channel[]> {
         const variant = await this.connection.getEntityOrThrow(ctx, ProductVariant, productVariantId, {
             relations: ['channels'],
@@ -254,7 +249,6 @@ export class ProductVariantService {
         return variant.channels;
     }
 
-    @Span('ProductVariantService.getProductVariantPrices')
     async getProductVariantPrices(ctx: RequestContext, productVariantId: ID): Promise<ProductVariantPrice[]> {
         return this.connection
             .getRepository(ctx, ProductVariantPrice)
@@ -268,7 +262,6 @@ export class ProductVariantService {
      * @description
      * Returns the ProductVariant associated with the given {@link OrderLine}.
      */
-    @Span('ProductVariantService.getVariantByOrderLineId')
     async getVariantByOrderLineId(ctx: RequestContext, orderLineId: ID): Promise<Translated<ProductVariant>> {
         const { productVariant } = await this.connection.getEntityOrThrow(ctx, OrderLine, orderLineId, {
             relations: ['productVariant', 'productVariant.taxCategory'],
@@ -281,7 +274,6 @@ export class ProductVariantService {
      * @description
      * Returns the {@link ProductOption}s for the given ProductVariant.
      */
-    @Span('ProductVariantService.getOptionsForVariant')
     getOptionsForVariant(ctx: RequestContext, variantId: ID): Promise<Array<Translated<ProductOption>>> {
         return this.connection
             .findOneInChannel(ctx, ProductVariant, variantId, ctx.channelId, {
@@ -290,7 +282,6 @@ export class ProductVariantService {
             .then(variant => (!variant ? [] : variant.options.map(o => this.translator.translate(o, ctx))));
     }
 
-    @Span('ProductVariantService.getFacetValuesForVariant')
     getFacetValuesForVariant(ctx: RequestContext, variantId: ID): Promise<Array<Translated<FacetValue>>> {
         return this.connection
             .findOneInChannel(ctx, ProductVariant, variantId, ctx.channelId, {
@@ -307,7 +298,6 @@ export class ProductVariantService {
      * method performs a large multi-table join with all the typical data needed for a "product detail"
      * page, this method returns only the Product itself.
      */
-    @Span('ProductVariantService.getProductForVariant')
     async getProductForVariant(ctx: RequestContext, variant: ProductVariant): Promise<Translated<Product>> {
         let product;
 
@@ -328,7 +318,6 @@ export class ProductVariantService {
      * for purchase by Customers. This is determined by the ProductVariant's `stockOnHand` value,
      * as well as the local and global `outOfStockThreshold` settings.
      */
-    @Span('ProductVariantService.getSaleableStockLevel')
     async getSaleableStockLevel(ctx: RequestContext, variant: ProductVariant): Promise<number> {
         const { outOfStockThreshold, trackInventory } = await this.globalSettingsService.getSettings(ctx);
 
@@ -367,7 +356,6 @@ export class ProductVariantService {
      * Returns the stockLevel to display to the customer, as specified by the configured
      * {@link StockDisplayStrategy}.
      */
-    @Span('ProductVariantService.getDisplayStockLevel')
     async getDisplayStockLevel(ctx: RequestContext, variant: ProductVariant): Promise<string> {
         const { stockDisplayStrategy } = this.configService.catalogOptions;
         const saleableStockLevel = await this.getSaleableStockLevel(ctx, variant);
@@ -379,7 +367,6 @@ export class ProductVariantService {
      * Returns the number of fulfillable units of the ProductVariant, equivalent to stockOnHand
      * for those variants which are tracking inventory.
      */
-    @Span('ProductVariantService.getFulfillableStockLevel')
     async getFulfillableStockLevel(ctx: RequestContext, variant: ProductVariant): Promise<number> {
         const { outOfStockThreshold, trackInventory } = await this.globalSettingsService.getSettings(ctx);
         const inventoryNotTracked =
@@ -392,7 +379,6 @@ export class ProductVariantService {
         return stockOnHand;
     }
 
-    @Span('ProductVariantService.create')
     async create(
         ctx: RequestContext,
         input: CreateProductVariantInput[],
@@ -407,7 +393,6 @@ export class ProductVariantService {
         return createdVariants;
     }
 
-    @Span('ProductVariantService.update')
     async update(
         ctx: RequestContext,
         input: UpdateProductVariantInput[],
@@ -423,7 +408,6 @@ export class ProductVariantService {
         return updatedVariants;
     }
 
-    @Span('ProductVariantService.createSingle')
     private async createSingle(ctx: RequestContext, input: CreateProductVariantInput): Promise<ID> {
         await this.validateVariantOptionIds(ctx, input.productId, input.optionIds);
         if (!input.optionIds) {
@@ -491,7 +475,6 @@ export class ProductVariantService {
         return createdVariant.id;
     }
 
-    @Span('ProductVariantService.updateSingle')
     private async updateSingle(ctx: RequestContext, input: UpdateProductVariantInput): Promise<ID> {
         const existingVariant = await this.connection.getEntityOrThrow(ctx, ProductVariant, input.id, {
             channelId: ctx.channelId,
@@ -585,7 +568,6 @@ export class ProductVariantService {
      * Creates a {@link ProductVariantPrice} for the given ProductVariant/Channel combination.
      * If the `currencyCode` is not specified, the default currency of the Channel will be used.
      */
-    @Span('ProductVariantService.createOrUpdateProductVariantPrice')
     async createOrUpdateProductVariantPrice(
         ctx: RequestContext,
         productVariantId: ID,
@@ -672,7 +654,6 @@ export class ProductVariantService {
         return targetPrice;
     }
 
-    @Span('ProductVariantService.deleteProductVariantPrice')
     async deleteProductVariantPrice(
         ctx: RequestContext,
         variantId: ID,
@@ -711,7 +692,6 @@ export class ProductVariantService {
         }
     }
 
-    @Span('ProductVariantService.softDelete')
     async softDelete(ctx: RequestContext, id: ID | ID[]): Promise<DeletionResponse> {
         const ids = Array.isArray(id) ? id : [id];
         const variants = await this.connection
@@ -735,7 +715,6 @@ export class ProductVariantService {
      *
      * Is optimized to make as few DB calls as possible using caching based on the open request.
      */
-    @Span('ProductVariantService.hydratePriceFields')
     async hydratePriceFields<F extends 'currencyCode' | 'price' | 'priceWithTax' | 'taxRateApplied'>(
         ctx: RequestContext,
         variant: ProductVariant,
@@ -782,7 +761,6 @@ export class ProductVariantService {
      * Given an array of ProductVariants from the database, this method will apply the correct price and tax
      * and translate each item.
      */
-    @Span('ProductVariantService.applyPricesAndTranslateVariants')
     private async applyPricesAndTranslateVariants(
         ctx: RequestContext,
         variants: ProductVariant[],
@@ -803,7 +781,6 @@ export class ProductVariantService {
      * @description
      * Populates the `price` field with the price for the specified channel.
      */
-    @Span('ProductVariantService.applyChannelPriceAndTax')
     async applyChannelPriceAndTax(
         variant: ProductVariant,
         ctx: RequestContext,
@@ -818,7 +795,6 @@ export class ProductVariantService {
      * Assigns the specified ProductVariants to the specified Channel. In doing so, it will create a new
      * {@link ProductVariantPrice} and also assign the associated Product and any Assets to the Channel too.
      */
-    @Span('ProductVariantService.assignProductVariantsToChannel')
     async assignProductVariantsToChannel(
         ctx: RequestContext,
         input: AssignProductVariantsToChannelInput,
@@ -869,7 +845,6 @@ export class ProductVariantService {
         return result;
     }
 
-    @Span('vendure.product-variant-service.remove-product-variants-from-channel')
     async removeProductVariantsFromChannel(
         ctx: RequestContext,
         input: RemoveProductVariantsFromChannelInput,
@@ -926,7 +901,6 @@ export class ProductVariantService {
         return result;
     }
 
-    @Span('vendure.product-variant-service.validate-variant-option-ids')
     private async validateVariantOptionIds(
         ctx: RequestContext,
         productId: ID,
@@ -991,7 +965,6 @@ export class ProductVariantService {
             .join(glue);
     }
 
-    @Span('vendure.product-variant-service.get-tax-category-for-new-variant')
     private async getTaxCategoryForNewVariant(
         ctx: RequestContext,
         taxCategoryId: ID | null | undefined,

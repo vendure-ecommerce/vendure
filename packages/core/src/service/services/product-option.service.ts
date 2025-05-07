@@ -9,6 +9,7 @@ import {
 import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
+import { Instrument } from '../../common/instrument-decorator';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { Logger } from '../../config/logger/vendure-logger';
@@ -30,6 +31,7 @@ import { TranslatorService } from '../helpers/translator/translator.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class ProductOptionService {
     constructor(
         private connection: TransactionalConnection,

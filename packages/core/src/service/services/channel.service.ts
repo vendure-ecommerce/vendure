@@ -11,7 +11,6 @@ import {
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
-import { getActiveSpan } from '@vendure/telemetry';
 import { FindOptionsWhere } from 'typeorm';
 
 import { RelationPaths } from '../../api';
@@ -24,6 +23,7 @@ import {
     UserInputError,
 } from '../../common/error/errors';
 import { LanguageNotAvailableError } from '../../common/error/generated-graphql-admin-errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { createSelfRefreshingCache, SelfRefreshingCache } from '../../common/self-refreshing-cache';
 import { ChannelAware, ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -40,7 +40,6 @@ import { Zone } from '../../entity/zone/zone.entity';
 import { EventBus } from '../../event-bus';
 import { ChangeChannelEvent } from '../../event-bus/events/change-channel-event';
 import { ChannelEvent } from '../../event-bus/events/channel-event';
-import { Span } from '../../instrumentation';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -53,6 +52,7 @@ import { GlobalSettingsService } from './global-settings.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class ChannelService {
     private allChannels: SelfRefreshingCache<Channel[], [RequestContext]>;
 
@@ -81,7 +81,6 @@ export class ChannelService {
      *
      * @internal
      */
-    @Span('ChannelService.createCache')
     async createCache(): Promise<SelfRefreshingCache<Channel[], [RequestContext]>> {
         return createSelfRefreshingCache({
             name: 'ChannelService.allChannels',
@@ -116,7 +115,6 @@ export class ChannelService {
      * specified in the RequestContext. This method will not save the entity to the database, but
      * assigns the `channels` property of the entity.
      */
-    @Span('ChannelService.assignToCurrentChannel')
     async assignToCurrentChannel<T extends ChannelAware & VendureEntity>(
         entity: T,
         ctx: RequestContext,
@@ -139,7 +137,6 @@ export class ChannelService {
      * @returns A promise that resolves to an array of objects, each containing a channel ID.
      * @private
      */
-    @Span('ChannelService.getAssignedEntityChannels')
     private async getAssignedEntityChannels<T extends ChannelAware & VendureEntity>(
         ctx: RequestContext,
         entityType: Type<T>,
@@ -178,7 +175,6 @@ export class ChannelService {
      * @description
      * Assigns the entity to the given Channels and saves all changes to the database.
      */
-    @Span('ChannelService.assignToChannels')
     async assignToChannels<T extends ChannelAware & VendureEntity>(
         ctx: RequestContext,
         entityType: Type<T>,
@@ -222,7 +218,6 @@ export class ChannelService {
      * @description
      * Removes the entity from the given Channels and saves.
      */
-    @Span('ChannelService.removeFromChannels')
     async removeFromChannels<T extends ChannelAware & VendureEntity>(
         ctx: RequestContext,
         entityType: Type<T>,
@@ -265,22 +260,21 @@ export class ChannelService {
      */
     async getChannelFromToken(token: string): Promise<Channel>;
     async getChannelFromToken(ctx: RequestContext, token: string): Promise<Channel>;
-    @Span('ChannelService.getChannelFromToken')
     async getChannelFromToken(ctxOrToken: RequestContext | string, token?: string): Promise<Channel> {
         const [ctx, channelToken] =
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             ctxOrToken instanceof RequestContext ? [ctxOrToken, token!] : [undefined, ctxOrToken];
 
-        const span = getActiveSpan();
+        // const span = getActiveSpan();
         const allChannels = await this.allChannels.value(ctx);
 
         if (allChannels.length === 1 || channelToken === '') {
             // there is only the default channel, so return it
-            span?.setAttribute('channel.token', 'default');
+            // span?.setAttribute('channel.token', 'default');
             return this.getDefaultChannel(ctx);
         }
 
-        span?.setAttribute('channel.token', channelToken);
+        // span?.setAttribute('channel.token', channelToken);
         const channel = allChannels.find(c => c.token === channelToken);
         if (!channel) {
             throw new ChannelNotFoundError(channelToken);
@@ -292,7 +286,6 @@ export class ChannelService {
      * @description
      * Returns the default Channel.
      */
-    @Span('ChannelService.getDefaultChannel')
     async getDefaultChannel(ctx?: RequestContext): Promise<Channel> {
         const allChannels = await this.allChannels.value(ctx);
         const defaultChannel = allChannels.find(channel => channel.code === DEFAULT_CHANNEL_CODE);
@@ -303,7 +296,6 @@ export class ChannelService {
         return defaultChannel;
     }
 
-    @Span('ChannelService.findAll')
     findAll(
         ctx: RequestContext,
         options?: ListQueryOptions<Channel>,
@@ -321,7 +313,6 @@ export class ChannelService {
             }));
     }
 
-    @Span('ChannelService.findOne')
     findOne(ctx: RequestContext, id: ID): Promise<Channel | undefined> {
         return this.connection
             .getRepository(ctx, Channel)
@@ -329,7 +320,6 @@ export class ChannelService {
             .then(result => result ?? undefined);
     }
 
-    @Span('ChannelService.create')
     async create(
         ctx: RequestContext,
         input: CreateChannelInput,
@@ -375,7 +365,6 @@ export class ChannelService {
         return newChannel;
     }
 
-    @Span('ChannelService.update')
     async update(
         ctx: RequestContext,
         input: UpdateChannelInput,
@@ -472,7 +461,6 @@ export class ChannelService {
         return assertFound(this.findOne(ctx, channel.id));
     }
 
-    @Span('ChannelService.delete')
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         const channel = await this.connection.getEntityOrThrow(ctx, Channel, id);
         if (channel.code === DEFAULT_CHANNEL_CODE)
@@ -499,7 +487,6 @@ export class ChannelService {
      * Type guard method which returns true if the given entity is an
      * instance of a class which implements the {@link ChannelAware} interface.
      */
-    @Span('ChannelService.isChannelAware')
     public isChannelAware(entity: VendureEntity): entity is VendureEntity & ChannelAware {
         const entityType = Object.getPrototypeOf(entity).constructor;
         return !!this.connection.rawConnection
@@ -510,7 +497,6 @@ export class ChannelService {
     /**
      * Ensures channel cache exists. If not, this method creates one.
      */
-    @Span('ChannelService.ensureCacheExists')
     private async ensureCacheExists() {
         if (this.allChannels) {
             return;
@@ -523,7 +509,6 @@ export class ChannelService {
      * There must always be a default Channel. If none yet exists, this method creates one.
      * Also ensures the default Channel token matches the defaultChannelToken config setting.
      */
-    @Span('ChannelService.ensureDefaultChannelExists')
     private async ensureDefaultChannelExists() {
         const { defaultChannelToken } = this.configService;
         let defaultChannel = await this.connection.rawConnection.getRepository(Channel).findOne({
@@ -561,7 +546,6 @@ export class ChannelService {
         }
     }
 
-    @Span('ChannelService.validateDefaultLanguageCode')
     private async validateDefaultLanguageCode(
         ctx: RequestContext,
         input: CreateChannelInput | UpdateChannelInput,

@@ -9,6 +9,7 @@ import { In, IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
+import { Instrument } from '../../common';
 import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/utils';
@@ -21,7 +22,6 @@ import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus';
 import { AdministratorEvent } from '../../event-bus/events/administrator-event';
 import { RoleChangeEvent } from '../../event-bus/events/role-change-event';
-import { Span } from '../../instrumentation';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { PasswordCipher } from '../helpers/password-cipher/password-cipher';
@@ -39,6 +39,7 @@ import { UserService } from './user.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class AdministratorService {
     constructor(
         private connection: TransactionalConnection,
@@ -61,7 +62,6 @@ export class AdministratorService {
      * @description
      * Get a paginated list of Administrators.
      */
-    @Span('AdministratorService.findAll')
     findAll(
         ctx: RequestContext,
         options?: ListQueryOptions<Administrator>,
@@ -84,7 +84,6 @@ export class AdministratorService {
      * @description
      * Get an Administrator by id.
      */
-    @Span('AdministratorService.findOne')
     findOne(
         ctx: RequestContext,
         administratorId: ID,
@@ -106,7 +105,6 @@ export class AdministratorService {
      * @description
      * Get an Administrator based on the User id.
      */
-    @Span('AdministratorService.findOneByUserId')
     findOneByUserId(
         ctx: RequestContext,
         userId: ID,
@@ -128,7 +126,6 @@ export class AdministratorService {
      * @description
      * Create a new Administrator.
      */
-    @Span('AdministratorService.create')
     async create(ctx: RequestContext, input: CreateAdministratorInput): Promise<Administrator> {
         await this.checkActiveUserCanGrantRoles(ctx, input.roleIds);
         const administrator = new Administrator(input);
@@ -154,7 +151,6 @@ export class AdministratorService {
      * @description
      * Update an existing Administrator.
      */
-    @Span('AdministratorService.update')
     async update(ctx: RequestContext, input: UpdateAdministratorInput): Promise<Administrator> {
         const administrator = await this.findOne(ctx, input.id);
         if (!administrator) {
@@ -257,7 +253,6 @@ export class AdministratorService {
      * @description
      * Soft deletes an Administrator (sets the `deletedAt` field).
      */
-    @Span('AdministratorService.softDelete')
     async softDelete(ctx: RequestContext, id: ID) {
         const administrator = await this.connection.getEntityOrThrow(ctx, Administrator, id, {
             relations: ['user'],
@@ -280,7 +275,6 @@ export class AdministratorService {
      * Resolves to `true` if the administrator ID belongs to the only Administrator
      * with SuperAdmin permissions.
      */
-    @Span('AdministratorService.isSoleSuperadmin')
     private async isSoleSuperadmin(ctx: RequestContext, id: ID) {
         const superAdminRole = await this.roleService.getSuperAdminRole(ctx);
         const allAdmins = await this.connection.getRepository(ctx, Administrator).find({
@@ -303,7 +297,6 @@ export class AdministratorService {
      *
      * @internal
      */
-    @Span('AdministratorService.ensureSuperAdminExists')
     private async ensureSuperAdminExists() {
         const { superadminCredentials } = this.configService.authOptions;
 

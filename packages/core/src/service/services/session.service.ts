@@ -5,6 +5,7 @@ import ms from 'ms';
 import { EntitySubscriberInterface, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
+import { Instrument } from '../../common/instrument-decorator';
 import { ConfigService } from '../../config/config.service';
 import { CachedSession, SessionCacheStrategy } from '../../config/session-cache/session-cache-strategy';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -26,6 +27,7 @@ import { OrderService } from './order.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class SessionService implements EntitySubscriberInterface {
     private sessionCacheStrategy: SessionCacheStrategy;
     private readonly sessionDurationInMs: number;

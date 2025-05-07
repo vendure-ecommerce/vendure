@@ -10,6 +10,7 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { EntityNotFoundError } from '../../common/error/errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { createSelfRefreshingCache, SelfRefreshingCache } from '../../common/self-refreshing-cache';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
@@ -33,6 +34,7 @@ import { patchEntity } from '../helpers/utils/patch-entity';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class TaxRateService {
     private readonly defaultTaxRate = new TaxRate({
         value: 0,

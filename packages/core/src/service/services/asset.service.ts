@@ -27,6 +27,7 @@ import { camelCase } from 'typeorm/util/StringUtils';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
+import { Instrument } from '../../common';
 import { isGraphQlErrorResult } from '../../common/error/error-result';
 import { ForbiddenError, InternalServerError } from '../../common/error/errors';
 import { MimeTypeError } from '../../common/error/generated-graphql-admin-errors';
@@ -44,7 +45,6 @@ import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AssetChannelEvent } from '../../event-bus/events/asset-channel-event';
 import { AssetEvent } from '../../event-bus/events/asset-event';
-import { Span } from '../../instrumentation';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -89,6 +89,7 @@ export interface EntityAssetInput {
  * @docsWeight 0
  */
 @Injectable()
+@Instrument()
 export class AssetService {
     private permittedMimeTypes: Array<{ type: string; subtype: string }> = [];
 
@@ -111,7 +112,6 @@ export class AssetService {
             });
     }
 
-    @Span('AssetService.findOne')
     findOne(ctx: RequestContext, id: ID, relations?: RelationPaths<Asset>): Promise<Asset | undefined> {
         return this.connection
             .findOneInChannel(ctx, Asset, id, ctx.channelId, {
@@ -120,7 +120,6 @@ export class AssetService {
             .then(result => result ?? undefined);
     }
 
-    @Span('AssetService.findAll')
     findAll(
         ctx: RequestContext,
         options?: AssetListOptions,
@@ -156,7 +155,6 @@ export class AssetService {
         }));
     }
 
-    @Span('AssetService.getFeaturedAsset')
     async getFeaturedAsset<T extends Omit<EntityWithAssets, 'assets'>>(
         ctx: RequestContext,
         entity: T,
@@ -196,7 +194,6 @@ export class AssetService {
      * Returns the Assets of an entity which has a well-ordered list of Assets, such as Product,
      * ProductVariant or Collection.
      */
-    @Span('AssetService.getEntityAssets')
     async getEntityAssets<T extends EntityWithAssets>(
         ctx: RequestContext,
         entity: T,
@@ -240,7 +237,6 @@ export class AssetService {
         return orderableAssets.sort((a, b) => a.position - b.position).map(a => a.asset);
     }
 
-    @Span('AssetService.updateFeaturedAsset')
     async updateFeaturedAsset<T extends EntityWithAssets>(
         ctx: RequestContext,
         entity: T,
@@ -295,7 +291,6 @@ export class AssetService {
      *
      * See the [Uploading Files docs](/guides/developer-guide/uploading-files) for an example of usage.
      */
-    @Span('AssetService.create')
     async create(ctx: RequestContext, input: CreateAssetInput): Promise<CreateAssetResult> {
         return new Promise(async (resolve, reject) => {
             const { createReadStream, filename, mimetype } = await input.file;
@@ -329,7 +324,6 @@ export class AssetService {
      * @description
      * Updates the name, focalPoint, tags & custom fields of an Asset.
      */
-    @Span('AssetService.update')
     async update(ctx: RequestContext, input: UpdateAssetInput): Promise<Asset> {
         const asset = await this.connection.getEntityOrThrow(ctx, Asset, input.id);
         if (input.focalPoint) {
@@ -352,7 +346,6 @@ export class AssetService {
      * Deletes an Asset after performing checks to ensure that the Asset is not currently in use
      * by a Product, ProductVariant or Collection.
      */
-    @Span('AssetService.delete')
     async delete(
         ctx: RequestContext,
         ids: ID[],
@@ -418,7 +411,6 @@ export class AssetService {
         return this.deleteUnconditional(ctx, assets);
     }
 
-    @Span('AssetService.assignToChannel')
     async assignToChannel(ctx: RequestContext, input: AssignAssetsToChannelInput): Promise<Asset[]> {
         const hasPermission = await this.roleService.userHasPermissionOnChannel(
             ctx,
@@ -462,7 +454,6 @@ export class AssetService {
         filePath: string,
         ctx?: RequestContext,
     ): Promise<CreateAssetResult>;
-    @Span('AssetService.createFromFileStream')
     async createFromFileStream(
         stream: ReadStream | Readable,
         maybeFilePathOrCtx?: string | RequestContext,
@@ -488,7 +479,6 @@ export class AssetService {
         }
     }
 
-    @Span('AssetService.getMimeType')
     private getMimeType(stream: Readable, filename: string): string {
         if (stream instanceof IncomingMessage) {
             const contentType = stream.headers['content-type'];
@@ -504,7 +494,6 @@ export class AssetService {
      * Unconditionally delete given assets.
      * Does not remove assets from channels
      */
-    @Span('AssetService.deleteUnconditional')
     private async deleteUnconditional(ctx: RequestContext, assets: Asset[]): Promise<DeletionResponse> {
         for (const asset of assets) {
             // Create a new asset so that the id is still available
@@ -527,7 +516,6 @@ export class AssetService {
     /**
      * Check if current user has permissions to delete assets from all channels
      */
-    @Span('AssetService.hasDeletePermissionForChannels')
     private async hasDeletePermissionForChannels(ctx: RequestContext, channelIds: ID[]): Promise<boolean> {
         const permissions = await Promise.all(
             channelIds.map(async channelId => {
@@ -537,7 +525,6 @@ export class AssetService {
         return !permissions.includes(false);
     }
 
-    @Span('AssetService.createAssetInternal')
     private async createAssetInternal(
         ctx: RequestContext,
         stream: Stream,
@@ -586,7 +573,6 @@ export class AssetService {
         return this.connection.getRepository(ctx, Asset).save(asset);
     }
 
-    @Span('AssetService.getSourceFileName')
     private async getSourceFileName(ctx: RequestContext, fileName: string): Promise<string> {
         const { assetOptions } = this.configService;
         return this.generateUniqueName(fileName, (name, conflict) =>
@@ -594,7 +580,6 @@ export class AssetService {
         );
     }
 
-    @Span('AssetService.getPreviewFileName')
     private async getPreviewFileName(ctx: RequestContext, fileName: string): Promise<string> {
         const { assetOptions } = this.configService;
         return this.generateUniqueName(fileName, (name, conflict) =>
@@ -602,7 +587,6 @@ export class AssetService {
         );
     }
 
-    @Span('AssetService.generateUniqueName')
     private async generateUniqueName(
         inputFileName: string,
         generateNameFn: (fileName: string, conflictName?: string) => string,
@@ -615,7 +599,6 @@ export class AssetService {
         return outputFileName;
     }
 
-    @Span('AssetService.getDimensions')
     private getDimensions(imageFile: Buffer): { width: number; height: number } {
         try {
             const { width, height } = sizeOf(imageFile);
@@ -626,7 +609,6 @@ export class AssetService {
         }
     }
 
-    @Span('AssetService.createOrderableAssets')
     private createOrderableAssets(
         ctx: RequestContext,
         entity: EntityWithAssets,
@@ -636,7 +618,6 @@ export class AssetService {
         return this.connection.getRepository(ctx, orderableAssets[0].constructor).save(orderableAssets);
     }
 
-    @Span('AssetService.getOrderableAsset')
     private getOrderableAsset(
         ctx: RequestContext,
         entity: EntityWithAssets,
@@ -652,7 +633,6 @@ export class AssetService {
         });
     }
 
-    @Span('AssetService.removeExistingOrderableAssets')
     private async removeExistingOrderableAssets(ctx: RequestContext, entity: EntityWithAssets) {
         const propertyName = this.getHostEntityIdProperty(entity);
         const orderableAssetType = this.getOrderableAssetType(ctx, entity);
@@ -661,7 +641,6 @@ export class AssetService {
         });
     }
 
-    @Span('AssetService.getOrderableAssetType')
     private getOrderableAssetType(ctx: RequestContext, entity: EntityWithAssets): Type<OrderableAsset> {
         const assetRelation = this.connection
             .getRepository(ctx, entity.constructor)
@@ -672,7 +651,6 @@ export class AssetService {
         return assetRelation.type as Type<OrderableAsset>;
     }
 
-    @Span('AssetService.getHostEntityIdProperty')
     private getHostEntityIdProperty(entity: EntityWithAssets): string {
         const entityName = entity.constructor.name;
         switch (entityName) {
@@ -687,7 +665,6 @@ export class AssetService {
         }
     }
 
-    @Span('AssetService.validateMimeType')
     private validateMimeType(mimeType: string): boolean {
         const [type, subtype] = mimeType.split('/');
         const typeMatches = this.permittedMimeTypes.filter(t => t.type === type);
@@ -703,7 +680,6 @@ export class AssetService {
     /**
      * Find the entities which reference the given Asset as a featuredAsset.
      */
-    @Span('AssetService.findAssetUsages')
     private async findAssetUsages(
         ctx: RequestContext,
         asset: Asset,

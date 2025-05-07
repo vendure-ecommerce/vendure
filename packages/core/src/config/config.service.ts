@@ -1,9 +1,6 @@
 import { DynamicModule, Injectable, Type } from '@nestjs/common';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { getActiveSpan } from '@vendure/telemetry';
 import { DataSourceOptions, getMetadataArgsStorage } from 'typeorm';
-
-import { Span } from '../instrumentation';
 
 import { getConfig } from './config-helpers';
 import { CustomFields } from './custom-field/custom-field-types';
@@ -123,12 +120,10 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.systemOptions;
     }
 
-    @Span('vendure.config.get-custom-fields-for-all-entities')
     private getCustomFieldsForAllEntities(): Required<CustomFields> {
         const definedCustomFields = this.activeConfig.customFields;
         const metadataArgsStorage = getMetadataArgsStorage();
-        const span = getActiveSpan();
-        span?.setAttribute('customFields', JSON.stringify(definedCustomFields));
+
         // We need to check for any entities which have a "customFields" property but which are not
         // explicitly defined in the customFields config. This is because the customFields object
         // only includes the built-in entities. Any custom entities which have a "customFields"
@@ -146,12 +141,10 @@ export class ConfigService implements VendureConfig {
                             .find(c => c.propertyName === 'languageCode');
                     if (hasCustomFields && !isTranslationEntity) {
                         definedCustomFields[entity.name] = [];
-                        span?.addEvent('removed-custom-fields', { entity: entity.name });
                     }
                 }
             }
         }
-        span?.end();
         return definedCustomFields;
     }
 

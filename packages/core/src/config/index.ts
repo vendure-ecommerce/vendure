@@ -45,7 +45,6 @@ export * from './job-queue/inspectable-job-queue-strategy';
 export * from './job-queue/job-queue-strategy';
 export * from './logger/default-logger';
 export * from './logger/noop-logger';
-export * from './logger/otel-logger';
 export * from './logger/vendure-logger';
 export * from './merge-config';
 export * from './order/active-order-strategy';

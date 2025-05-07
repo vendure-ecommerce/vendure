@@ -1,7 +1,9 @@
-import { Type } from '../../common/types/common-types';
+import { Type } from '@vendure/common/lib/shared-types';
+
 import { InjectableStrategy } from '../../common/types/injectable-strategy';
 
 export interface WrappedMethodArgs {
+    instance: any;
     target: Type<any>;
     methodName: string;
     args: any[];
