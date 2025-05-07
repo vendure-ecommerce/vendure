@@ -65,6 +65,8 @@ export const defaultVariantRelations: Array<EntityRelationPaths<ProductVariant>>
     'taxCategory',
     'channels',
     'channels.defaultTaxZone',
+    'translations',
+    'productVariantPrices',
 ];
 
 export interface ReindexMessageResponse {
@@ -513,16 +515,31 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         }
         let updatedProductVariants: ProductVariant[] = [];
         try {
-            updatedProductVariants = await this.connection.rawConnection.getRepository(ProductVariant).find({
-                relations: this.variantRelations,
-                where: {
-                    productId,
-                    deletedAt: IsNull(),
-                },
-                order: {
-                    id: 'ASC',
-                },
-            });
+            const productVariantSelectQueryBuilder = this.connection.rawConnection
+                .getRepository(ProductVariant)
+                .createQueryBuilder('variant');
+            const relations = this.variantRelations;
+            for (const relation of relations) {
+                if (relation === 'product') {
+                    continue; // Skip the product relation if applied
+                }
+                if (relation.includes('.')) {
+                    const relationPaths = relation.split('.');
+                    const lastLevel = relationPaths.pop();
+                    if (!lastLevel || lastLevel === '') {
+                        continue;
+                    }
+                    productVariantSelectQueryBuilder.leftJoinAndSelect(relation, lastLevel);
+                } else {
+                    productVariantSelectQueryBuilder.leftJoinAndSelect(`variant.${relation}`, relation);
+                }
+            }
+
+            productVariantSelectQueryBuilder
+                .where('variant.productId = :productId', { productId })
+                .andWhere('variant.deletedAt IS NULL')
+                .orderBy('variant.id', 'ASC');
+            updatedProductVariants = await productVariantSelectQueryBuilder.getMany();
         } catch (e: any) {
             Logger.error(e.message, loggerCtx, e.stack);
         }
