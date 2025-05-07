@@ -1798,7 +1798,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** Adds an item to the Order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available. */
   addItemToOrder: UpdateOrderItemsResult;
-  /** Adds mutliple items to the Order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available. */
+  /** Adds mutliple items to the Order. Returns a list of errors for each item that failed to add. It will still add successful items. */
   addItemsToOrder: UpdateMultipleOrderItemsResult;
   /** Add a Payment to the Order */
   addPaymentToOrder: AddPaymentToOrderResult;
