@@ -53,6 +53,7 @@ import { defaultShippingCalculator } from './shipping-method/default-shipping-ca
 import { defaultShippingEligibilityChecker } from './shipping-method/default-shipping-eligibility-checker';
 import { DefaultShippingLineAssignmentStrategy } from './shipping-method/default-shipping-line-assignment-strategy';
 import { InMemoryCacheStrategy } from './system/in-memory-cache-strategy';
+import { NoopInstrumentationStrategy } from './system/noop-instrumentation-strategy';
 import { DefaultTaxLineCalculationStrategy } from './tax/default-tax-line-calculation-strategy';
 import { DefaultTaxZoneStrategy } from './tax/default-tax-zone-strategy';
 import { RuntimeVendureConfig } from './vendure-config';
@@ -242,5 +243,6 @@ export const defaultConfig: RuntimeVendureConfig = {
         cacheStrategy: new InMemoryCacheStrategy({ cacheSize: 10_000 }),
         healthChecks: [new TypeORMHealthCheckStrategy()],
         errorHandlers: [],
+        instrumentationStrategy: new NoopInstrumentationStrategy(),
     },
 };

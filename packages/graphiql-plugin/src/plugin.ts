@@ -9,7 +9,6 @@ import {
     VendurePlugin,
 } from '@vendure/core';
 import express from 'express';
-import rateLimit from 'express-rate-limit';
 import fs from 'fs';
 import path from 'path';
 
@@ -56,6 +55,7 @@ import { GraphiqlPluginOptions } from './types';
         config.apiOptions.shopApiPlayground = false;
         return config;
     },
+    exports: [GraphiQLService],
     compatibility: '^3.0.0',
 })
 export class GraphiqlPlugin implements NestModule {
@@ -75,7 +75,7 @@ export class GraphiqlPlugin implements NestModule {
             ...options,
             route: options.route || 'graphiql',
         };
-        return this;
+        return GraphiqlPlugin;
     }
 
     configure(consumer: MiddlewareConsumer) {

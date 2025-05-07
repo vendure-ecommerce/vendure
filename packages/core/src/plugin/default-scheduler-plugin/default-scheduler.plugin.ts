@@ -2,9 +2,9 @@ import { PluginCommonModule } from '../../plugin/plugin-common.module';
 import { VendurePlugin } from '../../plugin/vendure-plugin';
 
 import {
+    DEFAULT_MANUAL_TRIGGER_CHECK_INTERVAL,
     DEFAULT_SCHEDULER_PLUGIN_OPTIONS,
     DEFAULT_TIMEOUT,
-    DEFAULT_MANUAL_TRIGGER_CHECK_INTERVAL,
 } from './constants';
 import { DefaultSchedulerStrategy } from './default-scheduler-strategy';
 import { ScheduledTaskRecord } from './scheduled-task-record.entity';

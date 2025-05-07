@@ -26,12 +26,12 @@ import path from 'path';
 import { adminApiExtensions } from './api/api-extensions';
 import { MetricsResolver } from './api/metrics.resolver';
 import {
+    DEFAULT_APP_PATH,
     defaultAvailableLanguages,
+    defaultAvailableLocales,
     defaultLanguage,
     defaultLocale,
-    DEFAULT_APP_PATH,
     loggerCtx,
-    defaultAvailableLocales,
 } from './constants';
 import { MetricsService } from './service/metrics.service';
 

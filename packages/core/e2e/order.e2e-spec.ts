@@ -47,7 +47,6 @@ import {
     PaymentFragment,
     RefundFragment,
     RefundOrderDocument,
-    SettlePaymentDocument,
     SortOrder,
     StockMovementType,
     TransitFulfillmentDocument,

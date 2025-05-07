@@ -128,6 +128,7 @@ export class ConfigService implements VendureConfig {
     private getCustomFieldsForAllEntities(): Required<CustomFields> {
         const definedCustomFields = this.activeConfig.customFields;
         const metadataArgsStorage = getMetadataArgsStorage();
+
         // We need to check for any entities which have a "customFields" property but which are not
         // explicitly defined in the customFields config. This is because the customFields object
         // only includes the built-in entities. Any custom entities which have a "customFields"

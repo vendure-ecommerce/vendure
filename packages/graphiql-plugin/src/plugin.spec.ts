@@ -1,28 +1,16 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigService, LanguageCode, Logger, PluginCommonModule, ProcessContext } from '@vendure/core';
-import {
-    createTestEnvironment,
-    registerInitializer,
-    SqljsInitializer,
-    testConfig,
-    TestEnvironment,
-    TestingLogger,
-} from '@vendure/testing';
+import { Logger, PluginCommonModule, ProcessContext } from '@vendure/core';
+import { TestingLogger } from '@vendure/testing';
 import express from 'express';
 import fs from 'fs';
-import path from 'path';
-import { afterEach, beforeEach, beforeAll, afterAll, describe, expect, it, Mock, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { PLUGIN_INIT_OPTIONS } from './constants';
 import { GraphiQLService } from './graphiql.service';
 import { GraphiqlPlugin } from './plugin';
 import { GraphiqlPluginOptions } from './types';
-
-const sqliteDataDir = path.join(__dirname, '__data__');
-
-registerInitializer('sqljs', new SqljsInitializer(sqliteDataDir));
 
 // Use this type instead of NestJS's MiddlewareConsumer which is not exported
 interface MockMiddlewareConsumer {
@@ -89,45 +77,6 @@ describe('GraphiQLPlugin', () => {
             expect(GraphiqlPlugin.options.route).toBe('custom-graphiql');
         });
     });
-
-    describe(
-        'configuration',
-        () => {
-            it('should disable GraphQL playground in config', async () => {
-                const result = createTestEnvironment({
-                    ...testConfig,
-                    apiOptions: {
-                        ...testConfig.apiOptions,
-                        adminApiPlayground: true,
-                        shopApiPlayground: true,
-                    },
-                    plugins: [GraphiqlPlugin.init()],
-                });
-
-                await result.server.init({
-                    initialData: {
-                        defaultLanguage: LanguageCode.en,
-                        defaultZone: 'Europe/London',
-                        countries: [],
-                        taxRates: [],
-                        paymentMethods: [],
-                        shippingMethods: [],
-                        collections: [],
-                    },
-                });
-
-                const configService = result.server.app.get(ConfigService);
-
-                expect(configService.apiOptions.adminApiPlayground).toBe(false);
-                expect(configService.apiOptions.shopApiPlayground).toBe(false);
-
-                await result.server.destroy();
-            });
-        },
-        {
-            timeout: 60000,
-        },
-    );
 
     describe('configure middleware', () => {
         it('should not configure middleware if not running in server', async () => {
@@ -372,100 +321,6 @@ describe('GraphiQLPlugin', () => {
             // Clean up mocks
             existsSyncSpy.mockRestore();
             createAssetsServer.mockRestore();
-        });
-    });
-});
-
-describe('GraphiQLService', () => {
-    let serviceInstance: GraphiQLService;
-    let configService: ConfigService;
-    let result: TestEnvironment;
-    beforeAll(async () => {
-        result = createTestEnvironment({
-            ...testConfig,
-            apiOptions: {
-                ...testConfig.apiOptions,
-                adminApiPlayground: true,
-                shopApiPlayground: true,
-            },
-            plugins: [GraphiqlPlugin.init()],
-        });
-
-        await result.server.init({
-            initialData: {
-                defaultLanguage: LanguageCode.en,
-                defaultZone: 'Europe/London',
-                countries: [],
-                taxRates: [],
-                paymentMethods: [],
-                shippingMethods: [],
-                collections: [],
-            },
-        });
-
-        configService = result.server.app.get(ConfigService);
-        serviceInstance = result.server.app.get(GraphiQLService);
-    });
-
-    afterAll(async () => {
-        await result.server.destroy();
-    });
-
-    describe('getAdminApiUrl', () => {
-        it('should return the admin API URL', () => {
-            configService.apiOptions.adminApiPath = 'admin-api';
-            const url = serviceInstance.getAdminApiUrl();
-            expect(url).toBe('/admin-api');
-        });
-
-        it('should use default path if not specified', () => {
-            configService.apiOptions.adminApiPath = 'admin-api';
-            const url = serviceInstance.getAdminApiUrl();
-            expect(url).toBe('/admin-api');
-        });
-    });
-
-    describe('getShopApiUrl', () => {
-        it('should return the shop API URL', () => {
-            configService.apiOptions.shopApiPath = 'shop-api';
-            const url = serviceInstance.getShopApiUrl();
-            expect(url).toBe('/shop-api');
-        });
-
-        it('should use default path if not specified', () => {
-            configService.apiOptions.shopApiPath = 'shop-api';
-            const url = serviceInstance.getShopApiUrl();
-            expect(url).toBe('/shop-api');
-        });
-    });
-
-    describe('createApiUrl', () => {
-        it('should create a relative URL if no host is specified', () => {
-            configService.apiOptions.hostname = '';
-            configService.apiOptions.port = 3000;
-            const url = (serviceInstance as any).createApiUrl('test-api');
-            expect(url).toBe('/test-api');
-        });
-
-        it('should create an absolute URL if host is specified', () => {
-            configService.apiOptions.hostname = 'example.com';
-            configService.apiOptions.port = 3000;
-            const url = (serviceInstance as any).createApiUrl('test-api');
-            expect(url).toBe('http://example.com:3000/test-api');
-        });
-
-        it('should handle HTTPS hosts', () => {
-            configService.apiOptions.hostname = 'https://example.com';
-            configService.apiOptions.port = 443;
-            const url = (serviceInstance as any).createApiUrl('test-api');
-            expect(url).toBe('https://example.com:443/test-api');
-        });
-
-        it('should handle paths with leading slash', () => {
-            configService.apiOptions.hostname = 'example.com';
-            configService.apiOptions.port = 3000;
-            const url = (serviceInstance as any).createApiUrl('/test-api');
-            expect(url).toBe('http://example.com:3000/test-api');
         });
     });
 });

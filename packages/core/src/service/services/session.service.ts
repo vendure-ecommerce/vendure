@@ -5,6 +5,7 @@ import ms from 'ms';
 import { Brackets, EntitySubscriberInterface, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
+import { Instrument } from '../../common/instrument-decorator';
 import { Logger } from '../../config';
 import { ConfigService } from '../../config/config.service';
 import { CachedSession, SessionCacheStrategy } from '../../config/session-cache/session-cache-strategy';
@@ -22,6 +23,7 @@ import { RequestContextService } from '../helpers/request-context/request-contex
 import { getUserChannelsPermissions } from '../helpers/utils/get-user-channels-permissions';
 
 import { OrderService } from './order.service';
+
 /**
  * @description
  * Contains methods relating to {@link Session} entities.
@@ -29,6 +31,7 @@ import { OrderService } from './order.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class SessionService implements EntitySubscriberInterface, OnApplicationBootstrap {
     private sessionCacheStrategy: SessionCacheStrategy;
     private cleanSessionsJobQueue: JobQueue<{ batchSize: number }>;

@@ -9,7 +9,6 @@ import {
     Users,
 } from 'lucide-react';
 
-import { registerAlert } from './alert/alert-extensions.js';
 import { LatestOrdersWidget } from './dashboard-widget/latest-orders-widget/index.js';
 import { MetricsWidget } from './dashboard-widget/metrics-widget/index.js';
 import { OrdersSummaryWidget } from './dashboard-widget/orders-summary/index.js';

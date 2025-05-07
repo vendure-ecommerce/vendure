@@ -25,6 +25,7 @@ import { In, IsNull } from 'typeorm';
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { ForbiddenError, IllegalOperationError, UserInputError } from '../../common/error/errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -74,6 +75,7 @@ export type ApplyCollectionFiltersJobData = {
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class CollectionService implements OnModuleInit {
     private rootCollection: Translated<Collection> | undefined;
     private applyFiltersQueue: JobQueue<ApplyCollectionFiltersJobData>;

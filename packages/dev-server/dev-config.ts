@@ -15,6 +15,7 @@ import {
 } from '@vendure/core';
 import { ScheduledTask } from '@vendure/core/dist/scheduler/scheduled-task';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
+import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
 import 'dotenv/config';
 import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
 import path from 'path';
@@ -93,25 +94,6 @@ export const devConfig: VendureConfig = {
     logger: new DefaultLogger({ level: LogLevel.Verbose }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
-    },
-    schedulerOptions: {
-        tasks: [
-            new ScheduledTask({
-                id: 'test-job',
-                description: "A test job that doesn't do anything",
-                schedule: '*/20 * * * * *',
-                async execute(injector) {
-                    await new Promise(resolve => setTimeout(resolve, 10_000));
-                    return { success: true };
-                },
-            }),
-            // cleanSessionsTask.configure({
-            //     schedule: cron => cron.every(1).minutes(),
-            //     params: {
-            //         batchSize: 10,
-            //     },
-            // }),
-        ],
     },
     plugins: [
         // MultivendorPlugin.init({

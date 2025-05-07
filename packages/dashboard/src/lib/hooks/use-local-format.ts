@@ -1,4 +1,3 @@
-import { useLingui } from '@lingui/react';
 import { useCallback, useMemo } from 'react';
 
 import { useServerConfig } from './use-server-config.js';

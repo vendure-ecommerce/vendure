@@ -2,7 +2,6 @@ import { Component, Input, OnInit } from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     DataTableLocationId,
-    LogicalOperator,
     ProductVariantFilterParameter,
     ProductVariantListQueryDocument,
     TypedBaseListComponent,

@@ -1,6 +1,5 @@
 import { assetFragment, errorResultFragment } from '@/graphql/fragments.js';
 import { graphql } from '@/graphql/graphql.js';
-import { gql } from 'awesome-graphql-client';
 
 export const orderListDocument = graphql(`
     query GetOrders($options: OrderListOptions) {

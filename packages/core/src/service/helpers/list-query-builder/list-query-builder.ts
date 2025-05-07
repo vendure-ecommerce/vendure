@@ -21,6 +21,7 @@ import {
     SortParameter,
     UserInputError,
 } from '../../../common';
+import { Instrument } from '../../../common/instrument-decorator';
 import { ConfigService, CustomFields, Logger } from '../../../config';
 import { TransactionalConnection } from '../../../connection';
 import { VendureEntity } from '../../../entity';
@@ -198,6 +199,7 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
  * @docsWeight 0
  */
 @Injectable()
+@Instrument()
 export class ListQueryBuilder implements OnApplicationBootstrap {
     constructor(
         private connection: TransactionalConnection,

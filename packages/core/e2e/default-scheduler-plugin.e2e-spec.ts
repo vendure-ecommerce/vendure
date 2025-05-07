@@ -11,7 +11,6 @@ import {
     GetTasksQuery,
     RunTaskMutation,
     RunTaskMutationVariables,
-    UpdateTagMutationVariables,
     UpdateTaskMutation,
     UpdateTaskMutationVariables,
 } from './graphql/generated-e2e-admin-types';

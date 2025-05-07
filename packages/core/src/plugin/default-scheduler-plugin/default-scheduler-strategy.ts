@@ -28,7 +28,7 @@ export class DefaultSchedulerStrategy implements SchedulerStrategy {
     private connection: TransactionalConnection;
     private injector: Injector;
     private intervalRef: NodeJS.Timeout | undefined;
-    private tasks: Map<string, { task: ScheduledTask; isRegistered: boolean }> = new Map();
+    private readonly tasks: Map<string, { task: ScheduledTask; isRegistered: boolean }> = new Map();
     private pluginOptions: DefaultSchedulerPluginOptions;
     private runningTasks: ScheduledTask[] = [];
 

@@ -2,11 +2,10 @@ import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { VariablesOf } from 'gql.tada';
 import {
     DocumentNode,
-    OperationDefinitionNode,
     FieldNode,
     FragmentDefinitionNode,
     FragmentSpreadNode,
-    VariableDefinitionNode,
+    OperationDefinitionNode,
 } from 'graphql';
 import { DefinitionNode, NamedTypeNode, SelectionSetNode, TypeNode } from 'graphql/language/ast.js';
 import { schemaInfo } from 'virtual:admin-api-schema';
