@@ -3,19 +3,19 @@ import { Input } from '@/components/ui/input.js';
 import { useDetailPage } from '@/framework/page/use-detail-page.js';
 import { Trans } from '@/lib/trans.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import { AnyRoute } from '@tanstack/react-router';
+import { AnyRoute, useNavigate } from '@tanstack/react-router';
 import { ResultOf, VariablesOf } from 'gql.tada';
-
 import { DateTimeInput } from '@/components/data-input/datetime-input.js';
 import { Button } from '@/components/ui/button.js';
 import { Checkbox } from '@/components/ui/checkbox.js';
+import { NEW_ENTITY_PATH } from '@/constants.js';
 import { toast } from 'sonner';
 import { getOperationVariablesFields } from '../document-introspection/get-document-structure.js';
+
 import {
     DetailFormGrid,
     Page,
     PageActionBar,
-    PageActionBarLeft,
     PageActionBarRight,
     PageBlock,
     PageLayout,
@@ -52,6 +52,8 @@ export function DetailPage<
     title,
 }: DetailPageProps<T, C, U>) {
     const params = route.useParams();
+    const creatingNewEntity = params.id === NEW_ENTITY_PATH;
+    const navigate = useNavigate();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage<any, any, any>({
         queryDocument,
@@ -59,9 +61,13 @@ export function DetailPage<
         createDocument,
         params: { id: params.id },
         setValuesForUpdate,
-        onSuccess: () => {
+        onSuccess: async (data) => {
             toast.success('Updated successfully');
             resetForm();
+            const id = (data as any).id;
+            if (creatingNewEntity && id) {
+                await navigate({ to: `../$id`, params: { id } });
+            }
         },
         onError: error => {
             toast.error('Failed to update', {
@@ -74,10 +80,8 @@ export function DetailPage<
 
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler}>
+            <PageTitle>{title(entity)}</PageTitle>
             <PageActionBar>
-                <PageActionBarLeft>
-                    <PageTitle>{title(entity)}</PageTitle>
-                </PageActionBarLeft>
                 <PageActionBarRight>
                     <Button
                         type="submit"
