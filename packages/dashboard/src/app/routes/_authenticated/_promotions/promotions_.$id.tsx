@@ -57,6 +57,8 @@ function PromotionDetailPage() {
         transformCreateInput: values => {
             return {
                 ...values,
+                startsAt: values.startsAt || undefined,
+                endsAt: values.endsAt || undefined,
                 conditions: values.conditions.filter(c => c.code !== ''),
                 actions: values.actions.filter(a => a.code !== ''),
             };
@@ -98,6 +100,10 @@ function PromotionDetailPage() {
                 if (creatingNewEntity) {
                     await navigate({ to: `../${data.id}`, from: Route.id });
                 }
+            } else {
+                toast.error(i18n.t('Failed to update promotion'), {
+                    description: data.message,
+                });
             }
         },
         onError: err => {

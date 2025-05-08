@@ -178,6 +178,7 @@ export function useDetailPage<
                 onSuccess?.((data as any)[createMutationName]);
             }
         },
+        onError,
     });
 
     const updateMutation = useMutation({
