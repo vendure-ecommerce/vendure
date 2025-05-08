@@ -70,9 +70,12 @@ function ScheduledTasksPage() {
     const { mutate: updateScheduledTask } = useMutation({
         mutationFn: api.mutate(updateScheduledTaskDocument),
         onSuccess: (result) => {
-            queryClient.invalidateQueries({ queryKey: ['scheduledTasks'] });
+            refreshScheduledTasks();
         },
     });
+    const refreshScheduledTasks = () => {
+        queryClient.invalidateQueries({ queryKey: ['scheduledTasks'] });
+    }
     const { mutate: runScheduledTask } = useMutation({
         mutationFn: api.mutate(runScheduledTaskDocument),
         onSuccess: (result) => {
@@ -223,6 +226,7 @@ function ScheduledTasksPage() {
             <PageLayout>
                 <FullWidthPageBlock blockId="list-table">
                     <DataTable
+                        onRefresh={refreshScheduledTasks}
                         columns={columns}
                         data={data?.scheduledTasks ?? []}
                         totalItems={data?.scheduledTasks?.length ?? 0}

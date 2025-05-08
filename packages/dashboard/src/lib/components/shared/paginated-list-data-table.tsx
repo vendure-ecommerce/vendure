@@ -428,6 +428,7 @@ export function PaginatedListDataTable<
                 facetedFilters={facetedFilters}
                 disableViewOptions={disableViewOptions}
                 setTableOptions={setTableOptions}
+                onRefresh={refetchPaginatedList}
             />
         </PaginatedListContext.Provider>
     );
