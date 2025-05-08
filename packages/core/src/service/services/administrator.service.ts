@@ -28,6 +28,7 @@ import { RequestContextService } from '../helpers/request-context/request-contex
 import { getChannelPermissions } from '../helpers/utils/get-user-channels-permissions';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
+import { ChannelService } from './channel.service';
 import { RoleService } from './role.service';
 import { UserService } from './user.service';
 
@@ -46,6 +47,7 @@ export class AdministratorService {
         private passwordCipher: PasswordCipher,
         private userService: UserService,
         private roleService: RoleService,
+        private channelService: ChannelService,
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
         private requestContextService: RequestContextService,
@@ -125,22 +127,33 @@ export class AdministratorService {
      * Create a new Administrator.
      */
     async create(ctx: RequestContext, input: CreateAdministratorInput): Promise<Administrator> {
-        await this.checkActiveUserCanGrantRoles(ctx, input.roleIds);
+        await this.checkActiveUserCanGrantRoles(ctx, input.roleIds); // TODO use this
         const administrator = new Administrator(input);
         administrator.emailAddress = normalizeEmailAddress(input.emailAddress);
         administrator.user = await this.userService.createAdminUser(ctx, input.emailAddress, input.password);
         let createdAdministrator = await this.connection
             .getRepository(ctx, Administrator)
             .save(administrator);
-        for (const roleId of input.roleIds) {
-            createdAdministrator = await this.assignRole(ctx, createdAdministrator.id, roleId);
-        }
+
+        const channelRoles =
+            await this.configService.authOptions.rolePermissionResolverStrategy.getChannelIdsFromAdministratorMutationInput(
+                ctx,
+                input,
+            );
+        await this.configService.authOptions.rolePermissionResolverStrategy.saveUserRoles(
+            ctx,
+            createdAdministrator.user,
+            channelRoles,
+        );
+
         await this.customFieldRelationService.updateRelations(
             ctx,
             Administrator,
             input,
             createdAdministrator,
         );
+
+        createdAdministrator = await assertFound(this.findOne(ctx, createdAdministrator.id));
         await this.eventBus.publish(new AdministratorEvent(ctx, createdAdministrator, 'created', input));
         return createdAdministrator;
     }
@@ -155,7 +168,7 @@ export class AdministratorService {
             throw new EntityNotFoundError('Administrator', input.id);
         }
         if (input.roleIds) {
-            await this.checkActiveUserCanGrantRoles(ctx, input.roleIds);
+            await this.checkActiveUserCanGrantRoles(ctx, input.roleIds); // TODO use this
         }
         let updatedAdministrator = patchEntity(administrator, input);
         await this.connection.getRepository(ctx, Administrator).save(administrator, { reload: false });
@@ -172,37 +185,55 @@ export class AdministratorService {
                 await this.connection.getRepository(ctx, NativeAuthenticationMethod).save(nativeAuthMethod);
             }
         }
-        if (input.roleIds) {
+
+        const channelRoles =
+            await this.configService.authOptions.rolePermissionResolverStrategy.getChannelIdsFromAdministratorMutationInput(
+                ctx,
+                input,
+            );
+        if (channelRoles.length > 0) {
             const isSoleSuperAdmin = await this.isSoleSuperadmin(ctx, input.id);
             if (isSoleSuperAdmin) {
                 const superAdminRole = await this.roleService.getSuperAdminRole(ctx);
-                if (!input.roleIds.find(id => idsAreEqual(id, superAdminRole.id))) {
+                if (!channelRoles.find(entry => idsAreEqual(entry.roleId, superAdminRole.id))) {
                     throw new InternalServerError('error.superadmin-must-have-superadmin-role');
                 }
             }
-            const removeIds = administrator.user.roles
-                .map(role => role.id)
-                .filter(roleId => (input.roleIds as ID[]).indexOf(roleId) === -1);
 
-            const addIds = (input.roleIds as ID[]).filter(
-                roleId => !administrator.user.roles.some(role => role.id === roleId),
+            await this.configService.authOptions.rolePermissionResolverStrategy.saveUserRoles(
+                ctx,
+                administrator.user,
+                channelRoles,
             );
-
-            administrator.user.roles = [];
-            await this.connection.getRepository(ctx, User).save(administrator.user, { reload: false });
-            for (const roleId of input.roleIds) {
-                updatedAdministrator = await this.assignRole(ctx, administrator.id, roleId);
-            }
-            await this.eventBus.publish(new RoleChangeEvent(ctx, administrator, addIds, 'assigned'));
-            await this.eventBus.publish(new RoleChangeEvent(ctx, administrator, removeIds, 'removed'));
         }
+
+        updatedAdministrator = await assertFound(this.findOne(ctx, administrator.id));
+
         await this.customFieldRelationService.updateRelations(
             ctx,
             Administrator,
             input,
             updatedAdministrator,
         );
-        await this.eventBus.publish(new AdministratorEvent(ctx, administrator, 'updated', input));
+
+        // TODO channel role events
+        if (channelRoles.length > 0) {
+            const roleIdsAdded = (input.roleIds as ID[]).filter(
+                roleId => !administrator.user.roles.some(role => role.id === roleId),
+            );
+
+            const roleIdsRemoved = administrator.user.roles
+                .map(role => role.id)
+                .filter(roleId => (input.roleIds as ID[]).indexOf(roleId) === -1);
+
+            await this.eventBus.publish(
+                new RoleChangeEvent(ctx, updatedAdministrator, roleIdsAdded, 'assigned'),
+            );
+            await this.eventBus.publish(
+                new RoleChangeEvent(ctx, updatedAdministrator, roleIdsRemoved, 'removed'),
+            );
+        }
+        await this.eventBus.publish(new AdministratorEvent(ctx, updatedAdministrator, 'updated', input));
         return updatedAdministrator;
     }
 
@@ -306,7 +337,6 @@ export class AdministratorService {
 
         if (!superAdminUser) {
             const ctx = await this.requestContextService.create({ apiType: 'admin' });
-            const superAdminRole = await this.roleService.getSuperAdminRole();
             const administrator = new Administrator({
                 emailAddress: superadminCredentials.identifier,
                 firstName: 'Super',
@@ -319,8 +349,16 @@ export class AdministratorService {
             );
             const { id } = await this.connection.getRepository(ctx, Administrator).save(administrator);
             const createdAdministrator = await assertFound(this.findOne(ctx, id));
-            createdAdministrator.user.roles.push(superAdminRole);
-            await this.connection.getRepository(ctx, User).save(createdAdministrator.user, { reload: false });
+
+            const superAdminRole = await this.roleService.getSuperAdminRole();
+            const defaultChannel = await this.channelService.getDefaultChannel();
+
+            // TODO why does this fail?! connection is undefined inside the strategy... ?!?!?!
+            await this.configService.authOptions.rolePermissionResolverStrategy.saveUserRoles(
+                ctx,
+                createdAdministrator.user,
+                [{ channelId: defaultChannel.id, roleId: superAdminRole.id }],
+            );
         } else {
             const superAdministrator = await this.connection.rawConnection
                 .getRepository(Administrator)

@@ -3,25 +3,19 @@ import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
-    Asset,
     DefaultJobQueuePlugin,
     DefaultLogger,
     DefaultSearchPlugin,
     dummyPaymentHandler,
-    FacetValue,
     LanguageCode,
     LogLevel,
     VendureConfig,
 } from '@vendure/core';
-import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
-import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
 import 'dotenv/config';
-import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
 import path from 'path';
 import { DataSourceOptions } from 'typeorm';
 
-import { MultivendorPlugin } from './example-plugins/multivendor-plugin/multivendor.plugin';
 import { ReviewsPlugin } from '@plugins/reviews/reviews-plugin';
 
 /**
@@ -92,7 +86,8 @@ export const devConfig: VendureConfig = {
             },
         ],
     },
-    logger: new DefaultLogger({ level: LogLevel.Info }),
+    // TODO remove if this feature is closer to merging
+    logger: new DefaultLogger({ level: LogLevel.Debug }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
@@ -102,6 +97,7 @@ export const devConfig: VendureConfig = {
         //     platformFeeSKU: 'FEE',
         // }),
         ReviewsPlugin,
+        // ChannelRolePlugin.init({}),
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
