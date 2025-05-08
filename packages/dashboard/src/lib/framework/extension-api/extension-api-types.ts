@@ -1,10 +1,10 @@
-import { NavMenuItem } from '@/framework/nav-menu/nav-menu-extensions.js';
 import { AnyRoute, RouteOptions } from '@tanstack/react-router';
-import React from 'react';
+import type React from 'react';
 
 import { DashboardAlertDefinition } from '../alert/types.js';
 import { DashboardWidgetDefinition } from '../dashboard-widget/types.js';
 import { PageContext } from '../layout-engine/page-layout.js';
+import { NavMenuItem } from '../nav-menu/nav-menu-extensions.js';
 
 export interface DashboardRouteDefinition {
     component: (route: AnyRoute) => React.ReactNode;

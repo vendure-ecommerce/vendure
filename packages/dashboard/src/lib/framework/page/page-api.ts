@@ -1,4 +1,4 @@
-import { DashboardRouteDefinition } from '@/framework/extension-api/extension-api-types.js';
+import { DashboardRouteDefinition } from '../extension-api/extension-api-types.js';
 
 export const extensionRoutes = new Map<string, DashboardRouteDefinition>();
 
