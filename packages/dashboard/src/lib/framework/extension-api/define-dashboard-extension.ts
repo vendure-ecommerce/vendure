@@ -22,6 +22,16 @@ export function executeDashboardExtensionCallbacks() {
     }
 }
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * The main entry point for extensions to the React-based dashboard.
+ *
+ *
+ * @docsCategry dashboard
+ * @since 3.3.0
+ */
 export function defineDashboardExtension(extension: DashboardExtension) {
     globalRegistry.get('registerDashboardExtensionCallbacks').add(() => {
         if (extension.routes) {

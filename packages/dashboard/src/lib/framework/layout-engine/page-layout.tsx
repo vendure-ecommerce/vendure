@@ -29,11 +29,11 @@ export function Page({ children, pageId, entity, form, submitHandler, ...props }
 
     const pageTitle = childArray.find(child => React.isValidElement(child) && child.type === PageTitle);
     const pageActionBar = childArray.find(
-        child => React.isValidElement(child) && child.type === PageActionBar,
+        child => isOfType(child, PageActionBar),
     );
 
     const pageContent = childArray.filter(
-        child => React.isValidElement(child) && child.type !== PageTitle && child.type !== PageActionBar,
+        child => !isOfType(child, PageTitle) && !isOfType(child, PageActionBar),
     );
 
     const pageHeader = (
@@ -112,7 +112,7 @@ export function PageLayout({ children, className }: PageLayoutProps) {
         if (childBlock) {
             const blockId =
                 childBlock.props.blockId ??
-                (childBlock.type === CustomFieldsPageBlock ? 'custom-fields' : undefined);
+                (isOfType(childBlock, CustomFieldsPageBlock) ? 'custom-fields' : undefined);
             const extensionBlock = extensionBlocks.find(block => block.location.position.blockId === blockId);
             if (extensionBlock) {
                 const ExtensionBlock = (
@@ -138,7 +138,7 @@ export function PageLayout({ children, className }: PageLayoutProps) {
     }
 
     const fullWidthBlocks = finalChildArray.filter(
-        child => isPageBlock(child) && child.type === FullWidthPageBlock,
+        child => isPageBlock(child) && isOfType(child, FullWidthPageBlock),
     );
     const mainBlocks = finalChildArray.filter(child => isPageBlock(child) && child.props.column === 'main');
     const sideBlocks = finalChildArray.filter(child => isPageBlock(child) && child.props.column === 'side');
@@ -178,10 +178,10 @@ export function PageActionBar({ children }: { children: React.ReactNode }) {
     let childArray = React.Children.toArray(children);
 
     const leftContent = childArray.filter(
-        child => React.isValidElement(child) && child.type === PageActionBarLeft,
+        child => isOfType(child, PageActionBarLeft),
     );
     const rightContent = childArray.filter(
-        child => React.isValidElement(child) && child.type === PageActionBarRight,
+        child => isOfType(child, PageActionBarRight),
     );
 
     return (
@@ -273,4 +273,18 @@ export function CustomFieldsPageBlock({
             <CustomFieldsForm entityType={entityType} control={control} />
         </PageBlock>
     );
+}
+
+/**
+ * @description
+ * This compares the type of a React component to a given type.
+ * It is safer than a simple `el === Component` check, as it also works in the context of
+ * the Vite build where the component is not the same reference.
+ */
+export function isOfType(el: unknown, type: React.FunctionComponent<any>): boolean {
+    if (React.isValidElement(el)) {
+        const elTypeName = typeof el.type === 'string' ? el.type : (el.type as React.FunctionComponent).name;
+        return elTypeName === type.name;
+    }
+    return false;
 }

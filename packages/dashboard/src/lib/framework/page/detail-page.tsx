@@ -70,7 +70,7 @@ export function DetailPage<
         },
     });
 
-    const updateFields = getOperationVariablesFields(updateDocument);
+    const updateFields = getOperationVariablesFields(updateDocument, 'input');
 
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler}>
