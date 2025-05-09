@@ -80,6 +80,8 @@ export interface DetailPageProps<
  *
  * Auto-generates a detail page with a form based on the provided query and mutation documents.
  *
+ * For more control over the layout, you would use the more low-level {@link Page} component.
+ *
  * @docsCategory components
  * @docsPage DetailPage
  * @docsWeight 0

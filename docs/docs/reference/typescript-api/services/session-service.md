@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SessionService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/session.service.ts" sourceLine="31" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/session.service.ts" sourceLine="33" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/session#session'>Session</a> entities.
 

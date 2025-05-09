@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CacheService
 
-<GenerationInfo sourceFile="packages/core/src/cache/cache.service.ts" sourceLine="20" packageName="@vendure/core" since="3.1.0" />
+<GenerationInfo sourceFile="packages/core/src/cache/cache.service.ts" sourceLine="21" packageName="@vendure/core" since="3.1.0" />
 
 The CacheService is used to cache data in order to optimize performance.
 

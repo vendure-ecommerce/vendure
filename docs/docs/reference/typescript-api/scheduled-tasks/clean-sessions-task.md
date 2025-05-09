@@ -13,7 +13,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 <GenerationInfo sourceFile="packages/core/src/scheduler/tasks/clean-sessions-task.ts" sourceLine="37" packageName="@vendure/core" since="3.3.0" />
 
-A scheduled task that cleans expired & inactive sessions from the database.
+A <a href='/reference/typescript-api/scheduled-tasks/scheduled-task#scheduledtask'>ScheduledTask</a> that cleans expired & inactive sessions from the database.
 
 *Example*
 

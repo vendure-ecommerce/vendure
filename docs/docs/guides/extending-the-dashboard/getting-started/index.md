@@ -16,6 +16,7 @@ The goal of the new dashboard:
 - Improve the developer experience to make it significantly easier and faster to build customizations
 - Reduce boilerplate (repetitive code) by using schema-driven UI generation
 - Modern, AI-ready stack using React, Tailwind & Shadcn.
+- Built-in type-safety with zero extra configuration
 
 Because the dashboard is in beta, not all planned features are available yet. However, enough has been implemented that
 you can try it out and give us feedback.
@@ -47,8 +48,17 @@ export default defineConfig({
     },
     plugins: [
         vendureDashboardPlugin({
+            // The vendureDashboardPlugin will scan your configuration in order
+            // to find any plugins which have dashboard extensions, as well as
+            // to introspect the GraphQL schema based on any API extensions 
+            // and custom fields that are configured.
             vendureConfigPath: pathToFileURL('./src/vendure-config.ts'),
-            adminUiConfig: { vapiHost: 'http://localhost', apiPort: 3000 },
+            // Points to the location of your Vendure server. 
+            adminUiConfig: { apiHost: 'http://localhost', apiPort: 3000 },
+            // When you start the Vite server, your Admin API schema will
+            // be introspected and the types will be generated in this location.
+            // These types can be used in your dashboard extensions to provide
+            // type safety when writing queries and mutations.
             gqlTadaOutputPath: './src/gql',
         }),
     ],
@@ -68,6 +78,10 @@ to correctly resolve imports of GraphQL types & interpret JSX in your dashboard 
 ```json title="tsconfig.json"
 {
     "compilerOptions": {
+        // highlight-start
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+        // highlight-end
         // ... existing options
         // highlight-start
         "jsx": "react-jsx",
@@ -75,7 +89,17 @@ to correctly resolve imports of GraphQL types & interpret JSX in your dashboard 
             "@/gql": ["./src/gql/graphql.ts"]
         }
         // highlight-end
-    }
+    },
+    "exclude": [
+        "node_modules", 
+        "migration.ts", 
+        "src/plugins/**/ui/*",
+        "admin-ui",
+        // highlight-start
+        "src/plugins/**/dashboard/*", 
+        "vite.*.*ts"
+        // highlight-end
+    ]
 }
 ```
 
@@ -349,7 +373,8 @@ You should now be able to see the list view, which will be empty:
 
 Now let's create a detail page so we can start adding articles.
 
-We'll begin with the simplest approach, where the form will be auto-generated for us based on the GraphQL schema. 
+We'll begin with the simplest approach, where the form will be auto-generated for us based on the GraphQL schema
+using the [DetailPage](/reference/dashboard/components/detail-page) component.
 This is useful for quickly getting started, but you will probably want to customize the form later on.
 
 Create a new file called `article-detail.tsx` in the `./src/plugins/cms/dashboard` directory:
@@ -450,6 +475,179 @@ You should now be able to click on the "New article" button in the list view, an
 Congratulations! You can now add, edit and delete articles in the dashboard.
 
 ![List view with entries](./list-view-full.webp)
+
+### Customizing the detail page
+
+The auto-generated [DetailPage](/reference/dashboard/components/detail-page) is a great way to get started and quickly be able
+to interact with your entities. But let's now see how we can fully customize the layout and form fields.
+
+```tsx title="src/plugins/cms/dashboard/article-detail.tsx"
+import {
+    DashboardRouteDefinition,
+    detailPageRouteLoader,
+    useDetailPage,
+    Page,
+    PageTitle,
+    PageActionBar,
+    PageActionBarRight,
+    PermissionGuard,
+    Button,
+    PageLayout,
+    PageBlock,
+    FormFieldWrapper,
+    DetailFormGrid,
+    Switch,
+    Input,
+    RichTextInput,
+    CustomFieldsPageBlock,
+} from '@vendure/dashboard';
+import {AnyRoute, useNavigate} from '@tanstack/react-router'
+import {toast} from 'sonner';
+
+import {graphql} from '@/gql';
+
+const articleDetailDocument = graphql(`
+    query GetArticleDetail($id: ID!) {
+        article(id: $id) {
+            id
+            createdAt
+            updatedAt
+            isPublished
+            title
+            slug
+            body
+            customFields
+        }
+    }
+`);
+
+const createArticleDocument = graphql(`
+    mutation CreateArticle($input: CreateArticleInput!) {
+        createArticle(input: $input) {
+            id
+        }
+    }
+`);
+
+const updateArticleDocument = graphql(`
+    mutation UpdateArticle($input: UpdateArticleInput!) {
+        updateArticle(input: $input) {
+            id
+        }
+    }
+`);
+
+export const articleDetail: DashboardRouteDefinition = {
+    path: '/articles/$id',
+    loader: detailPageRouteLoader({
+        queryDocument: articleDetailDocument,
+        breadcrumb: (isNew, entity) => [
+            {path: '/articles', label: 'Articles'},
+            isNew ? 'New article' : entity?.title,
+        ],
+    }),
+    component: route => {
+        return (
+            <ArticleDetailPage route={route} />
+        );
+    },
+};
+
+
+function ArticleDetailPage({route}: { route: AnyRoute }) {
+    const params = route.useParams();
+    const navigate = useNavigate();
+    const creatingNewEntity = params.id === 'new';
+
+    const {form, submitHandler, entity, isPending, resetForm} = useDetailPage({
+        queryDocument: articleDetailDocument,
+        createDocument: createArticleDocument,
+        updateDocument: updateArticleDocument,
+        setValuesForUpdate: article => {
+            return {
+                id: article?.id ?? '',
+                isPublished: article?.isPublished ?? false,
+                title: article?.title ?? '',
+                slug: article?.slug ?? '',
+                body: article?.body ?? '',
+            };
+        },
+        params: {id: params.id},
+        onSuccess: async data => {
+            toast('Successfully updated article');
+            resetForm();
+            if (creatingNewEntity) {
+                await navigate({to: `../$id`, params: { id: data.id } });
+            }
+        },
+        onError: err => {
+            toast('Failed to update article', {
+                description: err instanceof Error ? err.message : 'Unknown error',
+            });
+        },
+    });
+
+    return (
+        <Page pageId="article-detail" form={form} submitHandler={submitHandler}>
+            <PageTitle>{creatingNewEntity ? 'New article' : (entity?.title ?? '')}</PageTitle>
+            <PageActionBar>
+                <PageActionBarRight>
+                    <PermissionGuard requires={['UpdateProduct', 'UpdateCatalog']}>
+                        <Button
+                            type="submit"
+                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
+                        >
+                            Update
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
+            </PageActionBar>
+            <PageLayout>
+                <PageBlock column="side" blockId="publish-status">
+                    <FormFieldWrapper
+                        control={form.control}
+                        name="isPublished"
+                        label="Is Published"
+                        render={({field}) => (
+                            <Switch checked={field.value} onCheckedChange={field.onChange}/>
+                        )}
+                    />
+                </PageBlock>
+                <PageBlock column="main" blockId="main-form">
+                    <DetailFormGrid>
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="title"
+                            label="Title"
+                            render={({field}) => <Input {...field} />}
+                        />
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="slug"
+                            label="Slug"
+                            render={({field}) => <Input {...field} />}
+                        />
+                    </DetailFormGrid>
+                    <FormFieldWrapper
+                        control={form.control}
+                        name="body"
+                        label="Content"
+                        render={({field}) => <RichTextInput value={field.value ?? ''} onChange={field.onChange} />}
+                    />
+                </PageBlock>
+                <CustomFieldsPageBlock column="main" entityType="Article" control={form.control}/>
+            </PageLayout>
+        </Page>
+    );
+}
+```
+
+In the above example, we have:
+
+- Used the [Page](/reference/dashboard/components/page), [PageTitle](/reference/dashboard/components/page-title), 
+  [PageActionBar](/reference/dashboard/components/page-action-bar) and [PageLayout](/reference/dashboard/components/page-layout) components to create a layout for our page.
+- Used [PageBlock](/reference/dashboard/components/page-block) components to structure the page into blocks.
+- Used custom form components (such as the `RichTextInput`) to better represent the data.
 
 ### Defining page blocks
 

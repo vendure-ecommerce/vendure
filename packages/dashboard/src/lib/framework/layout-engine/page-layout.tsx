@@ -23,6 +23,24 @@ export interface PageProps extends ComponentProps<'div'> {
     submitHandler?: any;
 }
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * This component should be used to wrap _all_ pages in the dashboard. It provides
+ * a consistent layout as well as a context for the slot-based PageBlock system.
+ *
+ * The typical hierarchy of a page is as follows:
+ * - `Page`
+ *  - {@link PageTitle}
+ *  - {@link PageActionBar}
+ *  - {@link PageLayout}
+ *
+ * @docsCategory components
+ * @docsPage Page
+ * @docsWeight 0
+ * @since 3.3.0
+ */
 export function Page({ children, pageId, entity, form, submitHandler, ...props }: PageProps) {
     const childArray = React.Children.toArray(children);
 
@@ -99,6 +117,14 @@ export function PageContentWithOptionalForm({ form, pageHeader, pageContent, sub
     );
 }
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * @docsCategory components
+ * @docsPage PageLayout
+ * @since 3.3.0
+ */
 export type PageLayoutProps = {
     children: React.ReactNode;
     className?: string;
@@ -117,6 +143,18 @@ function isPageBlock(child: unknown): child is React.ReactElement<PageBlockProps
     return hasColumn || hasBlockId;
 }
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * This component governs the layout of the contents of a {@link Page} component.
+ * It should contain all the {@link PageBlock} components that are to be displayed on the page.
+ *
+ * @docsCategory components
+ * @docsPage PageLayout
+ * @docsWeight 0
+ * @since 3.3.0
+ */
 export function PageLayout({ children, className }: PageLayoutProps) {
     const page = usePage();
     const isDesktop = useMediaQuery('only screen and (min-width : 769px)');
@@ -194,10 +232,33 @@ export function DetailFormGrid({ children }: { children: React.ReactNode }) {
     return <div className="md:grid md:grid-cols-2 gap-4 items-start mb-4">{children}</div>;
 }
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * A component for displaying the title of a page. This should be used inside the {@link Page} component.
+ *
+ * @docsCategory components
+ * @docsPage PageTitle
+ * @since 3.3.0
+ */
 export function PageTitle({ children }: { children: React.ReactNode }) {
     return <h1 className="text-2xl font-semibold">{children}</h1>;
 }
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * A component for displaying the main actions for a page. This should be used inside the {@link Page} component.
+ * It should be used in conjunction with the {@link PageActionBarLeft} and {@link PageActionBarRight} components
+ * as direct children.
+ *
+ * @docsCategory components
+ * @docsPage PageActionBar
+ * @docsWeight 0
+ * @since 3.3.0
+ */
 export function PageActionBar({ children }: { children: React.ReactNode }) {
     let childArray = React.Children.toArray(children);
 
@@ -216,10 +277,26 @@ export function PageActionBar({ children }: { children: React.ReactNode }) {
     );
 }
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * @docsCategory components
+ * @docsPage PageActionBar
+ * @since 3.3.0
+ */
 export function PageActionBarLeft({ children }: { children: React.ReactNode }) {
     return <div className="flex justify-start gap-2">{children}</div>;
 }
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * @docsCategory components
+ * @docsPage PageActionBar
+ * @since 3.3.0
+ */
 export function PageActionBarRight({ children }: { children: React.ReactNode }) {
     const page = usePage();
     const actionBarItems = page.pageId ? getDashboardActionBarItems(page.pageId) : [];
@@ -241,6 +318,14 @@ function PageActionBarItem({ item, page }: { item: DashboardActionBarItem; page:
     );
 }
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * @docsCategory components
+ * @docsPage PageBlock
+ * @since 3.3.0
+ */
 export type PageBlockProps = {
     children?: React.ReactNode;
     /** Which column this block should appear in */
@@ -251,6 +336,19 @@ export type PageBlockProps = {
     className?: string;
 };
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * A component for displaying a block of content on a page. This should be used inside the {@link PageLayout} component.
+ * It should be provided with a `column` prop to determine which column it should appear in, and a `blockId` prop
+ * to identify the block.
+ *
+ * @docsCategory components
+ * @docsPage PageBlock
+ * @docsWeight 0
+ * @since 3.3.0
+ */
 export function PageBlock({ children, title, description, className, blockId }: PageBlockProps) {
     return (
         <LocationWrapper blockId={blockId}>
@@ -267,6 +365,17 @@ export function PageBlock({ children, title, description, className, blockId }: 
     );
 }
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * A component for displaying a block of content on a page that takes up the full width of the page.
+ * This should be used inside the {@link PageLayout} component.
+ *
+ * @docsCategory components
+ * @docsPage PageBlock
+ * @since 3.3.0
+ */
 export function FullWidthPageBlock({
                                        children,
                                        className,
@@ -279,6 +388,16 @@ export function FullWidthPageBlock({
     );
 }
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * A component for displaying an auto-generated form for custom fields on a page.
+ *
+ * @docsCategory components
+ * @docsPage PageBlock
+ * @since 3.3.0
+ */
 export function CustomFieldsPageBlock({
                                           column,
                                           entityType,

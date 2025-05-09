@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ScheduledTask
 
-<GenerationInfo sourceFile="packages/core/src/scheduler/scheduled-task.ts" sourceLine="90" packageName="@vendure/core" since="3.3.0" />
+<GenerationInfo sourceFile="packages/core/src/scheduler/scheduled-task.ts" sourceLine="120" packageName="@vendure/core" since="3.3.0" />
 
 Use this class to define a scheduled task that will be executed at a given cron schedule.
 
@@ -23,7 +23,7 @@ import { ScheduledTask } from '@vendure/core';
 const task = new ScheduledTask({
     id: 'test-job',
     schedule: cron => cron.every(2).minutes(),
-    execute: async (injector, params) => {
+    execute: async ({ injector, scheduledContext, params }) => {
         // some logic here
     },
 });
@@ -76,7 +76,7 @@ import { ScheduledTask } from '@vendure/core';
 const task = new ScheduledTask({
     id: 'test-job',
     schedule: cron => cron.every(2).minutes(),
-    execute: async (injector, params) => {
+    execute: async ({ injector, scheduledContext, params }) => {
         // some logic here
     },
 });
@@ -89,9 +89,45 @@ task.configure({ schedule: cron => cron.every(5).minutes() });
 </div>
 
 
+## ScheduledTaskExecutionArgs
+
+<GenerationInfo sourceFile="packages/core/src/scheduler/scheduled-task.ts" sourceLine="16" packageName="@vendure/core" since="3.3.0" />
+
+The arguments passed to the execute method of a scheduled task.
+
+```ts title="Signature"
+interface ScheduledTaskExecutionArgs<C extends Record<string, any> = Record<string, any>> {
+    injector: Injector;
+    scheduledContext: RequestContext;
+    params: C;
+}
+```
+
+<div className="members-wrapper">
+
+### injector
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/injector#injector'>Injector</a>`}   />
+
+The injector instance.
+### scheduledContext
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>`}   />
+
+A RequestContext instance that is configured for the scheduled task.
+### params
+
+<MemberInfo kind="property" type={`C`}   />
+
+The parameters for the scheduled task.
+
+
+</div>
+
+
 ## ScheduledTaskConfig
 
-<GenerationInfo sourceFile="packages/core/src/scheduler/scheduled-task.ts" sourceLine="12" packageName="@vendure/core" since="3.3.0" />
+<GenerationInfo sourceFile="packages/core/src/scheduler/scheduled-task.ts" sourceLine="42" packageName="@vendure/core" since="3.3.0" />
 
 The configuration for a scheduled task.
 
@@ -103,7 +139,7 @@ interface ScheduledTaskConfig<C extends Record<string, any> = Record<string, any
     schedule: string | ((cronTime: typeof CronTime) => string);
     timeout?: number | string;
     preventOverlap?: boolean;
-    execute(injector: Injector, config: C): Promise<any>;
+    execute(args: ScheduledTaskExecutionArgs<C>): Promise<any>;
 }
 ```
 
@@ -156,7 +192,7 @@ will be considered to have failed with a timeout error.
 Whether the scheduled task should be prevented from running if it is already running.
 ### execute
 
-<MemberInfo kind="method" type={`(injector: <a href='/reference/typescript-api/common/injector#injector'>Injector</a>, config: C) => Promise&#60;any&#62;`}   />
+<MemberInfo kind="method" type={`(args: <a href='/reference/typescript-api/scheduled-tasks/scheduled-task#scheduledtaskexecutionargs'>ScheduledTaskExecutionArgs</a>&#60;C&#62;) => Promise&#60;any&#62;`}   />
 
 The function that will be executed when the scheduled task is run.
 

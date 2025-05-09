@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## GraphiqlPlugin
 
-<GenerationInfo sourceFile="packages/graphiql-plugin/src/plugin.ts" sourceLine="44" packageName="@vendure/graphiql-plugin" />
+<GenerationInfo sourceFile="packages/graphiql-plugin/src/plugin.ts" sourceLine="43" packageName="@vendure/graphiql-plugin" />
 
 This plugin provides a GraphiQL UI for exploring and testing the Vendure GraphQL APIs.
 
@@ -35,6 +35,7 @@ const config: VendureConfig = {
 
 ```ts title="Signature"
 class GraphiqlPlugin implements NestModule {
+    static options: Required<GraphiqlPluginOptions>;
     constructor(processContext: ProcessContext, configService: ConfigService, graphiQLService: GraphiQLService)
     init(options: GraphiqlPluginOptions = {}) => Type<GraphiqlPlugin>;
     configure(consumer: MiddlewareConsumer) => ;
@@ -45,6 +46,11 @@ class GraphiqlPlugin implements NestModule {
 
 
 <div className="members-wrapper">
+
+### options
+
+<MemberInfo kind="property" type={`Required&#60;GraphiqlPluginOptions&#62;`}   />
+
 
 ### constructor
 

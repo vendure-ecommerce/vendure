@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## UserService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/user.service.ts" sourceLine="37" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/user.service.ts" sourceLine="38" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/user#user'>User</a> entities.
 

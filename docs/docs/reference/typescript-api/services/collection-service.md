@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## CollectionService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/collection.service.ts" sourceLine="76" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/collection.service.ts" sourceLine="77" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/collection#collection'>Collection</a> entities.
 
