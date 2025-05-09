@@ -126,28 +126,11 @@ services:
             - GF_AUTH_ANONYMOUS_ENABLED=true
             - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
             - GF_FEATURE_TOGGLES_ENABLE=alertingSimplifiedRouting,alertingQueryAndExpressionsStepMode
-        entrypoint:
-            - sh
-            - -euc
-            - |
-                mkdir -p /etc/grafana/provisioning/datasources
-                cat <<EOF > /etc/grafana/provisioning/datasources/ds.yaml
-                apiVersion: 1
-                datasources:
-                - name: Loki
-                type: loki
-                access: proxy 
-                orgId: 1
-                url: http://loki:3100
-                basicAuth: false
-                isDefault: true
-                version: 1
-                editable: false
-                EOF
-                /run.sh
         image: grafana/grafana:latest
         ports:
             - '3200:3000'
+        volumes:
+          - grafana-storage:/var/lib/grafana
         networks:
             - loki
 
@@ -169,4 +152,6 @@ volumes:
     esdata:
         driver: local
     jaeger_data:
+        driver: local
+    grafana-storage:
         driver: local
