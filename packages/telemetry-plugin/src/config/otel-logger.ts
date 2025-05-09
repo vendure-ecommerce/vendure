@@ -3,10 +3,46 @@ import { DefaultLogger, LogLevel, VENDURE_VERSION, VendureLogger } from '@vendur
 
 export const otelLogger = logs.getLogger('@vendure/core', VENDURE_VERSION);
 
+/**
+ * @description
+ * Options for the OtelLogger.
+ *
+ * @since 3.3.0
+ * @docsCategory core plugins/TelemetryPlugin
+ * @docsPage OtelLogger
+ */
 export interface OtelLoggerOptions {
+    /**
+     * @description
+     * If set to a LogLevel, the logger will also log to the console.
+     * This can be useful for local development or debugging.
+     *
+     * @example
+     * ```ts
+     * import { LogLevel } from '@vendure/core';
+     * import { TelemetryPlugin } from '@vendure/telemetry-plugin';
+     *
+     * // ...
+     *
+     * TelemetryPlugin.init({
+     *   loggerOptions: {
+     *     logToConsole: LogLevel.Verbose,
+     *   },
+     * });
+     * ```
+     */
     logToConsole?: LogLevel;
 }
 
+/**
+ * @description
+ * A logger that emits logs to OpenTelemetry and optionally to the console.
+ *
+ * @since 3.3.0
+ * @docsCategory core plugins/TelemetryPlugin
+ * @docsPage OtelLogger
+ * @docsWeight 0
+ */
 export class OtelLogger implements VendureLogger {
     private defaultLogger?: DefaultLogger;
 

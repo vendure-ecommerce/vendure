@@ -4,7 +4,7 @@
         "module": "NodeNext",
         "moduleResolution": "NodeNext",
         "declaration": true,
-        "removeComments": true,
+        "removeComments": false,
         "strictPropertyInitialization": false,
         "sourceMap": true,
         "allowJs": true

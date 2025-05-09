@@ -19,6 +19,11 @@ import { TelemetryPluginOptions } from './types';
  * npm install \@vendure/telemetry-plugin
  * ```
  *
+ * :::info
+ * For a complete guide to setting up and working with Open Telemetry, see
+ * the [Implementing Open Telemetry guide](/guides/how-to/telemetry/).
+ * :::
+ *
  * ## Configuration
  *
  * The plugin is configured via the `TelemetryPlugin.init()` method. This method accepts an options object
@@ -113,7 +118,7 @@ import { TelemetryPluginOptions } from './types';
         config.logger = new OtelLogger(TelemetryPlugin.options.loggerOptions ?? {});
         return config;
     },
-    // compatibility: '>3.3.0',
+    compatibility: '>3.3.0',
 })
 export class TelemetryPlugin {
     static options: TelemetryPluginOptions = {};
