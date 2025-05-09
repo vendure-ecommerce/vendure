@@ -70,6 +70,10 @@ const sections: DocsSectionConfig[] = [
         exclude: [/generated-types/],
         outputPath: 'admin-ui-api',
     },
+    {
+        sourceDirs: ['packages/dashboard/src/'],
+        outputPath: 'dashboard',
+    },
 ];
 
 generateTypescriptDocs(sections);

@@ -23,21 +23,68 @@ import {
 } from '../layout-engine/page-layout.js';
 import { DetailEntityPath } from './page-types.js';
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * @docsCategory components
+ * @docsPage DetailPage
+ * @since 3.3.0
+ */
 export interface DetailPageProps<
     T extends TypedDocumentNode<any, any>,
     C extends TypedDocumentNode<any, any>,
     U extends TypedDocumentNode<any, any>,
     EntityField extends keyof ResultOf<T> = DetailEntityPath<T>,
 > {
+    /**
+     * @description
+     * A unique identifier for the page.
+     */
     pageId: string;
+    /**
+     * @description
+     * The Tanstack Router route used to navigate to this page.
+     */
     route: AnyRoute;
+    /**
+     * @description
+     * The title of the page.
+     */
     title: (entity: ResultOf<T>[EntityField]) => string;
+    /**
+     * @description
+     * The query document used to fetch the entity.
+     */
     queryDocument: T;
+    /**
+     * @description
+     * The mutation document used to create the entity.
+     */
     createDocument?: C;
+    /**
+     * @description
+     * The mutation document used to update the entity.
+     */
     updateDocument: U;
+    /**
+     * @description
+     * A function that sets the values for the update input type based on the entity.
+     */
     setValuesForUpdate: (entity: ResultOf<T>[EntityField]) => VariablesOf<U>['input'];
 }
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * Auto-generates a detail page with a form based on the provided query and mutation documents.
+ *
+ * @docsCategory components
+ * @docsPage DetailPage
+ * @docsWeight 0
+ * @since 3.3.0
+ */
 export function DetailPage<
     T extends TypedDocumentNode<any, any>,
     C extends TypedDocumentNode<any, any>,

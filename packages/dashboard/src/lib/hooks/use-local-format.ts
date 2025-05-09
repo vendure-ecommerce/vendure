@@ -18,6 +18,10 @@ import { useServerConfig } from './use-server-config.js';
  *          toMajorUnits,
  * } = useLocalFormat();
  * ```
+ *
+ * @docsCategory hooks
+ * @docsPage useLocalFormat
+ * @docsWeight 0
  */
 export function useLocalFormat() {
     const { moneyStrategyPrecision } = useServerConfig() ?? { moneyStrategyPrecision: 2 };

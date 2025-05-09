@@ -3,7 +3,7 @@ import type React from 'react';
 
 import { DashboardAlertDefinition } from '../alert/types.js';
 import { DashboardWidgetDefinition } from '../dashboard-widget/types.js';
-import { PageContext } from '../layout-engine/page-layout.js';
+import { PageContextValue } from '../layout-engine/page-layout.js';
 import { NavMenuItem } from '../nav-menu/nav-menu-extensions.js';
 
 export interface DashboardRouteDefinition {
@@ -24,7 +24,7 @@ export interface ActionBarButtonState {
  *
  * Allows you to define custom action bar items for any page in the dashboard.
  *
- * @docsCategry dashboard
+ * @docsCategory extensions
  * @since 3.3.0
  */
 export interface DashboardActionBarItem {
@@ -37,7 +37,7 @@ export interface DashboardActionBarItem {
      * @description
      * A React component that will be rendered in the action bar.
      */
-    component: React.FunctionComponent<{ context: PageContext }>;
+    component: React.FunctionComponent<{ context: PageContextValue }>;
     /**
      * @description
      * Any permissions that are required to display this action bar item.
@@ -47,7 +47,7 @@ export interface DashboardActionBarItem {
 
 export interface DashboardActionBarDropdownMenuItem {
     locationId: string;
-    component: React.FunctionComponent<{ context: PageContext }>;
+    component: React.FunctionComponent<{ context: PageContextValue }>;
     requiresPermission?: string | string[];
 }
 
@@ -61,7 +61,7 @@ export type PageBlockPosition = { blockId: string; order: 'before' | 'after' | '
  * "developer mode" in the dashboard user menu (bottom left corner) and then
  * clicking the `< />` icon when hovering over a page block.
  *
- * @docsCategry dashboard
+ * @docsCategory extensions
  * @since 3.3.0
  */
 export type PageBlockLocation = {
@@ -77,14 +77,14 @@ export type PageBlockLocation = {
  * This allows you to insert a custom component into a specific location
  * on any page in the dashboard.
  *
- * @docsCategry dashboard
+ * @docsCategory extensions
  * @since 3.3.0
  */
 export interface DashboardPageBlockDefinition {
     id: string;
     title?: React.ReactNode;
     location: PageBlockLocation;
-    component: React.FunctionComponent<{ context: PageContext }>;
+    component: React.FunctionComponent<{ context: PageContextValue }>;
     requiresPermission?: string | string[];
 }
 
@@ -94,7 +94,7 @@ export interface DashboardPageBlockDefinition {
  *
  * This is used to define the routes, widgets, etc. that will be displayed in the dashboard.
  *
- * @docsCategry dashboard
+ * @docsCategory extensions
  * @since 3.3.0
  */
 export interface DashboardExtension {

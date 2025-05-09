@@ -22,7 +22,7 @@ export interface PageProps extends ComponentProps<'div'> {
     submitHandler?: any;
 }
 
-export const PageProvider = createContext<PageContext | undefined>(undefined);
+export const PageContext = createContext<PageContextValue | undefined>(undefined);
 
 export function Page({ children, pageId, entity, form, submitHandler, ...props }: PageProps) {
     const childArray = React.Children.toArray(children);
@@ -43,7 +43,48 @@ export function Page({ children, pageId, entity, form, submitHandler, ...props }
         </div>
     );
 
-    const pageContentWithOptionalForm = form ? (
+    return (
+        <PageContext.Provider value={{ pageId, form, entity }}>
+            <PageContent 
+                pageHeader={pageHeader} 
+                pageContent={pageContent} 
+                form={form}
+                submitHandler={submitHandler}
+                className={props.className}
+                {...props}
+            />
+        </PageContext.Provider>
+    );
+}
+
+function PageContent({ pageHeader, pageContent, form, submitHandler, ...props }: {
+    pageHeader: React.ReactElement;
+    pageContent: React.ReactElement;
+    form?: UseFormReturn<any>;
+    submitHandler?: any;
+    className?: string;
+}) {
+    return (
+        <div className={cn('m-4', props.className)} {...props}>
+            <LocationWrapper>
+                <PageContentWithOptionalForm 
+                    pageHeader={pageHeader} 
+                    pageContent={pageContent} 
+                    form={form}
+                    submitHandler={submitHandler} 
+                />
+            </LocationWrapper>
+        </div>
+    );
+}
+
+export function PageContentWithOptionalForm({ form, pageHeader, pageContent, submitHandler }: {
+    form?: UseFormReturn<any>;
+    pageHeader: React.ReactElement
+    pageContent: React.ReactElement;
+    submitHandler?: any;
+}) {
+    return form ? (
         <Form {...form}>
             <NavigationConfirmation form={form} />
             <form onSubmit={submitHandler} className="space-y-4">
@@ -56,16 +97,6 @@ export function Page({ children, pageId, entity, form, submitHandler, ...props }
             {pageHeader}
             {pageContent}
         </div>
-    );
-
-    return (
-        <PageProvider value={{ pageId, form, entity }}>
-            <LocationWrapper>
-                <div className={cn('m-4', props.className)} {...props}>
-                    {pageContentWithOptionalForm}
-                </div>
-            </LocationWrapper>
-        </PageProvider>
     );
 }
 
@@ -164,7 +195,7 @@ export function DetailFormGrid({ children }: { children: React.ReactNode }) {
     return <div className="md:grid md:grid-cols-2 gap-4 items-start mb-4">{children}</div>;
 }
 
-export interface PageContext {
+export interface PageContextValue {
     pageId?: string;
     entity?: any;
     form?: UseFormReturn<any>;
@@ -209,7 +240,7 @@ export function PageActionBarRight({ children }: { children: React.ReactNode }) 
     );
 }
 
-function PageActionBarItem({ item, page }: { item: DashboardActionBarItem; page: PageContext }) {
+function PageActionBarItem({ item, page }: { item: DashboardActionBarItem; page: PageContextValue }) {
     return (
         <PermissionGuard requires={item.requiresPermission ?? []}>
             <item.component context={page} />
@@ -244,10 +275,10 @@ export function PageBlock({ children, title, description, className, blockId }: 
 }
 
 export function FullWidthPageBlock({
-    children,
-    className,
-    blockId,
-}: Pick<PageBlockProps, 'children' | 'className' | 'blockId'>) {
+                                       children,
+                                       className,
+                                       blockId,
+                                   }: Pick<PageBlockProps, 'children' | 'className' | 'blockId'>) {
     return (
         <LocationWrapper blockId={blockId}>
             <div className={cn('w-full', className)}>{children}</div>
@@ -256,10 +287,10 @@ export function FullWidthPageBlock({
 }
 
 export function CustomFieldsPageBlock({
-    column,
-    entityType,
-    control,
-}: {
+                                          column,
+                                          entityType,
+                                          control,
+                                      }: {
     column: 'main' | 'side';
     entityType: string;
     control: Control<any, any>;

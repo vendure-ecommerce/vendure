@@ -29,7 +29,7 @@ export function executeDashboardExtensionCallbacks() {
  * The main entry point for extensions to the React-based dashboard.
  *
  *
- * @docsCategry dashboard
+ * @docsCategory extensions
  * @since 3.3.0
  */
 export function defineDashboardExtension(extension: DashboardExtension) {
