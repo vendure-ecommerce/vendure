@@ -1,5 +1,5 @@
-import { PageContext } from "@/framework/layout-engine/page-layout.js";
 import { useContext } from "react";
+import { PageContext } from '@/framework/layout-engine/page-provider.js';
 
 export function usePage() {
     const page = useContext(PageContext);

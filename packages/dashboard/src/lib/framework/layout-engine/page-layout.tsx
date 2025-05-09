@@ -7,13 +7,14 @@ import { usePage } from '@/hooks/use-page.js';
 import { cn } from '@/lib/utils.js';
 import { NavigationConfirmation } from '@/components/shared/navigation-confirmation.js';
 import { useMediaQuery } from '@uidotdev/usehooks';
-import React, { ComponentProps, createContext } from 'react';
+import React, { ComponentProps } from 'react';
 import { Control, UseFormReturn } from 'react-hook-form';
 
 import { DashboardActionBarItem } from '../extension-api/extension-api-types.js';
 
 import { getDashboardActionBarItems, getDashboardPageBlocks } from './layout-extensions.js';
 import { LocationWrapper } from './location-wrapper.js';
+import { PageContext, PageContextValue } from '@/framework/layout-engine/page-provider.js';
 
 export interface PageProps extends ComponentProps<'div'> {
     pageId?: string;
@@ -21,8 +22,6 @@ export interface PageProps extends ComponentProps<'div'> {
     form?: UseFormReturn<any>;
     submitHandler?: any;
 }
-
-export const PageContext = createContext<PageContextValue | undefined>(undefined);
 
 export function Page({ children, pageId, entity, form, submitHandler, ...props }: PageProps) {
     const childArray = React.Children.toArray(children);
@@ -45,9 +44,9 @@ export function Page({ children, pageId, entity, form, submitHandler, ...props }
 
     return (
         <PageContext.Provider value={{ pageId, form, entity }}>
-            <PageContent 
-                pageHeader={pageHeader} 
-                pageContent={pageContent} 
+            <PageContent
+                pageHeader={pageHeader}
+                pageContent={pageContent}
                 form={form}
                 submitHandler={submitHandler}
                 className={props.className}
@@ -58,8 +57,8 @@ export function Page({ children, pageId, entity, form, submitHandler, ...props }
 }
 
 function PageContent({ pageHeader, pageContent, form, submitHandler, ...props }: {
-    pageHeader: React.ReactElement;
-    pageContent: React.ReactElement;
+    pageHeader: React.ReactNode;
+    pageContent: React.ReactNode;
     form?: UseFormReturn<any>;
     submitHandler?: any;
     className?: string;
@@ -67,11 +66,11 @@ function PageContent({ pageHeader, pageContent, form, submitHandler, ...props }:
     return (
         <div className={cn('m-4', props.className)} {...props}>
             <LocationWrapper>
-                <PageContentWithOptionalForm 
-                    pageHeader={pageHeader} 
-                    pageContent={pageContent} 
+                <PageContentWithOptionalForm
+                    pageHeader={pageHeader}
+                    pageContent={pageContent}
                     form={form}
-                    submitHandler={submitHandler} 
+                    submitHandler={submitHandler}
                 />
             </LocationWrapper>
         </div>
@@ -80,8 +79,8 @@ function PageContent({ pageHeader, pageContent, form, submitHandler, ...props }:
 
 export function PageContentWithOptionalForm({ form, pageHeader, pageContent, submitHandler }: {
     form?: UseFormReturn<any>;
-    pageHeader: React.ReactElement
-    pageContent: React.ReactElement;
+    pageHeader: React.ReactNode
+    pageContent: React.ReactNode;
     submitHandler?: any;
 }) {
     return form ? (
@@ -193,12 +192,6 @@ export function PageLayout({ children, className }: PageLayoutProps) {
 
 export function DetailFormGrid({ children }: { children: React.ReactNode }) {
     return <div className="md:grid md:grid-cols-2 gap-4 items-start mb-4">{children}</div>;
-}
-
-export interface PageContextValue {
-    pageId?: string;
-    entity?: any;
-    form?: UseFormReturn<any>;
 }
 
 export function PageTitle({ children }: { children: React.ReactNode }) {
