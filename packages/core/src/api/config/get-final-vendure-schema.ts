@@ -124,7 +124,7 @@ function extendSchemaWithPluginApiExtensions(
     apiType: 'admin' | 'shop',
 ) {
     getPluginAPIExtensions(plugins, apiType)
-        .map(e => (typeof e.schema === 'function' ? e.schema() : e.schema))
+        .map(e => (typeof e.schema === 'function' ? e.schema(schema) : e.schema))
         .filter(notNullOrUndefined)
         .forEach(documentNode => (schema = extendSchema(schema, documentNode)));
     return schema;
