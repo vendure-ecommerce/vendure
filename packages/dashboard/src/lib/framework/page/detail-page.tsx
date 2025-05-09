@@ -165,7 +165,7 @@ export function DetailPage<
                                             case 'DateTime':
                                                 return <DateTimeInput {...field} />;
                                             case 'Boolean':
-                                                return <Checkbox {...field} />;
+                                                return <Checkbox value={field.value} onCheckedChange={field.onChange} />;
                                             case 'String':
                                             default:
                                                 return <Input {...field} />;
