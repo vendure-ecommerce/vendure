@@ -334,6 +334,13 @@
       "ChannelDefaultLanguageError",
       "GlobalSettings"
     ],
+    "UpdateOrderItemErrorResult": [
+      "InsufficientStockError",
+      "NegativeQuantityError",
+      "OrderInterceptorError",
+      "OrderLimitError",
+      "OrderModificationError"
+    ],
     "UpdateOrderItemsResult": [
       "InsufficientStockError",
       "NegativeQuantityError",

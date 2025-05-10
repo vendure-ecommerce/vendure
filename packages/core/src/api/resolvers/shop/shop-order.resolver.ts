@@ -3,6 +3,7 @@ import {
     ActiveOrderResult,
     AddPaymentToOrderResult,
     ApplyCouponCodeResult,
+    MutationAddItemsToOrderArgs,
     MutationAddItemToOrderArgs,
     MutationAddPaymentToOrderArgs,
     MutationAdjustOrderLineArgs,
@@ -23,6 +24,7 @@ import {
     SetOrderShippingMethodResult,
     ShippingMethodQuote,
     TransitionOrderToStateResult,
+    UpdateMultipleOrderItemsResult,
     UpdateOrderItemsResult,
 } from '@vendure/common/lib/generated-shop-types';
 import { QueryCountriesArgs } from '@vendure/common/lib/generated-types';
@@ -30,10 +32,7 @@ import { unique } from '@vendure/common/lib/unique';
 
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../../common/error/error-result';
 import { ForbiddenError } from '../../../common/error/errors';
-import {
-    AlreadyLoggedInError,
-    NoActiveOrderError,
-} from '../../../common/error/generated-graphql-shop-errors';
+import { NoActiveOrderError } from '../../../common/error/generated-graphql-shop-errors';
 import { Translated } from '../../../common/types/locale-types';
 import { idsAreEqual } from '../../../common/utils';
 import { ACTIVE_ORDER_INPUT_FIELD_NAME, ConfigService, LogLevel } from '../../../config';
@@ -351,6 +350,28 @@ export class ShopOrderResolver {
             (args as any).customFields,
             relations,
         );
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.UpdateOrder, Permission.Owner)
+    async addItemsToOrder(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationAddItemsToOrderArgs & ActiveOrderArgs,
+    ): Promise<{ 
+        order: Order; 
+        errorResults: UpdateMultipleOrderItemsResult['errorResults'] 
+    }> {
+        const order = await this.activeOrderService.getActiveOrder(
+            ctx,
+            args[ACTIVE_ORDER_INPUT_FIELD_NAME],
+            true,
+        );
+        const result = await this.orderService.addItemsToOrder(ctx, order.id, args.inputs);
+        return {
+            order: result.order,
+            errorResults: result.errorResults,
+        };
     }
 
     @Transaction()
