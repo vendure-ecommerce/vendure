@@ -145,7 +145,7 @@ export function buildElasticBody(
             : undefined),
     };
     if (groupByProduct) {
-        body.collapse = { field: 'productId' };
+        body.collapse = { field: 'sku.keyword' };
     }
     return body;
 }

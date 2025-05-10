@@ -452,7 +452,7 @@ describe('buildElasticBody()', () => {
 
         expect(result).toEqual({
             collapse: {
-                field: 'productId',
+                field: 'sku.keyword',
             },
             from: 0,
             size: 25,
