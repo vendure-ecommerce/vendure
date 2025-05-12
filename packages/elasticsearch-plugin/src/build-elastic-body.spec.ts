@@ -451,18 +451,9 @@ describe('buildElasticBody()', () => {
         );
 
         expect(result).toEqual({
-            if (searchConfig.groupByProduct)
-            {
-                collapse: {
-                    field: 'productId',
-                },
-            }
-            if (searchConfig.groupBySKU)
-            {
-                collapse: {
-                    field: 'sku.keyword',
-                },
-            }
+            collapse: {
+                field: 'productId',
+            },
             from: 0,
             size: 25,
             query: {
