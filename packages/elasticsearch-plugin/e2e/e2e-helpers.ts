@@ -45,7 +45,7 @@ export async function testGroupBySKU(client: SimpleGraphQLClient) {
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
-                term: 'bonsai'
+                term: 'bonsai',
                 groupBySKU: true,
             },
         },
