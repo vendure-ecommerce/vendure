@@ -203,6 +203,8 @@ describe('Elasticsearch plugin', () => {
     describe('shop api', () => {
         it('group by product', () => testGroupByProduct(shopClient));
 
+        it('group by SKU', () => testGroupBySKU(shopClient));
+
         it('no grouping', () => testNoGrouping(shopClient));
 
         it('matches search term', () => testMatchSearchTerm(shopClient));
@@ -478,6 +480,8 @@ describe('Elasticsearch plugin', () => {
 
     describe('admin api', () => {
         it('group by product', () => testGroupByProduct(adminClient));
+
+        it('group by SKU', () => testGroupBySKU(adminClient));
 
         it('no grouping', () => testNoGrouping(adminClient));
 

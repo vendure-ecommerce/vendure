@@ -66,6 +66,18 @@ describe('Elasticsearch plugin with UuidIdStrategy', () => {
         expect(search.totalItems).toBe(20);
     });
 
+    it('no term or filters', async () => {
+        const { search } = await shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
+            SEARCH_PRODUCTS_SHOP,
+            {
+                input: {
+                    groupBySKU: true,
+                },
+            },
+        );
+        expect(search.totalItems).toBe(34);
+    });
+
     it('with search term', async () => {
         const { search } = await shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
             SEARCH_PRODUCTS_SHOP,
@@ -73,6 +85,19 @@ describe('Elasticsearch plugin with UuidIdStrategy', () => {
                 input: {
                     groupByProduct: true,
                     term: 'laptop',
+                },
+            },
+        );
+        expect(search.totalItems).toBe(1);
+    });
+
+        it('with search term', async () => {
+        const { search } = await shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
+            SEARCH_PRODUCTS_SHOP,
+            {
+                input: {
+                    groupBySKU: true,
+                    term: 'bonsai',
                 },
             },
         );

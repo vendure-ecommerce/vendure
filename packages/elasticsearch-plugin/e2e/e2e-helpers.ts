@@ -40,12 +40,25 @@ export async function testGroupByProduct(client: SimpleGraphQLClient) {
     expect(result.search.totalItems).toBe(20);
 }
 
+export async function testGroupBySKU(client: SimpleGraphQLClient) {
+    const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
+        SEARCH_PRODUCTS_SHOP,
+        {
+            input: {
+                groupBySKU: true,
+            },
+        },
+    );
+    expect(result.search.totalItems).toBe(34);
+}
+
 export async function testNoGrouping(client: SimpleGraphQLClient) {
     const result = await client.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
                 groupByProduct: false,
+                groupBySKU: false,
             },
         },
     );

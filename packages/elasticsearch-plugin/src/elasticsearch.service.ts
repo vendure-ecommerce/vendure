@@ -182,7 +182,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         enabledOnly: boolean = false,
     ): Promise<Omit<ElasticSearchResponse, 'facetValues' | 'collections' | 'priceRange'>> {
         const { indexPrefix } = this.options;
-        const { groupByProduct } = input;
+        const { groupByProduct, groupBySKU } = input;
         const elasticSearchBody = buildElasticBody(
             input,
             this.options.searchConfig,
@@ -191,6 +191,13 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             enabledOnly,
             ctx,
         );
+
+        if (groupByProduct && groupBySKU) {
+            throw new InternalServerError(
+                'groupByProduct and groupBySKU cannot be used at the same time, you can only group by one attribute.',
+            );
+        }
+
         if (groupByProduct) {
             try {
                 const { body }: { body: SearchResponseBody<VariantIndexItem> } = await this.client.search({
@@ -201,6 +208,32 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 await this.eventBus.publish(new SearchEvent(ctx, input));
                 return {
                     items: body.hits.hits.map(hit => this.mapProductToSearchResult(hit)),
+                    totalItems,
+                };
+            } catch (e: any) {
+                if (e.meta.body.error.type && e.meta.body.error.type === 'search_phase_execution_exception') {
+                    // Log runtime error of the script exception instead of stacktrace
+                    Logger.error(
+                        e.message,
+                        loggerCtx,
+                        JSON.stringify(e.meta.body.error.root_cause || [], null, 2),
+                    );
+                    Logger.verbose(JSON.stringify(e.meta.body.error.failed_shards || [], null, 2), loggerCtx);
+                } else {
+                    Logger.error(e.message, loggerCtx, e.stack);
+                }
+                throw e;
+            }
+        } else if (groupBySKU) {
+            try {
+                const { body }: { body: SearchResponseBody<VariantIndexItem> } = await this.client.search({
+                    index: indexPrefix + VARIANT_INDEX_NAME,
+                    body: elasticSearchBody,
+                });
+                const totalItems = await this.totalHits(ctx, input, groupBySKU);
+                await this.eventBus.publish(new SearchEvent(ctx, input));
+                return {
+                    items: body.hits.hits.map(hit => this.mapSKUToSearchResult(hit)),
                     totalItems,
                 };
             } catch (e: any) {
@@ -251,6 +284,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         enabledOnly: boolean = false,
     ): Promise<number> {
         const { indexPrefix, searchConfig } = this.options;
+        const { groupBySKU } = input;
         const elasticSearchBody = buildElasticBody(
             input,
             searchConfig,
@@ -261,13 +295,24 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         );
         elasticSearchBody.from = 0;
         elasticSearchBody.size = 0;
-        elasticSearchBody.aggs = {
-            total: {
-                cardinality: {
-                    field: 'productId',
+        if (groupBySKU) {
+            elasticSearchBody.aggs = {
+                total: {
+                    cardinality: {
+                        field: 'sku.keyword',
+                    },
                 },
-            },
-        };
+            };
+        }
+        else {
+            elasticSearchBody.aggs = {
+                total: {
+                    cardinality: {
+                        field: 'productId',
+                    },
+                },
+            };
+        }
         const { body }: { body: SearchResponseBody<VariantIndexItem> } = await this.client.search({
             index: indexPrefix + VARIANT_INDEX_NAME,
             body: elasticSearchBody,
@@ -290,7 +335,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         input: ElasticSearchInput,
         enabledOnly: boolean = false,
     ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
-        const { groupByProduct } = input;
+        const { groupByProduct, groupBySKU } = input;
         const buckets = await this.getDistinctBucketsOfField(
             ctx,
             input,
@@ -307,6 +352,8 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             const bucket = buckets.find(b => b.key.toString() === facetValue.id.toString());
             let count;
             if (groupByProduct) {
+                count = bucket ? bucket.total.value : 0;
+            } else if (groupBySKU) {
                 count = bucket ? bucket.total.value : 0;
             } else {
                 count = bucket ? bucket.doc_count : 0;
@@ -326,7 +373,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         input: ElasticSearchInput,
         enabledOnly: boolean = false,
     ): Promise<Array<{ collection: Collection; count: number }>> {
-        const { groupByProduct } = input;
+        const { groupByProduct, groupBySKU } = input;
         const buckets = await this.getDistinctBucketsOfField(
             ctx,
             input,
@@ -343,6 +390,8 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             const bucket = buckets.find(b => b.key.toString() === collection.id.toString());
             let count;
             if (groupByProduct) {
+                count = bucket ? bucket.total.value : 0;
+            } else if (groupBySKU) {
                 count = bucket ? bucket.total.value : 0;
             } else {
                 count = bucket ? bucket.doc_count : 0;
@@ -362,7 +411,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         aggregation_max_size: number,
     ): Promise<Array<{ key: string; doc_count: number; total: { value: number } }>> {
         const { indexPrefix } = this.options;
-        const { groupByProduct } = input;
+        const { groupByProduct, groupBySKU } = input;
         const elasticSearchBody = buildElasticBody(
             input,
             this.options.searchConfig,
@@ -387,6 +436,16 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 total: {
                     cardinality: {
                         field: 'productId',
+                    },
+                },
+            };
+        }
+
+        if (groupBySKU) {
+            elasticSearchBody.aggs.aggregation_field.aggs = {
+                total: {
+                    cardinality: {
+                        field: 'sku.keyword',
                     },
                 },
             };
@@ -515,6 +574,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             this.options.customProductMappings,
             this.options.customProductVariantMappings,
             false,
+            false,
         );
         ElasticsearchService.addScriptMappings(
             result,
@@ -561,6 +621,54 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             this.options.customProductMappings,
             this.options.customProductVariantMappings,
             true,
+            false,
+        );
+        ElasticsearchService.addScriptMappings(
+            result,
+            fields,
+            this.options.searchConfig?.scriptFields,
+            'product',
+        );
+        return result;
+    }
+
+    private mapSKUToSearchResult(hit: SearchHit<VariantIndexItem>): ElasticSearchResult {
+        const source = hit._source;
+        const fields = hit.fields;
+        const { productAsset, productVariantAsset } = this.getSearchResultAssets(source);
+        const result = {
+            ...source,
+            productAsset,
+            productVariantAsset,
+            enabled: source.productEnabled,
+            productId: source.productId.toString(),
+            productName: source.productName,
+            productVariantId: source.productVariantId.toString(),
+            productVariantName: source.productVariantName,
+            facetIds: source.productFacetIds as string[],
+            facetValueIds: source.productFacetValueIds as string[],
+            collectionIds: source.productCollectionIds as string[],
+            sku: source.sku,
+            slug: source.slug,
+            price: {
+                min: source.productPriceMin,
+                max: source.productPriceMax,
+            },
+            priceWithTax: {
+                min: source.productPriceWithTaxMin,
+                max: source.productPriceWithTaxMax,
+            },
+            channelIds: [],
+            inStock: source.productInStock,
+            score: hit._score || 0,
+        };
+        ElasticsearchService.addCustomMappings(
+            result,
+            source,
+            this.options.customProductMappings,
+            this.options.customProductVariantMappings,
+            false,
+            true,
         );
         ElasticsearchService.addScriptMappings(
             result,
@@ -598,6 +706,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         productMappings: { [fieldName: string]: CustomMapping<any> },
         variantMappings: { [fieldName: string]: CustomMapping<any> },
         groupByProduct: boolean,
+        groupBySKU: boolean,
     ): any {
         const productCustomMappings = Object.keys(productMappings);
         if (productCustomMappings.length) {
@@ -606,7 +715,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 customMappingsResult[name] = source[`product-${name}`];
             }
             result.customProductMappings = customMappingsResult;
-            if (groupByProduct) {
+            if (groupByProduct || groupBySKU) {
                 result.customMappings = customMappingsResult;
             }
         }
@@ -617,7 +726,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 customMappingsResult[name] = source[`variant-${name}`];
             }
             result.customProductVariantMappings = customMappingsResult;
-            if (!groupByProduct) {
+            if (!groupByProduct && !groupBySKU) {
                 result.customMappings = customMappingsResult;
             }
         }
