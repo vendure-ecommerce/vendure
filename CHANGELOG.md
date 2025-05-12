@@ -3,7 +3,6 @@
 
 #### Fixes
 
-* **core** Fix scheduled task entity date type ([e6afdbe](https://github.com/vendure-ecommerce/vendure/commit/e6afdbe))
 * **dashboard** Fix checkbox on DetailPage ([f32d66d](https://github.com/vendure-ecommerce/vendure/commit/f32d66d))
 * **dashboard** Fix Page component not rendering when used externally ([3322fa1](https://github.com/vendure-ecommerce/vendure/commit/3322fa1))
 * **dashboard** Fix some form validation issues ([e811e99](https://github.com/vendure-ecommerce/vendure/commit/e811e99))
@@ -12,10 +11,11 @@
 * **dashboard** Improve DetailPage component ([c4c93a0](https://github.com/vendure-ecommerce/vendure/commit/c4c93a0))
 * **dashboard** Preserve Vite alias settings if set ([d79ea77](https://github.com/vendure-ecommerce/vendure/commit/d79ea77))
 * **dashboard** Prevent navigation blocker on creating entity ([b5851d5](https://github.com/vendure-ecommerce/vendure/commit/b5851d5))
-* **dashboard** Temporarily replace avatar component ([43f8cd9](https://github.com/vendure-ecommerce/vendure/commit/43f8cd9))
 
 #### Features
 
+* **telemetry-plugin** Add new `@vendure/telemetry-plugin` package
+* **graphiql-plugin** Add new `@vendure/graphiql-plugin` package
 * **admin-ui** Manual triggering of scheduled tasks ([76d74e1](https://github.com/vendure-ecommerce/vendure/commit/76d74e1)), closes [#1425](https://github.com/vendure-ecommerce/vendure/issues/1425)
 * **core** Add scheduled task to clean up jobs from the DB ([ed28280](https://github.com/vendure-ecommerce/vendure/commit/ed28280))
 * **core** Allow manual triggering of scheduled tasks ([2a89b2a](https://github.com/vendure-ecommerce/vendure/commit/2a89b2a)), closes [#1425](https://github.com/vendure-ecommerce/vendure/issues/1425)
