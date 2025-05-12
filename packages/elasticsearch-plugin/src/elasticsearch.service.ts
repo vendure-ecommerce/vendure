@@ -213,7 +213,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
 
                 await this.eventBus.publish(new SearchEvent(ctx, input));
                 return {
-                    items: body.hits.hits.map(hit => this.mapProductToSearchResult(hit)),
+                    items: body.hits.hits.map(hit => this.mapProductToSearchResult(hit, groupByProduct, groupBySKU)),
                     totalItems,
                 };
             } catch (e: any) {
@@ -550,7 +550,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         return result;
     }
 
-    private mapProductToSearchResult(hit: SearchHit<VariantIndexItem>): ElasticSearchResult {
+    private mapProductToSearchResult(hit: SearchHit<VariantIndexItem>, groupByProduct, groupBySKU): ElasticSearchResult {
         const source = hit._source;
         const fields = hit.fields;
         const { productAsset, productVariantAsset } = this.getSearchResultAssets(source);
@@ -585,55 +585,8 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             source,
             this.options.customProductMappings,
             this.options.customProductVariantMappings,
-            true,
-            false,
-        );
-        ElasticsearchService.addScriptMappings(
-            result,
-            fields,
-            this.options.searchConfig?.scriptFields,
-            'product',
-        );
-        return result;
-    }
-
-    private mapSKUToSearchResult(hit: SearchHit<VariantIndexItem>): ElasticSearchResult {
-        const source = hit._source;
-        const fields = hit.fields;
-        const { productAsset, productVariantAsset } = this.getSearchResultAssets(source);
-        const result = {
-            ...source,
-            productAsset,
-            productVariantAsset,
-            enabled: source.productEnabled,
-            productId: source.productId.toString(),
-            productName: source.productName,
-            productVariantId: source.productVariantId.toString(),
-            productVariantName: source.productVariantName,
-            facetIds: source.productFacetIds as string[],
-            facetValueIds: source.productFacetValueIds as string[],
-            collectionIds: source.productCollectionIds as string[],
-            sku: source.sku,
-            slug: source.slug,
-            price: {
-                min: source.productPriceMin,
-                max: source.productPriceMax,
-            },
-            priceWithTax: {
-                min: source.productPriceWithTaxMin,
-                max: source.productPriceWithTaxMax,
-            },
-            channelIds: [],
-            inStock: source.productInStock,
-            score: hit._score || 0,
-        };
-        ElasticsearchService.addCustomMappings(
-            result,
-            source,
-            this.options.customProductMappings,
-            this.options.customProductVariantMappings,
-            false,
-            true,
+            groupByProduct,
+            groupBySKU,
         );
         ElasticsearchService.addScriptMappings(
             result,
