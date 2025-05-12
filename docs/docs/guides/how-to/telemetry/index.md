@@ -1,5 +1,5 @@
 ---
-title: "Implementing Open Telemetry"
+title: "Open Telemetry"
 ---
 
 [Open Telemetry](https://opentelemetry.io/) is a set of APIs, libraries, agents, and instrumentation to provide observability for applications. 
@@ -117,6 +117,18 @@ export const config: VendureConfig = {
 };
 ```
 
+### Set environment variables
+
+In order to send telemetry data to the Jaeger and Loki services, you need to set some environment variables.
+In a standard Vendure installation, there is an `.env` file in the root of the project. We will add the following:
+
+```env
+# Open Telemetry
+OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:3100/otlp
+OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://localhost:4318/v1/traces
+OTEL_LOGS_EXPORTER=otlp
+```
+
 ### Create a preload script
 
 The Open Telemetry libraries for Node.js instrument underlying libraries such as NestJS, GraphQL,
@@ -132,14 +144,9 @@ import { BatchLogRecordProcessor } from '@opentelemetry/sdk-logs';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
 import { getSdkConfiguration } from '@vendure/telemetry-plugin/preload';
+import 'dotenv/config';
 
-process.env.OTEL_EXPORTER_OTLP_ENDPOINT = 'http://localhost:3100/otlp';
-process.env.OTEL_LOGS_EXPORTER = 'otlp';
-process.env.OTEL_RESOURCE_ATTRIBUTES = 'service.name=vendure-dev-server';
-
-const traceExporter = new OTLPTraceExporter({
-    url: 'http://localhost:4318/v1/traces',
-});
+const traceExporter = new OTLPTraceExporter();
 const logExporter = new OTLPLogExporter();
 
 const config = getSdkConfiguration({
@@ -161,7 +168,8 @@ with the services used in this guide. The important things is to make sure the u
 the Vendure core is instrumented correctly.
 :::
 
-To run the preload script, you need to set the `--require` flag when starting the Vendure server.
+To run the preload script, you need to set the `--require` flag when starting the Vendure server. We will 
+also set an environment variable to distinguish the server from the worker process.
 
 You can do this by adding the following script to your `package.json`:
 
@@ -169,14 +177,14 @@ You can do this by adding the following script to your `package.json`:
 {
     "scripts": {
         // highlight-start
-        "dev:server": "ts-node --require ./src/preload.ts ./src/index.ts",
-        "dev:worker": "ts-node --require ./src/preload.ts ./src/index-worker.ts",
+        "dev:server": "OTEL_RESOURCE_ATTRIBUTES=service.name=vendure-server ts-node --require ./src/preload.ts ./src/index.ts",
+        "dev:worker": "OTEL_RESOURCE_ATTRIBUTES=service.name=vendure-worker ts-node --require ./src/preload.ts ./src/index-worker.ts",
         // highlight-end
         "dev": "concurrently npm:dev:*",
         "build": "tsc",
         // highlight-start
-        "start:server": "node --require ./dist/preload.js ./dist/index.js",
-        "start:worker": "node --require ./dist/preload.js ./dist/index-worker.js",
+        "start:server": "OTEL_RESOURCE_ATTRIBUTES=service.name=vendure-server node --require ./dist/preload.js ./dist/index.js",
+        "start:worker": "OTEL_RESOURCE_ATTRIBUTES=service.name=vendure-worker node --require ./dist/preload.js ./dist/index-worker.js",
         // highlight-end
         "start": "concurrently npm:start:*"
     },
@@ -221,3 +229,26 @@ Now you can select **Explore** from the left-hand menu, select "Jaeger" from the
 Clicking the blue "Run Query" button will show you the traces for that service.
 
 ![Grafana traces](./grafana-trace.webp)
+
+## Instrumenting Your Plugins
+
+You can also instrument your own plugins and services with Open Telemetry. To do so,
+add the [Instrument decorator](/reference/typescript-api/telemetry/instrument) to your service class:
+
+```ts
+import { Injectable } from '@nestjs/common';
+// highlight-next-line
+import { Instrument } from '@vendure/core';
+
+// highlight-next-line
+@Instrument()
+@Injectable()
+export class MyService {
+
+    async myMethod() {
+        // ...
+    }
+}
+```
+
+You should now be able to see calls to `MyService.myMethod` in your traces.
