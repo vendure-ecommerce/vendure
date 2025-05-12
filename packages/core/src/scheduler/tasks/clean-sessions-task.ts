@@ -22,7 +22,7 @@ import { ScheduledTask } from '../scheduled-task';
  *         schedule: cron => cron.everyDayAt(3, 0),
  *         params: {
  *           // How many sessions to process in each batch
- *           // Default: 10_000
+ *           // Default: 1000
  *           batchSize: 5_000,
  *         },
  *       }),
@@ -38,7 +38,7 @@ export const cleanSessionsTask = new ScheduledTask({
     id: 'clean-sessions',
     description: 'Clean expired & inactive sessions from the database',
     params: {
-        batchSize: 10_000,
+        batchSize: 1000,
     },
     schedule: cron => cron.everyDayAt(0, 0),
     async execute({ injector, params }) {
