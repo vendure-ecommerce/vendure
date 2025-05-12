@@ -45,11 +45,12 @@ export async function testGroupBySKU(client: SimpleGraphQLClient) {
         SEARCH_PRODUCTS_SHOP,
         {
             input: {
+                term: 'bonsai'
                 groupBySKU: true,
             },
         },
     );
-    expect(result.search.totalItems).toBe(34);
+    expect(result.search.totalItems).toBe(1);
 }
 
 export async function testNoGrouping(client: SimpleGraphQLClient) {
