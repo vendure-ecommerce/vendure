@@ -1,3 +1,35 @@
+## 3.3.0 (2025-05-12)
+
+
+#### Fixes
+
+* **core** Fix scheduled task entity date type ([e6afdbe](https://github.com/vendure-ecommerce/vendure/commit/e6afdbe))
+* **dashboard** Fix checkbox on DetailPage ([f32d66d](https://github.com/vendure-ecommerce/vendure/commit/f32d66d))
+* **dashboard** Fix Page component not rendering when used externally ([3322fa1](https://github.com/vendure-ecommerce/vendure/commit/3322fa1))
+* **dashboard** Fix some form validation issues ([e811e99](https://github.com/vendure-ecommerce/vendure/commit/e811e99))
+* **dashboard** Fix some small issues with extensions, add docs ([7dca28c](https://github.com/vendure-ecommerce/vendure/commit/7dca28c))
+* **dashboard** Fix types for dashboard extensions ([c6ade27](https://github.com/vendure-ecommerce/vendure/commit/c6ade27))
+* **dashboard** Improve DetailPage component ([c4c93a0](https://github.com/vendure-ecommerce/vendure/commit/c4c93a0))
+* **dashboard** Preserve Vite alias settings if set ([d79ea77](https://github.com/vendure-ecommerce/vendure/commit/d79ea77))
+* **dashboard** Prevent navigation blocker on creating entity ([b5851d5](https://github.com/vendure-ecommerce/vendure/commit/b5851d5))
+* **dashboard** Temporarily replace avatar component ([43f8cd9](https://github.com/vendure-ecommerce/vendure/commit/43f8cd9))
+
+#### Features
+
+* **admin-ui** Manual triggering of scheduled tasks ([76d74e1](https://github.com/vendure-ecommerce/vendure/commit/76d74e1)), closes [#1425](https://github.com/vendure-ecommerce/vendure/issues/1425)
+* **core** Add scheduled task to clean up jobs from the DB ([ed28280](https://github.com/vendure-ecommerce/vendure/commit/ed28280))
+* **core** Allow manual triggering of scheduled tasks ([2a89b2a](https://github.com/vendure-ecommerce/vendure/commit/2a89b2a)), closes [#1425](https://github.com/vendure-ecommerce/vendure/issues/1425)
+* **core** Apply Instrumentation to all services & key helper classes ([4b3f526](https://github.com/vendure-ecommerce/vendure/commit/4b3f526))
+* **core** Enhance cache service and SQL cache strategy with tracing support ([374db42](https://github.com/vendure-ecommerce/vendure/commit/374db42))
+* **core** Enhance scheduled task execution with RequestContext ([c0b5902](https://github.com/vendure-ecommerce/vendure/commit/c0b5902))
+* **core** Integrate tracing into ConfigService for enhanced custom fields logging ([195132f](https://github.com/vendure-ecommerce/vendure/commit/195132f))
+* **core** Tracing for job-queue ([7a27428](https://github.com/vendure-ecommerce/vendure/commit/7a27428))
+* **core** Update tracing in AppModule to enhance middleware configuration logging ([596846c](https://github.com/vendure-ecommerce/vendure/commit/596846c))
+* **create** Update default tsconfig ([ee40c50](https://github.com/vendure-ecommerce/vendure/commit/ee40c50))
+* **dashboard** Add refresh button to data tables ([891ff15](https://github.com/vendure-ecommerce/vendure/commit/891ff15))
+* **dashboard** Implement alert system with customizable alerts ([13c8969](https://github.com/vendure-ecommerce/vendure/commit/13c8969))
+* **dashboard** Manual triggering of scheduled tasks ([226730e](https://github.com/vendure-ecommerce/vendure/commit/226730e)), closes [#1425](https://github.com/vendure-ecommerce/vendure/issues/1425)
+
 ## <small>3.2.4 (2025-05-05)</small>
 
 
