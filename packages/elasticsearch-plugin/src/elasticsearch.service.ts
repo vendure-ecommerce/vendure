@@ -205,7 +205,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                     body: elasticSearchBody,
                 });
 
-                let totalItems = 0
+                let totalItems: number | undefined  = 0
                 if (groupByProduct)
                     totalItems = await this.totalHits(ctx, input, groupByProduct);
                 else if (groupBySKU)
@@ -275,24 +275,13 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         );
         elasticSearchBody.from = 0;
         elasticSearchBody.size = 0;
-        if (groupBySKU) {
-            elasticSearchBody.aggs = {
+        elasticSearchBody.aggs = {
                 total: {
                     cardinality: {
-                        field: 'sku.keyword',
+                        field: groupBySKU ? 'sku.keyword' : 'productId',
                     },
                 },
             };
-        }
-        else {
-            elasticSearchBody.aggs = {
-                total: {
-                    cardinality: {
-                        field: 'productId',
-                    },
-                },
-            };
-        }
         const { body }: { body: SearchResponseBody<VariantIndexItem> } = await this.client.search({
             index: indexPrefix + VARIANT_INDEX_NAME,
             body: elasticSearchBody,
