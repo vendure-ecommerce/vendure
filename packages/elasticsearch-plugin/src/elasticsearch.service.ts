@@ -550,7 +550,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         return result;
     }
 
-    private mapProductToSearchResult(hit: SearchHit<VariantIndexItem>, groupByProduct: Boolean, groupBySKU: Boolean): ElasticSearchResult {
+    private mapProductToSearchResult(hit: SearchHit<VariantIndexItem>, groupByProduct: boolean | undefined, groupBySKU: boolean | undefined): ElasticSearchResult {
         const source = hit._source;
         const fields = hit.fields;
         const { productAsset, productVariantAsset } = this.getSearchResultAssets(source);
