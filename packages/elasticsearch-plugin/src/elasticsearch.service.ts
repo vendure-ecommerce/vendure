@@ -205,7 +205,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                     body: elasticSearchBody,
                 });
 
-                var totalItems 
+                let totalItems
                 if (groupByProduct)
                     totalItems = await this.totalHits(ctx, input, groupByProduct);
                 else if (groupBySKU)
