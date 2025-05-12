@@ -63,7 +63,7 @@ describe('Elasticsearch plugin with UuidIdStrategy', () => {
                 },
             },
         );
-        expect(search.totalItems).toBe(20);
+        expect(search.totalItems).toBe(21);
     });
 
     it('no term or filters', async () => {

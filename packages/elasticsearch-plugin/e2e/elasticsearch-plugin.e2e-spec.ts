@@ -50,6 +50,7 @@ import {
     doAdminSearchQuery,
     dropElasticIndices,
     testGroupByProduct,
+    testGroupBySKU,
     testMatchCollectionId,
     testMatchCollectionSlug,
     testMatchFacetIdsAnd,
@@ -247,8 +248,8 @@ describe('Elasticsearch plugin', () => {
                 { count: 17, facetValue: { id: 'T_2', name: 'computers' } },
                 { count: 4, facetValue: { id: 'T_3', name: 'photo' } },
                 { count: 10, facetValue: { id: 'T_4', name: 'sports equipment' } },
-                { count: 3, facetValue: { id: 'T_5', name: 'home & garden' } },
-                { count: 3, facetValue: { id: 'T_6', name: 'plants' } },
+                { count: 4, facetValue: { id: 'T_5', name: 'home & garden' } },
+                { count: 4, facetValue: { id: 'T_6', name: 'plants' } },
             ]);
         });
 
@@ -329,7 +330,7 @@ describe('Elasticsearch plugin', () => {
                 },
             });
             expect(result.search.collections).toEqual([
-                { collection: { id: 'T_2', name: 'Plants' }, count: 3 },
+                { collection: { id: 'T_2', name: 'Plants' }, count: 4 },
             ]);
         });
 
@@ -343,7 +344,7 @@ describe('Elasticsearch plugin', () => {
                 },
             });
             expect(result.search.collections).toEqual([
-                { collection: { id: 'T_2', name: 'Plants' }, count: 3 },
+                { collection: { id: 'T_2', name: 'Plants' }, count: 4 },
             ]);
         });
 
@@ -435,7 +436,7 @@ describe('Elasticsearch plugin', () => {
                     },
                 },
             );
-            expect(result.search.totalItems).toBe(31);
+            expect(result.search.totalItems).toBe(32);
         });
 
         it('inStock is true and grouped by product', async () => {
@@ -448,7 +449,7 @@ describe('Elasticsearch plugin', () => {
                     },
                 },
             );
-            expect(result.search.totalItems).toBe(19);
+            expect(result.search.totalItems).toBe(20);
         });
 
         it('inStock is undefined and not grouped by product', async () => {
@@ -461,7 +462,7 @@ describe('Elasticsearch plugin', () => {
                     },
                 },
             );
-            expect(result.search.totalItems).toBe(33);
+            expect(result.search.totalItems).toBe(34);
         });
 
         it('inStock is undefined and grouped by product', async () => {
@@ -474,7 +475,7 @@ describe('Elasticsearch plugin', () => {
                     },
                 },
             );
-            expect(result.search.totalItems).toBe(20);
+            expect(result.search.totalItems).toBe(21);
         });
     });
 
