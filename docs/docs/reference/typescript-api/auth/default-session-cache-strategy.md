@@ -44,7 +44,7 @@ class DefaultSessionCacheStrategy implements SessionCacheStrategy {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(options?: {             ttl?: number;             cachePrefix?: string;         }) => DefaultSessionCacheStrategy`}   />
+<MemberInfo kind="method" type={`(options?: {             ttl?: number;             cachePrefix?: string;         }) => DefaultSessionCacheStrategy`}   />
 
 
 ### init

@@ -1,15 +1,14 @@
 import { GraphQLTypesLoader } from '@nestjs/graphql';
 import {
-    resetConfig,
-    setConfig,
     getConfig,
-    runPluginConfigurations,
     getFinalVendureSchema,
+    resetConfig,
+    runPluginConfigurations,
+    setConfig,
     VENDURE_ADMIN_API_TYPE_PATHS,
     VendureConfig,
 } from '@vendure/core';
-import { buildSchema } from 'graphql';
-import { GraphQLSchema } from 'graphql';
+import { buildSchema, GraphQLSchema } from 'graphql';
 
 let schemaPromise: Promise<GraphQLSchema> | undefined;
 

@@ -18,6 +18,7 @@ import {
     VerificationTokenExpiredError,
     VerificationTokenInvalidError,
 } from '../../common/error/generated-graphql-shop-errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { isEmailAddressLike, normalizeEmailAddress } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -35,6 +36,7 @@ import { RoleService } from './role.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class UserService {
     constructor(
         private connection: TransactionalConnection,

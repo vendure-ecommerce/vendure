@@ -41,7 +41,14 @@ const ChannelsQuery = graphql(
 type ActiveChannel = ResultOf<typeof ChannelsQuery>['activeChannel'];
 type Channel = ResultOf<typeof channelFragment>;
 
-// Define the context interface
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * @docsCategory hooks
+ * @docsPage useChannel
+ * @since 3.3.0
+ */
 export interface ChannelContext {
     activeChannel: ActiveChannel | undefined;
     channels: Channel[];

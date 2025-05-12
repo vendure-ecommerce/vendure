@@ -6,6 +6,7 @@
     "add-asset": "Ajout fichier",
     "add-asset-with-count": "Ajout {count, plural, =0 {fichier} one {d'un fichier} other {de {count} fichiers}}",
     "assets-selected-count": "{ count } ressources selectionnées",
+    "change-asset": "Changer ressource",
     "dimensions": "Dimensions",
     "focal-point": "Point de focale",
     "notify-create-assets-success": "Création {count, plural, one {d'un nouveau fichier} other {de {count} nouveaux fichiers}}",
@@ -16,6 +17,7 @@
     "select-assets": "Sélectionner fichiers",
     "set-as-featured-asset": "Définir en tant que fichier en vedette",
     "set-focal-point": "Définir point de focale",
+    "size": "Taille",
     "source-file": "Fichier source",
     "unset-focal-point": "Enlever",
     "update-focal-point": "Mettre à jour le point",
@@ -45,6 +47,7 @@
     "profile": "Profil",
     "promotions": "Promotions",
     "roles": "Roles",
+    "scheduled-tasks": "Tâches programmées",
     "seller-orders": "Commandes vendeur",
     "sellers": "Vendeurs",
     "shipping-methods": "Modes d'expédition",
@@ -196,7 +199,7 @@
   },
   "common": {
     "ID": "ID",
-    "add-filter": "",
+    "add-filter": "Ajouter un filtre",
     "add-item-to-list": "Ajouter un article à la liste",
     "add-note": "Ajouter une note",
     "apply": "Appliquer",
@@ -237,12 +240,14 @@
     "delete": "Supprimer",
     "description": "Description",
     "details": "Détails",
+    "disable": "Désactiver",
     "disabled": "Désactivé",
     "discard-changes": "Annuler les changements",
     "duplicate": "Dupliquer",
     "edit": "Editer",
     "edit-field": "Editer champ",
     "edit-note": "Editer note",
+    "enable": "Activer",
     "enabled": "Activé",
     "end-date": "Date de fin",
     "expand-entries": "Développer les éléments",
@@ -274,9 +279,9 @@
     "name": "Nom",
     "no-alerts": "Pas d'alerte",
     "no-bulk-actions-available": "Aucune action groupée disponible",
-    "no-channel-selected": "",
+    "no-channel-selected": "Aucun canal sélectionné",
     "no-results": "Aucun resultat",
-    "not-applicable": "",
+    "not-applicable": "Non applicable",
     "not-set": "Non défini",
     "notify-assign-to-channel-success-with-count": "{count, plural, one {1 item} other {{count} items}} ont bien été attribués à { channelCode }",
     "notify-bulk-update-success": "{ count } { entity } ont été mis à jour",
@@ -475,6 +480,7 @@
     "year": "an"
   },
   "editor": {
+    "height": "Hauteur",
     "image-alt": "Description (alt)",
     "image-src": "Source",
     "image-title": "Titre",
@@ -483,7 +489,8 @@
     "link-target": "Target du lien",
     "link-title": "Titre du lien",
     "remove-link": "Retirer le lien",
-    "set-link": "Définir lien"
+    "set-link": "Définir lien",
+    "width": "Largeur"
   },
   "error": {
     "403-forbidden": "Vous n'êtes pas autorisés à accéder à \"{ path }\". Vous n'avez pas la permission ou votre session a expiré.",
@@ -528,6 +535,7 @@
     "promotions": "Promotions",
     "roles": "Roles",
     "sales": "Ventes",
+    "scheduled-tasks": "Tâches programmées",
     "sellers": "Vendeurs",
     "settings": "Paramètres",
     "shipping-methods": "Mode d'expédition",
@@ -675,7 +683,7 @@
     "set-billing-address": "Définir l'adresse de facturation",
     "set-coupon-codes": "Définir les codes promo",
     "set-customer-for-order": "Définir le client pour la commande",
-    "set-customer-success": "",
+    "set-customer-success": "Client défini avec succès",
     "set-fulfillment-state": "Marquer {state}",
     "set-shipping-address": "Définir l'adresse de livraison",
     "set-shipping-method": "Définir la méthode de livraison",
@@ -790,6 +798,7 @@
   },
   "system": {
     "all-job-queues": "Toute la file de tâches",
+    "could-not-trigger-task": "Impossible de déclencher la tâche",
     "health-all-systems-up": "Tous les système en route",
     "health-error": "Erreur: un ou plusieurs systèmes sont en pannes!",
     "health-last-checked": "Dernière vérification",
@@ -809,6 +818,13 @@
     "job-state-completed": "Terminé",
     "job-state-failed": "Échoué",
     "job-state-pending": "En attente",
-    "job-state-running": "En cours"
+    "job-state-running": "En cours",
+    "last-executed-at": "Dernière exécution",
+    "last-result": "Dernier résultat",
+    "next-execution-at": "Prochaine exécution",
+    "run-task": "Exécuter la tâche",
+    "schedule": "Programmation",
+    "task-id": "ID de la tâche",
+    "task-will-be-triggered": "La tâche sera exécutée"
   }
 }

@@ -1,7 +1,7 @@
 {
     "name": "@vendure/dashboard",
     "private": false,
-    "version": "3.2.3",
+    "version": "3.3.0",
     "type": "module",
     "repository": {
         "type": "git",
@@ -71,7 +71,7 @@
         "@radix-ui/react-switch": "^1.1.3",
         "@radix-ui/react-tabs": "^1.1.3",
         "@radix-ui/react-tooltip": "^1.1.8",
-        "@tailwindcss/vite": "^4.0.7",
+        "@tailwindcss/vite": "^4.1.5",
         "@tanstack/eslint-plugin-query": "^5.66.1",
         "@tanstack/react-query": "^5.66.7",
         "@tanstack/react-query-devtools": "^5.68.0",
@@ -86,8 +86,8 @@
         "@types/react-dom": "^19.0.4",
         "@types/react-grid-layout": "^1.3.5",
         "@uidotdev/usehooks": "^2.4.1",
-        "@vendure/common": "3.2.3",
-        "@vendure/core": "3.2.3",
+        "@vendure/common": "3.3.0",
+        "@vendure/core": "3.3.0",
         "@vitejs/plugin-react": "^4.3.4",
         "awesome-graphql-client": "^2.1.0",
         "class-variance-authority": "^0.7.1",
@@ -108,12 +108,12 @@
         "react-hook-form": "^7.54.2",
         "recharts": "^2.15.1",
         "sonner": "^2.0.1",
-        "tailwind-merge": "^3.0.1",
-        "tailwindcss": "^4.0.6",
+        "tailwind-merge": "^3.2.0",
+        "tailwindcss": "^4.1.5",
         "tailwindcss-animate": "^1.0.7",
         "tsconfig-paths": "^4.2.0",
-        "tw-animate-css": "^1.2.4",
-        "vite": "^6.1.0",
+        "tw-animate-css": "^1.2.9",
+        "vite": "^6.3.5",
         "zod": "^3.24.2"
     },
     "devDependencies": {
@@ -125,5 +125,9 @@
         "eslint-plugin-react-refresh": "^0.4.18",
         "globals": "^15.14.0",
         "vite-plugin-dts": "^4.5.3"
+    },
+    "optionalDependencies": {
+        "lightningcss-linux-arm64-musl": "^1.29.3",
+        "lightningcss-linux-x64-musl": "^1.29.1"
     }
 }

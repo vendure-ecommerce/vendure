@@ -61,7 +61,7 @@ export class HandlebarsMjmlGenerator implements EmailGenerator {
                 // See https://handlebarsjs.com/api-reference/helpers.html#the-options-parameter
                 if (!currencyCode || typeof currencyCode === 'object') {
                     return new Intl.NumberFormat(typeof locale === 'object' ? undefined : locale, {
-                        style: 'decimal'
+                        style: 'decimal',
                     }).format(amount / 100);
                 }
                 // Same reasoning for `locale` as for `currencyCode` here.

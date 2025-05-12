@@ -31,6 +31,14 @@ type ListQueryFields<T extends TypedDocumentNode<any, any>> = {
         : never;
 }[keyof ResultOf<T>];
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * @docsCategory components
+ * @docsPage ListPage
+ * @since 3.3.0
+ */
 export interface ListPageProps<
     T extends TypedDocumentNode<U, V>,
     U extends ListQueryShape,
@@ -56,6 +64,17 @@ export interface ListPageProps<
     setTableOptions?: (table: TableOptions<any>) => TableOptions<any>;
 }
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * Auto-generates a list page with columns generated based on the provided query document fields.
+ *
+ * @docsCategory components
+ * @docsPage ListPage
+ * @docsWeight 0
+ * @since 3.3.0
+ */
 export function ListPage<
     T extends TypedDocumentNode<U, V>,
     U extends Record<string, any> = any,

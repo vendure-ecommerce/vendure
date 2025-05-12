@@ -8,7 +8,7 @@ import TabItem from '@theme/TabItem';
 
 ## Requirements
  
-* [Node.js](https://nodejs.org/en/) **v18** or above, with support for **even-numbered Node.js versions**. (Odd-numbered versions should still work but are not officially supported.)
+* [Node.js](https://nodejs.org/en/) **v20** or above, with support for **even-numbered Node.js versions**. (Odd-numbered versions should still work but are not officially supported.)
 
 ### Optional
 * [Docker Desktop](https://www.docker.com/products/docker-desktop/): If you want to use the quick start with Postgres, you must have Docker Desktop installed. If you do not have Docker Desktop installed 

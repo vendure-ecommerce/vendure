@@ -19,6 +19,7 @@ import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { RequestContextCacheService } from '../../cache/request-context-cache.service';
 import { ForbiddenError, UserInputError } from '../../common/error/errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { roundMoney } from '../../common/round-money';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
@@ -35,10 +36,10 @@ import {
     TaxCategory,
 } from '../../entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
-import { Product } from '../../entity/product/product.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
 import { ProductVariantTranslation } from '../../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
+import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { ProductVariantChannelEvent } from '../../event-bus/events/product-variant-channel-event';
 import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
@@ -67,6 +68,7 @@ import { TaxCategoryService } from './tax-category.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class ProductVariantService {
     constructor(
         private connection: TransactionalConnection,
@@ -639,7 +641,7 @@ export class ProductVariantService {
                 // We don't save the targetPrice again unless it has been assigned
                 // a different price by the ProductVariantPriceUpdateStrategy.
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                !(idsAreEqual(p.id, targetPrice!.id) && p.price === targetPrice!.price),
+                !(idsAreEqual(p.id, targetPrice.id) && p.price === targetPrice.price),
         );
         if (uniqueAdditionalPricesToUpdate.length) {
             const updatedAdditionalPrices = await this.connection

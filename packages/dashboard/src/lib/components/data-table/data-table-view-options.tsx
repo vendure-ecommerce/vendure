@@ -73,7 +73,7 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
         <div className="flex items-center gap-2">
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="ml-auto hidden h-8 lg:flex">
+                    <Button variant="ghost" size="sm" className="ml-auto hidden h-8 lg:flex">
                         <Settings2 />
                         <Trans>Columns</Trans>
                     </Button>

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## JobQueue
 
-<GenerationInfo sourceFile="packages/core/src/job-queue/job-queue.ts" sourceLine="25" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/job-queue/job-queue.ts" sourceLine="21" packageName="@vendure/core" />
 
 A JobQueue is used to process <a href='/reference/typescript-api/job-queue/job#job'>Job</a>s. A job is added to the queue via the
 `.add()` method, and the configured <a href='/reference/typescript-api/job-queue/job-queue-strategy#jobqueuestrategy'>JobQueueStrategy</a> will check for new jobs and process each

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JsonCompatible } from '@vendure/common/lib/shared-types';
 
+import { Instrument } from '../common';
 import { ConfigService } from '../config/config.service';
 import { Logger } from '../config/index';
 import { CacheStrategy, SetCacheKeyOptions } from '../config/system/cache-strategy';
@@ -18,8 +19,10 @@ import { Cache, CacheConfig } from './cache';
  * @docsCategory cache
  */
 @Injectable()
+@Instrument()
 export class CacheService {
     protected cacheStrategy: CacheStrategy;
+
     constructor(private configService: ConfigService) {
         this.cacheStrategy = this.configService.systemOptions.cacheStrategy;
     }

@@ -1,14 +1,4 @@
-import { GraphQLTypesLoader } from '@nestjs/graphql';
 import {
-    getConfig,
-    getFinalVendureSchema,
-    resetConfig,
-    runPluginConfigurations,
-    setConfig,
-    VENDURE_ADMIN_API_TYPE_PATHS,
-} from '@vendure/core';
-import {
-    buildSchema,
     GraphQLList,
     GraphQLNonNull,
     GraphQLObjectType,

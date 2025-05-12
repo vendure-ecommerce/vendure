@@ -23,6 +23,7 @@ import { AddFilterMenu } from './add-filter-menu.js';
 import { DataTableFacetedFilter, DataTableFacetedFilterOption } from './data-table-faceted-filter.js';
 import { DataTableFilterBadge } from './data-table-filter-badge.js';
 import { useChannel } from '@/hooks/use-channel.js';
+import { RefreshButton } from '@/components/data-table/refresh-button.js';
 
 export interface FacetedFilter {
     title: string;
@@ -31,8 +32,8 @@ export interface FacetedFilter {
     options?: DataTableFacetedFilterOption[];
 }
 
-interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[];
+interface DataTableProps<TData> {
+    columns: ColumnDef<TData, any>[];
     data: TData[];
     totalItems: number;
     page?: number;
@@ -52,26 +53,28 @@ interface DataTableProps<TData, TValue> {
      * when needed.
      */
     setTableOptions?: (table: TableOptions<TData>) => TableOptions<TData>;
+    onRefresh?: () => void;
 }
 
-export function DataTable<TData, TValue>({
-    columns,
-    data,
-    totalItems,
-    page,
-    itemsPerPage,
-    sorting: sortingInitialState,
-    columnFilters: filtersInitialState,
-    onPageChange,
-    onSortChange,
-    onFilterChange,
-    onSearchTermChange,
-    onColumnVisibilityChange,
-    defaultColumnVisibility,
-    facetedFilters,
-    disableViewOptions,
-    setTableOptions,
-}: DataTableProps<TData, TValue>) {
+export function DataTable<TData>({
+                                     columns,
+                                     data,
+                                     totalItems,
+                                     page,
+                                     itemsPerPage,
+                                     sorting: sortingInitialState,
+                                     columnFilters: filtersInitialState,
+                                     onPageChange,
+                                     onSortChange,
+                                     onFilterChange,
+                                     onSearchTermChange,
+                                     onColumnVisibilityChange,
+                                     defaultColumnVisibility,
+                                     facetedFilters,
+                                     disableViewOptions,
+                                     setTableOptions,
+                                     onRefresh,
+                                 }: DataTableProps<TData>) {
     const [sorting, setSorting] = React.useState<SortingState>(sortingInitialState || []);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(filtersInitialState || []);
     const { activeChannel } = useChannel();
@@ -160,15 +163,18 @@ export function DataTable<TData, TValue>({
                                 const column = table.getColumn(f.id);
                                 const currency = activeChannel?.defaultCurrencyCode ?? 'USD';
                                 return <DataTableFilterBadge
-                                            key={f.id}
-                                            filter={f}
-                                            currencyCode={currency}
-                                            dataType={(column?.columnDef.meta as any)?.fieldInfo?.type ?? 'String'}
-                                            onRemove={() => setColumnFilters(old => old.filter(x => x.id !== f.id))} />;
+                                    key={f.id}
+                                    filter={f}
+                                    currencyCode={currency}
+                                    dataType={(column?.columnDef.meta as any)?.fieldInfo?.type ?? 'String'}
+                                    onRemove={() => setColumnFilters(old => old.filter(x => x.id !== f.id))} />;
                             })}
                     </div>
                 </div>
-                {!disableViewOptions && <DataTableViewOptions table={table} />}
+                <div className="flex items-center justify-start gap-2">
+                    {!disableViewOptions && <DataTableViewOptions table={table} />}
+                    {onRefresh && <RefreshButton onRefresh={onRefresh} />}
+                </div>
             </div>
             <div className="rounded-md border my-2">
                 <Table>

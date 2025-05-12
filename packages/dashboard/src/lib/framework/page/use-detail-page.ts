@@ -26,6 +26,14 @@ type RemoveNullFields<T> = {
     [K in keyof T]: RemoveNull<T[K]>;
 };
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * @docsCategory hooks
+ * @docsPage useDetailPage
+ * @since 3.3.0
+ */
 export interface DetailPageOptions<
     T extends TypedDocumentNode<any, any>,
     C extends TypedDocumentNode<any, any>,
@@ -114,6 +122,14 @@ export type DetailPageEntity<
     translations: DetailPageTranslations<T, EntityField>;
 };
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * @docsCategory hooks
+ * @docsPage useDetailPage
+ * @since 3.3.0
+ */
 export interface UseDetailPageResult<
     T extends TypedDocumentNode<any, any>,
     C extends TypedDocumentNode<any, any>,
@@ -130,8 +146,72 @@ export interface UseDetailPageResult<
 
 /**
  * @description
+ * **Status: Developer Preview**
+ *
  * This hook is used to create an entity detail page which can read
  * and update an entity.
+ *
+ * @example
+ * ```ts
+ * const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+ *     queryDocument: paymentMethodDetailDocument,
+ *     createDocument: createPaymentMethodDocument,
+ *     updateDocument: updatePaymentMethodDocument,
+ *     setValuesForUpdate: entity => {
+ *         return {
+ *             id: entity.id,
+ *             enabled: entity.enabled,
+ *             name: entity.name,
+ *             code: entity.code,
+ *             description: entity.description,
+ *             checker: entity.checker?.code
+ *                 ? {
+ *                       code: entity.checker?.code,
+ *                       arguments: entity.checker?.args,
+ *                   }
+ *                 : null,
+ *             handler: entity.handler?.code
+ *                 ? {
+ *                       code: entity.handler?.code,
+ *                       arguments: entity.handler?.args,
+ *                   }
+ *                 : null,
+ *             translations: entity.translations.map(translation => ({
+ *                 id: translation.id,
+ *                 languageCode: translation.languageCode,
+ *                 name: translation.name,
+ *                 description: translation.description,
+ *             })),
+ *             customFields: entity.customFields,
+ *         };
+ *     },
+ *     transformCreateInput: input => {
+ *         return {
+ *             ...input,
+ *             checker: input.checker?.code ? input.checker : undefined,
+ *             handler: input.handler,
+ *         };
+ *     },
+ *     params: { id: params.id },
+ *     onSuccess: async data => {
+ *         toast.success(i18n.t('Successfully updated payment method'));
+ *         resetForm();
+ *         if (creatingNewEntity) {
+ *             await navigate({ to: `../$id`, params: { id: data.id } });
+ *         }
+ *     },
+ *     onError: err => {
+ *         toast.error(i18n.t('Failed to update payment method'), {
+ *             description: err instanceof Error ? err.message : 'Unknown error',
+ *         });
+ *     },
+ * });
+ * ```
+ *
+ * @docsCategory hooks
+ * @docsPage useDetailPage
+ * @docsWeight 0
+ * @since 3.3.0
  */
 export function useDetailPage<
     T extends TypedDocumentNode<any, any>,
@@ -178,6 +258,7 @@ export function useDetailPage<
                 onSuccess?.((data as any)[createMutationName]);
             }
         },
+        onError,
     });
 
     const updateMutation = useMutation({

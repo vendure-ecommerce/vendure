@@ -3,7 +3,17 @@ import { ResultOf, graphql } from '@/graphql/graphql.js';
 import { useUserSettings } from '@/hooks/use-user-settings.js';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import * as React from 'react';
+import { useAuth } from '@/hooks/use-auth.js';
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * @docsCategory hooks
+ * @docsPage useAuth
+ * @docsWeight 0
+ * @since 3.3.0
+ */
 export interface AuthContext {
     status: 'authenticated' | 'verifying' | 'unauthenticated';
     authenticationError?: string;

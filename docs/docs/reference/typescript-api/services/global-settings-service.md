@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## GlobalSettingsService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/global-settings.service.ts" sourceLine="22" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/global-settings.service.ts" sourceLine="23" packageName="@vendure/core" />
 
 Contains methods relating to the <a href='/reference/typescript-api/entities/global-settings#globalsettings'>GlobalSettings</a> entity.
 

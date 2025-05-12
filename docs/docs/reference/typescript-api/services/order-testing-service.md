@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## OrderTestingService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/order-testing.service.ts" sourceLine="34" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/order-testing.service.ts" sourceLine="35" packageName="@vendure/core" />
 
 This service is responsible for creating temporary mock Orders against which tests can be run, such as
 testing a ShippingMethod or Promotion.

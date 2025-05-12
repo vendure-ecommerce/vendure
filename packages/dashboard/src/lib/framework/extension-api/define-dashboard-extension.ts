@@ -1,13 +1,13 @@
-import { registerDashboardWidget } from '@/framework/dashboard-widget/widget-extensions.js';
-import { DashboardExtension } from '@/framework/extension-api/extension-api-types.js';
-import { addNavMenuItem, NavMenuItem } from '@/framework/nav-menu/nav-menu-extensions.js';
-import { registerRoute } from '@/framework/page/page-api.js';
-
+import { registerDashboardWidget } from '../dashboard-widget/widget-extensions.js';
 import {
     registerDashboardActionBarItem,
     registerDashboardPageBlock,
 } from '../layout-engine/layout-extensions.js';
+import { addNavMenuItem, NavMenuItem } from '../nav-menu/nav-menu-extensions.js';
+import { registerRoute } from '../page/page-api.js';
 import { globalRegistry } from '../registry/global-registry.js';
+
+import { DashboardExtension } from './extension-api-types.js';
 
 globalRegistry.register('extensionSourceChangeCallbacks', new Set<() => void>());
 globalRegistry.register('registerDashboardExtensionCallbacks', new Set<() => void>());
@@ -22,6 +22,16 @@ export function executeDashboardExtensionCallbacks() {
     }
 }
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * The main entry point for extensions to the React-based dashboard.
+ *
+ *
+ * @docsCategory extensions
+ * @since 3.3.0
+ */
 export function defineDashboardExtension(extension: DashboardExtension) {
     globalRegistry.get('registerDashboardExtensionCallbacks').add(() => {
         if (extension.routes) {
