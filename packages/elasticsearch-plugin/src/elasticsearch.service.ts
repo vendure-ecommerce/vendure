@@ -198,42 +198,22 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             );
         }
 
-        if (groupByProduct) {
+        if (groupByProduct || groupBySKU) {
             try {
                 const { body }: { body: SearchResponseBody<VariantIndexItem> } = await this.client.search({
                     index: indexPrefix + VARIANT_INDEX_NAME,
                     body: elasticSearchBody,
                 });
-                const totalItems = await this.totalHits(ctx, input, groupByProduct);
+
+                var totalItems 
+                if (groupByProduct)
+                    totalItems = await this.totalHits(ctx, input, groupByProduct);
+                else if (groupBySKU)
+                    totalItems = await this.totalHits(ctx, input, groupBySKU); 
+
                 await this.eventBus.publish(new SearchEvent(ctx, input));
                 return {
                     items: body.hits.hits.map(hit => this.mapProductToSearchResult(hit)),
-                    totalItems,
-                };
-            } catch (e: any) {
-                if (e.meta.body.error.type && e.meta.body.error.type === 'search_phase_execution_exception') {
-                    // Log runtime error of the script exception instead of stacktrace
-                    Logger.error(
-                        e.message,
-                        loggerCtx,
-                        JSON.stringify(e.meta.body.error.root_cause || [], null, 2),
-                    );
-                    Logger.verbose(JSON.stringify(e.meta.body.error.failed_shards || [], null, 2), loggerCtx);
-                } else {
-                    Logger.error(e.message, loggerCtx, e.stack);
-                }
-                throw e;
-            }
-        } else if (groupBySKU) {
-            try {
-                const { body }: { body: SearchResponseBody<VariantIndexItem> } = await this.client.search({
-                    index: indexPrefix + VARIANT_INDEX_NAME,
-                    body: elasticSearchBody,
-                });
-                const totalItems = await this.totalHits(ctx, input, groupBySKU);
-                await this.eventBus.publish(new SearchEvent(ctx, input));
-                return {
-                    items: body.hits.hits.map(hit => this.mapSKUToSearchResult(hit)),
                     totalItems,
                 };
             } catch (e: any) {
@@ -351,9 +331,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         return facetValues.map(facetValue => {
             const bucket = buckets.find(b => b.key.toString() === facetValue.id.toString());
             let count;
-            if (groupByProduct) {
-                count = bucket ? bucket.total.value : 0;
-            } else if (groupBySKU) {
+            if (groupByProduct || groupBySKU) {
                 count = bucket ? bucket.total.value : 0;
             } else {
                 count = bucket ? bucket.doc_count : 0;
@@ -389,9 +367,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         return collections.map(collection => {
             const bucket = buckets.find(b => b.key.toString() === collection.id.toString());
             let count;
-            if (groupByProduct) {
-                count = bucket ? bucket.total.value : 0;
-            } else if (groupBySKU) {
+            if (groupByProduct || groupBySKU) {
                 count = bucket ? bucket.total.value : 0;
             } else {
                 count = bucket ? bucket.doc_count : 0;
