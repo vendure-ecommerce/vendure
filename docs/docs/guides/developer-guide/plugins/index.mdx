@@ -308,6 +308,10 @@ We can then import this types file in our plugin's main file:
 import './types';
 ```
 
+:::note
+Custom fields are not solely restricted to Vendure's native entities though, it's also possible to add support for custom fields to your own custom entities. This way other plugins would be able to extend our example `WishlistItem`. See: [Supporting custom fields](/guides/developer-guide/database-entity/#supporting-custom-fields) 
+:::
+
 ### Step 4: Create a service
 
 A "service" is a class which houses the bulk of the business logic of any plugin. A plugin can define multiple services if needed, but each service should be responsible for a single unit of functionality, such as dealing with a particular entity, or performing a particular task.

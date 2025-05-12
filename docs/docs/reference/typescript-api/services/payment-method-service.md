@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## PaymentMethodService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/payment-method.service.ts" sourceLine="46" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/payment-method.service.ts" sourceLine="47" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a> entities.
 
@@ -33,6 +33,7 @@ class PaymentMethodService {
         handler: PaymentMethodHandler;
         checker: PaymentMethodEligibilityChecker | null;
     }>;
+    getActivePaymentMethods(ctx: RequestContext) => Promise<PaymentMethod[]>;
 }
 ```
 
@@ -95,7 +96,12 @@ class PaymentMethodService {
 
 ### getMethodAndOperations
 
-<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, method: string) => Promise&#60;{         paymentMethod: <a href='/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>;         handler: <a href='/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>;         checker: <a href='/reference/typescript-api/payment/payment-method-eligibility-checker#paymentmethodeligibilitychecker'>PaymentMethodEligibilityChecker</a> | null;     }&#62;`}   />
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, method: string) => Promise&#60;{         paymentMethod: <a href='/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>;         handler: <a href='/reference/typescript-api/payment/payment-method-handler#paymentmethodhandler'>PaymentMethodHandler</a>;         checker: <a href='/reference/typescript-api/payment/payment-method-eligibility-checker#paymentmethodeligibilitychecker'>PaymentMethodEligibilityChecker</a> | null;     }&#62;`}   />
+
+
+### getActivePaymentMethods
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) => Promise&#60;<a href='/reference/typescript-api/entities/payment-method#paymentmethod'>PaymentMethod</a>[]&#62;`}   />
 
 
 

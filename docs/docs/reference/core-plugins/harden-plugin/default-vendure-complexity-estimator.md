@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## defaultVendureComplexityEstimator
 
-<GenerationInfo sourceFile="packages/harden-plugin/src/middleware/query-complexity-plugin.ts" sourceLine="94" packageName="@vendure/harden-plugin" />
+<GenerationInfo sourceFile="packages/harden-plugin/src/middleware/query-complexity-plugin.ts" sourceLine="98" packageName="@vendure/harden-plugin" />
 
 A complexity estimator which takes into account List and PaginatedList types and can
 be further configured by providing a customComplexityFactors object.

@@ -18,6 +18,7 @@ import { filter, map, takeUntil } from 'rxjs/operators';
     templateUrl: './job-list.component.html',
     styleUrls: ['./job-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class JobListComponent
     extends BaseListComponent<GetAllJobsQuery, ItemOf<GetAllJobsQuery, 'jobs'>>

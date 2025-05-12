@@ -27,6 +27,7 @@ const VALID_SCOPES: string[] = [
     'common',
     'core',
     'create',
+    'dashboard',
     'elasticsearch-plugin',
     'email-plugin',
     'email',
@@ -37,6 +38,8 @@ const VALID_SCOPES: string[] = [
     'harden-plugin',
     'stellate-plugin',
     'sentry-plugin',
+    'graphiql-plugin',
+    'telemetry-plugin',
 ];
 
 const mainTemplate = fs.readFileSync(path.join(__dirname, 'template.hbs'), 'utf-8');

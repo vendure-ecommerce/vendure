@@ -6,14 +6,15 @@ import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
 import { InvalidCredentialsError } from '../../common/error/generated-graphql-admin-errors';
 import {
-    InvalidCredentialsError as ShopInvalidCredentialsError,
     NotVerifiedError,
+    InvalidCredentialsError as ShopInvalidCredentialsError,
 } from '../../common/error/generated-graphql-shop-errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { AuthenticationStrategy } from '../../config/auth/authentication-strategy';
 import {
+    NATIVE_AUTH_STRATEGY_NAME,
     NativeAuthenticationData,
     NativeAuthenticationStrategy,
-    NATIVE_AUTH_STRATEGY_NAME,
 } from '../../config/auth/native-authentication-strategy';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -34,6 +35,7 @@ import { SessionService } from './session.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class AuthService {
     constructor(
         private connection: TransactionalConnection,

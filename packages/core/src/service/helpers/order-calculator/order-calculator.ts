@@ -7,6 +7,7 @@ import { RequestContext } from '../../../api/common/request-context';
 import { RequestContextCacheService } from '../../../cache/request-context-cache.service';
 import { CacheKey } from '../../../common/constants';
 import { InternalServerError } from '../../../common/error/errors';
+import { Instrument } from '../../../common/instrument-decorator';
 import { idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
 import { OrderLine, TaxRate } from '../../../entity';
@@ -32,6 +33,7 @@ import { prorate } from './prorate';
  * @docsCategory service-helpers
  */
 @Injectable()
+@Instrument()
 export class OrderCalculator {
     constructor(
         private configService: ConfigService,
@@ -90,7 +92,6 @@ export class OrderCalculator {
             // Then test and apply promotions
             const totalBeforePromotions = order.subTotal;
             await this.applyPromotions(ctx, order, promotions);
-
 
             if (order.subTotal !== totalBeforePromotions) {
                 // Finally, re-calculate taxes because the promotions may have
@@ -213,7 +214,6 @@ export class OrderCalculator {
         order: Order,
         promotions: Promotion[],
     ): Promise<void> {
-
         const orderHasDistributedPromotions = !!order.discounts.find(
             adjustment => adjustment.type === AdjustmentType.DISTRIBUTED_ORDER_PROMOTION,
         );

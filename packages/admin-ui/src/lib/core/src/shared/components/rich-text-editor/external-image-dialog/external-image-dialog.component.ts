@@ -32,6 +32,7 @@ export interface ExternalAssetChange {
     templateUrl: './external-image-dialog.component.html',
     styleUrls: ['./external-image-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ExternalImageDialogComponent implements OnInit, Dialog<ExternalImageAttrs> {
     form: UntypedFormGroup;

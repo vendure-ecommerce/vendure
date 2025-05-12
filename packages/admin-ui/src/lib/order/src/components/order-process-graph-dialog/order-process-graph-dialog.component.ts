@@ -13,6 +13,7 @@ import { Observable } from 'rxjs';
     templateUrl: './order-process-graph-dialog.component.html',
     styleUrls: ['./order-process-graph-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OrderProcessGraphDialogComponent implements OnInit, Dialog<void> {
     activeState: string;

@@ -43,6 +43,7 @@ interface ProductOrVariant {
     templateUrl: './bulk-add-facet-values-dialog.component.html',
     styleUrls: ['./bulk-add-facet-values-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class BulkAddFacetValuesDialogComponent
     implements OnInit, OnDestroy, Dialog<FacetWithValuesFragment[]>

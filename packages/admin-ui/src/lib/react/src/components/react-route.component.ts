@@ -16,8 +16,7 @@ export const REACT_ROUTE_COMPONENT_OPTIONS = new InjectionToken<ReactRouteCompon
     `,
     styleUrls: ['./react-global-styles.scss'],
     encapsulation: ViewEncapsulation.None,
-    standalone: true,
-    imports: [ReactComponentHostDirective, RouteComponent, SharedModule],
+    imports: [ReactComponentHostDirective, RouteComponent, SharedModule]
 })
 export class ReactRouteComponent {
     protected props = inject(REACT_ROUTE_COMPONENT_OPTIONS).props;

@@ -64,6 +64,7 @@ type T1 = T['stockLevels'];
     templateUrl: './product-variant-detail.component.html',
     styleUrls: ['./product-variant-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ProductVariantDetailComponent
     extends TypedBaseDetailComponent<typeof GetProductVariantDetailDocument, 'productVariant'>

@@ -12,19 +12,19 @@ import {
     FulfillmentStateTransitionError,
     InvalidFulfillmentHandlerError,
 } from '../../common/error/generated-graphql-admin-errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
-import { Order } from '../../entity/order/order.entity';
-import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { FulfillmentLine } from '../../entity/order-line-reference/fulfillment-line.entity';
+import { OrderLine } from '../../entity/order-line/order-line.entity';
+import { Order } from '../../entity/order/order.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { FulfillmentEvent } from '../../event-bus/events/fulfillment-event';
 import { FulfillmentStateTransitionEvent } from '../../event-bus/events/fulfillment-state-transition-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { FulfillmentState } from '../helpers/fulfillment-state-machine/fulfillment-state';
 import { FulfillmentStateMachine } from '../helpers/fulfillment-state-machine/fulfillment-state-machine';
-
 /**
  * @description
  * Contains methods relating to {@link Fulfillment} entities.
@@ -32,6 +32,7 @@ import { FulfillmentStateMachine } from '../helpers/fulfillment-state-machine/fu
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class FulfillmentService {
     constructor(
         private connection: TransactionalConnection,

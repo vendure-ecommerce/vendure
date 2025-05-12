@@ -12,6 +12,7 @@ import { unique } from '@vendure/common/lib/unique';
 import { In } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
+import { Instrument } from '../../common/instrument-decorator';
 import { createSelfRefreshingCache, SelfRefreshingCache } from '../../common/self-refreshing-cache';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
@@ -34,6 +35,7 @@ import { patchEntity } from '../helpers/utils/patch-entity';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class ZoneService {
     /**
      * We cache all Zones to avoid hitting the DB many times per request.

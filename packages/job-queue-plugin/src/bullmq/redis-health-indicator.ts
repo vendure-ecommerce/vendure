@@ -2,7 +2,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { HealthCheckError, HealthIndicator, HealthIndicatorResult } from '@nestjs/terminus';
 import { Logger } from '@vendure/core';
 import { RedisConnection } from 'bullmq';
-import { timer } from 'rxjs';
 
 import { BULLMQ_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { BullMQPluginOptions } from './types';
@@ -14,7 +13,7 @@ export class RedisHealthIndicator extends HealthIndicator {
         super();
     }
     async isHealthy(key: string, timeoutMs = 5000): Promise<HealthIndicatorResult> {
-        const connection = new RedisConnection(this.options.connection);
+        const connection = new RedisConnection(this.options.connection ?? {});
         const pingResult = await new Promise(async (resolve, reject) => {
             try {
                 connection.on('error', err => {

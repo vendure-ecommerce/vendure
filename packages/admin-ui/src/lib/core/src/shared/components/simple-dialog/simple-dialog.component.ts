@@ -10,6 +10,7 @@ import { Dialog, DialogButtonConfig } from '../../../providers/modal/modal.types
     templateUrl: './simple-dialog.component.html',
     styleUrls: ['./simple-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class SimpleDialogComponent implements Dialog<any> {
     resolveWith: (result?: any) => void;

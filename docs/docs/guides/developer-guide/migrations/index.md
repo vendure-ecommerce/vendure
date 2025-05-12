@@ -119,9 +119,11 @@ Running the `vendure migrate` command also uses a very similar script internally
 
 ```ts title="migration.ts"
 import { generateMigration, revertLastMigration, runMigrations } from '@vendure/core';
-import program from 'commander';
+import { Command } from 'commander';
 
 import { config } from './src/vendure-config';
+
+const program = new Command();
 
 program
     .command('generate <name>')

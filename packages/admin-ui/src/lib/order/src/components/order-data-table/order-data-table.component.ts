@@ -10,6 +10,7 @@ import { OrderTotalColumnComponent } from './order-total-column.component';
         './order-data-table.component.scss',
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OrderDataTableComponent extends DataTable2Component<OrderDetailFragment> {
     @ContentChildren(OrderTotalColumnComponent) totalColumns: QueryList<OrderTotalColumnComponent<any>>;

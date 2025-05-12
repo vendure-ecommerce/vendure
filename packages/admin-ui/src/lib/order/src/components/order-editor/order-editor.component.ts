@@ -49,6 +49,7 @@ import { SelectShippingMethodDialogComponent } from '../select-shipping-method-d
     templateUrl: './order-editor.component.html',
     styleUrls: ['./order-editor.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OrderEditorComponent
     extends TypedBaseDetailComponent<typeof OrderDetailQueryDocument, 'order'>

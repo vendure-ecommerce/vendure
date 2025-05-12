@@ -3,21 +3,21 @@ import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
-    Asset,
     DefaultJobQueuePlugin,
     DefaultLogger,
     DefaultSearchPlugin,
     dummyPaymentHandler,
-    FacetValue,
     LanguageCode,
     LogLevel,
+    DefaultSchedulerPlugin,
     VendureConfig,
+    cleanSessionsTask,
 } from '@vendure/core';
-import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
+import { ScheduledTask } from '@vendure/core/dist/scheduler/scheduled-task';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
 import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
 import 'dotenv/config';
-import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
+import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
 import path from 'path';
 import { DataSourceOptions } from 'typeorm';
 
@@ -63,8 +63,35 @@ export const devConfig: VendureConfig = {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
 
-    customFields: {},
-    logger: new DefaultLogger({ level: LogLevel.Info }),
+    customFields: {
+        Product: [
+            {
+                name: 'infoUrl',
+                type: 'string',
+                label: [{ languageCode: LanguageCode.en, value: 'Info URL' }],
+                description: [{ languageCode: LanguageCode.en, value: 'Info URL' }],
+            },
+            {
+                name: 'downloadable',
+                type: 'boolean',
+                label: [{ languageCode: LanguageCode.en, value: 'Downloadable' }],
+                description: [{ languageCode: LanguageCode.en, value: 'Downloadable' }],
+            },
+            {
+                name: 'shortName',
+                type: 'localeString',
+                label: [{ languageCode: LanguageCode.en, value: 'Short Name' }],
+                description: [{ languageCode: LanguageCode.en, value: 'Short Name' }],
+            },
+            {
+                name: 'lastUpdated',
+                type: 'datetime',
+                label: [{ languageCode: LanguageCode.en, value: 'Last Updated' }],
+                description: [{ languageCode: LanguageCode.en, value: 'Last Updated' }],
+            },
+        ],
+    },
+    logger: new DefaultLogger({ level: LogLevel.Verbose }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
@@ -73,6 +100,7 @@ export const devConfig: VendureConfig = {
         //     platformFeePercent: 10,
         //     platformFeeSKU: 'FEE',
         // }),
+        GraphiqlPlugin.init(),
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
@@ -87,6 +115,7 @@ export const devConfig: VendureConfig = {
         //     port: 9200,
         //     bufferUpdates: true,
         // }),
+        DefaultSchedulerPlugin.init({}),
         EmailPlugin.init({
             devMode: true,
             route: 'mailbox',
@@ -102,6 +131,7 @@ export const devConfig: VendureConfig = {
         AdminUiPlugin.init({
             route: 'admin',
             port: 5001,
+            adminUiConfig: {},
             // Un-comment to compile a custom admin ui
             // app: compileUiExtensions({
             //     outputPath: path.join(__dirname, './custom-admin-ui'),

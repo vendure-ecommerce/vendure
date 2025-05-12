@@ -8,6 +8,7 @@ import { DataTable2ColumnComponent } from '../data-table-2/data-table-column.com
     templateUrl: './data-table-column-picker.component.html',
     styleUrls: ['./data-table-column-picker.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DataTableColumnPickerComponent {
     @Input() columns: Array<DataTable2ColumnComponent<any>>;
