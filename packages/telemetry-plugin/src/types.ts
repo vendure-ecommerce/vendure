@@ -35,6 +35,10 @@ export interface TelemetryPluginOptions {
     loggerOptions?: OtelLoggerOptions;
     /**
      * @description
+     * **Status: Developer Preview**
+     *
+     * This API may change in a future release.
+     *
      * Method hooks allow you to add extra telemetry actions to specific methods.
      * To define hooks on a method, use the {@link registerMethodHooks} function.
      *
@@ -61,6 +65,8 @@ export interface TelemetryPluginOptions {
      *   ],
      * });
      * ```
+     *
+     * @experimental
      */
     methodHooks?: Array<MethodHookConfig<any>>;
 }

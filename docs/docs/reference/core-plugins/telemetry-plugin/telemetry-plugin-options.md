@@ -26,7 +26,7 @@ interface TelemetryPluginOptions {
 
 ### loggerOptions
 
-<MemberInfo kind="property" type={`OtelLoggerOptions`}   />
+<MemberInfo kind="property" type={`<a href='/reference/core-plugins/telemetry-plugin/otel-logger#otelloggeroptions'>OtelLoggerOptions</a>`}   />
 
 The options for the OtelLogger.
 
@@ -43,7 +43,11 @@ TelemetryPlugin.init({
 ```
 ### methodHooks
 
-<MemberInfo kind="property" type={`Array&#60;MethodHookConfig&#60;any&#62;&#62;`}   />
+<MemberInfo kind="property" type={`Array&#60;MethodHookConfig&#60;any&#62;&#62;`}  experimental="true" />
+
+**Status: Developer Preview**
+
+This API may change in a future release.
 
 Method hooks allow you to add extra telemetry actions to specific methods.
 To define hooks on a method, use the <a href='/reference/core-plugins/telemetry-plugin/register-method-hooks#registermethodhooks'>registerMethodHooks</a> function.

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## TelemetryPlugin
 
-<GenerationInfo sourceFile="packages/telemetry-plugin/src/telemetry.plugin.ts" sourceLine="102" packageName="@vendure/telemetry-plugin" since="3.3.0" />
+<GenerationInfo sourceFile="packages/telemetry-plugin/src/telemetry.plugin.ts" sourceLine="107" packageName="@vendure/telemetry-plugin" since="3.3.0" />
 
 The TelemetryPlugin is used to instrument the Vendure application and collect telemetry data using
 [OpenTelemetry](https://opentelemetry.io/).
@@ -21,6 +21,11 @@ The TelemetryPlugin is used to instrument the Vendure application and collect te
 ```
 npm install @vendure/telemetry-plugin
 ```
+
+:::info
+For a complete guide to setting up and working with Open Telemetry, see
+the [Implementing Open Telemetry guide](/guides/how-to/telemetry/).
+:::
 
 ## Configuration
 
