@@ -1,3 +1,4 @@
+import { VendureImage } from '@/components/shared/vendure-image.js';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.js';
 import { ResultOf } from '@/graphql/graphql.js';
 import {
@@ -9,9 +10,8 @@ import {
 } from '@tanstack/react-table';
 import { useState } from 'react';
 import { orderDetailDocument, orderLineFragment } from '../orders.graphql.js';
-import { VendureImage } from '@/components/shared/vendure-image.js';
-import { Money } from '@/components/data-display/money.js';
-import { Trans } from '@/lib/trans.js';
+import { MoneyGrossNet } from './money-gross-net.js';
+import { OrderTableTotals } from './order-table-totals.js';
 
 type OrderFragment = NonNullable<ResultOf<typeof orderDetailDocument>['order']>;
 type OrderLineFragment = ResultOf<typeof orderLineFragment>;
@@ -46,18 +46,9 @@ export function OrderTable({ order }: OrderTableProps) {
             header: 'Unit price',
             accessorKey: 'unitPriceWithTax',
             cell: ({ cell, row }) => {
-                const value = cell.getValue();
+                const value = row.original.unitPriceWithTax;
                 const netValue = row.original.unitPrice;
-                return (
-                    <div className="flex flex-col gap-1">
-                        <div>
-                            <Money value={value} currencyCode={currencyCode} />
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                            <Money value={netValue} currencyCode={currencyCode} />
-                        </div>
-                    </div>
-                );
+                return <MoneyGrossNet priceWithTax={value} price={netValue} currencyCode={currencyCode} />;
             },
         },
         {
@@ -68,18 +59,9 @@ export function OrderTable({ order }: OrderTableProps) {
             header: 'Total',
             accessorKey: 'linePriceWithTax',
             cell: ({ cell, row }) => {
-                const value = cell.getValue();
+                const value = row.original.linePriceWithTax;
                 const netValue = row.original.linePrice;
-                return (
-                    <div className="flex flex-col gap-1">
-                        <div>
-                            <Money value={value} currencyCode={currencyCode} />
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                            <Money value={netValue} currencyCode={currencyCode} />
-                        </div>
-                    </div>
-                );
+                return <MoneyGrossNet priceWithTax={value} price={netValue} currencyCode={currencyCode} />;
             },
         },
     ];
@@ -137,30 +119,7 @@ export function OrderTable({ order }: OrderTableProps) {
                                 </TableCell>
                             </TableRow>
                         )}
-                        <TableRow>
-                            <TableCell colSpan={columns.length - 1} className="h-12">
-                                <Trans>Sub total</Trans>
-                            </TableCell>
-                            <TableCell colSpan={1} className="h-12">
-                                <Money value={order.subTotalWithTax} currencyCode={currencyCode} />
-                            </TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell colSpan={columns.length - 1} className="h-12">
-                                <Trans>Shipping</Trans>
-                            </TableCell>
-                            <TableCell colSpan={1} className="h-12">
-                                <Money value={order.shippingWithTax} currencyCode={currencyCode} />
-                            </TableCell>
-                        </TableRow>
-                        <TableRow>
-                            <TableCell colSpan={columns.length - 1} className="h-12 font-bold">
-                                <Trans>Total</Trans>
-                            </TableCell>
-                            <TableCell colSpan={1} className="h-12 font-bold">
-                                <Money value={order.totalWithTax} currencyCode={currencyCode} />
-                            </TableCell>
-                        </TableRow>
+                        <OrderTableTotals order={order} columnCount={columns.length} />
                     </TableBody>
                 </Table>
             </div>

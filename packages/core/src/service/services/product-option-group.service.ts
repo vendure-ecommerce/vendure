@@ -9,14 +9,15 @@ import { FindManyOptions, IsNull, Like } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
+import { Instrument } from '../../common/instrument-decorator';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { Logger } from '../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { Product } from '../../entity/product/product.entity';
 import { ProductOptionGroupTranslation } from '../../entity/product-option-group/product-option-group-translation.entity';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
+import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus';
 import { ProductOptionGroupEvent } from '../../event-bus/events/product-option-group-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
@@ -32,6 +33,7 @@ import { ProductOptionService } from './product-option.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class ProductOptionGroupService {
     constructor(
         private connection: TransactionalConnection,

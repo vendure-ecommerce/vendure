@@ -5,7 +5,8 @@
         "sourceMap": true,
         "jsx": "react-jsx",
         "paths": {
-            "@vendure/admin-ui/*": ["../admin-ui/package/*"]
+            "@vendure/admin-ui/*": ["../admin-ui/package/*"],
+            "@plugins/*": ["./test-plugins/*"]
         }
     },
     "exclude": ["node_modules"]

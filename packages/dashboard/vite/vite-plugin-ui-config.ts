@@ -2,7 +2,7 @@ import { AdminUiConfig, VendureConfig } from '@vendure/core';
 import path from 'path';
 import { Plugin } from 'vite';
 
-import { getAdminUiConfig } from './ui-config.js';
+import { getAdminUiConfig } from './utils/ui-config.js';
 import { ConfigLoaderApi, getConfigLoaderApi } from './vite-plugin-config-loader.js';
 
 const virtualModuleId = 'virtual:vendure-ui-config';
@@ -38,7 +38,8 @@ export function uiConfigPlugin({ adminUiConfig }: UiConfigPluginOptions): Plugin
         async load(id) {
             if (id === resolvedVirtualModuleId) {
                 if (!vendureConfig) {
-                    vendureConfig = await configLoaderApi.getVendureConfig();
+                    const result = await configLoaderApi.getVendureConfig();
+                    vendureConfig = result.vendureConfig;
                 }
 
                 const config = getAdminUiConfig(vendureConfig, adminUiConfig);

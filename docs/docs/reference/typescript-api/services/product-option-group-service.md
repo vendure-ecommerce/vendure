@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ProductOptionGroupService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/product-option-group.service.ts" sourceLine="34" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/product-option-group.service.ts" sourceLine="35" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/product-option-group#productoptiongroup'>ProductOptionGroup</a> entities.
 

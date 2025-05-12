@@ -14,16 +14,16 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
     return (
         <I18nProvider>
             <QueryClientProvider client={queryClient}>
-                <ServerConfigProvider>
-                    <UserSettingsProvider>
-                        <ThemeProvider defaultTheme="system">
-                            <AuthProvider>
+                <UserSettingsProvider>
+                    <ThemeProvider defaultTheme="system">
+                        <AuthProvider>
+                            <ServerConfigProvider>
                                 <ChannelProvider>{children}</ChannelProvider>
-                            </AuthProvider>
-                        </ThemeProvider>
-                    </UserSettingsProvider>
-                </ServerConfigProvider>
-                <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
+                            </ServerConfigProvider>
+                        </AuthProvider>
+                    </ThemeProvider>
+                </UserSettingsProvider>
+                {/*<ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />*/}
             </QueryClientProvider>
         </I18nProvider>
     );

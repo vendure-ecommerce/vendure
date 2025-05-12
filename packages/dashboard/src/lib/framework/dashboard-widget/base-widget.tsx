@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { cn } from '@/lib/utils.js';
 import { Trans } from '@/lib/trans.js';
 import { PropsWithChildren, useRef, useEffect, useState, createContext, useContext } from 'react';
+import type React from 'react';
 
 type WidgetDimensions = {
     width: number;

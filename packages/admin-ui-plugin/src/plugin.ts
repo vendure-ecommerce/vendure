@@ -26,12 +26,12 @@ import path from 'path';
 import { adminApiExtensions } from './api/api-extensions';
 import { MetricsResolver } from './api/metrics.resolver';
 import {
+    DEFAULT_APP_PATH,
     defaultAvailableLanguages,
+    defaultAvailableLocales,
     defaultLanguage,
     defaultLocale,
-    DEFAULT_APP_PATH,
     loggerCtx,
-    defaultAvailableLocales,
 } from './constants';
 import { MetricsService } from './service/metrics.service';
 
@@ -259,7 +259,7 @@ export class AdminUiPlugin implements NestModule {
         adminUiServer.use(limiter as any);
         adminUiServer.use(express.static(adminUiAppPath));
         adminUiServer.use((req, res) => {
-            res.sendFile(path.join(adminUiAppPath, 'index.html'));
+            res.sendFile('index.html', { root: adminUiAppPath });
         });
 
         return adminUiServer;

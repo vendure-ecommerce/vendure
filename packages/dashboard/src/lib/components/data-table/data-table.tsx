@@ -2,7 +2,6 @@
 
 import { DataTablePagination } from '@/components/data-table/data-table-pagination.js';
 import { DataTableViewOptions } from '@/components/data-table/data-table-view-options.js';
-import { Badge } from '@/components/ui/badge.js';
 import { Input } from '@/components/ui/input.js';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.js';
 import {
@@ -19,9 +18,12 @@ import {
     VisibilityState,
 } from '@tanstack/react-table';
 import { TableOptions } from '@tanstack/table-core';
-import { CircleX, Filter } from 'lucide-react';
 import React, { Suspense, useEffect } from 'react';
+import { AddFilterMenu } from './add-filter-menu.js';
 import { DataTableFacetedFilter, DataTableFacetedFilterOption } from './data-table-faceted-filter.js';
+import { DataTableFilterBadge } from './data-table-filter-badge.js';
+import { useChannel } from '@/hooks/use-channel.js';
+import { RefreshButton } from '@/components/data-table/refresh-button.js';
 
 export interface FacetedFilter {
     title: string;
@@ -30,8 +32,8 @@ export interface FacetedFilter {
     options?: DataTableFacetedFilterOption[];
 }
 
-interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[];
+interface DataTableProps<TData> {
+    columns: ColumnDef<TData, any>[];
     data: TData[];
     totalItems: number;
     page?: number;
@@ -41,6 +43,7 @@ interface DataTableProps<TData, TValue> {
     onPageChange?: (table: TableType<TData>, page: number, itemsPerPage: number) => void;
     onSortChange?: (table: TableType<TData>, sorting: SortingState) => void;
     onFilterChange?: (table: TableType<TData>, columnFilters: ColumnFilter[]) => void;
+    onColumnVisibilityChange?: (table: TableType<TData>, columnVisibility: VisibilityState) => void;
     onSearchTermChange?: (searchTerm: string) => void;
     defaultColumnVisibility?: VisibilityState;
     facetedFilters?: { [key: string]: FacetedFilter | undefined };
@@ -50,27 +53,31 @@ interface DataTableProps<TData, TValue> {
      * when needed.
      */
     setTableOptions?: (table: TableOptions<TData>) => TableOptions<TData>;
+    onRefresh?: () => void;
 }
 
-export function DataTable<TData, TValue>({
-    columns,
-    data,
-    totalItems,
-    page,
-    itemsPerPage,
-    sorting: sortingInitialState,
-    columnFilters: filtersInitialState,
-    onPageChange,
-    onSortChange,
-    onFilterChange,
-    onSearchTermChange,
-    defaultColumnVisibility,
-    facetedFilters,
-    disableViewOptions,
-    setTableOptions,
-}: DataTableProps<TData, TValue>) {
+export function DataTable<TData>({
+                                     columns,
+                                     data,
+                                     totalItems,
+                                     page,
+                                     itemsPerPage,
+                                     sorting: sortingInitialState,
+                                     columnFilters: filtersInitialState,
+                                     onPageChange,
+                                     onSortChange,
+                                     onFilterChange,
+                                     onSearchTermChange,
+                                     onColumnVisibilityChange,
+                                     defaultColumnVisibility,
+                                     facetedFilters,
+                                     disableViewOptions,
+                                     setTableOptions,
+                                     onRefresh,
+                                 }: DataTableProps<TData>) {
     const [sorting, setSorting] = React.useState<SortingState>(sortingInitialState || []);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(filtersInitialState || []);
+    const { activeChannel } = useChannel();
     const [pagination, setPagination] = React.useState<PaginationState>({
         pageIndex: (page ?? 1) - 1,
         pageSize: itemsPerPage ?? 10,
@@ -117,6 +124,11 @@ export function DataTable<TData, TValue>({
     useEffect(() => {
         onFilterChange?.(table, columnFilters);
     }, [columnFilters]);
+
+    useEffect(() => {
+        onColumnVisibilityChange?.(table, columnVisibility);
+    }, [columnVisibility]);
+
     return (
         <>
             <div className="flex justify-between items-start">
@@ -142,34 +154,27 @@ export function DataTable<TData, TValue>({
                                 />
                             ))}
                         </Suspense>
+                        <AddFilterMenu columns={table.getAllColumns()} />
                     </div>
                     <div className="flex gap-1">
                         {columnFilters
                             .filter(f => !facetedFilters?.[f.id])
                             .map(f => {
-                                const [operator, value] = Object.entries(
-                                    f.value as Record<string, string>,
-                                )[0];
-                                return (
-                                    <Badge key={f.id} className="flex gap-1 items-center" variant="secondary">
-                                        <Filter size="12" className="opacity-50" />
-                                        <div>{f.id}</div>
-                                        <div>{operator}</div>
-                                        <div>{value}</div>
-                                        <button
-                                            className="cursor-pointer"
-                                            onClick={() =>
-                                                setColumnFilters(old => old.filter(x => x.id !== f.id))
-                                            }
-                                        >
-                                            <CircleX size="14" />
-                                        </button>
-                                    </Badge>
-                                );
+                                const column = table.getColumn(f.id);
+                                const currency = activeChannel?.defaultCurrencyCode ?? 'USD';
+                                return <DataTableFilterBadge
+                                    key={f.id}
+                                    filter={f}
+                                    currencyCode={currency}
+                                    dataType={(column?.columnDef.meta as any)?.fieldInfo?.type ?? 'String'}
+                                    onRemove={() => setColumnFilters(old => old.filter(x => x.id !== f.id))} />;
                             })}
                     </div>
                 </div>
-                {!disableViewOptions && <DataTableViewOptions table={table} />}
+                <div className="flex items-center justify-start gap-2">
+                    {!disableViewOptions && <DataTableViewOptions table={table} />}
+                    {onRefresh && <RefreshButton onRefresh={onRefresh} />}
+                </div>
             </div>
             <div className="rounded-md border my-2">
                 <Table>
@@ -182,9 +187,9 @@ export function DataTable<TData, TValue>({
                                             {header.isPlaceholder
                                                 ? null
                                                 : flexRender(
-                                                      header.column.columnDef.header,
-                                                      header.getContext(),
-                                                  )}
+                                                    header.column.columnDef.header,
+                                                    header.getContext(),
+                                                )}
                                         </TableHead>
                                     );
                                 })}

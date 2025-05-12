@@ -4,7 +4,7 @@ An open-source headless commerce platform built on [Node.js](https://nodejs.org)
 
 > [!IMPORTANT]
 > **We're introducing our new React-based Admin Dashboard**</br>
-> Check out our alpha preview now: [v3.2.0 release notes](https://github.com/vendure-ecommerce/vendure/releases/tag/v3.2.0)</br>
+> Check out our beta preview now: [v3.3.0 release notes](https://github.com/vendure-ecommerce/vendure/releases/tag/v3.3.0)</br>
 > We're phasing out our Angular-based Admin UI with support until June 2026:
 > [Read more here](https://vendure.io/blog/2025/02/vendure-react-admin-ui)
 
@@ -50,11 +50,7 @@ vendure/
 
 ### 1. Install top-level dependencies
 
-`npm install --legacy-peer-deps`
-
-Note: the `--legacy-peer-deps` flag is necessary because in the dashboard package there is a dependency "react-day-picker" (from Shadcn/ui) which
-has a peer dependency on React v18, whereas we are using v19 in this repo. The latest version of that library is however not currently
-compatible with shadcn (https://github.com/shadcn-ui/ui/issues/4366).
+`npm install`
 
 The root directory has a `package.json` which contains build-related dependencies for tasks including:
 
@@ -114,7 +110,7 @@ cd packages/dev-server
 If you are making changes to the admin ui, you need to start the admin ui independent from the dev-server:
 
 1. `cd packages/admin-ui`
-2. `npm run start`
+2. `npm run dev`
 3. Go to http://localhost:4200 and log in with "superadmin", "superadmin"
 
 This will auto restart when you make changes to the admin ui. You don't need this step when you just use the admin ui just

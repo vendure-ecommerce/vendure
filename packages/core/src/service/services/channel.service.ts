@@ -23,6 +23,7 @@ import {
     UserInputError,
 } from '../../common/error/errors';
 import { LanguageNotAvailableError } from '../../common/error/generated-graphql-admin-errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { createSelfRefreshingCache, SelfRefreshingCache } from '../../common/self-refreshing-cache';
 import { ChannelAware, ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -44,7 +45,6 @@ import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-build
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { GlobalSettingsService } from './global-settings.service';
-
 /**
  * @description
  * Contains methods relating to {@link Channel} entities.
@@ -52,6 +52,7 @@ import { GlobalSettingsService } from './global-settings.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class ChannelService {
     private allChannels: SelfRefreshingCache<Channel[], [RequestContext]>;
 

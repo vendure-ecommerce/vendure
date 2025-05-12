@@ -28,7 +28,7 @@ import {
     SortingState,
     Table,
 } from '@tanstack/react-table';
-import { AccessorKeyColumnDef, ColumnDef, Row, TableOptions } from '@tanstack/table-core';
+import { AccessorKeyColumnDef, ColumnDef, Row, TableOptions, VisibilityState } from '@tanstack/table-core';
 import { EllipsisIcon, TrashIcon } from 'lucide-react';
 import React, { useMemo } from 'react';
 import { toast } from 'sonner';
@@ -196,6 +196,7 @@ export interface PaginatedListDataTableProps<
     onPageChange: (table: Table<any>, page: number, perPage: number) => void;
     onSortChange: (table: Table<any>, sorting: SortingState) => void;
     onFilterChange: (table: Table<any>, filters: ColumnFiltersState) => void;
+    onColumnVisibilityChange?: (table: Table<any>, columnVisibility: VisibilityState) => void;
     facetedFilters?: FacetedFilterConfig<T>;
     rowActions?: RowAction<PaginatedListItemFields<T>>[];
     disableViewOptions?: boolean;
@@ -227,6 +228,7 @@ export function PaginatedListDataTable<
     onPageChange,
     onSortChange,
     onFilterChange,
+    onColumnVisibilityChange,
     facetedFilters,
     rowActions,
     disableViewOptions,
@@ -331,6 +333,10 @@ export function PaginatedListDataTable<
                 meta: { fieldInfo, isCustomField },
                 enableColumnFilter,
                 enableSorting: fieldInfo.isScalar,
+                // Filtering is done on the server side, but we set this to 'equalsString' because
+                // otherwise the TanStack Table with apply an "auto" function which somehow
+                // prevents certain filters from working.
+                filterFn: 'equalsString',
                 cell: ({ cell, row }) => {
                     const value = !isCustomField
                         ? cell.getValue()
@@ -416,11 +422,13 @@ export function PaginatedListDataTable<
                 onPageChange={onPageChange}
                 onSortChange={onSortChange}
                 onFilterChange={onFilterChange}
+                onColumnVisibilityChange={onColumnVisibilityChange}
                 onSearchTermChange={onSearchTermChange ? term => setSearchTerm(term) : undefined}
                 defaultColumnVisibility={columnVisibility}
                 facetedFilters={facetedFilters}
                 disableViewOptions={disableViewOptions}
                 setTableOptions={setTableOptions}
+                onRefresh={refetchPaginatedList}
             />
         </PaginatedListContext.Provider>
     );
@@ -434,6 +442,7 @@ function getRowActions(
         id: 'actions',
         accessorKey: 'actions',
         header: 'Actions',
+        enableColumnFilter: false,
         cell: ({ row }) => {
             return (
                 <DropdownMenu>

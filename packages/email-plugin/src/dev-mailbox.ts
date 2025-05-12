@@ -20,7 +20,7 @@ export class DevMailbox {
         const { outputPath, handlers } = options;
         const server = Router();
         server.get('/', (req, res) => {
-            res.sendFile(path.join(__dirname, '../../dev-mailbox.html'));
+            res.sendFile('dev-mailbox.html', { root: path.join(__dirname, '../..') });
         });
         server.get('/list', async (req, res) => {
             const list = await fs.readdir(outputPath);

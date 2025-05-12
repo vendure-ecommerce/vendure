@@ -1,6 +1,7 @@
 import { ApolloServerPlugin, GraphQLRequestListener, GraphQLServerContext } from '@apollo/server';
 import { DocumentNode, GraphQLNamedType, isUnionType } from 'graphql';
 
+import { Instrument } from '../../common/instrument-decorator';
 import { AssetStorageStrategy } from '../../config/asset-storage-strategy/asset-storage-strategy';
 import { ConfigService } from '../../config/config.service';
 import { GraphqlValueTransformer } from '../common/graphql-value-transformer';
@@ -9,6 +10,7 @@ import { GraphqlValueTransformer } from '../common/graphql-value-transformer';
  * Transforms outputs so that any Asset instances are run through the {@link AssetStorageStrategy.toAbsoluteUrl}
  * method before being returned in the response.
  */
+@Instrument()
 export class AssetInterceptorPlugin implements ApolloServerPlugin {
     private graphqlValueTransformer: GraphqlValueTransformer;
     private readonly toAbsoluteUrl: AssetStorageStrategy['toAbsoluteUrl'] | undefined;

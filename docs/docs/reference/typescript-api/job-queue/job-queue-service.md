@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## JobQueueService
 
-<GenerationInfo sourceFile="packages/core/src/job-queue/job-queue.service.ts" sourceLine="48" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/job-queue/job-queue.service.ts" sourceLine="49" packageName="@vendure/core" />
 
 The JobQueueService is used to create new <a href='/reference/typescript-api/job-queue/#jobqueue'>JobQueue</a> instances and access
 existing jobs.

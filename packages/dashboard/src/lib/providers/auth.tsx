@@ -3,7 +3,17 @@ import { ResultOf, graphql } from '@/graphql/graphql.js';
 import { useUserSettings } from '@/hooks/use-user-settings.js';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import * as React from 'react';
+import { useAuth } from '@/hooks/use-auth.js';
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * @docsCategory hooks
+ * @docsPage useAuth
+ * @docsWeight 0
+ * @since 3.3.0
+ */
 export interface AuthContext {
     status: 'authenticated' | 'verifying' | 'unauthenticated';
     authenticationError?: string;
@@ -69,17 +79,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const onLogoutSuccessFn = React.useRef<() => void>(() => {});
     const isAuthenticated = status === 'authenticated';
 
-    const { data: currentUserData, isLoading } = useQuery({
-        queryKey: ['currentUser'],
+    const { data: currentUserData, isLoading , error: currentUserError} = useQuery({
+        queryKey: ['currentUser', isAuthenticated],
         queryFn: () => api.query(CurrentUserQuery),
         retry: false,
+        staleTime: 1000,
     });
 
+    const currentUser = currentUserError ? undefined : currentUserData;
+
     React.useEffect(() => {
-        if (!settings.activeChannelId && currentUserData?.me?.channels?.length) {
-            setActiveChannelId(currentUserData.me.channels[0].id);
+        if (!settings.activeChannelId && currentUser?.me?.channels?.length) {
+            setActiveChannelId(currentUser.me.channels[0].id);
         }
-    }, [settings.activeChannelId, currentUserData?.me?.channels]);
+    }, [settings.activeChannelId, currentUser?.me?.channels]);
 
     const loginMutationFn = api.mutate(LoginMutation);
     const loginMutation = useMutation({
@@ -123,7 +136,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     React.useEffect(() => {
         if (!isLoading) {
-            if (currentUserData?.me?.id) {
+            if (currentUser?.me?.id) {
                 setStatus('authenticated');
             } else {
                 setStatus('unauthenticated');
@@ -131,7 +144,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } else {
             setStatus('verifying');
         }
-    }, [isLoading, currentUserData]);
+    }, [isLoading, currentUser]);
 
     return (
         <AuthContext.Provider
@@ -139,8 +152,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 isAuthenticated,
                 authenticationError,
                 status,
-                user: currentUserData?.activeAdministrator,
-                channels: currentUserData?.me?.channels,
+                user: currentUser?.activeAdministrator,
+                channels: currentUser?.me?.channels,
                 login,
                 logout,
             }}

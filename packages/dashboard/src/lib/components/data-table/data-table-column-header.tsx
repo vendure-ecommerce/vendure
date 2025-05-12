@@ -29,7 +29,6 @@ export interface DataTableColumnHeaderProps {
 export function DataTableColumnHeader({ headerContext, customConfig }: DataTableColumnHeaderProps) {
     const { column } = headerContext;
     const isSortable = column.getCanSort();
-    const isFilterable = column.getCanFilter();
 
     const customHeader = customConfig.header;
     let display = camelCaseToTitleCase(column.id);
@@ -40,7 +39,6 @@ export function DataTableColumnHeader({ headerContext, customConfig }: DataTable
     }
 
     const columSort = column.getIsSorted();
-    const columnFilter = column.getFilterValue();
     const nextSort = columSort === 'asc' ? true : columSort === 'desc' ? undefined : false;
 
     return (
@@ -57,17 +55,6 @@ export function DataTableColumnHeader({ headerContext, customConfig }: DataTable
                 </Button>
             )}
             <div>{display}</div>
-
-            {isFilterable && (
-                <Dialog>
-                    <DialogTrigger asChild>
-                        <Button size="icon-sm" variant="ghost">
-                            <Filter className={columnFilter ? '' : 'opacity-50'} />
-                        </Button>
-                    </DialogTrigger>
-                    <DataTableFilterDialog column={column} />
-                </Dialog>
-            )}
         </div>
     );
 }

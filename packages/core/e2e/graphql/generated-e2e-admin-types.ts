@@ -2925,6 +2925,7 @@ export type Mutation = {
     /** Removes StockLocations from the specified Channel */
     removeStockLocationsFromChannel: Array<StockLocation>;
     runPendingSearchIndexUpdates: Success;
+    runScheduledTask: Success;
     setCustomerForDraftOrder: SetCustomerForDraftOrderResult;
     /** Sets the billing address for a draft Order */
     setDraftOrderBillingAddress: Order;
@@ -2990,6 +2991,7 @@ export type Mutation = {
     updateProvince: Province;
     /** Update an existing Role */
     updateRole: Role;
+    updateScheduledTask: ScheduledTask;
     /** Update an existing Seller */
     updateSeller: Seller;
     /** Update an existing ShippingMethod */
@@ -3493,6 +3495,10 @@ export type MutationRemoveStockLocationsFromChannelArgs = {
     input: RemoveStockLocationsFromChannelInput;
 };
 
+export type MutationRunScheduledTaskArgs = {
+    id: Scalars['String']['input'];
+};
+
 export type MutationSetCustomerForDraftOrderArgs = {
     customerId?: InputMaybe<Scalars['ID']['input']>;
     input?: InputMaybe<CreateCustomerInput>;
@@ -3652,6 +3658,10 @@ export type MutationUpdateProvinceArgs = {
 
 export type MutationUpdateRoleArgs = {
     input: UpdateRoleInput;
+};
+
+export type MutationUpdateScheduledTaskArgs = {
+    input: UpdateScheduledTaskInput;
 };
 
 export type MutationUpdateSellerArgs = {
@@ -4886,6 +4896,7 @@ export type Query = {
     provinces: ProvinceList;
     role?: Maybe<Role>;
     roles: RoleList;
+    scheduledTasks: Array<ScheduledTask>;
     search: SearchResponse;
     seller?: Maybe<Seller>;
     sellers: SellerList;
@@ -5387,6 +5398,18 @@ export type Sale = Node &
         type: StockMovementType;
         updatedAt: Scalars['DateTime']['output'];
     };
+
+export type ScheduledTask = {
+    description: Scalars['String']['output'];
+    enabled: Scalars['Boolean']['output'];
+    id: Scalars['String']['output'];
+    isRunning: Scalars['Boolean']['output'];
+    lastExecutedAt?: Maybe<Scalars['DateTime']['output']>;
+    lastResult?: Maybe<Scalars['JSON']['output']>;
+    nextExecutionAt?: Maybe<Scalars['DateTime']['output']>;
+    schedule: Scalars['String']['output'];
+    scheduleDescription: Scalars['String']['output'];
+};
 
 export type SearchInput = {
     collectionId?: InputMaybe<Scalars['ID']['input']>;
@@ -6329,6 +6352,11 @@ export type UpdateRoleInput = {
     permissions?: InputMaybe<Array<Permission>>;
 };
 
+export type UpdateScheduledTaskInput = {
+    enabled?: InputMaybe<Scalars['Boolean']['input']>;
+    id: Scalars['String']['input'];
+};
+
 export type UpdateSellerInput = {
     customFields?: InputMaybe<Scalars['JSON']['input']>;
     id: Scalars['ID']['input'];
@@ -7021,6 +7049,31 @@ export type AddNoteToCustomerMutation = {
         }> | null;
     };
 };
+
+export type GetTasksQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetTasksQuery = {
+    scheduledTasks: Array<{
+        id: string;
+        description: string;
+        schedule: string;
+        scheduleDescription: string;
+        lastResult?: any | null;
+        enabled: boolean;
+    }>;
+};
+
+export type UpdateTaskMutationVariables = Exact<{
+    input: UpdateScheduledTaskInput;
+}>;
+
+export type UpdateTaskMutation = { updateScheduledTask: { id: string; enabled: boolean } };
+
+export type RunTaskMutationVariables = Exact<{
+    id: Scalars['String']['input'];
+}>;
+
+export type RunTaskMutation = { runScheduledTask: { success: boolean } };
 
 export type ReindexMutationVariables = Exact<{ [key: string]: never }>;
 
@@ -18036,6 +18089,122 @@ export const AddNoteToCustomerDocument = {
         },
     ],
 } as unknown as DocumentNode<AddNoteToCustomerMutation, AddNoteToCustomerMutationVariables>;
+export const GetTasksDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'query',
+            name: { kind: 'Name', value: 'GetTasks' },
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'scheduledTasks' },
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'schedule' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'scheduleDescription' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'lastResult' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'enabled' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<GetTasksQuery, GetTasksQueryVariables>;
+export const UpdateTaskDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'UpdateTask' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: {
+                            kind: 'NamedType',
+                            name: { kind: 'Name', value: 'UpdateScheduledTaskInput' },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'updateScheduledTask' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'input' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'input' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [
+                                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                                { kind: 'Field', name: { kind: 'Name', value: 'enabled' } },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<UpdateTaskMutation, UpdateTaskMutationVariables>;
+export const RunTaskDocument = {
+    kind: 'Document',
+    definitions: [
+        {
+            kind: 'OperationDefinition',
+            operation: 'mutation',
+            name: { kind: 'Name', value: 'RunTask' },
+            variableDefinitions: [
+                {
+                    kind: 'VariableDefinition',
+                    variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+                    type: {
+                        kind: 'NonNullType',
+                        type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: 'SelectionSet',
+                selections: [
+                    {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'runScheduledTask' },
+                        arguments: [
+                            {
+                                kind: 'Argument',
+                                name: { kind: 'Name', value: 'id' },
+                                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: 'SelectionSet',
+                            selections: [{ kind: 'Field', name: { kind: 'Name', value: 'success' } }],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<RunTaskMutation, RunTaskMutationVariables>;
 export const ReindexDocument = {
     kind: 'Document',
     definitions: [

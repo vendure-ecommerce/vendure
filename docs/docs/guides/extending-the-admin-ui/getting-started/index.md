@@ -359,20 +359,20 @@ This can then be run from the command line:
 <TabItem value="npm" label="npm" default>
 
 ```bash
-npm run ts-node compile-admin-ui.ts
+npx ts-node src/compile-admin-ui.ts
 ```
 
 </TabItem>
 <TabItem value="yarn" label="yarn">
 
 ```bash
-yarn ts-node compile-admin-ui.ts
+yarn ts-node src/compile-admin-ui.ts
 ```
 
 </TabItem>
 </Tabs>
 
-Once complete, the production-ready app bundle will be output to `admin-ui/dist`. This method is suitable for a production setup, so that the Admin UI can be compiled ahead-of-time as part of your deployment process. This ensures that your Vendure server starts up as quickly as possible. In this case, you can pass the path of the compiled app to the AdminUiPlugin:
+Once complete, the production-ready app bundle will be output to `admin-ui/dist/browser`. This method is suitable for a production setup, so that the Admin UI can be compiled ahead-of-time as part of your deployment process. This ensures that your Vendure server starts up as quickly as possible. In this case, you can pass the path of the compiled app to the AdminUiPlugin:
 
 ```ts title="src/vendure-config.ts"
 import { VendureConfig } from '@vendure/core';
@@ -385,7 +385,7 @@ export const config: VendureConfig = {
         AdminUiPlugin.init({
             port: 3002,
             app: {
-                path: path.join(__dirname, '../admin-ui/dist'),
+                path: path.join(__dirname, '../admin-ui/dist/browser'),
             },
         }),
     ],

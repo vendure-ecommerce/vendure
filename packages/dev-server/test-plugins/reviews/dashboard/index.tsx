@@ -18,7 +18,9 @@ export default defineDashboardExtension({
         {
             label: 'Custom Action Bar Item',
             component: props => {
-                return <Button>YOLO swag</Button>;
+                return <Button type="button" onClick={() => {
+                    console.log('Clicked custom action bar item');
+                }}>Test Button</Button>;
             },
             locationId: 'product-detail',
         },

@@ -8,6 +8,7 @@ export function viteConfigPlugin({ packageRoot }: { packageRoot: string }): Plug
             config.root = packageRoot;
             config.resolve = {
                 alias: {
+                    ...(config.resolve?.alias ?? {}),
                     '@': path.resolve(packageRoot, './src/lib'),
                 },
             };

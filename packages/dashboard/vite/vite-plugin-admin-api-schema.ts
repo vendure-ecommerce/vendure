@@ -1,14 +1,4 @@
-import { GraphQLTypesLoader } from '@nestjs/graphql';
 import {
-    getConfig,
-    getFinalVendureSchema,
-    resetConfig,
-    runPluginConfigurations,
-    setConfig,
-    VENDURE_ADMIN_API_TYPE_PATHS,
-} from '@vendure/core';
-import {
-    buildSchema,
     GraphQLList,
     GraphQLNonNull,
     GraphQLObjectType,
@@ -21,7 +11,7 @@ import {
 } from 'graphql';
 import { Plugin } from 'vite';
 
-import { generateSchema } from './schema-generator.js';
+import { generateSchema } from './utils/schema-generator.js';
 import { ConfigLoaderApi, getConfigLoaderApi } from './vite-plugin-config-loader.js';
 
 export type FieldInfoTuple = readonly [
@@ -61,7 +51,7 @@ export function adminApiSchemaPlugin(): Plugin {
             configLoaderApi = getConfigLoaderApi(plugins);
         },
         async buildStart() {
-            const vendureConfig = await configLoaderApi.getVendureConfig();
+            const { vendureConfig } = await configLoaderApi.getVendureConfig();
             if (!schemaInfo) {
                 const safeSchema = await generateSchema({ vendureConfig });
                 schemaInfo = generateSchemaInfo(safeSchema);

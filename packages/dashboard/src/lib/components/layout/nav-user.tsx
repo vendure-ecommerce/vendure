@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/use-auth.js';
 import { Link, useNavigate, useRouter } from '@tanstack/react-router';
 import { ChevronsUpDown, LogOut, Monitor, Moon, Sparkles, Sun } from 'lucide-react';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
+// import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -44,13 +44,13 @@ export function NavUser() {
         });
     };
 
+    const avatarFallback = useMemo(() => {
+        return user?.firstName?.charAt(0) ?? '' + user?.lastName?.charAt(0) ?? '';
+    }, [user]);
+
     if (!user) {
         return <></>;
     }
-
-    const avatarFallback = useMemo(() => {
-        return user.firstName.charAt(0) + user.lastName.charAt(0);
-    }, [user]);
 
     const isDevMode = (import.meta as any).env?.MODE === 'development';
 
@@ -64,10 +64,15 @@ export function NavUser() {
                                 size="lg"
                                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                             >
-                                <Avatar className="h-8 w-8 rounded-lg">
-                                    <AvatarImage src={user.id} alt={user.firstName} />
-                                    <AvatarFallback className="rounded-lg">{avatarFallback}</AvatarFallback>
-                                </Avatar>
+                                {/* Avatar component temporarily disabled due to https://github.com/radix-ui/primitives/issues/3489
+                                    error in published package version */}
+                                {/*<Avatar className="h-8 w-8 rounded-lg">*/}
+                                {/*    <AvatarImage src={user.id} alt={user.firstName} />*/}
+                                {/*    <AvatarFallback className="rounded-lg">{avatarFallback}</AvatarFallback>*/}
+                                {/*</Avatar>*/}
+                                <div className='relative flex rounded-lg border justify-center items-center w-8 h-8'>
+                                    {avatarFallback}
+                                </div>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
                                     <span className="truncate font-semibold">
                                         {user.firstName} {user.lastName}
@@ -85,12 +90,12 @@ export function NavUser() {
                         >
                             <DropdownMenuLabel className="p-0 font-normal">
                                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                                    <Avatar className="h-8 w-8 rounded-lg">
-                                        <AvatarImage src={user.id} alt={user.firstName} />
-                                        <AvatarFallback className="rounded-lg">
-                                            {avatarFallback}
-                                        </AvatarFallback>
-                                    </Avatar>
+                                    {/*<Avatar className="h-8 w-8 rounded-lg">*/}
+                                    {/*    <AvatarImage src={user.id} alt={user.firstName} />*/}
+                                    {/*    <AvatarFallback className="rounded-lg">*/}
+                                    {/*        {avatarFallback}*/}
+                                    {/*    </AvatarFallback>*/}
+                                    {/*</Avatar>*/}
                                     <div className="grid flex-1 text-left text-sm leading-tight">
                                         <span className="truncate font-semibold">
                                             {user.firstName} {user.lastName}

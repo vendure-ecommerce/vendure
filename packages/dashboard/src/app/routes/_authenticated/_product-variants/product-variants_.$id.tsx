@@ -200,7 +200,9 @@ function ProductVariantDetailPage() {
                                                 <Trans>Stock level</Trans>
                                             </FormLabel>
                                             <FormControl>
-                                                <Input type="number" {...field} />
+                                                <Input type="number" value={field.value} onChange={e => {
+                                                    field.onChange(e.target.valueAsNumber);
+                                                }} />
                                             </FormControl>
                                         </FormItem>
                                     )}
@@ -224,7 +226,11 @@ function ProductVariantDetailPage() {
                                     <FormLabel>
                                         <Trans>Track inventory</Trans>
                                     </FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value}>
+                                    <Select onValueChange={val => {
+                                        if (val) {
+                                            field.onChange(val)
+                                        }
+                                    }} value={field.value}>
                                         <FormControl>
                                             <SelectTrigger className="">
                                                 <SelectValue placeholder="Track inventory" />
