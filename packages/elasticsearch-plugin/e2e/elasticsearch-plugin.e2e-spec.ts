@@ -267,8 +267,8 @@ describe('Elasticsearch plugin', () => {
                 { count: 6, facetValue: { id: 'T_2', name: 'computers' } },
                 { count: 4, facetValue: { id: 'T_3', name: 'photo' } },
                 { count: 7, facetValue: { id: 'T_4', name: 'sports equipment' } },
-                { count: 3, facetValue: { id: 'T_5', name: 'home & garden' } },
-                { count: 3, facetValue: { id: 'T_6', name: 'plants' } },
+                { count: 4, facetValue: { id: 'T_5', name: 'home & garden' } },
+                { count: 4, facetValue: { id: 'T_6', name: 'plants' } },
             ]);
         });
 
@@ -315,8 +315,8 @@ describe('Elasticsearch plugin', () => {
                 { count: 6, facetValue: { id: 'T_2', name: 'computers' } },
                 { count: 4, facetValue: { id: 'T_3', name: 'photo' } },
                 { count: 7, facetValue: { id: 'T_4', name: 'sports equipment' } },
-                { count: 3, facetValue: { id: 'T_5', name: 'home & garden' } },
-                { count: 3, facetValue: { id: 'T_6', name: 'plants' } },
+                { count: 4, facetValue: { id: 'T_5', name: 'home & garden' } },
+                { count: 4, facetValue: { id: 'T_6', name: 'plants' } },
             ]);
         });
 
@@ -410,7 +410,7 @@ describe('Elasticsearch plugin', () => {
                     },
                 },
             );
-            expect(result.search.totalItems).toBe(2);
+            expect(result.search.totalItems).toBe(3);
         });
 
         it('inStock is false and grouped by product', async () => {
@@ -423,7 +423,7 @@ describe('Elasticsearch plugin', () => {
                     },
                 },
             );
-            expect(result.search.totalItems).toBe(1);
+            expect(result.search.totalItems).toBe(2);
         });
 
         it('inStock is true and not grouped by product', async () => {
@@ -436,7 +436,7 @@ describe('Elasticsearch plugin', () => {
                     },
                 },
             );
-            expect(result.search.totalItems).toBe(32);
+            expect(result.search.totalItems).toBe(31);
         });
 
         it('inStock is true and grouped by product', async () => {
@@ -449,7 +449,7 @@ describe('Elasticsearch plugin', () => {
                     },
                 },
             );
-            expect(result.search.totalItems).toBe(20);
+            expect(result.search.totalItems).toBe(19);
         });
 
         it('inStock is undefined and not grouped by product', async () => {

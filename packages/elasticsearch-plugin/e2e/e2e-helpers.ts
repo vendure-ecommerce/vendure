@@ -37,7 +37,7 @@ export async function testGroupByProduct(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(result.search.totalItems).toBe(20);
+    expect(result.search.totalItems).toBe(21);
 }
 
 export async function testGroupBySKU(client: SimpleGraphQLClient) {
@@ -49,7 +49,7 @@ export async function testGroupBySKU(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(result.search.totalItems).toBe(34);
+    expect(result.search.totalItems).toBe(33);
 }
 
 export async function testNoGrouping(client: SimpleGraphQLClient) {
@@ -123,7 +123,7 @@ export async function testMatchFacetIdsOr(client: SimpleGraphQLClient) {
     );
     expect(result.search.items.map(i => i.productName)).toEqual([
         'Bonsai Tree',
-        'Bonsai Tree (Ch 2)',
+        'Bonsai Tree (Ch2)',
         'Camera Lens',
         'Clacky Keyboard',
         'Curvy Monitor',
@@ -171,7 +171,7 @@ export async function testMatchFacetValueFiltersOr(client: SimpleGraphQLClient) 
     expect(result.search.items.map(i => i.productName).sort()).toEqual(
         [
             'Bonsai Tree',
-            'Bonsai Tree (Ch 2)',
+            'Bonsai Tree (Ch2)',
             'Camera Lens',
             'Clacky Keyboard',
             'Curvy Monitor',
@@ -271,7 +271,7 @@ export async function testMatchCollectionId(client: SimpleGraphQLClient) {
     );
     expect(result.search.items.map(i => i.productName).sort()).toEqual([
         'Bonsai Tree',
-        'Bonsai Tree (Ch 2)',
+        'Bonsai Tree (Ch2)',
         'Orchid',
         'Spiky Cactus',
     ]);
@@ -289,7 +289,7 @@ export async function testMatchCollectionSlug(client: SimpleGraphQLClient) {
     );
     expect(result.search.items.map(i => i.productName).sort()).toEqual([
         'Bonsai Tree',
-        'Bonsai Tree (Ch 2)',
+        'Bonsai Tree (Ch2)',
         'Orchid',
         'Spiky Cactus',
     ]);
