@@ -67,7 +67,6 @@ export function Page({ children, pageId, entity, form, submitHandler, ...props }
                 pageContent={pageContent}
                 form={form}
                 submitHandler={submitHandler}
-                className={props.className}
                 {...props}
             />
         </PageContext.Provider>
