@@ -49,7 +49,7 @@ export async function testGroupBySKU(client: SimpleGraphQLClient) {
             },
         },
     );
-    expect(result.search.totalItems).toBe(33);
+    expect(result.search.totalItems).toBe(34);
 }
 
 export async function testNoGrouping(client: SimpleGraphQLClient) {
