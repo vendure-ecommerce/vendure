@@ -1,10 +1,5 @@
 /* eslint-disable @typescript-eslint/require-await */
-import {
-    ApolloServerPlugin,
-    GraphQLRequestListener,
-    GraphQLRequestContext,
-    GraphQLRequestContextDidEncounterErrors,
-} from '@apollo/server';
+import { ApolloServerPlugin, GraphQLRequestListener, GraphQLRequestContext } from '@apollo/server';
 import { Transaction, setContext } from '@sentry/node';
 
 import { SENTRY_TRANSACTION_KEY } from './constants';

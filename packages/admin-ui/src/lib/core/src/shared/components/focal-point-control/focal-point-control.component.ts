@@ -17,6 +17,7 @@ export type Point = { x: number; y: number };
     templateUrl: './focal-point-control.component.html',
     styleUrls: ['./focal-point-control.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class FocalPointControlComponent {
     @Input() visible = false;

@@ -11,6 +11,7 @@ import { RelationSelectorDialogComponent } from '../relation-selector-dialog/rel
     templateUrl: './relation-generic-input.component.html',
     styleUrls: ['./relation-generic-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RelationGenericInputComponent {
     @Input() readonly: boolean;

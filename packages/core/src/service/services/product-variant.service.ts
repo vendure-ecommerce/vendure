@@ -483,7 +483,7 @@ export class ProductVariantService {
             throw new UserInputError('error.stockonhand-cannot-be-negative');
         }
         if (input.optionIds) {
-            await this.validateVariantOptionIds(ctx, existingVariant.productId, input.optionIds);
+            await this.validateVariantOptionIds(ctx, existingVariant.productId, input.optionIds, true);
         }
         const inputWithoutPriceAndStockLevels = {
             ...input,
@@ -899,7 +899,12 @@ export class ProductVariantService {
         return result;
     }
 
-    private async validateVariantOptionIds(ctx: RequestContext, productId: ID, optionIds: ID[] = []) {
+    private async validateVariantOptionIds(
+        ctx: RequestContext,
+        productId: ID,
+        optionIds: ID[] = [],
+        isUpdateOperation?: boolean,
+    ) {
         // this could be done with fewer queries but depending on the data, node will crash
         // https://github.com/vendure-ecommerce/vendure/issues/328
         const optionGroups = (
@@ -936,6 +941,7 @@ export class ProductVariantService {
             .filter(v => !v.deletedAt)
             .forEach(variant => {
                 const variantOptionIds = this.sortJoin(variant.options, ',', 'id');
+                if (isUpdateOperation) return;
                 if (variantOptionIds === inputOptionIds) {
                     throw new UserInputError('error.product-variant-options-combination-already-exists', {
                         variantName: this.translator.translate(variant, ctx).name,

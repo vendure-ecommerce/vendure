@@ -8,6 +8,7 @@ import { CustomFieldConfig, GetAvailableCountriesQuery } from '../../../common/g
     templateUrl: './address-form.component.html',
     styleUrls: ['./address-form.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AddressFormComponent {
     @Input() customFields: CustomFieldConfig;

@@ -15,6 +15,7 @@ import { TestOrderLine } from '../test-order-builder/test-order-builder.componen
     templateUrl: './test-shipping-methods.component.html',
     styleUrls: ['./test-shipping-methods.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TestShippingMethodsComponent implements OnInit {
     activeChannel$: Observable<GetActiveChannelQuery['activeChannel']>;

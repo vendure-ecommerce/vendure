@@ -15,6 +15,7 @@ import { RelationSelectorDialogComponent } from '../relation-selector-dialog/rel
     templateUrl: './relation-customer-input.component.html',
     styleUrls: ['./relation-customer-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RelationCustomerInputComponent implements OnInit {
     @Input() readonly: boolean;
@@ -29,7 +30,10 @@ export class RelationCustomerInputComponent implements OnInit {
         return this.parentFormControl.value;
     }
 
-    constructor(private modalService: ModalService, private dataService: DataService) {}
+    constructor(
+        private modalService: ModalService,
+        private dataService: DataService,
+    ) {}
 
     ngOnInit() {
         this.results$ = this.searchTerm$.pipe(

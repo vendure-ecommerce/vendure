@@ -15,7 +15,6 @@
     "target": "ES2022",
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "jsx": "react",
     "typeRoots": [
       "node_modules/@types",

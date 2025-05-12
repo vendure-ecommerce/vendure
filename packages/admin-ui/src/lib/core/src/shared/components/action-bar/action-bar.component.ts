@@ -5,6 +5,7 @@ import { Component, ContentChild, Input, OnInit } from '@angular/core';
     template: `
         <ng-content></ng-content>
     `,
+    standalone: false,
 })
 export class ActionBarLeftComponent {
     @Input() grow = false;
@@ -23,6 +24,7 @@ export class ActionBarLeftComponent {
             }
         `,
     ],
+    standalone: false,
 })
 export class ActionBarRightComponent {
     @Input() grow = false;
@@ -32,6 +34,7 @@ export class ActionBarRightComponent {
     selector: 'vdr-action-bar',
     templateUrl: './action-bar.component.html',
     styleUrls: ['./action-bar.component.scss'],
+    standalone: false,
 })
 export class ActionBarComponent {
     @ContentChild(ActionBarLeftComponent) left: ActionBarLeftComponent;

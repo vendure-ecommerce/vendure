@@ -9,6 +9,7 @@ import { OrderProcessNodeComponent } from './order-process-node.component';
     templateUrl: './order-process-edge.component.html',
     styleUrls: ['./order-process-edge.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OrderProcessEdgeComponent implements OnInit {
     @Input() from: OrderProcessNodeComponent;
@@ -19,7 +20,7 @@ export class OrderProcessEdgeComponent implements OnInit {
     ngOnInit() {
         this.active$ = this.from.active$
             .asObservable()
-            .pipe(tap((active) => this.to.activeTarget$.next(active)));
+            .pipe(tap(active => this.to.activeTarget$.next(active)));
     }
 
     getStyle() {

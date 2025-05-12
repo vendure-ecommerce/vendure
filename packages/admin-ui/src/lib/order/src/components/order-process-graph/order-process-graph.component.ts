@@ -24,6 +24,7 @@ import { StateNode } from './types';
     templateUrl: './order-process-graph.component.html',
     styleUrls: ['./order-process-graph.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OrderProcessGraphComponent implements OnInit, OnChanges, AfterViewInit {
     @Input() states: OrderProcessState[];
@@ -65,7 +66,7 @@ export class OrderProcessGraphComponent implements OnInit, OnChanges, AfterViewI
 
     getNodeFor(state: string): OrderProcessNodeComponent | undefined {
         if (this.nodeComponents) {
-            return this.nodeComponents.find((n) => n.node.name === state);
+            return this.nodeComponents.find(n => n.node.name === state);
         }
     }
 
@@ -79,7 +80,7 @@ export class OrderProcessGraphComponent implements OnInit, OnChanges, AfterViewI
         }
 
         for (const [name, stateNode] of stateNodeMap.entries()) {
-            const targets = this.states.find((s) => s.name === name)?.to ?? [];
+            const targets = this.states.find(s => s.name === name)?.to ?? [];
             for (const target of targets) {
                 const targetNode = stateNodeMap.get(target);
                 if (targetNode) {
@@ -87,7 +88,7 @@ export class OrderProcessGraphComponent implements OnInit, OnChanges, AfterViewI
                 }
             }
         }
-        this.nodes = [...stateNodeMap.values()].filter((n) => n.name !== 'Cancelled');
+        this.nodes = [...stateNodeMap.values()].filter(n => n.name !== 'Cancelled');
     }
 
     private populateEdges() {

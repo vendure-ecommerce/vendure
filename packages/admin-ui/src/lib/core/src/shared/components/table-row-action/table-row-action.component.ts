@@ -7,6 +7,7 @@ import { Component, Input, OnInit } from '@angular/core';
     selector: 'vdr-table-row-action',
     templateUrl: './table-row-action.component.html',
     styleUrls: ['./table-row-action.component.scss'],
+    standalone: false,
 })
 export class TableRowActionComponent {
     @Input() linkTo: any[];

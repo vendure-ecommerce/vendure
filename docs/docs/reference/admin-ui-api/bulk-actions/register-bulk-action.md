@@ -57,7 +57,7 @@ export default [
 ```
 
 ```ts title="Signature"
-function registerBulkAction(bulkAction: BulkAction): FactoryProvider
+function registerBulkAction(bulkAction: BulkAction): void
 ```
 Parameters
 

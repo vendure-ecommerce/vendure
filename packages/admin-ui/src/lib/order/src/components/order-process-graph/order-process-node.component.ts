@@ -16,6 +16,7 @@ import { StateNode } from './types';
     templateUrl: './order-process-node.component.html',
     styleUrls: ['./order-process-node.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OrderProcessNodeComponent implements OnChanges {
     @Input() node: StateNode;
@@ -31,7 +32,7 @@ export class OrderProcessNodeComponent implements OnChanges {
     constructor(private elementRef: ElementRef<HTMLDivElement>) {}
 
     ngOnChanges(changes: SimpleChanges) {
-        this.isCancellable = !!this.node.to.find((s) => s.name === 'Cancelled');
+        this.isCancellable = !!this.node.to.find(s => s.name === 'Cancelled');
         if (changes.active) {
             this.active$.next(this.active);
         }

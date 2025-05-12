@@ -25,6 +25,7 @@ const GET_SELLER_LIST = gql`
     templateUrl: './seller-list.component.html',
     styleUrls: ['./seller-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SellerListComponent
     extends TypedBaseListComponent<typeof GetSellerListDocument, 'sellers'>
