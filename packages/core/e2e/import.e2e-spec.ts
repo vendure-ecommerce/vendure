@@ -427,7 +427,13 @@ describe('Import resolver', () => {
             // Set up minimal static file server
             staticServer = http
                 .createServer((req, res) => {
-                    const filePath = path.join(__dirname, 'fixtures/assets', req?.url ?? '');
+                    const baseDir = path.resolve(__dirname, 'fixtures/assets');
+                    const filePath = path.resolve(baseDir, req?.url ?? '');
+                    if (!filePath.startsWith(baseDir)) {
+                        res.writeHead(403);
+                        res.end('Forbidden');
+                        return;
+                    }
                     fs.readFile(filePath, (err, data) => {
                         if (err) {
                             res.writeHead(404);
