@@ -82,12 +82,6 @@ export class MollieService {
         input: MolliePaymentIntentInput,
     ): Promise<MolliePaymentIntentResult> {
         const { paymentMethodCode, molliePaymentMethodCode } = input;
-        const allowedMethods = Object.values(MollieClientMethod) as string[];
-        if (molliePaymentMethodCode && !allowedMethods.includes(molliePaymentMethodCode)) {
-            return new InvalidInputError(
-                `molliePaymentMethodCode has to be one of "${allowedMethods.join(',')}"`,
-            );
-        }
         const [order, paymentMethod] = await Promise.all([
             this.getOrder(ctx, input.orderId),
             this.getPaymentMethod(ctx, paymentMethodCode),
