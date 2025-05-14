@@ -21,12 +21,12 @@ for the respective APIs.
 ## Installation
 
 ```ts
-import { GraphiQLPlugin } from '@vendure/graphiql-plugin';
+import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
 
 const config: VendureConfig = {
   // Add an instance of the plugin to the plugins array
   plugins: [
-    GraphiQLPlugin.init({
+    GraphiqlPlugin.init({
       route: 'graphiql', // Optional, defaults to 'graphiql'
     }),
   ],
