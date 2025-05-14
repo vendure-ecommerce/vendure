@@ -29,7 +29,7 @@ export const cleanJobsTask = new ScheduledTask({
             .where(`job.state IN (:...states)`, {
                 states: ['COMPLETED', 'FAILED', 'CANCELLED'],
             })
-            .orderBy('createdAt', 'ASC');
+            .orderBy('job.createdAt', 'ASC');
 
         const count = await qb.getCount();
 
