@@ -55,6 +55,7 @@ export default function Home(): JSX.Element {
                     <Playground
                         api={'shop'}
                         minHeight="800px"
+                        server={'readonlydemo'}
                         document={`
 query GetProductList {
   products(
