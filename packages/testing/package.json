@@ -44,7 +44,7 @@
         "graphql": "^16.10.0",
         "graphql-tag": "^2.12.6",
         "node-fetch": "^2.7.0",
-        "sql.js": "1.8.0"
+        "sql.js": "1.13.0"
     },
     "devDependencies": {
         "@types/faker": "^5.5.9",
