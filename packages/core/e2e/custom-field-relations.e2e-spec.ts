@@ -97,7 +97,16 @@ const customConfig = mergeConfig(testConfig(), {
     paymentOptions: {
         paymentMethodHandlers: [testSuccessfulPaymentMethod],
     },
-    // logger: new DefaultLogger({ level: LogLevel.Debug }),
+    logger: {
+        // eslint-disable-next-line
+        info: console.log,
+        // eslint-disable-next-line
+        error: console.log,
+        // eslint-disable-next-line
+        warn: console.log,
+        // eslint-disable-next-line
+        verbose: console.log,
+    } as any,
     dbConnectionOptions: {
         timezone: 'Z',
     },
