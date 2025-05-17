@@ -98,7 +98,7 @@ export const generateSitemapTask = new ScheduledTask({
     // `.configure()` method on the instance later.
     schedule: cron => cron.everyDayAt(0, 0),
     // This is the function that will be executed per the schedule.
-    async execute(injector, params) {
+    async execute({injector, params}) {
         // Using `app.get()` we can grab an instance of _any_ provider defined in the
         // Vendure core as well as by our plugins.
         const sitemapService = app.get(SitemapService);
