@@ -1,0 +1,57 @@
+name: Sync core-team issues to Jira
+
+on:
+  issues:
+    types: [opened, reopened, edited, labeled]
+
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  sync:
+    if: contains(github.event.issue.labels.*.name, 'core-team')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create or update Jira ticket
+        id: jira
+        env:
+          JIRA_EMAIL:  ${{ secrets.JIRA_EMAIL }}
+          JIRA_TOKEN:  ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_BASE:   ${{ secrets.JIRA_BASE }}    
+          PROJECT_KEY: VEN
+        run: |
+          GH_URL="https://github.com/${{ github.repository }}/issues/${{ github.event.issue.number }}"
+          SUMMARY=$(jq -Rs . <<<"${{ github.event.issue.title }}")
+          DESC=$(jq -Rs . <<<"Imported from GitHub: $GH_URL")
+          # look for an existing ticket whose description contains the GH URL
+          JQL=$(jq -Rs . <<<"description ~ \"$GH_URL\"")
+          SEARCH="$JIRA_BASE/rest/api/3/search?jql=$JQL"
+          KEY=$(curl -s -u "$JIRA_EMAIL:$JIRA_TOKEN" "$SEARCH" \
+                | jq -r '.issues[0].key // empty')
+          if [ -z "$KEY" ]; then
+            BODY=$(jq -n --arg summary "$SUMMARY" --arg desc "$DESC" --arg proj "$PROJECT_KEY" '
+              {fields:{project:{key:$proj},summary:$summary,description:$desc,
+              issuetype:{name:"Task"},labels:["core-team"]}}')
+            KEY=$(curl -s -u "$JIRA_EMAIL:$JIRA_TOKEN" \
+                   -H "Content-Type: application/json" \
+                   --data "$BODY" "$JIRA_BASE/rest/api/3/issue" | jq -r .key)
+          fi
+          echo "key=$KEY" >> $GITHUB_OUTPUT
+      - name: Record the mapping on the GH issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue_number = context.issue.number;
+            const owner = context.repo.owner;
+            const repo  = context.repo.repo;
+            const jira  = "${{ steps.jira.outputs.key }}";
+            const body  = `🔗 Linked to Core Team Jira ticket **${jira}**`;
+            const {data:comments} = await github.issues.listComments({owner,repo,issue_number});
+            const existing = comments.find(c=>/Linked to Core Team Jira ticket/i.test(c.body));
+            if (existing) {
+              await github.issues.updateComment({owner,repo,comment_id:existing.id,body});
+            } else {
+              await github.issues.createComment({owner,repo,issue_number,body});
+            }
