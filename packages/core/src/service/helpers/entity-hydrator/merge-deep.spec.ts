@@ -62,8 +62,13 @@ describe('mergeDeep()', () => {
             },
         };
 
-        const merged = mergeDeep(obj1, obj2)
+        // @ts-ignore
+        first.entity = first;
+        // @ts-ignore
+        second.entity = second;
 
-        expect(merged.name).toBe('Jane')
+        const merged = mergeDeep(obj1, obj2);
+
+        expect(merged.name).toBe('Jane');
     });
 });
