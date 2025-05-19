@@ -67,7 +67,7 @@ describe('mergeDeep()', () => {
         // @ts-ignore
         second.entity = second;
 
-        const merged = mergeDeep(obj1, obj2);
+        const merged = mergeDeep(first, second);
 
         expect(merged.name).toBe('Jane');
     });
