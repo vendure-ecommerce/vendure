@@ -40,8 +40,8 @@ jobs:
           fi
           
           # Prepare the data with error checking
-          SUMMARY=$(jq -Rs . <<<"${{ github.event.issue.title }}" || { echo "Error processing summary"; exit 1; })
-          DESC=$(jq -Rs . <<<"Imported from GitHub: $GH_URL" || { echo "Error processing description"; exit 1; })
+          SUMMARY="${{ github.event.issue.title }}"
+          DESC="Imported from GitHub: $GH_URL"
           
           # Create the search request body
           SEARCH_BODY=$(jq -n --arg url "$GH_URL" --arg proj "$PROJECT_KEY" '
