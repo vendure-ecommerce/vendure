@@ -118,7 +118,7 @@ import { TelemetryPluginOptions } from './types';
         config.logger = new OtelLogger(TelemetryPlugin.options.loggerOptions ?? {});
         return config;
     },
-    compatibility: '>3.3.0',
+    compatibility: '>=3.3.0',
 })
 export class TelemetryPlugin {
     static options: TelemetryPluginOptions = {};
