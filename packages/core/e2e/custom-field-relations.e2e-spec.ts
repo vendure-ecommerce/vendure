@@ -109,6 +109,7 @@ const customConfig = mergeConfig(testConfig(), {
     } as any,
     dbConnectionOptions: {
         timezone: 'Z',
+        logging: ['error'],
     },
     customFields: customFieldConfig,
     plugins: [TestPlugin1636_1664, WithCustomEntity, PluginIssue2453],
