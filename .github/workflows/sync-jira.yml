@@ -48,10 +48,10 @@ jobs:
             const repo  = context.repo.repo;
             const jira  = "${{ steps.jira.outputs.key }}";
             const body  = `🔗 Linked to Core Team Jira ticket **${jira}**`;
-            const {data:comments} = await github.issues.listComments({owner,repo,issue_number});
+            const {data:comments} = await github.rest.issues.listComments({owner,repo,issue_number});
             const existing = comments.find(c=>/Linked to Core Team Jira ticket/i.test(c.body));
             if (existing) {
-              await github.issues.updateComment({owner,repo,comment_id:existing.id,body});
+              await github.rest.issues.updateComment({owner,repo,comment_id:existing.id,body});
             } else {
-              await github.issues.createComment({owner,repo,issue_number,body});
+              await github.rest.issues.createComment({owner,repo,issue_number,body});
             }
