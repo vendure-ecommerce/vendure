@@ -97,21 +97,8 @@ const customConfig = mergeConfig(testConfig(), {
     paymentOptions: {
         paymentMethodHandlers: [testSuccessfulPaymentMethod],
     },
-    logger: {
-        // eslint-disable-next-line
-        info: console.log,
-        // eslint-disable-next-line
-        error: console.log,
-        // eslint-disable-next-line
-        warn: console.log,
-        // eslint-disable-next-line
-        verbose: console.log,
-        // eslint-disable-next-line
-        // debug: console.log,
-    } as any,
     dbConnectionOptions: {
         timezone: 'Z',
-        // logging: ['query'],
     },
     customFields: customFieldConfig,
     plugins: [TestPlugin1636_1664, WithCustomEntity, PluginIssue2453],
@@ -121,15 +108,11 @@ describe('Custom field relations', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(customConfig);
 
     beforeAll(async () => {
-        // eslint-disable-next-line
-        console.log('Custom field relations initialData:', JSON.stringify(initialData));
         await server.init({
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 3,
         });
-        // eslint-disable-next-line
-        console.log(`server.init() done`);
         await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
