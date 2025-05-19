@@ -28,16 +28,36 @@ jobs:
           # look for an existing ticket whose description contains the GH URL
           JQL=$(jq -Rs . <<<"description ~ \"$GH_URL\"")
           SEARCH="$JIRA_BASE/rest/api/3/search?jql=$JQL"
-          KEY=$(curl -s -u "$JIRA_EMAIL:$JIRA_TOKEN" "$SEARCH" \
-                | jq -r '.issues[0].key // empty')
+          
+          # Add debug output
+          echo "Searching Jira with URL: $GH_URL"
+          echo "JQL query: $JQL"
+          
+          SEARCH_RESULT=$(curl -s -u "$JIRA_EMAIL:$JIRA_TOKEN" "$SEARCH")
+          echo "Search result: $SEARCH_RESULT"
+          
+          KEY=$(echo "$SEARCH_RESULT" | jq -r '.issues[0].key // empty')
+          echo "Found existing key: $KEY"
+          
           if [ -z "$KEY" ]; then
+            echo "No existing ticket found, creating new one"
             BODY=$(jq -n --arg summary "$SUMMARY" --arg desc "$DESC" --arg proj "$PROJECT_KEY" '
               {fields:{project:{key:$proj},summary:$summary,description:$desc,
               issuetype:{name:"Task"},labels:["core-team"]}}')
-            KEY=$(curl -s -u "$JIRA_EMAIL:$JIRA_TOKEN" \
+            
+            # Add debug output for creation
+            echo "Creating ticket with body: $BODY"
+            CREATE_RESULT=$(curl -s -u "$JIRA_EMAIL:$JIRA_TOKEN" \
                    -H "Content-Type: application/json" \
-                   --data "$BODY" "$JIRA_BASE/rest/api/3/issue" | jq -r .key)
+                   --data "$BODY" "$JIRA_BASE/rest/api/3/issue")
+            echo "Create result: $CREATE_RESULT"
+            
+            KEY=$(echo "$CREATE_RESULT" | jq -r .key)
+            echo "Created new key: $KEY"
           fi
+          
+          # Final debug output
+          echo "Final key value: $KEY"
           echo "key=$KEY" >> $GITHUB_OUTPUT
       - name: Record the mapping on the GH issue
         uses: actions/github-script@v7
