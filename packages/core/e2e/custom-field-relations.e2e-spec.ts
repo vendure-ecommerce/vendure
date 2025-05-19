@@ -109,7 +109,7 @@ const customConfig = mergeConfig(testConfig(), {
     } as any,
     dbConnectionOptions: {
         timezone: 'Z',
-        logging: ['error'],
+        logging: ['error', 'query'],
     },
     customFields: customFieldConfig,
     plugins: [TestPlugin1636_1664, WithCustomEntity, PluginIssue2453],
@@ -126,6 +126,8 @@ describe('Custom field relations', () => {
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 3,
         });
+        // eslint-disable-next-line
+        console.log(`server.init() done`);
         await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
 
