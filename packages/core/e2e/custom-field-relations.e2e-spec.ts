@@ -107,11 +107,11 @@ const customConfig = mergeConfig(testConfig(), {
         // eslint-disable-next-line
         verbose: console.log,
         // eslint-disable-next-line
-        debug: console.log,
+        // debug: console.log,
     } as any,
     dbConnectionOptions: {
         timezone: 'Z',
-        logging: true,
+        // logging: ['query'],
     },
     customFields: customFieldConfig,
     plugins: [TestPlugin1636_1664, WithCustomEntity, PluginIssue2453],
