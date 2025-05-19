@@ -5,33 +5,31 @@ import { isObject } from '@vendure/common/lib/shared-utils';
  * property already exists on the target, but the hydrated version also contains that
  * property with a different set of properties. This prevents the original target
  * entity from having data overwritten.
- * 
- * Skips circular objects during the merge process.
  */
 export function mergeDeep<T extends { [key: string]: any }>(
-    a: T | undefined, 
-    b: T, 
-    visited: WeakMap<object, boolean> = new WeakMap()
+    a: T | undefined,
+    b: T,
+    visited: WeakSet<object> = new WeakSet(),
 ): T {
     if (!a) {
         return b;
     }
-    
+
     // Prevent circular references
     if (isObject(b)) {
         if (visited.has(b)) {
             return a;
         }
-        visited.set(b, true);
+        visited.add(b);
     }
-    
+
     if (Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.length > 1) {
         if (a[0].hasOwnProperty('id')) {
             // If the array contains entities, we can use the id to match them up
             // so that we ensure that we don't merge properties from different entities
             // with the same index.
-            const aIds = a.map(e => e.id);
-            const bIds = b.map(e => e.id);
+            const aIds = a.map((e) => e.id);
+            const bIds = b.map((e) => e.id);
             if (JSON.stringify(aIds) !== JSON.stringify(bIds)) {
                 // The entities in the arrays are not in the same order, so we can't
                 // safely merge them. We need to sort the `b` array so that the entities
@@ -46,7 +44,7 @@ export function mergeDeep<T extends { [key: string]: any }>(
             }
         }
     }
-    
+
     for (const [key, value] of Object.entries(b)) {
         if (Object.getOwnPropertyDescriptor(b, key)?.writable) {
             if (Array.isArray(value) || isObject(value)) {
@@ -60,6 +58,6 @@ export function mergeDeep<T extends { [key: string]: any }>(
             }
         }
     }
-    
+
     return a ?? b;
 }
