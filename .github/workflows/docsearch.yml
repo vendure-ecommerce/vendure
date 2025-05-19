@@ -7,7 +7,6 @@ on:
     paths:
       - 'docs/**'
     
-
 jobs:
   index_docs:
     runs-on: ubuntu-latest
