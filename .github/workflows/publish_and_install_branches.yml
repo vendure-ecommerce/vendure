@@ -6,7 +6,7 @@ on:
             - minor
             - parallel-e2e
         paths:
-            - 'packages/*'
+            - 'packages/**'
             - 'package.json'
             - 'package-lock.json'
             
