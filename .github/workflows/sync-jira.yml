@@ -75,7 +75,7 @@ jobs:
           
           if [ -z "$KEY" ]; then
             echo "No existing ticket found, creating new one"
-            BODY=$(jq -n --arg summary "$SUMMARY" --arg desc "$DESC" --arg proj "$PROJECT_KEY" '
+            BODY=$(jq -n --arg summary "$SUMMARY" --arg url "$GH_URL" --arg proj "$PROJECT_KEY" '
               {
                 "fields": {
                   "project": {
@@ -91,7 +91,13 @@ jobs:
                         "content": [
                           {
                             "type": "text",
-                            "text": $desc
+                            "text": "Imported from GitHub: "
+                          },
+                          {
+                            "type": "inlineCard",
+                            "attrs": {
+                              "url": $url
+                            }
                           }
                         ]
                       }
