@@ -41,12 +41,14 @@ jobs:
           echo "key=$KEY" >> $GITHUB_OUTPUT
       - name: Record the mapping on the GH issue
         uses: actions/github-script@v7
+        env:
+          JIRA_KEY: ${{ steps.jira.outputs.key }}
         with:
           script: |
             const issue_number = context.issue.number;
             const owner = context.repo.owner;
             const repo  = context.repo.repo;
-            const jira  = "${{ steps.jira.outputs.key }}";
+            const jira  = process.env.JIRA_KEY;
             const body  = `🔗 Linked to Core Team Jira ticket **${jira}**`;
             const {data:comments} = await github.rest.issues.listComments({owner,repo,issue_number});
             const existing = comments.find(c=>/Linked to Core Team Jira ticket/i.test(c.body));
