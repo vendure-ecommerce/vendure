@@ -5,11 +5,26 @@ import { isObject } from '@vendure/common/lib/shared-utils';
  * property already exists on the target, but the hydrated version also contains that
  * property with a different set of properties. This prevents the original target
  * entity from having data overwritten.
+ * 
+ * Skips circular objects during the merge process.
  */
-export function mergeDeep<T extends { [key: string]: any }>(a: T | undefined, b: T): T {
+export function mergeDeep<T extends { [key: string]: any }>(
+    a: T | undefined, 
+    b: T, 
+    visited: WeakMap<object, boolean> = new WeakMap()
+): T {
     if (!a) {
         return b;
     }
+    
+    // Prevent circular references
+    if (isObject(b)) {
+        if (visited.has(b)) {
+            return a;
+        }
+        visited.set(b, true);
+    }
+    
     if (Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.length > 1) {
         if (a[0].hasOwnProperty('id')) {
             // If the array contains entities, we can use the id to match them up
@@ -31,14 +46,20 @@ export function mergeDeep<T extends { [key: string]: any }>(a: T | undefined, b:
             }
         }
     }
+    
     for (const [key, value] of Object.entries(b)) {
         if (Object.getOwnPropertyDescriptor(b, key)?.writable) {
             if (Array.isArray(value) || isObject(value)) {
-                (a as any)[key] = mergeDeep(a?.[key], b[key]);
+                // Skip if we detect a circular reference
+                if (isObject(value) && visited.has(value)) {
+                    continue;
+                }
+                (a as any)[key] = mergeDeep(a?.[key], b[key], visited);
             } else {
                 (a as any)[key] = b[key];
             }
         }
     }
+    
     return a ?? b;
 }
