@@ -414,12 +414,12 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                 }
                 const relationPath = path.split('.').slice(0, -1);
                 let targetMetadata = metadata;
-                const recontructedPath = [];
+                const reconstructedPath = [];
                 for (const relationPathPart of relationPath) {
                     const relationMetadata = targetMetadata.findRelationWithPropertyPath(relationPathPart);
                     if (relationMetadata) {
-                        recontructedPath.push(relationMetadata.propertyName);
-                        requiredRelations.push(recontructedPath.join('.'));
+                        reconstructedPath.push(relationMetadata.propertyName);
+                        requiredRelations.push(reconstructedPath.join('.'));
                         targetMetadata = relationMetadata.inverseEntityMetadata;
                     }
                 }
