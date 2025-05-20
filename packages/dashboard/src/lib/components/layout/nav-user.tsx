@@ -36,7 +36,6 @@ export function NavUser() {
     const handleLogout = () => {
         auth.logout().then(() => {
             router.invalidate().finally(() => {
-                console.log('logging out router -> to login');
                 navigate({ to: '/login' });
             });
         });

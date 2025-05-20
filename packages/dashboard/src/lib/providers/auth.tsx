@@ -123,7 +123,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setStatus('verifying');
             api.mutate(LogOutMutation)({}).then(async data => {
                 if (data?.logout.success) {
-                    console.log('logging out -> refetching current user');
                     queryClient.removeQueries({ queryKey: ['currentUser'] });
                     setStatus('unauthenticated');
                     onLogoutSuccess?.();
