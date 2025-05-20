@@ -5,6 +5,7 @@
 
 * **admin-ui** Improve Arabic translations (#3531) ([dbd3c65](https://github.com/vendure-ecommerce/vendure/commit/dbd3c65)), closes [#3531](https://github.com/vendure-ecommerce/vendure/issues/3531)
 * **admin-ui** Update French translations from (#3525) ([d03bc2b](https://github.com/vendure-ecommerce/vendure/commit/d03bc2b)), closes [#3525](https://github.com/vendure-ecommerce/vendure/issues/3525)
+* **core)** Use job alias for clean-jobs task by (#3537) https://github.com/vendure-ecommerce/vendure/pull/3537
 * **core** Fix circular merge-deep stack overflow issue (#3549) ([bdc3438](https://github.com/vendure-ecommerce/vendure/commit/bdc3438)), closes [#3549](https://github.com/vendure-ecommerce/vendure/issues/3549)
 * **dashboard** Fix padding on pages ([fc27608](https://github.com/vendure-ecommerce/vendure/commit/fc27608))
 * **graphiql-plugin** Fix asset path for pnpm ([882a055](https://github.com/vendure-ecommerce/vendure/commit/882a055)), closes [#3499](https://github.com/vendure-ecommerce/vendure/issues/3499)
