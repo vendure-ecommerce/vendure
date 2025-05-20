@@ -23,7 +23,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
                         </AuthProvider>
                     </ThemeProvider>
                 </UserSettingsProvider>
-                {/*<ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />*/}
+                <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
             </QueryClientProvider>
         </I18nProvider>
     );
