@@ -1,7 +1,7 @@
-import * as React from 'react';
 import { api } from '@/graphql/api.js';
 import { ResultOf, graphql } from '@/graphql/graphql.js';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import * as React from 'react';
 
 // Define the channel fragment for reuse
 const channelFragment = graphql(`
@@ -36,7 +36,6 @@ const ChannelsQuery = graphql(
     [channelFragment],
 );
 
-
 // Define the type for a channel
 type ActiveChannel = ResultOf<typeof ChannelsQuery>['activeChannel'];
 type Channel = ResultOf<typeof channelFragment>;
@@ -65,6 +64,7 @@ export const ChannelContext = React.createContext<ChannelContext | undefined>(un
 const SELECTED_CHANNEL_KEY = 'vendure-selected-channel';
 
 export function ChannelProvider({ children }: { children: React.ReactNode }) {
+    const queryClient = useQueryClient();
     const [selectedChannelId, setSelectedChannelId] = React.useState<string | undefined>(() => {
         // Initialize from localStorage if available
         try {
@@ -89,6 +89,7 @@ export function ChannelProvider({ children }: { children: React.ReactNode }) {
             // Store in localStorage
             localStorage.setItem(SELECTED_CHANNEL_KEY, channelId);
             setSelectedChannelId(channelId);
+            queryClient.invalidateQueries();
         } catch (e) {
             console.error('Failed to set selected channel', e);
         }
@@ -126,4 +127,3 @@ export function ChannelProvider({ children }: { children: React.ReactNode }) {
 
     return <ChannelContext.Provider value={contextValue}>{children}</ChannelContext.Provider>;
 }
-
