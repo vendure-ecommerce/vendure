@@ -73,7 +73,7 @@ export async function loadVendureConfig(options: ConfigLoaderOptions): Promise<L
         '.js',
     );
     // create package.json with type commonjs and save it to the output dir
-    await fs.writeFile(path.join(outputPath, 'package.json'), JSON.stringify({ type: 'commonjs' }, null, 2));
+    await fs.writeFile(path.join(outputPath, 'package.json'), JSON.stringify({ type: 'module' }, null, 2));
 
     // We need to figure out the symbol exported by the config file by
     // analyzing the AST and finding an export with the type "VendureConfig"
@@ -134,7 +134,8 @@ async function findTsConfigPaths(
                     const tsConfig = JSON.parse(tsConfigContent);
                     const compilerOptions = tsConfig.compilerOptions || {};
 
-                    if (compilerOptions.paths) {
+                    // consider tsconfig.build.json, tsconfig.json we have and real paths defined in tsconfig.json
+                    if (compilerOptions.paths && Object.keys(compilerOptions.paths).length > 0) {
                         // Determine the effective baseUrl: explicitly set or the directory of tsconfig.json
                         const tsConfigBaseUrl = path.resolve(currentDir, compilerOptions.baseUrl || '.');
                         const paths: Record<string, string[]> = {};
@@ -336,13 +337,13 @@ export async function compileFile(
         const compilerOptions: ts.CompilerOptions = {
             // Base options
             target: ts.ScriptTarget.ES2020,
-            module: ts.ModuleKind.CommonJS, // Output CommonJS for Node compatibility
+            module: ts.ModuleKind.NodeNext, // Output CommonJS for Node compatibility
             experimentalDecorators: true,
             emitDecoratorMetadata: true,
             esModuleInterop: true,
             skipLibCheck: true, // Faster compilation
             forceConsistentCasingInFileNames: true,
-            moduleResolution: ts.ModuleResolutionKind.NodeJs, // Use Node.js module resolution
+            moduleResolution: ts.ModuleResolutionKind.NodeNext, // Use Node.js module resolution
             incremental: false, // No need for incremental compilation
             noEmitOnError: false, // Continue emitting even with errors
             isolatedModules: true, // Treat files as separate modules
