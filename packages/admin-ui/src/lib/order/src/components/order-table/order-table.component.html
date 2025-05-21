@@ -39,10 +39,21 @@
     </vdr-dt2-column>
     <vdr-dt2-column [heading]="'order.product-name' | translate" id="product-name">
         <ng-template let-line="item">
-            {{ line.productVariant.name }}
+            <a class="button-ghost" [routerLink]="['/catalog/products', line.productVariant.product.id]"
+            ><span>{{ line.productVariant.product.name }}</span>
+                <clr-icon shape="arrow right"></clr-icon>
+            </a>
         </ng-template>
     </vdr-dt2-column>
-    <vdr-dt2-column [heading]="'order.product-sku' | translate" id="product-sku" [optional]="false">
+    <vdr-dt2-column [heading]="'order.product-variant' | translate" id="product-variant">
+        <ng-template let-line="item">
+            <a class="button-ghost" [routerLink]="['/catalog/products', line.productVariant.product.id, 'variants', line.productVariant.id]"
+            ><span>{{ line.productVariant.name }}</span>
+                <clr-icon shape="arrow right"></clr-icon>
+            </a>
+        </ng-template>
+    </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'order.product-sku' | translate" id="product-sku">
         <ng-template let-line="item">
             {{ line.productVariant.sku }}
         </ng-template>
