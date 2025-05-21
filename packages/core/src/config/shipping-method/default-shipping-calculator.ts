@@ -43,7 +43,7 @@ export const defaultShippingCalculator = new ShippingCalculator({
             label: [{ languageCode: LanguageCode.en, value: 'Price includes tax' }],
         },
         taxRate: {
-            type: 'int',
+            type: 'float',
             defaultValue: 0,
             ui: { component: 'number-form-input', suffix: '%' },
             label: [{ languageCode: LanguageCode.en, value: 'Tax rate' }],

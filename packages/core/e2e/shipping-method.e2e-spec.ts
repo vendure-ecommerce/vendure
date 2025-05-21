@@ -136,7 +136,7 @@ describe('ShippingMethod resolver', () => {
                         description: null,
                         label: 'Tax rate',
                         name: 'taxRate',
-                        type: 'int',
+                        type: 'float',
                     },
                 ],
                 code: 'default-shipping-calculator',
