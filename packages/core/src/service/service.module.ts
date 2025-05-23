@@ -45,6 +45,7 @@ import { FacetValueService } from './services/facet-value.service';
 import { FacetService } from './services/facet.service';
 import { FulfillmentService } from './services/fulfillment.service';
 import { GlobalSettingsService } from './services/global-settings.service';
+import { ConfigStorageService } from './services/config-storage.service';
 import { HistoryService } from './services/history.service';
 import { OrderTestingService } from './services/order-testing.service';
 import { OrderService } from './services/order.service';
@@ -82,6 +83,7 @@ const services = [
     FacetValueService,
     FulfillmentService,
     GlobalSettingsService,
+    ConfigStorageService,
     HistoryService,
     OrderService,
     OrderTestingService,

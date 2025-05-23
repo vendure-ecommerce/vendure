@@ -19,6 +19,7 @@ export * from './facet/facet-translation.entity';
 export * from './facet/facet.entity';
 export * from './fulfillment/fulfillment.entity';
 export * from './global-settings/global-settings.entity';
+export * from './config/config.entity';
 export * from './order/order.entity';
 export * from './order-line/order-line.entity';
 export * from './order-line-reference/fulfillment-line.entity';

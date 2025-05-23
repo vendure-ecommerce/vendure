@@ -1,0 +1,25 @@
+extend type Query {
+  """
+  Retrieve a specific config entry by key.
+  """
+  config(key: String!): Config
+  """
+  Retrieve all config entries.
+  """
+  configs: [Config!]!
+}
+
+extend type Mutation {
+  """
+  Create a new config entry.
+  """
+  createConfig(input: CreateConfigInput!): Config!
+  """
+  Update an existing config entry.
+  """
+  updateConfig(input: UpdateConfigInput!): Config!
+  """
+  Delete a config entry by key.
+  """
+  deleteConfig(key: String!): DeletionResponse!
+}

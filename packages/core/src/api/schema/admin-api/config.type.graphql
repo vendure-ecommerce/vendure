@@ -1,0 +1,40 @@
+"""
+Stores a plugin-defined config entry, including its permissions.
+"""
+type Config {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  key: String!
+  plugin: String!
+  value: JSON!
+  createPermissions: [Permission!]!
+  readPermissions: [Permission!]!
+  updatePermissions: [Permission!]!
+  deletePermissions: [Permission!]!
+}
+
+"""
+Input for creating a new Config entry.
+"""
+input CreateConfigInput {
+  key: String!
+  plugin: String!
+  value: JSON!
+  createPermissions: [Permission!]!
+  readPermissions: [Permission!]!
+  updatePermissions: [Permission!]!
+  deletePermissions: [Permission!]!
+}
+
+"""
+Input for updating an existing Config entry.
+"""
+input UpdateConfigInput {
+  key: String!
+  value: JSON
+  createPermissions: [Permission!]
+  readPermissions: [Permission!]
+  updatePermissions: [Permission!]
+  deletePermissions: [Permission!]
+}

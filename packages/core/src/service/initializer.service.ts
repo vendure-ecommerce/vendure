@@ -9,6 +9,7 @@ import { InitializerEvent } from '../event-bus/events/initializer-event';
 import { AdministratorService } from './services/administrator.service';
 import { ChannelService } from './services/channel.service';
 import { GlobalSettingsService } from './services/global-settings.service';
+import { ConfigStorageService } from './services/config-storage.service';
 import { RoleService } from './services/role.service';
 import { SellerService } from './services/seller.service';
 import { ShippingMethodService } from './services/shipping-method.service';
@@ -33,6 +34,7 @@ export class InitializerService {
         private administratorService: AdministratorService,
         private shippingMethodService: ShippingMethodService,
         private globalSettingsService: GlobalSettingsService,
+        private configStorageService: ConfigStorageService,
         private taxRateService: TaxRateService,
         private sellerService: SellerService,
         private eventBus: EventBus,
@@ -49,6 +51,7 @@ export class InitializerService {
         // there is a default Channel to work with.
         await this.zoneService.initZones();
         await this.globalSettingsService.initGlobalSettings();
+        await this.configStorageService.initConfigDefinitions();
         await this.sellerService.initSellers();
         await this.channelService.initChannels();
         await this.roleService.initRoles();

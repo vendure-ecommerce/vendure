@@ -24,6 +24,7 @@ import { DraftOrderResolver } from './resolvers/admin/draft-order.resolver';
 import { DuplicateEntityResolver } from './resolvers/admin/duplicate-entity.resolver';
 import { FacetResolver } from './resolvers/admin/facet.resolver';
 import { GlobalSettingsResolver } from './resolvers/admin/global-settings.resolver';
+import { ConfigStorageResolver } from './resolvers/admin/config-storage.resolver';
 import { ImportResolver } from './resolvers/admin/import.resolver';
 import { JobResolver } from './resolvers/admin/job.resolver';
 import { OrderResolver } from './resolvers/admin/order.resolver';
@@ -105,6 +106,7 @@ const adminResolvers = [
     DuplicateEntityResolver,
     FacetResolver,
     GlobalSettingsResolver,
+    ConfigStorageResolver,
     ImportResolver,
     JobResolver,
     OrderResolver,
