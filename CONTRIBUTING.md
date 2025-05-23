@@ -103,3 +103,30 @@ If you wish to contribute translations of the Admin UI into another language (or
 All contributors are required to agree to the [Contributor License Agreement](./license/CLA.md) before their contributions can be merged.
 
 This is done via an automation bot which will prompt you to sign the CLA when you open a pull request.
+
+## Issue Triage Guidelines
+
+This sections is meant for maintainers to help triage issues.
+
+### Quality Control
+
+- [ ] Does the issue have a **clear title and description**?
+- [ ] Was the **issue template followed** and is all required info available?
+- [ ] If it's a **bug report**, are there **clear steps to reproduce**?
+
+If any of the above are missing:
+- Add a relevant **blue label** (e.g., `needs reproduction`, `missing info`)
+- Comment to ask the reporter to supply the missing information
+
+### Check for Duplicates
+
+Search to see if the issue is already reported or resolved. If it is a duplicate, close the issue with a message like `Duplicate of #123`.
+
+### Label the Issue
+- [ ] Set an **Issue Type**: `bug`, `feature` or `task`
+- [ ] **Package**: label with relevant package/component
+- [ ] Assign a **Priority Label** if possible
+
+### Stale Issues
+
+Issues that need more information should be closed after 1 month of inactivity.
