@@ -165,7 +165,7 @@ export class GraphiqlPlugin implements NestModule {
                 const filePath = path.join(distDir, 'assets', assetPath.toString());
 
                 if (fs.existsSync(filePath)) {
-                    return res.sendFile(filePath);
+                    return res.sendFile(assetPath.toString(), { root: path.join(distDir, 'assets') });
                 } else {
                     return res.status(404).send('Asset not found');
                 }

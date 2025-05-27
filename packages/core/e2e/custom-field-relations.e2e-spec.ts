@@ -4,15 +4,12 @@ import {
     Collection,
     Country,
     CustomFields,
-    DefaultLogger,
     defaultShippingCalculator,
     defaultShippingEligibilityChecker,
     Facet,
     FacetValue,
-    LogLevel,
     manualFulfillmentHandler,
     mergeConfig,
-    PluginCommonModule,
     Product,
     ProductOption,
     ProductOptionGroup,
@@ -20,8 +17,6 @@ import {
     RequestContext,
     ShippingMethod,
     TransactionalConnection,
-    VendureEntity,
-    VendurePlugin,
 } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
@@ -30,7 +25,7 @@ import { Repository } from 'typeorm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import { TestPlugin1636_1664 } from './fixtures/test-plugins/issue-1636-1664/issue-1636-1664-plugin';
@@ -102,7 +97,6 @@ const customConfig = mergeConfig(testConfig(), {
     paymentOptions: {
         paymentMethodHandlers: [testSuccessfulPaymentMethod],
     },
-    // logger: new DefaultLogger({ level: LogLevel.Debug }),
     dbConnectionOptions: {
         timezone: 'Z',
     },
