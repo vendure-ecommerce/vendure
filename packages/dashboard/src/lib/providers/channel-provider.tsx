@@ -1,6 +1,7 @@
 import { api } from '@/graphql/api.js';
 import { ResultOf, graphql } from '@/graphql/graphql.js';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '@/hooks/use-auth.js';
 import * as React from 'react';
 
 // Define the channel fragment for reuse
@@ -64,6 +65,7 @@ export const ChannelContext = React.createContext<ChannelContext | undefined>(un
 const SELECTED_CHANNEL_KEY = 'vendure-selected-channel';
 
 export function ChannelProvider({ children }: { children: React.ReactNode }) {
+    const { isAuthenticated } = useAuth();
     const queryClient = useQueryClient();
     const [selectedChannelId, setSelectedChannelId] = React.useState<string | undefined>(() => {
         // Initialize from localStorage if available
@@ -77,11 +79,18 @@ export function ChannelProvider({ children }: { children: React.ReactNode }) {
     });
 
     // Fetch all available channels
-    const { data: channelsData, isLoading: isChannelsLoading } = useQuery({
+    const { data: channelsData, isLoading: isChannelsLoading, refetch: refetchChannels } = useQuery({
         queryKey: ['channels'],
         queryFn: () => api.query(ChannelsQuery),
         retry: false,
     });
+
+    React.useEffect(() => {
+        if (isAuthenticated) {
+            // Refetch channels when authenticated
+            refetchChannels();
+        }
+    }, [isAuthenticated, refetchChannels])
 
     // Set the selected channel and update localStorage
     const setSelectedChannel = React.useCallback((channelId: string) => {
