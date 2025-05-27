@@ -23,7 +23,9 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
                         </AuthProvider>
                     </ThemeProvider>
                 </UserSettingsProvider>
-                {/*<ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />*/}
+                {process.env.NODE_ENV === 'development' && (
+                    <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
+                )}
             </QueryClientProvider>
         </I18nProvider>
     );
