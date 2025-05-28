@@ -1,4 +1,5 @@
 import { getConfig } from '../config/config-helpers';
+import { NoopInstrumentationStrategy } from '../config/system/noop-instrumentation-strategy';
 
 export const ENABLE_INSTRUMENTATION_ENV_VAR = 'VENDURE_ENABLE_INSTRUMENTATION';
 
@@ -59,17 +60,24 @@ export function Instrument(): ClassDecorator {
                 if (!instrumentationStrategy) {
                     return this;
                 }
+
+                if (instrumentationStrategy instanceof NoopInstrumentationStrategy) {
+                    throw new Error('Please add a TelemetryPlugin to your VendureConfig');
+                }
+
                 // eslint-disable-next-line @typescript-eslint/no-this-alias
                 const instance = this;
-                return new Proxy(this, {
+                const proxy = new Proxy(this, {
                     get: (obj, prop) => {
                         const original = obj[prop as string];
                         if (typeof original === 'function') {
+                            // Bind the method to the proxy instance to ensure internal calls go through the proxy
+                            const boundMethod = original.bind(proxy);
                             return function (...methodArgs: any[]) {
                                 const applyOriginalFunction =
-                                    original.constructor.name === 'AsyncFunction'
-                                        ? async () => await original.apply(obj, methodArgs)
-                                        : () => original.apply(obj, methodArgs);
+                                    boundMethod.constructor.name === 'AsyncFunction'
+                                        ? async () => await boundMethod(...methodArgs)
+                                        : () => boundMethod(...methodArgs);
                                 const wrappedMethodArgs = {
                                     instance,
                                     target,
@@ -83,6 +91,7 @@ export function Instrument(): ClassDecorator {
                         return original;
                     },
                 });
+                return proxy;
             }
         };
 
