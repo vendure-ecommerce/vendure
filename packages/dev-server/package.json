@@ -7,7 +7,9 @@
     "scripts": {
         "populate": "node -r ts-node/register -r dotenv/config populate-dev-server.ts",
         "dev:server": "node -r ts-node/register -r dotenv/config -r tsconfig-paths/register index.ts",
+        "dev:server:instrumented": "IS_INSTRUMENTED=true node -r ts-node/register -r dotenv/config -r tsconfig-paths/register -r ./instrumentation.ts index.ts",
         "dev:worker": "node -r ts-node/register -r dotenv/config -r tsconfig-paths/register index-worker.ts",
+        "dev:worker:instrumented": "IS_INSTRUMENTED=tru node -r ts-node/register -r dotenv/config -r tsconfig-paths/register -r ./instrumentation.ts index.ts",
         "dev": "concurrently npm:dev:*",
         "dashboard:dev": "vite dev",
         "load-test:1k": "node -r ts-node/register load-testing/run-load-test.ts 1000",
