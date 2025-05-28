@@ -129,6 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     queryClient.clear();
                     // Clear selected channel from localStorage
                     localStorage.removeItem('vendure-selected-channel');
+                    localStorage.removeItem('vendure-selected-channel-token');
                     setStatus('unauthenticated');
                     onLogoutSuccess?.();
                 }
