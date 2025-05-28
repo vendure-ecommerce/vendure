@@ -1,4 +1,5 @@
 import { getConfig } from '../config/config-helpers';
+import { NoopInstrumentationStrategy } from '../config/system/noop-instrumentation-strategy';
 
 export const ENABLE_INSTRUMENTATION_ENV_VAR = 'VENDURE_ENABLE_INSTRUMENTATION';
 
@@ -59,6 +60,11 @@ export function Instrument(): ClassDecorator {
                 if (!instrumentationStrategy) {
                     return this;
                 }
+
+                if (instrumentationStrategy instanceof NoopInstrumentationStrategy) {
+                    throw new Error('Please add a TelemetryPlugin to your VendureConfig');
+                }
+
                 // eslint-disable-next-line @typescript-eslint/no-this-alias
                 const instance = this;
                 const proxy = new Proxy(this, {
