@@ -76,8 +76,8 @@ export function Instrument(): ClassDecorator {
                             return function (...methodArgs: any[]) {
                                 const applyOriginalFunction =
                                     boundMethod.constructor.name === 'AsyncFunction'
-                                        ? async () => await boundMethod.apply(proxy, methodArgs)
-                                        : () => boundMethod.apply(proxy, methodArgs);
+                                        ? async () => await boundMethod(...methodArgs)
+                                        : () => boundMethod(...methodArgs);
                                 const wrappedMethodArgs = {
                                     instance,
                                     target,
