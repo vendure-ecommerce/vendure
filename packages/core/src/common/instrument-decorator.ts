@@ -61,15 +61,17 @@ export function Instrument(): ClassDecorator {
                 }
                 // eslint-disable-next-line @typescript-eslint/no-this-alias
                 const instance = this;
-                return new Proxy(this, {
+                const proxy = new Proxy(this, {
                     get: (obj, prop) => {
                         const original = obj[prop as string];
                         if (typeof original === 'function') {
+                            // Bind the method to the proxy instance to ensure internal calls go through the proxy
+                            const boundMethod = original.bind(proxy);
                             return function (...methodArgs: any[]) {
                                 const applyOriginalFunction =
-                                    original.constructor.name === 'AsyncFunction'
-                                        ? async () => await original.apply(obj, methodArgs)
-                                        : () => original.apply(obj, methodArgs);
+                                    boundMethod.constructor.name === 'AsyncFunction'
+                                        ? async () => await boundMethod.apply(proxy, methodArgs)
+                                        : () => boundMethod.apply(proxy, methodArgs);
                                 const wrappedMethodArgs = {
                                     instance,
                                     target,
@@ -83,6 +85,7 @@ export function Instrument(): ClassDecorator {
                         return original;
                     },
                 });
+                return proxy;
             }
         };
 
