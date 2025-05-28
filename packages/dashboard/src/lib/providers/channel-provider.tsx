@@ -2,6 +2,7 @@ import { api } from '@/graphql/api.js';
 import { ResultOf, graphql } from '@/graphql/graphql.js';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as React from 'react';
+import { useAuth } from '@/hooks/use-auth.js';
 
 // Define the channel fragment for reuse
 const channelFragment = graphql(`
@@ -65,6 +66,7 @@ const SELECTED_CHANNEL_KEY = 'vendure-selected-channel';
 
 export function ChannelProvider({ children }: { children: React.ReactNode }) {
     const queryClient = useQueryClient();
+    const { channels: userChannels, isAuthenticated } = useAuth();
     const [selectedChannelId, setSelectedChannelId] = React.useState<string | undefined>(() => {
         // Initialize from localStorage if available
         try {
@@ -78,10 +80,29 @@ export function ChannelProvider({ children }: { children: React.ReactNode }) {
 
     // Fetch all available channels
     const { data: channelsData, isLoading: isChannelsLoading } = useQuery({
-        queryKey: ['channels'],
+        queryKey: ['channels', isAuthenticated],
         queryFn: () => api.query(ChannelsQuery),
         retry: false,
+        enabled: isAuthenticated,
     });
+
+    // Filter channels based on user permissions
+    const channels = React.useMemo(() => {
+        // If user has specific channels assigned (non-superadmin), use those
+        if (userChannels && userChannels.length > 0) {
+            // Map user channels to match the Channel type structure
+            return userChannels.map(ch => ({
+                id: ch.id,
+                code: ch.code,
+                token: ch.token,
+                defaultLanguageCode: channelsData?.channels.items.find(c => c.id === ch.id)?.defaultLanguageCode || 'en',
+                defaultCurrencyCode: channelsData?.channels.items.find(c => c.id === ch.id)?.defaultCurrencyCode || 'USD',
+                pricesIncludeTax: channelsData?.channels.items.find(c => c.id === ch.id)?.pricesIncludeTax || false,
+            }));
+        }
+        // Otherwise use all channels (superadmin)
+        return channelsData?.channels.items || [];
+    }, [userChannels, channelsData?.channels.items]);
 
     // Set the selected channel and update localStorage
     const setSelectedChannel = React.useCallback((channelId: string) => {
@@ -93,21 +114,35 @@ export function ChannelProvider({ children }: { children: React.ReactNode }) {
         } catch (e) {
             console.error('Failed to set selected channel', e);
         }
-    }, []);
+    }, [queryClient]);
 
     // If no selected channel is set but we have an active channel, use that
+    // Also validate that the selected channel is accessible to the user
     React.useEffect(() => {
-        if (!selectedChannelId && channelsData?.activeChannel?.id) {
-            setSelectedChannelId(channelsData.activeChannel.id);
+        const validChannelIds = channels.map(c => c.id);
+        
+        // If selected channel is not valid for this user, reset it
+        if (selectedChannelId && !validChannelIds.includes(selectedChannelId)) {
+            setSelectedChannelId(undefined);
             try {
-                localStorage.setItem(SELECTED_CHANNEL_KEY, channelsData.activeChannel.id);
+                localStorage.removeItem(SELECTED_CHANNEL_KEY);
+            } catch (e) {
+                console.error('Failed to remove selected channel from localStorage', e);
+            }
+        }
+        
+        // If no selected channel is set, use the first available channel
+        if (!selectedChannelId && channels.length > 0) {
+            const defaultChannelId = channels[0].id;
+            setSelectedChannelId(defaultChannelId);
+            try {
+                localStorage.setItem(SELECTED_CHANNEL_KEY, defaultChannelId);
             } catch (e) {
                 console.error('Failed to store selected channel in localStorage', e);
             }
         }
-    }, [selectedChannelId, channelsData]);
+    }, [selectedChannelId, channels]);
 
-    const channels = channelsData?.channels.items || [];
     const activeChannel = channelsData?.activeChannel;
     const isLoading = isChannelsLoading;
 
