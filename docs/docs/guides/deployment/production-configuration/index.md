@@ -117,6 +117,24 @@ show timezone;
 ```
 and you should expect to see `UTC` or `Etc/UTC`.
 
+## Trust proxy
+
+When deploying your Vendure application behind a reverse proxy (usually the case with most hosting services), consider configuring Express's `trust proxy` setting. This allows you to retrieve the original IP address from the `X-Forwarded-For` header, which proxies use to forward the client's IP address.
+
+You can set the `trustProxy` option in your `VendureConfig`:
+
+```ts
+import { VendureConfig } from '@vendure/core';
+
+export const config: VendureConfig = {
+    apiOptions: {
+        trustProxy: 1, // Trust the first proxy in front of your app
+    },
+};
+```
+
+For more details on configuring `trust proxy`, refer to the [Express documentation](https://expressjs.com/en/guide/behind-proxies.html).
+
 ## Security Considerations
 
 Please read over the [Security](/guides/developer-guide/security) section of the Developer Guide for more information on how to secure your Vendure application.
