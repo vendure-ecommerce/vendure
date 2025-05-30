@@ -194,6 +194,7 @@ export interface ApiOptions {
      * Set the trust proxy configuration for the server. See the [express proxy docs](https://expressjs.com/en/guide/behind-proxies.html).
      *
      * @default false
+     * @since 3.4.0
      */
     trustProxy?: TrustProxyOptions;
     /**
@@ -237,6 +238,7 @@ export interface ApiOptions {
  * See the [express documentation](https://expressjs.com/en/guide/behind-proxies.html) for more details.
  *
  * @docsCategory configuration
+ * @since 3.4.0
  */
 export type TrustProxyOptions = boolean | number | string | string[] | ((ip: string) => boolean);
 
