@@ -191,6 +191,13 @@ export interface ApiOptions {
     middleware?: Middleware[];
     /**
      * @description
+     * Set the trust proxy configuration for the server. See the [express proxy docs](https://expressjs.com/en/guide/behind-proxies.html).
+     *
+     * @default false
+     */
+    trustProxy?: TrustProxyOptions;
+    /**
+     * @description
      * Custom [ApolloServerPlugins](https://www.apollographql.com/docs/apollo-server/integrations/plugins/) which
      * allow the extension of the Apollo Server, which is the underlying GraphQL server used by Vendure.
      *
@@ -221,6 +228,17 @@ export interface ApiOptions {
      */
     introspection?: boolean;
 }
+
+/**
+ * @description
+ * Configures Express trust proxy settings when running behind a reverse proxy (usually the case with most hosting services).
+ * Setting `trustProxy` allows you to retrieve the original IP address from the `X-Forwarded-For` header.
+ *
+ * See the [express documentation](https://expressjs.com/en/guide/behind-proxies.html) for more details.
+ *
+ * @docsCategory configuration
+ */
+export type TrustProxyOptions = boolean | number | string | string[] | ((ip: string) => boolean);
 
 /**
  * @description
