@@ -103,6 +103,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     if (data.login.__typename === 'CurrentUser') {
                         setAuthenticationError(undefined);
                         await refetchCurrentUser();
+                        // Invalidate all queries to ensure fresh data after login
+                        await queryClient.invalidateQueries();
                         setStatus('authenticated');
                         onLoginSuccess?.();
                     } else {
@@ -115,7 +117,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     setStatus('unauthenticated');
                 });
         },
-        [refetchCurrentUser],
+        [refetchCurrentUser, queryClient],
     );
 
     const logout = React.useCallback(
@@ -123,13 +125,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setStatus('verifying');
             api.mutate(LogOutMutation)({}).then(async data => {
                 if (data?.logout.success) {
-                    queryClient.removeQueries({ queryKey: ['currentUser'] });
+                    // Clear all cached queries to prevent stale data
+                    queryClient.clear();
+                    // Clear selected channel from localStorage
+                    localStorage.removeItem('vendure-selected-channel');
+                    localStorage.removeItem('vendure-selected-channel-token');
                     setStatus('unauthenticated');
                     onLogoutSuccess?.();
                 }
             });
         },
-        [refetchCurrentUser],
+        [queryClient],
     );
 
     // Determine isAuthenticated from currentUserData
