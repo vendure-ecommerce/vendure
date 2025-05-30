@@ -86,6 +86,7 @@ export const defaultConfig: RuntimeVendureConfig = {
             origin: true,
             credentials: true,
         },
+        trustProxy: false,
         middleware: [],
         introspection: true,
         apolloServerPlugins: [],

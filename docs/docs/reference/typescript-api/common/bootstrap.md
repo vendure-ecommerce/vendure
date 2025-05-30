@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## bootstrap
 
-<GenerationInfo sourceFile="packages/core/src/bootstrap.ts" sourceLine="159" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/bootstrap.ts" sourceLine="160" packageName="@vendure/core" />
 
 Bootstraps the Vendure server. This is the entry point to the application.
 
@@ -87,7 +87,7 @@ Parameters
 
 ## BootstrapOptions
 
-<GenerationInfo sourceFile="packages/core/src/bootstrap.ts" sourceLine="41" packageName="@vendure/core" since="2.2.0" />
+<GenerationInfo sourceFile="packages/core/src/bootstrap.ts" sourceLine="42" packageName="@vendure/core" since="2.2.0" />
 
 Additional options that can be used to configure the bootstrap process of the
 Vendure server.
