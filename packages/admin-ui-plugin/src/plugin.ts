@@ -26,12 +26,12 @@ import path from 'path';
 import { adminApiExtensions } from './api/api-extensions';
 import { MetricsResolver } from './api/metrics.resolver';
 import {
+    DEFAULT_APP_PATH,
     defaultAvailableLanguages,
+    defaultAvailableLocales,
     defaultLanguage,
     defaultLocale,
-    DEFAULT_APP_PATH,
     loggerCtx,
-    defaultAvailableLocales,
 } from './constants';
 import { MetricsService } from './service/metrics.service';
 
@@ -253,10 +253,13 @@ export class AdminUiPlugin implements NestModule {
         });
 
         const adminUiServer = express.Router();
-        adminUiServer.use(limiter);
+        // This is a workaround for a type mismatch between express v5 (Vendure core)
+        // and express v4 (several transitive dependencies). Can be removed once the
+        // ecosystem has more significantly shifted to v5.
+        adminUiServer.use(limiter as any);
         adminUiServer.use(express.static(adminUiAppPath));
         adminUiServer.use((req, res) => {
-            res.sendFile(path.join(adminUiAppPath, 'index.html'));
+            res.sendFile('index.html', { root: adminUiAppPath });
         });
 
         return adminUiServer;

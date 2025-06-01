@@ -8,6 +8,7 @@ import { CustomFieldConfig, LanguageCode, StringFieldOption } from '../../common
 @Pipe({
     name: 'customFieldDescription',
     pure: true,
+    standalone: false,
 })
 export class CustomFieldDescriptionPipe implements PipeTransform {
     transform(value: CustomFieldConfig, uiLanguageCode: LanguageCode | null): string {

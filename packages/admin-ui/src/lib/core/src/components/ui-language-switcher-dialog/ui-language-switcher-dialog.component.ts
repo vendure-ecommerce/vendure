@@ -11,6 +11,7 @@ import { getAppConfig } from '../../app.config';
     templateUrl: './ui-language-switcher-dialog.component.html',
     styleUrls: ['./ui-language-switcher-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class UiLanguageSwitcherDialogComponent
     implements Dialog<[LanguageCode, string | undefined]>, OnInit, OnDestroy
@@ -28,7 +29,10 @@ export class UiLanguageSwitcherDialogComponent
     readonly browserDefaultLocale: string | undefined;
     readonly now = new Date().toISOString();
 
-    constructor(private dataService: DataService, private changeDetector: ChangeDetectorRef) {
+    constructor(
+        private dataService: DataService,
+        private changeDetector: ChangeDetectorRef,
+    ) {
         const browserLanguage = navigator.language.split('-');
         this.browserDefaultLocale = browserLanguage.length === 1 ? undefined : browserLanguage[1];
     }

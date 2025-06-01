@@ -15,15 +15,15 @@ import { In } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
-import { ErrorResultUnion, FacetInUseError, ForbiddenError, UserInputError } from '../../common';
+import { ErrorResultUnion, FacetInUseError, ForbiddenError, Instrument, UserInputError } from '../../common';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
+import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { FacetTranslation } from '../../entity/facet/facet-translation.entity';
 import { Facet } from '../../entity/facet/facet.entity';
-import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { EventBus } from '../../event-bus';
 import { FacetEvent } from '../../event-bus/events/facet-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
@@ -43,6 +43,7 @@ import { RoleService } from './role.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class FacetService {
     constructor(
         private connection: TransactionalConnection,
@@ -293,7 +294,6 @@ export class FacetService {
                 this.channelService.assignToChannels(ctx, FacetValue, value.id, [input.channelId]),
             ),
         ]);
-
         return this.connection
             .findByIdsInChannel(
                 ctx,

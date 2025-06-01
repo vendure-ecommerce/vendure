@@ -31,6 +31,7 @@ export const CUSTOMER_GROUP_DETAIL_QUERY = gql`
     templateUrl: './customer-group-detail.component.html',
     styleUrls: ['./customer-group-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class CustomerGroupDetailComponent
     extends TypedBaseDetailComponent<typeof GetCustomerGroupDetailDocument, 'customerGroup'>

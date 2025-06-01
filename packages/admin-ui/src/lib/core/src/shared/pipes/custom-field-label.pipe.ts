@@ -14,6 +14,7 @@ import {
 @Pipe({
     name: 'customFieldLabel',
     pure: true,
+    standalone: false,
 })
 export class CustomFieldLabelPipe implements PipeTransform {
     transform(

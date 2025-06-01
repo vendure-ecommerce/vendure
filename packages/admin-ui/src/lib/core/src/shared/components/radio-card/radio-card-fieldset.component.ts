@@ -17,9 +17,12 @@ import { debounceTime, throttleTime } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-radio-card-fieldset',
-    template: `<fieldset><ng-content></ng-content></fieldset> `,
+    template: `
+        <fieldset><ng-content></ng-content></fieldset>
+    `,
     styleUrls: ['radio-card-fieldset.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class RadioCardFieldsetComponent<T = any> implements OnInit, OnChanges, OnDestroy {
     @Input() selectedItemId: string;

@@ -35,6 +35,7 @@ export const GET_SELLER_DETAIL = gql`
     templateUrl: './seller-detail.component.html',
     styleUrls: ['./seller-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SellerDetailComponent
     extends TypedBaseDetailComponent<typeof GetSellerDetailDocument, 'seller'>

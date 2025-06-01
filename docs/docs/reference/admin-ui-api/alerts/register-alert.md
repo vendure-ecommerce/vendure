@@ -17,7 +17,7 @@ Registers an alert which can be displayed in the Admin UI alert dropdown in the 
 The alert is configured using the <a href='/reference/admin-ui-api/alerts/alert-config#alertconfig'>AlertConfig</a> object.
 
 ```ts title="Signature"
-function registerAlert(config: AlertConfig): FactoryProvider
+function registerAlert(config: AlertConfig): void
 ```
 Parameters
 

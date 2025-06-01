@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
+import { Instrument } from '../../common/instrument-decorator';
 import { AvailableStock } from '../../config/catalog/stock-location-strategy';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
@@ -20,6 +21,7 @@ import { StockLocationService } from './stock-location.service';
  * @since 2.0.0
  */
 @Injectable()
+@Instrument()
 export class StockLevelService {
     constructor(
         private connection: TransactionalConnection,

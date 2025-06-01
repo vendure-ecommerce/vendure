@@ -25,6 +25,7 @@ import { IfDirectiveBase } from './if-directive-base';
  */
 @Directive({
     selector: '[vdrIfPermissions]',
+    standalone: false,
 })
 export class IfPermissionsDirective extends IfDirectiveBase<Array<Permission[] | null>> {
     private permissionToCheck: string[] | null = ['__initial_value__'];

@@ -1,7 +1,7 @@
 import { LanguageCode } from '@vendure/core';
 import path from 'path';
 
-export const DEFAULT_APP_PATH = path.join(__dirname, '../admin-ui');
+export const DEFAULT_APP_PATH = path.join(__dirname, '../admin-ui/browser');
 export const loggerCtx = 'AdminUiPlugin';
 export const defaultLanguage = LanguageCode.en;
 export const defaultLocale = undefined;
@@ -28,6 +28,7 @@ export const defaultAvailableLanguages = [
     LanguageCode.sv,
     LanguageCode.nb,
     LanguageCode.tr,
+    LanguageCode.ja,
 ];
 
 export const defaultAvailableLocales = [

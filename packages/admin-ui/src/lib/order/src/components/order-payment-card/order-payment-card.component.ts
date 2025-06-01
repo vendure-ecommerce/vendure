@@ -8,6 +8,7 @@ type Payment = NonNullable<OrderDetailFragment['payments']>[number];
     templateUrl: './order-payment-card.component.html',
     styleUrls: ['./order-payment-card.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OrderPaymentCardComponent {
     @Input() payment: Payment;

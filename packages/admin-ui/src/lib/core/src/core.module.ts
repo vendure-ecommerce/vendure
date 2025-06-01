@@ -92,16 +92,16 @@ export class CoreModule {
             );
         }
 
-        if (!!defaultLocale && !availableLocales.includes(defaultLocale)) {
-            throw new Error(
-                `The defaultLocale "${defaultLocale}" must be one of the availableLocales [${availableLocales
-                    .map(l => `"${l}"`)
-                    .join(', ')}]`,
-            );
-        }
-
         const uiLanguage =
             lastLanguage && availableLanguages.includes(lastLanguage) ? lastLanguage : defaultLanguage;
+
+        // The locale detected from the `navigator.language` API might not be one of the
+        // "available" locales. In this case, we should still allow the app to load
+        // and add the detected locale to the available options.
+        if (defaultLocale && !availableLocales.includes(defaultLocale)) {
+            console.info(`Adding default locale ${defaultLocale} to the list of available locales`);
+            availableLocales.unshift(defaultLocale);
+        }
 
         this.localStorageService.set('uiLanguageCode', uiLanguage);
 

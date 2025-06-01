@@ -1,0 +1,160 @@
+name: Sync core-team issues to Jira
+
+on:
+  issues:
+    types: [opened, reopened, edited, labeled]
+
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  sync:
+    if: contains(github.event.issue.labels.*.name, 'core-team')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create or update Jira ticket
+        id: jira
+        env:
+          JIRA_EMAIL:  ${{ secrets.JIRA_EMAIL }}
+          JIRA_TOKEN:  ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_BASE:   ${{ secrets.JIRA_BASE }}    
+          PROJECT_KEY: VEN
+        run: |
+          set -e  # Exit on any error
+          
+          # Verify environment variables
+          if [ -z "$JIRA_EMAIL" ] || [ -z "$JIRA_TOKEN" ] || [ -z "$JIRA_BASE" ]; then
+            echo "Error: Required Jira environment variables are not set"
+            exit 1
+          fi
+          
+          GH_URL="https://github.com/${{ github.repository }}/issues/${{ github.event.issue.number }}"
+          echo "GitHub URL: $GH_URL"
+          
+          # Test jq installation
+          if ! command -v jq &> /dev/null; then
+            echo "Error: jq is not installed"
+            exit 1
+          fi
+          
+          # Prepare the data with error checking
+          SUMMARY="${{ github.event.issue.title }}"
+          DESC="Imported from GitHub: $GH_URL"
+          
+          # Create the search request body
+          SEARCH_BODY=$(jq -n --arg url "$GH_URL" --arg proj "$PROJECT_KEY" '
+            {
+              "jql": "project = \($proj) AND description ~ \"\($url)\""
+            }' || {
+              echo "Error creating search request body"
+              exit 1
+            })
+          
+          echo "Search request body: $SEARCH_BODY"
+          
+          # Search with JQL endpoint
+          SEARCH_RESULT=$(curl -f -s -u "$JIRA_EMAIL:$JIRA_TOKEN" \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/json" \
+            --data "$SEARCH_BODY" \
+            "$JIRA_BASE/rest/api/3/search" || { 
+              echo "Error: Jira search failed with status $?"
+              exit 1
+            })
+          
+          # Parse the key with error checking
+          # The search endpoint returns issues in an issues array
+          KEY=$(echo "$SEARCH_RESULT" | jq -r 'if .issues[0] then .issues[0].key else empty end' || { 
+            echo "Error parsing search result"
+            exit 1
+          })
+          
+          echo "Found existing key: $KEY"
+          
+          if [ -z "$KEY" ]; then
+            echo "No existing ticket found, creating new one"
+            BODY=$(jq -n --arg summary "$SUMMARY" --arg url "$GH_URL" --arg proj "$PROJECT_KEY" '
+              {
+                "fields": {
+                  "project": {
+                    "key": $proj
+                  },
+                  "summary": $summary,
+                  "description": {
+                    "type": "doc",
+                    "version": 1,
+                    "content": [
+                      {
+                        "type": "paragraph",
+                        "content": [
+                          {
+                            "type": "text",
+                            "text": "Imported from GitHub: "
+                          },
+                          {
+                            "type": "inlineCard",
+                            "attrs": {
+                              "url": $url
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "issuetype": {
+                    "name": "Task"
+                  }
+                }
+              }' || {
+                echo "Error creating request body"
+                exit 1
+              })
+            
+            echo "Creating ticket with body: $BODY"
+            
+            # Create with error checking
+            CREATE_RESULT=$(curl -f -s -u "$JIRA_EMAIL:$JIRA_TOKEN" \
+                   -H "Content-Type: application/json" \
+                   -H "Accept: application/json" \
+                   --data "$BODY" "$JIRA_BASE/rest/api/3/issue" || {
+                     echo "Error: Jira create failed with status $?"
+                     exit 1
+                   })
+            
+            echo "Create result: $CREATE_RESULT"
+            
+            KEY=$(echo "$CREATE_RESULT" | jq -r .key || {
+              echo "Error parsing create result"
+              exit 1
+            })
+            
+            echo "Created new key: $KEY"
+          fi
+          
+          if [ -z "$KEY" ]; then
+            echo "Error: Failed to get a valid Jira key"
+            exit 1
+          fi
+          
+          echo "Final key value: $KEY"
+          echo "key=$KEY" >> $GITHUB_OUTPUT
+      - name: Record the mapping on the GH issue
+        uses: actions/github-script@v7
+        env:
+          JIRA_KEY: ${{ steps.jira.outputs.key }}
+        with:
+          script: |
+            const issue_number = context.issue.number;
+            const owner = context.repo.owner;
+            const repo  = context.repo.repo;
+            const jira  = process.env.JIRA_KEY;
+            const body  = `🔗 Linked to Core Team Jira ticket **${jira}**`;
+            const {data:comments} = await github.rest.issues.listComments({owner,repo,issue_number});
+            const existing = comments.find(c=>/Linked to Core Team Jira ticket/i.test(c.body));
+            if (existing) {
+              await github.rest.issues.updateComment({owner,repo,comment_id:existing.id,body});
+            } else {
+              await github.rest.issues.createComment({owner,repo,issue_number,body});
+            }

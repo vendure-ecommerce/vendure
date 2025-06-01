@@ -20,6 +20,7 @@ import { RenameFilterPresetDialogComponent } from './rename-filter-preset-dialog
     templateUrl: './data-table-filter-presets.component.html',
     styleUrls: ['./data-table-filter-presets.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class DataTableFilterPresetsComponent implements OnInit, OnDestroy {
     @Input({ required: true }) dataTableId: string;

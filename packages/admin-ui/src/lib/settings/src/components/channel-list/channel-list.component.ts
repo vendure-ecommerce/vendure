@@ -21,6 +21,7 @@ export const GET_CHANNEL_LIST = gql`
     templateUrl: './channel-list.component.html',
     styleUrls: ['./channel-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ChannelListComponent
     extends TypedBaseListComponent<typeof GetChannelListDocument, 'channels'>

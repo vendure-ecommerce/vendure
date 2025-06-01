@@ -3,6 +3,7 @@
 
 const lightCodeTheme = require('prism-react-renderer/themes/nightOwlLight');
 const darkCodeTheme = require('prism-react-renderer/themes/nightOwl');
+const llmTxtPlugin = require('./src/plugins/llm-txt-plugin');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -33,7 +34,7 @@ const config = {
 
     presets: [
         [
-            '@docusaurus/preset-classic',
+            'classic',
             /** @type {import('@docusaurus/preset-classic').Options} */
             ({
                 docs: {
@@ -60,6 +61,8 @@ const config = {
         ],
     ],
     themes: ['docusaurus-theme-search-typesense'],
+
+    plugins: [llmTxtPlugin],
 
     themeConfig:
         /** @type {import('@docusaurus/preset-classic').ThemeConfig} */

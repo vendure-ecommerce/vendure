@@ -15,6 +15,7 @@ import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { RequestContextCacheService } from '../../cache/request-context-cache.service';
 import { EntityNotFoundError, ForbiddenError, UserInputError } from '../../common/error/errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -32,6 +33,7 @@ import { ChannelService } from './channel.service';
 import { RoleService } from './role.service';
 
 @Injectable()
+@Instrument()
 export class StockLocationService {
     constructor(
         private requestContextService: RequestContextService,

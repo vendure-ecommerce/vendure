@@ -12,6 +12,7 @@ export const initialData: InitialData = {
     shippingMethods: [
         { name: 'Standard Shipping', price: 500 },
         { name: 'Express Shipping', price: 1000 },
+        { name: 'Express Shipping (Taxed)', price: 1000, taxRate: 20 },
     ],
     paymentMethods: [],
     countries: [

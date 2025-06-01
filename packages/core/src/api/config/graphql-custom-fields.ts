@@ -140,16 +140,23 @@ export function addGraphQLCustomFields(
                 `;
         }
 
-        if (schema.getType(`Create${entityName}Input`)) {
-            if (writeableNonLocalizedFields.length) {
-                for (const structCustomField of structCustomFields) {
-                    customFieldTypeDefs += `
+        const hasCreateInputType = schema.getType(`Create${entityName}Input`);
+        const hasUpdateInputType = schema.getType(`Update${entityName}Input`);
+
+        if ((hasCreateInputType || hasUpdateInputType) && writeableNonLocalizedFields.length) {
+            // Define any Struct input types that are required by
+            // the create and/or update input types.
+            for (const structCustomField of structCustomFields) {
+                customFieldTypeDefs += `
                         input ${getStructInputName(entityName, structCustomField)} {
                             ${mapToStructFields(structCustomField.fields, wrapListType(getGraphQlInputType(entityName)))}
                         }
                     `;
-                }
+            }
+        }
 
+        if (hasCreateInputType) {
+            if (writeableNonLocalizedFields.length) {
                 customFieldTypeDefs += `
                     input Create${entityName}CustomFieldsInput {
                        ${mapToFields(
@@ -172,7 +179,7 @@ export function addGraphQLCustomFields(
             }
         }
 
-        if (schema.getType(`Update${entityName}Input`)) {
+        if (hasUpdateInputType) {
             if (writeableNonLocalizedFields.length) {
                 customFieldTypeDefs += `
                     input Update${entityName}CustomFieldsInput {
@@ -394,10 +401,13 @@ export function addModifyOrderCustomFields(
 export function addOrderLineCustomFieldsInput(
     typeDefsOrSchema: string | GraphQLSchema,
     orderLineCustomFields: CustomFieldConfig[],
+    publicOnly: boolean,
 ): GraphQLSchema {
     const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
+    orderLineCustomFields = orderLineCustomFields.filter(f => f.internal !== true);
     const publicCustomFields = orderLineCustomFields.filter(f => f.public !== false);
-    if (!publicCustomFields || publicCustomFields.length === 0) {
+    const customFields = publicOnly ? publicCustomFields : orderLineCustomFields;
+    if (!customFields || customFields.length === 0) {
         return schema;
     }
     const schemaConfig = schema.toConfig();
@@ -428,7 +438,7 @@ export function addOrderLineCustomFieldsInput(
     }
     const input = new GraphQLInputObjectType({
         name: 'OrderLineCustomFieldsInput',
-        fields: publicCustomFields.reduce((fields, field) => {
+        fields: customFields.reduce((fields, field) => {
             const name = getGraphQlInputName(field);
             const inputTypeName = getGraphQlInputType('OrderLine')(field);
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

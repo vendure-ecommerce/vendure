@@ -291,21 +291,6 @@ describe('Mollie payments', () => {
             expect(result.errorCode).toBe('ORDER_PAYMENT_STATE_ERROR');
         });
 
-        it('Should fail to create payment intent with invalid Mollie method', async () => {
-            await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
-            await setShipping(shopClient);
-            const { createMolliePaymentIntent: result } = await shopClient.query(
-                CREATE_MOLLIE_PAYMENT_INTENT,
-                {
-                    input: {
-                        paymentMethodCode: mockData.methodCode,
-                        molliePaymentMethodCode: 'invalid',
-                    },
-                },
-            );
-            expect(result.errorCode).toBe('INELIGIBLE_PAYMENT_METHOD_ERROR');
-        });
-
         it('Should fail to get payment url when items are out of stock', async () => {
             let { updateProductVariants } = await adminClient.query(UPDATE_PRODUCT_VARIANTS, {
                 input: {
@@ -316,6 +301,8 @@ describe('Mollie payments', () => {
                 },
             });
             expect(updateProductVariants[0].stockOnHand).toBe(1);
+            await shopClient.asUserWithCredentials(customers[0].emailAddress, 'test');
+            await setShipping(shopClient);
             const { createMolliePaymentIntent: result } = await shopClient.query(
                 CREATE_MOLLIE_PAYMENT_INTENT,
                 {

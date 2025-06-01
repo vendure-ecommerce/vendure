@@ -13,6 +13,7 @@ type FacetValueResult = SearchProductsQuery['search']['facetValues'][number];
     styleUrls: ['./product-search-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [{ provide: SELECTION_MODEL_FACTORY, useValue: SingleSearchSelectionModelFactory }],
+    standalone: false,
 })
 export class ProductSearchInputComponent {
     @Input() facetValueResults: FacetValueResult;

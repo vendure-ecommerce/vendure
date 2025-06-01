@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AuthService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/auth.service.ts" sourceLine="36" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/auth.service.ts" sourceLine="37" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/session#session'>Session</a>, <a href='/reference/typescript-api/entities/authenticated-session#authenticatedsession'>AuthenticatedSession</a> & <a href='/reference/typescript-api/entities/anonymous-session#anonymoussession'>AnonymousSession</a> entities.
 
