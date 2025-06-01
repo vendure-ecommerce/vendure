@@ -13,12 +13,12 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { CustomFieldsObject, ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
-import { In, IsNull } from 'typeorm';
+import { Brackets, In, IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { RequestContextCacheService } from '../../cache/request-context-cache.service';
-import { ForbiddenError, UserInputError } from '../../common/error/errors';
+import { EntityNotFoundError, ForbiddenError, UserInputError } from '../../common/error/errors';
 import { Instrument } from '../../common/instrument-decorator';
 import { roundMoney } from '../../common/round-money';
 import { ListQueryOptions } from '../../common/types/common-types';
@@ -276,9 +276,22 @@ export class ProductVariantService {
      */
     getOptionsForVariant(ctx: RequestContext, variantId: ID): Promise<Array<Translated<ProductOption>>> {
         return this.connection
-            .findOneInChannel(ctx, ProductVariant, variantId, ctx.channelId, {
-                relations: ['options'],
-            })
+            .getRepository(ctx, ProductVariant)
+            .createQueryBuilder('variant')
+            .leftJoinAndSelect('variant.options', 'options')
+            .leftJoinAndSelect('options.translations', 'optionTranslations')
+            .leftJoinAndSelect('options.channels', 'optionChannels')
+            .where('variant.id = :variantId', { variantId })
+            .andWhere('options.deletedAt IS NULL')
+            .andWhere(
+                new Brackets(qb => {
+                    qb.where('options.global = :global', { global: true }).orWhere(
+                        'optionChannels.id = :channelId',
+                        { channelId: ctx.channelId },
+                    );
+                }),
+            )
+            .getOne()
             .then(variant => (!variant ? [] : variant.options.map(o => this.translator.translate(o, ctx))));
     }
 
@@ -909,15 +922,34 @@ export class ProductVariantService {
     ) {
         // this could be done with fewer queries but depending on the data, node will crash
         // https://github.com/vendure-ecommerce/vendure/issues/328
-        const optionGroups = (
-            await this.connection.getEntityOrThrow(ctx, Product, productId, {
-                channelId: ctx.channelId,
-                relations: ['optionGroups', 'optionGroups.options'],
-                loadEagerRelations: false,
-            })
-        ).optionGroups;
+        const product = await this.connection
+            .getRepository(ctx, Product)
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.optionGroups', 'optionGroup')
+            .leftJoinAndSelect('optionGroup.options', 'options')
+            .leftJoinAndSelect('options.translations', 'optionTranslations')
+            .leftJoinAndSelect('optionGroup.translations', 'optionGroupTranslations')
+            .leftJoinAndSelect('options.channels', 'optionChannels')
+            .leftJoinAndSelect('optionGroup.channels', 'optionGroupChannels')
+            .where('product.id = :productId', { productId })
+            .andWhere('optionGroup.deletedAt IS NULL')
+            .andWhere('options.deletedAt IS NULL')
+            .andWhere(
+                new Brackets(qb => {
+                    qb.where('options.global = :global', { global: true }).orWhere(
+                        'optionChannels.id = :channelId',
+                        { channelId: ctx.channelId },
+                    );
+                }),
+            )
+            .getOne();
 
-        const activeOptions = optionGroups && optionGroups.filter(group => !group.deletedAt);
+        if (!product) {
+            throw new EntityNotFoundError('Product', productId);
+        }
+
+        const optionGroups = product.optionGroups;
+        const activeOptions = optionGroups.filter(group => !group.deletedAt);
 
         if (optionIds.length !== activeOptions.length) {
             this.throwIncompatibleOptionsError(optionGroups);
@@ -931,15 +963,33 @@ export class ProductVariantService {
             this.throwIncompatibleOptionsError(optionGroups);
         }
 
-        const product = await this.connection.getEntityOrThrow(ctx, Product, productId, {
-            channelId: ctx.channelId,
-            relations: ['variants', 'variants.options'],
-            loadEagerRelations: true,
-        });
+        const productWithVariants = await this.connection
+            .getRepository(ctx, Product)
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.variants', 'variant')
+            .leftJoinAndSelect('variant.options', 'options')
+            .leftJoinAndSelect('options.translations', 'optionTranslations')
+            .leftJoinAndSelect('options.channels', 'optionChannels')
+            .where('product.id = :productId', { productId })
+            .andWhere('variant.deletedAt IS NULL')
+            .andWhere('options.deletedAt IS NULL')
+            .andWhere(
+                new Brackets(qb => {
+                    qb.where('options.global = :global', { global: true }).orWhere(
+                        'optionChannels.id = :channelId',
+                        { channelId: ctx.channelId },
+                    );
+                }),
+            )
+            .getOne();
+
+        if (!productWithVariants) {
+            throw new EntityNotFoundError('Product', productId);
+        }
 
         const inputOptionIds = this.sortJoin(optionIds, ',');
 
-        product.variants
+        productWithVariants.variants
             .filter(v => !v.deletedAt)
             .forEach(variant => {
                 const variantOptionIds = this.sortJoin(variant.options, ',', 'id');

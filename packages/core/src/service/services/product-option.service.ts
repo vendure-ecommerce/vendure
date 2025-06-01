@@ -7,6 +7,7 @@ import {
     UpdateProductOptionInput,
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
+import { Brackets } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { Instrument } from '../../common/instrument-decorator';
@@ -53,10 +54,20 @@ export class ProductOptionService {
     findOne(ctx: RequestContext, id: ID): Promise<Translated<ProductOption> | undefined> {
         return this.connection
             .getRepository(ctx, ProductOption)
-            .findOne({
-                where: { id },
-                relations: ['group'],
-            })
+            .createQueryBuilder('option')
+            .leftJoinAndSelect('option.translations', 'optionTranslations')
+            .leftJoinAndSelect('option.channels', 'optionChannels')
+            .where('option.id = :id', { id })
+            .andWhere('option.deletedAt IS NULL')
+            .andWhere(
+                new Brackets(qb => {
+                    qb.where('option.global = :global', { global: true }).orWhere(
+                        'optionChannels.id = :channelId',
+                        { channelId: ctx.channelId },
+                    );
+                }),
+            )
+            .getOne()
             .then(option => (option && this.translator.translate(option, ctx)) ?? undefined);
     }
 
@@ -82,6 +93,16 @@ export class ProductOptionService {
             input as CreateProductOptionInput,
             option,
         );
+
+        if (!input.global) {
+            await this.connection
+                .getRepository(ctx, ProductOption)
+                .createQueryBuilder()
+                .relation(ProductOption, 'channels')
+                .of(option)
+                .add(ctx.channelId);
+        }
+
         await this.eventBus.publish(new ProductOptionEvent(ctx, optionWithRelations, 'created', input));
         return assertFound(this.findOne(ctx, option.id));
     }
@@ -94,6 +115,24 @@ export class ProductOptionService {
             translationType: ProductOptionTranslation,
         });
         await this.customFieldRelationService.updateRelations(ctx, ProductOption, input, option);
+
+        if (input.global !== undefined) {
+            const channelRepo = this.connection.getRepository(ctx, ProductOption);
+            if (input.global) {
+                await channelRepo
+                    .createQueryBuilder()
+                    .relation(ProductOption, 'channels')
+                    .of(option)
+                    .remove(option.channels);
+            } else {
+                await channelRepo
+                    .createQueryBuilder()
+                    .relation(ProductOption, 'channels')
+                    .of(option)
+                    .add(ctx.channelId);
+            }
+        }
+
         await this.eventBus.publish(new ProductOptionEvent(ctx, option, 'updated', input));
         return assertFound(this.findOne(ctx, option.id));
     }
@@ -147,9 +186,11 @@ export class ProductOptionService {
         return this.connection
             .getRepository(ctx, ProductVariant)
             .createQueryBuilder('variant')
-            .leftJoin('variant.options', 'option')
+            .leftJoin('variant.options', 'options')
+            .leftJoinAndSelect('option.translations', 'optionTranslations')
+            .leftJoinAndSelect('options.channels', 'channels')
             .where(variantState === 'active' ? 'variant.deletedAt IS NULL' : 'variant.deletedAt IS NOT NULL')
-            .andWhere('option.id = :id', { id: productOption.id })
+            .andWhere('options.id = :id', { id: productOption.id })
             .getCount();
     }
 }

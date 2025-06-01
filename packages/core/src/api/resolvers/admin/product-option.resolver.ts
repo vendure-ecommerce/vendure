@@ -1,7 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     DeletionResponse,
-    DeletionResult,
     MutationCreateProductOptionArgs,
     MutationCreateProductOptionGroupArgs,
     MutationDeleteProductOptionArgs,
@@ -13,8 +12,8 @@ import {
 } from '@vendure/common/lib/generated-types';
 
 import { Translated } from '../../../common/types/locale-types';
-import { ProductOption } from '../../../entity/product-option/product-option.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
+import { ProductOption } from '../../../entity/product-option/product-option.entity';
 import { ProductOptionGroupService } from '../../../service/services/product-option-group.service';
 import { ProductOptionService } from '../../../service/services/product-option.service';
 import { RequestContext } from '../../common/request-context';
@@ -31,7 +30,7 @@ export class ProductOptionResolver {
     ) {}
 
     @Query()
-    @Allow(Permission.ReadCatalog, Permission.ReadProduct)
+    @Allow(Permission.ReadCatalog, Permission.ReadProductOption)
     productOptionGroups(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryProductOptionGroupsArgs,
@@ -41,7 +40,7 @@ export class ProductOptionResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadCatalog, Permission.ReadProduct)
+    @Allow(Permission.ReadCatalog, Permission.ReadProductOption)
     productOptionGroup(
         @Ctx() ctx: RequestContext,
         @Args() args: QueryProductOptionGroupArgs,
@@ -52,7 +51,7 @@ export class ProductOptionResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.CreateCatalog, Permission.CreateProduct)
+    @Allow(Permission.CreateProductOption)
     async createProductOptionGroup(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateProductOptionGroupArgs,
@@ -71,7 +70,7 @@ export class ProductOptionResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
+    @Allow(Permission.UpdateProductOption)
     async updateProductOptionGroup(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateProductOptionGroupArgs,
@@ -82,7 +81,7 @@ export class ProductOptionResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.CreateCatalog, Permission.CreateProduct)
+    @Allow(Permission.CreateProductOption)
     async createProductOption(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateProductOptionArgs,
@@ -93,7 +92,7 @@ export class ProductOptionResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateCatalog, Permission.UpdateProduct)
+    @Allow(Permission.UpdateProductOption)
     async updateProductOption(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateProductOptionArgs,
@@ -104,7 +103,7 @@ export class ProductOptionResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.DeleteCatalog, Permission.DeleteProduct)
+    @Allow(Permission.DeleteProductOption)
     async deleteProductOption(
         @Ctx() ctx: RequestContext,
         @Args() { id }: MutationDeleteProductOptionArgs,

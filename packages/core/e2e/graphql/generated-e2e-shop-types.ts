@@ -2378,6 +2378,8 @@ export enum Permission {
     CreatePaymentMethod = 'CreatePaymentMethod',
     /** Grants permission to create Product */
     CreateProduct = 'CreateProduct',
+    /** Grants permission to create ProductOption */
+    CreateProductOption = 'CreateProductOption',
     /** Grants permission to create Promotion */
     CreatePromotion = 'CreatePromotion',
     /** Grants permission to create Seller */
@@ -2422,6 +2424,8 @@ export enum Permission {
     DeletePaymentMethod = 'DeletePaymentMethod',
     /** Grants permission to delete Product */
     DeleteProduct = 'DeleteProduct',
+    /** Grants permission to delete ProductOption */
+    DeleteProductOption = 'DeleteProductOption',
     /** Grants permission to delete Promotion */
     DeletePromotion = 'DeletePromotion',
     /** Grants permission to delete Seller */
@@ -2470,6 +2474,8 @@ export enum Permission {
     ReadPaymentMethod = 'ReadPaymentMethod',
     /** Grants permission to read Product */
     ReadProduct = 'ReadProduct',
+    /** Grants permission to read ProductOption */
+    ReadProductOption = 'ReadProductOption',
     /** Grants permission to read Promotion */
     ReadPromotion = 'ReadPromotion',
     /** Grants permission to read Seller */
@@ -2518,6 +2524,8 @@ export enum Permission {
     UpdatePaymentMethod = 'UpdatePaymentMethod',
     /** Grants permission to update Product */
     UpdateProduct = 'UpdateProduct',
+    /** Grants permission to update ProductOption */
+    UpdateProductOption = 'UpdateProductOption',
     /** Grants permission to update Promotion */
     UpdatePromotion = 'UpdatePromotion',
     /** Grants permission to update Seller */
@@ -2604,9 +2612,11 @@ export type ProductListOptions = {
 };
 
 export type ProductOption = Node & {
+    channels: Array<Channel>;
     code: Scalars['String']['output'];
     createdAt: Scalars['DateTime']['output'];
     customFields?: Maybe<Scalars['JSON']['output']>;
+    global: Scalars['Boolean']['output'];
     group: ProductOptionGroup;
     groupId: Scalars['ID']['output'];
     id: Scalars['ID']['output'];
@@ -2617,9 +2627,11 @@ export type ProductOption = Node & {
 };
 
 export type ProductOptionGroup = Node & {
+    channels: Array<Channel>;
     code: Scalars['String']['output'];
     createdAt: Scalars['DateTime']['output'];
     customFields?: Maybe<Scalars['JSON']['output']>;
+    global: Scalars['Boolean']['output'];
     id: Scalars['ID']['output'];
     languageCode: LanguageCode;
     name: Scalars['String']['output'];

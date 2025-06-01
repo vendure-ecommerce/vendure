@@ -7,10 +7,12 @@ import { VendureEntity } from '../base/base.entity';
 import { Collection } from '../collection/collection.entity';
 import { CustomChannelFields } from '../custom-entity-fields';
 import { EntityId } from '../entity-id.decorator';
-import { Facet } from '../facet/facet.entity';
 import { FacetValue } from '../facet-value/facet-value.entity';
-import { Product } from '../product/product.entity';
+import { Facet } from '../facet/facet.entity';
+import { ProductOptionGroup } from '../product-option-group/product-option-group.entity';
+import { ProductOption } from '../product-option/product-option.entity';
 import { ProductVariant } from '../product-variant/product-variant.entity';
+import { Product } from '../product/product.entity';
 import { Seller } from '../seller/seller.entity';
 import { Zone } from '../zone/zone.entity';
 
@@ -141,6 +143,12 @@ export class Channel extends VendureEntity {
 
     @ManyToMany(type => StockLocation, stockLocation => stockLocation.channels, { onDelete: 'CASCADE' })
     stockLocations: StockLocation[];
+
+    @ManyToMany(type => ProductOptionGroup, optionGroup => optionGroup.channels)
+    productOptionGroups: ProductOptionGroup[];
+
+    @ManyToMany(type => ProductOption, option => option.channels)
+    productOptions: ProductOption[];
 
     private generateToken(): string {
         const randomString = () => Math.random().toString(36).substr(3, 10);

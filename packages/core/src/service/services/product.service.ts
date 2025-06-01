@@ -11,7 +11,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
-import { FindOptionsUtils, In, IsNull } from 'typeorm';
+import { Brackets, FindOptionsUtils, In, IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
@@ -384,15 +384,31 @@ export class ProductService {
         optionGroupId: ID,
     ): Promise<Translated<Product>> {
         const product = await this.getProductWithOptionGroups(ctx, productId);
-        const optionGroup = await this.connection.getRepository(ctx, ProductOptionGroup).findOne({
-            where: { id: optionGroupId },
-            relations: ['product'],
-        });
+
+        const optionGroup = await this.connection
+            .getRepository(ctx, ProductOptionGroup)
+            .createQueryBuilder('optionGroup')
+            .leftJoin('optionGroup.products', 'product', 'product.id = :productId', { productId })
+            .leftJoin('optionGroup.channels', 'optionGroupChannels')
+            .where('optionGroup.id = :optionGroupId', { optionGroupId })
+            .andWhere('optionGroup.deletedAt IS NULL')
+            .andWhere(
+                new Brackets(qb => {
+                    qb.where('optionGroup.global = :global', { global: true }).orWhere(
+                        'optionGroupChannels.id = :channelId',
+                        { channelId: ctx.channelId },
+                    );
+                }),
+            )
+            .select(['optionGroup.id', 'optionGroup.code', 'product.id'])
+            .getOne();
+
         if (!optionGroup) {
             throw new EntityNotFoundError('ProductOptionGroup', optionGroupId);
         }
-        if (optionGroup.product) {
-            const translated = this.translator.translate(optionGroup.product, ctx);
+
+        if (optionGroup.products?.length > 0) {
+            const translated = this.translator.translate(product, ctx);
             throw new UserInputError('error.product-option-group-already-assigned', {
                 groupCode: optionGroup.code,
                 productName: translated.name,
@@ -463,12 +479,28 @@ export class ProductService {
     }
 
     private async getProductWithOptionGroups(ctx: RequestContext, productId: ID): Promise<Product> {
-        const product = await this.connection.getRepository(ctx, Product).findOne({
-            relationLoadStrategy: 'query',
-            loadEagerRelations: false,
-            where: { id: productId, deletedAt: IsNull() },
-            relations: ['optionGroups', 'variants', 'variants.options'],
-        });
+        const product = await this.connection
+            .getRepository(ctx, Product)
+            .createQueryBuilder('product')
+            .leftJoinAndSelect('product.optionGroups', 'optionGroup')
+            .leftJoinAndSelect('product.variants', 'variant')
+            .leftJoinAndSelect('variant.options', 'options')
+            .leftJoinAndSelect('options.translations', 'optionTranslations')
+            .leftJoinAndSelect('optionGroup.translations', 'optionGroupTranslations')
+            .leftJoinAndSelect('options.channels', 'optionChannels')
+            .leftJoinAndSelect('optionGroup.channels', 'optionGroupChannels')
+            .where('product.id = :productId', { productId })
+            .andWhere('product.deletedAt IS NULL')
+            .andWhere(
+                new Brackets(qb => {
+                    qb.where('optionGroup.global = :global', { global: true }).orWhere(
+                        'optionGroupChannels.id = :channelId',
+                        { channelId: ctx.channelId },
+                    );
+                }),
+            )
+            .getOne();
+
         if (!product) {
             throw new EntityNotFoundError('Product', productId);
         }
