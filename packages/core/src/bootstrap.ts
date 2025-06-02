@@ -2,12 +2,13 @@ import { DynamicModule, INestApplication, INestApplicationContext } from '@nestj
 import { NestApplicationContextOptions } from '@nestjs/common/interfaces/nest-application-context-options.interface';
 import { NestApplicationOptions } from '@nestjs/common/interfaces/nest-application-options.interface';
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { getConnectionToken } from '@nestjs/typeorm';
 import { DEFAULT_COOKIE_NAME } from '@vendure/common/lib/shared-constants';
 import { Type } from '@vendure/common/lib/shared-types';
-import cookieSession = require('cookie-session');
 import { satisfies } from 'semver';
 import { Connection, DataSourceOptions, EntitySubscriberInterface } from 'typeorm';
+import cookieSession = require('cookie-session');
 
 import { InternalServerError } from './common/error/errors';
 import { getConfig, setConfig } from './config/config-helpers';
@@ -170,15 +171,16 @@ export async function bootstrap(
     // eslint-disable-next-line
     const appModule = await import('./app.module.js');
     setProcessContext('server');
-    const { hostname, port, cors, middleware } = config.apiOptions;
+    const { hostname, port, cors, middleware, trustProxy } = config.apiOptions;
     DefaultLogger.hideNestBoostrapLogs();
-    const app = await NestFactory.create(appModule.AppModule, {
+    const app = await NestFactory.create<NestExpressApplication>(appModule.AppModule, {
         cors,
         logger: new Logger(),
         ...options?.nestApplicationOptions,
     });
     DefaultLogger.restoreOriginalLogLevel();
     app.useLogger(new Logger());
+    app.set('trust proxy', trustProxy);
     const { tokenMethod } = config.authOptions;
     const usingCookie =
         tokenMethod === 'cookie' || (Array.isArray(tokenMethod) && tokenMethod.includes('cookie'));
