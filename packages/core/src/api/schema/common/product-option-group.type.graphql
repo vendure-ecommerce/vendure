@@ -8,7 +8,6 @@ type ProductOptionGroup implements Node {
     options: [ProductOption!]!
     translations: [ProductOptionGroupTranslation!]!
     global: Boolean!
-    channels: [Channel!]!
 }
 
 type ProductOptionGroupTranslation {
@@ -30,7 +29,6 @@ type ProductOption implements Node {
     group: ProductOptionGroup!
     translations: [ProductOptionTranslation!]!
     global: Boolean!
-    channels: [Channel!]!
 }
 
 type ProductOptionTranslation {

@@ -8,6 +8,8 @@ type Mutation {
     createProductOptionGroup(input: CreateProductOptionGroupInput!): ProductOptionGroup!
     "Update an existing ProductOptionGroup"
     updateProductOptionGroup(input: UpdateProductOptionGroupInput!): ProductOptionGroup!
+    "Delete a ProductOptionGroup"
+    deleteProductOptionGroup(id: ID!): DeletionResponse!
     "Create a new ProductOption within a ProductOptionGroup"
     createProductOption(input: CreateProductOptionInput!): ProductOption!
     "Create a new ProductOption within a ProductOptionGroup"

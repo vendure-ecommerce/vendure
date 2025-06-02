@@ -50,7 +50,6 @@ import { ProductPriceApplicator } from '../helpers/product-price-applicator/prod
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { TranslatorService } from '../helpers/translator/translator.service';
 import { patchEntity } from '../helpers/utils/patch-entity';
-import { samplesEach } from '../helpers/utils/samples-each';
 
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
@@ -278,17 +277,16 @@ export class ProductVariantService {
         return this.connection
             .getRepository(ctx, ProductVariant)
             .createQueryBuilder('variant')
-            .leftJoinAndSelect('variant.options', 'options')
-            .leftJoinAndSelect('options.translations', 'optionTranslations')
+            .innerJoinAndSelect('variant.options', 'options')
+            .innerJoinAndSelect('options.translations', 'optionTranslations')
             .leftJoinAndSelect('options.channels', 'optionChannels')
             .where('variant.id = :variantId', { variantId })
             .andWhere('options.deletedAt IS NULL')
             .andWhere(
                 new Brackets(qb => {
-                    qb.where('options.global = :global', { global: true }).orWhere(
-                        'optionChannels.id = :channelId',
-                        { channelId: ctx.channelId },
-                    );
+                    qb.where('options.global = true').orWhere('optionChannels.id = :channelId', {
+                        channelId: ctx.channelId,
+                    });
                 }),
             )
             .getOne()
@@ -920,86 +918,80 @@ export class ProductVariantService {
         optionIds: ID[] = [],
         isUpdateOperation?: boolean,
     ) {
-        // this could be done with fewer queries but depending on the data, node will crash
-        // https://github.com/vendure-ecommerce/vendure/issues/328
-        const product = await this.connection
+        const productExists = await this.connection
             .getRepository(ctx, Product)
             .createQueryBuilder('product')
-            .leftJoinAndSelect('product.optionGroups', 'optionGroup')
-            .leftJoinAndSelect('optionGroup.options', 'options')
-            .leftJoinAndSelect('options.translations', 'optionTranslations')
-            .leftJoinAndSelect('optionGroup.translations', 'optionGroupTranslations')
-            .leftJoinAndSelect('options.channels', 'optionChannels')
-            .leftJoinAndSelect('optionGroup.channels', 'optionGroupChannels')
             .where('product.id = :productId', { productId })
-            .andWhere('optionGroup.deletedAt IS NULL')
-            .andWhere('options.deletedAt IS NULL')
-            .andWhere(
-                new Brackets(qb => {
-                    qb.where('options.global = :global', { global: true }).orWhere(
-                        'optionChannels.id = :channelId',
-                        { channelId: ctx.channelId },
-                    );
-                }),
-            )
             .getOne();
 
-        if (!product) {
+        if (!productExists) {
             throw new EntityNotFoundError('Product', productId);
         }
 
-        const optionGroups = product.optionGroups;
-        const activeOptions = optionGroups.filter(group => !group.deletedAt);
-
-        if (optionIds.length !== activeOptions.length) {
-            this.throwIncompatibleOptionsError(optionGroups);
-        }
-        if (
-            !samplesEach(
-                optionIds,
-                activeOptions.map(g => g.options.map(o => o.id)),
-            )
-        ) {
-            this.throwIncompatibleOptionsError(optionGroups);
-        }
-
-        const productWithVariants = await this.connection
-            .getRepository(ctx, Product)
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.variants', 'variant')
-            .leftJoinAndSelect('variant.options', 'options')
-            .leftJoinAndSelect('options.translations', 'optionTranslations')
+        const optionGroups = await this.connection
+            .getRepository(ctx, ProductOptionGroup)
+            .createQueryBuilder('optionGroup')
+            .innerJoin('optionGroup.products', 'product', 'product.id = :productId', { productId })
+            .innerJoinAndSelect('optionGroup.translations', 'groupTranslations')
+            .leftJoinAndSelect('optionGroup.channels', 'groupChannels')
+            .leftJoinAndSelect('optionGroup.options', 'options', 'options.deletedAt IS NULL')
+            .innerJoinAndSelect('options.translations', 'optionTranslations')
             .leftJoinAndSelect('options.channels', 'optionChannels')
-            .where('product.id = :productId', { productId })
-            .andWhere('variant.deletedAt IS NULL')
-            .andWhere('options.deletedAt IS NULL')
+            .where('optionGroup.deletedAt IS NULL')
             .andWhere(
                 new Brackets(qb => {
-                    qb.where('options.global = :global', { global: true }).orWhere(
-                        'optionChannels.id = :channelId',
-                        { channelId: ctx.channelId },
-                    );
-                }),
-            )
-            .getOne();
-
-        if (!productWithVariants) {
-            throw new EntityNotFoundError('Product', productId);
-        }
-
-        const inputOptionIds = this.sortJoin(optionIds, ',');
-
-        productWithVariants.variants
-            .filter(v => !v.deletedAt)
-            .forEach(variant => {
-                const variantOptionIds = this.sortJoin(variant.options, ',', 'id');
-                if (isUpdateOperation) return;
-                if (variantOptionIds === inputOptionIds) {
-                    throw new UserInputError('error.product-variant-options-combination-already-exists', {
-                        variantName: this.translator.translate(variant, ctx).name,
+                    qb.where('optionGroup.global = true').orWhere('groupChannels.id = :channelId', {
+                        channelId: ctx.channelId,
                     });
-                }
+                }),
+            )
+            .andWhere(
+                new Brackets(qb => {
+                    qb.where('options.id IS NULL')
+                        .orWhere('options.global = true')
+                        .orWhere('optionChannels.id = :channelId', {
+                            channelId: ctx.channelId,
+                        });
+                }),
+            )
+            .getMany();
+
+        const activeOptionGroups = optionGroups.filter(group => !group.deletedAt);
+
+        if (optionIds.length !== activeOptionGroups.length) {
+            this.throwIncompatibleOptionsError(optionGroups);
+        }
+
+        const validOptionIds = new Set(
+            activeOptionGroups.flatMap(group => group.options.map(option => option.id)),
+        );
+
+        if (!optionIds.every(id => validOptionIds.has(id))) {
+            this.throwIncompatibleOptionsError(optionGroups);
+        }
+
+        const variants = await this.connection
+            .getRepository(ctx, ProductVariant)
+            .createQueryBuilder('variant')
+            .innerJoinAndSelect('variant.options', 'options')
+            .where('variant.productId = :productId', { productId })
+            .andWhere('variant.deletedAt IS NULL')
+            .getMany();
+
+        if (!isUpdateOperation) {
+            const inputOptionIds = this.sortJoin(optionIds, ',');
+
+            const hasDuplicate = variants.some(variant => {
+                const variantOptionIds = this.sortJoin(variant.options, ',', 'id');
+                return variantOptionIds === inputOptionIds;
             });
+
+            if (hasDuplicate) {
+                throw new UserInputError('error.product-variant-options-combination-already-exists', {
+                    variantName: this.translator.translate(variants[0], ctx).name,
+                });
+            }
+        }
     }
 
     private throwIncompatibleOptionsError(optionGroups: ProductOptionGroup[]) {

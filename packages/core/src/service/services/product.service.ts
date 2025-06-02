@@ -16,7 +16,7 @@ import { Brackets, FindOptionsUtils, In, IsNull } from 'typeorm';
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { ErrorResultUnion } from '../../common/error/error-result';
-import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
+import { EntityNotFoundError, UserInputError } from '../../common/error/errors';
 import { ProductOptionInUseError } from '../../common/error/generated-graphql-admin-errors';
 import { Instrument } from '../../common/instrument-decorator';
 import { ListQueryOptions } from '../../common/types/common-types';
@@ -138,6 +138,7 @@ export class ProductService {
         return this.translator.translate(product, ctx, ['facetValues', ['facetValues', 'facet']]);
     }
 
+    // TODO
     async findByIds(
         ctx: RequestContext,
         productIds: ID[],
@@ -295,19 +296,6 @@ export class ProductService {
             await this.connection.rollBackTransaction(ctx);
             return variantResult;
         }
-        for (const optionGroup of product.optionGroups) {
-            if (!optionGroup.deletedAt) {
-                const groupResult = await this.productOptionGroupService.deleteGroupAndOptionsFromProduct(
-                    ctx,
-                    optionGroup.id,
-                    productId,
-                );
-                if (groupResult.result === DeletionResult.NOT_DELETED) {
-                    await this.connection.rollBackTransaction(ctx);
-                    return groupResult;
-                }
-            }
-        }
         return {
             result: DeletionResult.DELETED,
         };
@@ -388,26 +376,33 @@ export class ProductService {
         const optionGroup = await this.connection
             .getRepository(ctx, ProductOptionGroup)
             .createQueryBuilder('optionGroup')
-            .leftJoin('optionGroup.products', 'product', 'product.id = :productId', { productId })
-            .leftJoin('optionGroup.channels', 'optionGroupChannels')
+            .innerJoinAndSelect('optionGroup.translations', 'groupTranslations')
+            .leftJoinAndSelect('optionGroup.channels', 'optionGroupChannels')
             .where('optionGroup.id = :optionGroupId', { optionGroupId })
             .andWhere('optionGroup.deletedAt IS NULL')
             .andWhere(
                 new Brackets(qb => {
-                    qb.where('optionGroup.global = :global', { global: true }).orWhere(
-                        'optionGroupChannels.id = :channelId',
-                        { channelId: ctx.channelId },
-                    );
+                    qb.where('optionGroup.global = true').orWhere('optionGroupChannels.id = :channelId', {
+                        channelId: ctx.channelId,
+                    });
                 }),
             )
-            .select(['optionGroup.id', 'optionGroup.code', 'product.id'])
             .getOne();
 
         if (!optionGroup) {
             throw new EntityNotFoundError('ProductOptionGroup', optionGroupId);
         }
 
-        if (optionGroup.products?.length > 0) {
+        const exists = await this.connection
+            .getRepository(ctx, Product)
+            .createQueryBuilder('product')
+            .innerJoin('product.optionGroups', 'optionGroup', 'optionGroup.id = :optionGroupId', {
+                optionGroupId,
+            })
+            .where('product.id = :productId', { productId })
+            .getCount();
+
+        if (exists > 0) {
             const translated = this.translator.translate(product, ctx);
             throw new UserInputError('error.product-option-group-already-assigned', {
                 groupCode: optionGroup.code,
@@ -420,7 +415,6 @@ export class ProductService {
         } else {
             product.optionGroups = [optionGroup];
         }
-
         await this.connection.getRepository(ctx, Product).save(product, { reload: false });
         await this.eventBus.publish(
             new ProductOptionGroupChangeEvent(ctx, product, optionGroupId, 'assigned'),
@@ -439,11 +433,13 @@ export class ProductService {
         if (!optionGroup) {
             throw new EntityNotFoundError('ProductOptionGroup', optionGroupId);
         }
+
         const optionIsInUse = product.variants.some(
             variant =>
                 variant.deletedAt == null &&
                 variant.options.some(option => idsAreEqual(option.groupId, optionGroupId)),
         );
+
         if (optionIsInUse) {
             if (!force) {
                 return new ProductOptionInUseError({
@@ -461,17 +457,16 @@ export class ProductService {
                 });
             }
         }
-        const result = await this.productOptionGroupService.deleteGroupAndOptionsFromProduct(
-            ctx,
-            optionGroupId,
-            productId,
-        );
+
+        await this.connection
+            .getRepository(ctx, Product)
+            .createQueryBuilder()
+            .relation(Product, 'optionGroups')
+            .of(product)
+            .remove(optionGroup);
+
         product.optionGroups = product.optionGroups.filter(g => g.id !== optionGroupId);
         await this.connection.getRepository(ctx, Product).save(product, { reload: false });
-        if (result.result === DeletionResult.NOT_DELETED) {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            throw new InternalServerError(result.message!);
-        }
         await this.eventBus.publish(
             new ProductOptionGroupChangeEvent(ctx, product, optionGroupId, 'removed'),
         );
@@ -479,28 +474,12 @@ export class ProductService {
     }
 
     private async getProductWithOptionGroups(ctx: RequestContext, productId: ID): Promise<Product> {
-        const product = await this.connection
-            .getRepository(ctx, Product)
-            .createQueryBuilder('product')
-            .leftJoinAndSelect('product.optionGroups', 'optionGroup')
-            .leftJoinAndSelect('product.variants', 'variant')
-            .leftJoinAndSelect('variant.options', 'options')
-            .leftJoinAndSelect('options.translations', 'optionTranslations')
-            .leftJoinAndSelect('optionGroup.translations', 'optionGroupTranslations')
-            .leftJoinAndSelect('options.channels', 'optionChannels')
-            .leftJoinAndSelect('optionGroup.channels', 'optionGroupChannels')
-            .where('product.id = :productId', { productId })
-            .andWhere('product.deletedAt IS NULL')
-            .andWhere(
-                new Brackets(qb => {
-                    qb.where('optionGroup.global = :global', { global: true }).orWhere(
-                        'optionGroupChannels.id = :channelId',
-                        { channelId: ctx.channelId },
-                    );
-                }),
-            )
-            .getOne();
-
+        const product = await this.connection.getRepository(ctx, Product).findOne({
+            relationLoadStrategy: 'query',
+            loadEagerRelations: false,
+            where: { id: productId, deletedAt: IsNull() },
+            relations: ['optionGroups', 'variants', 'variants.options'],
+        });
         if (!product) {
             throw new EntityNotFoundError('Product', productId);
         }

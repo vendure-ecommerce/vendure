@@ -4,6 +4,7 @@ import {
     MutationCreateProductOptionArgs,
     MutationCreateProductOptionGroupArgs,
     MutationDeleteProductOptionArgs,
+    MutationDeleteProductOptionGroupArgs,
     MutationUpdateProductOptionArgs,
     MutationUpdateProductOptionGroupArgs,
     Permission,
@@ -58,7 +59,6 @@ export class ProductOptionResolver {
     ): Promise<Translated<ProductOptionGroup>> {
         const { input } = args;
         const group = await this.productOptionGroupService.create(ctx, input);
-
         if (input.options && input.options.length) {
             for (const option of input.options) {
                 const newOption = await this.productOptionService.create(ctx, group, option);
@@ -77,6 +77,16 @@ export class ProductOptionResolver {
     ): Promise<Translated<ProductOptionGroup>> {
         const { input } = args;
         return this.productOptionGroupService.update(ctx, input);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteProductOption)
+    async deleteProductOptionGroup(
+        @Ctx() ctx: RequestContext,
+        @Args() { id }: MutationDeleteProductOptionGroupArgs,
+    ): Promise<DeletionResponse> {
+        return this.productOptionGroupService.delete(ctx, id);
     }
 
     @Transaction()
