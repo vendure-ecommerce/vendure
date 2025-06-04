@@ -111,7 +111,7 @@ export function ListPage<
     };
 
     const columnVisibility = pageId ? tableSettings?.columnVisibility ?? defaultVisibility : defaultVisibility;
-    const columnOrder = pageId ? tableSettings?.columnOrder : defaultColumnOrder;
+    const columnOrder = pageId ? tableSettings?.columnOrder ?? defaultColumnOrder : defaultColumnOrder;
     const columnFilters = pageId ? tableSettings?.columnFilters : routeSearch.filters;
 
     const sorting: SortingState = (routeSearch.sort ?? '')
