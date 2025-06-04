@@ -1,4 +1,4 @@
-import { Module, Provider, Type as NestType } from '@nestjs/common';
+import { Module, Type as NestType, Provider } from '@nestjs/common';
 import { MODULE_METADATA } from '@nestjs/common/constants';
 import { ModuleMetadata } from '@nestjs/common/interfaces';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
@@ -81,7 +81,7 @@ export interface APIExtensionDefinition {
     /**
      * @description
      * Extensions to the schema.
-     * Passes the current schema as an optional argument, allowing the extension to be based on the existing schema.
+     * Passes the current schema as an optional argument, allowing the extension to be based on the existing schema..
      *
      * @example
      * ```ts
