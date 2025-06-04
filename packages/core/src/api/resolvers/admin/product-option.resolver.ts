@@ -52,7 +52,7 @@ export class ProductOptionResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.CreateProductOption)
+    @Allow(Permission.CreateCatalog, Permission.CreateProductOption)
     async createProductOptionGroup(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateProductOptionGroupArgs,
@@ -70,7 +70,7 @@ export class ProductOptionResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateProductOption)
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProductOption)
     async updateProductOptionGroup(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateProductOptionGroupArgs,
@@ -81,7 +81,7 @@ export class ProductOptionResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.DeleteProductOption)
+    @Allow(Permission.DeleteCatalog, Permission.DeleteProductOption)
     async deleteProductOptionGroup(
         @Ctx() ctx: RequestContext,
         @Args() { id }: MutationDeleteProductOptionGroupArgs,
@@ -91,7 +91,7 @@ export class ProductOptionResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.CreateProductOption)
+    @Allow(Permission.CreateCatalog, Permission.CreateProductOption)
     async createProductOption(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateProductOptionArgs,
@@ -102,7 +102,7 @@ export class ProductOptionResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.UpdateProductOption)
+    @Allow(Permission.UpdateCatalog, Permission.UpdateProductOption)
     async updateProductOption(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateProductOptionArgs,
@@ -113,7 +113,7 @@ export class ProductOptionResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.DeleteProductOption)
+    @Allow(Permission.DeleteCatalog, Permission.DeleteProductOption)
     async deleteProductOption(
         @Ctx() ctx: RequestContext,
         @Args() { id }: MutationDeleteProductOptionArgs,
