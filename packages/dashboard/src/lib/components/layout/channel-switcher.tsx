@@ -61,13 +61,12 @@ export function ChannelSwitcher() {
                                 onClick={() => setSelectedChannel(channel.id)}
                                 className="gap-2 p-2"
                             >
-                                <div className="flex size-6 items-center justify-center rounded-xs border">
+                                <div className="flex size-8 items-center justify-center rounded border">
                                     <span className="truncate font-semibold text-xs">
                                         {channel.defaultCurrencyCode}
                                     </span>
                                 </div>
                                 <ChannelCodeLabel code={channel.code} />
-                                <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
                             </DropdownMenuItem>
                         ))}
                         <DropdownMenuSeparator />
