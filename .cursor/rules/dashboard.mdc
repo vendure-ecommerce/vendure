@@ -1,0 +1,60 @@
+---
+description: 
+globs: packages/dashboard/**/*
+alwaysApply: false
+---
+The project in the /packages/dashboard dir uses the following stack. Please make sure to use these in any solutions:
+
+- React
+- Shadcn UI & tailwind
+- TanStack Query for data fetching, i.e. useQuery or useMutation. Not Apollo Client.
+- TanStack router for any routing & navigation
+
+When creating useQuery or useMutation calls, use the following pattern as a guide:
+
+```
+import { api } from '@/graphql/api.js';
+import { graphql } from '@/graphql/graphql.js';
+import { useQuery } from '@tanstack/react-query';
+
+const taxCategoriesDocument = graphql(`
+    query TaxCategories($options: TaxCategoryListOptions) {
+        taxCategories(options: $options) {
+            items {
+                id
+                name
+                isDefault
+            }
+        }
+    }
+`);
+
+export function MyComponent() {
+    const { data, isLoading, isPending, status } = useQuery({
+        queryKey: ['taxCategories'],
+        staleTime: 1000 * 60 * 5,
+        queryFn: () =>
+            api.query(taxCategoriesDocument, {
+                options: {
+                    take: 100,
+                },
+            }),
+    });
+}
+```
+
+The architecture of the dashboard is as follows:
+
+- /src/lib contains shared code that is used across the dashboard.
+- /src/app contains the routes and pages of the dashboard app.
+
+In the "app" context, we try as much as possible to use the same patterns across all pages. Most of the app routes
+are CRUD list/detail pages.
+
+- A representative list page is [administrators.tsx](mdc:packages/dashboard/src/app/routes/_authenticated/_administrators/administrators.tsx)
+- A representative detail page is [administrators_.$id.tsx](mdc:packages/dashboard/src/app/routes/_authenticated/_administrators/administrators_.$id.tsx)
+
+These examples show the common components, hooks and patterns that should be used across the app.
+
+In the "lib" context, we try to re-use components from the /src/lib/components dir, including preferring the Shadcn components
+as much as possible from the /src/lib/components/ui dir.
