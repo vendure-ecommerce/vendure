@@ -81,7 +81,7 @@ export interface APIExtensionDefinition {
     /**
      * @description
      * Extensions to the schema.
-     * Passes the current schema as an optional argument, allowing the extension to be based on the existing schema..
+     * Passes the current schema as an optional argument, allowing the extension to be based on the existing schema.
      *
      * @example
      * ```ts
