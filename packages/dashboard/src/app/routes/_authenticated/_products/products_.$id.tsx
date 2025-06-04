@@ -68,7 +68,7 @@ function ProductDetailPage() {
                     description: translation.description,
                     customFields: (translation as any).customFields,
                 })),
-                customFields: entity.customFields,
+                customFields: entity.customFields as any,
             };
         },
         params: { id: params.id },

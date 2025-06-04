@@ -57,9 +57,7 @@ function CountryDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated country'), {
-                position: 'top-right',
-            });
+            toast(i18n.t('Successfully updated country'));
             form.reset(form.getValues());
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
@@ -67,7 +65,6 @@ function CountryDetailPage() {
         },
         onError: err => {
             toast(i18n.t('Failed to update country'), {
-                position: 'top-right',
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
