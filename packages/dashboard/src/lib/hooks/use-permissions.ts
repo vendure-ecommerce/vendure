@@ -1,7 +1,6 @@
 import { useAuth } from '@/hooks/use-auth.js';
+import { useChannel } from '@/hooks/use-channel.js';
 import { Permission } from '@vendure/common/lib/generated-types';
-
-import { useUserSettings } from './use-user-settings.js';
 
 /**
  * @description
@@ -18,13 +17,14 @@ import { useUserSettings } from './use-user-settings.js';
  */
 export function usePermissions() {
     const { channels } = useAuth();
-    const { settings } = useUserSettings();
+    const { selectedChannelId } = useChannel();
 
     function hasPermissions(permissions: string[]) {
         if (permissions.length === 0) {
             return true;
         }
-        const activeChannel = (channels ?? []).find(channel => channel.id === settings.activeChannelId);
+        // Use the selected channel instead of settings.activeChannelId
+        const activeChannel = (channels ?? []).find(channel => channel.id === selectedChannelId);
         if (!activeChannel) {
             return false;
         }
