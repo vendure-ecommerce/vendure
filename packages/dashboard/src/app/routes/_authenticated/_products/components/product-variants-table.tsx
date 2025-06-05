@@ -1,4 +1,4 @@
-import { PaginatedListDataTable } from "@/components/shared/paginated-list-data-table.js";
+import { PaginatedListDataTable, PaginatedListRefresherRegisterFn } from "@/components/shared/paginated-list-data-table.js";
 import { productVariantListDocument } from "../products.graphql.js";
 import { useState } from "react";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
@@ -9,9 +9,10 @@ import { Button } from "@/components/ui/button.js";
 
 interface ProductVariantsTableProps {
     productId: string;
+    registerRefresher?: PaginatedListRefresherRegisterFn;
 }
 
-export function ProductVariantsTable({ productId }: ProductVariantsTableProps) {
+export function ProductVariantsTable({ productId, registerRefresher }: ProductVariantsTableProps) {
     const { formatCurrencyName } = useLocalFormat();
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
@@ -19,6 +20,7 @@ export function ProductVariantsTable({ productId }: ProductVariantsTableProps) {
     const [filters, setFilters] = useState<ColumnFiltersState>([]);
 
     return <PaginatedListDataTable
+        registerRefresher={registerRefresher}
         listQuery={productVariantListDocument}
         transformVariables={variables => ({
             ...variables,

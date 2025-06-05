@@ -27,7 +27,9 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { CreateProductVariantsDialog } from './components/create-product-variants-dialog.js';
 import { ProductVariantsTable } from './components/product-variants-table.js';
+import { AddProductVariantDialog } from './components/add-product-variant-dialog.js';
 import { createProductDocument, productDetailDocument, updateProductDocument } from './products.graphql.js';
+import { useRef } from 'react';
 
 export const Route = createFileRoute('/_authenticated/_products/products_/$id')({
     component: ProductDetailPage,
@@ -48,6 +50,7 @@ function ProductDetailPage() {
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const { i18n } = useLingui();
+    const refreshRef = useRef<() => void>(() => {});
 
     const { form, submitHandler, entity, isPending, refreshEntity, resetForm } = useDetailPage({
         queryDocument: productDetailDocument,
@@ -85,7 +88,7 @@ function ProductDetailPage() {
             });
         },
     });
-
+    
     return (
         <Page pageId="product-detail" entity={entity} form={form} submitHandler={submitHandler}>
             <PageTitle>{creatingNewEntity ? <Trans>New product</Trans> : (entity?.name ?? '')}</PageTitle>
@@ -139,7 +142,18 @@ function ProductDetailPage() {
                 <CustomFieldsPageBlock column="main" entityType="Product" control={form.control} />
                 {entity && entity.variantList.totalItems > 0 && (
                     <PageBlock column="main" blockId="product-variants-table">
-                        <ProductVariantsTable productId={params.id} />
+                        <ProductVariantsTable productId={params.id} registerRefresher={refresher => {
+                            refreshRef.current = refresher;
+                        }} />
+                         <div className="mt-4">
+                            <AddProductVariantDialog
+                                productId={params.id}
+                                onSuccess={() => {
+                                    console.log('onSuccess');
+                                    refreshRef.current?.();
+                                }}
+                            />
+                        </div>
                     </PageBlock>
                 )}
                 {entity && entity.variantList.totalItems === 0 && (
