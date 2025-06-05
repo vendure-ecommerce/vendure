@@ -17,7 +17,7 @@ import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { Logger, LogLevel } from '../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { Product, ProductOption, ProductVariant } from '../../entity';
+import { Product, ProductVariant } from '../../entity';
 import { ProductOptionGroupTranslation } from '../../entity/product-option-group/product-option-group-translation.entity';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { EventBus } from '../../event-bus';
@@ -182,22 +182,15 @@ export class ProductOptionGroupService {
                 if (input.global !== undefined) {
                     if (input.global) {
                         await this.channelService.removeFromAssignedChannels(ctx, ProductOptionGroup, g.id);
-                        for (const option of optionGroup.options) {
-                            await this.channelService.removeFromAssignedChannels(
-                                ctx,
-                                ProductOption,
-                                option.id,
-                            );
-                        }
                     } else {
                         await this.channelService.assignToCurrentChannel(g, ctx);
-                        for (const option of optionGroup.options) {
-                            await this.channelService.assignToCurrentChannel(option, ctx);
-                        }
                     }
                 }
             },
         });
+        for (const option of optionGroup.options) {
+            await this.productOptionService.update(ctx, { id: option.id }, true);
+        }
         await this.customFieldRelationService.updateRelations(ctx, ProductOptionGroup, input, group);
         await this.eventBus.publish(new ProductOptionGroupEvent(ctx, group, 'updated', input));
         return assertFound(this.findOne(ctx, group.id));

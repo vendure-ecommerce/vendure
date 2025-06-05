@@ -121,8 +121,16 @@ export class ProductOptionService {
         return assertFound(this.findOne(ctx, option.id));
     }
 
-    async update(ctx: RequestContext, input: UpdateProductOptionInput): Promise<Translated<ProductOption>> {
-        const groupOption = await this.findOne(ctx, input.id);
+    async update(
+        ctx: RequestContext,
+        input: UpdateProductOptionInput,
+        updateChannels: boolean = false,
+    ): Promise<Translated<ProductOption>> {
+        const groupOption = await this.connection.getRepository(ctx, ProductOption).findOne({
+            where: { id: input.id },
+            relations: ['group'],
+        });
+
         if (!groupOption) {
             throw new EntityNotFoundError('ProductOption', input.id);
         }
@@ -135,6 +143,15 @@ export class ProductOptionService {
             input,
             entityType: ProductOption,
             translationType: ProductOptionTranslation,
+            beforeSave: async op => {
+                if (updateChannels) {
+                    if (groupOption.group.global) {
+                        await this.channelService.removeFromAssignedChannels(ctx, ProductOption, op.id);
+                    } else {
+                        await this.channelService.assignToCurrentChannel(op, ctx);
+                    }
+                }
+            },
         });
         await this.customFieldRelationService.updateRelations(ctx, ProductOption, input, option);
         await this.eventBus.publish(new ProductOptionEvent(ctx, option, 'updated', input));
