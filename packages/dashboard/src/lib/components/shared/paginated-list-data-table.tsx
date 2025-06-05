@@ -174,6 +174,8 @@ export interface RowAction<T> {
     onClick?: (row: Row<T>) => void;
 }
 
+export type PaginatedListRefresherRegisterFn = (refreshFn: () => void) => void;
+
 export interface PaginatedListDataTableProps<
     T extends TypedDocumentNode<U, V>,
     U extends any,
@@ -202,6 +204,12 @@ export interface PaginatedListDataTableProps<
     disableViewOptions?: boolean;
     transformData?: (data: PaginatedListItemFields<T>[]) => PaginatedListItemFields<T>[];
     setTableOptions?: (table: TableOptions<any>) => TableOptions<any>;
+    /**
+     * Register a function that allows you to assign a refresh function for
+     * this list. The function can be assigned to a ref and then called when
+     * the list needs to be refreshed.
+     */
+    registerRefresher?: PaginatedListRefresherRegisterFn;
 }
 
 export const PaginatedListDataTableKey = 'PaginatedListDataTable';
@@ -234,6 +242,7 @@ export function PaginatedListDataTable<
     disableViewOptions,
     setTableOptions,
     transformData,
+    registerRefresher,
 }: PaginatedListDataTableProps<T, U, V, AC>) {
     const [searchTerm, setSearchTerm] = React.useState<string>('');
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
@@ -274,6 +283,7 @@ export function PaginatedListDataTable<
     function refetchPaginatedList() {
         queryClient.invalidateQueries({ queryKey });
     }
+    registerRefresher?.(refetchPaginatedList);
 
     const { data } = useQuery({
         queryFn: () => {

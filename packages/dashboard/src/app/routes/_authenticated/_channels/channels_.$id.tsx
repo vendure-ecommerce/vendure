@@ -76,23 +76,19 @@ function ChannelDetailPage() {
         params: { id: params.id },
         onSuccess: async data => {
             if (data.__typename === 'Channel') {
-                toast(i18n.t('Successfully updated channel'), {
-                    position: 'top-right',
-                });
+                toast(i18n.t('Successfully updated channel'));
                 resetForm();
                 if (creatingNewEntity) {
                     await navigate({ to: `../$id`, params: { id: data.id } });
                 }
             } else {
                 toast(i18n.t('Failed to update channel'), {
-                    position: 'top-right',
                     description: data.message,
                 });
             }
         },
         onError: err => {
             toast(i18n.t('Failed to update channel'), {
-                position: 'top-right',
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
