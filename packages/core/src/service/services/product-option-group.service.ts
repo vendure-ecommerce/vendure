@@ -48,7 +48,7 @@ export class ProductOptionGroupService {
         private channelService: ChannelService,
     ) {}
 
-    async findAll(
+    findAll(
         ctx: RequestContext,
         filterTerm?: string,
         relations?: RelationPaths<ProductOptionGroup>,
@@ -77,7 +77,7 @@ export class ProductOptionGroupService {
             .then(groups => groups.map(group => this.translator.translate(group, ctx, ['options'])));
     }
 
-    async findOne(
+    findOne(
         ctx: RequestContext,
         id: ID,
         relations?: RelationPaths<ProductOptionGroup>,

@@ -47,7 +47,7 @@ export class ProductOptionService {
         private channelService: ChannelService,
     ) {}
 
-    async findAll(ctx: RequestContext): Promise<Array<Translated<ProductOption>>> {
+    findAll(ctx: RequestContext): Promise<Array<Translated<ProductOption>>> {
         return this.connection
             .getRepository(ctx, ProductOption)
             .createQueryBuilder('option')
@@ -65,7 +65,7 @@ export class ProductOptionService {
             .then(options => options.map(option => this.translator.translate(option, ctx)));
     }
 
-    async findOne(ctx: RequestContext, id: ID): Promise<Translated<ProductOption> | undefined> {
+    findOne(ctx: RequestContext, id: ID): Promise<Translated<ProductOption> | undefined> {
         return this.connection
             .getRepository(ctx, ProductOption)
             .createQueryBuilder('option')
