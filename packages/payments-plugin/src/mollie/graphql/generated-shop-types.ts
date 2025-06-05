@@ -2785,7 +2785,6 @@ export type ProductOption = Node & {
     code: Scalars['String']['output'];
     createdAt: Scalars['DateTime']['output'];
     customFields?: Maybe<Scalars['JSON']['output']>;
-    global: Scalars['Boolean']['output'];
     group: ProductOptionGroup;
     groupId: Scalars['ID']['output'];
     id: Scalars['ID']['output'];

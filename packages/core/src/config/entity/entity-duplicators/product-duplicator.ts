@@ -145,18 +145,16 @@ export const productDuplicator = new EntityDuplicator({
                     );
                 }
             }
-            const newOptionGroups = await connection
-                .getRepository(ctx, ProductOptionGroup)
-                .createQueryBuilder('optionGroup')
-                .leftJoinAndSelect('optionGroup.options', 'options')
-                .leftJoinAndSelect('options.translations', 'optionTranslations')
-                .leftJoinAndSelect('optionGroup.translations', 'optionGroupTranslations')
-                .leftJoinAndSelect('options.channels', 'optionChannels')
-                .leftJoinAndSelect('optionGroup.channels', 'optionGroupChannels')
-                .innerJoin('optionGroup.products', 'product', 'product.id = :productId', {
-                    productId: duplicatedProduct.id,
-                })
-                .getMany();
+
+            const newOptionGroups = await connection.getRepository(ctx, ProductOptionGroup).find({
+                where: {
+                    products: { id: duplicatedProduct.id },
+                },
+                relations: {
+                    options: true,
+                },
+            });
+
             const variantInput: CreateProductVariantInput[] = productVariants.map((variant, i) => {
                 const options = variant.options.map(existingOption => {
                     const newOption = newOptionGroups

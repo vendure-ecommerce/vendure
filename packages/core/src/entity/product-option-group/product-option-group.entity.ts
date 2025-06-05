@@ -26,6 +26,7 @@ export class ProductOptionGroup
     constructor(input?: DeepPartial<ProductOptionGroup>) {
         super(input);
     }
+
     @Column({ type: Date, nullable: true })
     deletedAt: Date | null;
 

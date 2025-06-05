@@ -840,7 +840,6 @@ export type CreateFulfillmentError = ErrorResult & {
 
 export type CreateGroupOptionInput = {
     code: Scalars['String']['input'];
-    global?: InputMaybe<Scalars['Boolean']['input']>;
     translations: Array<ProductOptionGroupTranslationInput>;
 };
 
@@ -873,7 +872,6 @@ export type CreateProductOptionGroupInput = {
 export type CreateProductOptionInput = {
     code: Scalars['String']['input'];
     customFields?: InputMaybe<Scalars['JSON']['input']>;
-    global?: InputMaybe<Scalars['Boolean']['input']>;
     productOptionGroupId: Scalars['ID']['input'];
     translations: Array<ProductOptionGroupTranslationInput>;
 };
@@ -4501,7 +4499,6 @@ export type ProductOption = Node & {
     code: Scalars['String']['output'];
     createdAt: Scalars['DateTime']['output'];
     customFields?: Maybe<Scalars['JSON']['output']>;
-    global: Scalars['Boolean']['output'];
     group: ProductOptionGroup;
     groupId: Scalars['ID']['output'];
     id: Scalars['ID']['output'];
@@ -6311,7 +6308,6 @@ export type UpdateProductOptionGroupInput = {
 export type UpdateProductOptionInput = {
     code?: InputMaybe<Scalars['String']['input']>;
     customFields?: InputMaybe<Scalars['JSON']['input']>;
-    global?: InputMaybe<Scalars['Boolean']['input']>;
     id: Scalars['ID']['input'];
     translations?: InputMaybe<Array<ProductOptionGroupTranslationInput>>;
 };

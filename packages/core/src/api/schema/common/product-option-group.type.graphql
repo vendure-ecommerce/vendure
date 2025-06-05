@@ -28,7 +28,6 @@ type ProductOption implements Node {
     groupId: ID!
     group: ProductOptionGroup!
     translations: [ProductOptionTranslation!]!
-    global: Boolean!
 }
 
 type ProductOptionTranslation {

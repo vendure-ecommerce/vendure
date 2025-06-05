@@ -47,19 +47,16 @@ input ProductOptionTranslationInput {
 input CreateGroupOptionInput {
     code: String!
     translations: [ProductOptionGroupTranslationInput!]!
-    global: Boolean
 }
 
 input CreateProductOptionInput {
     productOptionGroupId: ID!
     code: String!
     translations: [ProductOptionGroupTranslationInput!]!
-    global: Boolean
 }
 
 input UpdateProductOptionInput {
     id: ID!
     code: String
     translations: [ProductOptionGroupTranslationInput!]
-    global: Boolean
 }

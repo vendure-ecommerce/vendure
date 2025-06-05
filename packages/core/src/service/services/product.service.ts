@@ -11,7 +11,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
-import { Brackets, FindOptionsUtils, In, IsNull } from 'typeorm';
+import { FindOptionsUtils, In, IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
@@ -25,7 +25,6 @@ import { assertFound, idsAreEqual } from '../../common/utils';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Channel } from '../../entity/channel/channel.entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
-import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { ProductTranslation } from '../../entity/product/product-translation.entity';
 import { Product } from '../../entity/product/product.entity';
@@ -138,7 +137,6 @@ export class ProductService {
         return this.translator.translate(product, ctx, ['facetValues', ['facetValues', 'facet']]);
     }
 
-    // TODO
     async findByIds(
         ctx: RequestContext,
         productIds: ID[],
@@ -372,45 +370,19 @@ export class ProductService {
         optionGroupId: ID,
     ): Promise<Translated<Product>> {
         const product = await this.getProductWithOptionGroups(ctx, productId);
-
-        const optionGroup = await this.connection
-            .getRepository(ctx, ProductOptionGroup)
-            .createQueryBuilder('optionGroup')
-            .innerJoinAndSelect('optionGroup.translations', 'groupTranslations')
-            .leftJoinAndSelect('optionGroup.channels', 'optionGroupChannels')
-            .where('optionGroup.id = :optionGroupId', { optionGroupId })
-            .andWhere('optionGroup.deletedAt IS NULL')
-            .andWhere(
-                new Brackets(qb => {
-                    qb.where('optionGroup.global = true').orWhere('optionGroupChannels.id = :channelId', {
-                        channelId: ctx.channelId,
-                    });
-                }),
-            )
-            .getOne();
-
+        const optionGroup = await this.productOptionGroupService.findOne(ctx, optionGroupId, []);
         if (!optionGroup) {
             throw new EntityNotFoundError('ProductOptionGroup', optionGroupId);
         }
-
-        const exists = await this.connection
-            .getRepository(ctx, Product)
-            .createQueryBuilder('product')
-            .innerJoin('product.optionGroups', 'optionGroup', 'optionGroup.id = :optionGroupId', {
-                optionGroupId,
-            })
-            .where('product.id = :productId', { productId })
-            .getCount();
-
-        if (exists > 0) {
-            const translated = this.translator.translate(product, ctx);
-            throw new UserInputError('error.product-option-group-already-assigned', {
-                groupCode: optionGroup.code,
-                productName: translated.name,
-            });
-        }
-
         if (Array.isArray(product.optionGroups)) {
+            const exists = product.optionGroups.find(g => idsAreEqual(g.id, optionGroup.id));
+            if (exists) {
+                const translated = this.translator.translate(product, ctx);
+                throw new UserInputError('error.product-option-group-already-assigned', {
+                    groupCode: optionGroup.code,
+                    productName: translated.name,
+                });
+            }
             product.optionGroups.push(optionGroup);
         } else {
             product.optionGroups = [optionGroup];
@@ -457,13 +429,6 @@ export class ProductService {
                 });
             }
         }
-
-        await this.connection
-            .getRepository(ctx, Product)
-            .createQueryBuilder()
-            .relation(Product, 'optionGroups')
-            .of(product)
-            .remove(optionGroup);
 
         product.optionGroups = product.optionGroups.filter(g => g.id !== optionGroupId);
         await this.connection.getRepository(ctx, Product).save(product, { reload: false });

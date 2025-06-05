@@ -50,6 +50,7 @@ import { ProductPriceApplicator } from '../helpers/product-price-applicator/prod
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { TranslatorService } from '../helpers/translator/translator.service';
 import { patchEntity } from '../helpers/utils/patch-entity';
+import { samplesEach } from '../helpers/utils/samples-each';
 
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
@@ -89,7 +90,7 @@ export class ProductVariantService {
         private translator: TranslatorService,
     ) {}
 
-    async findAll(
+    findAll(
         ctx: RequestContext,
         options?: ListQueryOptions<ProductVariant>,
     ): Promise<PaginatedList<Translated<ProductVariant>>> {
@@ -275,21 +276,9 @@ export class ProductVariantService {
      */
     getOptionsForVariant(ctx: RequestContext, variantId: ID): Promise<Array<Translated<ProductOption>>> {
         return this.connection
-            .getRepository(ctx, ProductVariant)
-            .createQueryBuilder('variant')
-            .innerJoinAndSelect('variant.options', 'options')
-            .innerJoinAndSelect('options.translations', 'optionTranslations')
-            .leftJoinAndSelect('options.channels', 'optionChannels')
-            .where('variant.id = :variantId', { variantId })
-            .andWhere('options.deletedAt IS NULL')
-            .andWhere(
-                new Brackets(qb => {
-                    qb.where('options.global = true').orWhere('optionChannels.id = :channelId', {
-                        channelId: ctx.channelId,
-                    });
-                }),
-            )
-            .getOne()
+            .findOneInChannel(ctx, ProductVariant, variantId, ctx.channelId, {
+                relations: ['options'],
+            })
             .then(variant => (!variant ? [] : variant.options.map(o => this.translator.translate(o, ctx))));
     }
 
@@ -932,26 +921,14 @@ export class ProductVariantService {
             .getRepository(ctx, ProductOptionGroup)
             .createQueryBuilder('optionGroup')
             .innerJoin('optionGroup.products', 'product', 'product.id = :productId', { productId })
-            .innerJoinAndSelect('optionGroup.translations', 'groupTranslations')
-            .leftJoinAndSelect('optionGroup.channels', 'groupChannels')
+            .leftJoinAndSelect('optionGroup.channels', 'channels')
             .leftJoinAndSelect('optionGroup.options', 'options', 'options.deletedAt IS NULL')
-            .innerJoinAndSelect('options.translations', 'optionTranslations')
-            .leftJoinAndSelect('options.channels', 'optionChannels')
             .where('optionGroup.deletedAt IS NULL')
             .andWhere(
                 new Brackets(qb => {
-                    qb.where('optionGroup.global = true').orWhere('groupChannels.id = :channelId', {
+                    qb.where('optionGroup.global = true').orWhere('channels.id = :channelId', {
                         channelId: ctx.channelId,
                     });
-                }),
-            )
-            .andWhere(
-                new Brackets(qb => {
-                    qb.where('options.id IS NULL')
-                        .orWhere('options.global = true')
-                        .orWhere('optionChannels.id = :channelId', {
-                            channelId: ctx.channelId,
-                        });
                 }),
             )
             .getMany();
@@ -962,41 +939,40 @@ export class ProductVariantService {
             this.throwIncompatibleOptionsError(optionGroups);
         }
 
-        const validOptionIds = new Set(
-            activeOptionGroups.flatMap(group => group.options.map(option => option.id)),
-        );
-
-        if (!optionIds.every(id => validOptionIds.has(id))) {
+        if (
+            !samplesEach(
+                optionIds,
+                activeOptionGroups.map(g => g.options.map(o => o.id)),
+            )
+        ) {
             this.throwIncompatibleOptionsError(optionGroups);
         }
 
-        const variants = await this.connection
-            .getRepository(ctx, ProductVariant)
-            .createQueryBuilder('variant')
-            .innerJoinAndSelect('variant.options', 'options')
-            .where('variant.productId = :productId', { productId })
-            .andWhere('variant.deletedAt IS NULL')
-            .getMany();
+        const product = await this.connection.getEntityOrThrow(ctx, Product, productId, {
+            channelId: ctx.channelId,
+            relations: ['variants', 'variants.options'],
+            loadEagerRelations: true,
+        });
 
-        if (!isUpdateOperation) {
-            const inputOptionIds = this.sortJoin(optionIds, ',');
+        const inputOptionIds = this.sortJoin(optionIds, ',');
 
-            const hasDuplicate = variants.some(variant => {
+        product.variants
+            .filter(v => !v.deletedAt)
+            .forEach(variant => {
                 const variantOptionIds = this.sortJoin(variant.options, ',', 'id');
-                return variantOptionIds === inputOptionIds;
+                if (isUpdateOperation) return;
+                if (variantOptionIds === inputOptionIds) {
+                    throw new UserInputError('error.product-variant-options-combination-already-exists', {
+                        variantName: this.translator.translate(variant, ctx).name,
+                    });
+                }
             });
-
-            if (hasDuplicate) {
-                throw new UserInputError('error.product-variant-options-combination-already-exists', {
-                    variantName: this.translator.translate(variants[0], ctx).name,
-                });
-            }
-        }
     }
 
     private throwIncompatibleOptionsError(optionGroups: ProductOptionGroup[]) {
         throw new UserInputError('error.product-variant-option-ids-not-compatible', {
             groupNames: this.sortJoin(optionGroups, ', ', 'code'),
+            groupNamesTranslated: this.sortJoin(optionGroups, ', ', 'name'),
         });
     }
 

@@ -11,7 +11,7 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { Brackets } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { ForbiddenError } from '../../common';
+import { EntityNotFoundError, ForbiddenError } from '../../common';
 import { Instrument } from '../../common/instrument-decorator';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
@@ -26,6 +26,8 @@ import { ProductOptionEvent } from '../../event-bus/events/product-option-event'
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { TranslatorService } from '../helpers/translator/translator.service';
+
+import { ChannelService } from './channel.service';
 
 /**
  * @description
@@ -42,49 +44,44 @@ export class ProductOptionService {
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
         private translator: TranslatorService,
+        private channelService: ChannelService,
     ) {}
 
     async findAll(ctx: RequestContext): Promise<Array<Translated<ProductOption>>> {
-        const qb = this.connection
+        return this.connection
             .getRepository(ctx, ProductOption)
             .createQueryBuilder('option')
-            .innerJoinAndSelect('option.translations', 'optionTranslations')
-            .leftJoinAndSelect('option.channels', 'optionChannels')
             .leftJoinAndSelect('option.group', 'group')
-            .innerJoinAndSelect('group.translations', 'groupTranslations')
+            .leftJoin('option.channels', 'channels')
             .where('option.deletedAt IS NULL')
             .andWhere(
-                new Brackets(q => {
-                    q.where('option.global = true').orWhere('optionChannels.id = :channelId', {
+                new Brackets(qb1 => {
+                    qb1.where('group.global = true').orWhere('channels.id = :channelId', {
                         channelId: ctx.channelId,
                     });
                 }),
-            );
-
-        const options = await qb.getMany();
-        return options.map(option => this.translator.translate(option, ctx));
+            )
+            .getMany()
+            .then(options => options.map(option => this.translator.translate(option, ctx)));
     }
 
     async findOne(ctx: RequestContext, id: ID): Promise<Translated<ProductOption> | undefined> {
-        const qb = this.connection
+        return this.connection
             .getRepository(ctx, ProductOption)
             .createQueryBuilder('option')
-            .innerJoinAndSelect('option.translations', 'optionTranslations')
-            .leftJoinAndSelect('option.channels', 'optionChannels')
             .leftJoinAndSelect('option.group', 'group')
-            .innerJoinAndSelect('group.translations', 'groupTranslations')
+            .leftJoin('option.channels', 'channels')
             .where('option.id = :id', { id })
             .andWhere('option.deletedAt IS NULL')
             .andWhere(
-                new Brackets(q => {
-                    q.where('option.global = true').orWhere('optionChannels.id = :channelId', {
+                new Brackets(qb1 => {
+                    qb1.where('group.global = true').orWhere('channels.id = :channelId', {
                         channelId: ctx.channelId,
                     });
                 }),
-            );
-
-        const option = await qb.getOne();
-        return option ? this.translator.translate(option, ctx) : undefined;
+            )
+            .getOne()
+            .then(option => (option && this.translator.translate(option, ctx)) ?? undefined);
     }
 
     async create(
@@ -92,21 +89,27 @@ export class ProductOptionService {
         group: ProductOptionGroup | ID,
         input: CreateGroupOptionInput | CreateProductOptionInput,
     ): Promise<Translated<ProductOption>> {
-        if (input.global) {
-            if (!ctx.userHasPermissions([Permission.CreateGlobalProductOption])) {
-                throw new ForbiddenError(LogLevel.Verbose);
-            }
-        }
         const productOptionGroup =
             group instanceof ProductOptionGroup
                 ? group
                 : await this.connection.getEntityOrThrow(ctx, ProductOptionGroup, group);
+
+        if (productOptionGroup.global) {
+            if (!ctx.userHasPermissions([Permission.CreateGlobalProductOption])) {
+                throw new ForbiddenError(LogLevel.Verbose);
+            }
+        }
         const option = await this.translatableSaver.create({
             ctx,
             input,
             entityType: ProductOption,
             translationType: ProductOptionTranslation,
-            beforeSave: po => (po.group = productOptionGroup),
+            beforeSave: async po => {
+                po.group = productOptionGroup;
+                if (!productOptionGroup.global) {
+                    await this.channelService.assignToCurrentChannel(po, ctx);
+                }
+            },
         });
         const optionWithRelations = await this.customFieldRelationService.updateRelations(
             ctx,
@@ -114,21 +117,19 @@ export class ProductOptionService {
             input as CreateProductOptionInput,
             option,
         );
-
-        if (!input.global) {
-            await this.connection
-                .getRepository(ctx, ProductOption)
-                .createQueryBuilder()
-                .relation(ProductOption, 'channels')
-                .of(option)
-                .add(ctx.channelId);
-        }
-
         await this.eventBus.publish(new ProductOptionEvent(ctx, optionWithRelations, 'created', input));
         return assertFound(this.findOne(ctx, option.id));
     }
 
     async update(ctx: RequestContext, input: UpdateProductOptionInput): Promise<Translated<ProductOption>> {
+        const groupOption = await this.findOne(ctx, input.id);
+        if (!groupOption) {
+            throw new EntityNotFoundError('ProductOption', input.id);
+        }
+        if (groupOption.group.global && !ctx.userHasPermissions([Permission.UpdateGlobalProductOption])) {
+            throw new ForbiddenError(LogLevel.Verbose);
+        }
+
         const option = await this.translatableSaver.update({
             ctx,
             input,
@@ -136,25 +137,6 @@ export class ProductOptionService {
             translationType: ProductOptionTranslation,
         });
         await this.customFieldRelationService.updateRelations(ctx, ProductOption, input, option);
-        if (input.global !== undefined) {
-            if (!ctx.userHasPermissions([Permission.UpdateGlobalProductOption])) {
-                throw new ForbiddenError(LogLevel.Verbose);
-            }
-            const channelRepo = this.connection.getRepository(ctx, ProductOption);
-            if (input.global) {
-                await channelRepo
-                    .createQueryBuilder()
-                    .relation(ProductOption, 'channels')
-                    .of(option)
-                    .remove(option.channels);
-            } else {
-                await channelRepo
-                    .createQueryBuilder()
-                    .relation(ProductOption, 'channels')
-                    .of(option)
-                    .add(ctx.channelId);
-            }
-        }
         await this.eventBus.publish(new ProductOptionEvent(ctx, option, 'updated', input));
         return assertFound(this.findOne(ctx, option.id));
     }
@@ -169,8 +151,10 @@ export class ProductOptionService {
      * - If the ProductOption is not used by any ProductVariant at all, it will be hard-deleted.
      */
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
-        const productOption = await this.connection.getEntityOrThrow(ctx, ProductOption, id);
-        if (productOption.global) {
+        const productOption = await this.connection.getEntityOrThrow(ctx, ProductOption, id, {
+            relations: ['group'],
+        });
+        if (productOption.group.global) {
             if (!ctx.userHasPermissions([Permission.DeleteGlobalProductOption])) {
                 throw new ForbiddenError(LogLevel.Verbose);
             }
