@@ -21,6 +21,7 @@ jobs:
           JIRA_TOKEN:  ${{ secrets.JIRA_API_TOKEN }}
           JIRA_BASE:   ${{ secrets.JIRA_BASE }}    
           PROJECT_KEY: VEN
+          ISSUE_TITLE: ${{ github.event.issue.title }}
         run: |
           set -e  # Exit on any error
           
@@ -40,7 +41,7 @@ jobs:
           fi
           
           # Prepare the data with error checking
-          SUMMARY="${{ github.event.issue.title }}"
+          SUMMARY="$ISSUE_TITLE"
           DESC="Imported from GitHub: $GH_URL"
           
           # Create the search request body
