@@ -13,7 +13,6 @@ import {
     CustomFieldConfig,
     CustomFields,
     StructCustomFieldConfig,
-    RelationCustomFieldConfig,
     StructFieldConfig,
 } from '../../config/custom-field/custom-field-types';
 import { Logger } from '../../config/logger/vendure-logger';
@@ -249,8 +248,25 @@ export function addGraphQLCustomFields(
                 }
             }
         }
+    }
 
+    const entitiesWithPublicTypes = [`ShippingMethod`, `PaymentMethod`];
+
+    for (const entityName of entitiesWithPublicTypes) {
         const publicEntityName = `Public${entityName}`;
+        const customFields = customFieldsConfig.find(config => config[0] === entityName)?.[1];
+
+        if (!customFields) {
+            continue;
+        }
+
+        const customEntityFields = customFields.filter(config => {
+            return !config.internal && (publicOnly === true ? config.public !== false : true);
+        });
+
+        const structCustomFields = customEntityFields.filter(
+            (f): f is StructCustomFieldConfig => f.type === 'struct',
+        );
 
         if (schema.getType(publicEntityName)) {
             if (customEntityFields.length) {
@@ -266,7 +282,7 @@ export function addGraphQLCustomFields(
                     type ${publicEntityName}CustomFields {
                         ${mapToFields(customEntityFields, wrapListType(getGraphQlType(entityName)))}
                     }
-
+    
                     extend type ${publicEntityName} {
                         customFields: ${publicEntityName}CustomFields
                     }
