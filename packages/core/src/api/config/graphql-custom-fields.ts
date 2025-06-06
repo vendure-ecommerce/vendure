@@ -46,6 +46,8 @@ export function addGraphQLCustomFields(
     }
 
     const customFieldsConfig = getCustomFieldsConfigWithoutInterfaces(customFieldConfig, schema);
+    const entitiesWithPublicTypes = [`ShippingMethod`, `PaymentMethod`];
+
     for (const [entityName, customFields] of customFieldsConfig) {
         const gqlType = schema.getType(entityName);
         if (isObjectType(gqlType) && gqlType.getFields().customFields) {
@@ -248,27 +250,10 @@ export function addGraphQLCustomFields(
                 }
             }
         }
-    }
 
-    const entitiesWithPublicTypes = [`ShippingMethod`, `PaymentMethod`];
-
-    for (const entityName of entitiesWithPublicTypes) {
         const publicEntityName = `Public${entityName}`;
-        const customFields = customFieldsConfig.find(config => config[0] === entityName)?.[1];
 
-        if (!customFields) {
-            continue;
-        }
-
-        const customEntityFields = customFields.filter(config => {
-            return !config.internal && (publicOnly === true ? config.public !== false : true);
-        });
-
-        const structCustomFields = customEntityFields.filter(
-            (f): f is StructCustomFieldConfig => f.type === 'struct',
-        );
-
-        if (schema.getType(publicEntityName)) {
+        if (schema.getType(publicEntityName) && entitiesWithPublicTypes.includes(entityName)) {
             if (customEntityFields.length) {
                 for (const structCustomField of structCustomFields) {
                     customFieldTypeDefs += `
