@@ -63,7 +63,7 @@ jobs:
         runs-on: ubuntu-latest
         services:
             mariadb:
-                image: bitnami/mariadb:11.7
+                image: bitnami/mariadb:11.5
                 env:
                     MARIADB_ROOT_USER: vendure
                     MARIADB_ROOT_PASSWORD: password
