@@ -6,6 +6,7 @@
     "add-asset": "Añadir recurso",
     "add-asset-with-count": "Añadir {count, plural, =0 {recurso} one {1 recurso} other {{count} recursos}}",
     "assets-selected-count": "{ count } recursos seleccionados",
+    "change-asset": "Cambiar recurso",
     "dimensions": "Dimensiones",
     "focal-point": "Punto focal",
     "notify-create-assets-success": "{count, plural, one {Nuevo recurso} other {{count} Nuevos recursos}} {count, plural, one {creado} other {creados}} con éxito",
@@ -16,6 +17,7 @@
     "select-assets": "Seleccionar recursos",
     "set-as-featured-asset": "Seleccionar como recurso por defecto",
     "set-focal-point": "Fijar punto focal",
+    "size": "Tamaño",
     "source-file": "Fichero original",
     "unset-focal-point": "Quitar punto focal",
     "update-focal-point": "Actualizar punto focal",
@@ -45,6 +47,7 @@
     "profile": "Perfil",
     "promotions": "Promociones",
     "roles": "Roles",
+    "scheduled-tasks": "Tareas programadas",
     "seller-orders": "Órdenes de vendedores",
     "sellers": "Vendedores",
     "shipping-methods": "Métodos de envío",
@@ -237,12 +240,14 @@
     "delete": "Eliminar",
     "description": "Descripción",
     "details": "Detalles",
+    "disable": "Deshabilitar",
     "disabled": "Deshabilitado",
     "discard-changes": "Descartar cambios",
     "duplicate": "Duplicar",
     "edit": "Editar",
     "edit-field": "Editar campo",
     "edit-note": "Editar nota",
+    "enable": "Habilitar",
     "enabled": "Habilitado",
     "end-date": "Fecha final",
     "expand-entries": "Mostrar entradas",
@@ -274,7 +279,7 @@
     "name": "Nombre",
     "no-alerts": "No hay alertas",
     "no-bulk-actions-available": "No hay acciones agrupadas disponibles",
-    "no-channel-selected": "",
+    "no-channel-selected": "Ningún canal seleccionado",
     "no-results": "Sin resultados",
     "not-applicable": "No aplicable",
     "not-set": "Sin fijar",
@@ -475,6 +480,7 @@
     "year": "año"
   },
   "editor": {
+    "height": "Altura",
     "image-alt": "Descripción (alt)",
     "image-src": "Archivo",
     "image-title": "Título",
@@ -483,7 +489,8 @@
     "link-target": "Enlace target",
     "link-title": "Título del enlace",
     "remove-link": "Eliminar",
-    "set-link": "Establecer enlace"
+    "set-link": "Establecer enlace",
+    "width": "Ancho"
   },
   "error": {
     "403-forbidden": "Actualmente no está autorizado para acceder a \"{ path }\". O bien carece de permisos, o su sesión ha expirado.",
@@ -528,6 +535,7 @@
     "promotions": "Promociones",
     "roles": "Roles",
     "sales": "Ventas",
+    "scheduled-tasks": "Tareas programadas",
     "sellers": "Vendedores",
     "settings": "Ajustes",
     "shipping-methods": "Envíos",
@@ -643,6 +651,7 @@
     "previous-customer": "Cliente anterior",
     "product-name": "Nombre del producto",
     "product-sku": "Código de referencia",
+    "product-variant": "Variante de producto",
     "promotions-applied": "Promociones aplicadas",
     "prorated-unit-price": "Precio unitario prorrateado",
     "quantity": "Cantidad",
@@ -675,7 +684,7 @@
     "set-billing-address": "Añadir dirección de facturación",
     "set-coupon-codes": "Añadir cupón de descuento",
     "set-customer-for-order": "Añadir cliente",
-    "set-customer-success": "",
+    "set-customer-success": "Cliente añadido con éxito",
     "set-fulfillment-state": "Fijar como {state}",
     "set-shipping-address": "Añadir dirección de envío",
     "set-shipping-method": "Añadir método de envío",
@@ -790,6 +799,7 @@
   },
   "system": {
     "all-job-queues": "Todas las colas de trabajo",
+    "could-not-trigger-task": "No se pudo activar la tarea",
     "health-all-systems-up": "Todos los sistemas activos",
     "health-error": "Error: uno o más sistemas inactivos",
     "health-last-checked": "Última revisión",
@@ -809,6 +819,13 @@
     "job-state-completed": "Completado",
     "job-state-failed": "Fallido",
     "job-state-pending": "Pendiente",
-    "job-state-running": "En ejecución"
+    "job-state-running": "En ejecución",
+    "last-executed-at": "Última ejecución",
+    "last-result": "Último resultado",
+    "next-execution-at": "Próxima ejecución",
+    "run-task": "Ejecutar tarea",
+    "schedule": "Programación",
+    "task-id": "ID de la tarea",
+    "task-will-be-triggered": "Se ejecutará la tarea"
   }
 }

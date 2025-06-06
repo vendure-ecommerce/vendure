@@ -13,12 +13,12 @@ export interface ErrorPageProps {
  */
 export function ErrorPage({ message }: ErrorPageProps) {
     return (
-        <Page>
+        <Page pageId='error-page'>
             <PageTitle>
                 <Trans>Error</Trans>
             </PageTitle>
             <PageLayout>
-                <PageBlock column="main">
+                <PageBlock column="main" blockId='error-message'>
                     <Alert variant="destructive">
                         <AlertCircle className="h-4 w-4" />
                         <AlertTitle>Error</AlertTitle>

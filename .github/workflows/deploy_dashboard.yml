@@ -6,6 +6,12 @@ on:
             - minor
             - major
             - master
+        paths:
+            - 'packages/dashboard/**'
+            - 'package.json'
+            - 'package-lock.json'
+            - 'packages/core/**'
+            - 'packages/common/**'
 
 env:
     NEXT_TELEMETRY_DISABLED: 1

@@ -1,9 +1,18 @@
 import { api } from '@/graphql/api.js';
 import { ResultOf, graphql } from '@/graphql/graphql.js';
 import { useUserSettings } from '@/hooks/use-user-settings.js';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as React from 'react';
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * @docsCategory hooks
+ * @docsPage useAuth
+ * @docsWeight 0
+ * @since 3.3.0
+ */
 export interface AuthContext {
     status: 'authenticated' | 'verifying' | 'unauthenticated';
     authenticationError?: string;
@@ -62,79 +71,85 @@ const CurrentUserQuery = graphql(`
 export const AuthContext = React.createContext<AuthContext | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [status, setStatus] = React.useState<AuthContext['status']>('verifying');
+    const [status, setStatus] = React.useState<AuthContext['status']>('unauthenticated');
     const [authenticationError, setAuthenticationError] = React.useState<string | undefined>();
     const { settings, setActiveChannelId } = useUserSettings();
-    const onLoginSuccessFn = React.useRef<() => void>(() => {});
-    const onLogoutSuccessFn = React.useRef<() => void>(() => {});
-    const isAuthenticated = status === 'authenticated';
+    const queryClient = useQueryClient();
 
-    const { data: currentUserData, isLoading , error: currentUserError} = useQuery({
-        queryKey: ['currentUser', isAuthenticated],
+    // Query for current user
+    const {
+        data: currentUserData,
+        isLoading,
+        error: currentUserError,
+        refetch: refetchCurrentUser,
+    } = useQuery({
+        queryKey: ['currentUser'],
         queryFn: () => api.query(CurrentUserQuery),
-        retry: false,
-        staleTime: 1000,
     });
 
-    const currentUser = currentUserError ? undefined : currentUserData;
-
+    // Set active channel if needed
     React.useEffect(() => {
-        if (!settings.activeChannelId && currentUser?.me?.channels?.length) {
-            setActiveChannelId(currentUser.me.channels[0].id);
+        if (!settings.activeChannelId && currentUserData?.me?.channels?.length) {
+            setActiveChannelId(currentUserData.me.channels[0].id);
         }
-    }, [settings.activeChannelId, currentUser?.me?.channels]);
+    }, [settings.activeChannelId, currentUserData?.me?.channels]);
 
-    const loginMutationFn = api.mutate(LoginMutation);
-    const loginMutation = useMutation({
-        mutationFn: loginMutationFn,
-        onSuccess: async data => {
-            if (data.login.__typename === 'CurrentUser') {
-                setStatus('authenticated');
-                onLoginSuccessFn.current();
-            } else {
-                setAuthenticationError(data?.login.message);
-                setStatus('unauthenticated');
-            }
-        },
-        onError: error => {
-            setAuthenticationError(error.message);
-            setStatus('unauthenticated');
-        },
-    });
-
-    const logoutMutationFn = api.mutate(LogOutMutation);
-    const logoutMutation = useMutation({
-        mutationFn: logoutMutationFn,
-        onSuccess: async data => {
-            if (data?.logout.success === true) {
-                setStatus('unauthenticated');
-                onLogoutSuccessFn.current();
-            }
-        },
-    });
-
-    const logout = React.useCallback(async (onLogoutSuccess?: () => void) => {
-        logoutMutation.mutate({});
-        onLogoutSuccessFn.current = onLogoutSuccess || (() => {});
-    }, []);
-
-    const login = React.useCallback((username: string, password: string, onLoginSuccess?: () => void) => {
-        setStatus('verifying');
-        onLoginSuccessFn.current = onLoginSuccess || (() => {});
-        loginMutation.mutate({ username, password });
-    }, []);
-
-    React.useEffect(() => {
-        if (!isLoading) {
-            if (currentUser?.me?.id) {
-                setStatus('authenticated');
-            } else {
-                setStatus('unauthenticated');
-            }
-        } else {
+    // Auth actions
+    const login = React.useCallback(
+        (username: string, password: string, onLoginSuccess?: () => void) => {
             setStatus('verifying');
+            api.mutate(LoginMutation)({ username, password })
+                .then(async data => {
+                    if (data.login.__typename === 'CurrentUser') {
+                        setAuthenticationError(undefined);
+                        await refetchCurrentUser();
+                        // Invalidate all queries to ensure fresh data after login
+                        await queryClient.invalidateQueries();
+                        setStatus('authenticated');
+                        onLoginSuccess?.();
+                    } else {
+                        setAuthenticationError(data?.login.message);
+                        setStatus('unauthenticated');
+                    }
+                })
+                .catch(error => {
+                    setAuthenticationError(error.message);
+                    setStatus('unauthenticated');
+                });
+        },
+        [refetchCurrentUser, queryClient],
+    );
+
+    const logout = React.useCallback(
+        async (onLogoutSuccess?: () => void) => {
+            setStatus('verifying');
+            api.mutate(LogOutMutation)({}).then(async data => {
+                if (data?.logout.success) {
+                    // Clear all cached queries to prevent stale data
+                    queryClient.clear();
+                    // Clear selected channel from localStorage
+                    localStorage.removeItem('vendure-selected-channel');
+                    localStorage.removeItem('vendure-selected-channel-token');
+                    setStatus('unauthenticated');
+                    onLogoutSuccess?.();
+                }
+            });
+        },
+        [queryClient],
+    );
+
+    // Determine isAuthenticated from currentUserData
+    const isAuthenticated = !!currentUserData?.me?.id;
+
+    // Set status based on query result (only if not in the middle of login/logout)
+    React.useEffect(() => {
+        if (status === 'verifying') return;
+        if (currentUserError || !currentUserData?.me?.id) {
+            setStatus('unauthenticated');
+        } else {
+            setStatus('authenticated');
         }
-    }, [isLoading, currentUser]);
+    }, [currentUserData, currentUserError]);
 
     return (
         <AuthContext.Provider
@@ -142,8 +157,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 isAuthenticated,
                 authenticationError,
                 status,
-                user: currentUser?.activeAdministrator,
-                channels: currentUser?.me?.channels,
+                user: currentUserData?.activeAdministrator,
+                channels: currentUserData?.me?.channels,
                 login,
                 logout,
             }}
@@ -152,4 +167,3 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         </AuthContext.Provider>
     );
 }
-

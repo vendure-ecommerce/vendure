@@ -174,6 +174,8 @@ export interface RowAction<T> {
     onClick?: (row: Row<T>) => void;
 }
 
+export type PaginatedListRefresherRegisterFn = (refreshFn: () => void) => void;
+
 export interface PaginatedListDataTableProps<
     T extends TypedDocumentNode<U, V>,
     U extends any,
@@ -202,6 +204,12 @@ export interface PaginatedListDataTableProps<
     disableViewOptions?: boolean;
     transformData?: (data: PaginatedListItemFields<T>[]) => PaginatedListItemFields<T>[];
     setTableOptions?: (table: TableOptions<any>) => TableOptions<any>;
+    /**
+     * Register a function that allows you to assign a refresh function for
+     * this list. The function can be assigned to a ref and then called when
+     * the list needs to be refreshed.
+     */
+    registerRefresher?: PaginatedListRefresherRegisterFn;
 }
 
 export const PaginatedListDataTableKey = 'PaginatedListDataTable';
@@ -234,6 +242,7 @@ export function PaginatedListDataTable<
     disableViewOptions,
     setTableOptions,
     transformData,
+    registerRefresher,
 }: PaginatedListDataTableProps<T, U, V, AC>) {
     const [searchTerm, setSearchTerm] = React.useState<string>('');
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
@@ -274,6 +283,7 @@ export function PaginatedListDataTable<
     function refetchPaginatedList() {
         queryClient.invalidateQueries({ queryKey });
     }
+    registerRefresher?.(refetchPaginatedList);
 
     const { data } = useQuery({
         queryFn: () => {
@@ -333,6 +343,10 @@ export function PaginatedListDataTable<
                 meta: { fieldInfo, isCustomField },
                 enableColumnFilter,
                 enableSorting: fieldInfo.isScalar,
+                // Filtering is done on the server side, but we set this to 'equalsString' because
+                // otherwise the TanStack Table with apply an "auto" function which somehow
+                // prevents certain filters from working.
+                filterFn: 'equalsString',
                 cell: ({ cell, row }) => {
                     const value = !isCustomField
                         ? cell.getValue()
@@ -424,6 +438,7 @@ export function PaginatedListDataTable<
                 facetedFilters={facetedFilters}
                 disableViewOptions={disableViewOptions}
                 setTableOptions={setTableOptions}
+                onRefresh={refetchPaginatedList}
             />
         </PaginatedListContext.Provider>
     );
@@ -437,6 +452,7 @@ function getRowActions(
         id: 'actions',
         accessorKey: 'actions',
         header: 'Actions',
+        enableColumnFilter: false,
         cell: ({ row }) => {
             return (
                 <DropdownMenu>

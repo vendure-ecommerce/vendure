@@ -6,15 +6,16 @@ import {
 } from '@dnd-kit/modifiers';
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
 import { Table } from '@tanstack/react-table';
 import { GripVertical, Settings2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button.js';
 import {
+    DropdownMenuSeparator, DropdownMenuTrigger,
     DropdownMenu,
     DropdownMenuCheckboxItem,
-    DropdownMenuContent
+    DropdownMenuContent,
+    DropdownMenuItem
 } from '@/components/ui/dropdown-menu.js';
 import { usePage } from '@/hooks/use-page.js';
 import { useUserSettings } from '@/hooks/use-user-settings.js';
@@ -69,11 +70,18 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
         }
     };
 
+    const handleReset = () => {
+        if (page?.pageId) {
+            setTableSettings(page.pageId, 'columnOrder', undefined);
+            setTableSettings(page.pageId, 'columnVisibility', undefined);
+        }
+    };
+
     return (
         <div className="flex items-center gap-2">
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="ml-auto hidden h-8 lg:flex">
+                    <Button variant="ghost" size="sm" className="ml-auto hidden h-8 lg:flex">
                         <Settings2 />
                         <Trans>Columns</Trans>
                     </Button>
@@ -95,6 +103,8 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
                             ))}
                         </SortableContext>
                     </DndContext>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleReset}>Reset</DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>

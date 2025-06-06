@@ -1,6 +1,6 @@
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AwesomeGraphQLClient } from 'awesome-graphql-client';
-import { DocumentNode, parse, print } from 'graphql';
+import { DocumentNode, print } from 'graphql';
 import { uiConfig } from 'virtual:vendure-ui-config';
 
 const API_URL = uiConfig.apiHost + (uiConfig.apiPort !== 'auto' ? `:${uiConfig.apiPort}` : '') + '/admin-api';
@@ -11,8 +11,17 @@ export type RequestDocument = string | DocumentNode;
 const awesomeClient = new AwesomeGraphQLClient({
     endpoint: API_URL,
     fetch: async (url: string, options: RequestInit = {}) => {
+        // Get the active channel token from localStorage
+        const channelToken = localStorage.getItem('vendure-selected-channel-token');
+        const headers = new Headers(options.headers);
+
+        if (channelToken) {
+            headers.set('vendure-token', channelToken);
+        }
+
         return fetch(url, {
             ...options,
+            headers,
             credentials: 'include',
             mode: 'cors',
         });

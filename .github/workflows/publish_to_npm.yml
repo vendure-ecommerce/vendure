@@ -3,6 +3,7 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -16,7 +17,8 @@ jobs:
         with:
           node-version: '22.x'
           registry-url: 'https://registry.npmjs.org'
-      - run: npm ci
+      # Install  dependencies without modifying package-lock.json file
+      - run: npm install --no-save
       - run: npm run build
       - run: lerna publish from-package --yes
         env:

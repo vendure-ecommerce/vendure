@@ -76,6 +76,21 @@
     grid-column: span 2 / span 2;
 }
 
+@layer utilities {
+    @keyframes rotate {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .animate-rotate {
+        animation: rotate 0.5s linear;
+    }
+}
+
 /* Overrides for the react-grid-layout library */
 .react-grid-item {
     transition: none !important;

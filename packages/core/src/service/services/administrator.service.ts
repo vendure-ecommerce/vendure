@@ -9,6 +9,7 @@ import { In, IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
+import { Instrument } from '../../common';
 import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/utils';
@@ -38,6 +39,7 @@ import { UserService } from './user.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class AdministratorService {
     constructor(
         private connection: TransactionalConnection,

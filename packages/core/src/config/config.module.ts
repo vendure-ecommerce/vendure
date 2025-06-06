@@ -1,6 +1,5 @@
 import { Module, OnApplicationBootstrap, OnApplicationShutdown } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
 import { ConfigurableOperationDef } from '../common/configurable-operation';
 import { Injector } from '../common/injector';
@@ -87,6 +86,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
         } = this.configService.authOptions;
         const { taxZoneStrategy, taxLineCalculationStrategy } = this.configService.taxOptions;
         const { jobQueueStrategy, jobBufferStorageStrategy } = this.configService.jobQueueOptions;
+        const { schedulerStrategy } = this.configService.schedulerOptions;
         const {
             mergeStrategy,
             checkoutMergeStrategy,
@@ -112,7 +112,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
         const { healthChecks, errorHandlers } = this.configService.systemOptions;
         const { assetImportStrategy } = this.configService.importExportOptions;
         const { refundProcess: refundProcess } = this.configService.paymentOptions;
-        const { cacheStrategy } = this.configService.systemOptions;
+        const { cacheStrategy, instrumentationStrategy } = this.configService.systemOptions;
         const entityIdStrategy = entityIdStrategyCurrent ?? entityIdStrategyDeprecated;
         return [
             ...adminAuthenticationStrategy,
@@ -155,7 +155,9 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             guestCheckoutStrategy,
             ...refundProcess,
             cacheStrategy,
+            ...(instrumentationStrategy ? [instrumentationStrategy] : []),
             ...orderInterceptors,
+            schedulerStrategy,
         ];
     }
 

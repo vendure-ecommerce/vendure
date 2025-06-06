@@ -7,14 +7,7 @@ import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { TaxCategorySelector } from '@/components/shared/tax-category-selector.js';
 import { TranslatableFormFieldWrapper } from '@/components/shared/translatable-form-field.js';
 import { Button } from '@/components/ui/button.js';
-import {
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from '@/components/ui/form.js';
+import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from '@/components/ui/form.js';
 import { Input } from '@/components/ui/input.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.js';
 import { Switch } from '@/components/ui/switch.js';
@@ -194,15 +187,15 @@ function ProductVariantDetailPage() {
                                 <FormFieldWrapper
                                     control={form.control}
                                     name={`stockLevels.${index}.stockOnHand`}
+                                    label={<Trans>Stock level</Trans>}
                                     render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>
-                                                <Trans>Stock level</Trans>
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input type="number" {...field} />
-                                            </FormControl>
-                                        </FormItem>
+                                        <Input
+                                            type="number"
+                                            value={field.value}
+                                            onChange={e => {
+                                                field.onChange(e.target.valueAsNumber);
+                                            }}
+                                        />
                                     )}
                                 />
                                 <div>
@@ -216,73 +209,68 @@ function ProductVariantDetailPage() {
                             </Fragment>
                         ))}
 
-                        <FormField
+                        <FormFieldWrapper
                             control={form.control}
                             name="trackInventory"
+                            label={<Trans>Stock levels</Trans>}
                             render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>
-                                        <Trans>Track inventory</Trans>
-                                    </FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value}>
-                                        <FormControl>
-                                            <SelectTrigger className="">
-                                                <SelectValue placeholder="Track inventory" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="INHERIT">
-                                                <Trans>Inherit from global settings</Trans>
-                                            </SelectItem>
-                                            <SelectItem value="TRUE">
-                                                <Trans>Track</Trans>
-                                            </SelectItem>
-                                            <SelectItem value="FALSE">
-                                                <Trans>Do not track</Trans>
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </FormItem>
+                                <Select
+                                    onValueChange={val => {
+                                        if (val) {
+                                            field.onChange(val);
+                                        }
+                                    }}
+                                    value={field.value}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger className="">
+                                            <SelectValue placeholder="Track inventory" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="INHERIT">
+                                            <Trans>Inherit from global settings</Trans>
+                                        </SelectItem>
+                                        <SelectItem value="TRUE">
+                                            <Trans>Track</Trans>
+                                        </SelectItem>
+                                        <SelectItem value="FALSE">
+                                            <Trans>Do not track</Trans>
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
                             )}
                         />
-                        <FormField
+                        <FormFieldWrapper
                             control={form.control}
                             name="outOfStockThreshold"
+                            label={<Trans>Out-of-stock threshold</Trans>}
+                            description={
+                                <Trans>
+                                    Sets the stock level at which this variant is considered to be out of
+                                    stock. Using a negative value enables backorder support.
+                                </Trans>
+                            }
                             render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>
-                                        <Trans>Out-of-stock threshold</Trans>
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input type="number" {...field} />
-                                    </FormControl>
-                                    <FormDescription>
-                                        <Trans>
-                                            Sets the stock level at which this variant is considered to be out
-                                            of stock. Using a negative value enables backorder support.
-                                        </Trans>
-                                    </FormDescription>
-                                </FormItem>
+                                <Input
+                                    type="number"
+                                    value={field.value}
+                                    onChange={e => field.onChange(e.target.valueAsNumber)}
+                                />
                             )}
                         />
-                        <FormField
+                        <FormFieldWrapper
                             control={form.control}
                             name="useGlobalOutOfStockThreshold"
+                            label={<Trans>Use global out-of-stock threshold</Trans>}
+                            description={
+                                <Trans>
+                                    Sets the stock level at which this variant is considered to be out of
+                                    stock. Using a negative value enables backorder support.
+                                </Trans>
+                            }
                             render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>
-                                        <Trans>Use global out-of-stock threshold</Trans>
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                    </FormControl>
-                                    <FormDescription>
-                                        <Trans>
-                                            Sets the stock level at which this variant is considered to be out
-                                            of stock. Using a negative value enables backorder support.
-                                        </Trans>
-                                    </FormDescription>
-                                </FormItem>
+                                <Switch checked={field.value} onCheckedChange={field.onChange} />
                             )}
                         />
                     </DetailFormGrid>

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## StockLevelService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/stock-level.service.ts" sourceLine="22" packageName="@vendure/core" since="2.0.0" />
+<GenerationInfo sourceFile="packages/core/src/service/services/stock-level.service.ts" sourceLine="23" packageName="@vendure/core" since="2.0.0" />
 
 The StockLevelService is responsible for managing the stock levels of ProductVariants.
 Whenever you need to adjust the `stockOnHand` or `stockAllocated` for a ProductVariant,

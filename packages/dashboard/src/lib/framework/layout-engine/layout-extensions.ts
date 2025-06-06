@@ -9,13 +9,13 @@ globalRegistry.register('dashboardPageBlockRegistry', new Map<string, DashboardP
 
 export function registerDashboardActionBarItem(item: DashboardActionBarItem) {
     globalRegistry.set('dashboardActionBarItemRegistry', map => {
-        map.set(item.locationId, [...(map.get(item.locationId) ?? []), item]);
+        map.set(item.pageId, [...(map.get(item.pageId) ?? []), item]);
         return map;
     });
 }
 
-export function getDashboardActionBarItems(locationId: string) {
-    return globalRegistry.get('dashboardActionBarItemRegistry').get(locationId) ?? [];
+export function getDashboardActionBarItems(pageId: string) {
+    return globalRegistry.get('dashboardActionBarItemRegistry').get(pageId) ?? [];
 }
 
 export function registerDashboardPageBlock(block: DashboardPageBlockDefinition) {

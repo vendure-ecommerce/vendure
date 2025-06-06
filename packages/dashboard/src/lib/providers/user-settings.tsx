@@ -1,9 +1,11 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { Theme } from './theme-provider.js';
+import { ColumnFiltersState } from '@tanstack/react-table';
 
 export interface TableSettings {
     columnVisibility?: Record<string, boolean>;
     columnOrder?: string[];
+    columnFilters?: ColumnFiltersState;
     pageSize?: number;
 }
 

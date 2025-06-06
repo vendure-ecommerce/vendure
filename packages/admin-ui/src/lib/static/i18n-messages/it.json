@@ -6,6 +6,7 @@
     "add-asset": "Aggiungi immagine",
     "add-asset-with-count": "Aggiungi {count, plural, =0 {media} one {1 media} other {{count} media}}",
     "assets-selected-count": "{ count } media selezionati",
+    "change-asset": "Cambia media",
     "dimensions": "Dimensioni",
     "focal-point": "Punto focale",
     "notify-create-assets-success": "Creati {count, plural, one {nuovo media} other {{count} nuovi media}}",
@@ -16,6 +17,7 @@
     "select-assets": "Seleziona media",
     "set-as-featured-asset": "Imposta come media in evidenza",
     "set-focal-point": "Imposta punto focale",
+    "size": "Dimensione",
     "source-file": "File sorgente",
     "unset-focal-point": "Deseleziona",
     "update-focal-point": "Aggiorna punto",
@@ -45,6 +47,7 @@
     "profile": "Profilo",
     "promotions": "Promozioni",
     "roles": "Ruoli",
+    "scheduled-tasks": "Attività pianificate",
     "seller-orders": "Ordini venditori",
     "sellers": "Venditori",
     "shipping-methods": "Metodi di spedizione",
@@ -237,12 +240,14 @@
     "delete": "Cancella",
     "description": "Descrizione",
     "details": "Dettagli",
+    "disable": "Disabilitato",
     "disabled": "Disabilitato",
     "discard-changes": "Annulla modifiche",
     "duplicate": "Duplica",
     "edit": "Modifica",
     "edit-field": "Modifica campo",
     "edit-note": "Modifica nota",
+    "enable": "Abilitato",
     "enabled": "Abilitato",
     "end-date": "Data di fine",
     "expand-entries": "Espandi elementi",
@@ -274,7 +279,7 @@
     "name": "Nome",
     "no-alerts": "Nessun avviso",
     "no-bulk-actions-available": "Nessuna azione di massa disponibile",
-    "no-channel-selected": "",
+    "no-channel-selected": "Nessun canale selezionato",
     "no-results": "Nessun risultato",
     "not-applicable": "Non applicabile",
     "not-set": "Non impostato",
@@ -475,6 +480,7 @@
     "year": "anno"
   },
   "editor": {
+    "height": "Altezza",
     "image-alt": "Descrizione (alt)",
     "image-src": "Fonte (indirizzo immagine)",
     "image-title": "Titolo",
@@ -483,7 +489,8 @@
     "link-target": "Destinazione link",
     "link-title": "Titolo link",
     "remove-link": "Rimuovi",
-    "set-link": "Imposta link"
+    "set-link": "Imposta link",
+    "width": "Larghezza"
   },
   "error": {
     "403-forbidden": "Non sei autorizzato ad accedere a \"{ path }\". Potresti non avere sufficienti permessi, oppure la tua sessione è scaduta.",
@@ -528,6 +535,7 @@
     "promotions": "Promozioni",
     "roles": "Ruoli",
     "sales": "Vendite",
+    "scheduled-tasks": "Attività pianificate",
     "sellers": "Venditori",
     "settings": "Impostazioni",
     "shipping-methods": "Metodi di Spedizione",
@@ -643,6 +651,7 @@
     "previous-customer": "Cliente precedente",
     "product-name": "Nome prodotto",
     "product-sku": "SKU",
+    "product-variant": "Variante di prodotto",
     "promotions-applied": "Promozioni applicate",
     "prorated-unit-price": "Prezzo unitario",
     "quantity": "Quantità",
@@ -675,7 +684,7 @@
     "set-billing-address": "Inserisci indirizzo di fatturazioine",
     "set-coupon-codes": "Inserisci i codici coupon",
     "set-customer-for-order": "Seleziona cliente",
-    "set-customer-success": "",
+    "set-customer-success": "Cliente impostato con successo",
     "set-fulfillment-state": "Segna come {state}",
     "set-shipping-address": "Seleziona indirizzo di spedizione",
     "set-shipping-method": "Seleziona metodo di consegna",
@@ -790,6 +799,7 @@
   },
   "system": {
     "all-job-queues": "Tutte le operazioni",
+    "could-not-trigger-task": "Non è stato possibile attivare la task",
     "health-all-systems-up": "I sistemi sono attivi",
     "health-error": "Errore: uno o più sistemi sono inattivi!",
     "health-last-checked": "Ultimo controllo",
@@ -809,6 +819,13 @@
     "job-state-completed": "Completato",
     "job-state-failed": "Fallito",
     "job-state-pending": "In attesa",
-    "job-state-running": "In esecuzione"
+    "job-state-running": "In esecuzione",
+    "last-executed-at": "Ultimo esecuzione",
+    "last-result": "Ultimo risultato",
+    "next-execution-at": "Prossima esecuzione",
+    "run-task": "Esegui task",
+    "schedule": "Programmazione",
+    "task-id": "ID attività",
+    "task-will-be-triggered": "La task sarà eseguita"
   }
 }
