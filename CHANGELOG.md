@@ -1,28 +1,3 @@
-## <small>3.3.3-alpha.0 (2025-06-06)</small>
-
-
-#### Fixes
-
-* **core** Create spans for method calls within same class (#3564) ([a2721d1](https://github.com/vendure-ecommerce/vendure/commit/a2721d1)), closes [#3564](https://github.com/vendure-ecommerce/vendure/issues/3564)
-* **core** Export OrderableAsset (#3571) ([e17aaf6](https://github.com/vendure-ecommerce/vendure/commit/e17aaf6)), closes [#3571](https://github.com/vendure-ecommerce/vendure/issues/3571)
-* **dashboard** Do not throw on compilation errors by default ([b1df849](https://github.com/vendure-ecommerce/vendure/commit/b1df849))
-* **dashboard** Fetch channel info on login ([81f6659](https://github.com/vendure-ecommerce/vendure/commit/81f6659))
-* **dashboard** Fix admin auth & channel selection bugs (#3562) ([3b9c090](https://github.com/vendure-ecommerce/vendure/commit/3b9c090)), closes [#3562](https://github.com/vendure-ecommerce/vendure/issues/3562)
-* **dashboard** Fix default channel list columns ([c552aa5](https://github.com/vendure-ecommerce/vendure/commit/c552aa5))
-* **dashboard** Fix default column order ([1e1dc8e](https://github.com/vendure-ecommerce/vendure/commit/1e1dc8e))
-* **dashboard** Fix default column visibility ([029dd31](https://github.com/vendure-ecommerce/vendure/commit/029dd31))
-* **dashboard** Fix issue with form not being marked dirty until second interaction ([604cf4f](https://github.com/vendure-ecommerce/vendure/commit/604cf4f))
-* **dashboard** Fix loading of server config on page refresh ([66a7977](https://github.com/vendure-ecommerce/vendure/commit/66a7977))
-* **dashboard** Fix positioning of toasts ([38785e7](https://github.com/vendure-ecommerce/vendure/commit/38785e7))
-* **dashboard** Fix render issues for asset & facet blocks ([e14c457](https://github.com/vendure-ecommerce/vendure/commit/e14c457))
-* **dashboard** Improve responsiveness of form state ([21dc4bf](https://github.com/vendure-ecommerce/vendure/commit/21dc4bf))
-* **dashboard** Improve styling of channel switcher ([829513c](https://github.com/vendure-ecommerce/vendure/commit/829513c))
-
-#### Features
-
-* **dashboard** Add reset button for data table columns ([5877ef5](https://github.com/vendure-ecommerce/vendure/commit/5877ef5))
-* **dashboard** Implement adding new variants & product options ([7646a4a](https://github.com/vendure-ecommerce/vendure/commit/7646a4a))
-
 ## <small>3.3.2 (2025-05-28)</small>
 
 #### Fixes
