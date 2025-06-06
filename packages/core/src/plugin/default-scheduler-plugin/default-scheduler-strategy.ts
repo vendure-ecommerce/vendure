@@ -186,11 +186,19 @@ export class DefaultSchedulerStrategy implements SchedulerStrategy {
         if (!this.connection.rawConnection.isInitialized) {
             return;
         }
-        const taskEntities = await this.connection.rawConnection
-            .getRepository(ScheduledTaskRecord)
-            .createQueryBuilder('task')
-            .where('task.manuallyTriggeredAt IS NOT NULL')
-            .getMany();
+        let taskEntities: ScheduledTaskRecord[] = [];
+        try {
+            taskEntities = await this.connection.rawConnection
+                .getRepository(ScheduledTaskRecord)
+                .createQueryBuilder('task')
+                .where('task.manuallyTriggeredAt IS NOT NULL')
+                .getMany();
+        } catch (e) {
+            // This branch can be reached if the connection is closed and then this method
+            // is called on the interval. Usually encountered in tests.
+            const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+            Logger.error(`Error checking for manually triggered tasks: ${errorMessage}`);
+        }
 
         Logger.debug(`Checking for manually triggered tasks: ${taskEntities.length}`);
 
