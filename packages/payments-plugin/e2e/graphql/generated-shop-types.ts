@@ -2441,16 +2441,12 @@ export enum Permission {
     CreateCustomerGroup = 'CreateCustomerGroup',
     /** Grants permission to create Facet */
     CreateFacet = 'CreateFacet',
-    /** Grants permission to create GlobalProductOption */
-    CreateGlobalProductOption = 'CreateGlobalProductOption',
     /** Grants permission to create Order */
     CreateOrder = 'CreateOrder',
     /** Grants permission to create PaymentMethod */
     CreatePaymentMethod = 'CreatePaymentMethod',
     /** Grants permission to create Product */
     CreateProduct = 'CreateProduct',
-    /** Grants permission to create ProductOption */
-    CreateProductOption = 'CreateProductOption',
     /** Grants permission to create Promotion */
     CreatePromotion = 'CreatePromotion',
     /** Grants permission to create Seller */
@@ -2489,16 +2485,12 @@ export enum Permission {
     DeleteCustomerGroup = 'DeleteCustomerGroup',
     /** Grants permission to delete Facet */
     DeleteFacet = 'DeleteFacet',
-    /** Grants permission to delete GlobalProductOption */
-    DeleteGlobalProductOption = 'DeleteGlobalProductOption',
     /** Grants permission to delete Order */
     DeleteOrder = 'DeleteOrder',
     /** Grants permission to delete PaymentMethod */
     DeletePaymentMethod = 'DeletePaymentMethod',
     /** Grants permission to delete Product */
     DeleteProduct = 'DeleteProduct',
-    /** Grants permission to delete ProductOption */
-    DeleteProductOption = 'DeleteProductOption',
     /** Grants permission to delete Promotion */
     DeletePromotion = 'DeletePromotion',
     /** Grants permission to delete Seller */
@@ -2541,16 +2533,12 @@ export enum Permission {
     ReadCustomerGroup = 'ReadCustomerGroup',
     /** Grants permission to read Facet */
     ReadFacet = 'ReadFacet',
-    /** Grants permission to read GlobalProductOption */
-    ReadGlobalProductOption = 'ReadGlobalProductOption',
     /** Grants permission to read Order */
     ReadOrder = 'ReadOrder',
     /** Grants permission to read PaymentMethod */
     ReadPaymentMethod = 'ReadPaymentMethod',
     /** Grants permission to read Product */
     ReadProduct = 'ReadProduct',
-    /** Grants permission to read ProductOption */
-    ReadProductOption = 'ReadProductOption',
     /** Grants permission to read Promotion */
     ReadPromotion = 'ReadPromotion',
     /** Grants permission to read Seller */
@@ -2591,8 +2579,6 @@ export enum Permission {
     UpdateCustomerGroup = 'UpdateCustomerGroup',
     /** Grants permission to update Facet */
     UpdateFacet = 'UpdateFacet',
-    /** Grants permission to update GlobalProductOption */
-    UpdateGlobalProductOption = 'UpdateGlobalProductOption',
     /** Grants permission to update GlobalSettings */
     UpdateGlobalSettings = 'UpdateGlobalSettings',
     /** Grants permission to update Order */
@@ -2601,8 +2587,6 @@ export enum Permission {
     UpdatePaymentMethod = 'UpdatePaymentMethod',
     /** Grants permission to update Product */
     UpdateProduct = 'UpdateProduct',
-    /** Grants permission to update ProductOption */
-    UpdateProductOption = 'UpdateProductOption',
     /** Grants permission to update Promotion */
     UpdatePromotion = 'UpdatePromotion',
     /** Grants permission to update Seller */
@@ -2705,7 +2689,6 @@ export type ProductOptionGroup = Node & {
     code: Scalars['String']['output'];
     createdAt: Scalars['DateTime']['output'];
     customFields?: Maybe<Scalars['JSON']['output']>;
-    global: Scalars['Boolean']['output'];
     id: Scalars['ID']['output'];
     languageCode: LanguageCode;
     name: Scalars['String']['output'];
