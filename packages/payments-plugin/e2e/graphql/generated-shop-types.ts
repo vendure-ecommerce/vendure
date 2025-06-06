@@ -2441,6 +2441,8 @@ export enum Permission {
     CreateCustomerGroup = 'CreateCustomerGroup',
     /** Grants permission to create Facet */
     CreateFacet = 'CreateFacet',
+    /** Grants permission to create GlobalProductOption */
+    CreateGlobalProductOption = 'CreateGlobalProductOption',
     /** Grants permission to create Order */
     CreateOrder = 'CreateOrder',
     /** Grants permission to create PaymentMethod */
@@ -2485,6 +2487,8 @@ export enum Permission {
     DeleteCustomerGroup = 'DeleteCustomerGroup',
     /** Grants permission to delete Facet */
     DeleteFacet = 'DeleteFacet',
+    /** Grants permission to delete GlobalProductOption */
+    DeleteGlobalProductOption = 'DeleteGlobalProductOption',
     /** Grants permission to delete Order */
     DeleteOrder = 'DeleteOrder',
     /** Grants permission to delete PaymentMethod */
@@ -2533,6 +2537,8 @@ export enum Permission {
     ReadCustomerGroup = 'ReadCustomerGroup',
     /** Grants permission to read Facet */
     ReadFacet = 'ReadFacet',
+    /** Grants permission to read GlobalProductOption */
+    ReadGlobalProductOption = 'ReadGlobalProductOption',
     /** Grants permission to read Order */
     ReadOrder = 'ReadOrder',
     /** Grants permission to read PaymentMethod */
@@ -2579,6 +2585,8 @@ export enum Permission {
     UpdateCustomerGroup = 'UpdateCustomerGroup',
     /** Grants permission to update Facet */
     UpdateFacet = 'UpdateFacet',
+    /** Grants permission to update GlobalProductOption */
+    UpdateGlobalProductOption = 'UpdateGlobalProductOption',
     /** Grants permission to update GlobalSettings */
     UpdateGlobalSettings = 'UpdateGlobalSettings',
     /** Grants permission to update Order */
@@ -2689,6 +2697,7 @@ export type ProductOptionGroup = Node & {
     code: Scalars['String']['output'];
     createdAt: Scalars['DateTime']['output'];
     customFields?: Maybe<Scalars['JSON']['output']>;
+    global: Scalars['Boolean']['output'];
     id: Scalars['ID']['output'];
     languageCode: LanguageCode;
     name: Scalars['String']['output'];
@@ -2864,6 +2873,7 @@ export type ProvinceList = PaginatedList & {
 
 export type PublicPaymentMethod = {
     code: Scalars['String']['output'];
+    customFields?: Maybe<Scalars['JSON']['output']>;
     description?: Maybe<Scalars['String']['output']>;
     id: Scalars['ID']['output'];
     name: Scalars['String']['output'];
@@ -2872,6 +2882,7 @@ export type PublicPaymentMethod = {
 
 export type PublicShippingMethod = {
     code: Scalars['String']['output'];
+    customFields?: Maybe<Scalars['JSON']['output']>;
     description?: Maybe<Scalars['String']['output']>;
     id: Scalars['ID']['output'];
     name: Scalars['String']['output'];

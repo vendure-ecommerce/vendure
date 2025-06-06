@@ -63,9 +63,9 @@ export class ProductOptionGroupService {
             .where('group.deletedAt IS NULL')
             .andWhere(
                 new Brackets(qb1 => {
-                    qb1.where('group.global = true').orWhere('channels.id = :channelId', {
-                        channelId: ctx.channelId,
-                    });
+                    qb1.where('group.global = true')
+                        .orWhere('channels.id = :channelId', { channelId: ctx.channelId })
+                        .orWhere('group.productId IS NOT NULL');
                 }),
             );
 
@@ -88,18 +88,17 @@ export class ProductOptionGroupService {
             .setFindOptions({ relations: relations ?? ['options'] });
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
-        qb.leftJoin('group.channels', 'channels')
+        return qb
+            .leftJoin('group.channels', 'channels')
             .where('group.id = :id', { id })
             .andWhere('group.deletedAt IS NULL')
             .andWhere(
                 new Brackets(qb1 => {
-                    qb1.where('group.global = true').orWhere('channels.id = :channelId', {
-                        channelId: ctx.channelId,
-                    });
+                    qb1.where('group.global = true')
+                        .orWhere('channels.id = :channelId', { channelId: ctx.channelId })
+                        .orWhere('group.productId IS NOT NULL');
                 }),
-            );
-
-        return qb
+            )
             .getOne()
             .then(group => (group && this.translator.translate(group, ctx, ['options'])) ?? undefined);
     }
@@ -114,19 +113,18 @@ export class ProductOptionGroupService {
             .setFindOptions({ relations: ['options'] });
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
-        qb.innerJoin('group.products', 'product', 'product.id = :productId', { productId: id })
-            .leftJoin('group.channels', 'channels')
-            .andWhere('group.deletedAt IS NULL')
+        return qb
+            .leftJoin('group.products', 'products')
+            .where('group.deletedAt IS NULL')
             .andWhere(
                 new Brackets(qb1 => {
-                    qb1.where('group.global = true').orWhere('channels.id = :channelId', {
-                        channelId: ctx.channelId,
-                    });
+                    qb1.where('group.productId = :productId', { productId: id }).orWhere(
+                        'products.id = :productId',
+                        { productId: id },
+                    );
                 }),
             )
-            .orderBy('group.id', 'ASC');
-
-        return qb
+            .orderBy('group.id', 'ASC')
             .getMany()
             .then(groups => groups.map(group => this.translator.translate(group, ctx, ['options'])));
     }
@@ -188,8 +186,10 @@ export class ProductOptionGroupService {
                 }
             },
         });
-        for (const option of optionGroup.options) {
-            await this.productOptionService.update(ctx, { id: option.id }, true);
+        if (input.global !== undefined) {
+            for (const option of optionGroup.options) {
+                await this.productOptionService.update(ctx, { id: option.id }, true);
+            }
         }
         await this.customFieldRelationService.updateRelations(ctx, ProductOptionGroup, input, group);
         await this.eventBus.publish(new ProductOptionGroupEvent(ctx, group, 'updated', input));
@@ -202,27 +202,29 @@ export class ProductOptionGroupService {
      * If the ProductOptionGroup's options are in use by any variants, then a soft-delete will be used
      * to preserve referential integrity. Otherwise a hard-delete will be performed.
      */
-    async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
-        const optionGroup = await this.connection
+    async deleteGroupAndOptions(ctx: RequestContext, id: ID, productId?: ID): Promise<DeletionResponse> {
+        const qb = this.connection
             .getRepository(ctx, ProductOptionGroup)
             .createQueryBuilder('group')
-            .setFindOptions({ relations: ['options'] })
+            .leftJoinAndSelect('group.options', 'options')
             .leftJoin('group.channels', 'channels')
             .where('group.id = :id', { id })
-            .andWhere('group.deletedAt IS NULL')
-            .andWhere(
+            .andWhere('group.deletedAt IS NULL');
+        if (productId) {
+            qb.orWhere('group.productId = :productId', { productId });
+        } else {
+            qb.andWhere(
                 new Brackets(qb1 => {
                     qb1.where('group.global = true').orWhere('channels.id = :channelId', {
                         channelId: ctx.channelId,
                     });
                 }),
-            )
-            .getOne();
-
+            );
+        }
+        const optionGroup = await qb.getOne();
         if (!optionGroup) {
             throw new EntityNotFoundError('ProductOptionGroup', id);
         }
-
         if (optionGroup.global) {
             if (!ctx.userHasPermissions([Permission.DeleteGlobalProductOption])) {
                 throw new ForbiddenError(LogLevel.Verbose);
@@ -230,19 +232,18 @@ export class ProductOptionGroupService {
         }
 
         const deletedOptionGroup = new ProductOptionGroup(optionGroup);
-        const inUseByActiveProducts = await this.isInUseByOtherProducts(ctx, optionGroup);
-        if (0 < inUseByActiveProducts) {
+        const isInUse = await this.optionGroupIsInUse(ctx, optionGroup, productId);
+        if (isInUse) {
             return {
                 result: DeletionResult.NOT_DELETED,
                 message: ctx.translate('message.product-option-group-used', {
                     code: optionGroup.code,
-                    count: inUseByActiveProducts,
+                    count: isInUse,
                 }),
             };
         }
 
         const optionsToDelete = optionGroup.options && optionGroup.options.filter(op => !op.deletedAt);
-
         for (const option of optionsToDelete) {
             const { result, message } = await this.productOptionService.delete(ctx, option.id);
             if (result === DeletionResult.NOT_DELETED) {
@@ -270,17 +271,25 @@ export class ProductOptionGroupService {
         };
     }
 
-    private async isInUseByOtherProducts(
-        ctx: RequestContext,
-        productOptionGroup: ProductOptionGroup,
-    ): Promise<number> {
-        return this.connection
-            .getRepository(ctx, Product)
-            .createQueryBuilder('product')
-            .innerJoin('product.optionGroups', 'optionGroup')
-            .where('optionGroup.id = :id', { id: productOptionGroup.id })
-            .andWhere('product.deletedAt IS NULL')
-            .getCount();
+    private optionGroupIsInUse(ctx: RequestContext, optionGroup: ProductOptionGroup, productId?: ID) {
+        if (productId) {
+            return this.connection
+                .getRepository(ctx, Product)
+                .createQueryBuilder('product')
+                .leftJoin('product.optionGroups', 'optionGroup')
+                .where('product.deletedAt IS NULL')
+                .andWhere('optionGroup.id = :id', { id: optionGroup.id })
+                .andWhere('product.id != :productId', { productId })
+                .getCount();
+        } else {
+            return this.connection
+                .getRepository(ctx, Product)
+                .createQueryBuilder('product')
+                .leftJoin('product.productOptionGroups', 'productOptionGroups')
+                .where('product.deletedAt IS NULL')
+                .andWhere('productOptionGroups.id = :id', { id: optionGroup.id })
+                .getCount();
+        }
     }
 
     private async groupOptionsAreInUse(ctx: RequestContext, productOptionGroup: ProductOptionGroup) {

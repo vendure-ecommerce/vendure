@@ -56,9 +56,9 @@ export class ProductOptionService {
             .where('option.deletedAt IS NULL')
             .andWhere(
                 new Brackets(qb1 => {
-                    qb1.where('group.global = true').orWhere('channels.id = :channelId', {
-                        channelId: ctx.channelId,
-                    });
+                    qb1.where('group.global = true')
+                        .orWhere('channels.id = :channelId', { channelId: ctx.channelId })
+                        .orWhere('group.productId IS NOT NULL');
                 }),
             )
             .getMany()
@@ -75,9 +75,9 @@ export class ProductOptionService {
             .andWhere('option.deletedAt IS NULL')
             .andWhere(
                 new Brackets(qb1 => {
-                    qb1.where('group.global = true').orWhere('channels.id = :channelId', {
-                        channelId: ctx.channelId,
-                    });
+                    qb1.where('group.global = true')
+                        .orWhere('channels.id = :channelId', { channelId: ctx.channelId })
+                        .orWhere('group.productId IS NOT NULL');
                 }),
             )
             .getOne()

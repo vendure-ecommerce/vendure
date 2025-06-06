@@ -13,12 +13,12 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { CustomFieldsObject, ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
-import { Brackets, In, IsNull } from 'typeorm';
+import { In, IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { RequestContextCacheService } from '../../cache/request-context-cache.service';
-import { EntityNotFoundError, ForbiddenError, UserInputError } from '../../common/error/errors';
+import { ForbiddenError, UserInputError } from '../../common/error/errors';
 import { Instrument } from '../../common/instrument-decorator';
 import { roundMoney } from '../../common/round-money';
 import { ListQueryOptions } from '../../common/types/common-types';
@@ -907,31 +907,23 @@ export class ProductVariantService {
         optionIds: ID[] = [],
         isUpdateOperation?: boolean,
     ) {
-        const productExists = await this.connection
-            .getRepository(ctx, Product)
-            .createQueryBuilder('product')
-            .where('product.id = :productId', { productId })
-            .getOne();
+        // this could be done with fewer queries but depending on the data, node will crash
+        // https://github.com/vendure-ecommerce/vendure/issues/328
+        const productWithGroups = await this.connection.getEntityOrThrow(ctx, Product, productId, {
+            channelId: ctx.channelId,
+            relations: [
+                'optionGroups',
+                'optionGroups.options',
+                'productOptionGroups',
+                'productOptionGroups.options',
+            ],
+            loadEagerRelations: false,
+        });
 
-        if (!productExists) {
-            throw new EntityNotFoundError('Product', productId);
-        }
-
-        const optionGroups = await this.connection
-            .getRepository(ctx, ProductOptionGroup)
-            .createQueryBuilder('optionGroup')
-            .innerJoin('optionGroup.products', 'product', 'product.id = :productId', { productId })
-            .leftJoinAndSelect('optionGroup.channels', 'channels')
-            .leftJoinAndSelect('optionGroup.options', 'options', 'options.deletedAt IS NULL')
-            .where('optionGroup.deletedAt IS NULL')
-            .andWhere(
-                new Brackets(qb => {
-                    qb.where('optionGroup.global = true').orWhere('channels.id = :channelId', {
-                        channelId: ctx.channelId,
-                    });
-                }),
-            )
-            .getMany();
+        const optionGroups = unique([
+            ...productWithGroups.optionGroups,
+            ...productWithGroups.productOptionGroups,
+        ]);
 
         const activeOptionGroups = optionGroups.filter(group => !group.deletedAt);
 

@@ -37,12 +37,12 @@ export class ProductOption
     @OneToMany(type => ProductOptionTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<ProductOption>>;
 
-    @EntityId()
-    groupId: ID;
-
     @Index()
     @ManyToOne(type => ProductOptionGroup, group => group.options)
     group: ProductOptionGroup;
+
+    @EntityId()
+    groupId: ID;
 
     @ManyToMany(type => ProductVariant, variant => variant.options)
     productVariants: ProductVariant[];

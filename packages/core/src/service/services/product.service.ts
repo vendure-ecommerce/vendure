@@ -16,7 +16,7 @@ import { FindOptionsUtils, In, IsNull } from 'typeorm';
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { ErrorResultUnion } from '../../common/error/error-result';
-import { EntityNotFoundError, UserInputError } from '../../common/error/errors';
+import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
 import { ProductOptionInUseError } from '../../common/error/generated-graphql-admin-errors';
 import { Instrument } from '../../common/instrument-decorator';
 import { ListQueryOptions } from '../../common/types/common-types';
@@ -294,6 +294,21 @@ export class ProductService {
             await this.connection.rollBackTransaction(ctx);
             return variantResult;
         }
+
+        for (const optionGroup of product.optionGroups) {
+            if (!optionGroup.deletedAt) {
+                const groupResult = await this.productOptionGroupService.deleteGroupAndOptions(
+                    ctx,
+                    optionGroup.id,
+                    productId,
+                );
+                if (groupResult.result === DeletionResult.NOT_DELETED) {
+                    await this.connection.rollBackTransaction(ctx);
+                    return groupResult;
+                }
+            }
+        }
+
         return {
             result: DeletionResult.DELETED,
         };
@@ -370,23 +385,28 @@ export class ProductService {
         optionGroupId: ID,
     ): Promise<Translated<Product>> {
         const product = await this.getProductWithOptionGroups(ctx, productId);
-        const optionGroup = await this.productOptionGroupService.findOne(ctx, optionGroupId, []);
+        const optionGroup = await this.productOptionGroupService.findOne(ctx, optionGroupId, ['product']);
         if (!optionGroup) {
             throw new EntityNotFoundError('ProductOptionGroup', optionGroupId);
         }
-        if (Array.isArray(product.optionGroups)) {
-            const exists = product.optionGroups.find(g => idsAreEqual(g.id, optionGroup.id));
-            if (exists) {
-                const translated = this.translator.translate(product, ctx);
-                throw new UserInputError('error.product-option-group-already-assigned', {
-                    groupCode: optionGroup.code,
-                    productName: translated.name,
-                });
-            }
-            product.optionGroups.push(optionGroup);
-        } else {
-            product.optionGroups = [optionGroup];
+
+        if (
+            optionGroup.product ||
+            product?.productOptionGroups?.find(g => idsAreEqual(g.id, optionGroup.id))
+        ) {
+            const translated = this.translator.translate(optionGroup.product, ctx);
+            throw new UserInputError('error.product-option-group-already-assigned', {
+                groupCode: optionGroup.code,
+                productName: translated.name,
+            });
         }
+
+        if (Array.isArray(product.productOptionGroups)) {
+            product.productOptionGroups.push(optionGroup);
+        } else {
+            product.productOptionGroups = [optionGroup];
+        }
+
         await this.connection.getRepository(ctx, Product).save(product, { reload: false });
         await this.eventBus.publish(
             new ProductOptionGroupChangeEvent(ctx, product, optionGroupId, 'assigned'),
@@ -401,7 +421,10 @@ export class ProductService {
         force?: boolean,
     ): Promise<ErrorResultUnion<RemoveOptionGroupFromProductResult, Translated<Product>>> {
         const product = await this.getProductWithOptionGroups(ctx, productId);
-        const optionGroup = product.optionGroups.find(g => idsAreEqual(g.id, optionGroupId));
+        const optionGroup =
+            product.optionGroups.find(g => idsAreEqual(g.id, optionGroupId)) ||
+            product.productOptionGroups.find(g => idsAreEqual(g.id, optionGroupId));
+
         if (!optionGroup) {
             throw new EntityNotFoundError('ProductOptionGroup', optionGroupId);
         }
@@ -430,7 +453,21 @@ export class ProductService {
             }
         }
 
+        if (optionGroup.productId) {
+            const result = await this.productOptionGroupService.deleteGroupAndOptions(
+                ctx,
+                optionGroupId,
+                productId,
+            );
+
+            if (result.result === DeletionResult.NOT_DELETED) {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                throw new InternalServerError(result.message!);
+            }
+        }
+
         product.optionGroups = product.optionGroups.filter(g => g.id !== optionGroupId);
+        product.productOptionGroups = product.productOptionGroups.filter(g => g.id !== optionGroupId);
         await this.connection.getRepository(ctx, Product).save(product, { reload: false });
         await this.eventBus.publish(
             new ProductOptionGroupChangeEvent(ctx, product, optionGroupId, 'removed'),
@@ -442,8 +479,8 @@ export class ProductService {
         const product = await this.connection.getRepository(ctx, Product).findOne({
             relationLoadStrategy: 'query',
             loadEagerRelations: false,
-            where: { id: productId, deletedAt: IsNull() },
-            relations: ['optionGroups', 'variants', 'variants.options'],
+            where: { id: productId, deletedAt: IsNull(), channels: { id: ctx.channelId } },
+            relations: ['optionGroups', 'productOptionGroups', 'variants', 'variants.options'],
         });
         if (!product) {
             throw new EntityNotFoundError('Product', productId);

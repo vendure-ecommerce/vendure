@@ -147,9 +147,10 @@ export const productDuplicator = new EntityDuplicator({
             }
 
             const newOptionGroups = await connection.getRepository(ctx, ProductOptionGroup).find({
-                where: {
-                    products: { id: duplicatedProduct.id },
-                },
+                where: [
+                    { products: { id: duplicatedProduct.id } },
+                    { product: { id: duplicatedProduct.id } },
+                ],
                 relations: {
                     options: true,
                 },

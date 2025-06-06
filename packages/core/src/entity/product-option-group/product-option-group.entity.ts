@@ -1,5 +1,5 @@
-import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
+import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
+import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
@@ -7,6 +7,7 @@ import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
 import { Channel } from '../channel/channel.entity';
 import { CustomProductOptionGroupFields } from '../custom-entity-fields';
+import { EntityId } from '../entity-id.decorator';
 import { ProductOption } from '../product-option/product-option.entity';
 import { Product } from '../product/product.entity';
 
@@ -44,8 +45,14 @@ export class ProductOptionGroup
     @OneToMany(type => ProductOption, option => option.group)
     options: ProductOption[];
 
-    @ManyToMany(type => Product, product => product.optionGroups)
-    @JoinTable()
+    @Index()
+    @ManyToOne(type => Product, product => product.optionGroups)
+    product?: Product;
+
+    @EntityId({ nullable: true })
+    productId?: ID;
+
+    @ManyToMany(type => Product, product => product.productOptionGroups)
     products: Product[];
 
     @ManyToMany(type => Channel, channel => channel.productOptionGroups)
