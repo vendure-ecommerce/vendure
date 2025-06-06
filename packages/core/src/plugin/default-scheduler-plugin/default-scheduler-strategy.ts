@@ -181,6 +181,11 @@ export class DefaultSchedulerStrategy implements SchedulerStrategy {
     }
 
     private async checkForManuallyTriggeredTasks() {
+        // Since this is run on an interval, there is an edge case where, during shutdown,
+        // the connection may not be initialized anymore.
+        if (!this.connection.rawConnection.isInitialized) {
+            return;
+        }
         const taskEntities = await this.connection.rawConnection
             .getRepository(ScheduledTaskRecord)
             .createQueryBuilder('task')
