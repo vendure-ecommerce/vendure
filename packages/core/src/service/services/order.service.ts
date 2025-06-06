@@ -1295,20 +1295,14 @@ export class OrderService {
 
     /**
      * @description
-     * Transitions the given {@link Payment} to a new state. If the order totalWithTax price is then
-     * covered by Payments, the Order state will be automatically transitioned to `PaymentSettled`
-     * or `PaymentAuthorized`.
+     * Transitions the given {@link Payment} to a new state.
      */
     async transitionPaymentToState(
         ctx: RequestContext,
         paymentId: ID,
         state: PaymentState,
     ): Promise<ErrorResultUnion<TransitionPaymentToStateResult, Payment>> {
-        const result = await this.paymentService.transitionToState(ctx, paymentId, state);
-        if (isGraphQlErrorResult(result)) {
-            return result;
-        }
-        return result;
+        return this.paymentService.transitionToState(ctx, paymentId, state);
     }
 
     /**
