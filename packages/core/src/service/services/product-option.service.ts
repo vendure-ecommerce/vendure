@@ -8,7 +8,7 @@ import {
     UpdateProductOptionInput,
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
-import { Brackets } from 'typeorm';
+import { Brackets, FindOptionsUtils } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { EntityNotFoundError, ForbiddenError } from '../../common';
@@ -48,9 +48,10 @@ export class ProductOptionService {
     ) {}
 
     findAll(ctx: RequestContext): Promise<Array<Translated<ProductOption>>> {
-        return this.connection
-            .getRepository(ctx, ProductOption)
-            .createQueryBuilder('option')
+        const qb = this.connection.getRepository(ctx, ProductOption).createQueryBuilder('option');
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
+        return qb
             .leftJoinAndSelect('option.group', 'group')
             .leftJoin('option.channels', 'channels')
             .where('option.deletedAt IS NULL')
@@ -66,9 +67,10 @@ export class ProductOptionService {
     }
 
     findOne(ctx: RequestContext, id: ID): Promise<Translated<ProductOption> | undefined> {
-        return this.connection
-            .getRepository(ctx, ProductOption)
-            .createQueryBuilder('option')
+        const qb = this.connection.getRepository(ctx, ProductOption).createQueryBuilder('option');
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
+        return qb
             .leftJoinAndSelect('option.group', 'group')
             .leftJoin('option.channels', 'channels')
             .where('option.id = :id', { id })
