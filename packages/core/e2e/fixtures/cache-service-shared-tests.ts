@@ -1,5 +1,5 @@
-import { CacheService, Logger } from '@vendure/core';
-import { expect, vi } from 'vitest';
+import { CacheService } from '@vendure/core';
+import { expect } from 'vitest';
 
 import { TestingCacheTtlProvider } from '../../src/cache/cache-ttl-provider';
 
@@ -77,10 +77,15 @@ export async function setsAKeyWithSubSecondTtl(
 
 export async function evictsTheOldestKeyWhenCacheIsFull(cacheService: CacheService) {
     await cacheService.set('key1', 'value1');
+    await new Promise(resolve => setTimeout(resolve, 1));
     await cacheService.set('key2', 'value2');
+    await new Promise(resolve => setTimeout(resolve, 1));
     await cacheService.set('key3', 'value3');
+    await new Promise(resolve => setTimeout(resolve, 1));
     await cacheService.set('key4', 'value4');
+    await new Promise(resolve => setTimeout(resolve, 1));
     await cacheService.set('key5', 'value5');
+    await new Promise(resolve => setTimeout(resolve, 1));
 
     const result1 = await cacheService.get('key1');
     expect(result1).toBe('value1');

@@ -9,7 +9,7 @@ on:
             - 'packages/**'
             - 'package.json'
             - 'package-lock.json'
-            
+
 env:
     CI: true
 
@@ -63,7 +63,7 @@ jobs:
         runs-on: ubuntu-latest
         services:
             mariadb:
-                image: bitnami/mariadb:10.3
+                image: bitnami/mariadb:11.5
                 env:
                     MARIADB_ROOT_USER: vendure
                     MARIADB_ROOT_PASSWORD: password
