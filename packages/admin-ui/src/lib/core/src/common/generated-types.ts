@@ -880,6 +880,7 @@ export type CreateProductInput = {
 export type CreateProductOptionGroupInput = {
   code: Scalars['String']['input'];
   customFields?: InputMaybe<Scalars['JSON']['input']>;
+  global?: InputMaybe<Scalars['Boolean']['input']>;
   options: Array<CreateGroupOptionInput>;
   translations: Array<ProductOptionGroupTranslationInput>;
 };
@@ -2892,6 +2893,8 @@ export type Mutation = {
   deleteProduct: DeletionResponse;
   /** Delete a ProductOption */
   deleteProductOption: DeletionResponse;
+  /** Delete a ProductOptionGroup */
+  deleteProductOptionGroup: DeletionResponse;
   /** Delete a ProductVariant */
   deleteProductVariant: DeletionResponse;
   /** Delete multiple ProductVariants */
@@ -3464,6 +3467,11 @@ export type MutationDeleteProductArgs = {
 
 
 export type MutationDeleteProductOptionArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteProductOptionGroupArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -4541,6 +4549,8 @@ export enum Permission {
   CreateCustomerGroup = 'CreateCustomerGroup',
   /** Grants permission to create Facet */
   CreateFacet = 'CreateFacet',
+  /** Grants permission to create GlobalProductOption */
+  CreateGlobalProductOption = 'CreateGlobalProductOption',
   /** Grants permission to create Order */
   CreateOrder = 'CreateOrder',
   /** Grants permission to create PaymentMethod */
@@ -4585,6 +4595,8 @@ export enum Permission {
   DeleteCustomerGroup = 'DeleteCustomerGroup',
   /** Grants permission to delete Facet */
   DeleteFacet = 'DeleteFacet',
+  /** Grants permission to delete GlobalProductOption */
+  DeleteGlobalProductOption = 'DeleteGlobalProductOption',
   /** Grants permission to delete Order */
   DeleteOrder = 'DeleteOrder',
   /** Grants permission to delete PaymentMethod */
@@ -4634,6 +4646,8 @@ export enum Permission {
   ReadCustomerGroup = 'ReadCustomerGroup',
   /** Grants permission to read Facet */
   ReadFacet = 'ReadFacet',
+  /** Grants permission to read GlobalProductOption */
+  ReadGlobalProductOption = 'ReadGlobalProductOption',
   /** Grants permission to read Order */
   ReadOrder = 'ReadOrder',
   /** Grants permission to read PaymentMethod */
@@ -4680,6 +4694,8 @@ export enum Permission {
   UpdateCustomerGroup = 'UpdateCustomerGroup',
   /** Grants permission to update Facet */
   UpdateFacet = 'UpdateFacet',
+  /** Grants permission to update GlobalProductOption */
+  UpdateGlobalProductOption = 'UpdateGlobalProductOption',
   /** Grants permission to update GlobalSettings */
   UpdateGlobalSettings = 'UpdateGlobalSettings',
   /** Grants permission to update Order */
@@ -4812,6 +4828,7 @@ export type ProductOptionGroup = Node & {
   code: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   customFields?: Maybe<Scalars['JSON']['output']>;
+  global: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
   languageCode: LanguageCode;
   name: Scalars['String']['output'];
@@ -6700,6 +6717,7 @@ export type UpdateProductInput = {
 export type UpdateProductOptionGroupInput = {
   code?: InputMaybe<Scalars['String']['input']>;
   customFields?: InputMaybe<Scalars['JSON']['input']>;
+  global?: InputMaybe<Scalars['Boolean']['input']>;
   id: Scalars['ID']['input'];
   translations?: InputMaybe<Array<ProductOptionGroupTranslationInput>>;
 };
