@@ -198,9 +198,9 @@ export class ProductOptionGroupService {
 
     /**
      * @description
-     * Deletes the ProductOptionGroup and any associated ProductOptions from all products.
-     * If the ProductOptionGroup's options are in use by any variants, then a soft-delete will be used
-     * to preserve referential integrity. Otherwise a hard-delete will be performed.
+     * Deletes the ProductOptionGroup and any associated ProductOptions. If the ProductOptionGroup
+     * is still referenced by a soft-deleted Product, then a soft-delete will be used to preserve
+     * referential integrity. Otherwise a hard-delete will be performed.
      */
     async deleteGroupAndOptions(ctx: RequestContext, id: ID, productId?: ID): Promise<DeletionResponse> {
         const qb = this.connection
@@ -243,7 +243,7 @@ export class ProductOptionGroupService {
             };
         }
 
-        const optionsToDelete = optionGroup.options && optionGroup.options.filter(op => !op.deletedAt);
+        const optionsToDelete = optionGroup.options.filter(op => !op.deletedAt);
         for (const option of optionsToDelete) {
             const { result, message } = await this.productOptionService.delete(ctx, option.id);
             if (result === DeletionResult.NOT_DELETED) {
