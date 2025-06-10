@@ -43,6 +43,16 @@ vendure/
     ├── docs/       # Scripts used to generate documentation markdown from the source
 ```
 
+## Contributing
+
+You are very much welcome to contribute to Vendure, we appreciate every Pull request made, Issue reported or any other form of feedback or input. 
+
+Before getting started, please read our [Contribution Guidelines](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md) first to make most out of your time and ours.
+
+If you're looking for a place to start, check out our [list of issues labeled "contributions welcome"](https://github.com/vendure-ecommerce/vendure/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22contributions%20welcome%22).
+
+Thank you for considering making Vendure better!
+
 ## Development
 
 > [!IMPORTANT]
@@ -155,7 +165,7 @@ This will auto restart when you make changes to the Admin UI.
 ### Testing your changes locally
 
 This example shows how to test changes to the `payments-plugin` package locally. 
-This same workflow can be used for other packages aswell.
+This same workflow can be used for other packages as well.
 
 ### Terminal Setup
 
