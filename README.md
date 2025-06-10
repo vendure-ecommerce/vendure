@@ -85,24 +85,38 @@ docker-compose up -d elasticsearch
 
 ### 4. Populate test data
 
-Vendure uses [TypeORM](http://typeorm.io), and officially supports **MySQL**, **MariaDB**, **PostgreSQL** and **SQLite**.
+Vendure uses [TypeORM](http://typeorm.io) and officially supports **MySQL**, **MariaDB**, **PostgreSQL**, and **SQLite**.
 
 The first step is to populate the dev server with some test data:
 
 ```bash
 cd packages/dev-server
-
-[DB=mysql|postgres|sqlite] npm run populate
+npm run populate
 ```
 
-If you do not specify the `DB` variable, it will default to "mysql". If you specifically want to develop against Postgres,
-you need to run the `postgres_16` container and then run `DB=postgres npm run populate`.
+By default, if you do not specify the `DB` environment variable, it will use **MySQL/MariaDB**.
+
+If you want to develop against **PostgreSQL**:
+
+1. Run the `postgres_16` Docker container.
+2. Create a `.env` file in the root of your project and delcare the variable inside it:
+
+    ```env
+    DB=postgres
+    ```
+
+> [!TIP]
+> You can also override the environment variable directly in the CLI:
+>
+> ```bash
+> DB=postgres npm run populate
+> ```
 
 ### 5. Run the dev server
 
-```
+```bash
 cd packages/dev-server
-[DB=mysql|postgres|sqlite] npm run dev
+npm run dev
 ```
 
 ### Testing admin ui changes locally
