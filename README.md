@@ -109,6 +109,9 @@ By default, if you do not specify the `DB` environment variable, it will use **M
 If you want to develop against **PostgreSQL**:
 
 1. Run the `postgres_16` Docker container.
+```bash
+docker-compose up -d postgres_16
+```
 2. Create a `.env` file in the root of your project (or in the package you're working on) and declare the variable inside it:
     ```env
     DB=postgres
@@ -116,7 +119,7 @@ If you want to develop against **PostgreSQL**:
 3. Now run the npm populate script.
 
 > [!TIP]
-> You can also override the environment variable directly in the CLI:
+> You can also set the environment variable directly in the CLI:
 >
 > ```bash
 > DB=postgres npm run populate
