@@ -62,7 +62,7 @@ The root directory has a `package.json` which contains build-related dependencie
 
 `npm run build`
 
-Packages must be built (i.e. TypeScript compiled, admin ui app built, certain assets copied etc.) before being used.
+Packages must be built (i.e. TypeScript compiled, Admin UI app built, certain assets copied etc.) before being used.
 
 Note that this can take a few minutes.
 
@@ -99,11 +99,11 @@ By default, if you do not specify the `DB` environment variable, it will use **M
 If you want to develop against **PostgreSQL**:
 
 1. Run the `postgres_16` Docker container.
-2. Create a `.env` file in the root of your project and delcare the variable inside it:
-
+2. Create a `.env` file in the root of your project (or in the package you're working on) and declare the variable inside it:
     ```env
     DB=postgres
     ```
+3. Now run the npm populate script.
 
 > [!TIP]
 > You can also override the environment variable directly in the CLI:
@@ -119,57 +119,86 @@ cd packages/dev-server
 npm run dev
 ```
 
-### Testing admin ui changes locally
+This will start the development server, and you should see output in your terminal indicating that the **Vendure development server** has successfully started.
 
-If you are making changes to the admin ui, you need to start the admin ui independent from the dev-server:
+The output lists the available endpoints for the Shop API, Admin API, GraphiQL interfaces, asset server, development mailbox, and the Admin UI, along with their respective URLs.
 
-1. `cd packages/admin-ui`
-2. `npm run dev`
-3. Go to http://localhost:4200 and log in with "superadmin", "superadmin"
+You can now access these services in your browser for development and testing.
 
-This will auto restart when you make changes to the admin ui. You don't need this step when you just use the admin ui just
-to test backend changes.
+Default Admin UI credentials:
+
+Username: `superadmin`
+Password: `superadmin`
+
+
+### Testing Admin UI changes locally
+
+If you are making changes to the Admin UI, you need to start the Admin UI independent from the dev-server:
+
+> [!NOTE] 
+> You don't need this step when you just use the Admin UI just
+to test backend changes since the `dev-server` package ships with a default admin-ui
+
+
+```
+cd packages/admin-ui
+npm run dev
+```
+
+This will run a separate process of admin-ui on "http://localhost:4200", you can login with the default credentials:
+
+Username: `superadmin`
+Password: `superadmin`
+
+This will auto restart when you make changes to the Admin UI. 
 
 ### Testing your changes locally
 
-This example shows how to test changes to the `payments-plugin` package locally, but it will also work for other packages.
+This example shows how to test changes to the `payments-plugin` package locally. 
+This same workflow can be used for other packages aswell.
 
-1. Open 2 terminal windows:
+### Terminal Setup
 
-- Terminal 1 for watching and compiling the changes of the package you are developing
-- Terminal 2 for running the dev-server
+**In 2 separate terminal windows:**
 
-```shell
-# Terminal 1
+**Terminal 1** - Watch changes to the package:
+
+```bash
 cd packages/payments-plugin
 npm run watch
 ```
 
-:warning: If you are developing changes for the `core`package, you also need to watch the `common` package:
+**Terminal 2** - Run the development server:
+```bash
+cd packages/dev-server
+npm run dev
+```
 
+> [!NOTE]
+> After making changes, you need to stop and restart the development server to see your changes.
+
+> [!WARNING] 
+> If you are developing changes for the `core` package, you also need to watch the `common` package:
+
+in the root of the project:
 ```shell
-# Terminal 1
-# Root of the project
 npm run watch:core-common
 ```
 
-2. After the changes in your package are compiled you have to stop and restart the dev-server:
-
-```shell
-# Terminal 2
-cd packages/dev-server
-DB=sqlite npm run dev
-```
-
-3. The dev-server will now have your local changes from the changed package.
+#### Development Workflow Summary
+1. Start your package watcher (npm run watch)
+2. Start the dev-server (npm run dev)
+3. Make code changes
+4. Wait for compilation to complete
+5. Restart dev-server to see changes
 
 ### Interactive debugging
 
-To debug the dev server with VS Code use the include [launch.json](/.vscode/launch.json) configuration.
+To debug the dev server with VS Code use the included [launch.json](/.vscode/launch.json) configuration.
 
 ### Code generation
 
-[graphql-code-generator](https://github.com/dotansimha/graphql-code-generator) is used to automatically create TypeScript interfaces for all GraphQL server operations and admin ui queries. These generated interfaces are used in both the admin ui and the server.
+[graphql-code-generator](https://github.com/dotansimha/graphql-code-generator) is used to automatically create TypeScript interfaces for all GraphQL server operations and Admin UI queries. These generated interfaces are used in both the Admin UI and the server.
 
 Running `npm run codegen` will generate the following files:
 
@@ -183,7 +212,7 @@ Running `npm run codegen` will generate the following files:
 
 #### Server Unit Tests
 
-The core and several other packages have unit tests which are can be run all together by running `npm run test` from the root directory, or individually by running it from the package directory.
+The core and several other packages have unit tests which can be run all together by running `npm run test` from the root directory, or individually by running it from the package directory.
 
 Unit tests are co-located with the files which they test, and have the suffix `.spec.ts`.
 
@@ -213,7 +242,7 @@ Finally, the command will create changelog entries for this release and create a
 
 ##### 2. `git push origin master --follow-tags`
 
-The reason we do not rely on Lerna to push the release to Git is that this repo has a lengthy pre-push hook which runs all tests and builds the admin ui. This long wait then invalidates the npm OTP and the publish will fail. So the solution is to publish first and then push.
+The reason we do not rely on Lerna to push the release to Git is that this repo has a lengthy pre-push hook which runs all tests and builds the Admin UI. This long wait then invalidates the npm OTP and the publish will fail. So the solution is to publish first and then push.
 
 ##### 3. Create a GitHub release
 
