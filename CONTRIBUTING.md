@@ -14,6 +14,31 @@ There are 3 important branches to know about:
 
 Bug fixes should go directly to the `master` branch, from which new patch releases will be made regularly. Periodically, the master branch will be merged into the `minor` and `major` branches.
 
+## Recommended Contribution Workflow
+
+Start by creating a fork of the repository. This can be done by navigating to our [repository](https://github.com/vendure-ecommerce/vendure) and clicking on the fork button. This creates your own copy under your GitHub account.
+
+Then create a local clone of your fork:
+
+```bash
+git clone https://github.com/YOUR-USERNAME/YOUR-VENDURE-FORK.git
+cd YOUR-VENDURE-FORK
+```
+
+Add the [Vendure repository](https://github.com/vendure-ecommerce/vendure)  upstream remote to your clone:
+
+```bash
+git remote add upstream https://github.com/vendure-ecommerce/vendure
+```
+
+This lets you pull updates directly to your local clone.
+
+Create a feature branch:
+
+```bash
+git checkout -b your-new-feature-branch
+```
+
 ## Bug fixes
 
 If you would like to contribute a bug fix, please first create an issue detailing the bug, and indicate that you intend to fix it. When creating commits, please follow the commit message format below.
@@ -93,6 +118,12 @@ Commit messages are linted on commit, so you'll know if your message is not quit
 ## Setting up the dev environment
 
 After cloning the Vendure repo, please follow the [Development guide](https://github.com/vendure-ecommerce/vendure/blob/master/README.md#development) in the README for instructions on how to get up and running locally.
+
+## Contributing to the documentation
+
+For our [documentation](https://docs.vendure.io/), we use [Docusaurus](https://docusaurus.io/).
+
+after cloning our repository according to the [Recommended Contribution Workflow](url) 
 
 ## Contributing Admin UI translations
 
