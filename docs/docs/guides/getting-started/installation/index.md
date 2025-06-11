@@ -13,7 +13,7 @@ import TabItem from '@theme/TabItem';
 ### Optional
 * [Docker Desktop](https://www.docker.com/products/docker-desktop/): If you want to use the quick start with Postgres, you must have Docker Desktop installed. If you do not have Docker Desktop installed 
   then SQLite will be used for your database.
-* If you want to use an existing MySQL, MariaDB, or Postgres server as your data store, then you'll need an instance available locally. However, **if you are just testing out Vendure, we recommend the quick start flow, which handles the database for you**.
+* If you want to use an existing MySQL, MariaDB, or Postgres server as your data store, then you'll need an instance available locally. However, **if you are just testing out Vendure, we recommend the quick start option, which handles the database for you**.
 
 ## @vendure/create
 
@@ -40,7 +40,19 @@ all the configuration for you. If you have Docker Desktop installed, it will cre
 └
 ```
 
-And that's it! After a minute or two you'll have a fully-functional Vendure server running locally.
+And that's it! After a minute or two you'll have a **fully-functional Vendure server** installed locally.
+
+Once the installation is done, your terminal will output a message indicating a successful installation with:
+- The URL to access the **Admin UI**
+- Your admin log-in credentials.
+- The project file path
+
+Run the following commands to start the server, replace `my-shop` with the name of your project:
+
+```bash
+cd my-shop
+npm run dev
+```
 
 ### Manual Configuration
 
