@@ -279,6 +279,7 @@ All custom fields share some common properties:
 - [`unique`](#unique)
 - [`validate`](#validate)
 - [`requiresPermission`](#requirespermission)
+- [`deprecated`](#deprecated)
 
 #### name
 
@@ -651,6 +652,46 @@ a custom [field resolver](/guides/developer-guide/extend-graphql-api/#add-fields
 the entity's custom field value if the current customer meets the requirements.
 
 :::
+
+#### deprecated
+
+<CustomFieldProperty required={false} type="boolean | string" />
+
+Marks the custom field as deprecated in the GraphQL schema. When set to `true`, the field will be marked with the `@deprecated` directive. When set to a string, that string will be used as the deprecation reason.
+
+This is useful for API evolution - you can mark fields as deprecated to signal to API consumers that they should migrate to newer alternatives, while still maintaining backward compatibility.
+
+```ts title="src/vendure-config.ts"
+const config = {
+    // ...
+    customFields: {
+        Product: [
+            {
+                name: 'oldField',
+                type: 'string',
+                // highlight-next-line
+                deprecated: true,
+            },
+            {
+                name: 'legacyUrl',
+                type: 'string',
+                // highlight-next-line
+                deprecated: 'Use the new infoUrl field instead',
+            },
+        ]
+    }
+};
+```
+
+When querying the GraphQL schema, deprecated fields will be marked accordingly:
+
+```graphql
+type ProductCustomFields {
+    oldField: String @deprecated
+    legacyUrl: String @deprecated(reason: "Use the new infoUrl field instead")
+    infoUrl: String
+}
+```
 
 ### Properties for `string` fields
 
