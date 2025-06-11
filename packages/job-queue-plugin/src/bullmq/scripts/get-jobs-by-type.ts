@@ -62,19 +62,8 @@ if filterName ~= "" then
         redis.log(redis.LOG_NOTICE, 'Found indexed key, counting jobs')
         totalResults = countJobsInSortedSet(indexedKey)
     else
-        redis.log(redis.LOG_NOTICE, 'Indexed key not found, counting from all states')
-        -- Count each type
-        for i = 4, #ARGV do
-            local key = prefix .. ARGV[i]
-            local keyType = rcall('TYPE', key).ok
-            redis.log(redis.LOG_NOTICE, 'Counting key: ' .. key .. ' of type: ' .. keyType)
-            
-            if keyType == 'zset' then
-                totalResults = totalResults + countJobsInSortedSet(key)
-            elseif keyType == 'list' then
-                totalResults = totalResults + countJobsInList(key)
-            end
-        end
+        redis.log(redis.LOG_NOTICE, 'Indexed key not found, returning empty result')
+        return {0, {}}
     end
 else
     -- No filter, count all types
@@ -97,21 +86,8 @@ if filterName ~= "" then
     if rcall('EXISTS', indexedKey) == 1 then
         getJobsFromSortedSet(indexedKey, rangeStart, rangeEnd)
     else
-        -- Process each type
-        for i = 4, #ARGV do
-            local key = prefix .. ARGV[i]
-            local keyType = rcall('TYPE', key).ok
-            
-            if keyType == 'zset' then
-                getJobsFromSortedSet(key, rangeStart, rangeEnd)
-            elseif keyType == 'list' then
-                getJobsFromList(key, rangeStart, rangeEnd)
-            end
-            
-            if #results >= rangeEnd then
-                break
-            end
-        end
+        -- If no indexed key exists for the filter name, return empty results
+        return {0, {}}
     end
 else
     -- No filter, process all types

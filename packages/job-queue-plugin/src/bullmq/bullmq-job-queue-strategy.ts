@@ -24,13 +24,18 @@ import { Cluster, Redis, RedisOptions } from 'ioredis';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 
-import { ALL_JOB_TYPES, BULLMQ_PLUGIN_OPTIONS, loggerCtx } from './constants';
+import {
+    ALL_JOB_TYPES,
+    BULLMQ_PLUGIN_OPTIONS,
+    DEFAULT_CONCURRENCY,
+    loggerCtx,
+    QUEUE_NAME,
+} from './constants';
+import { IndexedSetService } from './indexed-set.service';
 import { RedisHealthIndicator } from './redis-health-indicator';
 import { getJobsByType } from './scripts/get-jobs-by-type';
 import { BullMQPluginOptions, CustomScriptDefinition } from './types';
-
-const QUEUE_NAME = 'vendure-job-queue';
-const DEFAULT_CONCURRENCY = 3;
+import { getPrefix } from './utils';
 
 /**
  * @description
@@ -46,6 +51,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     private worker: Worker;
     private workerProcessor: Processor;
     private options: BullMQPluginOptions;
+    private indexedSetService: IndexedSetService;
     private readonly queueNameProcessFnMap = new Map<string, (job: Job) => Promise<any>>();
     private cancellationSub: Redis;
     private readonly cancelRunningJob$ = new Subject<string>();
@@ -54,6 +60,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
 
     async init(injector: Injector): Promise<void> {
         const options = injector.get<BullMQPluginOptions>(BULLMQ_PLUGIN_OPTIONS);
+        this.indexedSetService = injector.get(IndexedSetService);
         this.options = {
             ...options,
             workerOptions: {
@@ -138,6 +145,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         };
         // Subscription-mode Redis connection for the cancellation messages
         this.cancellationSub = new Redis(this.connectionOptions as RedisOptions);
+        this.indexedSetService.register(this.redisConnection, this.queue);
     }
 
     async destroy() {
@@ -157,17 +165,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             ...customJobOptions,
         });
 
-        // Add to our indexed structure
-        const prefix = this.options.workerOptions?.prefix ?? 'bull';
-        const queuePrefix = `${prefix}:${this.queue.name}:`;
-        const jobId = bullJob.id;
-        const timestamp = Date.now();
-
-        // Add to the queue-specific sorted set
-        const indexedKey = `${queuePrefix}queue:${job.queueName}`;
-        Logger.debug(`Adding job ${jobId as string} to indexed key: ${indexedKey}`, loggerCtx);
-        await (this.redisConnection as any).zadd(indexedKey, timestamp, jobId);
-
+        void this.indexedSetService.add(bullJob);
         return this.createVendureJob(bullJob);
     }
 
@@ -230,14 +228,14 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         let totalItems = 0;
 
         try {
-            // console.time('getJobsByType');
+            console.time('getJobsByType');
             const [total, jobIds] = await this.callCustomScript(getJobsByType, [
                 skip,
                 take,
                 options?.filter?.queueName?.eq ?? '',
                 ...jobTypes,
             ]);
-            // console.timeEnd('getJobsByType');
+            console.timeEnd('getJobsByType');
             items = (
                 await Promise.all(
                     jobIds.map(id => {
@@ -418,7 +416,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         args: Args,
     ): Promise<T> {
         return new Promise<T>((resolve, reject) => {
-            const prefix = this.options.workerOptions?.prefix ?? 'bull';
+            const prefix = getPrefix(this.options);
             (this.redisConnection as any)[scriptDef.name](
                 `${prefix}:${this.queue.name}:`,
                 ...args,

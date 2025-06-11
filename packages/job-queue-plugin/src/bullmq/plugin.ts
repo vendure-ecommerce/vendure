@@ -6,6 +6,8 @@ import { RedisHealthCheckStrategy } from './redis-health-check-strategy';
 import { RedisHealthIndicator } from './redis-health-indicator';
 import { RedisJobBufferStorageStrategy } from './redis-job-buffer-storage-strategy';
 import { BullMQPluginOptions } from './types';
+import { cleanIndexedSetsTask } from './clean-indexed-sets-task';
+import { IndexedSetService } from './indexed-set.service';
 
 /**
  * @description
@@ -193,11 +195,13 @@ import { BullMQPluginOptions } from './types';
         config.jobQueueOptions.jobQueueStrategy = new BullMQJobQueueStrategy();
         config.jobQueueOptions.jobBufferStorageStrategy = new RedisJobBufferStorageStrategy();
         config.systemOptions.healthChecks.push(new RedisHealthCheckStrategy());
+        config.schedulerOptions.tasks.push(cleanIndexedSetsTask);
         return config;
     },
     providers: [
         { provide: BULLMQ_PLUGIN_OPTIONS, useFactory: () => BullMQJobQueuePlugin.options },
         RedisHealthIndicator,
+        IndexedSetService,
     ],
     compatibility: '^3.0.0',
 })

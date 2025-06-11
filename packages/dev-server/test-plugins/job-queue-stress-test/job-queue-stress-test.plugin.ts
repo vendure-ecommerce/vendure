@@ -21,7 +21,7 @@ class TestQueueService implements OnModuleInit {
     }
 
     addJob(message: string) {
-        return this.jobQueue.add({ message }, { retries: 2 });
+        return this.jobQueue.add({ message });
     }
 
     async generateJobs(count: number) {
