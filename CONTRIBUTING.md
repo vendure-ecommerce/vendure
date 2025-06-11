@@ -12,15 +12,15 @@ There are 3 important branches to know about:
 * `minor` - a branch for commits which introduce new features which would go in the next [SemVer minor](https://semver.org/) release.
 * `major` - a branch for commits which introduce breaking changes which would go in the next [SemVer major](https://semver.org/) release.
 
-Bug fixes should go direct in the `master` branch, from which new patch releases will be made regularly. Periodically the master branch will be merged into the `minor` and `major` branches.
+Bug fixes should go directly to the `master` branch, from which new patch releases will be made regularly. Periodically, the master branch will be merged into the `minor` and `major` branches.
 
 ## Bug fixes
 
-If you would like to contribute a bugfix, please first create an issue detailing the bug, and indicate that you intend to fix it. When creating commits, please follow the commit message format below.
+If you would like to contribute a bug fix, please first create an issue detailing the bug, and indicate that you intend to fix it. When creating commits, please follow the commit message format below.
 
 ## New features
 
-Again, please create a feature request detailing the functionality you intend to add, and state that you would like to implement it. When creating commits, please follow the commit message format below. New feature pull requests should be made against the `minor` branch.
+Similarly, please create a feature request detailing the functionality you intend to add, and state that you would like to implement it. When creating commits, please follow the commit message format below. Submit new feature pull requests to the `minor` branch.
 
 When adding new public APIs to support your new feature, add a `@since 1.2.0` tag (where "1.2.0" corresponds to what will be the next minor version) to the doc block. This will let readers of the documentation know the version in which the API was introduced. See the [docs readme](./docs/README.md) for more details on the valid docs tags.
 
@@ -106,7 +106,7 @@ This is done via an automation bot which will prompt you to sign the CLA when yo
 
 ## Issue Triage Guidelines
 
-This sections is meant for maintainers to help triage issues.
+This section is meant for maintainers to help triage issues.
 
 ### Quality Control
 
