@@ -11,13 +11,13 @@ import {
     PaginatedList,
 } from '@vendure/core';
 import Bull, {
+    Job as BullJob,
     ConnectionOptions,
     JobType,
     Processor,
     Queue,
     Worker,
     WorkerOptions,
-    Job as BullJob,
 } from 'bullmq';
 import { EventEmitter } from 'events';
 import { Cluster, Redis, RedisOptions } from 'ioredis';
@@ -156,6 +156,18 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             backoff: typeof backoff === 'number' || 'type' in backoff ? backoff : undefined,
             ...customJobOptions,
         });
+
+        // Add to our indexed structure
+        const prefix = this.options.workerOptions?.prefix ?? 'bull';
+        const queuePrefix = `${prefix}:${this.queue.name}:`;
+        const jobId = bullJob.id;
+        const timestamp = Date.now();
+
+        // Add to the queue-specific sorted set
+        const indexedKey = `${queuePrefix}queue:${job.queueName}`;
+        Logger.debug(`Adding job ${jobId as string} to indexed key: ${indexedKey}`, loggerCtx);
+        await (this.redisConnection as any).zadd(indexedKey, timestamp, jobId);
+
         return this.createVendureJob(bullJob);
     }
 
@@ -218,12 +230,14 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         let totalItems = 0;
 
         try {
+            // console.time('getJobsByType');
             const [total, jobIds] = await this.callCustomScript(getJobsByType, [
                 skip,
                 take,
                 options?.filter?.queueName?.eq ?? '',
                 ...jobTypes,
             ]);
+            // console.timeEnd('getJobsByType');
             items = (
                 await Promise.all(
                     jobIds.map(id => {

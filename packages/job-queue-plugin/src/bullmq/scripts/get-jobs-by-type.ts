@@ -2,7 +2,7 @@
 import { CustomScriptDefinition } from '../types';
 
 const script = `--[[
-  Get job ids per provided states and filter by name
+  Get job ids per provided states and filter by name - Optimized version using indexed structure
     Input:
       KEYS[1]    'prefix'
       ARGV[1]    start
@@ -16,95 +16,122 @@ local rangeStart = tonumber(ARGV[1])
 local rangeEnd = tonumber(ARGV[2])
 local filterName = ARGV[3]
 local results = {}
+local totalResults = 0
 
-local targetSets = {}
+redis.log(redis.LOG_NOTICE, 'Filter name: "' .. filterName .. '"')
+redis.log(redis.LOG_NOTICE, 'Filter name length: ' .. tostring(#filterName))
 
--- Initialize an empty array to hold the sets to unionize. The "completed" and "failed" lists
--- are sorted sets
-local setsToUnionize = {}
-local typesInUnion = {}
+-- Function to count jobs in a sorted set
+local function countJobsInSortedSet(key)
+    return rcall('ZCARD', key) or 0
+end
 
--- Initialize an empty array to hold lists to include. The "active" and "wait" lists are
--- regular lists
-local listsToInclude = {}
+-- Function to count jobs in a list
+local function countJobsInList(key)
+    return rcall('LLEN', key) or 0
+end
 
-
--- Iterate through ARGV starting from the first element (ARGV[1]) up to the end
-for i = 4, #ARGV do
-    local setKey = prefix .. ARGV[i]
-
-    -- Check if the setKey is valid (e.g., it exists and is a sorted set)
-    local targetExists = redis.call('EXISTS', setKey)
-    local listType = redis.call('TYPE', setKey).ok
-
-    if targetExists == 1 and listType == 'zset' then
-        -- Add the valid set to the array
-        table.insert(setsToUnionize, setKey)
-        table.insert(typesInUnion, ARGV[i])
+-- Function to get jobs from a sorted set
+local function getJobsFromSortedSet(key, start, count)
+    local items = rcall('ZREVRANGE', key, start, start + count - 1)
+    if items then
+        for _, jobId in ipairs(items) do
+            table.insert(results, jobId)
+        end
     end
-    if targetExists == 1 and listType == 'list' then
-        -- Add the valid set to the array
-        table.insert(listsToInclude, setKey)
-        table.insert(typesInUnion, ARGV[i])
+    return #items
+end
+
+-- Function to get jobs from a list
+local function getJobsFromList(key, start, count)
+    local items = rcall('LRANGE', key, start, start + count - 1)
+    if items then
+        for _, jobId in ipairs(items) do
+            table.insert(results, jobId)
+        end
     end
+    return #items
 end
 
--- Define the destination key for the concatenated sorted set
-local tempSortedSetUnionKey = prefix .. 'union:' .. table.concat(typesInUnion, ':');
-
-if #listsToInclude  == 0 and #setsToUnionize == 0 then
-    return {0, {}}
-end
-
--- Check if there are valid sets to unionize
-if #setsToUnionize > 0 then
-    -- Use ZUNIONSTORE to concatenate the valid sorted sets into the destination key
-    local numSets = #setsToUnionize
-    redis.call('ZUNIONSTORE', tempSortedSetUnionKey, numSets, unpack(setsToUnionize))
-end
-
-local originalResults = rcall("ZREVRANGE", tempSortedSetUnionKey, 0, -1)
-
-
-if #listsToInclude > 0 then
-    for _, listKey in ipairs(listsToInclude) do
-        local list = rcall("LRANGE", listKey, 0, -1)
-        for _, jobId in ipairs(list) do
-            table.insert(originalResults, jobId)
+-- First count total jobs
+if filterName ~= "" then
+    local indexedKey = prefix .. 'queue:' .. filterName
+    redis.log(redis.LOG_NOTICE, 'Checking indexed key: ' .. indexedKey)
+    redis.log(redis.LOG_NOTICE, 'Indexed key exists: ' .. tostring(rcall('EXISTS', indexedKey)))
+    if rcall('EXISTS', indexedKey) == 1 then
+        redis.log(redis.LOG_NOTICE, 'Found indexed key, counting jobs')
+        totalResults = countJobsInSortedSet(indexedKey)
+    else
+        redis.log(redis.LOG_NOTICE, 'Indexed key not found, counting from all states')
+        -- Count each type
+        for i = 4, #ARGV do
+            local key = prefix .. ARGV[i]
+            local keyType = rcall('TYPE', key).ok
+            redis.log(redis.LOG_NOTICE, 'Counting key: ' .. key .. ' of type: ' .. keyType)
+            
+            if keyType == 'zset' then
+                totalResults = totalResults + countJobsInSortedSet(key)
+            elseif keyType == 'list' then
+                totalResults = totalResults + countJobsInList(key)
+            end
+        end
+    end
+else
+    -- No filter, count all types
+    for i = 4, #ARGV do
+        local key = prefix .. ARGV[i]
+        local keyType = rcall('TYPE', key).ok
+        redis.log(redis.LOG_NOTICE, 'Counting key: ' .. key .. ' of type: ' .. keyType)
+        
+        if keyType == 'zset' then
+            totalResults = totalResults + countJobsInSortedSet(key)
+        elseif keyType == 'list' then
+            totalResults = totalResults + countJobsInList(key)
         end
     end
 end
 
-
--- Define a custom comparison function for sorting in descending order
-local function compareDescending(a, b)
-    return tonumber(a) > tonumber(b)
+-- Now collect results for the requested page
+if filterName ~= "" then
+    local indexedKey = prefix .. 'queue:' .. filterName
+    if rcall('EXISTS', indexedKey) == 1 then
+        getJobsFromSortedSet(indexedKey, rangeStart, rangeEnd)
+    else
+        -- Process each type
+        for i = 4, #ARGV do
+            local key = prefix .. ARGV[i]
+            local keyType = rcall('TYPE', key).ok
+            
+            if keyType == 'zset' then
+                getJobsFromSortedSet(key, rangeStart, rangeEnd)
+            elseif keyType == 'list' then
+                getJobsFromList(key, rangeStart, rangeEnd)
+            end
+            
+            if #results >= rangeEnd then
+                break
+            end
+        end
+    end
+else
+    -- No filter, process all types
+    for i = 4, #ARGV do
+        local key = prefix .. ARGV[i]
+        local keyType = rcall('TYPE', key).ok
+        
+        if keyType == 'zset' then
+            getJobsFromSortedSet(key, rangeStart, rangeEnd)
+        elseif keyType == 'list' then
+            getJobsFromList(key, rangeStart, rangeEnd)
+        end
+        
+        if #results >= rangeEnd then
+            break
+        end
+    end
 end
 
--- Sort the table in descending order
-table.sort(originalResults, compareDescending)
-
-local filteredResults = {}
-local totalResults = 0
-
-for _, job in ipairs(originalResults) do
-  local jobName = rcall("HGET", prefix .. job, "name");
-  if filterName ~= "" and jobName == filterName then
-    if rangeStart <= totalResults and #filteredResults < rangeEnd then
-      table.insert(filteredResults, job)
-    end
-    totalResults = totalResults + 1
-  elseif filterName == "" then
-    if rangeStart <= totalResults and #filteredResults < rangeEnd then
-      table.insert(filteredResults, job)
-    end
-    totalResults = totalResults + 1
-  end
-end
-
-rcall("DEL", tempSortedSetUnionKey)
-
-return {totalResults, filteredResults}
+return {totalResults, results}
 `;
 
 export const getJobsByType: CustomScriptDefinition<
