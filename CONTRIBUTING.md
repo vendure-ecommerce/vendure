@@ -14,30 +14,85 @@ There are 3 important branches to know about:
 
 Bug fixes should go directly to the `master` branch, from which new patch releases will be made regularly. Periodically, the master branch will be merged into the `minor` and `major` branches.
 
-## Recommended Contribution Workflow
+## Suggested Contribution Workflow
+
+### Creating a fork:
 
 Start by creating a fork of the repository. This can be done by navigating to our [repository](https://github.com/vendure-ecommerce/vendure) and clicking on the fork button. This creates your own copy under your GitHub account.
 
-Then create a local clone of your fork:
+### Cloning locally: 
+Run the following commands to create a local clone of the repository files, where you can safely develop and test out your changes:
 
 ```bash
 git clone https://github.com/YOUR-USERNAME/YOUR-VENDURE-FORK.git
 cd YOUR-VENDURE-FORK
 ```
 
-Add the [Vendure repository](https://github.com/vendure-ecommerce/vendure)  upstream remote to your clone:
+Add the [Vendure repository](https://github.com/vendure-ecommerce/vendure) as an upstream remote to your clone:
 
 ```bash
 git remote add upstream https://github.com/vendure-ecommerce/vendure
 ```
 
-This lets you pull updates directly to your local clone.
+This lets you pull updates from the original repository directly to your local clone.
 
-Create a feature branch:
+### Staying up to date
+> [!TIP]
+> It is a good idea to regularly update your local and forked repositories. You can do so by running the following commands:
+> ```bash
+> git fetch upstream
+> git checkout master
+> ```
+> Now you're on the master branch of your local repository, and git "knows" whether there are differences between your master branch and the upstream branch.
+>
+> to update your local and forked remote repositories: 
+> ```bash
+> git merge upstream/master
+> git push origin master
+> ```
+
+### Create a new branch:
+
+Start implementing your changes inside this branch. Make as many relevant commits as you need, but follow our [Commit message format](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#commit-message-format).
 
 ```bash
-git checkout -b your-new-feature-branch
+git checkout -b your-new-branch
 ```
+
+### Developing
+
+Follow our [development guide](https://github.com/vendure-ecommerce/vendure#development) to make set have a properly set up development environment.
+
+After implementing your changes, stage the changes and commit them:
+```bash
+git add .
+git commit -m type(scope): Commit message in present tense
+```
+
+### Creating a pull request
+
+> [!TIP]
+> Now would be a good time to [update](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#staying-up-to-date) your local and remote repositories.
+
+Make sure you have your new branch checked out and rebase it onto your up-to-date master branch:
+```bash
+git checkout your-new-branch
+git rebase master
+```
+Now push your changes to your forked repository:
+```bash
+git push origin your-new-branch
+```
+
+You can now create a pull request. If you prefer using the [GitHub CLI](https://cli.github.com/), run the following command:
+```bash
+gh pr create
+```
+and follow the prompts, this will automatically use our [pull request template](https://github.com/vendure-ecommerce/vendure/blob/master/.github/pull_request_template.md).
+
+Alternatively, navigate to your forked repository on GitHub and create a pull request from there.
+
+Well done! now comes our part, we will review your pull request and either merge it or provide you with feedback on what we would like to see changed.
 
 ## Bug fixes
 
@@ -123,7 +178,7 @@ After cloning the Vendure repo, please follow the [Development guide](https://gi
 
 For our [documentation](https://docs.vendure.io/), we use [Docusaurus](https://docusaurus.io/).
 
-after cloning our repository according to the [Recommended Contribution Workflow](url) 
+after cloning our repository according to the [Suggested Contribution Workflow](url) 
 
 ## Contributing Admin UI translations
 
