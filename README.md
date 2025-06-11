@@ -45,9 +45,9 @@ vendure/
 
 ## Contributing
 
-You are very much welcome to contribute to Vendure, we appreciate every Pull request made, Issue reported or any other form of feedback or input. 
+You are very much welcome to contribute to Vendure, we appreciate every pull request made, issue reported or any other form of feedback or input. 
 
-Before getting started, please read our [Contribution Guidelines](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md) first to make most out of your time and ours.
+Before getting started, please read our [Contribution Guidelines](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md) first to make the most out of your time and ours.
 
 If you're looking for a place to start, check out our [list of issues labeled "contributions welcome"](https://github.com/vendure-ecommerce/vendure/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22contributions%20welcome%22).
 
@@ -112,7 +112,8 @@ If you want to develop against **PostgreSQL**:
 ```bash
 docker-compose up -d postgres_16
 ```
-2. Create a `.env` file in the root of your project (or in the package you're working on) and declare the variable inside it:
+2. Create a .env file in `/packages/dev-server` and declare the `DB` variable inside it:
+
     ```env
     DB=postgres
     ```
