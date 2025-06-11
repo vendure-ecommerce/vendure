@@ -619,7 +619,7 @@ function mapToFields(
             }
             const name = nameFn ? nameFn(field) : field.name;
             const deprecationDirective = getDeprecationDirective(field);
-            return `${name}: ${type}${deprecationDirective}`;
+            return `${name}: ${type} ${deprecationDirective}`;
         })
         .filter(x => x != null);
     return res.join('\n');
@@ -759,8 +759,8 @@ function getDeprecationDirective(field: CustomFieldConfig): string {
     if (typeof field.deprecated === 'string') {
         // Escape quotes in the deprecation reason
         const escapedReason = field.deprecated.replace(/"/g, '\\"');
-        return ` @deprecated(reason: "${escapedReason}")`;
+        return `@deprecated(reason: "${escapedReason}")`;
     }
 
-    return ' @deprecated';
+    return '@deprecated';
 }
