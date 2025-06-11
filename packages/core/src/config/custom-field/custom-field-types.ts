@@ -69,7 +69,7 @@ export type BaseTypedCustomFieldConfig<T extends CustomFieldType, C extends Cust
      * the field will be marked as deprecated in the GraphQL schema.
      * If a string is provided, it will be used as the deprecation reason.
      *
-     * @since 3.1.0
+     * @since 3.4.0
      */
     deprecated?: boolean | string;
     ui?: UiComponentConfig<DefaultFormComponentId | string>;
