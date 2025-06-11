@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { INestApplication } from '@nestjs/common';
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
-import { bootstrap, VendureConfig } from '@vendure/core';
+import { bootstrap, DefaultLogger, LogLevel, VendureConfig } from '@vendure/core';
 import fs from 'fs';
 import { getIntrospectionQuery } from 'graphql';
 import http from 'http';
@@ -28,6 +28,7 @@ export const config: VendureConfig = {
         paymentMethodHandlers: [],
     },
     plugins: [AdminUiPlugin],
+    logger: new DefaultLogger({ level: LogLevel.Verbose }),
 };
 
 let appPromise: Promise<INestApplication>;
