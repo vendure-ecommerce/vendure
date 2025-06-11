@@ -67,6 +67,7 @@ export const productDuplicator = new EntityDuplicator({
                 optionGroups: {
                     options: true,
                 },
+                productOptionGroups: true,
             },
         });
         const translations: ProductTranslationInput[] = product.translations.map(translation => {
@@ -145,7 +146,11 @@ export const productDuplicator = new EntityDuplicator({
                     );
                 }
             }
-
+            if (product.productOptionGroups && product.productOptionGroups.length) {
+                for (const optionGroup of product.productOptionGroups) {
+                    await productService.addOptionGroupToProduct(ctx, duplicatedProduct.id, optionGroup.id);
+                }
+            }
             const newOptionGroups = await connection.getRepository(ctx, ProductOptionGroup).find({
                 where: [
                     { products: { id: duplicatedProduct.id } },
@@ -155,7 +160,6 @@ export const productDuplicator = new EntityDuplicator({
                     options: true,
                 },
             });
-
             const variantInput: CreateProductVariantInput[] = productVariants.map((variant, i) => {
                 const options = variant.options.map(existingOption => {
                     const newOption = newOptionGroups
