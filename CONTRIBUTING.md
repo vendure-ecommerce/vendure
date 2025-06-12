@@ -166,7 +166,7 @@ git commit -m "type(scope): Message in present tense"
 ### Creating a pull request
 
 > [!TIP]
-> Now would be a good time to [update](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#staying-up-to-date) your local and remote repositories.
+> Now would be a good time to [update](#staying-up-to-date) your local and remote repositories.
 
 Make sure you have your new branch checked out and rebase it onto your up-to-date master branch:
 ```bash
