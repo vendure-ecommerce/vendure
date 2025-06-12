@@ -124,7 +124,7 @@ cd YOUR-VENDURE-FORK
 Add the [Vendure repository](https://github.com/vendure-ecommerce/vendure) as an upstream remote to your clone:
 
 ```bash
-git remote add upstream https://github.com/vendure-ecommerce/vendure
+git remote add upstream https://github.com/vendure-ecommerce/vendure.git
 ```
 
 This lets you pull updates from the original repository directly to your local clone.
