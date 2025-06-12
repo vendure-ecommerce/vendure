@@ -34,7 +34,7 @@ If you would like to contribute a bug fix, please first create an issue detailin
 
 ## New features
 
-Similarly, please create a feature request detailing the functionality you intend to add, and state that you would like to implement it. When creating commits, please follow the commit message format below. Submit new feature pull requests to the `minor` branch.
+Similarly, please create a feature request issue detailing the functionality you intend to add, and state that you would like to implement it. When creating commits, please follow the commit message format below. Submit new feature pull requests to the `minor` branch.
 
 When adding new public APIs to support your new feature, add a `@since 1.2.0` tag (where "1.2.0" corresponds to what will be the next minor version) to the doc block. This will let readers of the documentation know the version in which the API was introduced. See the [docs readme](./docs/README.md) for more details on the valid docs tags.
 
@@ -112,14 +112,14 @@ After [cloning the Vendure repo](#cloning-locally), please refer to the [Develop
 
 ### Creating a fork:
 
-Start by creating a fork of the repository. This can be done by navigating to our [repository](https://github.com/vendure-ecommerce/vendure) and clicking on the fork button. This creates your own copy under your GitHub account.
+Start by creating a fork of the repository. This can be done by navigating to our [repository](https://github.com/vendure-ecommerce/vendure) and clicking on the fork button. This creates your own copy under your GitHub account. We recommend keeping "vendure" as the name of the fork.
 
 ### Cloning locally: 
 Run the following commands to create a local clone of the repository files, where you can safely develop and test out your changes:
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/YOUR-VENDURE-FORK.git
-cd YOUR-VENDURE-FORK
+git clone https://github.com/YOUR-USERNAME/vendure.git
+cd vendure
 ```
 
 Add the [Vendure repository](https://github.com/vendure-ecommerce/vendure) as the upstream remote to your clone:
