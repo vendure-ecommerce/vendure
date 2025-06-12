@@ -1,6 +1,6 @@
-// language=Lua
 import { CustomScriptDefinition } from '../types';
 
+// language=Lua
 const script = `--[[
   Get job ids per provided states and filter by name - Optimized version using indexed structure
     Input:
@@ -18,11 +18,11 @@ local filterName = ARGV[3]
 local results = {}
 local totalResults = 0
 
-// redis.log(redis.LOG_NOTICE, 'Filter name: "' .. filterName .. '"')
-// redis.log(redis.LOG_NOTICE, 'Filter name length: ' .. tostring(#filterName))
-// redis.log(redis.LOG_NOTICE, 'Number of ARGV: ' .. tostring(#ARGV))
-// redis.log(redis.LOG_NOTICE, 'skip: "' .. tostring(skip) .. '"')
-// redis.log(redis.LOG_NOTICE, 'take: "' .. tostring(take) .. '"')
+-- redis.log(redis.LOG_NOTICE, 'Filter name: "' .. filterName .. '"')
+-- redis.log(redis.LOG_NOTICE, 'Filter name length: ' .. tostring(#filterName))
+-- redis.log(redis.LOG_NOTICE, 'Number of ARGV: ' .. tostring(#ARGV))
+-- redis.log(redis.LOG_NOTICE, 'skip: "' .. tostring(skip) .. '"')
+-- redis.log(redis.LOG_NOTICE, 'take: "' .. tostring(take) .. '"')
 
 -- Create a temporary key for merging results
 local tempKey = prefix .. 'temp:merge:' .. math.random(1000000)
@@ -43,11 +43,11 @@ if filterName ~= "" then
     -- When filtering by name, we need to check each state
     for i = 4, #ARGV do
         local state = ARGV[i]
-        // redis.log(redis.LOG_NOTICE, 'Processing state: "' .. state .. '"')
+        -- redis.log(redis.LOG_NOTICE, 'Processing state: "' .. state .. '"')
         local indexedKey = prefix .. 'queue:' .. filterName .. ':' .. state
-        // redis.log(redis.LOG_NOTICE, 'Looking for key: ' .. indexedKey)
+        -- redis.log(redis.LOG_NOTICE, 'Looking for key: ' .. indexedKey)
         local keyType = rcall('TYPE', indexedKey).ok
-        // redis.log(redis.LOG_NOTICE, 'Key type: ' .. keyType)
+        -- redis.log(redis.LOG_NOTICE, 'Key type: ' .. keyType)
 
         if keyType == 'zset' then
             totalResults = totalResults + countJobsInSortedSet(indexedKey)
@@ -60,11 +60,11 @@ else
     -- No filter, count all types
     for i = 4, #ARGV do
         local state = ARGV[i]
-        // redis.log(redis.LOG_NOTICE, 'Processing state: "' .. state .. '"')
+        -- redis.log(redis.LOG_NOTICE, 'Processing state: "' .. state .. '"')
         local key = prefix .. state
-        // redis.log(redis.LOG_NOTICE, 'Looking for key: ' .. key)
+        -- redis.log(redis.LOG_NOTICE, 'Looking for key: ' .. key)
         local keyType = rcall('TYPE', key).ok
-        // redis.log(redis.LOG_NOTICE, 'Key type: ' .. keyType)
+        -- redis.log(redis.LOG_NOTICE, 'Key type: ' .. keyType)
 
         if keyType == 'zset' then
             totalResults = totalResults + countJobsInSortedSet(key)
@@ -79,17 +79,17 @@ end
 if #sourceKeys > 0 then
     -- Calculate how many elements we need to merge
     local neededElements = skip + take
-    // redis.log(redis.LOG_NOTICE, 'Number of source keys: ' .. tostring(#sourceKeys))
-    // redis.log(redis.LOG_NOTICE, 'Needed elements: ' .. tostring(neededElements))
+    -- redis.log(redis.LOG_NOTICE, 'Number of source keys: ' .. tostring(#sourceKeys))
+    -- redis.log(redis.LOG_NOTICE, 'Needed elements: ' .. tostring(neededElements))
 
     -- Create temporary keys for each source set with limited elements
     local limitedKeys = {}
     for i, sourceKey in ipairs(sourceKeys) do
         local limitedKey = tempKey .. ':limited:' .. i
-        // redis.log(redis.LOG_NOTICE, 'Processing source key: ' .. sourceKey)
+        -- redis.log(redis.LOG_NOTICE, 'Processing source key: ' .. sourceKey)
         -- Get only the elements we need from each source set
         local elements = rcall('ZREVRANGE', sourceKey, 0, neededElements - 1, 'WITHSCORES')
-        // redis.log(redis.LOG_NOTICE, 'Found ' .. tostring(#elements) .. ' elements in ' .. sourceKey)
+        -- redis.log(redis.LOG_NOTICE, 'Found ' .. tostring(#elements) .. ' elements in ' .. sourceKey)
         if #elements > 0 then
             -- Process elements in pairs (member, score)
             local chunkSize = 1000 -- Process in chunks of 1000 elements
@@ -107,27 +107,27 @@ if #sourceKeys > 0 then
                 end
             end
             table.insert(limitedKeys, limitedKey)
-            // redis.log(redis.LOG_NOTICE, 'Added to limited key: ' .. limitedKey)
+            -- redis.log(redis.LOG_NOTICE, 'Added to limited key: ' .. limitedKey)
         end
     end
 
-    // redis.log(redis.LOG_NOTICE, 'Number of limited keys: ' .. tostring(#limitedKeys))
+    -- redis.log(redis.LOG_NOTICE, 'Number of limited keys: ' .. tostring(#limitedKeys))
 
     if #limitedKeys > 0 then
         -- Merge the limited sets
         rcall('ZUNIONSTORE', tempKey, #limitedKeys, unpack(limitedKeys))
-        // redis.log(redis.LOG_NOTICE, 'Merged sets into: ' .. tempKey)
+        -- redis.log(redis.LOG_NOTICE, 'Merged sets into: ' .. tempKey)
 
         -- Get the paginated results from the merged set
         results = rcall('ZREVRANGE', tempKey, skip, skip + take - 1)
-        // redis.log(redis.LOG_NOTICE, 'Got ' .. tostring(#results) .. ' results from merged set')
+        -- redis.log(redis.LOG_NOTICE, 'Got ' .. tostring(#results) .. ' results from merged set')
 
         -- Clean up temporary limited keys
         for _, key in ipairs(limitedKeys) do
             rcall('DEL', key)
         end
     else
-        // redis.log(redis.LOG_NOTICE, 'No elements found in any source sets')
+        -- redis.log(redis.LOG_NOTICE, 'No elements found in any source sets')
     end
 end
 
