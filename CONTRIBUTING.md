@@ -11,7 +11,7 @@ In order to make the best use of both your time and that of the Vendure maintain
 - [New features](#new-features)
 - [Commit message format](#commit-message-format)
 - [Setting up the dev environment](#setting-up-the-dev-environment)
-- [Suggested Contribution Workflow](#suggested-contribution-workflow)
+- [Suggested contribution workflow](#suggested-contribution-workflow)
 - [Contributing to the documentation](#contributing-to-the-documentation)
 - [Contributing to the Admin UI translations](#contributing-to-the-admin-ui-translations)
 - [Where to get help](#where-to-get-help)
@@ -108,7 +108,7 @@ Commit messages are linted on commit, so you'll know if your message is not quit
 
 After [cloning the Vendure repo](#cloning-locally), please refer to the [Development guide](https://github.com/vendure-ecommerce/vendure/blob/master/README.md#development) in the README for instructions on setting up your local development environment.
 
-## Suggested Contribution Workflow
+## Suggested contribution workflow
 
 ### Creating a fork:
 
