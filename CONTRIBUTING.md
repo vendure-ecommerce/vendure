@@ -4,6 +4,18 @@ Hi! Thank you for taking the time to contribute to Vendure!
 
 In order to make the best use of both your time and that of the Vendure maintainers, please follow the guidelines in this document.
 
+## Table of Contents
+
+- [Branches](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#branches)
+- [Suggested Contribution Workflow](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#suggested-contribution-workflow)
+- [Bug fixes](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#bug-fixes) 
+- [New features](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#new-features) 
+- [Commit message format](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#commit-message-format) 
+- [Setting up the dev environment](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#setting-up-the-dev-environment) 
+- [Contributing to the Admin UI translations](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#contributing-to-the-admin-ui-translations) 
+- [Contributor License Agreement](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#contributor-license-agreement) 
+- [Issue Triage Guidelines](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#issue-triage-guidelines) 
+
 ## Branches
 
 There are 3 important branches to know about:
@@ -180,7 +192,7 @@ For our [documentation](https://docs.vendure.io/), we use [Docusaurus](https://d
 
 after cloning our repository according to the [Suggested Contribution Workflow](url) 
 
-## Contributing Admin UI translations
+## Contributing to the Admin UI translations
 
 If you wish to contribute translations of the Admin UI into another language (or improve an existing set of translations), please see the [Localization guide](https://github.com/vendure-ecommerce/vendure/blob/master/packages/admin-ui/README.md#localization) in the admin-ui package.
 
