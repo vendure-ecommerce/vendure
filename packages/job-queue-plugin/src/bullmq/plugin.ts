@@ -1,13 +1,13 @@
 import { PluginCommonModule, VendurePlugin } from '@vendure/core';
 
 import { BullMQJobQueueStrategy } from './bullmq-job-queue-strategy';
+import { cleanIndexedSetsTask } from './clean-indexed-sets-task';
 import { BULLMQ_PLUGIN_OPTIONS } from './constants';
+import { JobListIndexService } from './job-list-index.service';
 import { RedisHealthCheckStrategy } from './redis-health-check-strategy';
 import { RedisHealthIndicator } from './redis-health-indicator';
 import { RedisJobBufferStorageStrategy } from './redis-job-buffer-storage-strategy';
 import { BullMQPluginOptions } from './types';
-import { cleanIndexedSetsTask } from './clean-indexed-sets-task';
-import { IndexedSetService } from './indexed-set.service';
 
 /**
  * @description
@@ -201,7 +201,7 @@ import { IndexedSetService } from './indexed-set.service';
     providers: [
         { provide: BULLMQ_PLUGIN_OPTIONS, useFactory: () => BullMQJobQueuePlugin.options },
         RedisHealthIndicator,
-        IndexedSetService,
+        JobListIndexService,
     ],
     compatibility: '^3.0.0',
 })
