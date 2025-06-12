@@ -15,6 +15,9 @@ class TestQueueService implements OnModuleInit {
             process: async job => {
                 // Process the job here
                 Logger.info(`Processing job with message: ${job.data.message}`, 'TestQueueService');
+                if (Math.random() < 0.2) {
+                    throw new Error('Random failure occurred while processing job');
+                }
                 return { processed: true, message: job.data.message };
             },
         });
@@ -28,6 +31,7 @@ class TestQueueService implements OnModuleInit {
         const jobs = [];
         for (let i = 0; i < count; i++) {
             jobs.push(this.addJob(`Test job ${i + 1}`));
+            // await new Promise(resolve => setTimeout(resolve, 100));
         }
         return Promise.all(jobs);
     }
