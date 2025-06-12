@@ -6,16 +6,16 @@ In order to make the best use of both your time and that of the Vendure maintain
 
 ## Table of Contents
 
-- [Branches](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#branches)
-- [Bug fixes](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#bug-fixes) 
-- [New features](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#new-features) 
-- [Commit message format](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#commit-message-format) 
-- [Setting up the dev environment](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#setting-up-the-dev-environment) 
-- [Suggested Contribution Workflow](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#suggested-contribution-workflow)
-- [Contributing to the documentation](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#contributing-to-the-documentation) 
-- [Contributing to the Admin UI translations](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#contributing-to-the-admin-ui-translations) 
-- [Contributor License Agreement](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#contributor-license-agreement) 
-- [Issue Triage Guidelines](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#issue-triage-guidelines) 
+- [Branches](#branches)
+- [Bug fixes](#bug-fixes)
+- [New features](#new-features)
+- [Commit message format](#commit-message-format)
+- [Setting up the dev environment](#setting-up-the-dev-environment)
+- [Suggested Contribution Workflow](#suggested-contribution-workflow)
+- [Contributing to the documentation](#contributing-to-the-documentation)
+- [Contributing to the Admin UI translations](#contributing-to-the-admin-ui-translations)
+- [Contributor License Agreement](#contributor-license-agreement)
+- [Issue Triage Guidelines](#issue-triage-guidelines)
 
 ## Branches
 
