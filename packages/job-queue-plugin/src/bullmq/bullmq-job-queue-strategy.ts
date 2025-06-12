@@ -51,7 +51,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
     private worker: Worker;
     private workerProcessor: Processor;
     private options: BullMQPluginOptions;
-    private indexedSetService: JobListIndexService;
+    private jobListIndexService: JobListIndexService;
     private readonly queueNameProcessFnMap = new Map<string, (job: Job) => Promise<any>>();
     private cancellationSub: Redis;
     private readonly cancelRunningJob$ = new Subject<string>();
@@ -60,7 +60,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
 
     async init(injector: Injector): Promise<void> {
         const options = injector.get<BullMQPluginOptions>(BULLMQ_PLUGIN_OPTIONS);
-        this.indexedSetService = injector.get(JobListIndexService);
+        this.jobListIndexService = injector.get(JobListIndexService);
         this.options = {
             ...options,
             workerOptions: {
@@ -145,7 +145,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
         };
         // Subscription-mode Redis connection for the cancellation messages
         this.cancellationSub = new Redis(this.connectionOptions as RedisOptions);
-        this.indexedSetService.register(this.redisConnection, this.queue);
+        this.jobListIndexService.register(this.redisConnection, this.queue);
     }
 
     async destroy() {
@@ -165,7 +165,7 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             ...customJobOptions,
         });
 
-        void this.indexedSetService.add(bullJob);
+        void this.jobListIndexService.add(bullJob);
         return this.createVendureJob(bullJob);
     }
 
