@@ -105,7 +105,7 @@ Commit messages are linted on commit, so you'll know if your message is not quit
 
 ## Setting up the dev environment
 
-After [cloning the Vendure repo](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#cloning-locally), please refer to the [Development guide](https://github.com/vendure-ecommerce/vendure/blob/master/README.md#development) in the README for instructions on setting up your local development environment.
+After [cloning the Vendure repo](#cloning-locally), please refer to the [Development guide](https://github.com/vendure-ecommerce/vendure/blob/master/README.md#development) in the README for instructions on setting up your local development environment.
 
 ## Suggested Contribution Workflow
 
@@ -121,7 +121,7 @@ git clone https://github.com/YOUR-USERNAME/YOUR-VENDURE-FORK.git
 cd YOUR-VENDURE-FORK
 ```
 
-Add the [Vendure repository](https://github.com/vendure-ecommerce/vendure) as an upstream remote to your clone:
+Add the [Vendure repository](https://github.com/vendure-ecommerce/vendure) as the upstream remote to your clone:
 
 ```bash
 git remote add upstream https://github.com/vendure-ecommerce/vendure.git
@@ -136,17 +136,17 @@ This lets you pull updates from the original repository directly to your local c
 > git fetch upstream
 > git checkout master
 > ```
-> Now you're on the master branch of your local repository, and git "knows" whether there are differences between your master branch and the upstream branch.
+> Now you're on the master branch of your local repository, and Git "knows" whether there are differences between your master branch and the upstream branch.
 >
-> to update your local and forked remote repositories: 
+> To update your local and forked remote repositories: 
 > ```bash
 > git merge upstream/master
 > git push origin master
 > ```
 
-### Create a new branch:
+### Create a new branch
 
-Start implementing your changes inside this branch. Make as many relevant commits as you need, but follow our [Commit message format](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md#commit-message-format).
+This is where you can start implementing your changes:
 
 ```bash
 git checkout -b your-new-branch
@@ -154,12 +154,12 @@ git checkout -b your-new-branch
 
 ### Developing
 
-Follow our [development guide](https://github.com/vendure-ecommerce/vendure#development) to make sure have a properly set up development environment.
+Follow our [development guide](https://github.com/vendure-ecommerce/vendure#development) to make sure you have a properly set up development environment.
 
-After implementing your changes, stage the changes and commit them. Refer to the [Commit message format](https://github.com/copilot/c/a9e1ab36-d5f1-417f-a71f-f2ddeb3b37dd#commit-message-format)
+After implementing your changes, stage the changes and commit them. Refer to the [Commit message format](#commit-message-format)
 ```
 git add .
-git commit -m type(scope): Message in present tense
+git commit -m "type(scope): Message in present tense"
 ```
 
 ### Creating a pull request
@@ -185,13 +185,28 @@ and follow the prompts, this will automatically use our [pull request template](
 
 Alternatively, navigate to your forked repository on GitHub and create a pull request from there.
 
-Well done! now comes our part, we will review your pull request and either merge it or provide you with feedback on what we would like to see changed.
+Well done! Now comes our part: we will review your pull request and either merge it or provide you with feedback on what we would like to see changed.
 
 ## Contributing to the documentation
 
 For our [documentation](https://docs.vendure.io/), we use [Docusaurus](https://docusaurus.io/).
 
-after cloning our repository according to the [Suggested Contribution Workflow](url) 
+After [setting up your development environment](#setting-up-the-dev-environment). Navigate to the docs directory and start the docusaurus server:
+```bash
+cd docs
+npm run start
+```
+
+this will output a URL where you can preview your changes.
+
+You can find all of our documentation built by docusaurus in these directories: 
+
+```
+docs/docs
+├── guides
+├── reference
+└── user-guide
+```
 
 ## Contributing to the Admin UI translations
 
