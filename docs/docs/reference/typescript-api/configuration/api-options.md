@@ -33,6 +33,7 @@ interface ApiOptions {
     channelTokenKey?: string;
     cors?: boolean | CorsOptions;
     middleware?: Middleware[];
+    trustProxy?: TrustProxyOptions;
     apolloServerPlugins?: ApolloServerPlugin[];
     introspection?: boolean;
 }
@@ -125,6 +126,11 @@ Set the CORS handling for the server. See the [express CORS docs](https://github
 <MemberInfo kind="property" type={`<a href='/reference/typescript-api/common/middleware#middleware'>Middleware</a>[]`} default={`[]`}   />
 
 Custom Express or NestJS middleware for the server. More information can be found in the <a href='/reference/typescript-api/common/middleware#middleware'>Middleware</a> docs.
+### trustProxy
+
+<MemberInfo kind="property" type={`<a href='/reference/typescript-api/configuration/trust-proxy-options#trustproxyoptions'>TrustProxyOptions</a>`} default={`false`}   />
+
+Set the trust proxy configuration for the server. See the [express proxy docs](https://expressjs.com/en/guide/behind-proxies.html).
 ### apolloServerPlugins
 
 <MemberInfo kind="property" type={`ApolloServerPlugin[]`} default={`[]`}   />
