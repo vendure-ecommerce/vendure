@@ -14,6 +14,7 @@ In order to make the best use of both your time and that of the Vendure maintain
 - [Suggested Contribution Workflow](#suggested-contribution-workflow)
 - [Contributing to the documentation](#contributing-to-the-documentation)
 - [Contributing to the Admin UI translations](#contributing-to-the-admin-ui-translations)
+- [Where to get help](#where-to-get-help)
 - [Contributor License Agreement](#contributor-license-agreement)
 - [Issue Triage Guidelines](#issue-triage-guidelines)
 
@@ -212,6 +213,14 @@ docs/docs
 
 If you wish to contribute translations of the Admin UI into another language (or improve an existing set of translations), please see the [Localization guide](https://github.com/vendure-ecommerce/vendure/blob/master/packages/admin-ui/README.md#localization) in the admin-ui package.
 
+## Where to get help
+
+We have a relatively active discord community, join us there and ask away!
+[Vendure Discord](https://www.vendure.io/community) 
+
+Read the documentation - Our comprehensive [documentation](https://docs.vendure.io/) covers everything you need to know about Vendure. It also includes guides a references for the tools that we use.
+
+In case your pull request doesn't meet our requirements, we're here to help! We'll provide thorough reviews with clear guidance on how to get your contribution merged.
 ## Contributor License Agreement
 
 All contributors are required to agree to the [Contributor License Agreement](./license/CLA.md) before their contributions can be merged.
