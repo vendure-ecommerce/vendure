@@ -61,12 +61,12 @@ git checkout -b your-new-branch
 
 ### Developing
 
-Follow our [development guide](https://github.com/vendure-ecommerce/vendure#development) to make set have a properly set up development environment.
+Follow our [development guide](https://github.com/vendure-ecommerce/vendure#development) to make sure have a properly set up development environment.
 
-After implementing your changes, stage the changes and commit them:
-```bash
+After implementing your changes, stage the changes and commit them. Refer to the [Commit message format](https://github.com/copilot/c/a9e1ab36-d5f1-417f-a71f-f2ddeb3b37dd#commit-message-format)
+```
 git add .
-git commit -m type(scope): Commit message in present tense
+git commit -m type(scope): Message in present tense
 ```
 
 ### Creating a pull request
