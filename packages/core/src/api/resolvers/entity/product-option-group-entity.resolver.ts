@@ -37,7 +37,9 @@ export class ProductOptionGroupEntityResolver {
         if (optionGroup.options) {
             options = optionGroup.options;
         } else {
-            const group = await this.productOptionGroupService.findOne(ctx, optionGroup.id);
+            const group = await this.productOptionGroupService.findOne(ctx, optionGroup.id, undefined, {
+                includeSoftDeleted: true,
+            });
             options = group?.options ?? [];
         }
         return options.filter(o => !o.deletedAt);
