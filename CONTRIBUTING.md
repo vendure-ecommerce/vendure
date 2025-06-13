@@ -167,6 +167,7 @@ Now you're on the master branch of your local repository, and Git "knows" whethe
 git merge upstream/master
 git push origin master
 ```
+--- 
 
 ### Create a new branch
 
@@ -191,25 +192,42 @@ git commit -m "type(scope): Message in present tense"
 > [!TIP]
 > Now would be a good time to [update](#staying-up-to-date) your local and remote repositories.
 
-Make sure you have your new branch checked out and rebase it onto your up-to-date master branch:
+#### Prepare Your Branch
+
+Make sure you have your new branch checked out and merge the latest changes from your up-to-date master branch:
+
 ```bash
 git checkout your-new-branch
-git rebase master
+git merge master
 ```
-Now push your changes to your forked repository:
+
+#### Push Your Changes
+
+Push your updated branch to your forked repository:
+
 ```bash
 git push origin your-new-branch
 ```
 
-You can now create a pull request. If you prefer using the [GitHub CLI](https://cli.github.com/), run the following command:
+#### Create Your Pull Request
+
+**You can now create a pull request!** Choose one of the following methods:
+
+**Option A: Using GitHub CLI**
+
+If you have the [GitHub CLI](https://cli.github.com/) installed, run:
 ```bash
 gh pr create
 ```
-and follow the prompts, this will automatically use our [pull request template](https://github.com/vendure-ecommerce/vendure/blob/master/.github/pull_request_template.md).
+and follow the prompts - this will automatically use our [pull request template](https://github.com/vendure-ecommerce/vendure/blob/master/.github/pull_request_template.md).
 
-Alternatively, navigate to your forked repository on GitHub and create a pull request from there.
+**Option B: Using GitHub Web Interface**
 
-Well done! Now comes our part: we will review your pull request and either merge it or provide you with feedback on what we would like to see changed.
+Navigate to your forked repository on GitHub and create a pull request from there using the web interface.
+
+**Well done!** Now comes our part: we will review your pull request and either merge it or provide you with feedback on what we would like to see changed.
+
+--- 
 
 ## Contributing to the documentation
 
