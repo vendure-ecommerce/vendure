@@ -246,9 +246,12 @@ You can find all of our documentation built by docusaurus in these directories:
 ```
 docs/docs
 ├── guides
-├── reference
+├── reference // only contains generated documentation
 └── user-guide
 ```
+
+> [!NOTE]
+> Files in the [reference](https://docs.vendure.io/reference/) directory are auto-generated. To edit reference documentation, modify the [JSDoc](https://jsdoc.app/about-getting-started) comments in the source code and run `npm run docs:build` from the project root directory.
 
 ## Contributing to the Admin UI translations
 
