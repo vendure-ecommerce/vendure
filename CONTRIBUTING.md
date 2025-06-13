@@ -132,18 +132,41 @@ This lets you pull updates from the original repository directly to your local c
 
 ### Staying up to date
 > [!TIP]
-> It is a good idea to regularly update your local and forked repositories. You can do so by running the following commands:
-> ```bash
-> git fetch upstream
-> git checkout master
-> ```
-> Now you're on the master branch of your local repository, and Git "knows" whether there are differences between your master branch and the upstream branch.
+> It is a good idea to regularly update your local and forked repositories. This keeps your development environment synchronised and minimizes potential merge conflicts when contributing.
 >
-> To update your local and forked remote repositories: 
-> ```bash
-> git merge upstream/master
-> git push origin master
-> ```
+> Here is [GitHub's official guide](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork) on keeping your forks synced.
+
+There are **three main ways** to keep your fork synchronized:
+
+#### Option 1: Using GitHub's Web Interface
+
+Navigate to your fork's GitHub page and click the `Sync fork` button.
+
+#### Option 2: Using GitHub CLI
+
+GitHub offers a handy open-source CLI tool - [GitHub CLI](https://cli.github.com/) - which allows you to sync your branch directly in your terminal:
+
+```bash
+gh repo sync
+```
+
+#### Option 3: Using Git Commands
+
+If you prefer using `git` commands, which can be more robust in some circumstances:
+
+**First, fetch the latest changes:**
+```bash
+git fetch upstream
+git checkout master
+```
+
+Now you're on the master branch of your local repository, and Git "knows" whether there are differences between your master branch and the upstream branch.
+
+**Then, update your local and forked remote repositories:**
+```bash
+git merge upstream/master
+git push origin master
+```
 
 ### Create a new branch
 
