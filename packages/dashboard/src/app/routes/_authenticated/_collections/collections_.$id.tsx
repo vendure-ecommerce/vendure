@@ -85,9 +85,7 @@ function CollectionDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated collection'), {
-                position: 'top-right',
-            });
+            toast(i18n.t('Successfully updated collection'));
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
@@ -95,7 +93,6 @@ function CollectionDetailPage() {
         },
         onError: err => {
             toast(i18n.t('Failed to update collection'), {
-                position: 'top-right',
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

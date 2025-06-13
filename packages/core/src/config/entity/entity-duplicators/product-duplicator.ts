@@ -12,9 +12,9 @@ import { idsAreEqual } from '../../../common';
 import { InternalServerError } from '../../../common/error/errors';
 import { Injector } from '../../../common/injector';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
-import { Product } from '../../../entity/product/product.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
+import { Product } from '../../../entity/product/product.entity';
 import { ProductOptionGroupService } from '../../../service/services/product-option-group.service';
 import { ProductOptionService } from '../../../service/services/product-option.service';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
@@ -67,6 +67,7 @@ export const productDuplicator = new EntityDuplicator({
                 optionGroups: {
                     options: true,
                 },
+                productOptionGroups: true,
             },
         });
         const translations: ProductTranslationInput[] = product.translations.map(translation => {
@@ -145,10 +146,16 @@ export const productDuplicator = new EntityDuplicator({
                     );
                 }
             }
+            if (product.productOptionGroups && product.productOptionGroups.length) {
+                for (const optionGroup of product.productOptionGroups) {
+                    await productService.addOptionGroupToProduct(ctx, duplicatedProduct.id, optionGroup.id);
+                }
+            }
             const newOptionGroups = await connection.getRepository(ctx, ProductOptionGroup).find({
-                where: {
-                    product: { id: duplicatedProduct.id },
-                },
+                where: [
+                    { products: { id: duplicatedProduct.id } },
+                    { product: { id: duplicatedProduct.id } },
+                ],
                 relations: {
                     options: true,
                 },

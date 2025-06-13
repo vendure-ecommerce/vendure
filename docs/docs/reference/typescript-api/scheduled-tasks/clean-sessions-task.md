@@ -33,7 +33,7 @@ export const config: VendureConfig = {
         schedule: cron => cron.everyDayAt(3, 0),
         params: {
           // How many sessions to process in each batch
-          // Default: 10_000
+          // Default: 1000
           batchSize: 5_000,
         },
       }),

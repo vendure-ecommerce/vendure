@@ -90,7 +90,7 @@ export class ProductVariantService {
         private translator: TranslatorService,
     ) {}
 
-    async findAll(
+    findAll(
         ctx: RequestContext,
         options?: ListQueryOptions<ProductVariant>,
     ): Promise<PaginatedList<Translated<ProductVariant>>> {
@@ -909,23 +909,32 @@ export class ProductVariantService {
     ) {
         // this could be done with fewer queries but depending on the data, node will crash
         // https://github.com/vendure-ecommerce/vendure/issues/328
-        const optionGroups = (
-            await this.connection.getEntityOrThrow(ctx, Product, productId, {
-                channelId: ctx.channelId,
-                relations: ['optionGroups', 'optionGroups.options'],
-                loadEagerRelations: false,
-            })
-        ).optionGroups;
+        const productWithGroups = await this.connection.getEntityOrThrow(ctx, Product, productId, {
+            channelId: ctx.channelId,
+            relations: [
+                'optionGroups',
+                'optionGroups.options',
+                'productOptionGroups',
+                'productOptionGroups.options',
+            ],
+            loadEagerRelations: false,
+        });
 
-        const activeOptions = optionGroups && optionGroups.filter(group => !group.deletedAt);
+        const optionGroups = unique([
+            ...productWithGroups.optionGroups,
+            ...productWithGroups.productOptionGroups,
+        ]);
 
-        if (optionIds.length !== activeOptions.length) {
+        const activeOptionGroups = optionGroups.filter(group => !group.deletedAt);
+
+        if (optionIds.length !== activeOptionGroups.length) {
             this.throwIncompatibleOptionsError(optionGroups);
         }
+
         if (
             !samplesEach(
                 optionIds,
-                activeOptions.map(g => g.options.map(o => o.id)),
+                activeOptionGroups.map(g => g.options.map(o => o.id)),
             )
         ) {
             this.throwIncompatibleOptionsError(optionGroups);
@@ -955,6 +964,7 @@ export class ProductVariantService {
     private throwIncompatibleOptionsError(optionGroups: ProductOptionGroup[]) {
         throw new UserInputError('error.product-variant-option-ids-not-compatible', {
             groupNames: this.sortJoin(optionGroups, ', ', 'code'),
+            groupNamesTranslated: this.sortJoin(optionGroups, ', ', 'name'),
         });
     }
 

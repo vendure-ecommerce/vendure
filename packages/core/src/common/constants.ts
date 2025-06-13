@@ -70,6 +70,7 @@ export const DEFAULT_PERMISSIONS: PermissionDefinition[] = [
     new CrudPermissionDefinition('StockLocation'),
     new CrudPermissionDefinition('System'),
     new CrudPermissionDefinition('Zone'),
+    new CrudPermissionDefinition('GlobalProductOption'),
 ];
 
 export function getAllPermissionsMetadata(customPermissions: PermissionDefinition[]): PermissionMetadata[] {

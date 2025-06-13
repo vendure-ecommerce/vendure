@@ -358,9 +358,9 @@ export class ShopOrderResolver {
     async addItemsToOrder(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationAddItemsToOrderArgs & ActiveOrderArgs,
-    ): Promise<{ 
-        order: Order; 
-        errorResults: UpdateMultipleOrderItemsResult['errorResults'] 
+    ): Promise<{
+        order: Order;
+        errorResults: UpdateMultipleOrderItemsResult['errorResults'];
     }> {
         const order = await this.activeOrderService.getActiveOrder(
             ctx,

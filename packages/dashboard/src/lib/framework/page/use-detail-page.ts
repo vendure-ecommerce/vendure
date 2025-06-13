@@ -288,6 +288,13 @@ export function useDetailPage<
         },
     });
 
+    // A kind of ridiculous workaround to ensure that the `isDirty` and `isValid` properties
+    // are always up-to-date when used by the consuming component. This seems to be necessary
+    // due to the way that `react-hook-form` uses a Proxy object for the form state.
+    // See https://react-hook-form.com/docs/useform/formstate
+    // noinspection JSUnusedLocalSymbols
+    const { isDirty, isValid } = form.formState;
+
     return {
         form: form as any,
         submitHandler,

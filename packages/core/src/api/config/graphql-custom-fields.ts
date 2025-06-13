@@ -13,7 +13,6 @@ import {
     CustomFieldConfig,
     CustomFields,
     StructCustomFieldConfig,
-    RelationCustomFieldConfig,
     StructFieldConfig,
 } from '../../config/custom-field/custom-field-types';
 import { Logger } from '../../config/logger/vendure-logger';
@@ -47,6 +46,8 @@ export function addGraphQLCustomFields(
     }
 
     const customFieldsConfig = getCustomFieldsConfigWithoutInterfaces(customFieldConfig, schema);
+    const entitiesWithPublicTypes = [`ShippingMethod`, `PaymentMethod`];
+
     for (const [entityName, customFields] of customFieldsConfig) {
         const gqlType = schema.getType(entityName);
         if (isObjectType(gqlType) && gqlType.getFields().customFields) {
@@ -247,6 +248,36 @@ export function addGraphQLCustomFields(
                         `;
                     }
                 }
+            }
+        }
+
+        const publicEntityName = `Public${entityName}`;
+
+        if (schema.getType(publicEntityName) && entitiesWithPublicTypes.includes(entityName)) {
+            if (customEntityFields.length) {
+                for (const structCustomField of structCustomFields) {
+                    customFieldTypeDefs += `
+                        type ${getStructTypeName(publicEntityName, structCustomField)} {
+                            ${mapToStructFields(structCustomField.fields, wrapListType(getGraphQlTypeForStructField))}
+                        }
+                    `;
+                }
+
+                customFieldTypeDefs += `
+                    type ${publicEntityName}CustomFields {
+                        ${mapToFields(customEntityFields, wrapListType(getGraphQlType(entityName)))}
+                    }
+    
+                    extend type ${publicEntityName} {
+                        customFields: ${publicEntityName}CustomFields
+                    }
+                `;
+            } else {
+                customFieldTypeDefs += `
+                    extend type ${publicEntityName} {
+                        customFields: JSON
+                    }
+                `;
             }
         }
     }
@@ -634,7 +665,6 @@ function getFilterOperator(config: CustomFieldConfig): string | undefined {
         default:
             assertNever(config);
     }
-    return 'String';
 }
 
 function getGraphQlInputType(entityName: string) {
@@ -685,7 +715,6 @@ function getGraphQlType(entityName: string) {
             default:
                 assertNever(config);
         }
-        return 'String';
     };
 }
 
@@ -705,7 +734,6 @@ function getGraphQlTypeForStructField(config: StructFieldConfig): string {
         default:
             assertNever(config);
     }
-    return 'String';
 }
 
 function getStructTypeName(entityName: string, fieldDef: StructCustomFieldConfig): string {

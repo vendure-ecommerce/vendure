@@ -610,7 +610,6 @@ describe('Shop orders', () => {
                 orderResultGuard.assertSuccess(removeOrderLine);
                 expect(removeOrderLine.lines.length).toBe(1);
             });
-
         });
 
         it('addItemToOrder errors when going beyond orderItemsLimit', async () => {
@@ -1408,7 +1407,6 @@ describe('Shop orders', () => {
             expect(addItemToOrder.lines[1].featuredAsset?.id).toBe(product?.featuredAsset?.id);
         });
 
-
         it('adds multiple items to order with different custom fields', async () => {
             await shopClient.asAnonymousUser(); // New order
             const { addItemsToOrder } = await shopClient.query<CodegenShop.AddItemsToOrderMutation>(
@@ -1419,14 +1417,14 @@ describe('Shop orders', () => {
                             productVariantId: 'T_1',
                             quantity: 1,
                             customFields: {
-                                    notes: 'Variant 1 note',
+                                notes: 'Variant 1 note',
                             },
                         },
                         {
                             productVariantId: 'T_2',
                             quantity: 2,
                             customFields: {
-                                    notes: 'Variant 2 note',
+                                notes: 'Variant 2 note',
                             },
                         },
                         {
@@ -2862,12 +2860,8 @@ export const ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS = gql`
 `;
 
 export const ADD_MULTIPLE_ITEMS_TO_ORDER_WITH_CUSTOM_FIELDS = gql`
-    mutation AddMultipleItemsToOrderWithCustomFields(
-        $inputs: [AddItemInput!]!
-    ) {
-        addItemsToOrder(
-            inputs: $inputs
-        ) {
+    mutation AddMultipleItemsToOrderWithCustomFields($inputs: [AddItemInput!]!) {
+        addItemsToOrder(inputs: $inputs) {
             order {
                 ...UpdatedOrder
                 lines {
@@ -2879,10 +2873,10 @@ export const ADD_MULTIPLE_ITEMS_TO_ORDER_WITH_CUSTOM_FIELDS = gql`
                     customFields {
                         notes
                     }
-                }   
+                }
             }
             errorResults {
-                ...on ErrorResult {
+                ... on ErrorResult {
                     errorCode
                     message
                 }

@@ -86,6 +86,15 @@ export function DataTable<TData>({
         defaultColumnVisibility ?? {},
     );
 
+    useEffect(() => {
+        // If the defaultColumnVisibility changes externally (e.g. the user reset the table settings),
+        // we want to reset the column visibility to the default.
+        if (defaultColumnVisibility && JSON.stringify(defaultColumnVisibility) !== JSON.stringify(columnVisibility)) {
+            setColumnVisibility(defaultColumnVisibility);
+        }
+        // We intentionally do not include `columnVisibility` in the dependency array
+    }, [defaultColumnVisibility]);
+
     let tableOptions: TableOptions<TData> = {
         data,
         columns,

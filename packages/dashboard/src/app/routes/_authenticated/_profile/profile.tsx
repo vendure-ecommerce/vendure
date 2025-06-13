@@ -58,14 +58,11 @@ function ProfilePage() {
         },
         params: { id: 'undefined' },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated profile'), {
-                position: 'top-right',
-            });
+            toast(i18n.t('Successfully updated profile'));
             form.reset(form.getValues());
         },
         onError: err => {
             toast(i18n.t('Failed to update profile'), {
-                position: 'top-right',
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

@@ -8,6 +8,7 @@ import { Trans } from '@/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { channelListQuery, deleteChannelDocument } from './channels.graphql.js';
+import { useLocalFormat } from '@/hooks/use-local-format.js';
 
 export const Route = createFileRoute('/_authenticated/_channels/channels')({
     component: ChannelListPage,
@@ -15,6 +16,7 @@ export const Route = createFileRoute('/_authenticated/_channels/channels')({
 });
 
 function ChannelListPage() {
+    const { formatLanguageName } = useLocalFormat();
     return (
         <ListPage
             pageId="channel-list"
@@ -25,6 +27,10 @@ function ChannelListPage() {
             defaultVisibility={{
                 code: true,
                 token: true,
+                availableCurrencyCodes: false,
+                availableLanguageCodes: false,
+                defaultTaxZone: false,
+                defaultShippingZone: false,
             }}
             onSearchTermChange={searchTerm => {
                 return {
@@ -42,6 +48,18 @@ function ChannelListPage() {
                             />
                         );
                     },
+                },
+                seller: {
+                    header: 'Seller',
+                    cell: ({ row }) => {
+                        return row.original.seller?.name;
+                    }
+                },
+                defaultLanguageCode: {
+                    header: 'Default Language',
+                    cell: ({ row }) => {
+                        return formatLanguageName(row.original.defaultLanguageCode);
+                    }
                 },
             }}
         >

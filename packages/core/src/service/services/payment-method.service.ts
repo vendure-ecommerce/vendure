@@ -322,9 +322,10 @@ export class PaymentMethodService {
     }
 
     async getActivePaymentMethods(ctx: RequestContext): Promise<PaymentMethod[]> {
-        const paymentMethods = await this.connection
-            .getRepository(ctx, PaymentMethod)
-            .find({ where: { enabled: true, channels: { id: ctx.channelId } }, relations: ['channels'] });
+        const paymentMethods = await this.connection.getRepository(ctx, PaymentMethod).find({
+            where: { enabled: true, channels: { id: ctx.channelId } },
+            relations: ['channels', 'customFields'],
+        });
         return paymentMethods.map(p => this.translator.translate(p, ctx));
     }
 }

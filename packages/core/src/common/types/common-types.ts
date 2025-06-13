@@ -200,7 +200,7 @@ export type MiddlewareHandler = Type<any> | Function;
  *   apiOptions: {
  *     middleware: [{
  *       handler: json({ limit: '10mb' }),
- *       route: '*',
+ *       route: '*splat',
  *       beforeListen: true,
  *     }],
  *   },

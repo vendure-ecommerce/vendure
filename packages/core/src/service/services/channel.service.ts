@@ -255,6 +255,41 @@ export class ChannelService {
 
     /**
      * @description
+     * Removes the entity from the given Channels and saves.
+     */
+    async removeFromAssignedChannels<T extends ChannelAware & VendureEntity>(
+        ctx: RequestContext,
+        entityType: Type<T>,
+        entityId: ID,
+    ): Promise<T | undefined> {
+        const entity = await this.connection.getRepository(ctx, entityType).findOne({
+            loadEagerRelations: false,
+            relationLoadStrategy: 'query',
+            where: {
+                id: entityId,
+            } as FindOptionsWhere<T>,
+        });
+        if (!entity) {
+            return;
+        }
+        const assignedChannels = await this.getAssignedEntityChannels(ctx, entityType, entityId);
+        const channelIds = assignedChannels.map(c => c.channelId);
+
+        if (!channelIds.length) {
+            return;
+        }
+        await this.connection
+            .getRepository(ctx, entityType)
+            .createQueryBuilder()
+            .relation('channels')
+            .of(entity.id)
+            .remove(channelIds);
+        await this.eventBus.publish(new ChangeChannelEvent(ctx, entity, channelIds, 'removed', entityType));
+        return entity;
+    }
+
+    /**
+     * @description
      * Given a channel token, returns the corresponding Channel if it exists, else will throw
      * a {@link ChannelNotFoundError}.
      */

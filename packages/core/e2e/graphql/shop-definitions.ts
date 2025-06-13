@@ -137,12 +137,11 @@ export const ADD_MULTIPLE_ITEMS_TO_ORDER = gql`
                 ...UpdatedOrder
             }
             errorResults {
-                ...on ErrorResult {
+                ... on ErrorResult {
                     errorCode
                     message
                 }
             }
-            
         }
     }
     ${UPDATED_ORDER_FRAGMENT}

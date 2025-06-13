@@ -26,7 +26,7 @@ describe('Default scheduler plugin', () => {
                     new ScheduledTask({
                         id: 'test-job',
                         description: "A test job that doesn't do anything",
-                        schedule: cron => cron.every(5).minutes(),
+                        schedule: cron => cron.everySaturdayAt(0, 0),
                         async execute(injector) {
                             taskSpy();
                             return { success: true };
@@ -61,8 +61,8 @@ describe('Default scheduler plugin', () => {
         expect(scheduledTasks.length).toBe(1);
         expect(scheduledTasks[0].id).toBe('test-job');
         expect(scheduledTasks[0].description).toBe("A test job that doesn't do anything");
-        expect(scheduledTasks[0].schedule).toBe('*/5 * * * *');
-        expect(scheduledTasks[0].scheduleDescription).toBe('Every 5 minutes');
+        expect(scheduledTasks[0].schedule).toBe('0 0 * * 6');
+        expect(scheduledTasks[0].scheduleDescription).toBe('At 12:00 AM, only on Saturday');
         expect(scheduledTasks[0].enabled).toBe(true);
     });
 
@@ -93,6 +93,7 @@ describe('Default scheduler plugin', () => {
     });
 
     it('run task', async () => {
+        taskSpy.mockClear();
         expect(taskSpy).toHaveBeenCalledTimes(0);
 
         const { runScheduledTask } = await adminClient.query<RunTaskMutation, RunTaskMutationVariables>(

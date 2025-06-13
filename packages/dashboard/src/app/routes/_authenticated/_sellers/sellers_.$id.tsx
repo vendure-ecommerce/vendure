@@ -51,9 +51,7 @@ function SellerDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated seller'), {
-                position: 'top-right',
-            });
+            toast(i18n.t('Successfully updated seller'));
             form.reset(form.getValues());
             if (creatingNewEntity) {
                 await navigate({ to: `../${data?.id}`, from: Route.id });
@@ -61,7 +59,6 @@ function SellerDetailPage() {
         },
         onError: err => {
             toast(i18n.t('Failed to update seller'), {
-                position: 'top-right',
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

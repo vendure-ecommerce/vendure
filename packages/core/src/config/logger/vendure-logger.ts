@@ -153,7 +153,13 @@ export class Logger implements LoggerService {
 
     /** @internal */
     error(message: any, trace?: string, context?: string): any {
-        this.instance.error(message, context, trace);
+        // Nestjs ExceptionHandler can't log Error instances properly, so we need to handle them separately.
+        if (message instanceof Error) {
+            const err = message;
+            this.instance.error(err.message, context, err.stack);
+        } else {
+            this.instance.error(message, context, trace);
+        }
     }
 
     /** @internal */

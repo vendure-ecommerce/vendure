@@ -1,10 +1,10 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     DeletionResponse,
-    DeletionResult,
     MutationCreateProductOptionArgs,
     MutationCreateProductOptionGroupArgs,
     MutationDeleteProductOptionArgs,
+    MutationDeleteProductOptionGroupArgs,
     MutationUpdateProductOptionArgs,
     MutationUpdateProductOptionGroupArgs,
     Permission,
@@ -13,8 +13,8 @@ import {
 } from '@vendure/common/lib/generated-types';
 
 import { Translated } from '../../../common/types/locale-types';
-import { ProductOption } from '../../../entity/product-option/product-option.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
+import { ProductOption } from '../../../entity/product-option/product-option.entity';
 import { ProductOptionGroupService } from '../../../service/services/product-option-group.service';
 import { ProductOptionService } from '../../../service/services/product-option.service';
 import { RequestContext } from '../../common/request-context';
@@ -59,7 +59,6 @@ export class ProductOptionResolver {
     ): Promise<Translated<ProductOptionGroup>> {
         const { input } = args;
         const group = await this.productOptionGroupService.create(ctx, input);
-
         if (input.options && input.options.length) {
             for (const option of input.options) {
                 const newOption = await this.productOptionService.create(ctx, group, option);
@@ -78,6 +77,16 @@ export class ProductOptionResolver {
     ): Promise<Translated<ProductOptionGroup>> {
         const { input } = args;
         return this.productOptionGroupService.update(ctx, input);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.DeleteCatalog, Permission.DeleteProduct)
+    async deleteProductOptionGroup(
+        @Ctx() ctx: RequestContext,
+        @Args() { id }: MutationDeleteProductOptionGroupArgs,
+    ): Promise<DeletionResponse> {
+        return this.productOptionGroupService.deleteGroupAndOptions(ctx, id);
     }
 
     @Transaction()

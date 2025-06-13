@@ -25,7 +25,6 @@ import { assertFound, idsAreEqual } from '../../common/utils';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Channel } from '../../entity/channel/channel.entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
-import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { ProductTranslation } from '../../entity/product/product-translation.entity';
 import { Product } from '../../entity/product/product.entity';
@@ -297,9 +296,10 @@ export class ProductService {
             await this.connection.rollBackTransaction(ctx);
             return variantResult;
         }
+
         for (const optionGroup of product.optionGroups) {
             if (!optionGroup.deletedAt) {
-                const groupResult = await this.productOptionGroupService.deleteGroupAndOptionsFromProduct(
+                const groupResult = await this.productOptionGroupService.deleteGroupAndOptions(
                     ctx,
                     optionGroup.id,
                     productId,
@@ -310,6 +310,7 @@ export class ProductService {
                 }
             }
         }
+
         return {
             result: DeletionResult.DELETED,
         };
@@ -386,14 +387,15 @@ export class ProductService {
         optionGroupId: ID,
     ): Promise<Translated<Product>> {
         const product = await this.getProductWithOptionGroups(ctx, productId);
-        const optionGroup = await this.connection.getRepository(ctx, ProductOptionGroup).findOne({
-            where: { id: optionGroupId },
-            relations: ['product'],
-        });
+        const optionGroup = await this.productOptionGroupService.findOne(ctx, optionGroupId, ['product']);
         if (!optionGroup) {
             throw new EntityNotFoundError('ProductOptionGroup', optionGroupId);
         }
-        if (optionGroup.product) {
+
+        if (
+            optionGroup.product ||
+            product?.productOptionGroups?.find(g => idsAreEqual(g.id, optionGroup.id))
+        ) {
             const translated = this.translator.translate(optionGroup.product, ctx);
             throw new UserInputError('error.product-option-group-already-assigned', {
                 groupCode: optionGroup.code,
@@ -401,10 +403,10 @@ export class ProductService {
             });
         }
 
-        if (Array.isArray(product.optionGroups)) {
-            product.optionGroups.push(optionGroup);
+        if (Array.isArray(product.productOptionGroups)) {
+            product.productOptionGroups.push(optionGroup);
         } else {
-            product.optionGroups = [optionGroup];
+            product.productOptionGroups = [optionGroup];
         }
 
         await this.connection.getRepository(ctx, Product).save(product, { reload: false });
@@ -421,15 +423,20 @@ export class ProductService {
         force?: boolean,
     ): Promise<ErrorResultUnion<RemoveOptionGroupFromProductResult, Translated<Product>>> {
         const product = await this.getProductWithOptionGroups(ctx, productId);
-        const optionGroup = product.optionGroups.find(g => idsAreEqual(g.id, optionGroupId));
+        const optionGroup =
+            product.optionGroups.find(g => idsAreEqual(g.id, optionGroupId)) ||
+            product.productOptionGroups.find(g => idsAreEqual(g.id, optionGroupId));
+
         if (!optionGroup) {
             throw new EntityNotFoundError('ProductOptionGroup', optionGroupId);
         }
+
         const optionIsInUse = product.variants.some(
             variant =>
                 variant.deletedAt == null &&
                 variant.options.some(option => idsAreEqual(option.groupId, optionGroupId)),
         );
+
         if (optionIsInUse) {
             if (!force) {
                 return new ProductOptionInUseError({
@@ -447,17 +454,23 @@ export class ProductService {
                 });
             }
         }
-        const result = await this.productOptionGroupService.deleteGroupAndOptionsFromProduct(
-            ctx,
-            optionGroupId,
-            productId,
-        );
-        product.optionGroups = product.optionGroups.filter(g => g.id !== optionGroupId);
-        await this.connection.getRepository(ctx, Product).save(product, { reload: false });
-        if (result.result === DeletionResult.NOT_DELETED) {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            throw new InternalServerError(result.message!);
+
+        if (optionGroup.productId) {
+            const result = await this.productOptionGroupService.deleteGroupAndOptions(
+                ctx,
+                optionGroupId,
+                productId,
+            );
+
+            if (result.result === DeletionResult.NOT_DELETED) {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                throw new InternalServerError(result.message!);
+            }
         }
+
+        product.optionGroups = product.optionGroups.filter(g => g.id !== optionGroupId);
+        product.productOptionGroups = product.productOptionGroups.filter(g => g.id !== optionGroupId);
+        await this.connection.getRepository(ctx, Product).save(product, { reload: false });
         await this.eventBus.publish(
             new ProductOptionGroupChangeEvent(ctx, product, optionGroupId, 'removed'),
         );
@@ -468,8 +481,8 @@ export class ProductService {
         const product = await this.connection.getRepository(ctx, Product).findOne({
             relationLoadStrategy: 'query',
             loadEagerRelations: false,
-            where: { id: productId, deletedAt: IsNull() },
-            relations: ['optionGroups', 'variants', 'variants.options'],
+            where: { id: productId, deletedAt: IsNull(), channels: { id: ctx.channelId } },
+            relations: ['optionGroups', 'productOptionGroups', 'variants', 'variants.options'],
         });
         if (!product) {
             throw new EntityNotFoundError('Product', productId);

@@ -1,13 +1,15 @@
-import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm';
+import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
+import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
-import { SoftDeletable } from '../../common/types/common-types';
+import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
+import { Channel } from '../channel/channel.entity';
 import { CustomProductOptionGroupFields } from '../custom-entity-fields';
-import { Product } from '../product/product.entity';
+import { EntityId } from '../entity-id.decorator';
 import { ProductOption } from '../product-option/product-option.entity';
+import { Product } from '../product/product.entity';
 
 import { ProductOptionGroupTranslation } from './product-option-group-translation.entity';
 
@@ -20,11 +22,12 @@ import { ProductOptionGroupTranslation } from './product-option-group-translatio
 @Entity()
 export class ProductOptionGroup
     extends VendureEntity
-    implements Translatable, HasCustomFields, SoftDeletable
+    implements Translatable, HasCustomFields, SoftDeletable, ChannelAware
 {
     constructor(input?: DeepPartial<ProductOptionGroup>) {
         super(input);
     }
+
     @Column({ type: Date, nullable: true })
     deletedAt: Date | null;
 
@@ -32,6 +35,9 @@ export class ProductOptionGroup
 
     @Column()
     code: string;
+
+    @Column({ default: false })
+    global: boolean;
 
     @OneToMany(type => ProductOptionGroupTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<ProductOptionGroup>>;
@@ -41,7 +47,17 @@ export class ProductOptionGroup
 
     @Index()
     @ManyToOne(type => Product, product => product.optionGroups)
-    product: Product;
+    product?: Product;
+
+    @EntityId({ nullable: true })
+    productId?: ID;
+
+    @ManyToMany(type => Product, product => product.productOptionGroups)
+    products: Product[];
+
+    @ManyToMany(type => Channel, channel => channel.productOptionGroups)
+    @JoinTable()
+    channels: Channel[];
 
     @Column(type => CustomProductOptionGroupFields)
     customFields: CustomProductOptionGroupFields;

@@ -2844,19 +2844,19 @@ describe('Orders resolver', () => {
                     {
                         productVariantId: 'T_2',
                         quantity: 999999, // Exceeds limit
-                    }
+                    },
                 ],
             });
-            const t1 = addItemsToOrder.order.lines.find(l => l.productVariant.id === 'T_1')
+            const t1 = addItemsToOrder.order.lines.find(l => l.productVariant.id === 'T_1');
             // Should have added 1 of T_1
             expect(t1?.quantity).toBe(1);
             // Should not have added T_2
-            const t2 = addItemsToOrder.order.lines.find(l => l.productVariant.id === 'T_2')
-            expect(t2).toBeUndefined(); 
+            const t2 = addItemsToOrder.order.lines.find(l => l.productVariant.id === 'T_2');
+            expect(t2).toBeUndefined();
             // Should have errors
             expect(addItemsToOrder.errorResults.length).toBe(1);
-            expect(addItemsToOrder.errorResults[0].errorCode).toBe('ORDER_LIMIT_ERROR')
-            expect(addItemsToOrder.errorResults[0].message).toBe('ORDER_LIMIT_ERROR')
+            expect(addItemsToOrder.errorResults[0].errorCode).toBe('ORDER_LIMIT_ERROR');
+            expect(addItemsToOrder.errorResults[0].message).toBe('ORDER_LIMIT_ERROR');
         });
     });
 });

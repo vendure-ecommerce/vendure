@@ -34,8 +34,10 @@ export class TransactionWrapper {
         const ctx = originalCtx.copy();
 
         const entityManager: EntityManager | undefined = (ctx as any)[TRANSACTION_MANAGER_KEY];
-        const queryRunner = entityManager?.queryRunner || connection.createQueryRunner();
-
+        let queryRunner = entityManager?.queryRunner;
+        if (!queryRunner || queryRunner.isReleased) {
+            queryRunner = connection.createQueryRunner();
+        }
         if (mode === 'auto') {
             await this.startTransaction(queryRunner, isolationLevel);
         }

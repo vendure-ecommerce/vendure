@@ -51,6 +51,7 @@ export function useGeneratedForm<
             }
             return result;
         },
+        mode: 'onChange',
         defaultValues,
         values: processedEntity ? setValues(processedEntity) : defaultValues,
     });
