@@ -202,7 +202,9 @@ export class ProductService {
             .andWhere('_product_translation.slug = :slug', { slug });
 
         qb.leftJoin('product.translations', 'translation')
+            .leftJoin('product.channels', 'channel')
             .andWhere('product.deletedAt IS NULL')
+            .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
             .andWhere('product.id IN (' + translationQb.getQuery() + ')')
             .setParameters(translationQb.getParameters())
             .select('product.id', 'id')
