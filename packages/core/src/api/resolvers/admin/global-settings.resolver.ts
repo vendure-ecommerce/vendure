@@ -1,10 +1,10 @@
 import { Args, Info, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import {
-    CustomFields as GraphQLCustomFields,
+    EntityCustomFields,
     CustomFieldConfig as GraphQLCustomFieldConfig,
+    CustomFields as GraphQLCustomFields,
     RelationCustomFieldConfig as GraphQLRelationCustomFieldConfig,
     StructCustomFieldConfig as GraphQLStructCustomFieldConfig,
-    EntityCustomFields,
     MutationUpdateGlobalSettingsArgs,
     Permission,
     ServerConfig,
@@ -135,18 +135,29 @@ export class GlobalSettingsResolver {
                     .filter(c => !c.internal)
                     .map(c => ({ ...c, list: !!c.list as any }))
                     .map(c => {
-                        const { requiresPermission } = c;
-                        c.requiresPermission = Array.isArray(requiresPermission)
+                        const { requiresPermission, deprecated } = c;
+                        const result: any = { ...c };
+                        result.requiresPermission = Array.isArray(requiresPermission)
                             ? requiresPermission
                             : !!requiresPermission
                               ? [requiresPermission]
                               : [];
-                        return c;
+
+                        // Handle deprecation
+                        if (deprecated !== undefined) {
+                            result.deprecated = !!deprecated;
+                            result.deprecationReason =
+                                typeof deprecated === 'string' ? deprecated : undefined;
+                        } else {
+                            result.deprecated = false;
+                            result.deprecationReason = undefined;
+                        }
+                        return result;
                     })
                     .map(c => {
                         // In the VendureConfig, the relation entity is specified
                         // as the class, but the GraphQL API exposes it as a string.
-                        const customFieldConfig: GraphQLCustomFieldConfig = { ...c } as any;
+                        const customFieldConfig: GraphQLCustomFieldConfig = { ...c };
                         if (this.isRelationGraphQLType(customFieldConfig) && this.isRelationConfigType(c)) {
                             customFieldConfig.entity = c.entity.name;
                             customFieldConfig.scalarFields = this.getScalarFieldsOfType(
