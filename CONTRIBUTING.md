@@ -233,7 +233,7 @@ Navigate to your forked repository on GitHub and create a pull request from ther
 
 For our [documentation](https://docs.vendure.io/), we use [Docusaurus](https://docusaurus.io/).
 
-After [setting up your development environment](#setting-up-the-dev-environment). Navigate to the docs directory and start the docusaurus server:
+After [setting up your development environment](#setting-up-the-dev-environment), navigate to the docs directory and start the docusaurus server:
 ```bash
 cd docs
 npm run start
@@ -256,10 +256,10 @@ If you wish to contribute translations of the Admin UI into another language (or
 
 ## Where to get help
 
-We have a relatively active discord community, join us there and ask away!
+We have an active discord community, join us there and ask away!
 [Vendure Discord](https://www.vendure.io/community) 
 
-Read the documentation - Our comprehensive [documentation](https://docs.vendure.io/) covers everything you need to know about Vendure. It also includes guides a references for the tools that we use.
+Read the documentation - Our comprehensive [documentation](https://docs.vendure.io/) covers everything you need to know about Vendure. It also includes guides and references for the tools that we use.
 
 In case your pull request doesn't meet our requirements, we're here to help! We'll provide thorough reviews with clear guidance on how to get your contribution merged.
 ## Contributor License Agreement
