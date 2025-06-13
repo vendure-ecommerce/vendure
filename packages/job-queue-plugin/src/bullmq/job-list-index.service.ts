@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Logger, ProcessContext } from '@vendure/core';
-import { Job, Queue, QueueEvents } from 'bullmq';
+import { Job, JobType, Queue, QueueEvents } from 'bullmq';
 import Redis, { Cluster } from 'ioredis';
 
 import { BULLMQ_PLUGIN_OPTIONS, loggerCtx } from './constants';
@@ -17,7 +17,11 @@ import { getPrefix } from './utils';
  * over the former approach of iterating over all jobs via the custom LUA script.
  *
  * This also means that we need to periodically clean up the sorted sets to remove jobs that have
- * been removed from the queue (via the automatic removal features of BullMQ).
+ * been removed from the queue (via the automatic removal features of BullMQ). Why do we need to
+ * do this scheduled cleanup? Because currently BullMQ does not provide an event for when a job
+ * is automatically removed from the queue, so we cannot listen for that event and remove. The
+ * "removed" event is only emitted when a job is removed manually via the `remove()` method.
+ * See https://github.com/taskforcesh/bullmq/issues/3209#issuecomment-2795102551
  */
 @Injectable()
 export class JobListIndexService {
@@ -25,6 +29,15 @@ export class JobListIndexService {
     private redis: Redis | Cluster;
     private queue: Queue | undefined;
     private queueEvents: QueueEvents | undefined;
+    private allStates: JobType[] = [
+        'wait',
+        'active',
+        'completed',
+        'failed',
+        'delayed',
+        'waiting-children',
+        'prioritized',
+    ];
 
     constructor(
         @Inject(BULLMQ_PLUGIN_OPTIONS) private readonly options: BullMQPluginOptions,
@@ -45,11 +58,16 @@ export class JobListIndexService {
     }
 
     private setupEventListeners() {
+        if (this.processContext.isServer) return;
         if (!this.queueEvents || !this.queue) return;
 
         // When a job is added to the queue
         this.queueEvents.on('waiting', ({ jobId }) => {
             void this.updateJobIndex(jobId, 'wait');
+        });
+
+        this.queueEvents.on('waiting-children', ({ jobId }) => {
+            void this.updateJobIndex(jobId, 'waiting-children');
         });
 
         // When a job starts processing
@@ -82,24 +100,23 @@ export class JobListIndexService {
      * When a job's state changes, we need to update the indexed set
      * to reflect the new state of the job.
      */
-    private async updateJobIndex(jobId: string, state: string) {
+    private async updateJobIndex(jobId: string, state: JobType) {
         if (!this.redis || !this.queue) return;
 
         try {
             const job: Job | undefined = await this.queue.getJob(jobId);
             if (!job) return;
-
-            const prefix = getPrefix(this.options);
-            const queuePrefix = `${prefix}:${this.queue.name}:`;
             const timestamp = job.timestamp;
+            const targetKey = this.createSortedSetKey(job.name, state);
 
             // Remove from all state indices first
             await this.removeJobFromAllIndices(jobId);
 
             // Add to the specific state index
-            const indexedKey = `${queuePrefix}queue:${job.name}:${state}` as const;
-            Logger.debug(`Adding job ${jobId} to indexed key: ${indexedKey}`, loggerCtx);
-            await this.redis.zadd(indexedKey, timestamp, jobId);
+            const result = await this.redis.zadd(targetKey, timestamp, jobId);
+            if (result === 1) {
+                Logger.debug(`Added job ${jobId} to indexed key: ${targetKey}`, loggerCtx);
+            }
         } catch (err: unknown) {
             const error = err as Error;
             Logger.error(`Failed to update job index: ${error.message}`, loggerCtx);
@@ -110,16 +127,12 @@ export class JobListIndexService {
         if (!this.redis || !this.queue) return;
 
         try {
-            const prefix = this.options.workerOptions?.prefix ?? 'bull';
-            const queuePrefix = `${prefix}:${this.queue.name}:`;
             const job: Job | undefined = await this.queue.getJob(jobId);
             if (!job) return;
-
-            const states = ['wait', 'active', 'completed', 'failed', 'delayed'] as const;
             const pipeline = this.redis.pipeline();
 
-            for (const state of states) {
-                const indexedKey = `${queuePrefix}queue:${job.name}:${state}` as const;
+            for (const state of this.allStates) {
+                const indexedKey = this.createSortedSetKey(job.name, state);
                 pipeline.zrem(indexedKey, jobId);
             }
 
@@ -128,29 +141,6 @@ export class JobListIndexService {
             const error = err as Error;
             Logger.error(`Failed to remove job from indices: ${error.message}`, loggerCtx);
         }
-    }
-
-    /**
-     * @description
-     * Adds a job to the corresponding sorted set, so that we can efficiently query the list of jobs
-     * in the queue.
-     */
-    add(job: Job) {
-        if (!this.redis || !this.queue) {
-            throw new Error(
-                'Redis connection or queue not registered. The IndexedSetService must be registered with the BullMQJobQueueStrategy.',
-            );
-        }
-        if (!job.id) {
-            return;
-        }
-        // Add to our indexed structure
-        const prefix = this.options.workerOptions?.prefix ?? 'bull';
-        const queuePrefix = `${prefix}:${this.queue.name}:`;
-        const timestamp = Date.now();
-        const indexedKey = `${queuePrefix}queue:${job.name}`;
-        Logger.verbose(`Adding job ${job.id} to indexed key: ${indexedKey}`, loggerCtx);
-        return this.redis.zadd(indexedKey, timestamp, job.id);
     }
 
     /**
@@ -167,20 +157,15 @@ export class JobListIndexService {
         if (!this.redis || !this.queue) {
             throw new Error('Redis and Queue must be registered before migrating jobs');
         }
-
-        Logger.info('Starting migration of existing jobs to indexed sets...', loggerCtx);
-        const prefix = getPrefix(this.options);
-        const queuePrefix = `${prefix}:${this.queue.name}:`;
-
+        Logger.debug('Starting migration of existing jobs to indexed sets...', loggerCtx);
         // Get counts of jobs in each state
         const counts = await this.queue.getJobCounts();
-        Logger.verbose(`Found job counts: ${JSON.stringify(counts)}`, loggerCtx);
+        Logger.debug(`Found job counts: ${JSON.stringify(counts)}`, loggerCtx);
 
-        // Get all jobs from each state
-        const states = ['wait', 'active', 'completed', 'failed', 'delayed', 'paused'] as const;
         let totalMigrated = 0;
 
-        for (const state of states) {
+        // Get all jobs from each state
+        for (const state of this.allStates) {
             if (counts[state] > 0) {
                 Logger.debug(`Processing ${counts[state]} jobs in ${state} state`, loggerCtx);
                 if (!this.queue) {
@@ -210,7 +195,7 @@ export class JobListIndexService {
 
                     // Create sorted sets for each queue in this state
                     for (const [queueName, queueJobs] of jobsByQueue) {
-                        const indexedKey = `${queuePrefix}queue:${queueName}:${state}`;
+                        const indexedKey = this.createSortedSetKey(queueName, state);
                         const exists = await this.redis.exists(indexedKey);
                         if (exists === 0) {
                             Logger.info(
@@ -253,17 +238,14 @@ export class JobListIndexService {
             throw new Error('Redis and Queue must be registered before cleaning up indexed sets');
         }
 
-        const prefix = getPrefix(this.options);
-        const queuePrefix = `${prefix}:${this.queue.name}:`;
-
         // Get all queue names from our indexed sets
-        const keys = await this.redis.keys(`${queuePrefix}queue:*`);
+        const allStateKeys = this.createSortedSetKey('*');
+        const keys = await this.redis.keys(allStateKeys);
         const result: Array<{ queueName: string; jobsRemoved: number }> = [];
         const startTime = Date.now();
         Logger.verbose(`Cleaning up ${keys.length} indexed sets`, loggerCtx);
 
         for (const key of keys) {
-            const queueName = key.replace(`${queuePrefix}queue:`, '');
             let cursor = '0';
             let jobsRemoved = 0;
 
@@ -279,7 +261,7 @@ export class JobListIndexService {
                     // Check existence of jobs directly in Redis
                     const pipeline = this.redis.pipeline();
                     for (const jobId of jobIds) {
-                        pipeline.exists(`${queuePrefix}${jobId}`);
+                        pipeline.exists(this.createQueueItemKey(jobId));
                     }
                     const existsResults = await pipeline.exec();
 
@@ -308,5 +290,25 @@ export class JobListIndexService {
         const endTime = Date.now();
         Logger.verbose(`Cleaned up ${keys.length} indexed sets in ${endTime - startTime}ms`, loggerCtx);
         return result;
+    }
+
+    private createSortedSetKey(queueName: string, state?: string): string {
+        const prefix = getPrefix(this.options);
+        if (!this.queue) {
+            throw new Error('Queue is not initialized');
+        }
+        let key = `${prefix}:${this.queue.name}:queue:${queueName}`;
+        if (state) {
+            key += `:${state}`;
+        }
+        return key;
+    }
+
+    private createQueueItemKey(jobId: string): string {
+        const prefix = getPrefix(this.options);
+        if (!this.queue) {
+            throw new Error('Queue is not initialized');
+        }
+        return `${prefix}:${this.queue.name}:${jobId}`;
     }
 }

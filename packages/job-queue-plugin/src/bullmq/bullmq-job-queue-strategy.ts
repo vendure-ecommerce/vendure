@@ -164,8 +164,6 @@ export class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
             backoff: typeof backoff === 'number' || 'type' in backoff ? backoff : undefined,
             ...customJobOptions,
         });
-
-        void this.jobListIndexService.add(bullJob);
         return this.createVendureJob(bullJob);
     }
 
