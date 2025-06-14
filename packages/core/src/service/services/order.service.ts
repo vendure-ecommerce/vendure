@@ -891,6 +891,19 @@ export class OrderService {
         if (validationError) {
             return validationError;
         }
+
+        const { orderInterceptors } = this.configService.orderOptions;
+        for (const orderLine of order.lines) {
+            for (const interceptor of orderInterceptors) {
+                if (interceptor.willRemoveItemFromOrder) {
+                    const error = await interceptor.willRemoveItemFromOrder(ctx, order, orderLine);
+                    if (error) {
+                        return new OrderInterceptorError({ interceptorError: error });
+                    }
+                }
+            }
+        }
+
         await this.connection.getRepository(ctx, OrderLine).remove(order.lines);
         order.lines = [];
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
