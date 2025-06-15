@@ -40,7 +40,11 @@ export class ProductOptionEntityResolver {
             return option.group;
         }
         return this.requestContextCache.get(ctx, `ProductOptionEntityResolver.group(${option.groupId})`, () =>
-            assertFound(this.productOptionGroupService.findOne(ctx, option.groupId)),
+            assertFound(
+                this.productOptionGroupService.findOne(ctx, option.groupId, undefined, {
+                    includeSoftDeleted: true,
+                }),
+            ),
         );
     }
 }
