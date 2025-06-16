@@ -30,11 +30,11 @@ import { BullMQPluginOptions } from './types';
  *
  * ## Installation
  *
- * `yarn add \@vendure/job-queue-plugin bullmq`
+ * Note: To use this plugin, you need to manually install the `bullmq` package:
  *
- * or
- *
- * `npm install \@vendure/job-queue-plugin bullmq`
+ * ```shell
+ * npm install bullmq@^5.4.2
+ * ```
  *
  * **Note:** The v1.x version of this plugin is designed to work with bullmq v1.x, etc.
  *
