@@ -339,9 +339,7 @@ __Using dryRun option, you must wrap function call in transaction manually.__
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, paymentId: <a href='/reference/typescript-api/common/id#id'>ID</a>, state: <a href='/reference/typescript-api/payment/payment-state#paymentstate'>PaymentState</a>) => Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;TransitionPaymentToStateResult, <a href='/reference/typescript-api/entities/payment#payment'>Payment</a>&#62;&#62;`}   />
 
-Transitions the given <a href='/reference/typescript-api/entities/payment#payment'>Payment</a> to a new state. If the order totalWithTax price is then
-covered by Payments, the Order state will be automatically transitioned to `PaymentSettled`
-or `PaymentAuthorized`.
+Transitions the given <a href='/reference/typescript-api/entities/payment#payment'>Payment</a> to a new state.
 ### addPaymentToOrder
 
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, orderId: <a href='/reference/typescript-api/common/id#id'>ID</a>, input: PaymentInput) => Promise&#60;<a href='/reference/typescript-api/errors/error-result-union#errorresultunion'>ErrorResultUnion</a>&#60;AddPaymentToOrderResult, <a href='/reference/typescript-api/entities/order#order'>Order</a>&#62;&#62;`}   />

@@ -76,6 +76,8 @@ function FeaturedAsset({
             ) : (
                 <div
                     className="flex flex-col items-center justify-center text-muted-foreground cursor-pointer"
+                    onKeyDown={e => e.key === 'Enter' && onSelectAssets()}
+                    tabIndex={0}
                     onClick={onSelectAssets}
                 >
                     <ImageIcon className={compact ? 'h-10 w-10' : 'h-16 w-16'} />

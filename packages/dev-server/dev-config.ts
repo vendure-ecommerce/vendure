@@ -18,6 +18,7 @@ import { TelemetryPlugin } from '@vendure/telemetry-plugin';
 import 'dotenv/config';
 import path from 'path';
 import { DataSourceOptions } from 'typeorm';
+import { ReviewsPlugin } from './test-plugins/reviews/reviews-plugin';
 
 const IS_INSTRUMENTED = process.env.IS_INSTRUMENTED === 'true';
 
@@ -98,6 +99,7 @@ export const devConfig: VendureConfig = {
         //     platformFeePercent: 10,
         //     platformFeeSKU: 'FEE',
         // }),
+        ReviewsPlugin,
         GraphiqlPlugin.init(),
         AssetServerPlugin.init({
             route: 'assets',

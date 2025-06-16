@@ -31,7 +31,7 @@ export function HumanReadableOperator({
         case 'between':
             return mode === 'short' ? <Trans>between</Trans> : <Trans>is between</Trans>;
         case 'isNull':
-            return mode === 'short' ? <Trans>is null</Trans> : <Trans>is null</Trans>;
+            return <Trans>is null</Trans>;
         case 'in':
             return mode === 'short' ? <Trans>in</Trans> : <Trans>is in</Trans>;
         case 'notIn':
@@ -53,11 +53,11 @@ export function HumanReadableOperator({
                 <Trans>is less than or equal to</Trans>
             );
         case 'contains':
-            return mode === 'short' ? <Trans>contains</Trans> : <Trans>contains</Trans>;
+            return <Trans>contains</Trans>;
         case 'notContains':
-            return mode === 'short' ? <Trans>does not contain</Trans> : <Trans>does not contain</Trans>;
+            return <Trans>does not contain</Trans>;
         case 'regex':
-            return mode === 'short' ? <Trans>matches regex</Trans> : <Trans>matches regex</Trans>;
+            return <Trans>matches regex</Trans>;
         default:
             operator satisfies never;
             return <Trans>{operator}</Trans>;

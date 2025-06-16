@@ -1,5 +1,6 @@
 import {
     AdditionalColumns,
+    CustomFieldKeysOfItem,
     CustomizeColumnConfig,
     FacetedFilterConfig,
     ListQueryOptionsShape,
@@ -7,11 +8,11 @@ import {
     PaginatedListDataTable,
     RowAction,
 } from '@/components/shared/paginated-list-data-table.js';
+import { useUserSettings } from '@/hooks/use-user-settings.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRoute, AnyRouter, useNavigate } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
 import { TableOptions } from '@tanstack/table-core';
-import { useUserSettings } from '@/hooks/use-user-settings.js';
 import { ResultOf } from 'gql.tada';
 
 import { addCustomFields } from '../document-introspection/add-custom-fields.js';
@@ -54,9 +55,11 @@ export interface ListPageProps<
     onSearchTermChange?: (searchTerm: string) => NonNullable<V['options']>['filter'];
     customizeColumns?: CustomizeColumnConfig<T>;
     additionalColumns?: AC;
-    defaultColumnOrder?: (keyof ListQueryFields<T> | keyof AC)[];
+    defaultColumnOrder?: (keyof ListQueryFields<T> | keyof AC | CustomFieldKeysOfItem<ListQueryFields<T>>)[];
     defaultSort?: SortingState;
-    defaultVisibility?: Partial<Record<keyof ListQueryFields<T> | keyof AC, boolean>>;
+    defaultVisibility?: Partial<
+        Record<keyof ListQueryFields<T> | keyof AC | CustomFieldKeysOfItem<ListQueryFields<T>>, boolean>
+    >;
     children?: React.ReactNode;
     facetedFilters?: FacetedFilterConfig<T>;
     rowActions?: RowAction<ListQueryFields<T>>[];
@@ -107,11 +110,13 @@ export function ListPage<
 
     const pagination = {
         page: routeSearch.page ? parseInt(routeSearch.page) : 1,
-        itemsPerPage: routeSearch.perPage ? parseInt(routeSearch.perPage) : tableSettings?.pageSize ?? 10,
+        itemsPerPage: routeSearch.perPage ? parseInt(routeSearch.perPage) : (tableSettings?.pageSize ?? 10),
     };
 
-    const columnVisibility = pageId ? tableSettings?.columnVisibility ?? defaultVisibility : defaultVisibility;
-    const columnOrder = pageId ? tableSettings?.columnOrder ?? defaultColumnOrder : defaultColumnOrder;
+    const columnVisibility = pageId
+        ? (tableSettings?.columnVisibility ?? defaultVisibility)
+        : defaultVisibility;
+    const columnOrder = pageId ? (tableSettings?.columnOrder ?? defaultColumnOrder) : defaultColumnOrder;
     const columnFilters = pageId ? tableSettings?.columnFilters : routeSearch.filters;
 
     const sorting: SortingState = (routeSearch.sort ?? '')

@@ -11,10 +11,16 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## BullMQJobQueueStrategy
 
-<GenerationInfo sourceFile="packages/job-queue-plugin/src/bullmq/bullmq-job-queue-strategy.ts" sourceLine="42" packageName="@vendure/job-queue-plugin" />
+<GenerationInfo sourceFile="packages/job-queue-plugin/src/bullmq/bullmq-job-queue-strategy.ts" sourceLine="53" packageName="@vendure/job-queue-plugin" />
 
 This JobQueueStrategy uses [BullMQ](https://docs.bullmq.io/) to implement a push-based job queue
 on top of Redis. It should not be used alone, but as part of the <a href='/reference/core-plugins/job-queue-plugin/bull-mqjob-queue-plugin#bullmqjobqueueplugin'>BullMQJobQueuePlugin</a>.
+
+Note: To use this strategy, you need to manually install the `bullmq` package:
+
+```shell
+npm install bullmq@^5.4.2
+```
 
 ```ts title="Signature"
 class BullMQJobQueueStrategy implements InspectableJobQueueStrategy {
