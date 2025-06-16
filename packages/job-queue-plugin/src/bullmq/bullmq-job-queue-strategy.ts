@@ -42,10 +42,10 @@ import { getPrefix } from './utils';
  * This JobQueueStrategy uses [BullMQ](https://docs.bullmq.io/) to implement a push-based job queue
  * on top of Redis. It should not be used alone, but as part of the {@link BullMQJobQueuePlugin}.
  *
- * Note: To use this strategy, you need to manually install the `bullmq` and `ioredis` packages:
+ * Note: To use this strategy, you need to manually install the `bullmq` package:
  *
  * ```shell
- * npm install bullmq@^5.4.2 ioredis@^5.3.2
+ * npm install bullmq@^5.4.2
  * ```
  *
  * @docsCategory core plugins/JobQueuePlugin

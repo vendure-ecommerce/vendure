@@ -30,10 +30,10 @@ import { BullMQPluginOptions } from './types';
  *
  * ## Installation
  *
- * Note: To use this plugin, you need to manually install the `bullmq` and `ioredis` packages:
+ * Note: To use this plugin, you need to manually install the `bullmq` package:
  *
  * ```shell
- * npm install bullmq@^5.4.2 ioredis@^5.3.2
+ * npm install bullmq@^5.4.2
  * ```
  *
  * **Note:** The v1.x version of this plugin is designed to work with bullmq v1.x, etc.
