@@ -481,7 +481,7 @@ export class OrderService {
         order = patchEntity(order, { customFields });
         const updatedOrder = await this.connection.getRepository(ctx, Order).save(order);
         await this.customFieldRelationService.updateRelations(ctx, Order, { customFields }, updatedOrder);
-        await this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated'));
+        await this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated', { customFields }));
         return updatedOrder;
     }
 
@@ -515,7 +515,7 @@ export class OrderService {
         }
 
         const updatedOrder = await this.addCustomerToOrder(ctx, order.id, targetCustomer);
-        await this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated'));
+        await this.eventBus.publish(new OrderEvent(ctx, updatedOrder, 'updated', targetCustomer));
         await this.historyService.createHistoryEntryForOrder({
             ctx,
             orderId,
