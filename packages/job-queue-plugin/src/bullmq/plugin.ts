@@ -34,8 +34,6 @@ import { BullMQPluginOptions } from './types';
  *
  * ```shell
  * npm install bullmq@^5.4.2 ioredis@^5.3.2
- * # or
- * yarn add bullmq@^5.4.2 ioredis@^5.3.2
  * ```
  *
  * **Note:** The v1.x version of this plugin is designed to work with bullmq v1.x, etc.

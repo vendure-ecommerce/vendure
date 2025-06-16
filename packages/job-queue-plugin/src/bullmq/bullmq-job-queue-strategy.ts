@@ -46,8 +46,6 @@ import { getPrefix } from './utils';
  *
  * ```shell
  * npm install bullmq@^5.4.2 ioredis@^5.3.2
- * # or
- * yarn add bullmq@^5.4.2 ioredis@^5.3.2
  * ```
  *
  * @docsCategory core plugins/JobQueuePlugin

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## BullMQJobQueuePlugin
 
-<GenerationInfo sourceFile="packages/job-queue-plugin/src/bullmq/plugin.ts" sourceLine="194" packageName="@vendure/job-queue-plugin" />
+<GenerationInfo sourceFile="packages/job-queue-plugin/src/bullmq/plugin.ts" sourceLine="192" packageName="@vendure/job-queue-plugin" />
 
 This plugin is a drop-in replacement of the DefaultJobQueuePlugin, which implements a push-based
 job queue strategy built on top of the popular [BullMQ](https://github.com/taskforcesh/bullmq) library.
@@ -36,8 +36,6 @@ Note: To use this plugin, you need to manually install the `bullmq` and `ioredis
 
 ```shell
 npm install bullmq@^5.4.2 ioredis@^5.3.2
-# or
-yarn add bullmq@^5.4.2 ioredis@^5.3.2
 ```
 
 **Note:** The v1.x version of this plugin is designed to work with bullmq v1.x, etc.
