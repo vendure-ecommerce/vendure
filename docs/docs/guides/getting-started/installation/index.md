@@ -47,12 +47,7 @@ Once the installation is done, your terminal will output a message indicating a 
 - Your admin log-in credentials.
 - The project file path
 
-Run the following commands to start the server, replace `my-shop` with the name of your project:
-
-```bash
-cd my-shop
-npm run dev
-```
+Proceed to the [Start the server](#start-the-server) section below to run your Vendure server.
 
 ### Manual Configuration
 
