@@ -286,6 +286,7 @@ export class TransactionalConnection {
                 id,
                 options.channelId,
                 optionsWithoutChannelId,
+                options.ignoreGlobal,
             );
         } else {
             const optionsWithId = {
