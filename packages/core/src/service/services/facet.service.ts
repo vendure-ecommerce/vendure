@@ -158,9 +158,8 @@ export class FacetService {
     async create(ctx: RequestContext, input: CreateFacetInput): Promise<Translated<Facet>> {
         const isCreatingGlobal = input.global === true;
         if (isCreatingGlobal && !ctx.userHasPermissions([Permission.CreateGlobalFacet])) {
-            throw new ForbiddenError(LogLevel.Verbose);
+            throw new ForbiddenError();
         }
-
         const facet = await this.translatableSaver.create({
             ctx,
             input,
@@ -182,14 +181,17 @@ export class FacetService {
     }
 
     async update(ctx: RequestContext, input: UpdateFacetInput): Promise<Translated<Facet>> {
-        const facet = await this.connection.getEntityOrThrow(ctx, Facet, input.id);
+        const facet = await this.connection.getEntityOrThrow(ctx, Facet, input.id, {
+            channelId: ctx.channelId,
+            ignoreGlobal: true,
+        });
         const isUpdatingGlobal = facet.global === true;
         const isChangingToGlobal = facet.global !== undefined && !facet.global && input.global;
         if (isUpdatingGlobal && !ctx.userHasPermissions([Permission.UpdateGlobalFacet])) {
-            throw new ForbiddenError(LogLevel.Verbose);
+            throw new ForbiddenError();
         }
         if (isChangingToGlobal && !ctx.userHasPermissions([Permission.CreateGlobalFacet])) {
-            throw new ForbiddenError(LogLevel.Verbose);
+            throw new ForbiddenError();
         }
 
         const updatedFacet = await this.translatableSaver.update({
@@ -212,8 +214,8 @@ export class FacetService {
         const facet = await this.connection.getEntityOrThrow(ctx, Facet, id, {
             relations: ['values'],
             channelId: ctx.channelId,
+            ignoreGlobal: true,
         });
-
         const isDeletingGlobal = facet.global === true;
         if (isDeletingGlobal && !ctx.userHasPermissions([Permission.DeleteGlobalFacet])) {
             throw new ForbiddenError(LogLevel.Verbose);

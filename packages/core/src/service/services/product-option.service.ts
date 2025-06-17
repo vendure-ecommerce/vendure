@@ -8,7 +8,6 @@ import {
     UpdateProductOptionInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { Brackets, FindOptionsUtils } from 'typeorm';
 
 import { RelationPaths } from '../../api';
 import { RequestContext } from '../../api/common/request-context';
@@ -83,22 +82,12 @@ export class ProductOptionService {
     }
 
     findOne(ctx: RequestContext, id: ID): Promise<Translated<ProductOption> | undefined> {
-        const qb = this.connection.getRepository(ctx, ProductOption).createQueryBuilder('option');
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
-        return qb
-            .leftJoinAndSelect('option.group', 'group')
-            .leftJoin('option.channels', 'channels')
-            .where('option.id = :id', { id })
-            .andWhere('option.deletedAt IS NULL')
-            .andWhere(
-                new Brackets(qb1 => {
-                    qb1.where('group.global = true')
-                        .orWhere('channels.id = :channelId', { channelId: ctx.channelId })
-                        .orWhere('group.productId IS NOT NULL');
-                }),
-            )
-            .getOne()
+        return this.connection
+            .getRepository(ctx, ProductOption)
+            .findOne({
+                where: { id },
+                relations: ['group'],
+            })
             .then(option => (option && this.translator.translate(option, ctx)) ?? undefined);
     }
 
@@ -111,7 +100,6 @@ export class ProductOptionService {
             group instanceof ProductOptionGroup
                 ? group
                 : await this.connection.getEntityOrThrow(ctx, ProductOptionGroup, group);
-
         if (productOptionGroup.global) {
             if (!ctx.userHasPermissions([Permission.CreateGlobalProductOption])) {
                 throw new ForbiddenError(LogLevel.Verbose);
@@ -142,13 +130,13 @@ export class ProductOptionService {
     async update(ctx: RequestContext, input: UpdateProductOptionInput): Promise<Translated<ProductOption>> {
         const { group } = await this.connection.getEntityOrThrow(ctx, ProductOption, input.id, {
             relations: ['group'],
+            channelId: ctx.channelId,
+            ignoreGlobal: true,
         });
-
         const isUpdatingGlobal = group.global === true;
         if (isUpdatingGlobal && !ctx.userHasPermissions([Permission.UpdateGlobalProductOption])) {
             throw new ForbiddenError(LogLevel.Verbose);
         }
-
         const option = await this.translatableSaver.update({
             ctx,
             input,
@@ -172,12 +160,13 @@ export class ProductOptionService {
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         const productOption = await this.connection.getEntityOrThrow(ctx, ProductOption, id, {
             relations: ['group'],
+            channelId: ctx.channelId,
+            ignoreGlobal: true,
         });
         const isDeletingGlobal = productOption.group.global === true;
         if (isDeletingGlobal && !ctx.userHasPermissions([Permission.DeleteGlobalProductOption])) {
             throw new ForbiddenError(LogLevel.Verbose);
         }
-
         const deletedProductOption = new ProductOption(productOption);
         const inUseByActiveVariants = await this.isInUse(ctx, productOption, 'active');
         if (0 < inUseByActiveVariants) {

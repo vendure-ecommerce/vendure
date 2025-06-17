@@ -15,6 +15,7 @@ import {
     ReplicationMode,
     Repository,
     SelectQueryBuilder,
+    WhereExpressionBuilder,
 } from 'typeorm';
 
 import { RequestContext } from '../api/common/request-context';
@@ -320,6 +321,7 @@ export class TransactionalConnection {
         id: ID,
         channelId: ID,
         options: FindOneOptions<T> = {},
+        ignoreGlobal?: boolean,
     ) {
         const qb = this.getRepository(ctx, entity).createQueryBuilder('entity');
 
@@ -337,7 +339,7 @@ export class TransactionalConnection {
         });
 
         qb.andWhere('entity.id = :id', { id });
-        applyGlobalAndChannelConditions(qb, channelId, options.relations);
+        applyChannelConditions(qb, channelId, options.relations, ignoreGlobal);
 
         return qb.getOne().then(result => {
             return result ?? undefined;
@@ -355,6 +357,7 @@ export class TransactionalConnection {
         ids: ID[],
         channelId: ID,
         options: FindManyOptions<T>,
+        ignoreGlobal?: boolean,
     ) {
         // the syntax described in https://github.com/typeorm/typeorm/issues/1239#issuecomment-366955628
         // breaks if the array is empty
@@ -381,7 +384,7 @@ export class TransactionalConnection {
         });
 
         qb.andWhere('entity.id IN (:...ids)', { ids });
-        applyGlobalAndChannelConditions(qb, channelId, options.relations);
+        applyChannelConditions(qb, channelId, options.relations, ignoreGlobal);
         return qb.getMany();
     }
 
@@ -390,17 +393,56 @@ export class TransactionalConnection {
     }
 }
 
-export function applyGlobalAndChannelConditions<T extends ChannelAware | VendureEntity>(
+export function applyChannelConditions<T extends ChannelAware | VendureEntity>(
     qb: SelectQueryBuilder<T>,
     channelId: ID,
+    relations: FindOptionsRelations<T> | FindOptionsRelationByString | undefined,
+    ignoreGlobal: boolean = false,
+) {
+    qb.leftJoin(`${qb.alias}.channels`, 'channel').andWhere(
+        new Brackets(qb1 => {
+            if (!ignoreGlobal) {
+                addGlobalConditions(qb1, qb, relations);
+            }
+            qb1.orWhere('channel.id = :channelId', { channelId });
+        }),
+    );
+}
+
+/**
+ * Adds conditions to include global entities in the query
+ */
+function addGlobalConditions<T extends ChannelAware | VendureEntity>(
+    whereBuilder: WhereExpressionBuilder,
+    qb: SelectQueryBuilder<T>,
     relations: FindOptionsRelationByString | FindOptionsRelations<T> | undefined,
 ) {
     const hasGlobalField = qb.expressionMap.mainAlias?.metadata.columns.some(
         col => col.propertyName === 'global',
     );
+    if (hasGlobalField) {
+        whereBuilder.where(`${qb.alias}.global = true`);
+    }
 
     const relationsArray = relations ? findOptionsObjectToArray(relations) : [];
-    const relationsWithGlobal = relationsArray
+    const relationsWithGlobal = findRelationsWithGlobalField(qb, relationsArray);
+    for (const relation of relationsWithGlobal) {
+        const relationAlias = relation.split('.').pop() || relation;
+        if (!isRelationAlreadyJoined(qb, relationAlias)) {
+            qb.leftJoin(`${qb.alias}.${relation}`, relationAlias);
+        }
+        whereBuilder.orWhere(`${relationAlias}.global = true`);
+    }
+}
+
+/**
+ * Finds relations that have a global field
+ */
+function findRelationsWithGlobalField<T extends ChannelAware | VendureEntity>(
+    qb: SelectQueryBuilder<T>,
+    relations: string[],
+): string[] {
+    return relations
         .map(relation => {
             const relationMetadata =
                 qb.expressionMap.mainAlias?.metadata.findRelationWithPropertyPath(relation);
@@ -409,27 +451,7 @@ export function applyGlobalAndChannelConditions<T extends ChannelAware | Vendure
             }
             return null;
         })
-        .filter((r): r is string => r !== null);
-
-    for (const relation of relationsWithGlobal) {
-        const relationAlias = relation.split('.').pop() || relation;
-        if (!isRelationAlreadyJoined(qb, relationAlias)) {
-            qb.leftJoin(`${qb.alias}.${relation}`, relationAlias);
-        }
-    }
-
-    qb.leftJoin(`${qb.alias}.channels`, 'channel').andWhere(
-        new Brackets(qb1 => {
-            if (hasGlobalField) {
-                qb1.where(`${qb.alias}.global = true`);
-            }
-            for (const relation of relationsWithGlobal) {
-                const relationAlias = relation.split('.').pop() || relation;
-                qb1.orWhere(`${relationAlias}.global = true`);
-            }
-            qb1.orWhere('channel.id = :channelId', { channelId });
-        }),
-    );
+        .filter(r => r !== null);
 }
 
 function isRelationAlreadyJoined<T extends ChannelAware | VendureEntity>(

@@ -40,4 +40,11 @@ export interface GetEntityOrThrowOptions<T = any> extends FindOneOptions<T> {
      * @default false
      */
     includeSoftDeleted?: boolean;
+    /**
+     * @description
+     * If set to `true`, global entities will not be returned.
+     *
+     * @default false
+     */
+    ignoreGlobal?: boolean;
 }

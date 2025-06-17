@@ -23,7 +23,7 @@ import {
 } from '../../../common';
 import { Instrument } from '../../../common/instrument-decorator';
 import { ConfigService, CustomFields, Logger } from '../../../config';
-import { applyGlobalAndChannelConditions, TransactionalConnection } from '../../../connection';
+import { applyChannelConditions, TransactionalConnection } from '../../../connection';
 import { VendureEntity } from '../../../entity';
 import { joinTreeRelationsDynamically } from '../utils/tree-relations-qb-joiner';
 
@@ -124,6 +124,13 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
      * @default false
      */
     ignoreQueryLimits?: boolean;
+    /**
+     * @description
+     * If set to `true`, global entities will not be returned.
+     *
+     * @default false
+     */
+    ignoreGlobal?: boolean;
 };
 
 /**
@@ -327,7 +334,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         }
 
         if (extendedOptions.channelId) {
-            applyGlobalAndChannelConditions(qb, extendedOptions.channelId, relations);
+            applyChannelConditions(qb, extendedOptions.channelId, relations, extendedOptions.ignoreGlobal);
         }
 
         qb.orderBy(sort);

@@ -7,12 +7,12 @@ import {
     UpdateProductOptionGroupInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { Brackets, FindManyOptions, FindOptionsUtils, Like } from 'typeorm';
+import { Brackets, FindManyOptions, FindOptionsUtils, IsNull, Like, Not } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { ListQueryOptions } from '../../common';
-import { EntityNotFoundError, ForbiddenError } from '../../common/error/errors';
+import { ForbiddenError } from '../../common/error/errors';
 import { Instrument } from '../../common/instrument-decorator';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
@@ -98,24 +98,15 @@ export class ProductOptionGroupService {
         id: ID,
         relations?: RelationPaths<ProductOptionGroup>,
     ): Promise<Translated<ProductOptionGroup> | undefined> {
-        const qb = this.connection
+        return this.connection
             .getRepository(ctx, ProductOptionGroup)
-            .createQueryBuilder('group')
-            .setFindOptions({ relations: relations ?? ['options'] });
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
-        return qb
-            .leftJoin('group.channels', 'channels')
-            .where('group.id = :id', { id })
-            .andWhere('group.deletedAt IS NULL')
-            .andWhere(
-                new Brackets(qb1 => {
-                    qb1.where('group.global = true')
-                        .orWhere('channels.id = :channelId', { channelId: ctx.channelId })
-                        .orWhere('group.productId IS NOT NULL');
-                }),
-            )
-            .getOne()
+            .findOne({
+                where: {
+                    id,
+                    deletedAt: IsNull(),
+                },
+                relations: relations ?? ['options'],
+            })
             .then(group => (group && this.translator.translate(group, ctx, ['options'])) ?? undefined);
     }
 
@@ -153,7 +144,6 @@ export class ProductOptionGroupService {
         if (isCreatingGlobal && !ctx.userHasPermissions([Permission.CreateGlobalProductOption])) {
             throw new ForbiddenError(LogLevel.Verbose);
         }
-
         const group = await this.translatableSaver.create({
             ctx,
             input,
@@ -177,7 +167,9 @@ export class ProductOptionGroupService {
         ctx: RequestContext,
         input: UpdateProductOptionGroupInput,
     ): Promise<Translated<ProductOptionGroup>> {
-        const optionGroup = await this.connection.getEntityOrThrow(ctx, ProductOptionGroup, input.id);
+        const optionGroup = await this.connection.getEntityOrThrow(ctx, ProductOptionGroup, input.id, {
+            where: [{ channels: { id: ctx.channelId } }, { productId: Not(IsNull()) }],
+        });
         const isUpdatingGlobal = optionGroup.global === true;
         const isChangingToGlobal = optionGroup.global !== undefined && !optionGroup.global && input.global;
         if (isUpdatingGlobal && !ctx.userHasPermissions([Permission.UpdateGlobalProductOption])) {
@@ -206,28 +198,10 @@ export class ProductOptionGroupService {
      * referential integrity. Otherwise a hard-delete will be performed.
      */
     async deleteGroupAndOptions(ctx: RequestContext, id: ID, productId?: ID): Promise<DeletionResponse> {
-        const qb = this.connection
-            .getRepository(ctx, ProductOptionGroup)
-            .createQueryBuilder('group')
-            .leftJoinAndSelect('group.options', 'options')
-            .leftJoin('group.channels', 'channels')
-            .where('group.id = :id', { id })
-            .andWhere('group.deletedAt IS NULL');
-        if (productId) {
-            qb.orWhere('group.productId = :productId', { productId });
-        } else {
-            qb.andWhere(
-                new Brackets(qb1 => {
-                    qb1.where('group.global = true').orWhere('channels.id = :channelId', {
-                        channelId: ctx.channelId,
-                    });
-                }),
-            );
-        }
-        const optionGroup = await qb.getOne();
-        if (!optionGroup) {
-            throw new EntityNotFoundError('ProductOptionGroup', id);
-        }
+        const optionGroup = await this.connection.getEntityOrThrow(ctx, ProductOptionGroup, id, {
+            where: productId ? { productId } : { channels: { id: ctx.channelId } },
+            relations: ['options', 'product'],
+        });
         const isDeletingGlobal = optionGroup.global === true;
         if (isDeletingGlobal && !ctx.userHasPermissions([Permission.DeleteGlobalProductOption])) {
             throw new ForbiddenError(LogLevel.Verbose);

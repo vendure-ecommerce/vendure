@@ -178,7 +178,6 @@ export class FacetValueService {
         if (isCreatingGlobal && !ctx.userHasPermissions([Permission.CreateGlobalFacet])) {
             throw new ForbiddenError(LogLevel.Verbose);
         }
-
         const facetValue = await this.translatableSaver.create({
             ctx,
             input,
@@ -202,13 +201,13 @@ export class FacetValueService {
     async update(ctx: RequestContext, input: UpdateFacetValueInput): Promise<Translated<FacetValue>> {
         const { facet } = await this.connection.getEntityOrThrow(ctx, FacetValue, input.id, {
             relations: ['facet'],
+            channelId: ctx.channelId,
+            ignoreGlobal: true,
         });
-
         const isUpdatingGlobal = facet.global === true;
         if (isUpdatingGlobal && !ctx.userHasPermissions([Permission.UpdateGlobalFacet])) {
             throw new ForbiddenError(LogLevel.Verbose);
         }
-
         const facetValue = await this.translatableSaver.update({
             ctx,
             input,
@@ -223,8 +222,9 @@ export class FacetValueService {
     async delete(ctx: RequestContext, id: ID, force: boolean = false): Promise<DeletionResponse> {
         const { facet } = await this.connection.getEntityOrThrow(ctx, FacetValue, id, {
             relations: ['facet'],
+            channelId: ctx.channelId,
+            ignoreGlobal: true,
         });
-
         const isDeletingGlobal = facet.global === true;
         if (isDeletingGlobal && !ctx.userHasPermissions([Permission.DeleteGlobalFacet])) {
             throw new ForbiddenError(LogLevel.Verbose);
