@@ -45,6 +45,7 @@ input FacetTranslationInput {
 input CreateFacetInput {
     code: String!
     isPrivate: Boolean!
+    global: Boolean!
     translations: [FacetTranslationInput!]!
     values: [CreateFacetValueWithFacetInput!]
 }
@@ -52,6 +53,7 @@ input CreateFacetInput {
 input UpdateFacetInput {
     id: ID!
     isPrivate: Boolean
+    global: Boolean
     code: String
     translations: [FacetTranslationInput!]
 }

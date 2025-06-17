@@ -71,6 +71,7 @@ export const DEFAULT_PERMISSIONS: PermissionDefinition[] = [
     new CrudPermissionDefinition('System'),
     new CrudPermissionDefinition('Zone'),
     new CrudPermissionDefinition('GlobalProductOption'),
+    new CrudPermissionDefinition('GlobalFacet'),
 ];
 
 export function getAllPermissionsMetadata(customPermissions: PermissionDefinition[]): PermissionMetadata[] {

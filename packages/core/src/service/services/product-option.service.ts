@@ -7,11 +7,12 @@ import {
     Permission,
     UpdateProductOptionInput,
 } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Brackets, FindOptionsUtils } from 'typeorm';
 
+import { RelationPaths } from '../../api';
 import { RequestContext } from '../../api/common/request-context';
-import { EntityNotFoundError, ForbiddenError } from '../../common';
+import { ForbiddenError, ListQueryOptions } from '../../common';
 import { Instrument } from '../../common/instrument-decorator';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
@@ -24,6 +25,7 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
 import { EventBus } from '../../event-bus';
 import { ProductOptionEvent } from '../../event-bus/events/product-option-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { TranslatorService } from '../helpers/translator/translator.service';
 
@@ -45,25 +47,39 @@ export class ProductOptionService {
         private eventBus: EventBus,
         private translator: TranslatorService,
         private channelService: ChannelService,
+        private listQueryBuilder: ListQueryBuilder,
     ) {}
 
+    /**
+     * @deprecated Use {@link ProductOptionService.findAllList findAllList(ctx, options, relations)} instead
+     */
     findAll(ctx: RequestContext): Promise<Array<Translated<ProductOption>>> {
-        const qb = this.connection.getRepository(ctx, ProductOption).createQueryBuilder('option');
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
-        return qb
-            .leftJoinAndSelect('option.group', 'group')
-            .leftJoin('option.channels', 'channels')
-            .where('option.deletedAt IS NULL')
-            .andWhere(
-                new Brackets(qb1 => {
-                    qb1.where('group.global = true')
-                        .orWhere('channels.id = :channelId', { channelId: ctx.channelId })
-                        .orWhere('group.productId IS NOT NULL');
-                }),
-            )
-            .getMany()
+        return this.connection
+            .getRepository(ctx, ProductOption)
+            .find({
+                relations: ['group'],
+            })
             .then(options => options.map(option => this.translator.translate(option, ctx)));
+    }
+
+    findAllList(
+        ctx: RequestContext,
+        options?: ListQueryOptions<ProductOption>,
+        relations?: RelationPaths<ProductOption>,
+    ): Promise<PaginatedList<Translated<ProductOption>>> {
+        return this.listQueryBuilder
+            .build(ProductOption, options, {
+                ctx,
+                relations: relations ?? ['group'],
+                channelId: ctx.channelId,
+            })
+            .getManyAndCount()
+            .then(([items, totalItems]) => {
+                return {
+                    items: items.map(item => this.translator.translate(item, ctx, ['group'])),
+                    totalItems,
+                };
+            });
     }
 
     findOne(ctx: RequestContext, id: ID): Promise<Translated<ProductOption> | undefined> {
@@ -123,20 +139,13 @@ export class ProductOptionService {
         return assertFound(this.findOne(ctx, option.id));
     }
 
-    async update(
-        ctx: RequestContext,
-        input: UpdateProductOptionInput,
-        updateChannels: boolean = false,
-    ): Promise<Translated<ProductOption>> {
-        const groupOption = await this.connection.getRepository(ctx, ProductOption).findOne({
-            where: { id: input.id },
+    async update(ctx: RequestContext, input: UpdateProductOptionInput): Promise<Translated<ProductOption>> {
+        const { group } = await this.connection.getEntityOrThrow(ctx, ProductOption, input.id, {
             relations: ['group'],
         });
 
-        if (!groupOption) {
-            throw new EntityNotFoundError('ProductOption', input.id);
-        }
-        if (groupOption.group.global && !ctx.userHasPermissions([Permission.UpdateGlobalProductOption])) {
+        const isUpdatingGlobal = group.global === true;
+        if (isUpdatingGlobal && !ctx.userHasPermissions([Permission.UpdateGlobalProductOption])) {
             throw new ForbiddenError(LogLevel.Verbose);
         }
 
@@ -145,15 +154,6 @@ export class ProductOptionService {
             input,
             entityType: ProductOption,
             translationType: ProductOptionTranslation,
-            beforeSave: async op => {
-                if (updateChannels) {
-                    if (groupOption.group.global) {
-                        await this.channelService.removeFromAssignedChannels(ctx, ProductOption, op.id);
-                    } else {
-                        await this.channelService.assignToCurrentChannel(op, ctx);
-                    }
-                }
-            },
         });
         await this.customFieldRelationService.updateRelations(ctx, ProductOption, input, option);
         await this.eventBus.publish(new ProductOptionEvent(ctx, option, 'updated', input));
@@ -173,11 +173,11 @@ export class ProductOptionService {
         const productOption = await this.connection.getEntityOrThrow(ctx, ProductOption, id, {
             relations: ['group'],
         });
-        if (productOption.group.global) {
-            if (!ctx.userHasPermissions([Permission.DeleteGlobalProductOption])) {
-                throw new ForbiddenError(LogLevel.Verbose);
-            }
+        const isDeletingGlobal = productOption.group.global === true;
+        if (isDeletingGlobal && !ctx.userHasPermissions([Permission.DeleteGlobalProductOption])) {
+            throw new ForbiddenError(LogLevel.Verbose);
         }
+
         const deletedProductOption = new ProductOption(productOption);
         const inUseByActiveVariants = await this.isInUse(ctx, productOption, 'active');
         if (0 < inUseByActiveVariants) {

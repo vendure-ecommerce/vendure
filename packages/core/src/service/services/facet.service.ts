@@ -20,6 +20,7 @@ import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
+import { LogLevel } from '../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { FacetTranslation } from '../../entity/facet/facet-translation.entity';
@@ -155,6 +156,11 @@ export class FacetService {
     }
 
     async create(ctx: RequestContext, input: CreateFacetInput): Promise<Translated<Facet>> {
+        const isCreatingGlobal = input.global === true;
+        if (isCreatingGlobal && !ctx.userHasPermissions([Permission.CreateGlobalFacet])) {
+            throw new ForbiddenError(LogLevel.Verbose);
+        }
+
         const facet = await this.translatableSaver.create({
             ctx,
             input,
@@ -176,7 +182,17 @@ export class FacetService {
     }
 
     async update(ctx: RequestContext, input: UpdateFacetInput): Promise<Translated<Facet>> {
-        const facet = await this.translatableSaver.update({
+        const facet = await this.connection.getEntityOrThrow(ctx, Facet, input.id);
+        const isUpdatingGlobal = facet.global === true;
+        const isChangingToGlobal = facet.global !== undefined && !facet.global && input.global;
+        if (isUpdatingGlobal && !ctx.userHasPermissions([Permission.UpdateGlobalFacet])) {
+            throw new ForbiddenError(LogLevel.Verbose);
+        }
+        if (isChangingToGlobal && !ctx.userHasPermissions([Permission.CreateGlobalFacet])) {
+            throw new ForbiddenError(LogLevel.Verbose);
+        }
+
+        const updatedFacet = await this.translatableSaver.update({
             ctx,
             input,
             entityType: Facet,
@@ -187,9 +203,9 @@ export class FacetService {
                 }
             },
         });
-        await this.customFieldRelationService.updateRelations(ctx, Facet, input, facet);
-        await this.eventBus.publish(new FacetEvent(ctx, facet, 'updated', input));
-        return assertFound(this.findOne(ctx, facet.id));
+        await this.customFieldRelationService.updateRelations(ctx, Facet, input, updatedFacet);
+        await this.eventBus.publish(new FacetEvent(ctx, updatedFacet, 'updated', input));
+        return assertFound(this.findOne(ctx, updatedFacet.id));
     }
 
     async delete(ctx: RequestContext, id: ID, force: boolean = false): Promise<DeletionResponse> {
@@ -197,6 +213,12 @@ export class FacetService {
             relations: ['values'],
             channelId: ctx.channelId,
         });
+
+        const isDeletingGlobal = facet.global === true;
+        if (isDeletingGlobal && !ctx.userHasPermissions([Permission.DeleteGlobalFacet])) {
+            throw new ForbiddenError(LogLevel.Verbose);
+        }
+
         let productCount = 0;
         let variantCount = 0;
         if (facet.values.length) {

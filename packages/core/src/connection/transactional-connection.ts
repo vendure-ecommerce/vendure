@@ -2,16 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm/dist/common/typeorm.decorators';
 import { ID, Type } from '@vendure/common/lib/shared-types';
 import {
+    Brackets,
     DataSource,
     EntityManager,
     EntitySchema,
     FindManyOptions,
     FindOneOptions,
+    FindOptionsRelationByString,
+    FindOptionsRelations,
     ObjectLiteral,
     ObjectType,
+    ReplicationMode,
     Repository,
     SelectQueryBuilder,
-    ReplicationMode,
 } from 'typeorm';
 
 import { RequestContext } from '../api/common/request-context';
@@ -123,10 +126,12 @@ export class TransactionalConnection {
             return this.rawConnection.getRepository(maybeTarget!);
         } else {
             if (options?.replicationMode === 'master') {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                return this.dataSource
-                    .createQueryRunner(options.replicationMode)
-                    .manager.getRepository(maybeTarget!);
+                return (
+                    this.dataSource
+                        .createQueryRunner(options.replicationMode)
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        .manager.getRepository(maybeTarget!)
+                );
             }
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             return this.rawConnection.getRepository(ctxOrTarget ?? maybeTarget!);
@@ -160,13 +165,13 @@ export class TransactionalConnection {
      *     // Note you must not use `outerCtx` here, instead use `ctx`. Otherwise, this query
      *     // will be executed outside of transaction
      *     await this.giftCardService.updateCustomerCredit(ctx, fromId, -amount);
-     *
+
      *     await this.connection.getRepository(ctx, GiftCard).update(fromId, { transferred: true })
-     *
+
      *     // If some intermediate logic here throws an Error,
      *     // then all DB transactions will be rolled back and neither Customer's
      *     // credit balance will have changed.
-     *
+
      *     await this.giftCardService.updateCustomerCredit(ctx, toId, amount);
      *   })
      * }
@@ -331,9 +336,8 @@ export class TransactionalConnection {
             ...options,
         });
 
-        qb.leftJoin('entity.channels', '__channel')
-            .andWhere('entity.id = :id', { id })
-            .andWhere('__channel.id = :channelId', { channelId });
+        qb.andWhere('entity.id = :id', { id });
+        applyGlobalAndChannelConditions(qb, channelId, options.relations);
 
         return qb.getOne().then(result => {
             return result ?? undefined;
@@ -376,14 +380,61 @@ export class TransactionalConnection {
             ...options,
         });
 
-        return qb
-            .leftJoin('entity.channels', 'channel')
-            .andWhere('entity.id IN (:...ids)', { ids })
-            .andWhere('channel.id = :channelId', { channelId })
-            .getMany();
+        qb.andWhere('entity.id IN (:...ids)', { ids });
+        applyGlobalAndChannelConditions(qb, channelId, options.relations);
+        return qb.getMany();
     }
 
     private getTransactionManager(ctx: RequestContext): EntityManager | undefined {
         return (ctx as any)[TRANSACTION_MANAGER_KEY];
     }
+}
+
+export function applyGlobalAndChannelConditions<T extends ChannelAware | VendureEntity>(
+    qb: SelectQueryBuilder<T>,
+    channelId: ID,
+    relations: FindOptionsRelationByString | FindOptionsRelations<T> | undefined,
+) {
+    const hasGlobalField = qb.expressionMap.mainAlias?.metadata.columns.some(
+        col => col.propertyName === 'global',
+    );
+
+    const relationsArray = relations ? findOptionsObjectToArray(relations) : [];
+    const relationsWithGlobal = relationsArray
+        .map(relation => {
+            const relationMetadata =
+                qb.expressionMap.mainAlias?.metadata.findRelationWithPropertyPath(relation);
+            if (relationMetadata?.inverseEntityMetadata.columns.some(col => col.propertyName === 'global')) {
+                return relation;
+            }
+            return null;
+        })
+        .filter((r): r is string => r !== null);
+
+    for (const relation of relationsWithGlobal) {
+        const relationAlias = relation.split('.').pop() || relation;
+        if (!isRelationAlreadyJoined(qb, relationAlias)) {
+            qb.leftJoin(`${qb.alias}.${relation}`, relationAlias);
+        }
+    }
+
+    qb.leftJoin(`${qb.alias}.channels`, 'channel').andWhere(
+        new Brackets(qb1 => {
+            if (hasGlobalField) {
+                qb1.where(`${qb.alias}.global = true`);
+            }
+            for (const relation of relationsWithGlobal) {
+                const relationAlias = relation.split('.').pop() || relation;
+                qb1.orWhere(`${relationAlias}.global = true`);
+            }
+            qb1.orWhere('channel.id = :channelId', { channelId });
+        }),
+    );
+}
+
+function isRelationAlreadyJoined<T extends ChannelAware | VendureEntity>(
+    qb: SelectQueryBuilder<T>,
+    relationAlias: string,
+): boolean {
+    return qb.expressionMap.joinAttributes.some(ja => ja.alias.name === relationAlias);
 }

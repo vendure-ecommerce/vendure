@@ -5,16 +5,19 @@ import {
     DeletionResponse,
     DeletionResult,
     LanguageCode,
+    Permission,
     UpdateFacetValueInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
+import { ForbiddenError } from '../../common';
 import { Instrument } from '../../common/instrument-decorator';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
+import { LogLevel } from '../../config';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Product, ProductVariant } from '../../entity';
@@ -171,6 +174,11 @@ export class FacetValueService {
         facet: Facet,
         input: CreateFacetValueInput | CreateFacetValueWithFacetInput,
     ): Promise<Translated<FacetValue>> {
+        const isCreatingGlobal = facet.global === true;
+        if (isCreatingGlobal && !ctx.userHasPermissions([Permission.CreateGlobalFacet])) {
+            throw new ForbiddenError(LogLevel.Verbose);
+        }
+
         const facetValue = await this.translatableSaver.create({
             ctx,
             input,
@@ -192,6 +200,15 @@ export class FacetValueService {
     }
 
     async update(ctx: RequestContext, input: UpdateFacetValueInput): Promise<Translated<FacetValue>> {
+        const { facet } = await this.connection.getEntityOrThrow(ctx, FacetValue, input.id, {
+            relations: ['facet'],
+        });
+
+        const isUpdatingGlobal = facet.global === true;
+        if (isUpdatingGlobal && !ctx.userHasPermissions([Permission.UpdateGlobalFacet])) {
+            throw new ForbiddenError(LogLevel.Verbose);
+        }
+
         const facetValue = await this.translatableSaver.update({
             ctx,
             input,
@@ -204,6 +221,15 @@ export class FacetValueService {
     }
 
     async delete(ctx: RequestContext, id: ID, force: boolean = false): Promise<DeletionResponse> {
+        const { facet } = await this.connection.getEntityOrThrow(ctx, FacetValue, id, {
+            relations: ['facet'],
+        });
+
+        const isDeletingGlobal = facet.global === true;
+        if (isDeletingGlobal && !ctx.userHasPermissions([Permission.DeleteGlobalFacet])) {
+            throw new ForbiddenError(LogLevel.Verbose);
+        }
+
         const { productCount, variantCount } = await this.checkFacetValueUsage(ctx, [id]);
 
         const isInUse = !!(productCount || variantCount);

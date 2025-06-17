@@ -824,6 +824,7 @@ export type CreateCustomerResult = Customer | EmailAddressConflictError;
 export type CreateFacetInput = {
   code: Scalars['String']['input'];
   customFields?: InputMaybe<Scalars['JSON']['input']>;
+  global: Scalars['Boolean']['input'];
   isPrivate: Scalars['Boolean']['input'];
   translations: Array<FacetTranslationInput>;
   values?: InputMaybe<Array<CreateFacetValueWithFacetInput>>;
@@ -1716,6 +1717,7 @@ export type Facet = Node & {
   code: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   customFields?: Maybe<Scalars['JSON']['output']>;
+  global: Scalars['Boolean']['output'];
   id: Scalars['ID']['output'];
   isPrivate: Scalars['Boolean']['output'];
   languageCode: LanguageCode;
@@ -1737,6 +1739,7 @@ export type FacetFilterParameter = {
   _or?: InputMaybe<Array<FacetFilterParameter>>;
   code?: InputMaybe<StringOperators>;
   createdAt?: InputMaybe<DateOperators>;
+  global?: InputMaybe<BooleanOperators>;
   id?: InputMaybe<IdOperators>;
   isPrivate?: InputMaybe<BooleanOperators>;
   languageCode?: InputMaybe<StringOperators>;
@@ -4475,6 +4478,8 @@ export enum Permission {
   CreateCustomerGroup = 'CreateCustomerGroup',
   /** Grants permission to create Facet */
   CreateFacet = 'CreateFacet',
+  /** Grants permission to create GlobalFacet */
+  CreateGlobalFacet = 'CreateGlobalFacet',
   /** Grants permission to create GlobalProductOption */
   CreateGlobalProductOption = 'CreateGlobalProductOption',
   /** Grants permission to create Order */
@@ -4521,6 +4526,8 @@ export enum Permission {
   DeleteCustomerGroup = 'DeleteCustomerGroup',
   /** Grants permission to delete Facet */
   DeleteFacet = 'DeleteFacet',
+  /** Grants permission to delete GlobalFacet */
+  DeleteGlobalFacet = 'DeleteGlobalFacet',
   /** Grants permission to delete GlobalProductOption */
   DeleteGlobalProductOption = 'DeleteGlobalProductOption',
   /** Grants permission to delete Order */
@@ -4571,6 +4578,8 @@ export enum Permission {
   ReadCustomerGroup = 'ReadCustomerGroup',
   /** Grants permission to read Facet */
   ReadFacet = 'ReadFacet',
+  /** Grants permission to read GlobalFacet */
+  ReadGlobalFacet = 'ReadGlobalFacet',
   /** Grants permission to read GlobalProductOption */
   ReadGlobalProductOption = 'ReadGlobalProductOption',
   /** Grants permission to read Order */
@@ -4619,6 +4628,8 @@ export enum Permission {
   UpdateCustomerGroup = 'UpdateCustomerGroup',
   /** Grants permission to update Facet */
   UpdateFacet = 'UpdateFacet',
+  /** Grants permission to update GlobalFacet */
+  UpdateGlobalFacet = 'UpdateGlobalFacet',
   /** Grants permission to update GlobalProductOption */
   UpdateGlobalProductOption = 'UpdateGlobalProductOption',
   /** Grants permission to update GlobalSettings */
@@ -6560,6 +6571,7 @@ export type UpdateCustomerResult = Customer | EmailAddressConflictError;
 export type UpdateFacetInput = {
   code?: InputMaybe<Scalars['String']['input']>;
   customFields?: InputMaybe<Scalars['JSON']['input']>;
+  global?: InputMaybe<Scalars['Boolean']['input']>;
   id: Scalars['ID']['input'];
   isPrivate?: InputMaybe<Scalars['Boolean']['input']>;
   translations?: InputMaybe<Array<FacetTranslationInput>>;

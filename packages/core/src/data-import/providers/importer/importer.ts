@@ -11,8 +11,8 @@ import { InternalServerError } from '../../../common/error/errors';
 import { ConfigService } from '../../../config/config.service';
 import { CustomFieldConfig } from '../../../config/custom-field/custom-field-types';
 import { Logger } from '../../../config/index';
-import { Facet } from '../../../entity/facet/facet.entity';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
+import { Facet } from '../../../entity/facet/facet.entity';
 import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
 import { ChannelService } from '../../../service/services/channel.service';
 import { FacetValueService } from '../../../service/services/facet-value.service';
@@ -334,6 +334,7 @@ export class Importer {
                     facetEntity = existing;
                 } else {
                     facetEntity = await this.facetService.create(ctx, {
+                        global: false,
                         isPrivate: false,
                         code: normalizeString(facetName, '-'),
                         translations: item.translations.map(translation => {

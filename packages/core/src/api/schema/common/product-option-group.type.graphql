@@ -7,7 +7,6 @@ type ProductOptionGroup implements Node {
     name: String!
     options: [ProductOption!]!
     translations: [ProductOptionGroupTranslation!]!
-    global: Boolean!
 }
 
 type ProductOptionGroupTranslation {

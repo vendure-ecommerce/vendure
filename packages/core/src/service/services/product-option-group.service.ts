@@ -6,11 +6,12 @@ import {
     Permission,
     UpdateProductOptionGroupInput,
 } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
-import { Brackets, FindOptionsUtils } from 'typeorm';
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { Brackets, FindManyOptions, FindOptionsUtils, Like } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
+import { ListQueryOptions } from '../../common';
 import { EntityNotFoundError, ForbiddenError } from '../../common/error/errors';
 import { Instrument } from '../../common/instrument-decorator';
 import { Translated } from '../../common/types/locale-types';
@@ -23,6 +24,7 @@ import { ProductOptionGroup } from '../../entity/product-option-group/product-op
 import { EventBus } from '../../event-bus';
 import { ProductOptionGroupEvent } from '../../event-bus/events/product-option-group-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { TranslatorService } from '../helpers/translator/translator.service';
 
@@ -46,35 +48,49 @@ export class ProductOptionGroupService {
         private eventBus: EventBus,
         private translator: TranslatorService,
         private channelService: ChannelService,
+        private listQueryBuilder: ListQueryBuilder,
     ) {}
 
+    /**
+     * @deprecated Use {@link ProductOptionGroupService.findAllList findAllList(ctx, options, relations)} instead
+     */
     findAll(
         ctx: RequestContext,
         filterTerm?: string,
         relations?: RelationPaths<ProductOptionGroup>,
     ): Promise<Array<Translated<ProductOptionGroup>>> {
-        const qb = this.connection
-            .getRepository(ctx, ProductOptionGroup)
-            .createQueryBuilder('group')
-            .setFindOptions({ relations: relations ?? ['options'] });
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
-        qb.leftJoin('group.channels', 'channels')
-            .where('group.deletedAt IS NULL')
-            .andWhere(
-                new Brackets(qb1 => {
-                    qb1.where('group.global = true')
-                        .orWhere('channels.id = :channelId', { channelId: ctx.channelId })
-                        .orWhere('group.productId IS NOT NULL');
-                }),
-            );
-
+        const findOptions: FindManyOptions = {
+            relations: relations ?? ['options'],
+        };
         if (filterTerm) {
-            qb.andWhere('group.code LIKE :filterTerm', { filterTerm: `%${filterTerm}%` });
+            findOptions.where = {
+                code: Like(`%${filterTerm}%`),
+            };
         }
-        return qb
-            .getMany()
+        return this.connection
+            .getRepository(ctx, ProductOptionGroup)
+            .find(findOptions)
             .then(groups => groups.map(group => this.translator.translate(group, ctx, ['options'])));
+    }
+
+    findAllList(
+        ctx: RequestContext,
+        options?: ListQueryOptions<ProductOptionGroup>,
+        relations?: RelationPaths<ProductOptionGroup>,
+    ): Promise<PaginatedList<Translated<ProductOptionGroup>>> {
+        return this.listQueryBuilder
+            .build(ProductOptionGroup, options, {
+                ctx,
+                relations: relations ?? ['options'],
+                channelId: ctx.channelId,
+            })
+            .getManyAndCount()
+            .then(([items, totalItems]) => {
+                return {
+                    items: items.map(item => this.translator.translate(item, ctx, ['options'])),
+                    totalItems,
+                };
+            });
     }
 
     findOne(
@@ -133,20 +149,18 @@ export class ProductOptionGroupService {
         ctx: RequestContext,
         input: Omit<CreateProductOptionGroupInput, 'options'>,
     ): Promise<Translated<ProductOptionGroup>> {
-        if (input.global) {
-            if (!ctx.userHasPermissions([Permission.CreateGlobalProductOption])) {
-                throw new ForbiddenError(LogLevel.Verbose);
-            }
+        const isCreatingGlobal = input.global === true;
+        if (isCreatingGlobal && !ctx.userHasPermissions([Permission.CreateGlobalProductOption])) {
+            throw new ForbiddenError(LogLevel.Verbose);
         }
+
         const group = await this.translatableSaver.create({
             ctx,
             input,
             entityType: ProductOptionGroup,
             translationType: ProductOptionGroupTranslation,
             beforeSave: async g => {
-                if (!input.global) {
-                    await this.channelService.assignToCurrentChannel(g, ctx);
-                }
+                await this.channelService.assignToCurrentChannel(g, ctx);
             },
         });
         const groupWithRelations = await this.customFieldRelationService.updateRelations(
@@ -163,11 +177,13 @@ export class ProductOptionGroupService {
         ctx: RequestContext,
         input: UpdateProductOptionGroupInput,
     ): Promise<Translated<ProductOptionGroup>> {
-        const optionGroup = await this.findOne(ctx, input.id);
-        if (!optionGroup) {
-            throw new EntityNotFoundError('ProductOptionGroup', input.id);
+        const optionGroup = await this.connection.getEntityOrThrow(ctx, ProductOptionGroup, input.id);
+        const isUpdatingGlobal = optionGroup.global === true;
+        const isChangingToGlobal = optionGroup.global !== undefined && !optionGroup.global && input.global;
+        if (isUpdatingGlobal && !ctx.userHasPermissions([Permission.UpdateGlobalProductOption])) {
+            throw new ForbiddenError(LogLevel.Verbose);
         }
-        if (optionGroup.global && !ctx.userHasPermissions([Permission.UpdateGlobalProductOption])) {
+        if (isChangingToGlobal && !ctx.userHasPermissions([Permission.CreateGlobalProductOption])) {
             throw new ForbiddenError(LogLevel.Verbose);
         }
 
@@ -176,21 +192,8 @@ export class ProductOptionGroupService {
             input,
             entityType: ProductOptionGroup,
             translationType: ProductOptionGroupTranslation,
-            beforeSave: async g => {
-                if (input.global !== undefined) {
-                    if (input.global) {
-                        await this.channelService.removeFromAssignedChannels(ctx, ProductOptionGroup, g.id);
-                    } else {
-                        await this.channelService.assignToCurrentChannel(g, ctx);
-                    }
-                }
-            },
         });
-        if (input.global !== undefined) {
-            for (const option of optionGroup.options) {
-                await this.productOptionService.update(ctx, { id: option.id }, true);
-            }
-        }
+
         await this.customFieldRelationService.updateRelations(ctx, ProductOptionGroup, input, group);
         await this.eventBus.publish(new ProductOptionGroupEvent(ctx, group, 'updated', input));
         return assertFound(this.findOne(ctx, group.id));
@@ -225,10 +228,9 @@ export class ProductOptionGroupService {
         if (!optionGroup) {
             throw new EntityNotFoundError('ProductOptionGroup', id);
         }
-        if (optionGroup.global) {
-            if (!ctx.userHasPermissions([Permission.DeleteGlobalProductOption])) {
-                throw new ForbiddenError(LogLevel.Verbose);
-            }
+        const isDeletingGlobal = optionGroup.global === true;
+        if (isDeletingGlobal && !ctx.userHasPermissions([Permission.DeleteGlobalProductOption])) {
+            throw new ForbiddenError(LogLevel.Verbose);
         }
 
         const deletedOptionGroup = new ProductOptionGroup(optionGroup);

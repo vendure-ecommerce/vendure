@@ -23,7 +23,7 @@ import {
 } from '../../../common';
 import { Instrument } from '../../../common/instrument-decorator';
 import { ConfigService, CustomFields, Logger } from '../../../config';
-import { TransactionalConnection } from '../../../connection';
+import { applyGlobalAndChannelConditions, TransactionalConnection } from '../../../connection';
 import { VendureEntity } from '../../../entity';
 import { joinTreeRelationsDynamically } from '../utils/tree-relations-qb-joiner';
 
@@ -327,9 +327,7 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         }
 
         if (extendedOptions.channelId) {
-            qb.innerJoin(`${qb.alias}.channels`, 'lqb__channel', 'lqb__channel.id = :channelId', {
-                channelId: extendedOptions.channelId,
-            });
+            applyGlobalAndChannelConditions(qb, extendedOptions.channelId, relations);
         }
 
         qb.orderBy(sort);

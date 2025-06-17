@@ -36,6 +36,9 @@ export class Facet extends VendureEntity implements Translatable, HasCustomField
     @Column({ unique: true })
     code: string;
 
+    @Column({ default: false })
+    global: boolean;
+
     @OneToMany(type => FacetTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<Facet>>;
 

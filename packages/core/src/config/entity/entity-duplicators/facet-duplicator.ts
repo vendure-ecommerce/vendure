@@ -56,6 +56,7 @@ export const facetDuplicator = new EntityDuplicator({
             };
         });
         const facetInput: CreateFacetInput = {
+            global: false,
             isPrivate: true,
             translations,
             customFields: facet.customFields,

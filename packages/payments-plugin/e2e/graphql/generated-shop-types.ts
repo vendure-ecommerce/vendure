@@ -2452,6 +2452,8 @@ export enum Permission {
     CreateCustomerGroup = 'CreateCustomerGroup',
     /** Grants permission to create Facet */
     CreateFacet = 'CreateFacet',
+    /** Grants permission to create GlobalFacet */
+    CreateGlobalFacet = 'CreateGlobalFacet',
     /** Grants permission to create GlobalProductOption */
     CreateGlobalProductOption = 'CreateGlobalProductOption',
     /** Grants permission to create Order */
@@ -2498,6 +2500,8 @@ export enum Permission {
     DeleteCustomerGroup = 'DeleteCustomerGroup',
     /** Grants permission to delete Facet */
     DeleteFacet = 'DeleteFacet',
+    /** Grants permission to delete GlobalFacet */
+    DeleteGlobalFacet = 'DeleteGlobalFacet',
     /** Grants permission to delete GlobalProductOption */
     DeleteGlobalProductOption = 'DeleteGlobalProductOption',
     /** Grants permission to delete Order */
@@ -2548,6 +2552,8 @@ export enum Permission {
     ReadCustomerGroup = 'ReadCustomerGroup',
     /** Grants permission to read Facet */
     ReadFacet = 'ReadFacet',
+    /** Grants permission to read GlobalFacet */
+    ReadGlobalFacet = 'ReadGlobalFacet',
     /** Grants permission to read GlobalProductOption */
     ReadGlobalProductOption = 'ReadGlobalProductOption',
     /** Grants permission to read Order */
@@ -2596,6 +2602,8 @@ export enum Permission {
     UpdateCustomerGroup = 'UpdateCustomerGroup',
     /** Grants permission to update Facet */
     UpdateFacet = 'UpdateFacet',
+    /** Grants permission to update GlobalFacet */
+    UpdateGlobalFacet = 'UpdateGlobalFacet',
     /** Grants permission to update GlobalProductOption */
     UpdateGlobalProductOption = 'UpdateGlobalProductOption',
     /** Grants permission to update GlobalSettings */
@@ -2708,7 +2716,6 @@ export type ProductOptionGroup = Node & {
     code: Scalars['String']['output'];
     createdAt: Scalars['DateTime']['output'];
     customFields?: Maybe<Scalars['JSON']['output']>;
-    global: Scalars['Boolean']['output'];
     id: Scalars['ID']['output'];
     languageCode: LanguageCode;
     name: Scalars['String']['output'];
