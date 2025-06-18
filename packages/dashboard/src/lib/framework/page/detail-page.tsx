@@ -42,7 +42,7 @@ export interface DetailPageProps<
      * @description
      * The name of the entity.
      */
-    entityName: string;
+    entityName?: string;
     /**
      * @description
      * A unique identifier for the page.
@@ -194,7 +194,9 @@ export function DetailPage<
                             })}
                     </DetailFormGrid>
                 </PageBlock>
-                <CustomFieldsPageBlock column="main" entityType={entityName} control={form.control} />
+                {entityName && (
+                    <CustomFieldsPageBlock column="main" entityType={entityName} control={form.control} />
+                )}
             </PageLayout>
         </Page>
     );
