@@ -1,3 +1,5 @@
+import { log } from '@clack/prompts';
+
 import { CliCommandDefinition } from '../shared/cli-command-definition';
 
 export const cliCommands: CliCommandDefinition[] = [
@@ -13,9 +15,31 @@ export const cliCommands: CliCommandDefinition[] = [
     {
         name: 'migrate',
         description: 'Generate, run or revert a database migration',
-        action: async () => {
+        options: [
+            {
+                flag: '-g, --generate <name>',
+                description: 'Generate a new migration with the specified name',
+                required: false,
+            },
+            {
+                flag: '-r, --run',
+                description: 'Run pending migrations',
+                required: false,
+            },
+            {
+                flag: '--revert',
+                description: 'Revert the last migration',
+                required: false,
+            },
+            {
+                flag: '-o, --output-dir <path>',
+                description: 'Output directory for generated migrations',
+                required: false,
+            },
+        ],
+        action: async options => {
             const { migrateCommand } = await import('./migrate/migrate');
-            await migrateCommand();
+            await migrateCommand(options);
             process.exit(0);
         },
     },
@@ -36,19 +60,19 @@ export const cliCommands: CliCommandDefinition[] = [
                 defaultValue: false,
             },
         ],
-        action: async (options) => {
+        action: options => {
             // Example action implementation with options
-            console.log('Example command executed');
+            log.info('Example command executed');
             if (options) {
                 // Validate required options
                 if (!options.file) {
-                    console.error('Error: --file option is required');
+                    log.error('Error: --file option is required');
                     process.exit(1);
                 }
-                console.log('File path:', options.file);
-                console.log('Verbose mode:', options.verbose);
+                log.info(`File path: ${String(options.file)}`);
+                log.info(`Verbose mode: ${String(options.verbose)}`);
             }
             process.exit(0);
         },
     },
-]; 
+];

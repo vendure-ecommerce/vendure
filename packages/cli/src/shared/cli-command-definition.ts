@@ -14,4 +14,4 @@ export interface CliCommandDefinition {
 
 export interface CliCommandConfig {
     commands: CliCommandDefinition[];
-} 
+}
