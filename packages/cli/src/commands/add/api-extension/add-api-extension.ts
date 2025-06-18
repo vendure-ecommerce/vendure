@@ -17,19 +17,27 @@ import {
 import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
 import { EntityRef } from '../../../shared/entity-ref';
 import { ServiceRef } from '../../../shared/service-ref';
-import { analyzeProject, selectPlugin, selectServiceRef } from '../../../shared/shared-prompts';
+import { analyzeProject, selectPlugin, selectServiceRef, getServices } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
 import {
     addImportsToFile,
     createFile,
     customizeCreateUpdateInputInterfaces,
+    getRelativeImportPath,
+    getPluginClasses,
 } from '../../../utilities/ast-utils';
 import { pauseForPromptDisplay } from '../../../utilities/utils';
+import { addServiceCommand } from '../service/add-service';
 
 const cancelledMessage = 'Add API extension cancelled';
 
 export interface AddApiExtensionOptions {
     plugin?: VendurePluginRef;
+    pluginName?: string;
+    queryName?: string;
+    mutationName?: string;
+    config?: string;
+    isNonInteractive?: boolean;
 }
 
 export const addApiExtensionCommand = new CliCommand({
@@ -43,9 +51,80 @@ async function addApiExtension(
     options?: AddApiExtensionOptions,
 ): Promise<CliCommandReturnVal<{ serviceRef: ServiceRef }>> {
     const providedVendurePlugin = options?.plugin;
-    const { project } = await analyzeProject({ providedVendurePlugin, cancelledMessage });
-    const plugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
-    const serviceRef = await selectServiceRef(project, plugin, false);
+    const { project } = await analyzeProject({ providedVendurePlugin, cancelledMessage, config: options?.config });
+
+    // Detect non-interactive mode
+    const isNonInteractive = options?.isNonInteractive === true;
+    
+    let plugin: VendurePluginRef | undefined = providedVendurePlugin;
+    
+    // If a plugin name was provided, try to find it
+    if (!plugin && options?.pluginName) {
+        const pluginClasses = getPluginClasses(project);
+        const foundPlugin = pluginClasses.find(p => p.getName() === options.pluginName);
+        
+        if (!foundPlugin) {
+            // List available plugins if the specified one wasn't found
+            const availablePlugins = pluginClasses.map(p => p.getName()).filter(Boolean);
+            throw new Error(
+                `Plugin "${options.pluginName}" not found. Available plugins:\n` +
+                availablePlugins.map(name => `  - ${name}`).join('\n')
+            );
+        }
+        
+        plugin = new VendurePluginRef(foundPlugin);
+    }
+    
+    // In non-interactive mode, we need all required values
+    if (isNonInteractive) {
+        if (!plugin) {
+            throw new Error('Plugin must be specified when running in non-interactive mode');
+        }
+        // Don't require query/mutation names - we'll use defaults
+    }
+
+    plugin = plugin ?? (await selectPlugin(project, cancelledMessage));
+    
+    // In non-interactive mode, we cannot prompt for service selection
+    if (isNonInteractive && !plugin) {
+        throw new Error('Cannot select service in non-interactive mode - plugin must be specified');
+    }
+    
+    let serviceRef: ServiceRef | undefined;
+    
+    if (isNonInteractive) {
+        // In non-interactive mode, find existing services or create a new one
+        const existingServices = getServices(project).filter(sr => {
+            return sr.classDeclaration
+                .getSourceFile()
+                .getDirectoryPath()
+                .includes(plugin.getSourceFile().getDirectoryPath());
+        });
+        
+        if (existingServices.length > 0) {
+            // Use the first available service
+            serviceRef = existingServices[0];
+            log.info(`Using existing service: ${serviceRef.name}`);
+        } else {
+            // Create a new service automatically
+            log.info('No existing services found, creating a new service...');
+            const result = await addServiceCommand.run({ 
+                type: 'basic', 
+                plugin,
+                serviceName: 'GeneratedService',
+                isNonInteractive: true
+            });
+            serviceRef = result.serviceRef;
+        }
+    } else {
+        // Interactive mode - let user choose
+        serviceRef = await selectServiceRef(project, plugin, false);
+    }
+
+    if (!serviceRef) {
+        throw new Error('Service is required for API extension');
+    }
+
     const serviceEntityRef = serviceRef.crudEntityRef;
     const modifiedSourceFiles: SourceFile[] = [];
     let resolver: ClassDeclaration | undefined;
@@ -56,19 +135,25 @@ async function addApiExtension(
     let queryName = '';
     let mutationName = '';
     if (!serviceEntityRef) {
-        const queryNameResult = await text({
-            message: 'Enter a name for the new query',
-            initialValue: 'myNewQuery',
-        });
-        if (!isCancel(queryNameResult)) {
-            queryName = queryNameResult;
-        }
-        const mutationNameResult = await text({
-            message: 'Enter a name for the new mutation',
-            initialValue: 'myNewMutation',
-        });
-        if (!isCancel(mutationNameResult)) {
-            mutationName = mutationNameResult;
+        if (isNonInteractive) {
+            // Use defaults in non-interactive mode
+            queryName = options?.queryName || 'customQuery';
+            mutationName = options?.mutationName || 'customMutation';
+        } else {
+            const queryNameResult = options?.queryName ?? await text({
+                message: 'Enter a name for the new query',
+                initialValue: 'myNewQuery',
+            });
+            if (!isCancel(queryNameResult)) {
+                queryName = queryNameResult;
+            }
+            const mutationNameResult = options?.mutationName ?? await text({
+                message: 'Enter a name for the new mutation',
+                initialValue: 'myNewMutation',
+            });
+            if (!isCancel(mutationNameResult)) {
+                mutationName = mutationNameResult;
+            }
         }
     }
 
@@ -78,7 +163,7 @@ async function addApiExtension(
         resolver = createCrudResolver(project, plugin, serviceRef, serviceEntityRef);
         modifiedSourceFiles.push(resolver.getSourceFile());
     } else {
-        if (isCancel(queryName)) {
+        if (!isNonInteractive && isCancel(queryName)) {
             cancel(cancelledMessage);
             process.exit(0);
         }

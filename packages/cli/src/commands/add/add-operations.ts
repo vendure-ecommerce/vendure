@@ -16,14 +16,16 @@ export interface AddOperationOptions {
     entity?: string;
     /** Add a new service with the given name */
     service?: string;
-    /** Add a job-queue handler (boolean flag) */
-    jobQueue?: boolean;
-    /** Add GraphQL codegen configuration (boolean flag) */
-    codegen?: boolean;
-    /** Add an API extension scaffold (boolean flag) */
-    apiExtension?: boolean;
-    /** Add Admin-UI or Storefront UI extensions (boolean flag) */
-    uiExtensions?: boolean;
+    /** Add a job-queue handler to the specified plugin */
+    jobQueue?: string | boolean;
+    /** Add GraphQL codegen configuration to the specified plugin */
+    codegen?: string | boolean;
+    /** Add an API extension scaffold to the specified plugin */
+    apiExtension?: string | boolean;
+    /** Add Admin-UI or Storefront UI extensions to the specified plugin */
+    uiExtensions?: string | boolean;
+    /** Specify the path to a custom Vendure config file */
+    config?: string;
 }
 
 export interface AddOperationResult {
@@ -42,7 +44,7 @@ export async function performAddOperation(options: AddOperationOptions): Promise
         // Figure out which flag was set. They are mutually exclusive: the first
         // truthy option determines the sub-command we run.
         if (options.plugin) {
-            await createNewPluginCommand.run({ name: options.plugin });
+            await createNewPluginCommand.run({ name: options.plugin, config: options.config });
             return {
                 success: true,
                 message: `Plugin \"${options.plugin}\" created successfully`,
@@ -64,28 +66,48 @@ export async function performAddOperation(options: AddOperationOptions): Promise
             };
         }
         if (options.jobQueue) {
-            await addJobQueueCommand.run();
+            const pluginName = typeof options.jobQueue === 'string' ? options.jobQueue : undefined;
+            await addJobQueueCommand.run({ 
+                isNonInteractive: true, 
+                config: options.config,
+                pluginName 
+            });
             return {
                 success: true,
                 message: 'Job-queue feature added successfully',
             };
         }
         if (options.codegen) {
-            await addCodegenCommand.run();
+            const pluginName = typeof options.codegen === 'string' ? options.codegen : undefined;
+            await addCodegenCommand.run({ 
+                isNonInteractive: true, 
+                config: options.config,
+                pluginName 
+            });
             return {
                 success: true,
                 message: 'Codegen configuration added successfully',
             };
         }
         if (options.apiExtension) {
-            await addApiExtensionCommand.run();
+            const pluginName = typeof options.apiExtension === 'string' ? options.apiExtension : undefined;
+            await addApiExtensionCommand.run({ 
+                isNonInteractive: true, 
+                config: options.config,
+                pluginName 
+            });
             return {
                 success: true,
                 message: 'API extension scaffold added successfully',
             };
         }
         if (options.uiExtensions) {
-            await addUiExtensionsCommand.run();
+            const pluginName = typeof options.uiExtensions === 'string' ? options.uiExtensions : undefined;
+            await addUiExtensionsCommand.run({ 
+                isNonInteractive: true, 
+                config: options.config,
+                pluginName 
+            });
             return {
                 success: true,
                 message: 'UI extensions added successfully',

@@ -23,15 +23,19 @@ export const createNewPluginCommand = new CliCommand({
     id: 'create-new-plugin',
     category: 'Plugin',
     description: 'Create a new Vendure plugin',
-    run: createNewPlugin,
+    run: (options?: Partial<GeneratePluginOptions>) => createNewPlugin(options),
 });
 
 const cancelledMessage = 'Plugin setup cancelled.';
 
-export async function createNewPlugin(): Promise<CliCommandReturnVal> {
-    const options: GeneratePluginOptions = { name: '', customEntityName: '', pluginDir: '' } as any;
-    intro('Adding a new Vendure plugin!');
-    const { project } = await analyzeProject({ cancelledMessage });
+export async function createNewPlugin(
+    options: Partial<GeneratePluginOptions> = {},
+): Promise<CliCommandReturnVal> {
+    const isNonInteractive = !!options.name;
+    if (!isNonInteractive) {
+        intro('Adding a new Vendure plugin!');
+    }
+    const { project, config } = await analyzeProject({ cancelledMessage, config: options.config });
     if (!options.name) {
         const name = await text({
             message: 'What is the name of the plugin?',
@@ -51,30 +55,38 @@ export async function createNewPlugin(): Promise<CliCommandReturnVal> {
         }
     }
     const existingPluginDir = findExistingPluginsDir(project);
-    const pluginDir = getPluginDirName(options.name, existingPluginDir);
-    const confirmation = await text({
-        message: 'Plugin location',
-        initialValue: pluginDir,
-        placeholder: '',
-        validate: input => {
-            if (fs.existsSync(input)) {
-                return `A directory named "${input}" already exists. Please specify a different directory.`;
-            }
-        },
-    });
+    const pluginDir = getPluginDirName(options.name , existingPluginDir);
 
-    if (isCancel(confirmation)) {
-        cancel(cancelledMessage);
-        process.exit(0);
+    if (isNonInteractive) {
+        options.pluginDir = pluginDir;
+        if (fs.existsSync(options.pluginDir)) {
+            throw new Error(`A directory named "${options.pluginDir}" already exists.`);
+        }
+    } else {
+        const confirmation = await text({
+            message: 'Plugin location',
+            initialValue: pluginDir,
+            placeholder: '',
+            validate: input => {
+                if (fs.existsSync(input)) {
+                    return `A directory named "${input}" already exists. Please specify a different directory.`;
+                }
+            },
+        });
+
+        if (isCancel(confirmation)) {
+            cancel(cancelledMessage);
+            process.exit(0);
+        }
+        options.pluginDir = confirmation;
     }
 
-    options.pluginDir = confirmation;
-    const { plugin, modifiedSourceFiles } = await generatePlugin(project, options);
+    const { plugin, modifiedSourceFiles } = await generatePlugin(project, options as GeneratePluginOptions);
 
     const configSpinner = spinner();
     configSpinner.start('Updating VendureConfig...');
     await pauseForPromptDisplay();
-    const vendureConfig = new VendureConfigRef(project);
+    const vendureConfig = new VendureConfigRef(project, config);
     vendureConfig.addToPluginsArray(`${plugin.name}.init({})`);
     addImportsToFile(vendureConfig.sourceFile, {
         moduleSpecifier: plugin.getSourceFile(),
@@ -83,6 +95,12 @@ export async function createNewPlugin(): Promise<CliCommandReturnVal> {
     await vendureConfig.sourceFile.getProject().save();
     configSpinner.stop('Updated VendureConfig');
 
+    if (isNonInteractive) {
+        return {
+            project,
+            modifiedSourceFiles: [],
+        };
+    }
     let done = false;
     const followUpCommands = [
         addEntityCommand,

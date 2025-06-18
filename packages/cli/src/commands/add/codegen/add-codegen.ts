@@ -6,13 +6,16 @@ import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
 import { PackageJson } from '../../../shared/package-json-ref';
 import { analyzeProject, selectMultiplePluginClasses } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
-import { getRelativeImportPath } from '../../../utilities/ast-utils';
+import { getRelativeImportPath, getPluginClasses } from '../../../utilities/ast-utils';
 import { pauseForPromptDisplay } from '../../../utilities/utils';
 
 import { CodegenConfigRef } from './codegen-config-ref';
 
 export interface AddCodegenOptions {
     plugin?: VendurePluginRef;
+    pluginName?: string;
+    config?: string;
+    isNonInteractive?: boolean;
 }
 
 export const addCodegenCommand = new CliCommand({
@@ -27,9 +30,38 @@ async function addCodegen(options?: AddCodegenOptions): Promise<CliCommandReturn
     const { project } = await analyzeProject({
         providedVendurePlugin,
         cancelledMessage: 'Add codegen cancelled',
+        config: options?.config,
     });
-    const plugins = providedVendurePlugin
-        ? [providedVendurePlugin]
+
+    // Detect non-interactive mode
+    const isNonInteractive = options?.isNonInteractive === true;
+    
+    let plugin: VendurePluginRef | undefined = providedVendurePlugin;
+    
+    // If a plugin name was provided, try to find it
+    if (!plugin && options?.pluginName) {
+        const pluginClasses = getPluginClasses(project);
+        const foundPlugin = pluginClasses.find(p => p.getName() === options.pluginName);
+        
+        if (!foundPlugin) {
+            // List available plugins if the specified one wasn't found
+            const availablePlugins = pluginClasses.map(p => p.getName()).filter(Boolean);
+            throw new Error(
+                `Plugin "${options.pluginName}" not found. Available plugins:\n` +
+                availablePlugins.map(name => `  - ${name}`).join('\n')
+            );
+        }
+        
+        plugin = new VendurePluginRef(foundPlugin);
+    }
+    
+    // In non-interactive mode, we need a plugin specified
+    if (isNonInteractive && !plugin) {
+        throw new Error('Plugin must be specified when running in non-interactive mode');
+    }
+
+    const plugins = plugin
+        ? [plugin]
         : await selectMultiplePluginClasses(project, 'Add codegen cancelled');
 
     const packageJson = new PackageJson(project);

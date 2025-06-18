@@ -4,14 +4,19 @@ import { Node, Scope } from 'ts-morph';
 
 import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
 import { ServiceRef } from '../../../shared/service-ref';
-import { analyzeProject, selectPlugin, selectServiceRef } from '../../../shared/shared-prompts';
+import { analyzeProject, selectPlugin, selectServiceRef, getServices } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
-import { addImportsToFile } from '../../../utilities/ast-utils';
+import { addImportsToFile, getPluginClasses } from '../../../utilities/ast-utils';
+import { addServiceCommand } from '../service/add-service';
 
 const cancelledMessage = 'Add API extension cancelled';
 
 export interface AddJobQueueOptions {
     plugin?: VendurePluginRef;
+    pluginName?: string;
+    name?: string;
+    config?: string;
+    isNonInteractive?: boolean;
 }
 
 export const addJobQueueCommand = new CliCommand({
@@ -25,11 +30,81 @@ async function addJobQueue(
     options?: AddJobQueueOptions,
 ): Promise<CliCommandReturnVal<{ serviceRef: ServiceRef }>> {
     const providedVendurePlugin = options?.plugin;
-    const { project } = await analyzeProject({ providedVendurePlugin, cancelledMessage });
-    const plugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
-    const serviceRef = await selectServiceRef(project, plugin);
+    const { project } = await analyzeProject({ providedVendurePlugin, cancelledMessage, config: options?.config });
 
-    const jobQueueName = await text({
+    // Detect non-interactive mode
+    const isNonInteractive = options?.isNonInteractive === true;
+    
+    let plugin: VendurePluginRef | undefined = providedVendurePlugin;
+    
+    // If a plugin name was provided, try to find it
+    if (!plugin && options?.pluginName) {
+        const pluginClasses = getPluginClasses(project);
+        const foundPlugin = pluginClasses.find(p => p.getName() === options.pluginName);
+        
+        if (!foundPlugin) {
+            // List available plugins if the specified one wasn't found
+            const availablePlugins = pluginClasses.map(p => p.getName()).filter(Boolean);
+            throw new Error(
+                `Plugin "${options.pluginName}" not found. Available plugins:\n` +
+                availablePlugins.map(name => `  - ${name}`).join('\n')
+            );
+        }
+        
+        plugin = new VendurePluginRef(foundPlugin);
+    }
+    
+    // In non-interactive mode, we need all required values upfront
+    if (isNonInteractive) {
+        if (!plugin) {
+            throw new Error('Plugin must be specified when running in non-interactive mode');
+        }
+        // Don't require name - we'll use a default
+    }
+
+    plugin = plugin ?? (await selectPlugin(project, cancelledMessage));
+    
+    // In non-interactive mode, we cannot prompt for service selection
+    if (isNonInteractive && !plugin) {
+        throw new Error('Cannot select service in non-interactive mode - plugin must be specified');
+    }
+    
+    let serviceRef: ServiceRef | undefined;
+    
+    if (isNonInteractive) {
+        // In non-interactive mode, find existing services or create a new one
+        const existingServices = getServices(project).filter(sr => {
+            return sr.classDeclaration
+                .getSourceFile()
+                .getDirectoryPath()
+                .includes(plugin.getSourceFile().getDirectoryPath());
+        });
+        
+        if (existingServices.length > 0) {
+            // Use the first available service
+            serviceRef = existingServices[0];
+            log.info(`Using existing service: ${serviceRef.name}`);
+        } else {
+            // Create a new service automatically
+            log.info('No existing services found, creating a new service...');
+            const result = await addServiceCommand.run({ 
+                type: 'basic', 
+                plugin,
+                serviceName: 'GeneratedService',
+                isNonInteractive: true
+            });
+            serviceRef = result.serviceRef;
+        }
+    } else {
+        // Interactive mode - let user choose
+        serviceRef = await selectServiceRef(project, plugin);
+    }
+
+    if (!serviceRef) {
+        throw new Error('Service is required for job queue');
+    }
+
+    const jobQueueName = options?.name ?? (isNonInteractive ? 'my-job-queue' : await text({
         message: 'What is the name of the job queue?',
         initialValue: 'my-background-task',
         validate: input => {
@@ -37,9 +112,9 @@ async function addJobQueue(
                 return 'The job queue name must be lowercase and contain only letters, numbers and dashes';
             }
         },
-    });
+    }));
 
-    if (isCancel(jobQueueName)) {
+    if (!isNonInteractive && isCancel(jobQueueName)) {
         cancel(cancelledMessage);
         process.exit(0);
     }
@@ -64,7 +139,7 @@ async function addJobQueue(
         type: 'JobQueueService',
     });
 
-    const jobQueuePropertyName = camelCase(jobQueueName) + 'Queue';
+    const jobQueuePropertyName = camelCase(jobQueueName as string) + 'Queue';
 
     serviceRef.classDeclaration.insertProperty(0, {
         name: jobQueuePropertyName,
@@ -94,7 +169,7 @@ async function addJobQueue(
             writer
                 .write(
                     `this.${jobQueuePropertyName} = await this.jobQueueService.createQueue({
-                name: '${jobQueueName}',
+                name: '${jobQueueName as string}',
                 process: async job => {
                     // Deserialize the RequestContext from the job data
                     const ctx = RequestContext.deserialize(job.data.ctx);
@@ -134,7 +209,7 @@ async function addJobQueue(
 
     serviceRef.classDeclaration
         .addMethod({
-            name: `trigger${pascalCase(jobQueueName)}`,
+            name: `trigger${pascalCase(jobQueueName as string)}`,
             scope: Scope.Public,
             parameters: [{ name: 'ctx', type: 'RequestContext' }],
             statements: writer => {
