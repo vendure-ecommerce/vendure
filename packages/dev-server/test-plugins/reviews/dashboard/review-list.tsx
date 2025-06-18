@@ -65,6 +65,12 @@ export const reviewList: DashboardRouteDefinition = {
                 downvotes: false,
             }}
             customizeColumns={{
+                id: {
+                    header: 'ID',
+                    cell: ({ row }) => {
+                        return <DetailPageButton id={row.original.id} label={row.original.id} />;
+                    },
+                },
                 product: {
                     header: 'Product',
                     cell: ({ row }) => {

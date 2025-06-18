@@ -1,9 +1,5 @@
 import { graphql } from '@/graphql/graphql';
-import {
-    DashboardRouteDefinition,
-    DetailPage,
-    detailPageRouteLoader
-} from '@vendure/dashboard';
+import { DashboardRouteDefinition, DetailPage, detailPageRouteLoader } from '@vendure/dashboard';
 
 const reviewDetailDocument = graphql(`
     query GetReviewDetail($id: ID!) {
@@ -30,6 +26,9 @@ const reviewDetailDocument = graphql(`
             state
             response
             responseCreatedAt
+            customFields {
+                reviewerName
+            }
         }
     }
 `);
@@ -54,6 +53,7 @@ export const reviewDetail: DashboardRouteDefinition = {
     component: route => {
         return (
             <DetailPage
+                entityName="ProductReview"
                 pageId="review-detail"
                 queryDocument={reviewDetailDocument}
                 updateDocument={updateReviewDocument}
