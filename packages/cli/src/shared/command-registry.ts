@@ -14,10 +14,18 @@ export function registerCommands(program: Command, commands: CliCommandDefinitio
         // Add options if they exist
         if (commandDef.options) {
             commandDef.options.forEach(option => {
-                // Handle both required and optional options
-                const optionString = option.required
-                    ? option.flag
-                    : option.flag.replace(/<([^>]+)>/g, '[$1]');
+                const parts: string[] = [];
+                if (option.short) {
+                    parts.push(option.short);
+                }
+                parts.push(option.long);
+
+                let optionString = parts.join(', ');
+
+                // Handle optional options which expect a value by converting <value> to [value]
+                if (!option.required) {
+                    optionString = optionString.replace(/<([^>]+)>/g, '[$1]');
+                }
 
                 command.option(optionString, option.description, option.defaultValue);
             });

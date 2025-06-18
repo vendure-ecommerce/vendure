@@ -1,5 +1,6 @@
 export interface CliCommandOption {
-    flag: string;
+    long: string;
+    short?: string;
     description: string;
     required?: boolean;
     defaultValue?: any;

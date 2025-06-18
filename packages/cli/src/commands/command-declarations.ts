@@ -1,5 +1,3 @@
-import { log } from '@clack/prompts';
-
 import { CliCommandDefinition } from '../shared/cli-command-definition';
 
 export const cliCommands: CliCommandDefinition[] = [
@@ -17,22 +15,25 @@ export const cliCommands: CliCommandDefinition[] = [
         description: 'Generate, run or revert a database migration',
         options: [
             {
-                flag: '-g, --generate <name>',
+                short: '-g',
+                long: '--generate <name>',
                 description: 'Generate a new migration with the specified name',
                 required: false,
             },
             {
-                flag: '-r, --run',
+                short: '-r',
+                long: '--run',
                 description: 'Run pending migrations',
                 required: false,
             },
             {
-                flag: '--revert',
+                long: '--revert',
                 description: 'Revert the last migration',
                 required: false,
             },
             {
-                flag: '-o, --output-dir <path>',
+                short: '-o',
+                long: '--output-dir <path>',
                 description: 'Output directory for generated migrations',
                 required: false,
             },
@@ -40,38 +41,6 @@ export const cliCommands: CliCommandDefinition[] = [
         action: async options => {
             const { migrateCommand } = await import('./migrate/migrate');
             await migrateCommand(options);
-            process.exit(0);
-        },
-    },
-    // Example of a command with options
-    {
-        name: 'example',
-        description: 'Example command with options',
-        options: [
-            {
-                flag: '-f, --file <path>',
-                description: 'Path to the file',
-                required: true,
-            },
-            {
-                flag: '-v, --verbose',
-                description: 'Enable verbose output',
-                required: false,
-                defaultValue: false,
-            },
-        ],
-        action: options => {
-            // Example action implementation with options
-            log.info('Example command executed');
-            if (options) {
-                // Validate required options
-                if (!options.file) {
-                    log.error('Error: --file option is required');
-                    process.exit(1);
-                }
-                log.info(`File path: ${String(options.file)}`);
-                log.info(`Verbose mode: ${String(options.verbose)}`);
-            }
             process.exit(0);
         },
     },
