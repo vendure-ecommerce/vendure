@@ -1,18 +1,19 @@
+import { DateTimeInput } from '@/components/data-input/datetime-input.js';
 import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
+import { Button } from '@/components/ui/button.js';
+import { Checkbox } from '@/components/ui/checkbox.js';
 import { Input } from '@/components/ui/input.js';
+import { NEW_ENTITY_PATH } from '@/constants.js';
 import { useDetailPage } from '@/framework/page/use-detail-page.js';
 import { Trans } from '@/lib/trans.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRoute, useNavigate } from '@tanstack/react-router';
 import { ResultOf, VariablesOf } from 'gql.tada';
-import { DateTimeInput } from '@/components/data-input/datetime-input.js';
-import { Button } from '@/components/ui/button.js';
-import { Checkbox } from '@/components/ui/checkbox.js';
-import { NEW_ENTITY_PATH } from '@/constants.js';
 import { toast } from 'sonner';
 import { getOperationVariablesFields } from '../document-introspection/get-document-structure.js';
 
 import {
+    CustomFieldsPageBlock,
     DetailFormGrid,
     Page,
     PageActionBar,
@@ -37,6 +38,11 @@ export interface DetailPageProps<
     U extends TypedDocumentNode<any, any>,
     EntityField extends keyof ResultOf<T> = DetailEntityPath<T>,
 > {
+    /**
+     * @description
+     * The name of the entity.
+     */
+    entityName: string;
     /**
      * @description
      * A unique identifier for the page.
@@ -94,6 +100,7 @@ export function DetailPage<
 >({
     pageId,
     route,
+    entityName,
     queryDocument,
     createDocument,
     updateDocument,
@@ -110,7 +117,7 @@ export function DetailPage<
         createDocument,
         params: { id: params.id },
         setValuesForUpdate,
-        onSuccess: async (data) => {
+        onSuccess: async data => {
             toast.success('Updated successfully');
             resetForm();
             const id = (data as any).id;
@@ -143,41 +150,51 @@ export function DetailPage<
             <PageLayout>
                 <PageBlock column="main" blockId="main-form">
                     <DetailFormGrid>
-                        {updateFields.map(fieldInfo => {
-                            if (fieldInfo.name === 'id' && fieldInfo.type === 'ID') {
-                                return null;
-                            }
-                            return (
-                                <FormFieldWrapper
-                                    key={fieldInfo.name}
-                                    control={form.control}
-                                    name={fieldInfo.name as never}
-                                    label={fieldInfo.name}
-                                    render={({ field }) => {
-                                        switch (fieldInfo.type) {
-                                            case 'Int':
-                                            case 'Float':
-                                                return (
-                                                    <Input
-                                                        type="number"
-                                                        value={field.value}
-                                                        onChange={e => field.onChange(e.target.valueAsNumber)}
-                                                    />
-                                                );
-                                            case 'DateTime':
-                                                return <DateTimeInput {...field} />;
-                                            case 'Boolean':
-                                                return <Checkbox value={field.value} onCheckedChange={field.onChange} />;
-                                            case 'String':
-                                            default:
-                                                return <Input {...field} />;
-                                        }
-                                    }}
-                                />
-                            );
-                        })}
+                        {updateFields
+                            .filter(fieldInfo => fieldInfo.name !== 'customFields')
+                            .map(fieldInfo => {
+                                if (fieldInfo.name === 'id' && fieldInfo.type === 'ID') {
+                                    return null;
+                                }
+                                return (
+                                    <FormFieldWrapper
+                                        key={fieldInfo.name}
+                                        control={form.control}
+                                        name={fieldInfo.name as never}
+                                        label={fieldInfo.name}
+                                        render={({ field }) => {
+                                            switch (fieldInfo.type) {
+                                                case 'Int':
+                                                case 'Float':
+                                                    return (
+                                                        <Input
+                                                            type="number"
+                                                            value={field.value}
+                                                            onChange={e =>
+                                                                field.onChange(e.target.valueAsNumber)
+                                                            }
+                                                        />
+                                                    );
+                                                case 'DateTime':
+                                                    return <DateTimeInput {...field} />;
+                                                case 'Boolean':
+                                                    return (
+                                                        <Checkbox
+                                                            value={field.value}
+                                                            onCheckedChange={field.onChange}
+                                                        />
+                                                    );
+                                                case 'String':
+                                                default:
+                                                    return <Input {...field} />;
+                                            }
+                                        }}
+                                    />
+                                );
+                            })}
                     </DetailFormGrid>
                 </PageBlock>
+                <CustomFieldsPageBlock column="main" entityType={entityName} control={form.control} />
             </PageLayout>
         </Page>
     );
