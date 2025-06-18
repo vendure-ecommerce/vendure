@@ -40,6 +40,7 @@ export function defineDashboardExtension(extension: DashboardExtension) {
                     ...section,
                     placement: 'top',
                     order: section.order ?? 999,
+                    items: [],
                 });
             }
         }
