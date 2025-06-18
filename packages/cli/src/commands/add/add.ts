@@ -46,10 +46,10 @@ async function handleNonInteractiveMode(options: AddOperationOptions) {
             const stackLines = e.stack.split('\n');
             const stackTrace = stackLines.slice(1).join('\n'); // Remove first line (error message)
 
-            // Display colored error message, newline, then stack trace
-            log.error(pc.red('Error:') + ' ' + String(errorMessage));
-            log.error(''); // Add empty line for better readability
+            // Display stack trace first, then colored error message at the end
             log.error(stackTrace);
+            log.error(''); // Add empty line for better readability
+            log.error(pc.red('Error:') + ' ' + String(errorMessage));
         } else {
             log.error(e.message as string);
             if (e.stack) {
