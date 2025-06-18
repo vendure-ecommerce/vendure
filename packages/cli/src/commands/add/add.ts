@@ -5,6 +5,7 @@ import { Messages } from '../../constants';
 import { CliCommand } from '../../shared/cli-command';
 import { pauseForPromptDisplay } from '../../utilities/utils';
 
+import { AddOperationOptions, performAddOperation } from './add-operations';
 import { addApiExtensionCommand } from './api-extension/add-api-extension';
 import { addCodegenCommand } from './codegen/add-codegen';
 import { addEntityCommand } from './entity/add-entity';
@@ -15,7 +16,38 @@ import { addUiExtensionsCommand } from './ui-extensions/add-ui-extensions';
 
 const cancelledMessage = 'Add feature cancelled.';
 
-export async function addCommand() {
+export interface AddOptions extends AddOperationOptions {}
+
+export async function addCommand(options?: AddOptions) {
+    // If any non-interactive option is supplied, we switch to the non-interactive path
+    const nonInteractive = options && Object.values(options).some(v => v !== undefined && v !== false);
+
+    if (nonInteractive) {
+        await handleNonInteractiveMode(options as AddOperationOptions);
+    } else {
+        await handleInteractiveMode();
+    }
+}
+
+async function handleNonInteractiveMode(options: AddOperationOptions) {
+    try {
+        const result = await performAddOperation(options);
+        if (result.success) {
+            log.success(result.message);
+        } else {
+            log.error(result.message);
+            process.exit(1);
+        }
+    } catch (e: any) {
+        log.error(e.message as string);
+        if (e.stack) {
+            log.error(e.stack);
+        }
+        process.exit(1);
+    }
+}
+
+async function handleInteractiveMode() {
     // eslint-disable-next-line no-console
     console.log(`\n`);
     intro(pc.blue("✨ Let's add a new feature to your Vendure project!"));
