@@ -26,6 +26,12 @@ export interface AddOperationOptions {
     uiExtensions?: string | boolean;
     /** Specify the path to a custom Vendure config file */
     config?: string;
+    /** Name for the job queue (used with jobQueue) */
+    name?: string;
+    /** Name for the query (used with apiExtension) */
+    queryName?: string;
+    /** Name for the mutation (used with apiExtension) */
+    mutationName?: string;
 }
 
 export interface AddOperationResult {
@@ -67,10 +73,11 @@ export async function performAddOperation(options: AddOperationOptions): Promise
         }
         if (options.jobQueue) {
             const pluginName = typeof options.jobQueue === 'string' ? options.jobQueue : undefined;
-            await addJobQueueCommand.run({ 
-                isNonInteractive: true, 
+            await addJobQueueCommand.run({
+                isNonInteractive: true,
                 config: options.config,
-                pluginName 
+                pluginName,
+                name: options.name
             });
             return {
                 success: true,
@@ -79,10 +86,10 @@ export async function performAddOperation(options: AddOperationOptions): Promise
         }
         if (options.codegen) {
             const pluginName = typeof options.codegen === 'string' ? options.codegen : undefined;
-            await addCodegenCommand.run({ 
-                isNonInteractive: true, 
+            await addCodegenCommand.run({
+                isNonInteractive: true,
                 config: options.config,
-                pluginName 
+                pluginName
             });
             return {
                 success: true,
@@ -91,10 +98,12 @@ export async function performAddOperation(options: AddOperationOptions): Promise
         }
         if (options.apiExtension) {
             const pluginName = typeof options.apiExtension === 'string' ? options.apiExtension : undefined;
-            await addApiExtensionCommand.run({ 
-                isNonInteractive: true, 
+            await addApiExtensionCommand.run({
+                isNonInteractive: true,
                 config: options.config,
-                pluginName 
+                pluginName,
+                queryName: options.queryName,
+                mutationName: options.mutationName
             });
             return {
                 success: true,
@@ -103,10 +112,10 @@ export async function performAddOperation(options: AddOperationOptions): Promise
         }
         if (options.uiExtensions) {
             const pluginName = typeof options.uiExtensions === 'string' ? options.uiExtensions : undefined;
-            await addUiExtensionsCommand.run({ 
-                isNonInteractive: true, 
+            await addUiExtensionsCommand.run({
+                isNonInteractive: true,
                 config: options.config,
-                pluginName 
+                pluginName
             });
             return {
                 success: true,

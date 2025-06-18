@@ -32,26 +32,26 @@ async function addUiExtensions(options?: AddUiExtensionsOptions): Promise<CliCom
 
     // Detect non-interactive mode
     const isNonInteractive = options?.isNonInteractive === true;
-    
+
     let vendurePlugin: VendurePluginRef | undefined = providedVendurePlugin;
-    
+
     // If a plugin name was provided, try to find it
     if (!vendurePlugin && options?.pluginName) {
         const pluginClasses = getPluginClasses(project);
         const foundPlugin = pluginClasses.find(p => p.getName() === options.pluginName);
-        
+
         if (!foundPlugin) {
             // List available plugins if the specified one wasn't found
             const availablePlugins = pluginClasses.map(p => p.getName()).filter(Boolean);
             throw new Error(
                 `Plugin "${options.pluginName}" not found. Available plugins:\n` +
-                availablePlugins.map(name => `  - ${name}`).join('\n')
+                availablePlugins.map(name => `  - ${name as string}`).join('\n')
             );
         }
-        
+
         vendurePlugin = new VendurePluginRef(foundPlugin);
     }
-    
+
     // In non-interactive mode, we need a plugin specified
     if (isNonInteractive && !vendurePlugin) {
         throw new Error('Plugin must be specified when running in non-interactive mode');

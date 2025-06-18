@@ -35,6 +35,11 @@ export const cliCommands: CliCommandDefinition[] = [
                 required: false,
             },
             {
+                long: '--name <n>',
+                description: 'Name for the job queue (required with -j)',
+                required: false,
+            },
+            {
                 short: '-c',
                 long: '--codegen [plugin]',
                 description: 'Add GraphQL codegen configuration to the specified plugin',
@@ -44,6 +49,16 @@ export const cliCommands: CliCommandDefinition[] = [
                 short: '-a',
                 long: '--api-extension [plugin]',
                 description: 'Add an API extension scaffold to the specified plugin',
+                required: false,
+            },
+            {
+                long: '--queryName <n>',
+                description: 'Name for the query (used with -a)',
+                required: false,
+            },
+            {
+                long: '--mutationName <n>',
+                description: 'Name for the mutation (used with -a)',
                 required: false,
             },
             {
