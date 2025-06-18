@@ -7,11 +7,11 @@ import {
     UpdateProductOptionGroupInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { Brackets, FindManyOptions, FindOptionsUtils, IsNull, Like, Not } from 'typeorm';
+import { Brackets, FindManyOptions, FindOptionsUtils, IsNull, Like } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
-import { ListQueryOptions } from '../../common';
+import { EntityNotFoundError, ListQueryOptions, UserInputError } from '../../common';
 import { ForbiddenError } from '../../common/error/errors';
 import { Instrument } from '../../common/instrument-decorator';
 import { Translated } from '../../common/types/locale-types';
@@ -167,18 +167,22 @@ export class ProductOptionGroupService {
         ctx: RequestContext,
         input: UpdateProductOptionGroupInput,
     ): Promise<Translated<ProductOptionGroup>> {
-        const optionGroup = await this.connection.getEntityOrThrow(ctx, ProductOptionGroup, input.id, {
-            where: [{ channels: { id: ctx.channelId } }, { productId: Not(IsNull()) }],
-        });
-        const isUpdatingGlobal = optionGroup.global === true;
-        const isChangingToGlobal = optionGroup.global !== undefined && !optionGroup.global && input.global;
-        if (isUpdatingGlobal && !ctx.userHasPermissions([Permission.UpdateGlobalProductOption])) {
+        const optionGroup = await this.getGroupOrThrow(ctx, input.id);
+        if (optionGroup.global === true && !ctx.userHasPermissions([Permission.UpdateGlobalProductOption])) {
             throw new ForbiddenError(LogLevel.Verbose);
         }
-        if (isChangingToGlobal && !ctx.userHasPermissions([Permission.CreateGlobalProductOption])) {
+        if (
+            !optionGroup.global &&
+            input.global &&
+            !ctx.userHasPermissions([Permission.CreateGlobalProductOption])
+        ) {
             throw new ForbiddenError(LogLevel.Verbose);
         }
-
+        if (optionGroup.productId && input.global) {
+            throw new UserInputError('message.product-option-group-cannot-be-global', {
+                groupCode: optionGroup.code,
+            });
+        }
         const group = await this.translatableSaver.update({
             ctx,
             input,
@@ -275,5 +279,15 @@ export class ProductOptionGroupService {
             .leftJoin('variant.options', 'option')
             .where('option.groupId = :groupId', { groupId: productOptionGroup.id })
             .getCount();
+    }
+
+    private async getGroupOrThrow(ctx: RequestContext, groupId: ID): Promise<ProductOptionGroup> {
+        const optionGroup = await this.connection.getEntityOrThrow(ctx, ProductOptionGroup, groupId, {
+            relations: ['channels'],
+        });
+        if (!(optionGroup.channels.some(c => c.id === ctx.channelId) || optionGroup.productId)) {
+            throw new EntityNotFoundError(ProductOptionGroup.name, groupId);
+        }
+        return optionGroup;
     }
 }

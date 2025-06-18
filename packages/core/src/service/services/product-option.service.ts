@@ -11,7 +11,7 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RelationPaths } from '../../api';
 import { RequestContext } from '../../api/common/request-context';
-import { ForbiddenError, ListQueryOptions } from '../../common';
+import { EntityNotFoundError, ForbiddenError, ListQueryOptions } from '../../common';
 import { Instrument } from '../../common/instrument-decorator';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
@@ -128,15 +128,15 @@ export class ProductOptionService {
     }
 
     async update(ctx: RequestContext, input: UpdateProductOptionInput): Promise<Translated<ProductOption>> {
-        const { group } = await this.connection.getEntityOrThrow(ctx, ProductOption, input.id, {
-            relations: ['group'],
-            channelId: ctx.channelId,
-            ignoreGlobal: true,
-        });
-        const isUpdatingGlobal = group.global === true;
-        if (isUpdatingGlobal && !ctx.userHasPermissions([Permission.UpdateGlobalProductOption])) {
+        const groupOption = await this.getOptionOrThrow(ctx, input.id);
+
+        if (
+            groupOption.group.global === true &&
+            !ctx.userHasPermissions([Permission.UpdateGlobalProductOption])
+        ) {
             throw new ForbiddenError(LogLevel.Verbose);
         }
+
         const option = await this.translatableSaver.update({
             ctx,
             input,
@@ -158,13 +158,11 @@ export class ProductOptionService {
      * - If the ProductOption is not used by any ProductVariant at all, it will be hard-deleted.
      */
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
-        const productOption = await this.connection.getEntityOrThrow(ctx, ProductOption, id, {
-            relations: ['group'],
-            channelId: ctx.channelId,
-            ignoreGlobal: true,
-        });
-        const isDeletingGlobal = productOption.group.global === true;
-        if (isDeletingGlobal && !ctx.userHasPermissions([Permission.DeleteGlobalProductOption])) {
+        const productOption = await this.getOptionOrThrow(ctx, id);
+        if (
+            productOption.group.global === true &&
+            !ctx.userHasPermissions([Permission.DeleteGlobalProductOption])
+        ) {
             throw new ForbiddenError(LogLevel.Verbose);
         }
         const deletedProductOption = new ProductOption(productOption);
@@ -209,5 +207,15 @@ export class ProductOptionService {
             .where(variantState === 'active' ? 'variant.deletedAt IS NULL' : 'variant.deletedAt IS NOT NULL')
             .andWhere('options.id = :id', { id: productOption.id })
             .getCount();
+    }
+
+    private async getOptionOrThrow(ctx: RequestContext, optionId: ID): Promise<ProductOption> {
+        const groupOption = await this.connection.getEntityOrThrow(ctx, ProductOption, optionId, {
+            relations: ['group', 'channels'],
+        });
+        if (!(groupOption.channels.some(c => c.id === ctx.channelId) || groupOption.group.productId)) {
+            throw new EntityNotFoundError(ProductOption.name, optionId);
+        }
+        return groupOption;
     }
 }
