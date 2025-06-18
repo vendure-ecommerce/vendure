@@ -9,7 +9,11 @@ import {
     SidebarMenuSubButton,
     SidebarMenuSubItem,
 } from '@/components/ui/sidebar.js';
-import { NavMenuItem, NavMenuSection } from '@/framework/nav-menu/nav-menu-extensions.js';
+import {
+    NavMenuItem,
+    NavMenuSection,
+    NavMenuSectionPlacement,
+} from '@/framework/nav-menu/nav-menu-extensions.js';
 import { Link, useLocation } from '@tanstack/react-router';
 import { ChevronRight } from 'lucide-react';
 import * as React from 'react';
@@ -29,30 +33,24 @@ export function NavMain({ items }: { items: Array<NavMenuSection | NavMenuItem> 
     // State to track which bottom section is currently open
     const [openBottomSectionId, setOpenBottomSectionId] = React.useState<string | null>(null);
 
-    // Replace naive filters with memoised, sorted results
-    const topSections = React.useMemo(() => {
-        return items
-            .filter(item => item.placement === 'top')
-            .slice()
-            .sort(sortByOrder)
-            .map(section =>
-                'items' in section
-                    ? { ...section, items: section.items?.slice().sort(sortByOrder) }
-                    : section,
-            );
-    }, [items]);
+    // Helper to build a sorted list of sections for a given placement, memoized for stability
+    const getSortedSections = React.useCallback(
+        (placement: NavMenuSectionPlacement) => {
+            return items
+                .filter(item => item.placement === placement)
+                .slice()
+                .sort(sortByOrder)
+                .map(section =>
+                    'items' in section
+                        ? { ...section, items: section.items?.slice().sort(sortByOrder) }
+                        : section,
+                );
+        },
+        [items],
+    );
 
-    const bottomSections = React.useMemo(() => {
-        return items
-            .filter(item => item.placement === 'bottom')
-            .slice()
-            .sort(sortByOrder)
-            .map(section =>
-                'items' in section
-                    ? { ...section, items: section.items?.slice().sort(sortByOrder) }
-                    : section,
-            );
-    }, [items]);
+    const topSections = React.useMemo(() => getSortedSections('top'), [getSortedSections]);
+    const bottomSections = React.useMemo(() => getSortedSections('bottom'), [getSortedSections]);
 
     // Handle bottom section open/close
     const handleBottomSectionToggle = (sectionId: string, isOpen: boolean) => {
