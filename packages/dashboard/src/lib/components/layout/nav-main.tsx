@@ -9,19 +9,50 @@ import {
     SidebarMenuSubButton,
     SidebarMenuSubItem,
 } from '@/components/ui/sidebar.js';
-import { NavMenuSection, NavMenuItem } from '@/framework/nav-menu/nav-menu-extensions.js';
-import { Link, rootRouteId, useLocation, useMatch } from '@tanstack/react-router';
+import { NavMenuItem, NavMenuSection } from '@/framework/nav-menu/nav-menu-extensions.js';
+import { Link, useLocation } from '@tanstack/react-router';
 import { ChevronRight } from 'lucide-react';
 import * as React from 'react';
+
+// Utility to sort items & sections by the optional `order` prop (ascending) and then alphabetically by title
+function sortByOrder<T extends { order?: number; title: string }>(a: T, b: T) {
+    const orderA = a.order ?? Number.MAX_SAFE_INTEGER;
+    const orderB = b.order ?? Number.MAX_SAFE_INTEGER;
+    if (orderA === orderB) {
+        return a.title.localeCompare(b.title);
+    }
+    return orderA - orderB;
+}
 
 export function NavMain({ items }: { items: Array<NavMenuSection | NavMenuItem> }) {
     const location = useLocation();
     // State to track which bottom section is currently open
     const [openBottomSectionId, setOpenBottomSectionId] = React.useState<string | null>(null);
 
-    // Split sections into top and bottom groups based on placement property
-    const topSections = items.filter(item => item.placement === 'top');
-    const bottomSections = items.filter(item => item.placement === 'bottom');
+    // Replace naive filters with memoised, sorted results
+    const topSections = React.useMemo(() => {
+        return items
+            .filter(item => item.placement === 'top')
+            .slice()
+            .sort(sortByOrder)
+            .map(section =>
+                'items' in section
+                    ? { ...section, items: section.items?.slice().sort(sortByOrder) }
+                    : section,
+            );
+    }, [items]);
+
+    const bottomSections = React.useMemo(() => {
+        return items
+            .filter(item => item.placement === 'bottom')
+            .slice()
+            .sort(sortByOrder)
+            .map(section =>
+                'items' in section
+                    ? { ...section, items: section.items?.slice().sort(sortByOrder) }
+                    : section,
+            );
+    }, [items]);
 
     // Handle bottom section open/close
     const handleBottomSectionToggle = (sectionId: string, isOpen: boolean) => {
@@ -50,7 +81,7 @@ export function NavMain({ items }: { items: Array<NavMenuSection | NavMenuItem> 
                 return;
             }
         }
-    }, [location.pathname]);
+    }, [location.pathname, bottomSections]);
 
     // Render a top navigation section
     const renderTopSection = (item: NavMenuSection | NavMenuItem) => {

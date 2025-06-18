@@ -1,5 +1,6 @@
 import { PageContextValue } from '@/framework/layout-engine/page-provider.js';
 import { AnyRoute, RouteOptions } from '@tanstack/react-router';
+import { LucideIcon } from 'lucide-react';
 import type React from 'react';
 
 import { DashboardAlertDefinition } from '../alert/types.js';
@@ -16,6 +17,13 @@ export interface DashboardRouteDefinition {
 export interface ActionBarButtonState {
     disabled: boolean;
     visible: boolean;
+}
+
+export interface DashboardNavSectionDefinition {
+    id: string;
+    title: string;
+    icon?: LucideIcon;
+    order?: number;
 }
 
 /**
@@ -103,6 +111,11 @@ export interface DashboardExtension {
      * Allows you to define custom routes such as list or detail views.
      */
     routes?: DashboardRouteDefinition[];
+    /**
+     * @description
+     * Allows you to define custom nav sections for the dashboard.
+     */
+    navSections?: DashboardNavSectionDefinition[];
     /**
      * @description
      * Allows you to define custom page blocks for any page in the dashboard.
