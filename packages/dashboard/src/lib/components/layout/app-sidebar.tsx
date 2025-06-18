@@ -16,8 +16,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { extensionsLoaded } = useDashboardExtensions();
     const { sections } = getNavMenuConfig();
 
-    console.log({ sections });
-
     return (
         extensionsLoaded && (
             <Sidebar collapsible="icon" {...props}>
