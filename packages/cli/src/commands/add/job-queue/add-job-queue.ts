@@ -4,10 +4,9 @@ import { Node, Scope } from 'ts-morph';
 
 import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
 import { ServiceRef } from '../../../shared/service-ref';
-import { analyzeProject, selectPlugin, selectServiceRef, getServices } from '../../../shared/shared-prompts';
+import { analyzeProject, getServices, selectPlugin, selectServiceRef } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
 import { addImportsToFile, getPluginClasses } from '../../../utilities/ast-utils';
-import { addServiceCommand } from '../service/add-service';
 
 const cancelledMessage = 'Add API extension cancelled';
 
@@ -15,6 +14,7 @@ export interface AddJobQueueOptions {
     plugin?: VendurePluginRef;
     pluginName?: string;
     name?: string;
+    selectedService?: string;
     config?: string;
     isNonInteractive?: boolean;
 }
@@ -30,7 +30,11 @@ async function addJobQueue(
     options?: AddJobQueueOptions,
 ): Promise<CliCommandReturnVal<{ serviceRef: ServiceRef }>> {
     const providedVendurePlugin = options?.plugin;
-    const { project } = await analyzeProject({ providedVendurePlugin, cancelledMessage, config: options?.config });
+    const { project } = await analyzeProject({
+        providedVendurePlugin,
+        cancelledMessage,
+        config: options?.config,
+    });
 
     // Detect non-interactive mode
     const isNonInteractive = options?.isNonInteractive === true;
@@ -47,7 +51,7 @@ async function addJobQueue(
             const availablePlugins = pluginClasses.map(p => p.getName()).filter(Boolean);
             throw new Error(
                 `Plugin "${options.pluginName}" not found. Available plugins:\n` +
-                availablePlugins.map(name => `  - ${name as string}`).join('\n')
+                    availablePlugins.map(name => `  - ${name as string}`).join('\n'),
             );
         }
 
@@ -63,7 +67,14 @@ async function addJobQueue(
         if (!options?.name) {
             throw new Error(
                 'Job queue name must be specified in non-interactive mode.\n' +
-                'Usage: npx vendure add -j <PluginName> --name <job-queue-name>'
+                    'Usage: npx vendure add -j <PluginName> --name <job-queue-name> --selected-service <service-name>',
+            );
+        }
+        // Require service to be specified explicitly
+        if (!options?.selectedService) {
+            throw new Error(
+                'Service must be specified in non-interactive mode.\n' +
+                    'Usage: npx vendure add -j <PluginName> --name <job-queue-name> --selected-service <service-name>',
             );
         }
     }
@@ -78,12 +89,33 @@ async function addJobQueue(
     let serviceRef: ServiceRef | undefined;
 
     if (isNonInteractive) {
-        // In non-interactive mode, require explicit service specification
-        throw new Error(
-            'Service selection is not supported in non-interactive mode.\n' +
-            'Please first create a service using: npx vendure add -s <ServiceName>\n' +
-            'Then add the job queue interactively.'
-        );
+        // In non-interactive mode, find the specified service
+        const existingServices = getServices(project).filter(sr => {
+            return sr.classDeclaration
+                .getSourceFile()
+                .getDirectoryPath()
+                .includes(plugin.getSourceFile().getDirectoryPath());
+        });
+
+        const selectedService = existingServices.find(sr => sr.name === options.selectedService);
+
+        if (!selectedService) {
+            const availableServices = existingServices.map(sr => sr.name);
+            if (availableServices.length === 0) {
+                throw new Error(
+                    `No services found in plugin "${plugin.name}".\n` +
+                        'Please first create a service using: npx vendure add -s <ServiceName>',
+                );
+            } else {
+                throw new Error(
+                    `Service "${options.selectedService as string}" not found in plugin "${plugin.name}". Available services:\n` +
+                        availableServices.map(name => `  - ${name}`).join('\n'),
+                );
+            }
+        }
+
+        serviceRef = selectedService;
+        log.info(`Using service: ${serviceRef.name}`);
     } else {
         // Interactive mode - let user choose
         serviceRef = await selectServiceRef(project, plugin);
@@ -93,15 +125,17 @@ async function addJobQueue(
         throw new Error('Service is required for job queue');
     }
 
-    const jobQueueName = options?.name ?? await text({
-        message: 'What is the name of the job queue?',
-        initialValue: 'my-background-task',
-        validate: input => {
-            if (!/^[a-z][a-z-0-9]+$/.test(input)) {
-                return 'The job queue name must be lowercase and contain only letters, numbers and dashes';
-            }
-        },
-    });
+    const jobQueueName =
+        options?.name ??
+        (await text({
+            message: 'What is the name of the job queue?',
+            initialValue: 'my-background-task',
+            validate: input => {
+                if (!/^[a-z][a-z-0-9]+$/.test(input)) {
+                    return 'The job queue name must be lowercase and contain only letters, numbers and dashes';
+                }
+            },
+        }));
 
     if (!isNonInteractive && isCancel(jobQueueName)) {
         cancel(cancelledMessage);

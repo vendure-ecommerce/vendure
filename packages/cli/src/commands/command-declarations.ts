@@ -40,6 +40,11 @@ export const cliCommands: CliCommandDefinition[] = [
                 required: false,
             },
             {
+                long: '--selected-service <n>',
+                description: 'Name of the service to add the job queue to (required with -j)',
+                required: false,
+            },
+            {
                 short: '-c',
                 long: '--codegen [plugin]',
                 description: 'Add GraphQL codegen configuration to the specified plugin',

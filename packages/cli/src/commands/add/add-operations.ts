@@ -32,6 +32,8 @@ export interface AddOperationOptions {
     queryName?: string;
     /** Name for the mutation (used with apiExtension) */
     mutationName?: string;
+    /** Name of the service to use (used with jobQueue) */
+    selectedService?: string;
 }
 
 export interface AddOperationResult {
@@ -77,7 +79,8 @@ export async function performAddOperation(options: AddOperationOptions): Promise
                 isNonInteractive: true,
                 config: options.config,
                 pluginName,
-                name: options.name
+                name: options.name,
+                selectedService: options.selectedService,
             });
             return {
                 success: true,
@@ -89,7 +92,7 @@ export async function performAddOperation(options: AddOperationOptions): Promise
             await addCodegenCommand.run({
                 isNonInteractive: true,
                 config: options.config,
-                pluginName
+                pluginName,
             });
             return {
                 success: true,
@@ -103,7 +106,7 @@ export async function performAddOperation(options: AddOperationOptions): Promise
                 config: options.config,
                 pluginName,
                 queryName: options.queryName,
-                mutationName: options.mutationName
+                mutationName: options.mutationName,
             });
             return {
                 success: true,
@@ -115,7 +118,7 @@ export async function performAddOperation(options: AddOperationOptions): Promise
             await addUiExtensionsCommand.run({
                 isNonInteractive: true,
                 config: options.config,
-                pluginName
+                pluginName,
             });
             return {
                 success: true,
