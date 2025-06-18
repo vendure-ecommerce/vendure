@@ -35,6 +35,11 @@ jobs:
               id: date
               run: echo "date=$(date +'%Y%m%d%H%M')" >> $GITHUB_OUTPUT
 
+            - name: Configure Git
+              run: |
+                  git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                  git config --global user.name "github-actions[bot]"
+
             - name: Version and build packages
               run: |
                   # Get the current version from lerna.json
