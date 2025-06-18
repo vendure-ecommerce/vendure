@@ -42,7 +42,7 @@
                         <input
                             type="checkbox"
                             clrToggle
-                            [vdrDisabled]="!(updatePermission | hasPermission)"
+                            [vdrDisabled]="!(updatePermission | hasPermission) || !isCurrentChannelInFacetChannels"
                             formControlName="visible"
                             id="visibility"
                         />
@@ -51,6 +51,25 @@
                                 'catalog.public' | translate
                             }}</ng-container>
                             <ng-template #private>{{ 'catalog.private' | translate }}</ng-template>
+                        </label>
+                    </clr-toggle-wrapper>
+                </vdr-form-field>
+            </vdr-card>
+            <vdr-card>
+                <vdr-form-field [label]="'catalog.availability' | translate" for="global">
+                    <clr-toggle-wrapper>
+                        <input
+                            type="checkbox"
+                            clrToggle
+                            [vdrDisabled]="!(updateGlobalPermission | hasPermission) || !isCurrentChannelInFacetChannels"
+                            formControlName="global"
+                            id="global"
+                        />
+                        <label class="global-toggle">
+                            <ng-container *ngIf="detailForm.value.facet?.global; else channel">{{
+                                'catalog.all-channels' | translate
+                            }}</ng-container>
+                            <ng-template #channel>{{ 'catalog.assigned-channels' | translate }}</ng-template>
                         </label>
                     </clr-toggle-wrapper>
                 </vdr-form-field>
@@ -67,7 +86,7 @@
                             id="name"
                             type="text"
                             formControlName="name"
-                            [readonly]="!(updatePermission | hasPermission)"
+                            [readonly]="!(updatePermission | hasPermission) || !isCurrentChannelInFacetChannels"
                             (input)="updateCode(entity?.code, $event.target.value)"
                         />
                     </vdr-form-field>
@@ -75,7 +94,7 @@
                         <input
                             id="code"
                             type="text"
-                            [readonly]="!(updatePermission | hasPermission)"
+                            [readonly]="!(updatePermission | hasPermission) || !isCurrentChannelInFacetChannels"
                             formControlName="code"
                         />
                     </vdr-form-field>
@@ -86,7 +105,7 @@
                     entityName="Facet"
                     [customFields]="customFields"
                     [customFieldsFormGroup]="detailForm.get('facet.customFields')"
-                    [readonly]="!(updatePermission | hasPermission)"
+                    [readonly]="!(updatePermission | hasPermission) || !isCurrentChannelInFacetChannels"
                 />
             </vdr-card>
 
@@ -144,7 +163,7 @@
                                     <input
                                         type="text"
                                         formControlName="name"
-                                        [readonly]="!(updatePermission | hasPermission)"
+                                        [readonly]="!(updatePermission | hasPermission) || !isCurrentChannelInFacetChannels"
                                         (input)="updateValueCode(value.code, $event.target.value, value.id)"
                                     />
                                 </td>
@@ -159,7 +178,7 @@
                                         [customFieldsFormGroup]="
                                             detailForm.get(['values', value.id, 'customFields'])
                                         "
-                                        [readonly]="!(updatePermission | hasPermission)"
+                                        [readonly]="!(updatePermission | hasPermission) || !isCurrentChannelInFacetChannels"
                                     ></vdr-tabbed-custom-fields>
                                 </td>
                                 <td class="align-middle">
@@ -172,7 +191,7 @@
                                                 type="button"
                                                 class="delete-button"
                                                 (click)="deleteFacetValue(value.id)"
-                                                [disabled]="!(updatePermission | hasPermission)"
+                                                [disabled]="!(updatePermission | hasPermission) || !isCurrentChannelInFacetChannels"
                                                 vdrDropdownItem
                                             >
                                                 <clr-icon shape="trash" class="is-danger"></clr-icon>

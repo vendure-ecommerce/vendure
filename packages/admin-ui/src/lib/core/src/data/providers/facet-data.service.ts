@@ -29,7 +29,7 @@ export class FacetDataService {
 
     createFacet(facet: Codegen.CreateFacetInput) {
         const input: Codegen.CreateFacetMutationVariables = {
-            input: pick(facet, ['code', 'isPrivate', 'translations', 'values', 'customFields']),
+            input: pick(facet, ['code', 'isPrivate', 'translations', 'values', 'customFields', 'global']),
         };
         return this.baseDataService.mutate<Codegen.CreateFacetMutation, Codegen.CreateFacetMutationVariables>(
             CREATE_FACET,
@@ -39,7 +39,7 @@ export class FacetDataService {
 
     updateFacet(facet: Codegen.UpdateFacetInput) {
         const input: Codegen.UpdateFacetMutationVariables = {
-            input: pick(facet, ['id', 'code', 'isPrivate', 'translations', 'customFields']),
+            input: pick(facet, ['id', 'code', 'isPrivate', 'global', 'translations', 'customFields']),
         };
         return this.baseDataService.mutate<Codegen.UpdateFacetMutation, Codegen.UpdateFacetMutationVariables>(
             UPDATE_FACET,

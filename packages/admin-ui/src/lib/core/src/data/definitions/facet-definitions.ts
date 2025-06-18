@@ -19,6 +19,10 @@ export const FACET_VALUE_FRAGMENT = gql`
             updatedAt
             name
             code
+            channels {
+                id
+                code
+            }
         }
     }
 `;
@@ -30,6 +34,7 @@ export const FACET_WITH_VALUES_FRAGMENT = gql`
         updatedAt
         languageCode
         isPrivate
+        global
         code
         name
         translations {
@@ -39,6 +44,10 @@ export const FACET_WITH_VALUES_FRAGMENT = gql`
         }
         values {
             ...FacetValue
+        }
+        channels {
+            id
+            code
         }
     }
     ${FACET_VALUE_FRAGMENT}
@@ -51,6 +60,7 @@ export const FACET_WITH_VALUE_LIST_FRAGMENT = gql`
         updatedAt
         languageCode
         isPrivate
+        global
         code
         name
         translations {
@@ -58,11 +68,15 @@ export const FACET_WITH_VALUE_LIST_FRAGMENT = gql`
             languageCode
             name
         }
+        channels {
+            id
+            code
+        }
         valueList(options: $facetValueListOptions) {
-            totalItems
             items {
                 ...FacetValue
             }
+            totalItems
         }
     }
     ${FACET_VALUE_FRAGMENT}

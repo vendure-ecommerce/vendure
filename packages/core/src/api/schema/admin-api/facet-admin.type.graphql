@@ -1,4 +1,5 @@
 type Facet implements Node {
     isPrivate: Boolean!
     global: Boolean!
+    channels: [Channel!]!
 }

@@ -55,7 +55,7 @@ type ValueItem =
     templateUrl: './facet-detail.component.html',
     styleUrls: ['./facet-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    standalone: false,
 })
 export class FacetDetailComponent
     extends TypedBaseDetailComponent<typeof GetFacetDetailDocument, 'facet'>
@@ -68,6 +68,7 @@ export class FacetDetailComponent
             code: ['', Validators.required],
             name: '',
             visible: true,
+            global: false,
             customFields: this.formBuilder.group(getCustomFieldsDefaults(this.customFields)),
         }),
         values: this.formBuilder.record<
@@ -85,6 +86,8 @@ export class FacetDetailComponent
     filterControl = new FormControl('');
     values$ = new BehaviorSubject<ValueItem[]>([]);
     readonly updatePermission = [Permission.UpdateCatalog, Permission.UpdateFacet];
+    readonly updateGlobalPermission = [Permission.UpdateGlobalFacet];
+    isCurrentChannelInFacetChannels = true;
 
     constructor(
         private changeDetector: ChangeDetectorRef,
@@ -175,6 +178,8 @@ export class FacetDetailComponent
                 name: '',
                 code: '',
                 translations: [],
+                global: false,
+                channels: [],
             },
             facetForm,
             this.languageCode,
@@ -331,10 +336,21 @@ export class FacetDetailComponent
     protected setFormValues(facet: FacetWithValueListFragment, languageCode: LanguageCode) {
         const currentTranslation = findTranslation(facet, languageCode);
 
+        this.dataService.client
+            .userStatus()
+            .single$.pipe(take(1))
+            .subscribe(({ userStatus }) => {
+                this.isCurrentChannelInFacetChannels = facet.channels.some(
+                    channel => channel.id === userStatus.activeChannelId,
+                );
+                this.changeDetector.markForCheck();
+            });
+
         this.detailForm.patchValue({
             facet: {
                 code: facet.code,
                 visible: !facet.isPrivate,
+                global: facet.global,
                 name: currentTranslation?.name ?? '',
             },
         });
@@ -416,6 +432,7 @@ export class FacetDetailComponent
             },
         });
         input.isPrivate = !facetFormGroup.value.visible;
+        input.global = !!facetFormGroup.value.global;
         return input;
     }
 

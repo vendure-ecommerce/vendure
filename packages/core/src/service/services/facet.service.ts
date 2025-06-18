@@ -22,6 +22,7 @@ import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { LogLevel } from '../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../connection/transactional-connection';
+import { Channel } from '../../entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { FacetTranslation } from '../../entity/facet/facet-translation.entity';
 import { Facet } from '../../entity/facet/facet.entity';
@@ -389,5 +390,9 @@ export class FacetService {
         }
 
         return results;
+    }
+
+    getChannelsForFacet(ctx: RequestContext, facetId: ID): Promise<Channel[]> {
+        return this.findOne(ctx, facetId, ['channels']).then(facet => (facet ? facet.channels : []));
     }
 }

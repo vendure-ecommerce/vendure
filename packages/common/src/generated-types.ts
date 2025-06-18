@@ -1714,6 +1714,7 @@ export type ErrorResult = {
 
 export type Facet = Node & {
   __typename?: 'Facet';
+  channels: Array<Channel>;
   code: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
   customFields?: Maybe<Scalars['JSON']['output']>;

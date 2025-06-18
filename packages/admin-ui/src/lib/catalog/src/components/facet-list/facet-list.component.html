@@ -88,6 +88,16 @@
             }}</vdr-chip>
         </ng-template>
     </vdr-dt2-column>
+    <vdr-dt2-column [heading]="'catalog.availability' | translate" id="availability">
+        <ng-template let-facet="item">
+            <vdr-chip *ngIf="facet.global" colorType="success">{{
+                'catalog.all-channels' | translate
+            }}</vdr-chip>
+            <vdr-chip *ngIf="!facet.global" colorType="warning">{{
+                'catalog.assigned-channels' | translate
+            }}</vdr-chip>
+        </ng-template>
+    </vdr-dt2-column>
     <vdr-dt2-column [heading]="'catalog.values' | translate" id="values">
         <ng-template let-facet="item">
             <div class="facet-values-list">

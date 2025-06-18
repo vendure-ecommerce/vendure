@@ -195,7 +195,10 @@
     "variant": "Variant",
     "variant-count": "{count, plural, one {1 variant} other {{count} variants}}",
     "view-contents": "View contents",
-    "visibility": "Visibility"
+    "visibility": "Visibility",
+    "availability": "Availability",  
+    "all-channels": "All Channels",  
+    "assigned-channels": "Assigned Channels" 
   },
   "common": {
     "ID": "ID",
