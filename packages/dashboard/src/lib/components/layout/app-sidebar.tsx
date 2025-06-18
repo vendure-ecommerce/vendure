@@ -7,14 +7,15 @@ import {
     SidebarHeader,
     SidebarRail,
 } from '@/components/ui/sidebar.js';
-import { getNavMenuConfig } from '@/framework/nav-menu/nav-menu-extensions.js';
 import { useDashboardExtensions } from '@/framework/extension-api/use-dashboard-extensions.js';
+import { getNavMenuConfig } from '@/framework/nav-menu/nav-menu-extensions.js';
 import * as React from 'react';
 import { ChannelSwitcher } from './channel-switcher.js';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { extensionsLoaded } = useDashboardExtensions();
     const { sections } = getNavMenuConfig();
+
     return (
         extensionsLoaded && (
             <Sidebar collapsible="icon" {...props}>

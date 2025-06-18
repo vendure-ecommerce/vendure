@@ -23,6 +23,7 @@ export function registerDefaults() {
                 placement: 'top',
                 icon: LayoutDashboardIcon,
                 url: '/',
+                order: 100,
             },
             {
                 id: 'catalog',
@@ -30,6 +31,7 @@ export function registerDefaults() {
                 icon: SquareTerminal,
                 defaultOpen: true,
                 placement: 'top',
+                order: 200,
                 items: [
                     {
                         id: 'products',
@@ -64,6 +66,7 @@ export function registerDefaults() {
                 icon: ShoppingCart,
                 defaultOpen: true,
                 placement: 'top',
+                order: 300,
                 items: [
                     {
                         id: 'orders',
@@ -78,6 +81,7 @@ export function registerDefaults() {
                 icon: Users,
                 defaultOpen: false,
                 placement: 'top',
+                order: 400,
                 items: [
                     {
                         id: 'customers',
@@ -97,6 +101,7 @@ export function registerDefaults() {
                 icon: Mail,
                 defaultOpen: false,
                 placement: 'top',
+                order: 500,
                 items: [
                     {
                         id: 'promotions',
@@ -111,6 +116,7 @@ export function registerDefaults() {
                 icon: Terminal,
                 defaultOpen: false,
                 placement: 'bottom',
+                order: 100,
                 items: [
                     {
                         id: 'job-queue',
@@ -135,6 +141,7 @@ export function registerDefaults() {
                 icon: Settings2,
                 defaultOpen: false,
                 placement: 'bottom',
+                order: 200,
                 items: [
                     {
                         id: 'sellers',

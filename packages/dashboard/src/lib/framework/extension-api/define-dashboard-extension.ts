@@ -3,7 +3,7 @@ import {
     registerDashboardActionBarItem,
     registerDashboardPageBlock,
 } from '../layout-engine/layout-extensions.js';
-import { addNavMenuItem, NavMenuItem } from '../nav-menu/nav-menu-extensions.js';
+import { addNavMenuItem, addNavMenuSection, NavMenuItem } from '../nav-menu/nav-menu-extensions.js';
 import { registerRoute } from '../page/page-api.js';
 import { globalRegistry } from '../registry/global-registry.js';
 
@@ -34,6 +34,16 @@ export function executeDashboardExtensionCallbacks() {
  */
 export function defineDashboardExtension(extension: DashboardExtension) {
     globalRegistry.get('registerDashboardExtensionCallbacks').add(() => {
+        if (extension.navSections) {
+            for (const section of extension.navSections) {
+                addNavMenuSection({
+                    ...section,
+                    placement: 'top',
+                    order: section.order ?? 999,
+                    items: [],
+                });
+            }
+        }
         if (extension.routes) {
             for (const route of extension.routes) {
                 if (route.navMenuItem) {
