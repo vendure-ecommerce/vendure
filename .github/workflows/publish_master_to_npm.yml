@@ -48,8 +48,10 @@ jobs:
                   # Update version using lerna directly
                   npx lerna version $NEW_VERSION --no-git-tag-version --yes --no-push --force-publish
 
-            - name: Fix git index
-              run: git update-index --skip-worktree .
+            - name: Commit changes
+              run: |
+                  git add .
+                  git commit -m "chore: Bump version for pre-release to $NEW_VERSION"
 
             - name: Publish to NPM
               run: npx lerna publish from-package --yes --dist-tag master --no-git-reset
