@@ -48,11 +48,11 @@ jobs:
                   # Update version using lerna directly
                   npx lerna version $NEW_VERSION --no-git-tag-version --yes --no-push --force-publish
 
-            - name: Build packages
-              run: npm run build
+            - name: Fix git index
+              run: git update-index --skip-worktree .
 
             - name: Publish to NPM
-              run: npx lerna publish from-package --yes --dist-tag master --no-git-reset --no-verify-access
+              run: npx lerna publish from-package --yes --dist-tag master --no-git-reset
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
                   NPM_CONFIG_PROVENANCE: true
