@@ -1,5 +1,3 @@
-import { log } from '@clack/prompts';
-
 import { addApiExtensionCommand } from './api-extension/add-api-extension';
 import { addCodegenCommand } from './codegen/add-codegen';
 import { addEntityCommand } from './entity/add-entity';
@@ -135,9 +133,9 @@ export async function performAddOperation(options: AddOperationOptions): Promise
             message: 'No valid add operation specified',
         };
     } catch (error: any) {
-        log.error(error.message);
-        if (error.stack) {
-            log.error(error.stack);
+        // Re-throw validation errors so they can be properly handled with stack trace
+        if (error.message.includes('Plugin name is required')) {
+            throw error;
         }
         return {
             success: false,

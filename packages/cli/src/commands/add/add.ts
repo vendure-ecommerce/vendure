@@ -39,9 +39,22 @@ async function handleNonInteractiveMode(options: AddOperationOptions) {
             process.exit(1);
         }
     } catch (e: any) {
-        log.error(e.message as string);
-        if (e.stack) {
-            log.error(e.stack);
+        // For validation errors, show the full error with stack trace
+        if (e.message.includes('Plugin name is required')) {
+            // Extract error message and stack trace
+            const errorMessage = e.message;
+            const stackLines = e.stack.split('\n');
+            const stackTrace = stackLines.slice(1).join('\n'); // Remove first line (error message)
+
+            // Display colored error message, newline, then stack trace
+            log.error(pc.red('Error:') + ' ' + String(errorMessage));
+            log.error(''); // Add empty line for better readability
+            log.error(stackTrace);
+        } else {
+            log.error(e.message as string);
+            if (e.stack) {
+                log.error(e.stack);
+            }
         }
         process.exit(1);
     }
