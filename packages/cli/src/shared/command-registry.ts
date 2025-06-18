@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 
-import { CliCommandDefinition } from './cli-command-definition';
+import { CliCommandDefinition, CliCommandOption } from './cli-command-definition';
 
 export function registerCommands(program: Command, commands: CliCommandDefinition[]): void {
     commands.forEach(commandDef => {
@@ -14,21 +14,37 @@ export function registerCommands(program: Command, commands: CliCommandDefinitio
         // Add options if they exist
         if (commandDef.options) {
             commandDef.options.forEach(option => {
-                const parts: string[] = [];
-                if (option.short) {
-                    parts.push(option.short);
+                addOption(command, option);
+
+                // Add sub-options if they exist
+                if (option.subOptions) {
+                    option.subOptions.forEach(subOption => {
+                        // Create a version of the sub-option with indented description
+                        const indentedSubOption = {
+                            ...subOption,
+                            description: `  └─ ${subOption.description}`,
+                        };
+                        addOption(command, indentedSubOption);
+                    });
                 }
-                parts.push(option.long);
-
-                let optionString = parts.join(', ');
-
-                // Handle optional options which expect a value by converting <value> to [value]
-                if (!option.required) {
-                    optionString = optionString.replace(/<([^>]+)>/g, '[$1]');
-                }
-
-                command.option(optionString, option.description, option.defaultValue);
             });
         }
     });
+}
+
+function addOption(command: Command, option: CliCommandOption): void {
+    const parts: string[] = [];
+    if (option.short) {
+        parts.push(option.short);
+    }
+    parts.push(option.long);
+
+    let optionString = parts.join(', ');
+
+    // Handle optional options which expect a value by converting <value> to [value]
+    if (!option.required) {
+        optionString = optionString.replace(/<([^>]+)>/g, '[$1]');
+    }
+
+    command.option(optionString, option.description, option.defaultValue);
 }

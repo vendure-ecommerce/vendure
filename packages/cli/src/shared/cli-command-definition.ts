@@ -4,6 +4,7 @@ export interface CliCommandOption {
     description: string;
     required?: boolean;
     defaultValue?: any;
+    subOptions?: CliCommandOption[]; // Options that are only valid when this option is used
 }
 
 export interface CliCommandDefinition {

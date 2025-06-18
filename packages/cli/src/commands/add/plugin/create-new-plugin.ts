@@ -31,6 +31,11 @@ const cancelledMessage = 'Plugin setup cancelled.';
 export async function createNewPlugin(
     options: Partial<GeneratePluginOptions> = {},
 ): Promise<CliCommandReturnVal> {
+    // Validate that if a name is provided, it's actually a string
+    if (options.name !== undefined && (typeof options.name !== 'string' || !options.name.trim())) {
+        throw new Error('Plugin name is required. Usage: vendure add -p <plugin-name>');
+    }
+
     const isNonInteractive = !!options.name;
     if (!isNonInteractive) {
         intro('Adding a new Vendure plugin!');
@@ -55,7 +60,7 @@ export async function createNewPlugin(
         }
     }
     const existingPluginDir = findExistingPluginsDir(project);
-    const pluginDir = getPluginDirName(options.name , existingPluginDir);
+    const pluginDir = getPluginDirName(options.name, existingPluginDir);
 
     if (isNonInteractive) {
         options.pluginDir = pluginDir;

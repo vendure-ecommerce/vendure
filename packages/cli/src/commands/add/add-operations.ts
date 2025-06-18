@@ -52,6 +52,10 @@ export async function performAddOperation(options: AddOperationOptions): Promise
         // Figure out which flag was set. They are mutually exclusive: the first
         // truthy option determines the sub-command we run.
         if (options.plugin) {
+            // Validate that a plugin name was provided
+            if (typeof options.plugin !== 'string' || !options.plugin.trim()) {
+                throw new Error('Plugin name is required. Usage: vendure add -p <plugin-name>');
+            }
             await createNewPluginCommand.run({ name: options.plugin, config: options.config });
             return {
                 success: true,

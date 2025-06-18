@@ -33,16 +33,18 @@ export const cliCommands: CliCommandDefinition[] = [
                 long: '--job-queue [plugin]',
                 description: 'Add job-queue support to the specified plugin',
                 required: false,
-            },
-            {
-                long: '--name <n>',
-                description: 'Name for the job queue (required with -j)',
-                required: false,
-            },
-            {
-                long: '--selected-service <n>',
-                description: 'Name of the service to add the job queue to (required with -j)',
-                required: false,
+                subOptions: [
+                    {
+                        long: '--name <n>',
+                        description: 'Name for the job queue (required with -j)',
+                        required: false,
+                    },
+                    {
+                        long: '--selected-service <n>',
+                        description: 'Name of the service to add the job queue to (required with -j)',
+                        required: false,
+                    },
+                ],
             },
             {
                 short: '-c',
@@ -55,16 +57,18 @@ export const cliCommands: CliCommandDefinition[] = [
                 long: '--api-extension [plugin]',
                 description: 'Add an API extension scaffold to the specified plugin',
                 required: false,
-            },
-            {
-                long: '--queryName <n>',
-                description: 'Name for the query (used with -a)',
-                required: false,
-            },
-            {
-                long: '--mutationName <n>',
-                description: 'Name for the mutation (used with -a)',
-                required: false,
+                subOptions: [
+                    {
+                        long: '--queryName <n>',
+                        description: 'Name for the query (used with -a)',
+                        required: false,
+                    },
+                    {
+                        long: '--mutationName <n>',
+                        description: 'Name for the mutation (used with -a)',
+                        required: false,
+                    },
+                ],
             },
             {
                 short: '-u',
