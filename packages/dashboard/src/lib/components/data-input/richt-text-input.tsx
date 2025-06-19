@@ -43,15 +43,17 @@ export function RichTextInput({ value, onChange }: RichTextInputProps) {
         },
     });
 
-    if (!editor) return null;
-
     useLayoutEffect(() => {
-        const { from, to } = editor.state.selection;
-    
-        editor.commands.setContent(value, false);
-    
-        editor.commands.setTextSelection({ from, to });
-      }, [value]);
+        if (editor) {
+            const { from, to } = editor.state.selection;
+            editor.commands.setContent(value, false);
+            editor.commands.setTextSelection({ from, to });
+        }
+    }, [value, editor]);
+
+    if (!editor) {
+        return null;
+    }
 
     return (
         <>
