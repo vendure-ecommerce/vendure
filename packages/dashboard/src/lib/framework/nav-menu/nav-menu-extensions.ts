@@ -9,6 +9,7 @@ interface NavMenuBaseItem {
     id: string;
     title: string;
     icon?: LucideIcon;
+    order?: number;
     placement?: NavMenuSectionPlacement;
 }
 
@@ -63,4 +64,10 @@ export function addNavMenuItem(item: NavMenuItem, sectionId: string) {
             navMenuConfig.sections.splice(sectionIndex, 1, item);
         }
     }
+}
+
+export function addNavMenuSection(section: NavMenuSection) {
+    const navMenuConfig = getNavMenuConfig();
+    navMenuConfig.sections = [...navMenuConfig.sections];
+    navMenuConfig.sections.push(section);
 }

@@ -18,8 +18,8 @@ import {
 } from '@/components/ui/dropdown-menu.js';
 import { DisplayComponent } from '@/framework/component-registry/dynamic-component.js';
 import { ResultOf } from '@/graphql/graphql.js';
-import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { Trans, useLingui } from '@/lib/trans.js';
+import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { useQuery } from '@tanstack/react-query';
 import {
     ColumnFiltersState,
@@ -97,14 +97,21 @@ export type PaginatedListKeys<
     [K in keyof PaginatedListItemFields<T, Path>]: K;
 }[keyof PaginatedListItemFields<T, Path>];
 
+// Utility types to include keys inside `customFields` object for typing purposes
+export type CustomFieldKeysOfItem<Item> = Item extends { customFields?: infer CF }
+    ? Extract<keyof CF, string>
+    : never;
+
+export type AllItemFieldKeys<T extends TypedDocumentNode<any, any>> =
+    | keyof PaginatedListItemFields<T>
+    | CustomFieldKeysOfItem<PaginatedListItemFields<T>>;
+
 export type CustomizeColumnConfig<T extends TypedDocumentNode<any, any>> = {
-    [Key in keyof PaginatedListItemFields<T>]?: Partial<
-        ColumnDef<PaginatedListItemFields<T>, PaginatedListItemFields<T>[Key]>
-    >;
+    [Key in AllItemFieldKeys<T>]?: Partial<ColumnDef<PaginatedListItemFields<T>, any>>;
 };
 
 export type FacetedFilterConfig<T extends TypedDocumentNode<any, any>> = {
-    [Key in keyof PaginatedListItemFields<T>]?: FacetedFilter;
+    [Key in AllItemFieldKeys<T>]?: FacetedFilter;
 };
 
 export type ListQueryShape =
@@ -174,6 +181,8 @@ export interface RowAction<T> {
     onClick?: (row: Row<T>) => void;
 }
 
+export type PaginatedListRefresherRegisterFn = (refreshFn: () => void) => void;
+
 export interface PaginatedListDataTableProps<
     T extends TypedDocumentNode<U, V>,
     U extends any,
@@ -186,8 +195,8 @@ export interface PaginatedListDataTableProps<
     transformVariables?: (variables: V) => V;
     customizeColumns?: CustomizeColumnConfig<T>;
     additionalColumns?: AC;
-    defaultColumnOrder?: (keyof PaginatedListItemFields<T> | AC[number]['id'])[];
-    defaultVisibility?: Partial<Record<keyof PaginatedListItemFields<T>, boolean>>;
+    defaultColumnOrder?: (AllItemFieldKeys<T> | AC[number]['id'])[];
+    defaultVisibility?: Partial<Record<AllItemFieldKeys<T>, boolean>>;
     onSearchTermChange?: (searchTerm: string) => NonNullable<V['options']>['filter'];
     page: number;
     itemsPerPage: number;
@@ -202,6 +211,12 @@ export interface PaginatedListDataTableProps<
     disableViewOptions?: boolean;
     transformData?: (data: PaginatedListItemFields<T>[]) => PaginatedListItemFields<T>[];
     setTableOptions?: (table: TableOptions<any>) => TableOptions<any>;
+    /**
+     * Register a function that allows you to assign a refresh function for
+     * this list. The function can be assigned to a ref and then called when
+     * the list needs to be refreshed.
+     */
+    registerRefresher?: PaginatedListRefresherRegisterFn;
 }
 
 export const PaginatedListDataTableKey = 'PaginatedListDataTable';
@@ -234,6 +249,7 @@ export function PaginatedListDataTable<
     disableViewOptions,
     setTableOptions,
     transformData,
+    registerRefresher,
 }: PaginatedListDataTableProps<T, U, V, AC>) {
     const [searchTerm, setSearchTerm] = React.useState<string>('');
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
@@ -274,6 +290,7 @@ export function PaginatedListDataTable<
     function refetchPaginatedList() {
         queryClient.invalidateQueries({ queryKey });
     }
+    registerRefresher?.(refetchPaginatedList);
 
     const { data } = useQuery({
         queryFn: () => {
@@ -324,7 +341,7 @@ export function PaginatedListDataTable<
         }
 
         const queryBasedColumns = columnConfigs.map(({ fieldInfo, isCustomField }) => {
-            const customConfig = customizeColumns?.[fieldInfo.name as keyof PaginatedListItemFields<T>] ?? {};
+            const customConfig = customizeColumns?.[fieldInfo.name as unknown as AllItemFieldKeys<T>] ?? {};
             const { header, ...customConfigRest } = customConfig;
             const enableColumnFilter = fieldInfo.isScalar && !facetedFilters?.[fieldInfo.name];
 
@@ -338,9 +355,11 @@ export function PaginatedListDataTable<
                 // prevents certain filters from working.
                 filterFn: 'equalsString',
                 cell: ({ cell, row }) => {
-                    const value = !isCustomField
-                        ? cell.getValue()
-                        : (row.original as any)?.customFields?.[fieldInfo.name];
+                    const cellValue = cell.getValue();
+                    const value =
+                        cellValue ??
+                        (isCustomField ? row.original?.customFields?.[fieldInfo.name] : undefined);
+
                     if (fieldInfo.list && Array.isArray(value)) {
                         return value.join(', ');
                     }
@@ -520,10 +539,10 @@ function getColumnVisibility(
         updatedAt: false,
         ...(allDefaultsTrue ? { ...Object.fromEntries(fields.map(f => [f.name, false])) } : {}),
         ...(allDefaultsFalse ? { ...Object.fromEntries(fields.map(f => [f.name, true])) } : {}),
-        ...defaultVisibility,
-        // Make custom fields hidden by default
+        // Make custom fields hidden by default unless overridden
         ...(customFieldColumnNames
             ? { ...Object.fromEntries(customFieldColumnNames.map(f => [f, false])) }
             : {}),
+        ...defaultVisibility,
     };
 }

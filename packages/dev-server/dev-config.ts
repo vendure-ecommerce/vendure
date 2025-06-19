@@ -5,23 +5,22 @@ import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/sha
 import {
     DefaultJobQueuePlugin,
     DefaultLogger,
+    DefaultSchedulerPlugin,
     DefaultSearchPlugin,
     dummyPaymentHandler,
     LanguageCode,
     LogLevel,
-    DefaultSchedulerPlugin,
     VendureConfig,
-    cleanSessionsTask,
 } from '@vendure/core';
-import { ScheduledTask } from '@vendure/core/dist/scheduler/scheduled-task';
 import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@vendure/email-plugin';
-import { BullMQJobQueuePlugin } from '@vendure/job-queue-plugin/package/bullmq';
-import 'dotenv/config';
 import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
+import { TelemetryPlugin } from '@vendure/telemetry-plugin';
+import 'dotenv/config';
 import path from 'path';
 import { DataSourceOptions } from 'typeorm';
+import { ReviewsPlugin } from './test-plugins/reviews/reviews-plugin';
 
-import { MultivendorPlugin } from './example-plugins/multivendor-plugin/multivendor.plugin';
+const IS_INSTRUMENTED = process.env.IS_INSTRUMENTED === 'true';
 
 /**
  * Config settings used during development
@@ -100,6 +99,7 @@ export const devConfig: VendureConfig = {
         //     platformFeePercent: 10,
         //     platformFeeSKU: 'FEE',
         // }),
+        ReviewsPlugin,
         GraphiqlPlugin.init(),
         AssetServerPlugin.init({
             route: 'assets',
@@ -128,6 +128,7 @@ export const devConfig: VendureConfig = {
                 changeEmailAddressUrl: 'http://localhost:4201/change-email-address',
             },
         }),
+        ...(IS_INSTRUMENTED ? [TelemetryPlugin.init({})] : []),
         AdminUiPlugin.init({
             route: 'admin',
             port: 5001,

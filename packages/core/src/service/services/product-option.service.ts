@@ -7,6 +7,7 @@ import {
     UpdateProductOptionInput,
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
+import { IsNull } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { Instrument } from '../../common/instrument-decorator';
@@ -46,6 +47,7 @@ export class ProductOptionService {
             .getRepository(ctx, ProductOption)
             .find({
                 relations: ['group'],
+                where: { deletedAt: IsNull() },
             })
             .then(options => options.map(option => this.translator.translate(option, ctx)));
     }
@@ -54,7 +56,7 @@ export class ProductOptionService {
         return this.connection
             .getRepository(ctx, ProductOption)
             .findOne({
-                where: { id },
+                where: { id, deletedAt: IsNull() },
                 relations: ['group'],
             })
             .then(option => (option && this.translator.translate(option, ctx)) ?? undefined);

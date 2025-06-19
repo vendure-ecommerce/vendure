@@ -51,10 +51,14 @@ export class ProductOptionGroupService {
     ): Promise<Array<Translated<ProductOptionGroup>>> {
         const findOptions: FindManyOptions = {
             relations: relations ?? ['options'],
+            where: {
+                deletedAt: IsNull(),
+            },
         };
         if (filterTerm) {
             findOptions.where = {
                 code: Like(`%${filterTerm}%`),
+                ...findOptions.where,
             };
         }
         return this.connection
@@ -67,13 +71,14 @@ export class ProductOptionGroupService {
         ctx: RequestContext,
         id: ID,
         relations?: RelationPaths<ProductOptionGroup>,
+        findOneOptions?: { includeSoftDeleted: boolean },
     ): Promise<Translated<ProductOptionGroup> | undefined> {
         return this.connection
             .getRepository(ctx, ProductOptionGroup)
             .findOne({
                 where: {
                     id,
-                    deletedAt: IsNull(),
+                    deletedAt: !findOneOptions?.includeSoftDeleted ? IsNull() : undefined,
                 },
                 relations: relations ?? ['options'],
             })
@@ -87,6 +92,7 @@ export class ProductOptionGroupService {
                 relations: ['options'],
                 where: {
                     product: { id },
+                    deletedAt: IsNull(),
                 },
                 order: {
                     id: 'ASC',
