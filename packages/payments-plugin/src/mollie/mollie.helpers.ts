@@ -1,16 +1,16 @@
-import { CreateParameters } from '@mollie/api-client/dist/types/src/binders/orders/parameters';
-import { Amount } from '@mollie/api-client/dist/types/src/data/global';
-import { OrderAddress as MollieOrderAddress } from '@mollie/api-client/dist/types/src/data/orders/data';
-import { CurrencyCode, Customer, Order } from '@vendure/core';
+import { Locale } from '@mollie/api-client';
+import { CreateParameters } from '@mollie/api-client/dist/types/binders/payments/parameters';
+import { Amount, Address as MollieAddress } from '@mollie/api-client/dist/types/data/global';
+import { Customer, Order } from '@vendure/core';
 import currency from 'currency.js';
 
 import { OrderAddress } from './graphql/generated-shop-types';
 
 /**
- * Check if given address has mandatory fields for Mollie Order and map to a MollieOrderAddress.
+ * Check if given address has mandatory fields for Mollie Order and map to a MollieAddress.
  * Returns undefined if address doesn't have all mandatory fields
  */
-export function toMollieAddress(address: OrderAddress, customer: Customer): MollieOrderAddress | undefined {
+export function toMollieAddress(address: OrderAddress, customer: Customer): MollieAddress | undefined {
     if (address.city && address.countryCode && address.streetLine1 && address.postalCode) {
         return {
             streetAndNumber: `${address.streetLine1} ${address.streetLine2 || ''}`,
@@ -25,12 +25,12 @@ export function toMollieAddress(address: OrderAddress, customer: Customer): Moll
 }
 
 /**
- * Map all order and shipping lines to a single array of Mollie order lines
+ * Map all order and shipping lines to a single array of Mollie payment lines
  */
-export function toMollieOrderLines(order: Order, alreadyPaid: number): CreateParameters['lines'] {
-    // Add order lines
+export function toMolliePaymentLines(order: Order, alreadyPaid: number): CreateParameters['lines'] {
+    // Add lines
     const lines: CreateParameters['lines'] = order.lines.map(line => ({
-        name: line.productVariant.name,
+        description: line.productVariant.name,
         quantity: line.quantity,
         unitPrice: toAmount(line.proratedLinePriceWithTax / line.quantity, order.currencyCode), // totalAmount has to match unitPrice * quantity
         totalAmount: toAmount(line.proratedLinePriceWithTax, order.currencyCode),
@@ -43,7 +43,7 @@ export function toMollieOrderLines(order: Order, alreadyPaid: number): CreatePar
     // Add shippingLines
     lines.push(
         ...order.shippingLines.map(line => ({
-            name: line.shippingMethod?.name || 'Shipping',
+            description: line.shippingMethod?.name || 'Shipping',
             quantity: 1,
             unitPrice: toAmount(line.discountedPriceWithTax, order.currencyCode),
             totalAmount: toAmount(line.discountedPriceWithTax, order.currencyCode),
@@ -54,7 +54,7 @@ export function toMollieOrderLines(order: Order, alreadyPaid: number): CreatePar
     // Add surcharges
     lines.push(
         ...order.surcharges.map(surcharge => ({
-            name: surcharge.description,
+            description: surcharge.description,
             quantity: 1,
             unitPrice: toAmount(surcharge.priceWithTax, order.currencyCode),
             totalAmount: toAmount(surcharge.priceWithTax, order.currencyCode),
@@ -65,7 +65,7 @@ export function toMollieOrderLines(order: Order, alreadyPaid: number): CreatePar
     // Deduct amount already paid
     if (alreadyPaid) {
         lines.push({
-            name: 'Already paid',
+            description: 'Already paid',
             quantity: 1,
             unitPrice: toAmount(-alreadyPaid, order.currencyCode),
             totalAmount: toAmount(-alreadyPaid, order.currencyCode),
@@ -104,48 +104,24 @@ export function calculateLineTaxAmount(taxRate: number, orderLinePriceWithTax: n
 }
 
 /**
- * Lookup one of Mollies allowed locales based on an orders countrycode or channel default.
+ * Best effort guess to get the locale for a payment based on order countrycode or the language code from the request context.
  * If both lookups fail, resolve to en_US to prevent payment failure
  */
-export function getLocale(countryCode: string, channelLanguage: string): string {
-    const allowedLocales = [
-        'en_US',
-        'en_GB',
-        'nl_NL',
-        'nl_BE',
-        'fr_FR',
-        'fr_BE',
-        'de_DE',
-        'de_AT',
-        'de_CH',
-        'es_ES',
-        'ca_ES',
-        'pt_PT',
-        'it_IT',
-        'nb_NO',
-        'sv_SE',
-        'fi_FI',
-        'da_DK',
-        'is_IS',
-        'hu_HU',
-        'pl_PL',
-        'lv_LV',
-        'lt_LT',
-    ];
+export function getLocale(countryCode: string, ctxLanguage: string): Locale {
     // Prefer order locale if possible
-    const orderLocale = allowedLocales.find(
+    const orderLocale = Object.values(Locale).find(
         locale => locale.toLowerCase().indexOf(countryCode.toLowerCase()) > -1,
     );
     if (orderLocale) {
         return orderLocale;
     }
-    // If no order locale, try channel default
-    const channelLocale = allowedLocales.find(
-        locale => locale.toLowerCase().indexOf(channelLanguage.toLowerCase()) > -1,
+    // If no order locale, try locale from ctx default
+    const channelLocale = Object.values(Locale).find(
+        locale => locale.toLowerCase().indexOf(ctxLanguage.toLowerCase()) > -1,
     );
     if (channelLocale) {
         return channelLocale;
     }
-    // If no order locale and no channel locale, return a default, otherwise order creation will fail
-    return allowedLocales[0];
+    // If no order locale and no channel locale, return en_US
+    return Locale.en_US;
 }

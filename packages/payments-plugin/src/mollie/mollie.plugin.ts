@@ -1,4 +1,4 @@
-import type { ListParameters } from '@mollie/api-client/dist/types/src/binders/methods/parameters';
+import type { ListParameters } from '@mollie/api-client/dist/types/binders/methods/parameters';
 import {
     Injector,
     Order,
@@ -8,7 +8,7 @@ import {
     VendurePlugin,
 } from '@vendure/core';
 
-import { shopApiExtensions, adminApiExtensions } from './api-extensions';
+import { adminApiExtensions, shopApiExtensions } from './api-extensions';
 import { PLUGIN_INIT_OPTIONS } from './constants';
 import { MollieCommonResolver } from './mollie.common-resolver';
 import { MollieController } from './mollie.controller';
@@ -104,10 +104,9 @@ export interface MolliePluginOptions {
  *       MolliePlugin.init({ vendureHost: 'https://yourhost.io/' }),
  *     ]
  *     ```
- * 2. Run a database migration to add the `mollieOrderId` custom field to the order entity.
- * 3. Create a new PaymentMethod in the Admin UI, and select "Mollie payments" as the handler.
- * 4. Set your Mollie apiKey in the `API Key` field.
- * 5. Set the `Fallback redirectUrl` to the url that the customer should be redirected to after completing the payment.
+ * 2. Create a new PaymentMethod in the Admin UI, and select "Mollie payments" as the handler.
+ * 3. Set your Mollie apiKey in the `API Key` field.
+ * 4. Set the `Fallback redirectUrl` to the url that the customer should be redirected to after completing the payment.
  * You can override this url by passing the `redirectUrl` as an argument to the `createMolliePaymentIntent` mutation.
  *
  * ## Storefront usage
@@ -169,16 +168,17 @@ export interface MolliePluginOptions {
  * the user is redirected to the given redirect url, e.g. `https://storefront/order/CH234X5`
  *
  * ## Pay later methods
- * Mollie supports pay-later methods like 'Klarna Pay Later'. For pay-later methods, the status of an order is
- * 'PaymentAuthorized' after the Mollie hosted checkout. You need to manually settle the payment via the admin ui to capture the payment!
- * Make sure you capture a payment within 28 days, because this is the Klarna expiry time
+ * Mollie supports pay-later methods like 'Klarna Pay Later'. Pay-later methods are captured immediately after checkout.
  *
- * If you don't want this behaviour (Authorized first), you can set 'autoCapture=true' on the payment method. This option will immediately
- * capture the payment after a customer authorizes the payment.
+ * If your order fulfilment time is longer than 24 hours You should pass `immediateCapture=false` to the `createMolliePaymentIntent` mutation.
+ * This will transition your order to 'PaymentAuthorized' after the Mollie hosted checkout.
+ * You need to manually capture the payment after the order is fulfilled, by settling existing payments, either via the admin UI or in custom code.
+ *
+ * Make sure you capture a payment within 28 days, because this is the shortest expiry time.
  *
  * ## ArrangingAdditionalPayment state
  *
- * In some rare cases, a customer can add items to the active order, while a Mollie payment is still open,
+ * In some rare cases, a customer can add items to the active order, while a Mollie checkout is still open,
  * for example by opening your storefront in another browser tab.
  * This could result in an order being in `ArrangingAdditionalPayment` status after the customer finished payment.
  * You should check if there is still an active order with status `ArrangingAdditionalPayment` on your order confirmation page,
