@@ -17,6 +17,8 @@ jobs:
               with:
                   days-before-stale: 30
                   days-before-close: 3
+                  # Temporary fix to avoid touching PRs at all
+                  only-pr-labels: 'no-response'
                   # Act ONLY on issues that *still* have one of these labels
                   any-of-issue-labels: |
                       status: missing info ❓,
@@ -53,4 +55,3 @@ jobs:
                       days after a reminder.  Please comment with new information and
                       remove the label to re-open.
                   operations-per-run: 1000
-                  debug-only: true
