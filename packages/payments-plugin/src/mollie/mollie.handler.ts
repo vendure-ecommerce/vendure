@@ -72,7 +72,7 @@ export const molliePaymentHandler = new PaymentMethodHandler({
         return {
             amount: mollieMetadata.amount,
             state: mollieMetadata.status,
-            transactionId: mollieMetadata.paymentId, // The plugin now only supports 1 payment per order, so a mollie payment equals a payment
+            transactionId: mollieMetadata.paymentId,
             metadata: mollieMetadata, // Store all given metadata on a payment
         };
     },
