@@ -27,6 +27,9 @@ const getReviewList = graphql(`
                 state
                 response
                 responseCreatedAt
+                customFields {
+                    reviewerName
+                }
             }
         }
     }
@@ -50,16 +53,34 @@ export const reviewList: DashboardRouteDefinition = {
             listQuery={getReviewList}
             route={route}
             defaultVisibility={{
-                product: true,
-                summary: true,
-                rating: true,
-                authorName: true,
+                productVariant: false,
+                product: false,
+                summary: false,
+                rating: false,
+                authorName: false,
+                reviewerName: false,
+                responseCreatedAt: false,
+                response: false,
+                upvotes: false,
+                downvotes: false,
             }}
             customizeColumns={{
+                id: {
+                    header: 'ID',
+                    cell: ({ row }) => {
+                        return <DetailPageButton id={row.original.id} label={row.original.id} />;
+                    },
+                },
                 product: {
                     header: 'Product',
                     cell: ({ row }) => {
                         return <DetailPageButton id={row.original.id} label={row.original.product.name} />;
+                    },
+                },
+                reviewerName: {
+                    header: 'Reviewer Name',
+                    cell: ({ row }) => {
+                        return <div className="text-red-500">{row.original.customFields?.reviewerName}</div>;
                     },
                 },
             }}

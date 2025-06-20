@@ -98,14 +98,14 @@ export const generateSitemapTask = new ScheduledTask({
     // `.configure()` method on the instance later.
     schedule: cron => cron.everyDayAt(0, 0),
     // This is the function that will be executed per the schedule.
-    async execute(injector, params) {
-        // Using `app.get()` we can grab an instance of _any_ provider defined in the
+    async execute({injector, params}) {
+        // Using `injector.get()` we can grab an instance of _any_ provider defined in the
         // Vendure core as well as by our plugins.
-        const sitemapService = app.get(SitemapService);
+        const sitemapService = injector.get(SitemapService);
 
         // For most service methods, we'll need to pass a RequestContext object.
         // We can use the RequestContextService to create one.
-        const ctx = await app.get(RequestContextService).create({
+        const ctx = await injector.get(RequestContextService).create({
             apiType: 'admin',
         });
 

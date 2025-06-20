@@ -1,5 +1,3 @@
-'use client';
-
 import { useAuth } from '@/hooks/use-auth.js';
 import { Link, useNavigate, useRouter } from '@tanstack/react-router';
 import { ChevronsUpDown, LogOut, Monitor, Moon, Sparkles, Sun } from 'lucide-react';
@@ -22,12 +20,11 @@ import {
 } from '@/components/ui/dropdown-menu.js';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar.js';
 import { useUserSettings } from '@/hooks/use-user-settings.js';
+import { Trans } from '@/lib/trans.js';
+import { Theme } from '@/providers/theme-provider.js';
 import { useMemo } from 'react';
 import { Dialog, DialogTrigger } from '../ui/dialog.js';
 import { LanguageDialog } from './language-dialog.js';
-import { Theme } from '@/providers/theme-provider.js';
-import { Badge } from '../ui/badge.js';
-import { Trans } from '@/lib/trans.js';
 
 export function NavUser() {
     const { isMobile } = useSidebar();
@@ -37,7 +34,7 @@ export function NavUser() {
     const { settings, setTheme, setDevMode } = useUserSettings();
 
     const handleLogout = () => {
-        auth.logout(() => {
+        auth.logout().then(() => {
             router.invalidate().finally(() => {
                 navigate({ to: '/login' });
             });
@@ -70,7 +67,7 @@ export function NavUser() {
                                 {/*    <AvatarImage src={user.id} alt={user.firstName} />*/}
                                 {/*    <AvatarFallback className="rounded-lg">{avatarFallback}</AvatarFallback>*/}
                                 {/*</Avatar>*/}
-                                <div className='relative flex rounded-lg border justify-center items-center w-8 h-8'>
+                                <div className="relative flex rounded-lg border justify-center items-center w-8 h-8">
                                     {avatarFallback}
                                 </div>
                                 <div className="grid flex-1 text-left text-sm leading-tight">

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## usePermissions
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/hooks/use-permissions.ts" sourceLine="19" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/hooks/use-permissions.ts" sourceLine="18" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 

@@ -1,7 +1,6 @@
 # This contains the services required to develop and test Vendure
 # locally. It includes multiple SQL databases (for testing specific
 # versions), Elasticsearch, Redis etc.
-version: '3.7'
 name: vendure-monorepo
 services:
     mariadb:

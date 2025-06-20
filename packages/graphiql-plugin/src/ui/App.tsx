@@ -1,16 +1,26 @@
 import { createGraphiQLFetcher } from '@graphiql/toolkit';
 import { GraphiQL } from 'graphiql';
 import 'graphiql/graphiql.css';
+import './overrides.css';
 import React, { useCallback } from 'react';
+import { embeddedModeStorage } from './embedded-mode-storage';
 
 interface AppProps {
     apiType: 'admin' | 'shop';
 }
 
 const App: React.FC<AppProps> = ({ apiType }) => {
-    const { adminApiUrl, shopApiUrl } = window.GRAPHIQL_SETTINGS;
+    const { adminApiUrl, shopApiUrl } = window.GRAPHIQL_SETTINGS ?? {
+        adminApiUrl: 'http://localhost:3000/admin-api',
+        shopApiUrl: 'http://localhost:3000/shop-api',
+    };
     const apiUrl = apiType === 'admin' ? adminApiUrl : shopApiUrl;
     const apiName = apiType === 'admin' ? 'Admin API' : 'Shop API';
+
+    const params = new URLSearchParams(window.location.search);
+    const query = params.get('query') ?? undefined;
+    const embeddedMode = params.get('embeddedMode') === 'true';
+    const storage = embeddedMode ? embeddedModeStorage : undefined;
 
     const fetcher = useCallback(() => {
         return createGraphiQLFetcher({
@@ -30,7 +40,7 @@ const App: React.FC<AppProps> = ({ apiType }) => {
 
     return (
         <div className="graphiql-app">
-            <div className="vendure-header">
+            {!embeddedMode ? <div className="vendure-header">
                 <h1>Vendure GraphiQL - {apiName}</h1>
                 <div className="switch-api">
                     <span>Switch API:</span>
@@ -55,9 +65,10 @@ const App: React.FC<AppProps> = ({ apiType }) => {
                         Shop API
                     </a>
                 </div>
-            </div>
+            </div> : null}
             <div className="graphiql-wrapper">
-                <GraphiQL fetcher={fetcher()} defaultEditorToolsVisibility={true} />
+                <GraphiQL className={embeddedMode ? 'embedded-mode' : undefined} fetcher={fetcher()} storage={storage}
+                          defaultEditorToolsVisibility={embeddedMode ? false : true} query={query} />
             </div>
         </div>
     );

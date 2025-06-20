@@ -26,17 +26,38 @@ import { GraphiqlPluginOptions } from './types';
  * ## Installation
  *
  * ```ts
- * import { GraphiQLPlugin } from '\@vendure/graphiql-plugin';
+ * import { GraphiqlPlugin } from '\@vendure/graphiql-plugin';
  *
  * const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array
  *   plugins: [
- *     GraphiQLPlugin.init({
+ *     GraphiqlPlugin.init({
  *       route: 'graphiql', // Optional, defaults to 'graphiql'
  *     }),
  *   ],
  * };
  * ```
+ *
+ * ## Custom API paths
+ *
+ * By default, the plugin automatically reads the Admin API and Shop API paths from your Vendure configuration.
+ *
+ * If you need to override these paths, you can specify them explicitly:
+ *
+ * ```typescript
+ * GraphiQLPlugin.init({
+ *     route: 'my-custom-route', // defaults to `graphiql`
+ * });
+ * ```
+ *
+ * ## Query parameters
+ *
+ * You can add the following query parameters to the GraphiQL URL:
+ *
+ * - `?query=...` - Pre-populate the query editor with a GraphQL query.
+ * - `?embeddedMode=true` - This renders the editor in embedded mode, which hides the header and
+ *    the API switcher. This is useful for embedding GraphiQL in other applications such as documentation.
+ *    In this mode, the editor also does not persist changes across reloads.
  *
  * @docsCategory core plugins/GraphiqlPlugin
  */
@@ -144,7 +165,7 @@ export class GraphiqlPlugin implements NestModule {
                 const filePath = path.join(distDir, 'assets', assetPath.toString());
 
                 if (fs.existsSync(filePath)) {
-                    return res.sendFile(filePath);
+                    return res.sendFile(assetPath.toString(), { root: path.join(distDir, 'assets') });
                 } else {
                     return res.status(404).send('Asset not found');
                 }

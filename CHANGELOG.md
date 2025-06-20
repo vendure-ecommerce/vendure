@@ -1,3 +1,79 @@
+## <small>3.3.4 (2025-06-19)</small>
+
+
+#### Fixes
+
+* **core** Add missing peer deps and docs (#3595) ([36cf92b](https://github.com/vendure-ecommerce/vendure/commit/36cf92b)), closes [#3595](https://github.com/vendure-ecommerce/vendure/issues/3595)
+* **core** Call OrderInterceptor `willRemoveItemFromOrder` on `removeAllItemsFromOrder` (#3578) (#3592) ([6c239bf](https://github.com/vendure-ecommerce/vendure/commit/6c239bf)), closes [#3578](https://github.com/vendure-ecommerce/vendure/issues/3578) [#3592](https://github.com/vendure-ecommerce/vendure/issues/3592)
+* **core** Further stability improvement to default scheduler ([664b919](https://github.com/vendure-ecommerce/vendure/commit/664b919))
+* **core** Improve fault-tolerance of default scheduler ([852cdce](https://github.com/vendure-ecommerce/vendure/commit/852cdce))
+* **core** Improve ProductOptionGroup soft-delete handling (#3581) ([95d9417](https://github.com/vendure-ecommerce/vendure/commit/95d9417)), closes [#3581](https://github.com/vendure-ecommerce/vendure/issues/3581)
+* **core** Product by slug query filters on channel (#3591) ([357de30](https://github.com/vendure-ecommerce/vendure/commit/357de30)), closes [#3591](https://github.com/vendure-ecommerce/vendure/issues/3591)
+* **core** Safer access to queryRunner in transactions ([5beb2fe](https://github.com/vendure-ecommerce/vendure/commit/5beb2fe)), closes [#3565](https://github.com/vendure-ecommerce/vendure/issues/3565)
+* **dashboard** Allow customization of custom field columns (#3597) ([f42085b](https://github.com/vendure-ecommerce/vendure/commit/f42085b)), closes [#3597](https://github.com/vendure-ecommerce/vendure/issues/3597)
+* **dashboard** Fix bug preventing login screen from rendering ([cc77ddf](https://github.com/vendure-ecommerce/vendure/commit/cc77ddf))
+
+#### Features
+
+* **dashboard** Custom nav sections (#3598) ([cbc0409](https://github.com/vendure-ecommerce/vendure/commit/cbc0409)), closes [#3598](https://github.com/vendure-ecommerce/vendure/issues/3598)
+* **dashboard** Enhance Vite plugin configuration for build output management ([257bc03](https://github.com/vendure-ecommerce/vendure/commit/257bc03))
+* **dashboard** Support for custom fields in detail page component (#3599) ([32314cc](https://github.com/vendure-ecommerce/vendure/commit/32314cc)), closes [#3599](https://github.com/vendure-ecommerce/vendure/issues/3599)
+
+#### Perf
+
+* **job-queue-plugin** Optimize list query for BullMQJobQueuePlugin (#3590) ([208b87a](https://github.com/vendure-ecommerce/vendure/commit/208b87a)), closes [#3590](https://github.com/vendure-ecommerce/vendure/issues/3590)
+
+## <small>3.3.3 (2025-06-06)</small>
+
+
+#### Fixes
+
+* **admin-ui** Make product / variant cols link to detail pages in order table (#3552) ([0fda452](https://github.com/vendure-ecommerce/vendure/commit/0fda452)), closes [#3552](https://github.com/vendure-ecommerce/vendure/issues/3552)
+* **core** Export OrderableAsset (#3571) ([e17aaf6](https://github.com/vendure-ecommerce/vendure/commit/e17aaf6)), closes [#3571](https://github.com/vendure-ecommerce/vendure/issues/3571)
+* **core** Include custom fields on `activePaymentMethods` and `activeShippingMethods` queries (#3513) ([bb4723d](https://github.com/vendure-ecommerce/vendure/commit/bb4723d)), closes [#3513](https://github.com/vendure-ecommerce/vendure/issues/3513)
+* **core** Update @nestjs/* packages version constraint (#3577) ([1a8eece](https://github.com/vendure-ecommerce/vendure/commit/1a8eece)), closes [#3577](https://github.com/vendure-ecommerce/vendure/issues/3577)
+* **dashboard** Do not throw on compilation errors by default ([b1df849](https://github.com/vendure-ecommerce/vendure/commit/b1df849))
+* **dashboard** Fix admin auth & channel selection bugs (#3562) ([3b9c090](https://github.com/vendure-ecommerce/vendure/commit/3b9c090)), closes [#3562](https://github.com/vendure-ecommerce/vendure/issues/3562)
+* **dashboard** Fix default channel list columns ([c552aa5](https://github.com/vendure-ecommerce/vendure/commit/c552aa5))
+* **dashboard** Fix default column order ([1e1dc8e](https://github.com/vendure-ecommerce/vendure/commit/1e1dc8e))
+* **dashboard** Fix default column visibility ([029dd31](https://github.com/vendure-ecommerce/vendure/commit/029dd31))
+* **dashboard** Fix issue with form not being marked dirty until second interaction ([604cf4f](https://github.com/vendure-ecommerce/vendure/commit/604cf4f))
+* **dashboard** Fix loading of server config on page refresh ([66a7977](https://github.com/vendure-ecommerce/vendure/commit/66a7977))
+* **dashboard** Fix positioning of toasts ([38785e7](https://github.com/vendure-ecommerce/vendure/commit/38785e7))
+* **dashboard** Fix render issues for asset & facet blocks ([e14c457](https://github.com/vendure-ecommerce/vendure/commit/e14c457))
+* **dashboard** Improve responsiveness of form state ([21dc4bf](https://github.com/vendure-ecommerce/vendure/commit/21dc4bf))
+* **dashboard** Improve styling of channel switcher ([829513c](https://github.com/vendure-ecommerce/vendure/commit/829513c))
+
+#### Features
+
+* **dashboard** Add reset button for data table columns ([5877ef5](https://github.com/vendure-ecommerce/vendure/commit/5877ef5))
+* **dashboard** Implement adding new variants & product options ([7646a4a](https://github.com/vendure-ecommerce/vendure/commit/7646a4a))
+
+## <small>3.3.2 (2025-05-28)</small>
+
+
+#### Fixes
+
+* **core** Create spans for method calls within same class (#3564) ([a2721d1](https://github.com/vendure-ecommerce/vendure/commit/a2721d1)), closes [#3564](https://github.com/vendure-ecommerce/vendure/issues/3564)
+* **core** Enhance error handling for Error instances in logger (#3561) ([a580e88](https://github.com/vendure-ecommerce/vendure/commit/a580e88)), closes [#3561](https://github.com/vendure-ecommerce/vendure/issues/3561)
+* **dashboard** Authenticated status race condition (#3554) ([58ac01b](https://github.com/vendure-ecommerce/vendure/commit/58ac01b)), closes [#3554](https://github.com/vendure-ecommerce/vendure/issues/3554)
+* **dashboard** Fetch channel info on login ([81f6659](https://github.com/vendure-ecommerce/vendure/commit/81f6659))
+
+## <small>3.3.1 (2025-05-20)</small>
+
+
+#### Fixes
+
+* **admin-ui** Improve Arabic translations (#3531) ([dbd3c65](https://github.com/vendure-ecommerce/vendure/commit/dbd3c65)), closes [#3531](https://github.com/vendure-ecommerce/vendure/issues/3531)
+* **admin-ui** Update French translations from (#3525) ([d03bc2b](https://github.com/vendure-ecommerce/vendure/commit/d03bc2b)), closes [#3525](https://github.com/vendure-ecommerce/vendure/issues/3525)
+* **core)** Use job alias for clean-jobs task by (#3537) https://github.com/vendure-ecommerce/vendure/pull/3537
+* **core** Fix circular merge-deep stack overflow issue (#3549) ([bdc3438](https://github.com/vendure-ecommerce/vendure/commit/bdc3438)), closes [#3549](https://github.com/vendure-ecommerce/vendure/issues/3549)
+* **dashboard** Fix padding on pages ([fc27608](https://github.com/vendure-ecommerce/vendure/commit/fc27608))
+* **graphiql-plugin** Fix asset path for pnpm ([882a055](https://github.com/vendure-ecommerce/vendure/commit/882a055)), closes [#3499](https://github.com/vendure-ecommerce/vendure/issues/3499)
+* **payments-plugin** Enable use of "klarna" payment via Mollie (#3538) ([6313d0f](https://github.com/vendure-ecommerce/vendure/commit/6313d0f)), closes [#3538](https://github.com/vendure-ecommerce/vendure/issues/3538)
+* **telemetry-plugin** Fix compatibility range ([ac0528d](https://github.com/vendure-ecommerce/vendure/commit/ac0528d))
+* **testing** Await outstanding jobs before populating test data (#3544) ([cc32ce7](https://github.com/vendure-ecommerce/vendure/commit/cc32ce7)), closes [#3544](https://github.com/vendure-ecommerce/vendure/issues/3544)
+
 ## 3.3.0 (2025-05-12)
 
 

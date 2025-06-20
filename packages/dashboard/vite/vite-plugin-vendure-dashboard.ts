@@ -1,4 +1,3 @@
-import { lingui } from '@lingui/vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
@@ -10,8 +9,8 @@ import { configLoaderPlugin } from './vite-plugin-config-loader.js';
 import { viteConfigPlugin } from './vite-plugin-config.js';
 import { dashboardMetadataPlugin } from './vite-plugin-dashboard-metadata.js';
 import { gqlTadaPlugin } from './vite-plugin-gql-tada.js';
-import { themeVariablesPlugin } from './vite-plugin-theme.js';
-import { ThemeVariablesPluginOptions } from './vite-plugin-theme.js';
+import { ThemeVariablesPluginOptions, themeVariablesPlugin } from './vite-plugin-theme.js';
+import { transformIndexHtmlPlugin } from './vite-plugin-transform-index.js';
 import { UiConfigPluginOptions, uiConfigPlugin } from './vite-plugin-ui-config.js';
 
 /**
@@ -37,6 +36,14 @@ export type VitePluginVendureDashboardOptions = {
     gqlTadaOutputPath?: string;
     tempCompilationDir?: string;
     disableTansStackRouterPlugin?: boolean;
+    /**
+     * @description
+     * If set to `true`, compilation errors during the build process will be reported and
+     * the build will fail.
+     *
+     * @default false
+     */
+    reportCompilationErrors?: boolean;
 } & UiConfigPluginOptions &
     ThemeVariablesPluginOptions;
 
@@ -74,7 +81,11 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
         }),
         themeVariablesPlugin({ theme: options.theme }),
         tailwindcss(),
-        configLoaderPlugin({ vendureConfigPath: normalizedVendureConfigPath, tempDir }),
+        configLoaderPlugin({
+            vendureConfigPath: normalizedVendureConfigPath,
+            tempDir,
+            reportCompilationErrors: options.reportCompilationErrors,
+        }),
         viteConfigPlugin({ packageRoot }),
         adminApiSchemaPlugin(),
         dashboardMetadataPlugin({ rootDir: tempDir }),
@@ -82,6 +93,7 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
         ...(options.gqlTadaOutputPath
             ? [gqlTadaPlugin({ gqlTadaOutputPath: options.gqlTadaOutputPath, tempDir, packageRoot })]
             : []),
+        transformIndexHtmlPlugin(),
     ];
 }
 

@@ -1,10 +1,21 @@
-import { Customer, DeepPartial, LocaleString, Product, ProductVariant, Translatable, Translation, VendureEntity } from '@vendure/core';
+import {
+    Customer,
+    DeepPartial,
+    HasCustomFields,
+    LocaleString,
+    Product,
+    ProductVariant,
+    Translatable,
+    Translation,
+    VendureEntity,
+} from '@vendure/core';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { ReviewState } from '../types';
 import { ProductReviewTranslation } from './product-review-translation.entity';
 
+export class CustomReviewFields {}
 @Entity()
-export class ProductReview extends VendureEntity implements Translatable {
+export class ProductReview extends VendureEntity implements Translatable, HasCustomFields {
     constructor(input?: DeepPartial<ProductReview>) {
         super(input);
     }
@@ -51,4 +62,7 @@ export class ProductReview extends VendureEntity implements Translatable {
 
     @OneToMany(() => ProductReviewTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<ProductReview>>;
+
+    @Column(type => CustomReviewFields)
+    customFields: CustomReviewFields;
 }

@@ -36,6 +36,7 @@ export interface ConfigLoaderOptions {
     tempDir: string;
     vendureConfigExport?: string;
     logger?: Logger;
+    reportCompilationErrors?: boolean;
 }
 
 export interface LoadVendureConfigResult {
@@ -67,7 +68,12 @@ export async function loadVendureConfig(options: ConfigLoaderOptions): Promise<L
     const configFileName = path.basename(vendureConfigPath);
     const inputRootDir = path.dirname(vendureConfigPath);
     await fs.remove(outputPath);
-    const pluginInfo = await compileFile(inputRootDir, vendureConfigPath, outputPath, logger);
+    const pluginInfo = await compileFile({
+        inputRootDir,
+        inputPath: vendureConfigPath,
+        outputDir: outputPath,
+        logger,
+    });
     const compiledConfigFilePath = pathToFileURL(path.join(outputPath, configFileName)).href.replace(
         /.ts$/,
         '.js',
@@ -148,7 +154,14 @@ async function findTsConfigPaths(
                             );
                         }
                         logger.debug(
-                            `Found tsconfig paths in ${tsConfigPath}: ${JSON.stringify({ baseUrl: tsConfigBaseUrl, paths }, null, 2)}`,
+                            `Found tsconfig paths in ${tsConfigPath}: ${JSON.stringify(
+                                {
+                                    baseUrl: tsConfigBaseUrl,
+                                    paths,
+                                },
+                                null,
+                                2,
+                            )}`,
                         );
                         return { baseUrl: tsConfigBaseUrl, paths };
                     }
@@ -168,15 +181,27 @@ async function findTsConfigPaths(
     return undefined;
 }
 
-export async function compileFile(
-    inputRootDir: string,
-    inputPath: string,
-    outputDir: string,
-    logger: Logger = defaultLogger,
+type CompileFileOptions = {
+    inputRootDir: string;
+    inputPath: string;
+    outputDir: string;
+    logger?: Logger;
+    compiledFiles?: Set<string>;
+    isRoot?: boolean;
+    pluginInfo?: PluginInfo[];
+    reportCompilationErrors?: boolean;
+};
+
+export async function compileFile({
+    inputRootDir,
+    inputPath,
+    outputDir,
+    logger = defaultLogger,
     compiledFiles = new Set<string>(),
     isRoot = true,
-    pluginInfo: PluginInfo[] = [],
-): Promise<PluginInfo[]> {
+    pluginInfo = [],
+    reportCompilationErrors = false,
+}: CompileFileOptions): Promise<PluginInfo[]> {
     const absoluteInputPath = path.resolve(inputPath);
     if (compiledFiles.has(absoluteInputPath)) {
         return pluginInfo;
@@ -326,7 +351,15 @@ export async function compileFile(
     // Recursively collect all files that need to be compiled
     for (const importPath of importPaths) {
         // Pass rootTsConfigInfo down, but set isRoot to false
-        await compileFile(inputRootDir, importPath, outputDir, logger, compiledFiles, false, pluginInfo);
+        await compileFile({
+            inputRootDir,
+            inputPath: importPath,
+            outputDir,
+            logger,
+            compiledFiles,
+            isRoot: false,
+            pluginInfo,
+        });
     }
 
     // If this is the root file (the one that started the compilation),
@@ -371,10 +404,12 @@ export async function compileFile(
         logger.info(`Emitting compiled files to ${outputDir}`);
         const emitResult = program.emit();
 
-        const hasEmitErrors = reportDiagnostics(program, emitResult, logger);
+        if (reportCompilationErrors) {
+            const hasEmitErrors = reportDiagnostics(program, emitResult, logger);
 
-        if (hasEmitErrors) {
-            throw new Error('TypeScript compilation failed with errors.');
+            if (hasEmitErrors) {
+                throw new Error('TypeScript compilation failed with errors.');
+            }
         }
 
         logger.info(`Successfully compiled ${allFiles.length} files to ${outputDir}`);

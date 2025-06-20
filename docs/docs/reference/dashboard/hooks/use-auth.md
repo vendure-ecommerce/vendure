@@ -25,7 +25,7 @@ function useAuth(): void
 
 ## AuthContext
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/providers/auth.tsx" sourceLine="17" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/providers/auth.tsx" sourceLine="16" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 

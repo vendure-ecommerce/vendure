@@ -4,6 +4,7 @@ import { pathToFileURL } from 'url';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+    base: '/dashboard/',
     plugins: [
         vendureDashboardPlugin({
             vendureConfigPath: pathToFileURL('./dev-config.ts'),

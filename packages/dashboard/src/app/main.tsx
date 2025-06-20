@@ -1,5 +1,7 @@
 import { Toaster } from '@/components/ui/sonner.js';
+import { registerDefaults } from '@/framework/defaults.js';
 import { setCustomFieldsMap } from '@/framework/document-introspection/add-custom-fields.js';
+import { executeDashboardExtensionCallbacks } from '@/framework/extension-api/define-dashboard-extension.js';
 import { useDashboardExtensions } from '@/framework/extension-api/use-dashboard-extensions.js';
 import { useExtendedRouter } from '@/framework/page/use-extended-router.js';
 import { useAuth } from '@/hooks/use-auth.js';
@@ -8,8 +10,6 @@ import { defaultLocale, dynamicActivate } from '@/providers/i18n-provider.js';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
-import { registerDefaults } from '@/framework/defaults.js';
-import { executeDashboardExtensionCallbacks } from '@/framework/extension-api/define-dashboard-extension.js';
 
 import { AppProviders, queryClient } from './app-providers.js';
 import { routeTree } from './routeTree.gen.js';
@@ -26,6 +26,8 @@ export const router = createRouter({
     routeTree,
     defaultPreload: 'intent',
     scrollRestoration: true,
+    // In case the dashboard gets served from a subpath, we need to set the basepath based on the environment variable
+    ...(import.meta.env.BASE_URL ? { basepath: import.meta.env.BASE_URL } : {}),
     context: {
         /* eslint-disable @typescript-eslint/no-non-null-assertion */
         auth: undefined!, // This will be set after we wrap the app in an AuthProvider
@@ -50,7 +52,7 @@ function InnerApp() {
 
     return (
         <>
-            {hasSetCustomFieldsMap && (
+            {(hasSetCustomFieldsMap || auth.status === 'unauthenticated') && (
                 <RouterProvider router={extendedRouter} context={{ auth, queryClient }} />
             )}
         </>

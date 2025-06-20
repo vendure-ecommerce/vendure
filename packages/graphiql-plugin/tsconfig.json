@@ -6,6 +6,7 @@
         "noLib": false,
         "skipLibCheck": true,
         "sourceMap": true,
-        "lib": ["dom"]
+        "lib": ["dom"],
+        "jsx": "react-jsx"
     }
 }
