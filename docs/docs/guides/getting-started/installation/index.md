@@ -12,8 +12,7 @@ import TabItem from '@theme/TabItem';
 
 ### Optional
 
-* [Docker Desktop](https://www.docker.com/products/docker-desktop/): If you want to use the quick start with Postgres, you must have Docker Desktop installed. If you do not have Docker Desktop installed.
-  then SQLite will be used for your database.
+* [Docker Desktop](https://www.docker.com/products/docker-desktop/): If you want to use the quick start with Postgres, you must have Docker Desktop installed. If you do not have Docker Desktop installed, then SQLite will be used for your database.
 * If you want to use an existing MySQL, MariaDB, or Postgres server as your data store, then you'll need an instance available locally. However, **if you are just testing out Vendure, we recommend the quick start option, which handles the database for you**.
 
 ## @vendure/create
@@ -22,39 +21,37 @@ The recommended way to get started with Vendure is by using the [@vendure/create
 
 ### Quick Start
 
-First run the following command in your terminal, replacing `my-shop` with the name of your project:
+First, run the following command in your terminal, replacing `my-shop` with the name of your project:
 
 ```bash
 npx @vendure/create my-shop
 ```
 
-Next choose the "Quick Start" option. This is the fastest way to get a Vendure server up and running, and will handle
-all the configuration for you. If you have Docker Desktop installed, it will create and configure a Postgres database for you. If not, it will use SQLite.
+Next, choose the "Quick Start" option. This is the fastest way to get a Vendure server up and running and will handle all the configuration for you. If you have Docker Desktop installed, it will create and configure a Postgres database for you. If not, it will use SQLite.
 
 ```text
 ┌  Let's create a Vendure App ✨
 │
 ◆  How should we proceed?
 // highlight-next-line
-│  ● Quick Start (Get up an running in a single step)
+│  ● Quick Start (Get up and running in a single step)
 │  ○ Manual Configuration
 └
 ```
 
-And that's it! After a minute or two you'll have a **fully-functional Vendure server** installed locally.
+And that's it! After a minute or two, you'll have a **fully-functional Vendure server** installed locally.
 
 Once the installation is done, your terminal will output a message indicating a successful installation with:
 
 * The URL to access the **Admin UI**
-* Your admin log-in credentials.
+* Your admin log-in credentials
 * The project file path
 
 Proceed to the [Start the server](#start-the-server) section below to run your Vendure server.
 
 ### Manual Configuration
 
-If you'd rather have more control over the configuration, you can choose the "Manual Configuration" option.
-This will prompt you to select a database, and whether to populate the database with sample data.
+If you'd rather have more control over the configuration, you can choose the "Manual Configuration" option. This will prompt you to select a database and whether to populate the database with sample data.
 
 #### 1. Select a database
 
@@ -65,11 +62,11 @@ Vendure supports a number of different databases. The `@vendure/create` tool wil
 ![Vendure Create step 1](./create-1.webp)
 
 :::tip
-If you select MySQL, MariaDB or Postgres, you need to make sure you:
+If you select MySQL, MariaDB, or Postgres, you need to make sure you:
 
 1. have the database server running and accessible
 2. have created a database for Vendure to use
-3. know the username and password for a user with access to that database.
+3. know the username and password for a user with access to that database
 
 :::
 
@@ -77,8 +74,7 @@ If you select MySQL, MariaDB or Postgres, you need to make sure you:
 
 The final prompt will ask whether to populate your new Vendure server with some sample product data.
 
-**We recommend you do so**, as it will give you a good starting point for exploring the APIs which we will cover in the [Try the API section](/guides/getting-started/try-the-api/), as well as providing some data to use when
-building your own storefront.
+**We recommend you do so**, as it will give you a good starting point for exploring the APIs, which we will cover in the [Try the API section](/guides/getting-started/try-the-api/), as well as providing some data to use when building your own storefront.
 
 ![Vendure Create step 2](./create-2.webp)
 
@@ -132,15 +128,13 @@ Use `npx vendure add` to start adding plugins & custom functionality to your Ven
    npx @vendure/create my-shop --log-level verbose
    ```
 
-* The [supported TypeScript version](https://github.com/vendure-ecommerce/vendure/blob/master/packages/create/src/constants.ts#L7) is set upon installation. Upgrading to a newer version of TypeScript might result in compilation errors because
-  TypeScript sometimes introduces stricter checks in newer versions.
+* The [supported TypeScript version](https://github.com/vendure-ecommerce/vendure/blob/master/packages/create/src/constants.ts#L7) is set upon installation. Upgrading to a newer version of TypeScript might result in compilation errors because TypeScript sometimes introduces stricter checks in newer versions.
 * If you want to use **Yarn**, from Vendure v2.2.0+, you'll need to use **Yarn 2** (Berry) or above.
 
 ## Set up a storefront
 
 Once you have a Vendure server running, you can set up a storefront to interact with it!
 
-We have a number of storefront starter kits available for you to use - head over to the [Storefront Starters](/guides/storefront/storefront-starters/)
-page to learn more.
+We have a number of storefront starter kits available for you to use—head over to the [Storefront Starters](/guides/storefront/storefront-starters/) page to learn more.
 
 ![Remix storefront](../../storefront/storefront-starters/remix-storefront.webp)
