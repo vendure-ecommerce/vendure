@@ -245,10 +245,11 @@ describe('Mollie payments', () => {
             expect(mollieRequest?.amount?.value).toBe('1009.88');
             expect(mollieRequest?.amount?.currency).toBe('USD');
             expect(mollieRequest.lines[0].vatAmount.value).toEqual('199.98');
-            let totalLineAmount = 0;
-            for (const line of mollieRequest.lines) {
-                totalLineAmount += Number(line.totalAmount.value);
-            }
+            const totalLineAmount =
+                mollieRequest?.lines?.reduce(
+                    (sum: number, line: any) => sum + Number(line.totalAmount.value),
+                    0,
+                ) ?? 0;
             // Sum of lines should equal order total
             expect(mollieRequest.amount.value).toEqual(totalLineAmount.toFixed(2));
         });
@@ -334,13 +335,14 @@ describe('Mollie payments', () => {
                     paymentMethodCode: mollieMockData.methodCode,
                 },
             });
-            expect(mollieRequest.amount?.value).toBe('909.88'); // minus 100,00 from manual payment
-            let totalLineAmount = 0;
-            for (const line of mollieRequest?.lines) {
-                totalLineAmount += Number(line.totalAmount.value);
-            }
+            expect(mollieRequest?.amount?.value).toBe('909.88'); // minus 100,00 from manual payment
+            const totalLineAmount =
+                mollieRequest?.lines?.reduce(
+                    (sum: number, line: any) => sum + Number(line.totalAmount.value),
+                    0,
+                ) ?? 0;
             // This is the line that deducts the amount from payment that was already made
-            const priceDeductionLine = mollieRequest?.lines?.find((line: any) => line.totalAmount.value < 0);
+            const priceDeductionLine = mollieRequest.lines?.find((line: any) => line.totalAmount.value < 0);
             expect(priceDeductionLine?.type).toBe('store_credit');
             // Sum of lines should equal order total
             expect(mollieRequest.amount.value).toEqual(totalLineAmount.toFixed(2));
