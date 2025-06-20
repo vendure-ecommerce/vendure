@@ -10,6 +10,7 @@ import { viteConfigPlugin } from './vite-plugin-config.js';
 import { dashboardMetadataPlugin } from './vite-plugin-dashboard-metadata.js';
 import { gqlTadaPlugin } from './vite-plugin-gql-tada.js';
 import { ThemeVariablesPluginOptions, themeVariablesPlugin } from './vite-plugin-theme.js';
+import { transformIndexHtmlPlugin } from './vite-plugin-transform-index.js';
 import { UiConfigPluginOptions, uiConfigPlugin } from './vite-plugin-ui-config.js';
 
 /**
@@ -92,6 +93,7 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
         ...(options.gqlTadaOutputPath
             ? [gqlTadaPlugin({ gqlTadaOutputPath: options.gqlTadaOutputPath, tempDir, packageRoot })]
             : []),
+        transformIndexHtmlPlugin(),
     ];
 }
 
