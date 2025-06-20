@@ -5,6 +5,10 @@ on:
     push:
         branches:
             - master
+        paths:
+            - 'packages/**'
+            - 'package.json'
+            - 'package-lock.json'
 
 jobs:
     publish:
