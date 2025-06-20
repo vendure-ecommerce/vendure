@@ -25,7 +25,7 @@ export function transformIndexHtmlPlugin(): Plugin {
                 const basePath = config.base.replace(/\/$/, ''); // Remove trailing slash
 
                 // Single regex to handle both href and src attributes with any quote type
-                const attributeRegex = new RegExp(`(href|src)=(["'])${basePath}`, 'g');
+                const attributeRegex = new RegExp(`(href|src)=(["'])${basePath}/?`, 'g');
                 let transformedHtml = html.replace(attributeRegex, '$1=$2');
 
                 // Add base tag to head
