@@ -30,7 +30,6 @@ export async function loadVendureConfigFile(
 
         let tsConfigFileContent: string;
         let tsConfigJson: any;
-        let compilerOptions: any;
 
         try {
             tsConfigFileContent = readFileSync(tsConfigPath, 'utf-8');
@@ -46,14 +45,7 @@ export async function loadVendureConfigFile(
             throw new Error(`Failed to parse TypeScript config file at ${tsConfigPath}: ${errorMessage}`);
         }
 
-        try {
-            compilerOptions = tsConfigJson.compilerOptions ?? {};
-        } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            throw new Error(
-                `Failed to access compilerOptions in TypeScript config file at ${tsConfigPath}: ${errorMessage}`,
-            );
-        }
+        const compilerOptions = tsConfigJson.compilerOptions;
 
         register({
             compilerOptions: { ...compilerOptions, moduleResolution: 'NodeNext', module: 'NodeNext' },
