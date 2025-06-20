@@ -284,6 +284,15 @@ export class MollieService {
                 return;
             }
         }
+        if (order.state === 'Cancelled' && molliePayment.status === PaymentStatus.paid) {
+            Logger.error(
+                `Order '${order.code}' is 'Cancelled'', but was paid for with '${molliePayment.id}'. Payment '${
+                    molliePayment.id
+                }' should be refunded.`,
+                loggerCtx,
+            );
+            return;
+        }
         // If order is not in one of these states, we don't need to handle the Mollie webhook
         const vendureStatesThatRequireAction: OrderState[] = [
             'AddingItems',
