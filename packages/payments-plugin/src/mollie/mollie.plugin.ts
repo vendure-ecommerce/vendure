@@ -118,9 +118,11 @@ export interface MolliePluginOptions {
  * ```GraphQL
  * mutation CreateMolliePaymentIntent {
  *   createMolliePaymentIntent(input: {
- *     redirectUrl: "https://storefront/order/1234XYZ"
- *     paymentMethodCode: "mollie-payment-method"
- *     molliePaymentMethodCode: "ideal"
+ *     redirectUrl: "https://storefront/order/1234XYZ" // Optional, the fallback redirect url set in the admin UI will be used if not provided
+ *     paymentMethodCode: "mollie-payment-method" // Optional, the first method with Mollie as handler will be used if not provided
+ *     molliePaymentMethodCode: "ideal", // Optional argument to skip the method selection in the hosted checkout
+ *     locale: "nl_NL", // Optional, the browser language will be used by Mollie if not provided
+ *     immediateCapture: true, // Optional, default is true, set to false if you expect the order fulfillment to take longer than 24 hours
  *   }) {
  *          ... on MolliePaymentIntent {
  *               url
@@ -162,19 +164,21 @@ export interface MolliePluginOptions {
  *  }
  * }
  * ```
- * You can pass `creditcard` for example, to the `createMolliePaymentIntent` mutation to skip the method selection.
  *
  * After completing payment on the Mollie platform,
- * the user is redirected to the given redirect url, e.g. `https://storefront/order/CH234X5`
+ * the user is redirected to the redirect url that was provided in the `createMolliePaymentIntent` mutation, e.g. `https://storefront/order/CH234X5`
  *
  * ## Pay later methods
- * Mollie supports pay-later methods like 'Klarna Pay Later'. Pay-later methods are captured immediately after checkout.
  *
- * If your order fulfilment time is longer than 24 hours You should pass `immediateCapture=false` to the `createMolliePaymentIntent` mutation.
+ * Mollie supports pay-later methods like 'Klarna Pay Later'. Pay-later methods are captured immediately after payment.
+ *
+ * If your order fulfillment time is longer than 24 hours You should pass `immediateCapture=false` to the `createMolliePaymentIntent` mutation.
  * This will transition your order to 'PaymentAuthorized' after the Mollie hosted checkout.
  * You need to manually capture the payment after the order is fulfilled, by settling existing payments, either via the admin UI or in custom code.
  *
- * Make sure you capture a payment within 28 days, because this is the shortest expiry time.
+ * Make sure to capture a payment within 28 days, after that the payment will be automaticallreleased.
+ * See the [Mollie documentation](https://docs.mollie.com/docs/place-a-hold-for-a-payment#authorization-expiration-window)
+ * for more information.
  *
  * ## ArrangingAdditionalPayment state
  *
