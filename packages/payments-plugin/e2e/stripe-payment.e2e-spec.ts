@@ -252,7 +252,7 @@ describe('Stripe payments', () => {
 
     // https://github.com/vendure-ecommerce/vendure/issues/3183
     it('should attach additional options to payment intent using requestOptions', async () => {
-        StripePlugin.options.requestOptions = async (injector, ctx, currentOrder) => {
+        StripePlugin.options.requestOptions = (injector, ctx, currentOrder) => {
             return {
                 stripeAccount: 'acct_connected',
             };

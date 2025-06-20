@@ -28,7 +28,7 @@
         "access": "public"
     },
     "peerDependencies": {
-        "@mollie/api-client": "3.x",
+        "@mollie/api-client": "4.x",
         "braintree": "3.x",
         "stripe": "13.x"
     },
@@ -47,7 +47,7 @@
         }
     },
     "devDependencies": {
-        "@mollie/api-client": "^3.7.0",
+        "@mollie/api-client": "^4.3.3",
         "@types/braintree": "^3.3.11",
         "@types/localtunnel": "2.0.4",
         "@vendure/common": "3.3.4",
