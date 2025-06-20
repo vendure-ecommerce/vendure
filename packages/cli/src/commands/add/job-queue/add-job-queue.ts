@@ -4,14 +4,19 @@ import { Node, Scope } from 'ts-morph';
 
 import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
 import { ServiceRef } from '../../../shared/service-ref';
-import { analyzeProject, selectPlugin, selectServiceRef } from '../../../shared/shared-prompts';
+import { analyzeProject, getServices, selectPlugin, selectServiceRef } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
-import { addImportsToFile } from '../../../utilities/ast-utils';
+import { addImportsToFile, getPluginClasses } from '../../../utilities/ast-utils';
 
 const cancelledMessage = 'Add API extension cancelled';
 
 export interface AddJobQueueOptions {
     plugin?: VendurePluginRef;
+    pluginName?: string;
+    name?: string;
+    selectedService?: string;
+    config?: string;
+    isNonInteractive?: boolean;
 }
 
 export const addJobQueueCommand = new CliCommand({
@@ -25,21 +30,114 @@ async function addJobQueue(
     options?: AddJobQueueOptions,
 ): Promise<CliCommandReturnVal<{ serviceRef: ServiceRef }>> {
     const providedVendurePlugin = options?.plugin;
-    const { project } = await analyzeProject({ providedVendurePlugin, cancelledMessage });
-    const plugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
-    const serviceRef = await selectServiceRef(project, plugin);
-
-    const jobQueueName = await text({
-        message: 'What is the name of the job queue?',
-        initialValue: 'my-background-task',
-        validate: input => {
-            if (!/^[a-z][a-z-0-9]+$/.test(input)) {
-                return 'The job queue name must be lowercase and contain only letters, numbers and dashes';
-            }
-        },
+    const { project } = await analyzeProject({
+        providedVendurePlugin,
+        cancelledMessage,
+        config: options?.config,
     });
 
-    if (isCancel(jobQueueName)) {
+    // Detect non-interactive mode
+    const isNonInteractive = options?.isNonInteractive === true;
+
+    let plugin: VendurePluginRef | undefined = providedVendurePlugin;
+
+    // If a plugin name was provided, try to find it
+    if (!plugin && options?.pluginName) {
+        const pluginClasses = getPluginClasses(project);
+        const foundPlugin = pluginClasses.find(p => p.getName() === options.pluginName);
+
+        if (!foundPlugin) {
+            // List available plugins if the specified one wasn't found
+            const availablePlugins = pluginClasses.map(p => p.getName()).filter(Boolean);
+            throw new Error(
+                `Plugin "${options.pluginName}" not found. Available plugins:\n` +
+                    availablePlugins.map(name => `  - ${name as string}`).join('\n'),
+            );
+        }
+
+        plugin = new VendurePluginRef(foundPlugin);
+    }
+
+    // In non-interactive mode, we need all required values upfront
+    if (isNonInteractive) {
+        if (!plugin) {
+            throw new Error('Plugin must be specified when running in non-interactive mode');
+        }
+        // Require name to be specified explicitly
+        if (!options?.name) {
+            throw new Error(
+                'Job queue name must be specified in non-interactive mode.\n' +
+                    'Usage: npx vendure add -j <PluginName> --name <job-queue-name> --selected-service <service-name>',
+            );
+        }
+        // Require service to be specified explicitly
+        if (!options?.selectedService) {
+            throw new Error(
+                'Service must be specified in non-interactive mode.\n' +
+                    'Usage: npx vendure add -j <PluginName> --name <job-queue-name> --selected-service <service-name>',
+            );
+        }
+    }
+
+    plugin = plugin ?? (await selectPlugin(project, cancelledMessage));
+
+    // In non-interactive mode, we cannot prompt for service selection
+    if (isNonInteractive && !plugin) {
+        throw new Error('Cannot select service in non-interactive mode - plugin must be specified');
+    }
+
+    let serviceRef: ServiceRef | undefined;
+
+    if (isNonInteractive) {
+        // In non-interactive mode, find the specified service
+        const existingServices = getServices(project).filter(sr => {
+            return sr.classDeclaration
+                .getSourceFile()
+                .getDirectoryPath()
+                .includes(plugin.getSourceFile().getDirectoryPath());
+        });
+
+        const selectedService = existingServices.find(sr => sr.name === options.selectedService);
+
+        if (!selectedService) {
+            const availableServices = existingServices.map(sr => sr.name);
+            if (availableServices.length === 0) {
+                throw new Error(
+                    `No services found in plugin "${plugin.name}".\n` +
+                        'Please first create a service using: npx vendure add -s <ServiceName>',
+                );
+            } else {
+                throw new Error(
+                    `Service "${options.selectedService as string}" not found in plugin "${plugin.name}". Available services:\n` +
+                        availableServices.map(name => `  - ${name}`).join('\n'),
+                );
+            }
+        }
+
+        serviceRef = selectedService;
+        log.info(`Using service: ${serviceRef.name}`);
+    } else {
+        // Interactive mode - let user choose
+        serviceRef = await selectServiceRef(project, plugin);
+    }
+
+    if (!serviceRef) {
+        throw new Error('Service is required for job queue');
+    }
+
+    const jobQueueName =
+        options?.name ??
+        (await text({
+            message: 'What is the name of the job queue?',
+            initialValue: 'my-background-task',
+            validate: input => {
+                if (!/^[a-z][a-z-0-9]+$/.test(input)) {
+                    return 'The job queue name must be lowercase and contain only letters, numbers and dashes';
+                }
+            },
+        }));
+
+    if (!isNonInteractive && isCancel(jobQueueName)) {
         cancel(cancelledMessage);
         process.exit(0);
     }
@@ -64,7 +162,7 @@ async function addJobQueue(
         type: 'JobQueueService',
     });
 
-    const jobQueuePropertyName = camelCase(jobQueueName) + 'Queue';
+    const jobQueuePropertyName = camelCase(jobQueueName as string) + 'Queue';
 
     serviceRef.classDeclaration.insertProperty(0, {
         name: jobQueuePropertyName,
@@ -94,7 +192,7 @@ async function addJobQueue(
             writer
                 .write(
                     `this.${jobQueuePropertyName} = await this.jobQueueService.createQueue({
-                name: '${jobQueueName}',
+                name: '${jobQueueName as string}',
                 process: async job => {
                     // Deserialize the RequestContext from the job data
                     const ctx = RequestContext.deserialize(job.data.ctx);
@@ -134,7 +232,7 @@ async function addJobQueue(
 
     serviceRef.classDeclaration
         .addMethod({
-            name: `trigger${pascalCase(jobQueueName)}`,
+            name: `trigger${pascalCase(jobQueueName as string)}`,
             scope: Scope.Public,
             parameters: [{ name: 'ctx', type: 'RequestContext' }],
             statements: writer => {

@@ -24,6 +24,8 @@ interface AddServiceOptions {
     type: 'basic' | 'entity';
     serviceName: string;
     entityRef?: EntityRef;
+    config?: string;
+    isNonInteractive?: boolean;
 }
 
 export const addServiceCommand = new CliCommand({
@@ -37,12 +39,19 @@ async function addService(
     providedOptions?: Partial<AddServiceOptions>,
 ): Promise<CliCommandReturnVal<{ serviceRef: ServiceRef }>> {
     const providedVendurePlugin = providedOptions?.plugin;
-    const { project } = await analyzeProject({ providedVendurePlugin, cancelledMessage });
+    const { project } = await analyzeProject({ providedVendurePlugin, cancelledMessage, config: providedOptions?.config });
+
+    // In non-interactive mode with no plugin specified, we cannot proceed
+    const isNonInteractive = providedOptions?.serviceName !== undefined;
+    if (isNonInteractive && !providedVendurePlugin) {
+        throw new Error('Plugin must be specified when running in non-interactive mode. Use selectPlugin in interactive mode.');
+    }
+
     const vendurePlugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
     const modifiedSourceFiles: SourceFile[] = [];
     const type =
         providedOptions?.type ??
-        (await select({
+        (isNonInteractive ? 'basic' : await select({
             message: 'What type of service would you like to add?',
             options: [
                 { value: 'basic', label: 'Basic empty service' },
@@ -50,13 +59,14 @@ async function addService(
             ],
             maxItems: 10,
         }));
-    if (isCancel(type)) {
+    if (!isNonInteractive && isCancel(type)) {
         cancel('Cancelled');
         process.exit(0);
     }
     const options: AddServiceOptions = {
         type: type as AddServiceOptions['type'],
-        serviceName: 'MyService',
+        serviceName: providedOptions?.serviceName ?? 'MyService',
+        config: providedOptions?.config,
     };
     if (type === 'entity') {
         let entityRef: EntityRef;
@@ -81,25 +91,27 @@ async function addService(
     let serviceSourceFile: SourceFile;
     let serviceClassDeclaration: ClassDeclaration;
     if (options.type === 'basic') {
-        const name = await text({
-            message: 'What is the name of the new service?',
-            initialValue: 'MyService',
-            validate: input => {
-                if (!input) {
-                    return 'The service name cannot be empty';
-                }
-                if (!pascalCaseRegex.test(input)) {
-                    return 'The service name must be in PascalCase, e.g. "MyService"';
-                }
-            },
-        });
+        const name = options.serviceName !== 'MyService'
+            ? options.serviceName
+            : await text({
+                message: 'What is the name of the new service?',
+                initialValue: 'MyService',
+                validate: input => {
+                    if (!input) {
+                        return 'The service name cannot be empty';
+                    }
+                    if (!pascalCaseRegex.test(input)) {
+                        return 'The service name must be in PascalCase, e.g. "MyService"';
+                    }
+                },
+            });
 
-        if (isCancel(name)) {
+        if (!isNonInteractive && isCancel(name)) {
             cancel(cancelledMessage);
             process.exit(0);
         }
 
-        options.serviceName = name;
+        options.serviceName = name as string;
         serviceSpinner.start(`Creating ${options.serviceName}...`);
         const serviceSourceFilePath = getServiceFilePath(vendurePlugin, options.serviceName);
         await pauseForPromptDisplay();

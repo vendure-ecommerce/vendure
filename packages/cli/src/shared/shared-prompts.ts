@@ -13,6 +13,7 @@ import { VendurePluginRef } from './vendure-plugin-ref';
 export async function analyzeProject(options: {
     providedVendurePlugin?: VendurePluginRef;
     cancelledMessage?: string;
+    config?: string;
 }) {
     const providedVendurePlugin = options.providedVendurePlugin;
     let project = providedVendurePlugin?.classDeclaration.getProject();
@@ -23,12 +24,21 @@ export async function analyzeProject(options: {
         const tsConfigFile = await selectTsConfigFile();
         projectSpinner.start('Analyzing project...');
         await pauseForPromptDisplay();
-        const { project: _project, tsConfigPath: _tsConfigPath } = await getTsMorphProject({}, tsConfigFile);
+        const { project: _project, tsConfigPath: _tsConfigPath } = await getTsMorphProject(
+            {
+                compilerOptions: {
+                    // When running via the CLI, we want to find all source files,
+                    // not just the compiled .js files.
+                    rootDir: './src',
+                },
+            },
+            tsConfigFile,
+        );
         project = _project;
         tsConfigPath = _tsConfigPath;
         projectSpinner.stop('Project analyzed');
     }
-    return { project: project as Project, tsConfigPath };
+    return { project: project as Project, tsConfigPath, config: options.config };
 }
 
 export async function selectPlugin(project: Project, cancelledMessage: string): Promise<VendurePluginRef> {

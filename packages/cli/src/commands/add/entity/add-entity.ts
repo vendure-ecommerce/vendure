@@ -24,6 +24,8 @@ export interface AddEntityOptions {
         customFields: boolean;
         translatable: boolean;
     };
+    config?: string;
+    isNonInteractive?: boolean;
 }
 
 export const addEntityCommand = new CliCommand({
@@ -37,7 +39,13 @@ async function addEntity(
     options?: Partial<AddEntityOptions>,
 ): Promise<CliCommandReturnVal<{ entityRef: EntityRef }>> {
     const providedVendurePlugin = options?.plugin;
-    const { project } = await analyzeProject({ providedVendurePlugin, cancelledMessage });
+    const { project } = await analyzeProject({ providedVendurePlugin, cancelledMessage, config: options?.config });
+
+    // In non-interactive mode with no plugin specified, we cannot proceed
+    if (options?.className && !providedVendurePlugin) {
+        throw new Error('Plugin must be specified when running in non-interactive mode. Use selectPlugin in interactive mode.');
+    }
+
     const vendurePlugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
     const modifiedSourceFiles: SourceFile[] = [];
 
@@ -48,6 +56,7 @@ async function addEntity(
         fileName: paramCase(customEntityName) + '.entity',
         translationFileName: paramCase(customEntityName) + '-translation.entity',
         features: await getFeatures(options),
+        config: options?.config,
     };
 
     const entitySpinner = spinner();
@@ -76,6 +85,13 @@ async function addEntity(
 async function getFeatures(options?: Partial<AddEntityOptions>): Promise<AddEntityOptions['features']> {
     if (options?.features) {
         return options?.features;
+    }
+    // Default features for non-interactive mode when not specified
+    if (options?.className && !options?.features) {
+        return {
+            customFields: true,
+            translatable: false,
+        };
     }
     const features = await multiselect({
         message: 'Entity features (use ↑, ↓, space to select)',
