@@ -60,7 +60,7 @@ This will prompt you to select a database, and whether to populate the database 
 
 Vendure supports a number of different databases. The `@vendure/create` tool will prompt you to select one.
 
-**To quickly test out Vendure, we recommend using SQLite**, which requires no external dependencies. You can always switch to a different database later by changing your configuration file.
+**To quickly test out Vendure, we recommend using SQLite**, which requires no external dependencies. You can always switch to a different database later [by changing your configuration file](/guides/developer-guide/configuration/#connecting-to-the-database).
 
 ![Vendure Create step 1](./create-1.webp)
 
