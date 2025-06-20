@@ -41,7 +41,7 @@ jobs:
                       @vendure/elasticsearch-plugin,
                       @vendure/email-plugin,
                       @vendure/job-queue-plugin,
-                      @vendure/payments-plugins,
+                      @vendure/payments-plugin,
                       @vendure/testing,
                       @vendure/ui-devkit,
                       P1: urgent,
