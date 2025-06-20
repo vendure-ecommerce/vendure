@@ -30,7 +30,7 @@ const icon = {
     <ellipse rx="11" ry="4.2" transform="rotate(60)"/>
     <ellipse rx="11" ry="4.2" transform="rotate(120)"/>
   </g>
-</svg>`
+</svg>`,
 };
 
 /** @type {import('@docusaurus/plugin-content-docs').SidebarsConfig} */
@@ -100,6 +100,7 @@ const sidebars = {
                     value: 'Advanced Topics',
                     className: 'sidebar-section-header',
                 },
+                'guides/developer-guide/custom-strategies-in-plugins/index',
                 'guides/developer-guide/channel-aware/index',
                 'guides/developer-guide/translateable/index',
                 'guides/developer-guide/cache/index',
@@ -173,9 +174,7 @@ const sidebars = {
             customProps: {
                 icon: icon.reactLogo,
             },
-            items: [
-                'guides/extending-the-dashboard/getting-started/index',
-            ]
+            items: ['guides/extending-the-dashboard/getting-started/index'],
         },
         {
             type: 'category',
