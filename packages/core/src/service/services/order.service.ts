@@ -891,6 +891,19 @@ export class OrderService {
         if (validationError) {
             return validationError;
         }
+
+        const { orderInterceptors } = this.configService.orderOptions;
+        for (const orderLine of order.lines) {
+            for (const interceptor of orderInterceptors) {
+                if (interceptor.willRemoveItemFromOrder) {
+                    const error = await interceptor.willRemoveItemFromOrder(ctx, order, orderLine);
+                    if (error) {
+                        return new OrderInterceptorError({ interceptorError: error });
+                    }
+                }
+            }
+        }
+
         await this.connection.getRepository(ctx, OrderLine).remove(order.lines);
         order.lines = [];
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
@@ -1295,20 +1308,14 @@ export class OrderService {
 
     /**
      * @description
-     * Transitions the given {@link Payment} to a new state. If the order totalWithTax price is then
-     * covered by Payments, the Order state will be automatically transitioned to `PaymentSettled`
-     * or `PaymentAuthorized`.
+     * Transitions the given {@link Payment} to a new state.
      */
     async transitionPaymentToState(
         ctx: RequestContext,
         paymentId: ID,
         state: PaymentState,
     ): Promise<ErrorResultUnion<TransitionPaymentToStateResult, Payment>> {
-        const result = await this.paymentService.transitionToState(ctx, paymentId, state);
-        if (isGraphQlErrorResult(result)) {
-            return result;
-        }
-        return result;
+        return this.paymentService.transitionToState(ctx, paymentId, state);
     }
 
     /**

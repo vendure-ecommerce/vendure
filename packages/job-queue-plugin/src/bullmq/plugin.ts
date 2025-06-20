@@ -1,7 +1,9 @@
 import { PluginCommonModule, VendurePlugin } from '@vendure/core';
 
 import { BullMQJobQueueStrategy } from './bullmq-job-queue-strategy';
+import { cleanIndexedSetsTask } from './clean-indexed-sets-task';
 import { BULLMQ_PLUGIN_OPTIONS } from './constants';
+import { JobListIndexService } from './job-list-index.service';
 import { RedisHealthCheckStrategy } from './redis-health-check-strategy';
 import { RedisHealthIndicator } from './redis-health-indicator';
 import { RedisJobBufferStorageStrategy } from './redis-job-buffer-storage-strategy';
@@ -28,11 +30,11 @@ import { BullMQPluginOptions } from './types';
  *
  * ## Installation
  *
- * `yarn add \@vendure/job-queue-plugin bullmq`
+ * Note: To use this plugin, you need to manually install the `bullmq` package:
  *
- * or
- *
- * `npm install \@vendure/job-queue-plugin bullmq`
+ * ```shell
+ * npm install bullmq@^5.4.2
+ * ```
  *
  * **Note:** The v1.x version of this plugin is designed to work with bullmq v1.x, etc.
  *
@@ -193,11 +195,13 @@ import { BullMQPluginOptions } from './types';
         config.jobQueueOptions.jobQueueStrategy = new BullMQJobQueueStrategy();
         config.jobQueueOptions.jobBufferStorageStrategy = new RedisJobBufferStorageStrategy();
         config.systemOptions.healthChecks.push(new RedisHealthCheckStrategy());
+        config.schedulerOptions.tasks.push(cleanIndexedSetsTask);
         return config;
     },
     providers: [
         { provide: BULLMQ_PLUGIN_OPTIONS, useFactory: () => BullMQJobQueuePlugin.options },
         RedisHealthIndicator,
+        JobListIndexService,
     ],
     compatibility: '^3.0.0',
 })

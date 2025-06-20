@@ -50,7 +50,7 @@ function InnerApp() {
 
     return (
         <>
-            {hasSetCustomFieldsMap && (
+            {(hasSetCustomFieldsMap || auth.status === 'unauthenticated') && (
                 <RouterProvider router={extendedRouter} context={{ auth, queryClient }} />
             )}
         </>

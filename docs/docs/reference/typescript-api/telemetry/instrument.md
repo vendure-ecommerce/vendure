@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## Instrument
 
-<GenerationInfo sourceFile="packages/core/src/common/instrument-decorator.ts" sourceLine="40" packageName="@vendure/core" since="3.3.0" />
+<GenerationInfo sourceFile="packages/core/src/common/instrument-decorator.ts" sourceLine="41" packageName="@vendure/core" since="3.3.0" />
 
 This decorator is used to apply instrumentation to a class. It is intended to be used in conjunction
 with an <a href='/reference/typescript-api/telemetry/instrumentation-strategy#instrumentationstrategy'>InstrumentationStrategy</a> which defines how the instrumentation should be applied.
