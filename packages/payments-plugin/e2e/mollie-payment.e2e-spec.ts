@@ -339,6 +339,9 @@ describe('Mollie payments', () => {
             for (const line of mollieRequest?.lines) {
                 totalLineAmount += Number(line.totalAmount.value);
             }
+            // This is the line that deducts the amount from payment that was already made
+            const priceDeductionLine = mollieRequest?.lines?.find((line: any) => line.totalAmount.value < 0);
+            expect(priceDeductionLine?.type).toBe('store_credit');
             // Sum of lines should equal order total
             expect(mollieRequest.amount.value).toEqual(totalLineAmount.toFixed(2));
         });

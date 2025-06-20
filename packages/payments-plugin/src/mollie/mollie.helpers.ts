@@ -1,5 +1,6 @@
 import { CreateParameters } from '@mollie/api-client/dist/types/binders/payments/parameters';
 import { Amount, Address as MollieAddress } from '@mollie/api-client/dist/types/data/global';
+import { PaymentLine, PaymentLineType } from '@mollie/api-client/dist/types/data/payments/data';
 import { Customer, Order } from '@vendure/core';
 import currency from 'currency.js';
 
@@ -28,7 +29,7 @@ export function toMollieAddress(address: OrderAddress, customer: Customer): Moll
  */
 export function toMolliePaymentLines(order: Order, alreadyPaid: number): CreateParameters['lines'] {
     // Add lines
-    const lines: CreateParameters['lines'] = order.lines.map(line => ({
+    const lines: PaymentLine[] = order.lines.map(line => ({
         description: line.productVariant.name,
         quantity: line.quantity,
         unitPrice: toAmount(line.proratedLinePriceWithTax / line.quantity, order.currencyCode), // totalAmount has to match unitPrice * quantity
@@ -59,6 +60,7 @@ export function toMolliePaymentLines(order: Order, alreadyPaid: number): CreateP
             totalAmount: toAmount(surcharge.priceWithTax, order.currencyCode),
             vatRate: String(surcharge.taxRate),
             vatAmount: toAmount(surcharge.priceWithTax - surcharge.price, order.currencyCode),
+            type: surcharge.priceWithTax < 0 ? ('store_credit' as PaymentLineType) : undefined,
         })),
     );
     // Deduct amount already paid
@@ -70,6 +72,7 @@ export function toMolliePaymentLines(order: Order, alreadyPaid: number): CreateP
             totalAmount: toAmount(-alreadyPaid, order.currencyCode),
             vatRate: String(0),
             vatAmount: toAmount(0, order.currencyCode),
+            type: 'store_credit' as PaymentLineType, // Needed to allow negative unitPrice
         });
     }
     return lines;

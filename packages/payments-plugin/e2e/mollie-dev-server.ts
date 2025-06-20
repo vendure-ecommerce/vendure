@@ -107,6 +107,23 @@ async function runMollieDevServer() {
     });
     // eslint-disable-next-line no-console
     console.log('Payment intent result', result);
+
+    // Add another item to the order
+    await shopClient.query(ADD_ITEM_TO_ORDER, {
+        productVariantId: 'T_1',
+        quantity: 1,
+    });
+
+    // Wait X seconds and create another payment intent
+    await new Promise(resolve => setTimeout(resolve, 20000));
+
+    const result2 = await shopClient.query(CREATE_MOLLIE_PAYMENT_INTENT, {
+        input: {
+            locale: 'nl_NL',
+        },
+    });
+    // eslint-disable-next-line no-console
+    console.log('Second payment intent result', result2);
 }
 
 (async () => {
