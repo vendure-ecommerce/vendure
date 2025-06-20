@@ -18,7 +18,7 @@ jobs:
                   days-before-stale: 30
                   days-before-close: 3
                   # Act ONLY on issues that *still* have one of these labels
-                  only-labels: 'status: missing info ❓,status: reproduction needed 🔁,type: bug 🐛'
+                  any-of-labels: 'status: missing info ❓,status: reproduction needed 🔁,type: bug 🐛'
                   # Never touch these
                   exempt-issue-labels: 'type: feature ✨,type: chore 🧤,type: security 🔐,👋 contributions welcome,🚀 good first task'
                   stale-issue-label: stale
