@@ -64,9 +64,13 @@ Vendure supports a number of different databases. The `@vendure/create` tool wil
 :::tip
 If you select MySQL, MariaDB, or Postgres, you need to make sure you:
 
-1. have the database server running and accessible
-2. have created a database for Vendure to use
-3. know the username and password for a user with access to that database
+1. **Have the database server running**: You can either install the database locally on your machine, use a cloud provider, or run it via Docker. For local development with Docker, you can use the provided `docker-compose.yml` file in your project.
+
+2. **Have created a database**: Use your database client to create an empty database (e.g., `CREATE DATABASE vendure;` in most SQL databases).
+
+3. **Have database credentials**: You need the username and password for a database user that has full permissions (CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT) on the database you created.
+
+For detailed database configuration examples, see the [Configuration guide](/guides/developer-guide/configuration/#connecting-to-the-database).
 
 :::
 
