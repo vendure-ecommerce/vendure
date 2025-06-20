@@ -17,6 +17,8 @@ export function transformIndexHtmlPlugin(): Plugin {
             // store the resolved config
             config = resolvedConfig;
         },
+        // Only apply this plugin during the build phase
+        apply: 'build',
         transformIndexHtml(html) {
             if (config.base && config.base !== '/') {
                 // Remove the base path from hrefs and srcs
