@@ -1,0 +1,31 @@
+name: Close label-gated stale issues
+
+on:
+    schedule:
+        - cron: '0 2 * * *' # 02:00 UTC daily
+    workflow_dispatch: # allow manual runs
+
+permissions:
+    issues: write
+    pull-requests: write
+
+jobs:
+    sweep:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/stale@v9 # v9 or later
+              with:
+                  days-before-stale: 30
+                  days-before-close: 3
+                  # Act ONLY on issues that *still* have one of these labels
+                  only-labels: 'status: missing info ❓,status: reproduction needed 🔁,type: bug 🐛'
+                  # Never touch these
+                  exempt-issue-labels: 'type: feature ✨,type: chore 🧤,type: security 🔐,👋 contributions welcome,🚀 good first task'
+                  stale-issue-label: stale
+                  close-issue-message: >
+                      Closed automatically because the **{{issue.labels}}** label is
+                      still present and there has been no activity for {{days-before-close}}
+                      days after a reminder.  Please comment with new information and
+                      remove the label to re-open.
+                  operations-per-run: 500
+                  debug-only: true
