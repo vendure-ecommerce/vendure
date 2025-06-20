@@ -78,7 +78,7 @@ export async function loadVendureConfig(options: ConfigLoaderOptions): Promise<L
         /.ts$/,
         '.js',
     );
-    // create package.json with type commonjs and save it to the output dir
+    // create package.json with type module and save it to the output dir
     await fs.writeFile(path.join(outputPath, 'package.json'), JSON.stringify({ type: 'module' }, null, 2));
 
     // We need to figure out the symbol exported by the config file by
@@ -370,7 +370,7 @@ export async function compileFile({
         const compilerOptions: ts.CompilerOptions = {
             // Base options
             target: ts.ScriptTarget.ES2020,
-            module: ts.ModuleKind.NodeNext, // Output CommonJS for Node compatibility
+            module: ts.ModuleKind.NodeNext, // Support both CommonJS and ES modules based on package.json
             experimentalDecorators: true,
             emitDecoratorMetadata: true,
             esModuleInterop: true,
