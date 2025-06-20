@@ -42,24 +42,23 @@ Create a default implementation that users can extend or replace:
 ```ts title="src/strategies/default-my-custom-strategy.ts"
 import { Injector, RequestContext, Logger } from '@vendure/core';
 import { MyCustomStrategy } from './my-custom-strategy';
-import { MyPluginService } from '../services/my-plugin.service';
+import { SomeOtherService } from '../services/some-other.service';
+import { loggerCtx } from '../constants';
 
 export class DefaultMyCustomStrategy implements MyCustomStrategy {
-    private myPluginService: MyPluginService;
-    private logger: Logger;
+    private someOtherService: SomeOtherService;
 
     async init(injector: Injector): Promise<void> {
         // Inject dependencies during the init phase
-        this.myPluginService = injector.get(MyPluginService);
-        this.logger = injector.get(Logger);
+        this.someOtherService = injector.get(SomeOtherService);
 
         // Perform any setup logic
-        this.logger.info('DefaultMyCustomStrategy initialized');
+        Logger.info('DefaultMyCustomStrategy initialized', loggerCtx);
     }
 
     async destroy(): Promise<void> {
         // Clean up resources if needed
-        this.logger.info('DefaultMyCustomStrategy destroyed');
+        Logger.info('DefaultMyCustomStrategy destroyed', loggerCtx);
     }
 
     async processData(ctx: RequestContext, data: any): Promise<string> {
@@ -69,7 +68,8 @@ export class DefaultMyCustomStrategy implements MyCustomStrategy {
         }
 
         // Use injected service to process data
-        const result = await this.myPluginService.processData(ctx, data);
+        const result = await this.someOtherService.doSomething(ctx, data);
+        // ... do something with the result
         return result;
     }
 
@@ -113,11 +113,13 @@ import { MY_PLUGIN_OPTIONS } from './constants';
 import { MyPluginInitOptions } from './types';
 import { DefaultMyCustomStrategy } from './strategies/default-my-custom-strategy';
 import { MyPluginService } from './services/my-plugin.service';
+import { SomeOtherService } from './services/some-other.service';
 
 @VendurePlugin({
     imports: [PluginCommonModule],
     providers: [
         MyPluginService,
+        SomeOtherService,
         {
             provide: MY_PLUGIN_OPTIONS,
             useFactory: () => MyPlugin.options,
@@ -202,18 +204,17 @@ Plugin users can now provide their own strategy implementations:
 import { Injector, RequestContext, Logger } from '@vendure/core';
 import { MyCustomStrategy } from '@my-org/my-plugin';
 import { ExternalApiService } from './external-api.service';
+import { loggerCtx } from '../constants';
 
 export class CustomProcessingStrategy implements MyCustomStrategy {
     private externalApi: ExternalApiService;
-    private logger: Logger;
 
     async init(injector: Injector): Promise<void> {
         this.externalApi = injector.get(ExternalApiService);
-        this.logger = injector.get(Logger);
 
         // Initialize external API connection
         await this.externalApi.connect();
-        this.logger.info('Custom processing strategy initialized');
+        Logger.info('Custom processing strategy initialized', loggerCtx);
     }
 
     async destroy(): Promise<void> {
@@ -221,7 +222,7 @@ export class CustomProcessingStrategy implements MyCustomStrategy {
         if (this.externalApi) {
             await this.externalApi.disconnect();
         }
-        this.logger.info('Custom processing strategy destroyed');
+        Logger.info('Custom processing strategy destroyed', loggerCtx);
     }
 
     async processData(ctx: RequestContext, data: any): Promise<string> {
