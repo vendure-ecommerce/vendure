@@ -50,8 +50,7 @@ jobs:
                       P4: low
                   stale-issue-label: stale
                   close-issue-message: >
-                      Closed automatically because the **{{issue.labels}}** label is
-                      still present and there has been no activity for {{days-before-close}}
+                      Closed automatically because there has been no activity for {{days-before-close}}
                       days after a reminder.  Please comment with new information and
                       remove the label to re-open.
                   operations-per-run: 1000
