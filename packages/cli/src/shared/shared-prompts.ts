@@ -10,6 +10,13 @@ import { EntityRef } from './entity-ref';
 import { ServiceRef } from './service-ref';
 import { VendurePluginRef } from './vendure-plugin-ref';
 
+/**
+ * Analyzes a TypeScript project and returns its `ts-morph` Project instance, the path to the `tsconfig` file, and an optional config string.
+ *
+ * If a `providedVendurePlugin` is supplied, uses its associated project; otherwise, prompts the user to select a `tsconfig` file and analyzes the project with the source directory as the root.
+ *
+ * @returns An object containing the `Project` instance, the `tsConfigPath` (if available), and the provided `config` option.
+ */
 export async function analyzeProject(options: {
     providedVendurePlugin?: VendurePluginRef;
     cancelledMessage?: string;
@@ -41,6 +48,14 @@ export async function analyzeProject(options: {
     return { project: project as Project, tsConfigPath, config: options.config };
 }
 
+/**
+ * Prompts the user to select a Vendure plugin class from the project.
+ *
+ * If no plugins are found, the process is cancelled and exited. Returns a `VendurePluginRef` wrapping the selected plugin class.
+ *
+ * @param cancelledMessage - The message to display if the selection is cancelled
+ * @returns A reference to the selected Vendure plugin class
+ */
 export async function selectPlugin(project: Project, cancelledMessage: string): Promise<VendurePluginRef> {
     const pluginClasses = getPluginClasses(project);
     if (pluginClasses.length === 0) {

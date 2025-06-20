@@ -47,6 +47,15 @@ export const addApiExtensionCommand = new CliCommand({
     run: options => addApiExtension(options),
 });
 
+/**
+ * Adds GraphQL API extensions to a Vendure plugin, supporting both interactive and non-interactive modes.
+ *
+ * In interactive mode, prompts the user to select a plugin and service, and to specify query and mutation names if needed. In non-interactive mode, requires all necessary options to be provided up front and does not allow interactive selection or creation of services.
+ *
+ * Generates resolver files and GraphQL schema definitions, registers the new API extensions with the selected plugin, and updates the relevant source files.
+ *
+ * @returns An object containing the updated project, the modified source files, and a reference to the affected service.
+ */
 async function addApiExtension(
     options?: AddApiExtensionOptions,
 ): Promise<CliCommandReturnVal<{ serviceRef: ServiceRef }>> {

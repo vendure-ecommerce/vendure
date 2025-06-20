@@ -20,6 +20,14 @@ export interface MigrationResult {
     migrationsRan?: string[];
 }
 
+/**
+ * Generates a new database migration for a Vendure project.
+ *
+ * Validates the project directory, migration name, and determines the appropriate output directory before generating the migration. Returns the result indicating success, a descriptive message, and the migration name if generated.
+ *
+ * @param options - Options to specify the migration name and output directory.
+ * @returns The result of the migration generation, including success status, message, and the migration name if applicable.
+ */
 export async function generateMigrationOperation(options: MigrationOptions = {}): Promise<MigrationResult> {
     try {
         // Check if we're in a proper Vendure project directory
@@ -76,6 +84,11 @@ export async function generateMigrationOperation(options: MigrationOptions = {})
     }
 }
 
+/**
+ * Executes all pending database migrations for the current Vendure project.
+ *
+ * @returns The result of the migration operation, including success status, a descriptive message, and a list of migrations that were run if applicable.
+ */
 export async function runMigrationsOperation(): Promise<MigrationResult> {
     try {
         // Check if we're in a proper Vendure project directory
@@ -112,6 +125,11 @@ export async function runMigrationsOperation(): Promise<MigrationResult> {
     }
 }
 
+/**
+ * Reverts the most recently applied database migration in the current Vendure project.
+ *
+ * @returns The result of the revert operation, including success status and a descriptive message.
+ */
 export async function revertMigrationOperation(): Promise<MigrationResult> {
     try {
         // Check if we're in a proper Vendure project directory
@@ -143,6 +161,13 @@ export async function revertMigrationOperation(): Promise<MigrationResult> {
     }
 }
 
+/**
+ * Determines whether the current working directory is a Vendure project.
+ *
+ * Checks for the presence of Vendure configuration files and Vendure dependencies in `package.json`.
+ *
+ * @returns `true` if the directory appears to be a Vendure project; otherwise, `false`.
+ */
 function isVendureProjectDirectory(): boolean {
     const cwd = process.cwd();
 
@@ -172,6 +197,13 @@ function isVendureProjectDirectory(): boolean {
     return false;
 }
 
+/**
+ * Returns possible directories where migration files may be located for the given Vendure configuration.
+ *
+ * The returned array includes directories derived from the migration paths in the configuration, any source file containing a class implementing `MigrationInterface`, and a default `../migrations` directory relative to the Vendure config file.
+ *
+ * @returns An array of normalized directory paths that may contain migration files.
+ */
 function getMigrationsDir(vendureConfigRef: VendureConfigRef, config: VendureConfig): string[] {
     const options: string[] = [];
     if (

@@ -18,6 +18,13 @@ const cancelledMessage = 'Add feature cancelled.';
 
 export interface AddOptions extends AddOperationOptions {}
 
+/**
+ * Executes the "add" command, enabling users to add features to a Vendure project in either interactive or non-interactive mode.
+ *
+ * If any options are provided, the command runs in non-interactive mode using those options; otherwise, it prompts the user interactively.
+ *
+ * @param options - Optional parameters to configure the add operation non-interactively
+ */
 export async function addCommand(options?: AddOptions) {
     // If any non-interactive option is supplied, we switch to the non-interactive path
     const nonInteractive = options && Object.values(options).some(v => v !== undefined && v !== false);
@@ -29,6 +36,11 @@ export async function addCommand(options?: AddOptions) {
     }
 }
 
+/**
+ * Executes the add operation in non-interactive mode using the provided options.
+ *
+ * Logs a success message if the operation completes successfully. On failure or exception, logs an error message (with stack trace for specific validation errors) and exits the process with status code 1.
+ */
 async function handleNonInteractiveMode(options: AddOperationOptions) {
     try {
         const result = await performAddOperation(options);
@@ -60,6 +72,11 @@ async function handleNonInteractiveMode(options: AddOperationOptions) {
     }
 }
 
+/**
+ * Guides the user through interactively adding a new feature to a Vendure project.
+ *
+ * Prompts the user to select a feature to add, executes the corresponding command, organizes imports if source files are modified, and provides feedback on completion or errors.
+ */
 async function handleInteractiveMode() {
     // eslint-disable-next-line no-console
     console.log(`\n`);

@@ -25,6 +25,14 @@ export const addCodegenCommand = new CliCommand({
     run: addCodegen,
 });
 
+/**
+ * Sets up GraphQL code generation for one or more Vendure plugins in the current project.
+ *
+ * Installs required codegen dependencies, generates a codegen configuration file, and adds a `codegen` script to `package.json`. Supports both interactive and non-interactive modes, allowing plugin selection by reference or name. If a plugin has UI extensions, configures additional client codegen entries. Throws errors if required plugins are not found or if the project root or `package.json` cannot be located.
+ *
+ * @param options - Optional settings for plugin selection, config file location, and non-interactive mode
+ * @returns An object containing the updated project and the generated codegen configuration source file
+ */
 async function addCodegen(options?: AddCodegenOptions): Promise<CliCommandReturnVal> {
     const providedVendurePlugin = options?.plugin;
     const { project } = await analyzeProject({

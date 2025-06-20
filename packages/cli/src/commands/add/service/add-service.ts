@@ -35,6 +35,14 @@ export const addServiceCommand = new CliCommand({
     run: options => addService(options),
 });
 
+/**
+ * Adds a new service to a Vendure plugin, supporting both basic and entity-based services.
+ *
+ * Depending on the provided options and interactive prompts, generates a service file, customizes it for the selected entity if applicable, registers the service with the plugin, and saves all changes to the project. In non-interactive mode, requires explicit plugin and service name inputs.
+ *
+ * @param providedOptions - Optional configuration for service creation, including plugin, service type, service name, entity reference, config, and non-interactive mode flag.
+ * @returns An object containing the updated project, modified source files, and a reference to the newly created service.
+ */
 async function addService(
     providedOptions?: Partial<AddServiceOptions>,
 ): Promise<CliCommandReturnVal<{ serviceRef: ServiceRef }>> {

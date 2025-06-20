@@ -28,6 +28,14 @@ export const createNewPluginCommand = new CliCommand({
 
 const cancelledMessage = 'Plugin setup cancelled.';
 
+/**
+ * Creates a new Vendure plugin in the current project, supporting both interactive and non-interactive modes.
+ *
+ * If run interactively, prompts the user for the plugin name, directory, and optional additional features to scaffold. In non-interactive mode, uses provided options and throws errors for invalid input or existing directories. Integrates the new plugin into the Vendure config and optionally scaffolds additional features such as entities, services, or API extensions.
+ *
+ * @param options - Optional plugin generation options. If `name` is provided, runs non-interactively.
+ * @returns An object containing the updated project and a list of modified source files (empty if non-interactive or after completion).
+ */
 export async function createNewPlugin(
     options: Partial<GeneratePluginOptions> = {},
 ): Promise<CliCommandReturnVal> {

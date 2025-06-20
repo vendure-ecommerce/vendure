@@ -17,9 +17,11 @@ export interface MigrateOptions {
 }
 
 /**
- * This command is currently not exposed due to unresolved issues which I think are related to
- * peculiarities in loading ESM modules vs CommonJS modules. More time is needed to dig into
- * this before we expose this command in the cli.ts file.
+ * Executes the database migration command in either interactive or non-interactive mode.
+ *
+ * If migration options are provided, runs the corresponding migration operation without user prompts. Otherwise, launches an interactive prompt for the user to select a migration action.
+ *
+ * @param options - Optional migration operation parameters to enable non-interactive execution
  */
 export async function migrateCommand(options?: MigrateOptions) {
     // Check if any non-interactive options are provided
@@ -33,6 +35,13 @@ export async function migrateCommand(options?: MigrateOptions) {
     await handleInteractiveMode();
 }
 
+/**
+ * Executes migration operations in non-interactive mode based on the provided options.
+ *
+ * Depending on the options, this function generates a new migration, runs pending migrations, or reverts the last migration. Logs the outcome and exits the process with code 1 on failure.
+ *
+ * @param options - Migration operation options specifying which action to perform
+ */
 async function handleNonInteractiveMode(options: MigrateOptions) {
     try {
         process.env.VENDURE_RUNNING_IN_CLI = 'true';
@@ -79,6 +88,11 @@ async function handleNonInteractiveMode(options: MigrateOptions) {
     }
 }
 
+/**
+ * Launches an interactive CLI prompt for managing database migrations.
+ *
+ * Guides the user through generating, running, or reverting migrations based on their selection. Exits the process if the user cancels the prompt.
+ */
 async function handleInteractiveMode() {
     // eslint-disable-next-line no-console
     console.log(`\n`);

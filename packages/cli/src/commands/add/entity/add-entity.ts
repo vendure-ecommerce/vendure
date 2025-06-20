@@ -35,6 +35,13 @@ export const addEntityCommand = new CliCommand({
     run: options => addEntity(options),
 });
 
+/**
+ * Adds a new entity to a Vendure plugin, supporting both interactive and non-interactive CLI modes.
+ *
+ * If required options are not provided in non-interactive mode, an error is thrown. The function generates entity and translation files as needed, updates the plugin source, and saves project changes.
+ *
+ * @returns An object containing the updated project, modified source files, and a reference to the newly created entity.
+ */
 async function addEntity(
     options?: Partial<AddEntityOptions>,
 ): Promise<CliCommandReturnVal<{ entityRef: EntityRef }>> {
@@ -82,6 +89,13 @@ async function addEntity(
     };
 }
 
+/**
+ * Determines the feature flags for a new entity, either from provided options or by prompting the user.
+ *
+ * If features are specified in the options, returns them directly. In non-interactive mode with a class name but no features, defaults to enabling custom fields and disabling translatable properties. Otherwise, prompts the user to select features interactively.
+ *
+ * @returns An object indicating whether custom fields and translatable properties are enabled for the entity.
+ */
 async function getFeatures(options?: Partial<AddEntityOptions>): Promise<AddEntityOptions['features']> {
     if (options?.features) {
         return options?.features;

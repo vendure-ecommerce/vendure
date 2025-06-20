@@ -26,6 +26,14 @@ export const addUiExtensionsCommand = new CliCommand<AddUiExtensionsOptions>({
     run: options => addUiExtensions(options),
 });
 
+/**
+ * Sets up Admin UI extensions for a specified Vendure plugin within the current project.
+ *
+ * Optionally operates in non-interactive mode, supports plugin selection by name or reference, and allows specifying a custom Vendure config file. Installs required dependencies, scaffolds UI extension files, updates the plugin class, and attempts to update the Vendure configuration to register the new UI extension. Returns the updated project and the modified plugin source file.
+ *
+ * @param options - Optional settings for plugin selection, config file path, and interactivity mode
+ * @returns An object containing the updated project and the modified plugin source file
+ */
 async function addUiExtensions(options?: AddUiExtensionsOptions): Promise<CliCommandReturnVal> {
     const providedVendurePlugin = options?.plugin;
     const { project } = await analyzeProject({ providedVendurePlugin, config: options?.config });

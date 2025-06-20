@@ -40,10 +40,12 @@ export interface AddOperationResult {
 }
 
 /**
- * Determines which sub-command to execute based on the provided options and
- * delegates the work to that command's `run()` function. The interactive prompts
- * inside the sub-command will only be shown for data that is still missing – so
- * callers can supply as many or as few options as they need.
+ * Executes the appropriate "add" sub-command based on mutually exclusive options, delegating to the corresponding command handler.
+ *
+ * Accepts a set of options indicating which type of resource to add (e.g., plugin, entity, service, job queue, codegen config, API extension, or UI extensions) and invokes the relevant sub-command. Returns a result object indicating success or failure and a descriptive message. If required information is missing, sub-commands may prompt interactively for additional input.
+ *
+ * @param options - Options specifying which add operation to perform and any relevant parameters
+ * @returns The result of the add operation, including a success flag and message
  */
 export async function performAddOperation(options: AddOperationOptions): Promise<AddOperationResult> {
     try {

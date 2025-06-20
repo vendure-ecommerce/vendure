@@ -26,6 +26,13 @@ export const addJobQueueCommand = new CliCommand({
     run: options => addJobQueue(options),
 });
 
+/**
+ * Adds a new job queue to a Vendure plugin service, supporting both interactive and non-interactive CLI modes.
+ *
+ * In interactive mode, prompts the user to select a plugin, service, and job queue name. In non-interactive mode, requires explicit specification of the plugin, service, and job queue name via options. Modifies the selected service to inject the job queue, add necessary imports, implement `OnModuleInit`, and provide a trigger method for the new queue.
+ *
+ * @returns An object containing the updated project, modified source files, and a reference to the modified service.
+ */
 async function addJobQueue(
     options?: AddJobQueueOptions,
 ): Promise<CliCommandReturnVal<{ serviceRef: ServiceRef }>> {
