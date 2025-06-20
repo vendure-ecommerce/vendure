@@ -71,7 +71,12 @@ export const productVariantListDocument = graphql(`
                 currencyCode
                 price
                 priceWithTax
+                stockLevels {
+                    stockOnHand
+                    stockAllocated
+                }
             }
+            totalItems
         }
     }
 `);

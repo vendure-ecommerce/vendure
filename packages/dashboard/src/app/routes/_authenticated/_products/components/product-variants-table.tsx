@@ -1,11 +1,11 @@
-import { PaginatedListDataTable, PaginatedListRefresherRegisterFn } from "@/components/shared/paginated-list-data-table.js";
-import { productVariantListDocument } from "../products.graphql.js";
-import { useState } from "react";
-import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { Money } from "@/components/data-display/money.js";
+import { PaginatedListDataTable, PaginatedListRefresherRegisterFn } from "@/components/shared/paginated-list-data-table.js";
+import { StockLevelLabel } from "@/components/shared/stock-level-label.js";
 import { useLocalFormat } from "@/hooks/use-local-format.js";
-import { Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button.js";
+import { DetailPageButton } from "@/index.js";
+import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
+import { useState } from "react";
+import { productVariantListDocument } from "../products.graphql.js";
 
 interface ProductVariantsTableProps {
     productId: string;
@@ -33,42 +33,19 @@ export function ProductVariantsTable({ productId, registerRefresher }: ProductVa
         customizeColumns={{
             name: {
                 header: 'Variant name',
-                cell: ({ row }) => {
-                    const variant = row.original as any;
-                    return (
-                        <Button asChild variant="ghost">
-                            <Link to={`../../product-variants/${variant.id}`}>{variant.name} </Link>
-                        </Button>
-                    );
-                },
+                cell: ({ row: { original } }) => <DetailPageButton href={`../../product-variants/${original.id}`} label={original.name} />,
             },
             currencyCode: {
-                cell: ({ cell, row }) => {
-                    const value = cell.getValue();
-                    return formatCurrencyName(value as string, 'full');
-                },
+                cell: ({ row: { original } }) => formatCurrencyName(original.currencyCode, 'full'),
             },
             price: {
-                cell: ({ cell, row }) => {
-                    const variant = row.original as any;
-                    const value = cell.getValue();
-                    const currencyCode = variant.currencyCode;
-                    if (typeof value === 'number') {
-                        return <Money value={value} currency={currencyCode} />;
-                    }
-                    return value;
-                },
+                cell: ({ row: { original } }) => <Money value={original.price} currency={original.currencyCode} />,
             },
             priceWithTax: {
-                cell: ({ cell, row }) => {
-                    const variant = row.original as any;
-                    const value = cell.getValue();
-                    const currencyCode = variant.currencyCode;
-                    if (typeof value === 'number') {
-                        return <Money value={value} currency={currencyCode} />;
-                    }
-                    return value;
-                },
+                cell: ({ row: { original } }) => <Money value={original.priceWithTax} currency={original.currencyCode} />,
+            },
+            stockLevels: {
+                cell: ({ row: { original } }) => <StockLevelLabel stockLevels={original.stockLevels} />,
             },
         }}
         page={page}
