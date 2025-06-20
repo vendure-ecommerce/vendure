@@ -1,8 +1,8 @@
 import { log } from '@clack/prompts';
 import { generateMigration, revertLastMigration, runMigrations, VendureConfig } from '@vendure/core';
-import * as fs from 'fs-extra';
 import path from 'path';
 
+import { validateVendureProjectDirectory } from '../../shared/project-validation';
 import { analyzeProject } from '../../shared/shared-prompts';
 import { VendureConfigRef } from '../../shared/vendure-config-ref';
 
@@ -22,14 +22,7 @@ export interface MigrationResult {
 
 export async function generateMigrationOperation(options: MigrationOptions = {}): Promise<MigrationResult> {
     try {
-        // Check if we're in a proper Vendure project directory
-        if (!isVendureProjectDirectory()) {
-            return {
-                success: false,
-                message:
-                    'Error: Not in a Vendure project directory. Please run this command from your Vendure project root.',
-            };
-        }
+        validateVendureProjectDirectory();
 
         const { project, tsConfigPath } = await analyzeProject({ cancelledMessage: '' });
         const vendureConfig = new VendureConfigRef(project);
@@ -43,7 +36,6 @@ export async function generateMigrationOperation(options: MigrationOptions = {})
             };
         }
 
-        // Validate name
         if (!/^[a-zA-Z][a-zA-Z-_0-9]+$/.test(name)) {
             return {
                 success: false,
@@ -78,14 +70,7 @@ export async function generateMigrationOperation(options: MigrationOptions = {})
 
 export async function runMigrationsOperation(): Promise<MigrationResult> {
     try {
-        // Check if we're in a proper Vendure project directory
-        if (!isVendureProjectDirectory()) {
-            return {
-                success: false,
-                message:
-                    'Error: Not in a Vendure project directory. Please run this command from your Vendure project root.',
-            };
-        }
+        validateVendureProjectDirectory();
 
         const { project } = await analyzeProject({ cancelledMessage: '' });
         const vendureConfig = new VendureConfigRef(project);
@@ -114,14 +99,7 @@ export async function runMigrationsOperation(): Promise<MigrationResult> {
 
 export async function revertMigrationOperation(): Promise<MigrationResult> {
     try {
-        // Check if we're in a proper Vendure project directory
-        if (!isVendureProjectDirectory()) {
-            return {
-                success: false,
-                message:
-                    'Error: Not in a Vendure project directory. Please run this command from your Vendure project root.',
-            };
-        }
+        validateVendureProjectDirectory();
 
         const { project } = await analyzeProject({ cancelledMessage: '' });
         const vendureConfig = new VendureConfigRef(project);
@@ -141,35 +119,6 @@ export async function revertMigrationOperation(): Promise<MigrationResult> {
             message: error.message || 'Failed to revert migration',
         };
     }
-}
-
-function isVendureProjectDirectory(): boolean {
-    const cwd = process.cwd();
-
-    // Check for common Vendure project files
-    const hasPackageJson = fs.existsSync(path.join(cwd, 'package.json'));
-    const hasVendureConfig =
-        fs.existsSync(path.join(cwd, 'vendure-config.ts')) ||
-        fs.existsSync(path.join(cwd, 'vendure-config.js')) ||
-        fs.existsSync(path.join(cwd, 'src/vendure-config.ts')) ||
-        fs.existsSync(path.join(cwd, 'src/vendure-config.js'));
-
-    // Check if package.json contains Vendure dependencies
-    if (hasPackageJson) {
-        try {
-            const packageJson = JSON.parse(fs.readFileSync(path.join(cwd, 'package.json'), 'utf-8'));
-            const dependencies = { ...packageJson.dependencies, ...packageJson.devDependencies };
-            const hasVendureDeps = Object.keys(dependencies).some(
-                dep => dep.includes('@vendure/') || dep === 'vendure',
-            );
-
-            return hasVendureDeps && hasVendureConfig;
-        } catch {
-            return false;
-        }
-    }
-
-    return false;
 }
 
 function getMigrationsDir(vendureConfigRef: VendureConfigRef, config: VendureConfig): string[] {

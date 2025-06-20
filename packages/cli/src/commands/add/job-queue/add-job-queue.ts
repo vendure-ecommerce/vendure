@@ -3,10 +3,11 @@ import { camelCase, pascalCase } from 'change-case';
 import { Node, Scope } from 'ts-morph';
 
 import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
+import { resolvePluginFromOptions } from '../../../shared/plugin-resolution';
 import { ServiceRef } from '../../../shared/service-ref';
 import { analyzeProject, getServices, selectPlugin, selectServiceRef } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
-import { addImportsToFile, getPluginClasses } from '../../../utilities/ast-utils';
+import { addImportsToFile } from '../../../utilities/ast-utils';
 
 const cancelledMessage = 'Add API extension cancelled';
 
@@ -36,41 +37,20 @@ async function addJobQueue(
         config: options?.config,
     });
 
-    // Detect non-interactive mode
-    const isNonInteractive = options?.isNonInteractive === true;
-
-    let plugin: VendurePluginRef | undefined = providedVendurePlugin;
-
-    // If a plugin name was provided, try to find it
-    if (!plugin && options?.pluginName) {
-        const pluginClasses = getPluginClasses(project);
-        const foundPlugin = pluginClasses.find(p => p.getName() === options.pluginName);
-
-        if (!foundPlugin) {
-            // List available plugins if the specified one wasn't found
-            const availablePlugins = pluginClasses.map(p => p.getName()).filter(Boolean);
-            throw new Error(
-                `Plugin "${options.pluginName}" not found. Available plugins:\n` +
-                    availablePlugins.map(name => `  - ${name as string}`).join('\n'),
-            );
-        }
-
-        plugin = new VendurePluginRef(foundPlugin);
-    }
+    const { plugin: resolvedPlugin, shouldPromptForSelection } = resolvePluginFromOptions(project, {
+        providedPlugin: providedVendurePlugin,
+        pluginName: options?.pluginName,
+        isNonInteractive: options?.isNonInteractive === true,
+    });
 
     // In non-interactive mode, we need all required values upfront
-    if (isNonInteractive) {
-        if (!plugin) {
-            throw new Error('Plugin must be specified when running in non-interactive mode');
-        }
-        // Require name to be specified explicitly
+    if (options?.isNonInteractive) {
         if (!options?.name) {
             throw new Error(
                 'Job queue name must be specified in non-interactive mode.\n' +
                     'Usage: npx vendure add -j <PluginName> --name <job-queue-name> --selected-service <service-name>',
             );
         }
-        // Require service to be specified explicitly
         if (!options?.selectedService) {
             throw new Error(
                 'Service must be specified in non-interactive mode.\n' +
@@ -79,17 +59,11 @@ async function addJobQueue(
         }
     }
 
-    plugin = plugin ?? (await selectPlugin(project, cancelledMessage));
-
-    // In non-interactive mode, we cannot prompt for service selection
-    if (isNonInteractive && !plugin) {
-        throw new Error('Cannot select service in non-interactive mode - plugin must be specified');
-    }
+    const plugin = resolvedPlugin ?? (await selectPlugin(project, cancelledMessage));
 
     let serviceRef: ServiceRef | undefined;
 
-    if (isNonInteractive) {
-        // In non-interactive mode, find the specified service
+    if (options?.isNonInteractive) {
         const existingServices = getServices(project).filter(sr => {
             return sr.classDeclaration
                 .getSourceFile()
@@ -117,7 +91,6 @@ async function addJobQueue(
         serviceRef = selectedService;
         log.info(`Using service: ${serviceRef.name}`);
     } else {
-        // Interactive mode - let user choose
         serviceRef = await selectServiceRef(project, plugin);
     }
 
@@ -137,7 +110,7 @@ async function addJobQueue(
             },
         }));
 
-    if (!isNonInteractive && isCancel(jobQueueName)) {
+    if (!options?.isNonInteractive && isCancel(jobQueueName)) {
         cancel(cancelledMessage);
         process.exit(0);
     }
@@ -173,7 +146,6 @@ async function addJobQueue(
     serviceRef.classDeclaration.addImplements('OnModuleInit');
     let onModuleInitMethod = serviceRef.classDeclaration.getMethod('onModuleInit');
     if (!onModuleInitMethod) {
-        // Add this after the constructor
         const constructor = serviceRef.classDeclaration.getConstructors()[0];
         const constructorChildIndex = constructor?.getChildIndex() ?? 0;
 
