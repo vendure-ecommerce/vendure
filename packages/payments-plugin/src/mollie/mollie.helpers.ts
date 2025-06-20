@@ -1,4 +1,3 @@
-import { Locale } from '@mollie/api-client';
 import { CreateParameters } from '@mollie/api-client/dist/types/binders/payments/parameters';
 import { Amount, Address as MollieAddress } from '@mollie/api-client/dist/types/data/global';
 import { Customer, Order } from '@vendure/core';
@@ -7,7 +6,7 @@ import currency from 'currency.js';
 import { OrderAddress } from './graphql/generated-shop-types';
 
 /**
- * Check if given address has mandatory fields for Mollie Order and map to a MollieAddress.
+ * Check if given address has mandatory fields for Mollie and map to a MollieAddress.
  * Returns undefined if address doesn't have all mandatory fields
  */
 export function toMollieAddress(address: OrderAddress, customer: Customer): MollieAddress | undefined {
@@ -101,27 +100,4 @@ export function amountToCents(amount: Amount): number {
 export function calculateLineTaxAmount(taxRate: number, orderLinePriceWithTax: number): number {
     const taxMultiplier = taxRate / 100;
     return orderLinePriceWithTax * (taxMultiplier / (1 + taxMultiplier)); // I.E. €99,99 * (0,2 ÷ 1,2) with a 20% taxrate
-}
-
-/**
- * Best effort guess to get the locale for a payment based on order countrycode or the language code from the request context.
- * If both lookups fail, resolve to en_US to prevent payment failure
- */
-export function getLocale(countryCode: string, ctxLanguage: string): Locale {
-    // Prefer order locale if possible
-    const orderLocale = Object.values(Locale).find(
-        locale => locale.toLowerCase().indexOf(countryCode.toLowerCase()) > -1,
-    );
-    if (orderLocale) {
-        return orderLocale;
-    }
-    // If no order locale, try locale from ctx default
-    const channelLocale = Object.values(Locale).find(
-        locale => locale.toLowerCase().indexOf(ctxLanguage.toLowerCase()) > -1,
-    );
-    if (channelLocale) {
-        return channelLocale;
-    }
-    // If no order locale and no channel locale, return en_US
-    return Locale.en_US;
 }

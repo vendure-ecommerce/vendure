@@ -30,6 +30,11 @@ const commonSchemaExtensions = gql`
         If you fail to do so, the Authorized payment will expire after 28 days.
         """
         immediateCapture: Boolean
+        """
+        Specify a locale for Mollie's hosted checkout. If not provided, Mollie will detect the browser language.
+        The supported locales can be found here: https://docs.mollie.com/reference/common-data-types#locale
+        """
+        locale: String
     }
 
     type MolliePaymentIntent {

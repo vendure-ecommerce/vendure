@@ -1,5 +1,6 @@
 import createMollieClient, {
     CaptureMethod,
+    Locale,
     PaymentMethod as MollieClientMethod,
     PaymentStatus,
 } from '@mollie/api-client';
@@ -36,7 +37,7 @@ import {
     MolliePaymentMethod,
 } from './graphql/generated-shop-types';
 import { molliePaymentHandler } from './mollie.handler';
-import { amountToCents, getLocale, toAmount, toMollieAddress, toMolliePaymentLines } from './mollie.helpers';
+import { amountToCents, toAmount, toMollieAddress, toMolliePaymentLines } from './mollie.helpers';
 import { MolliePluginOptions } from './mollie.plugin';
 import { MolliePaymentMetadata } from './types';
 
@@ -194,21 +195,21 @@ export class MollieService {
             redirectUrl,
             webhookUrl: `${vendureHost}/payments/mollie/${ctx.channel.token}/${paymentMethod.id}`,
             billingAddress,
-            locale: getLocale(billingAddress.country, ctx.languageCode),
+            locale: input.locale as Locale,
             lines: toMolliePaymentLines(order, alreadyPaid),
             metadata: {
                 languageCode: ctx.languageCode,
             },
-            captureMode: input.immediateCapture ? CaptureMethod.automatic : CaptureMethod.manual,
+            captureMode: input.immediateCapture === false ? CaptureMethod.manual : CaptureMethod.automatic,
         };
         if (molliePaymentMethodCode) {
             paymentInput.method = molliePaymentMethodCode as MollieClientMethod;
         }
         const molliePayment = await mollieClient.payments.create(paymentInput);
-        Logger.info(`Created Mollie order ${String(molliePayment.id)} for order ${order.code}`, loggerCtx);
+        Logger.info(`Created Mollie payment ${String(molliePayment.id)} for order ${order.code}`, loggerCtx);
         const url = molliePayment.getCheckoutUrl();
         if (!url) {
-            throw Error('Unable to getCheckoutUrl() from Mollie order');
+            throw Error('Unable to getCheckoutUrl() from Mollie payment');
         }
         return {
             url,
@@ -250,7 +251,9 @@ export class MollieService {
             });
         }
         Logger.info(
-            `Processing status '${molliePayment.status}' for order ${molliePayment.description} for channel ${ctx.channel.token} for Mollie payment ${paymentId}`,
+            `Processing incoming webhook status '${molliePayment.status}' for order ${
+                molliePayment.description
+            } for channel ${ctx.channel.token} for Mollie payment ${paymentId}`,
             loggerCtx,
         );
         let order = await this.orderService.findOneByCode(ctx, molliePayment.description, ['payments']);

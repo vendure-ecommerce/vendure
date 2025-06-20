@@ -1775,6 +1775,11 @@ export type MolliePaymentIntentInput = {
      */
     immediateCapture?: InputMaybe<Scalars['Boolean']['input']>;
     /**
+     * Specify a locale for Mollie's hosted checkout. If not provided, Mollie will detect the browser language.
+     * The supported locales can be found here: https://docs.mollie.com/reference/common-data-types#locale
+     */
+    locale?: InputMaybe<Scalars['String']['input']>;
+    /**
      * Optional preselected Mollie payment method. When this is passed
      * the payment selection step will be skipped.
      */

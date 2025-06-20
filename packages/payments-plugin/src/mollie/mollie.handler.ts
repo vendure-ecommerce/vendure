@@ -85,20 +85,28 @@ export const molliePaymentHandler = new PaymentMethodHandler({
             Logger.info(`Payment '${payment.id}' for ${order.code} is already captured`, loggerCtx);
             return { success: true };
         }
-        const capture = await mollieClient.paymentCaptures.create({
+        // We poll 10 x 500ms to see if the payment is captured, because it is done async, but usually fast enough to wait
+        let capture = await mollieClient.paymentCaptures.create({
             paymentId: molliePayment.id,
-            amount: molliePayment.amount, // Capture the full amount
+            amount: molliePayment.amount,
         });
-        if (capture.status === 'succeeded') {
-            Logger.info(`Payment '${payment.id}' for ${order.code} is captured.`, loggerCtx);
-            return { success: true };
+        for (let i = 0; i < 10; i++) {
+            capture = await mollieClient.paymentCaptures.get(capture.id, { paymentId: molliePayment.id });
+            if (capture.status === 'succeeded') {
+                Logger.info(`Payment '${payment.id}' for ${order.code} is captured.`, loggerCtx);
+                return { success: true };
+            }
+            if (capture.status === 'failed') {
+                throw new Error(
+                    `Failed to capture payment '${payment.id}' for ${order.code}. Please check your Mollie dashboard for payment '${molliePayment.id}' for more details.`,
+                );
+            }
+            // Wait 500ms before next attempt
+            await new Promise(resolve => setTimeout(resolve, 500));
         }
-        if (capture.status === 'failed') {
-            throw new Error(
-                `Failed to capture payment '${payment.id}' for ${order.code}. Please check your Mollie dashboard for payment '${molliePayment.id}' for more details.`,
-            );
-        }
-        throw new Error(`Something went wrong: Mollie capture is in status '${capture.status}'`);
+        throw new Error(
+            `Failed to capture payment after 10 attempts. Last status: '${capture.status}'. Try again later`,
+        );
     },
     createRefund: async (ctx, input, amount, order, payment, args): Promise<CreateRefundResult> => {
         const { apiKey } = args;
