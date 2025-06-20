@@ -138,7 +138,7 @@ Use `npx vendure add` to start adding plugins & custom functionality to your Ven
 
 ## Set up a storefront
 
-Once you have a Vendure server running, you can set up a storefront to interact with it! 
+Once you have a Vendure server running, you can set up a storefront to interact with it!
 
 We have a number of storefront starter kits available for you to use - head over to the [Storefront Starters](/guides/storefront/storefront-starters/)
 page to learn more.
