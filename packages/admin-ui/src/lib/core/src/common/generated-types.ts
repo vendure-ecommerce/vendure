@@ -2892,6 +2892,8 @@ export type Mutation = {
   deleteProduct: DeletionResponse;
   /** Delete a ProductOption */
   deleteProductOption: DeletionResponse;
+  /** Delete a ProductOptionGroup */
+  deleteProductOptionGroup: DeletionResponse;
   /** Delete a ProductVariant */
   deleteProductVariant: DeletionResponse;
   /** Delete multiple ProductVariants */
@@ -3464,6 +3466,11 @@ export type MutationDeleteProductArgs = {
 
 
 export type MutationDeleteProductOptionArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteProductOptionGroupArgs = {
   id: Scalars['ID']['input'];
 };
 

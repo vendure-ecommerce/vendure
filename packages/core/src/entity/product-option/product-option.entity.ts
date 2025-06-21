@@ -1,6 +1,7 @@
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
-import { Column, Entity, Index, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
+import { Channel } from '..';
 import { SoftDeletable } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
@@ -42,6 +43,10 @@ export class ProductOption extends VendureEntity implements Translatable, HasCus
 
     @ManyToMany(type => ProductVariant, variant => variant.options)
     productVariants: ProductVariant[];
+
+    @ManyToMany(type => Channel, channel => channel.options)
+    @JoinTable()
+    channels: Channel[];
 
     @Column(type => CustomProductOptionFields)
     customFields: CustomProductOptionFields;

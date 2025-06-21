@@ -6,10 +6,12 @@ import {
     DeletionResult,
     UpdateProductOptionInput,
 } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
-
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { IsNull } from 'typeorm';
+
+import { RelationPaths } from '../../api';
 import { RequestContext } from '../../api/common/request-context';
+import { EntityNotFoundError, ListQueryOptions } from '../../common';
 import { Instrument } from '../../common/instrument-decorator';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
@@ -22,8 +24,11 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
 import { EventBus } from '../../event-bus';
 import { ProductOptionEvent } from '../../event-bus/events/product-option-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { TranslatorService } from '../helpers/translator/translator.service';
+
+import { ChannelService } from './channel.service';
 
 /**
  * @description
@@ -40,8 +45,13 @@ export class ProductOptionService {
         private customFieldRelationService: CustomFieldRelationService,
         private eventBus: EventBus,
         private translator: TranslatorService,
+        private channelService: ChannelService,
+        private listQueryBuilder: ListQueryBuilder,
     ) {}
 
+    /**
+     * @deprecated Use {@link ProductOptionService.findAllList findAllList(ctx, options, relations)} instead
+     */
     findAll(ctx: RequestContext): Promise<Array<Translated<ProductOption>>> {
         return this.connection
             .getRepository(ctx, ProductOption)
@@ -50,6 +60,26 @@ export class ProductOptionService {
                 where: { deletedAt: IsNull() },
             })
             .then(options => options.map(option => this.translator.translate(option, ctx)));
+    }
+
+    findAllList(
+        ctx: RequestContext,
+        options?: ListQueryOptions<ProductOption>,
+        relations?: RelationPaths<ProductOption>,
+    ): Promise<PaginatedList<Translated<ProductOption>>> {
+        return this.listQueryBuilder
+            .build(ProductOption, options, {
+                ctx,
+                relations: relations ?? ['group'],
+                channelId: ctx.channelId,
+            })
+            .getManyAndCount()
+            .then(([items, totalItems]) => {
+                return {
+                    items: items.map(item => this.translator.translate(item, ctx, ['group'])),
+                    totalItems,
+                };
+            });
     }
 
     findOne(ctx: RequestContext, id: ID): Promise<Translated<ProductOption> | undefined> {
@@ -76,7 +106,10 @@ export class ProductOptionService {
             input,
             entityType: ProductOption,
             translationType: ProductOptionTranslation,
-            beforeSave: po => (po.group = productOptionGroup),
+            beforeSave: async po => {
+                po.group = productOptionGroup;
+                await this.channelService.assignToCurrentChannel(po, ctx);
+            },
         });
         const optionWithRelations = await this.customFieldRelationService.updateRelations(
             ctx,
@@ -97,7 +130,7 @@ export class ProductOptionService {
         });
         await this.customFieldRelationService.updateRelations(ctx, ProductOption, input, option);
         await this.eventBus.publish(new ProductOptionEvent(ctx, option, 'updated', input));
-        return assertFound(this.findOne(ctx, option.id));
+        return assertFound(this.findOneInternal(ctx, option.id));
     }
 
     /**
@@ -110,7 +143,10 @@ export class ProductOptionService {
      * - If the ProductOption is not used by any ProductVariant at all, it will be hard-deleted.
      */
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
-        const productOption = await this.connection.getEntityOrThrow(ctx, ProductOption, id);
+        const productOption = await this.findOneInternal(ctx, id);
+        if (!productOption) {
+            throw new EntityNotFoundError(ProductOption.name, id);
+        }
         const deletedProductOption = new ProductOption(productOption);
         const inUseByActiveVariants = await this.isInUse(ctx, productOption, 'active');
         if (0 < inUseByActiveVariants) {
@@ -125,7 +161,7 @@ export class ProductOptionService {
         const isInUseBySoftDeletedVariants = await this.isInUse(ctx, productOption, 'soft-deleted');
         if (0 < isInUseBySoftDeletedVariants) {
             // soft delete
-            productOption.deletedAt = new Date();
+            productOption.deletedAt = new Date() as any;
             await this.connection.getRepository(ctx, ProductOption).save(productOption, { reload: false });
         } else {
             // hard delete
@@ -153,5 +189,18 @@ export class ProductOptionService {
             .where(variantState === 'active' ? 'variant.deletedAt IS NULL' : 'variant.deletedAt IS NOT NULL')
             .andWhere('option.id = :id', { id: productOption.id })
             .getCount();
+    }
+
+    private async findOneInternal(
+        ctx: RequestContext,
+        optionId: ID,
+    ): Promise<Translated<ProductOption> | undefined> {
+        const option = await this.connection.getEntityOrThrow(ctx, ProductOption, optionId, {
+            relations: ['group', 'channels'],
+        });
+        if (!(option.channels.some(c => c.id === ctx.channelId) || option.group.productId)) {
+            return undefined;
+        }
+        return this.translator.translate(option, ctx, ['group']);
     }
 }

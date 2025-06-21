@@ -12,17 +12,17 @@ import { unique } from '@vendure/common/lib/unique';
 import { RequestContext } from '../../../api/common/request-context';
 import { TransactionalConnection } from '../../../connection/transactional-connection';
 import { Channel } from '../../../entity/channel/channel.entity';
-import { ProductAsset } from '../../../entity/product/product-asset.entity';
-import { ProductTranslation } from '../../../entity/product/product-translation.entity';
-import { Product } from '../../../entity/product/product.entity';
-import { ProductOptionTranslation } from '../../../entity/product-option/product-option-translation.entity';
-import { ProductOption } from '../../../entity/product-option/product-option.entity';
 import { ProductOptionGroupTranslation } from '../../../entity/product-option-group/product-option-group-translation.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
+import { ProductOptionTranslation } from '../../../entity/product-option/product-option-translation.entity';
+import { ProductOption } from '../../../entity/product-option/product-option.entity';
 import { ProductVariantAsset } from '../../../entity/product-variant/product-variant-asset.entity';
 import { ProductVariantPrice } from '../../../entity/product-variant/product-variant-price.entity';
 import { ProductVariantTranslation } from '../../../entity/product-variant/product-variant-translation.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
+import { ProductAsset } from '../../../entity/product/product-asset.entity';
+import { ProductTranslation } from '../../../entity/product/product-translation.entity';
+import { Product } from '../../../entity/product/product.entity';
 import { RequestContextService } from '../../../service/helpers/request-context/request-context.service';
 import { TranslatableSaver } from '../../../service/helpers/translatable-saver/translatable-saver';
 import { ChannelService } from '../../../service/services/channel.service';
@@ -42,6 +42,10 @@ import { StockMovementService } from '../../../service/services/stock-movement.s
 export class FastImporterService {
     private defaultChannel: Channel;
     private importCtx: RequestContext;
+    // These Maps are used to cache newly-created entities and prevent duplicates
+    // from being created.
+    private optionGroupMap = new Map<string, ProductOptionGroup>();
+    private optionMap = new Map<string, ProductOption>();
 
     /** @internal */
     constructor(
@@ -110,25 +114,40 @@ export class FastImporterService {
 
     async createProductOptionGroup(input: CreateProductOptionGroupInput): Promise<ID> {
         this.ensureInitialized();
-        const group = await this.translatableSaver.create({
-            ctx: this.importCtx,
-            input,
-            entityType: ProductOptionGroup,
-            translationType: ProductOptionGroupTranslation,
-        });
-        return group.id;
+        let groupEntity: ProductOptionGroup;
+        const cachedGroup = this.optionGroupMap.get(input.code);
+        if (cachedGroup) {
+            groupEntity = cachedGroup;
+        } else {
+            groupEntity = await this.translatableSaver.create({
+                ctx: this.importCtx,
+                input,
+                entityType: ProductOptionGroup,
+                translationType: ProductOptionGroupTranslation,
+            });
+            this.optionGroupMap.set(input.code, groupEntity);
+        }
+        return groupEntity.id;
     }
 
     async createProductOption(input: CreateProductOptionInput): Promise<ID> {
         this.ensureInitialized();
-        const option = await this.translatableSaver.create({
-            ctx: this.importCtx,
-            input,
-            entityType: ProductOption,
-            translationType: ProductOptionTranslation,
-            beforeSave: po => (po.group = { id: input.productOptionGroupId } as any),
-        });
-        return option.id;
+        let optionEntity: ProductOption;
+        const optionKey = `${input.productOptionGroupId}:${input.code}`;
+        const cachedOption = this.optionMap.get(optionKey);
+        if (cachedOption) {
+            optionEntity = cachedOption;
+        } else {
+            optionEntity = await this.translatableSaver.create({
+                ctx: this.importCtx,
+                input,
+                entityType: ProductOption,
+                translationType: ProductOptionTranslation,
+                beforeSave: po => (po.group = { id: input.productOptionGroupId } as any),
+            });
+            this.optionMap.set(optionKey, optionEntity);
+        }
+        return optionEntity.id;
     }
 
     async addOptionGroupToProduct(productId: ID, optionGroupId: ID) {
@@ -136,7 +155,7 @@ export class FastImporterService {
         await this.connection
             .getRepository(this.importCtx, Product)
             .createQueryBuilder()
-            .relation('optionGroups')
+            .relation('__optionGroups')
             .of(productId)
             .add(optionGroupId);
     }

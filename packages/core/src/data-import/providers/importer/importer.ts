@@ -11,8 +11,8 @@ import { InternalServerError } from '../../../common/error/errors';
 import { ConfigService } from '../../../config/config.service';
 import { CustomFieldConfig } from '../../../config/custom-field/custom-field-types';
 import { Logger } from '../../../config/index';
-import { Facet } from '../../../entity/facet/facet.entity';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
+import { Facet } from '../../../entity/facet/facet.entity';
 import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
 import { ChannelService } from '../../../service/services/channel.service';
 import { FacetValueService } from '../../../service/services/facet-value.service';
@@ -213,10 +213,7 @@ export class Importer {
                     optionGroup.translations,
                     ctx.languageCode,
                 );
-                const code = normalizeString(
-                    `${productMainTranslation.name}-${optionGroupMainTranslation.name}`,
-                    '-',
-                );
+                const code = normalizeString(optionGroupMainTranslation.name, '-');
                 const groupId = await this.fastImporter.createProductOptionGroup({
                     code,
                     options: optionGroupMainTranslation.values.map(name => ({}) as any),
