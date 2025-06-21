@@ -65,6 +65,9 @@ export class FastImporterService {
      * to that Channel.
      */
     async initialize(channel?: Channel) {
+        this.optionGroupMap.clear();
+        this.optionMap.clear();
+
         this.importCtx = channel
             ? await this.requestContextService.create({
                   apiType: 'admin',

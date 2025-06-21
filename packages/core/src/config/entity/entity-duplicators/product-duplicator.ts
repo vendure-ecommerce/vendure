@@ -148,7 +148,7 @@ export const productDuplicator = new EntityDuplicator({
                     );
                 }
             }
-            if (product.__optionGroups && product.__optionGroups.length) {
+            if (product.__optionGroups?.length) {
                 for (const optionGroup of product.__optionGroups) {
                     await productService.addOptionGroupToProduct(ctx, duplicatedProduct.id, optionGroup.id);
                 }

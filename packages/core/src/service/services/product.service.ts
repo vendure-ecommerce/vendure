@@ -408,7 +408,7 @@ export class ProductService {
             });
         }
 
-        if (Array.isArray(product.optionGroups)) {
+        if (Array.isArray(product.__optionGroups)) {
             product.__optionGroups.push(optionGroup);
         } else {
             product.__optionGroups = [optionGroup];

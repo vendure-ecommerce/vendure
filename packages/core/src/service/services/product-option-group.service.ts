@@ -268,14 +268,18 @@ export class ProductOptionGroupService {
 
     private async findOneInternal(
         ctx: RequestContext,
-        optionId: ID,
+        groupId: ID,
     ): Promise<Translated<ProductOptionGroup> | undefined> {
-        const groupOption = await this.connection.getEntityOrThrow(ctx, ProductOptionGroup, optionId, {
+        const group = await this.connection.getRepository(ctx, ProductOptionGroup).findOne({
+            where: { id: groupId },
             relations: ['options', 'channels'],
         });
-        if (!(groupOption.channels.some(c => c.id === ctx.channelId) || groupOption.productId)) {
+        if (!group) {
             return undefined;
         }
-        return this.translator.translate(groupOption, ctx, ['options']);
+        if (group.channels.some(c => c.id === ctx.channelId) || group.productId) {
+            return this.translator.translate(group, ctx, ['options']);
+        }
+        return undefined;
     }
 }

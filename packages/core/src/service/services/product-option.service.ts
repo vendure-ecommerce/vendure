@@ -170,7 +170,7 @@ export class ProductOptionService {
      * - If the ProductOption is not used by any ProductVariant at all, it will be hard-deleted.
      */
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
-        const productOption = await this.findOneInternal(ctx, id);
+        const productOption = (await this.findOneInternal(ctx, id)) as ProductOption;
         if (!productOption) {
             throw new EntityNotFoundError(ProductOption.name, id);
         }
@@ -188,7 +188,7 @@ export class ProductOptionService {
         const isInUseBySoftDeletedVariants = await this.isInUse(ctx, productOption, 'soft-deleted');
         if (0 < isInUseBySoftDeletedVariants) {
             // soft delete
-            productOption.deletedAt = new Date() as any;
+            productOption.deletedAt = new Date();
             await this.connection.getRepository(ctx, ProductOption).save(productOption, { reload: false });
         } else {
             // hard delete
@@ -222,12 +222,16 @@ export class ProductOptionService {
         ctx: RequestContext,
         optionId: ID,
     ): Promise<Translated<ProductOption> | undefined> {
-        const option = await this.connection.getEntityOrThrow(ctx, ProductOption, optionId, {
+        const option = await this.connection.getRepository(ctx, ProductOption).findOne({
+            where: { id: optionId },
             relations: ['group', 'channels'],
         });
-        if (!(option.channels.some(c => c.id === ctx.channelId) || option.group.productId)) {
+        if (!option) {
             return undefined;
         }
-        return this.translator.translate(option, ctx, ['group']);
+        if (option.channels.some(c => c.id === ctx.channelId) || option.group.productId) {
+            return this.translator.translate(option, ctx, ['group']);
+        }
+        return undefined;
     }
 }
