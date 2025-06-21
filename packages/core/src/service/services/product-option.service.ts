@@ -92,6 +92,33 @@ export class ProductOptionService {
             .then(option => (option && this.translator.translate(option, ctx)) ?? undefined);
     }
 
+    /**
+     * @description
+     * Returns all ProductOptions belonging to the ProductOptionGroup with the given id.
+     */
+    findByGroupIdList(
+        ctx: RequestContext,
+        id: ID,
+        options?: ListQueryOptions<ProductOption>,
+        relations?: RelationPaths<ProductOption>,
+    ): Promise<PaginatedList<Translated<ProductOption>>> {
+        return this.listQueryBuilder
+            .build(ProductOption, options, {
+                ctx,
+                relations: relations ?? ['group'],
+                channelId: ctx.channelId,
+                entityAlias: 'productOption',
+            })
+            .andWhere('productOption.groupId = :id', { id })
+            .getManyAndCount()
+            .then(([items, totalItems]) => {
+                return {
+                    items: items.map(item => this.translator.translate(item, ctx, ['group'])),
+                    totalItems,
+                };
+            });
+    }
+
     async create(
         ctx: RequestContext,
         group: ProductOptionGroup | ID,

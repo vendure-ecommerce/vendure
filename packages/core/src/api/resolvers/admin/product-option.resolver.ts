@@ -9,8 +9,11 @@ import {
     MutationUpdateProductOptionGroupArgs,
     Permission,
     QueryProductOptionGroupArgs,
+    QueryProductOptionGroupListArgs,
     QueryProductOptionGroupsArgs,
+    QueryProductOptionsArgs,
 } from '@vendure/common/lib/generated-types';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Translated } from '../../../common/types/locale-types';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
@@ -38,6 +41,16 @@ export class ProductOptionResolver {
         @Relations(ProductOptionGroup) relations: RelationPaths<ProductOptionGroup>,
     ): Promise<Array<Translated<ProductOptionGroup>>> {
         return this.productOptionGroupService.findAll(ctx, args.filterTerm || undefined);
+    }
+
+    @Query()
+    @Allow(Permission.ReadCatalog, Permission.ReadProduct)
+    productOptionGroupList(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryProductOptionGroupListArgs,
+        @Relations(ProductOptionGroup) relations: RelationPaths<ProductOptionGroup>,
+    ): Promise<PaginatedList<Translated<ProductOptionGroup>>> {
+        return this.productOptionGroupService.findAllList(ctx, args.options || undefined, relations);
     }
 
     @Query()
@@ -88,6 +101,16 @@ export class ProductOptionResolver {
         @Args() { id }: MutationDeleteProductOptionGroupArgs,
     ): Promise<DeletionResponse> {
         return this.productOptionGroupService.deleteGroupAndOptions(ctx, id);
+    }
+
+    @Query()
+    @Allow(Permission.ReadCatalog, Permission.ReadProduct, Permission.ReadFacet)
+    productOptions(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryProductOptionsArgs,
+        @Relations(ProductOption) relations: RelationPaths<ProductOption>,
+    ): Promise<PaginatedList<Translated<ProductOption>>> {
+        return this.productOptionService.findAllList(ctx, args.options || undefined, relations);
     }
 
     @Transaction()

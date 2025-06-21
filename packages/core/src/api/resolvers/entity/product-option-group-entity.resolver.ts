@@ -1,13 +1,16 @@
-import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
-import { Permission } from '@vendure/common/lib/generated-types';
+import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql';
+import { Permission, ProductOptionListOptions } from '@vendure/common/lib/generated-types';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Translated } from '../../../common/types/locale-types';
-import { ProductOption } from '../../../entity/product-option/product-option.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
+import { ProductOption } from '../../../entity/product-option/product-option.entity';
+import { ProductOptionService } from '../../../service';
 import { LocaleStringHydrator } from '../../../service/helpers/locale-string-hydrator/locale-string-hydrator';
 import { ProductOptionGroupService } from '../../../service/services/product-option-group.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
+import { RelationPaths, Relations } from '../../decorators/relations.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('ProductOptionGroup')
@@ -15,6 +18,7 @@ export class ProductOptionGroupEntityResolver {
     constructor(
         private productOptionGroupService: ProductOptionGroupService,
         private localeStringHydrator: LocaleStringHydrator,
+        private productOptionService: ProductOptionService,
     ) {}
 
     @ResolveField()
@@ -43,5 +47,15 @@ export class ProductOptionGroupEntityResolver {
             options = group?.options ?? [];
         }
         return options.filter(o => !o.deletedAt);
+    }
+
+    @ResolveField()
+    async optionList(
+        @Ctx() ctx: RequestContext,
+        @Parent() optionGroup: ProductOptionGroup,
+        @Args() args: { options: ProductOptionListOptions },
+        @Relations({ entity: ProductOption }) relations: RelationPaths<ProductOption>,
+    ): Promise<PaginatedList<ProductOption>> {
+        return this.productOptionService.findByGroupIdList(ctx, optionGroup.id, args.options, relations);
     }
 }

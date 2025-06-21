@@ -4491,6 +4491,18 @@ export type ProductOption = Node & {
     updatedAt: Scalars['DateTime']['output'];
 };
 
+export type ProductOptionFilterParameter = {
+    _and?: InputMaybe<Array<ProductOptionFilterParameter>>;
+    _or?: InputMaybe<Array<ProductOptionFilterParameter>>;
+    code?: InputMaybe<StringOperators>;
+    createdAt?: InputMaybe<DateOperators>;
+    groupId?: InputMaybe<IdOperators>;
+    id?: InputMaybe<IdOperators>;
+    languageCode?: InputMaybe<StringOperators>;
+    name?: InputMaybe<StringOperators>;
+    updatedAt?: InputMaybe<DateOperators>;
+};
+
 export type ProductOptionGroup = Node & {
     code: Scalars['String']['output'];
     createdAt: Scalars['DateTime']['output'];
@@ -4498,9 +4510,52 @@ export type ProductOptionGroup = Node & {
     id: Scalars['ID']['output'];
     languageCode: LanguageCode;
     name: Scalars['String']['output'];
+    /** Returns a paginated, sortable, filterable list of the ProductOptionGroup's options. */
+    optionList: ProductOptionList;
     options: Array<ProductOption>;
     translations: Array<ProductOptionGroupTranslation>;
     updatedAt: Scalars['DateTime']['output'];
+};
+
+export type ProductOptionGroupOptionListArgs = {
+    options?: InputMaybe<ProductOptionListOptions>;
+};
+
+export type ProductOptionGroupFilterParameter = {
+    _and?: InputMaybe<Array<ProductOptionGroupFilterParameter>>;
+    _or?: InputMaybe<Array<ProductOptionGroupFilterParameter>>;
+    code?: InputMaybe<StringOperators>;
+    createdAt?: InputMaybe<DateOperators>;
+    id?: InputMaybe<IdOperators>;
+    languageCode?: InputMaybe<StringOperators>;
+    name?: InputMaybe<StringOperators>;
+    updatedAt?: InputMaybe<DateOperators>;
+};
+
+export type ProductOptionGroupList = PaginatedList & {
+    items: Array<ProductOptionGroup>;
+    totalItems: Scalars['Int']['output'];
+};
+
+export type ProductOptionGroupListOptions = {
+    /** Allows the results to be filtered */
+    filter?: InputMaybe<ProductOptionGroupFilterParameter>;
+    /** Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND. */
+    filterOperator?: InputMaybe<LogicalOperator>;
+    /** Skips the first n results, for use in pagination */
+    skip?: InputMaybe<Scalars['Int']['input']>;
+    /** Specifies which properties to sort the results by */
+    sort?: InputMaybe<ProductOptionGroupSortParameter>;
+    /** Takes n results, for use in pagination */
+    take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ProductOptionGroupSortParameter = {
+    code?: InputMaybe<SortOrder>;
+    createdAt?: InputMaybe<SortOrder>;
+    id?: InputMaybe<SortOrder>;
+    name?: InputMaybe<SortOrder>;
+    updatedAt?: InputMaybe<SortOrder>;
 };
 
 export type ProductOptionGroupTranslation = {
@@ -4523,6 +4578,33 @@ export type ProductOptionInUseError = ErrorResult & {
     message: Scalars['String']['output'];
     optionGroupCode: Scalars['String']['output'];
     productVariantCount: Scalars['Int']['output'];
+};
+
+export type ProductOptionList = PaginatedList & {
+    items: Array<ProductOption>;
+    totalItems: Scalars['Int']['output'];
+};
+
+export type ProductOptionListOptions = {
+    /** Allows the results to be filtered */
+    filter?: InputMaybe<ProductOptionFilterParameter>;
+    /** Specifies whether multiple top-level "filter" fields should be combined with a logical AND or OR operation. Defaults to AND. */
+    filterOperator?: InputMaybe<LogicalOperator>;
+    /** Skips the first n results, for use in pagination */
+    skip?: InputMaybe<Scalars['Int']['input']>;
+    /** Specifies which properties to sort the results by */
+    sort?: InputMaybe<ProductOptionSortParameter>;
+    /** Takes n results, for use in pagination */
+    take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ProductOptionSortParameter = {
+    code?: InputMaybe<SortOrder>;
+    createdAt?: InputMaybe<SortOrder>;
+    groupId?: InputMaybe<SortOrder>;
+    id?: InputMaybe<SortOrder>;
+    name?: InputMaybe<SortOrder>;
+    updatedAt?: InputMaybe<SortOrder>;
 };
 
 export type ProductOptionTranslation = {
@@ -4887,7 +4969,9 @@ export type Query = {
     /** Get a Product either by id or slug. If neither id nor slug is specified, an error will result. */
     product?: Maybe<Product>;
     productOptionGroup?: Maybe<ProductOptionGroup>;
+    productOptionGroupList: ProductOptionGroupList;
     productOptionGroups: Array<ProductOptionGroup>;
+    productOptions: ProductOptionList;
     /** Get a ProductVariant by id */
     productVariant?: Maybe<ProductVariant>;
     /** List ProductVariants either all or for the specific product. */
@@ -5047,8 +5131,16 @@ export type QueryProductOptionGroupArgs = {
     id: Scalars['ID']['input'];
 };
 
+export type QueryProductOptionGroupListArgs = {
+    options?: InputMaybe<ProductOptionGroupListOptions>;
+};
+
 export type QueryProductOptionGroupsArgs = {
     filterTerm?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type QueryProductOptionsArgs = {
+    options?: InputMaybe<ProductOptionListOptions>;
 };
 
 export type QueryProductVariantArgs = {
