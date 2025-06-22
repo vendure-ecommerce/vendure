@@ -1,20 +1,32 @@
 import { Injectable } from '@nestjs/common';
 import {
+    AssignOptionGroupsToChannelInput,
     CreateProductOptionGroupInput,
     DeletionResult,
+    LanguageCode,
+    Permission,
+    RemoveOptionGroupFromChannelResult,
+    RemoveOptionGroupsFromChannelInput,
     UpdateProductOptionGroupInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { FindManyOptions, IsNull, Like } from 'typeorm';
+import { FindManyOptions, In, IsNull, Like } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
-import { ListQueryOptions } from '../../common';
+import {
+    ErrorResultUnion,
+    ForbiddenError,
+    ListQueryOptions,
+    OptionGroupInUseError,
+    UserInputError,
+} from '../../common';
 import { Instrument } from '../../common/instrument-decorator';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { Logger } from '../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../connection/transactional-connection';
+import { ProductOption } from '../../entity';
 import { ProductOptionGroupTranslation } from '../../entity/product-option-group/product-option-group-translation.entity';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
@@ -25,9 +37,11 @@ import { CustomFieldRelationService } from '../helpers/custom-field-relation/cus
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { TranslatorService } from '../helpers/translator/translator.service';
+import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { ChannelService } from './channel.service';
 import { ProductOptionService } from './product-option.service';
+import { RoleService } from './role.service';
 
 /**
  * @description
@@ -47,6 +61,7 @@ export class ProductOptionGroupService {
         private translator: TranslatorService,
         private channelService: ChannelService,
         private listQueryBuilder: ListQueryBuilder,
+        private roleService: RoleService,
     ) {}
 
     /**
@@ -113,6 +128,27 @@ export class ProductOptionGroupService {
             .then(group => (group && this.translator.translate(group, ctx, ['options'])) ?? undefined);
     }
 
+    findByCode(
+        ctx: RequestContext,
+        groupCode: string,
+        lang: LanguageCode,
+    ): Promise<Translated<ProductOptionGroup> | undefined> {
+        // TODO: Implement usage of channelLanguageCode
+        return this.connection
+            .getRepository(ctx, ProductOptionGroup)
+            .findOne({
+                where: {
+                    code: groupCode,
+                    productId: IsNull(),
+                },
+                relations: ['options', 'options.group'],
+            })
+            .then(
+                group =>
+                    (group && translateDeep(group, lang, ['options', ['options', 'group']])) ?? undefined,
+            );
+    }
+
     getOptionGroupsByProductId(ctx: RequestContext, id: ID): Promise<Array<Translated<ProductOptionGroup>>> {
         return this.connection
             .getRepository(ctx, ProductOptionGroup)
@@ -139,6 +175,7 @@ export class ProductOptionGroupService {
             entityType: ProductOptionGroup,
             translationType: ProductOptionGroupTranslation,
             beforeSave: async g => {
+                g.code = await this.ensureUniqueCode(ctx, g.code);
                 await this.channelService.assignToCurrentChannel(g, ctx);
             },
         });
@@ -161,6 +198,11 @@ export class ProductOptionGroupService {
             input,
             entityType: ProductOptionGroup,
             translationType: ProductOptionGroupTranslation,
+            beforeSave: async g => {
+                if (g.code) {
+                    g.code = await this.ensureUniqueCode(ctx, g.code, g.id);
+                }
+            },
         });
         await this.customFieldRelationService.updateRelations(ctx, ProductOptionGroup, input, group);
         await this.eventBus.publish(new ProductOptionGroupEvent(ctx, group, 'updated', input));
@@ -232,6 +274,34 @@ export class ProductOptionGroupService {
         };
     }
 
+    /**
+     * Checks to ensure the ProductOptionGroup code is unique. If there is a conflict, then the code is suffixed
+     * with an incrementing integer.
+     */
+    private async ensureUniqueCode(ctx: RequestContext, code: string, id?: ID) {
+        let candidate = code;
+        let suffix = 1;
+        let conflict = false;
+        const alreadySuffixed = /-\d+$/;
+        do {
+            const match = await this.connection
+                .getRepository(ctx, ProductOptionGroup)
+                .findOne({ where: { code: candidate } });
+
+            conflict = !!match && ((id != null && !idsAreEqual(match.id, id)) || id == null);
+            if (conflict) {
+                suffix++;
+                if (alreadySuffixed.test(candidate)) {
+                    candidate = candidate.replace(alreadySuffixed, `-${suffix}`);
+                } else {
+                    candidate = `${candidate}-${suffix}`;
+                }
+            }
+        } while (conflict);
+
+        return candidate;
+    }
+
     private async isInUseByOtherProducts(
         ctx: RequestContext,
         productOptionGroup: ProductOptionGroup,
@@ -281,5 +351,119 @@ export class ProductOptionGroupService {
             return this.translator.translate(group, ctx, ['options']);
         }
         return undefined;
+    }
+
+    /**
+     * @description
+     * Assigns ProductOptionGroups to the specified Channel
+     */
+    async assignGroupsToChannel(
+        ctx: RequestContext,
+        input: AssignOptionGroupsToChannelInput,
+    ): Promise<Array<Translated<ProductOptionGroup>>> {
+        const hasPermission = await this.roleService.userHasAnyPermissionsOnChannel(ctx, input.channelId, [
+            Permission.UpdateProduct,
+            Permission.UpdateCatalog,
+        ]);
+        if (!hasPermission) {
+            throw new ForbiddenError();
+        }
+        const groupsToAssign = await this.connection.getRepository(ctx, ProductOptionGroup).find({
+            where: {
+                id: In(input.groupIds),
+                productId: IsNull(),
+            },
+            relations: ['options'],
+        });
+        const optionsToAssign = groupsToAssign.reduce(
+            (values, group) => [...values, ...group.options],
+            [] as ProductOption[],
+        );
+
+        await Promise.all<any>([
+            ...groupsToAssign.map(async group => {
+                return this.channelService.assignToChannels(ctx, ProductOptionGroup, group.id, [
+                    input.channelId,
+                ]);
+            }),
+            ...optionsToAssign.map(async option =>
+                this.channelService.assignToChannels(ctx, ProductOption, option.id, [input.channelId]),
+            ),
+        ]);
+        return this.connection
+            .findByIdsInChannel(
+                ctx,
+                ProductOptionGroup,
+                groupsToAssign.map(g => g.id),
+                ctx.channelId,
+                {},
+            )
+            .then(groups => groups.map(group => translateDeep(group, ctx.languageCode)));
+    }
+
+    /**
+     * @description
+     * Remove Facets from the specified Channel
+     */
+    async removeGroupsFromChannel(
+        ctx: RequestContext,
+        input: RemoveOptionGroupsFromChannelInput,
+    ): Promise<Array<ErrorResultUnion<RemoveOptionGroupFromChannelResult, ProductOptionGroup>>> {
+        const hasPermission = await this.roleService.userHasAnyPermissionsOnChannel(ctx, input.channelId, [
+            Permission.DeleteFacet,
+            Permission.DeleteCatalog,
+        ]);
+        if (!hasPermission) {
+            throw new ForbiddenError();
+        }
+        const defaultChannel = await this.channelService.getDefaultChannel(ctx);
+        if (idsAreEqual(input.channelId, defaultChannel.id)) {
+            throw new UserInputError('error.items-cannot-be-removed-from-default-channel');
+        }
+        const groupsToRemove = await this.connection.getRepository(ctx, ProductOptionGroup).find({
+            where: {
+                id: In(input.groupIds),
+                productId: IsNull(),
+            },
+            relations: ['options'],
+        });
+
+        const results: Array<ErrorResultUnion<RemoveOptionGroupFromChannelResult, ProductOptionGroup>> = [];
+
+        for (const group of groupsToRemove) {
+            let variantCount = 0;
+            if (group.options.length) {
+                const counts = await this.productOptionService.checkOptionUsage(
+                    ctx,
+                    group.options.map(o => o.id),
+                    input.channelId,
+                );
+                variantCount = counts.variantCount;
+
+                const isInUse = !!variantCount;
+                let result: Translated<ProductOptionGroup> | undefined;
+
+                if (!isInUse || input.force) {
+                    await this.channelService.removeFromChannels(ctx, ProductOptionGroup, group.id, [
+                        input.channelId,
+                    ]);
+                    await Promise.all(
+                        group.options.map(o =>
+                            this.channelService.removeFromChannels(ctx, ProductOption, o.id, [
+                                input.channelId,
+                            ]),
+                        ),
+                    );
+                    result = await this.findOne(ctx, group.id);
+                    if (result) {
+                        results.push(result);
+                    }
+                } else {
+                    results.push(new OptionGroupInUseError({ optionGroupCode: group.code, variantCount }));
+                }
+            }
+        }
+
+        return results;
     }
 }

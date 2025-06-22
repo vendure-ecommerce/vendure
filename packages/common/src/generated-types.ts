@@ -262,6 +262,11 @@ export type AssignFacetsToChannelInput = {
   facetIds: Array<Scalars['ID']['input']>;
 };
 
+export type AssignOptionGroupsToChannelInput = {
+  channelId: Scalars['ID']['input'];
+  groupIds: Array<Scalars['ID']['input']>;
+};
+
 export type AssignPaymentMethodsToChannelInput = {
   channelId: Scalars['ID']['input'];
   paymentMethodIds: Array<Scalars['ID']['input']>;
@@ -1687,6 +1692,7 @@ export enum ErrorCode {
   NOTHING_TO_REFUND_ERROR = 'NOTHING_TO_REFUND_ERROR',
   NO_ACTIVE_ORDER_ERROR = 'NO_ACTIVE_ORDER_ERROR',
   NO_CHANGES_SPECIFIED_ERROR = 'NO_CHANGES_SPECIFIED_ERROR',
+  OPTION_GROUP_IN_USE_ERROR = 'OPTION_GROUP_IN_USE_ERROR',
   ORDER_INTERCEPTOR_ERROR = 'ORDER_INTERCEPTOR_ERROR',
   ORDER_LIMIT_ERROR = 'ORDER_LIMIT_ERROR',
   ORDER_MODIFICATION_ERROR = 'ORDER_MODIFICATION_ERROR',
@@ -2763,6 +2769,8 @@ export type Mutation = {
   assignCollectionsToChannel: Array<Collection>;
   /** Assigns Facets to the specified Channel */
   assignFacetsToChannel: Array<Facet>;
+  /** Assigns ProductOptionGroups to the specified Channel */
+  assignOptionGroupsToChannel: Array<ProductOptionGroup>;
   /** Assigns PaymentMethods to the specified Channel */
   assignPaymentMethodsToChannel: Array<PaymentMethod>;
   /** Assigns ProductVariants to the specified Channel */
@@ -2963,6 +2971,8 @@ export type Mutation = {
    * as well as removing any of the group's options from the Product's ProductVariants.
    */
   removeOptionGroupFromProduct: RemoveOptionGroupFromProductResult;
+  /** Removes ProductOptionGroups from the specified Channel */
+  removeOptionGroupsFromChannel: Array<RemoveOptionGroupFromChannelResult>;
   /** Removes PaymentMethods from the specified Channel */
   removePaymentMethodsFromChannel: Array<PaymentMethod>;
   /** Removes ProductVariants from the specified Channel */
@@ -3129,6 +3139,11 @@ export type MutationAssignCollectionsToChannelArgs = {
 
 export type MutationAssignFacetsToChannelArgs = {
   input: AssignFacetsToChannelInput;
+};
+
+
+export type MutationAssignOptionGroupsToChannelArgs = {
+  input: AssignOptionGroupsToChannelInput;
 };
 
 
@@ -3634,6 +3649,11 @@ export type MutationRemoveOptionGroupFromProductArgs = {
 };
 
 
+export type MutationRemoveOptionGroupsFromChannelArgs = {
+  input: RemoveOptionGroupsFromChannelInput;
+};
+
+
 export type MutationRemovePaymentMethodsFromChannelArgs = {
   input: RemovePaymentMethodsFromChannelInput;
 };
@@ -3981,6 +4001,14 @@ export type NumberOperators = {
 export type NumberRange = {
   end: Scalars['Float']['input'];
   start: Scalars['Float']['input'];
+};
+
+export type OptionGroupInUseError = ErrorResult & {
+  __typename?: 'OptionGroupInUseError';
+  errorCode: ErrorCode;
+  message: Scalars['String']['output'];
+  optionGroupCode: Scalars['String']['output'];
+  variantCount: Scalars['Int']['output'];
 };
 
 export type Order = Node & {
@@ -5719,7 +5747,15 @@ export type RemoveFacetsFromChannelInput = {
   force?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type RemoveOptionGroupFromChannelResult = OptionGroupInUseError | ProductOptionGroup;
+
 export type RemoveOptionGroupFromProductResult = Product | ProductOptionInUseError;
+
+export type RemoveOptionGroupsFromChannelInput = {
+  channelId: Scalars['ID']['input'];
+  force?: InputMaybe<Scalars['Boolean']['input']>;
+  groupIds: Array<Scalars['ID']['input']>;
+};
 
 export type RemoveOrderItemsResult = Order | OrderInterceptorError | OrderModificationError;
 

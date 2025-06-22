@@ -1,7 +1,7 @@
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
-import { SoftDeletable } from '../../common/types/common-types';
+import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
@@ -22,7 +22,7 @@ import { ProductOptionGroupTranslation } from './product-option-group-translatio
 @Entity()
 export class ProductOptionGroup
     extends VendureEntity
-    implements Translatable, HasCustomFields, SoftDeletable
+    implements Translatable, HasCustomFields, SoftDeletable, ChannelAware
 {
     constructor(input?: DeepPartial<ProductOptionGroup>) {
         super(input);

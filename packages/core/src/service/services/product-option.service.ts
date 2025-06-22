@@ -234,4 +234,34 @@ export class ProductOptionService {
         }
         return undefined;
     }
+
+    /**
+     * @description
+     * Checks for usage of the given ProductOptions in any Products or Variants, and returns the counts.
+     */
+    async checkOptionUsage(
+        ctx: RequestContext,
+        optionIds: ID[],
+        channelId?: ID,
+    ): Promise<{ variantCount: number }> {
+        const consumingVariantsQb = this.connection
+            .getRepository(ctx, ProductVariant)
+            .createQueryBuilder('variant')
+            .leftJoinAndSelect('variant.options', 'options')
+            .where('options.id IN (:...optionIds)', { optionIds })
+            .andWhere('variant.deletedAt IS NULL');
+
+        if (channelId) {
+            consumingVariantsQb
+                .leftJoin('variant.channels', 'variant_channel')
+                .leftJoin('options.channels', 'channel')
+                .andWhere('variant_channel.id = :channelId')
+                .andWhere('channel.id = :channelId')
+                .setParameter('channelId', channelId);
+        }
+
+        return {
+            variantCount: await consumingVariantsQb.getCount(),
+        };
+    }
 }
