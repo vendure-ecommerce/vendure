@@ -342,7 +342,7 @@ describe('EmailPlugin', () => {
             _languageCode: LanguageCode.en,
         } as any);
 
-        it('formateDate', async () => {
+        it('formatDate', async () => {
             const handler = new EmailEventListener('test-helpers')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
