@@ -400,7 +400,7 @@ export class ProductOptionGroupService {
 
     /**
      * @description
-     * Remove Facets from the specified Channel
+     * Remove ProductOptionGroups from the specified Channel
      */
     async removeGroupsFromChannel(
         ctx: RequestContext,
