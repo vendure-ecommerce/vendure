@@ -203,6 +203,29 @@ describe('EmailPlugin', () => {
             expect(onSend.mock.calls[0][0].body).toContain('this is the test var');
         });
 
+        it('interpolates text', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello')
+                // Testing the order interpolation is its own test, purposefully not using the entity here
+                .setTemplateVars(event => ({ testVar: 'this is the test var', order: { total: 1337 } }));
+
+            await initPluginWithHandlers([handler]);
+
+            await eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+            // Make sure that body actually has HTML which oughta get stripped out
+            expect(onSend.mock.calls[0][0].body).toContain('<html');
+            expect(onSend.mock.calls[0][0].text).not.toContain('<html');
+            expect(onSend.mock.calls[0][0].body).toContain('</body>');
+            expect(onSend.mock.calls[0][0].text).not.toContain('</body>');
+            // Interpolation
+            expect(onSend.mock.calls[0][0].text).toContain('this is the test var');
+            expect(onSend.mock.calls[0][0].text).toContain('1337');
+        });
+
         /**
          * Intended to test the ability for Handlebars to interpolate
          * getters on the Order entity prototype.
