@@ -375,10 +375,7 @@ export class ProductOptionGroupService {
             },
             relations: ['options'],
         });
-        const optionsToAssign = groupsToAssign.reduce(
-            (values, group) => [...values, ...group.options],
-            [] as ProductOption[],
-        );
+        const optionsToAssign = groupsToAssign.flatMap(group => group.options);
 
         await Promise.all<any>([
             ...groupsToAssign.map(async group => {
