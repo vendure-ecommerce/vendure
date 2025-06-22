@@ -1,5 +1,6 @@
 import dateFormat from 'dateformat';
 import Handlebars from 'handlebars';
+import * as jsdom from 'jsdom';
 import mjml2html from 'mjml';
 
 import { InitializedEmailPluginOptions } from '../types';
@@ -23,7 +24,22 @@ export class HandlebarsMjmlGenerator implements EmailGenerator {
         this.registerHelpers();
     }
 
-    generate(from: string, subject: string, template: string, templateVars: any) {
+    private stripHtml(html: string): string {
+        const dom = new jsdom.JSDOM(html);
+        // Remove all <style> and <script> tags to avoid any unwanted content in the plaintext version.
+        dom.window.document.body.querySelectorAll('style, script').forEach(el => el.remove());
+        const textContent = dom.window.document.body.textContent || '';
+        // Nested elements result in a lot of indentation-whitespace, this will look bad in plaintext emails,
+        // so we replace leading whitespace on each line with a newline character to ensure that the text is readable.
+        return textContent.replace(/^\s+/gm, '\n').trim();
+    }
+
+    generate(
+        from: string,
+        subject: string,
+        template: string,
+        templateVars: any,
+    ): ReturnType<EmailGenerator['generate']> {
         const compiledFrom = Handlebars.compile(from, { noEscape: true });
         const compiledSubject = Handlebars.compile(subject);
         const compiledTemplate = Handlebars.compile(template);
@@ -32,11 +48,12 @@ export class HandlebarsMjmlGenerator implements EmailGenerator {
         // This is needed because some Vendure entities use getters on the entity
         // prototype (e.g. Order.total) which may need to be interpolated.
         const templateOptions: RuntimeOptions = { allowProtoPropertiesByDefault: true };
-        const fromResult = compiledFrom(templateVars, { allowProtoPropertiesByDefault: true });
-        const subjectResult = compiledSubject(templateVars, { allowProtoPropertiesByDefault: true });
-        const mjml = compiledTemplate(templateVars, { allowProtoPropertiesByDefault: true });
+        const fromResult = compiledFrom(templateVars, templateOptions);
+        const subjectResult = compiledSubject(templateVars, templateOptions);
+        const mjml = compiledTemplate(templateVars, templateOptions);
         const body = mjml2html(mjml).html;
-        return { from: fromResult, subject: subjectResult, body };
+        const text = this.stripHtml(body);
+        return { from: fromResult, subject: subjectResult, body, text };
     }
 
     private registerHelpers() {

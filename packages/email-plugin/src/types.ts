@@ -290,6 +290,7 @@ export interface EmailDetails<Type extends 'serialized' | 'unserialized' = 'unse
     recipient: string;
     subject: string;
     body: string;
+    text?: string;
     attachments: Array<Type extends 'serialized' ? SerializedAttachment : Attachment>;
     cc?: string;
     bcc?: string;
