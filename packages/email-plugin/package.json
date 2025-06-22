@@ -30,6 +30,7 @@
         "express": "^5.1.0",
         "fs-extra": "^11.2.0",
         "handlebars": "^4.7.8",
+        "jsdom": "^26.1.0",
         "mjml": "^4.14.1",
         "nodemailer": "^6.9.4"
     },
@@ -37,6 +38,7 @@
         "@types/dateformat": "^3.0.1",
         "@types/express": "^5.0.1",
         "@types/fs-extra": "^11.0.4",
+        "@types/jsdom": "^21.1.7",
         "@types/mjml": "^4.7.4",
         "@vendure/common": "3.3.4",
         "@vendure/core": "3.3.4",
