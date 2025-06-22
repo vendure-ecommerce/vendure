@@ -407,7 +407,7 @@ export class ProductOptionGroupService {
         input: RemoveOptionGroupsFromChannelInput,
     ): Promise<Array<ErrorResultUnion<RemoveOptionGroupFromChannelResult, ProductOptionGroup>>> {
         const hasPermission = await this.roleService.userHasAnyPermissionsOnChannel(ctx, input.channelId, [
-            Permission.DeleteFacet,
+            Permission.DeleteProduct,
             Permission.DeleteCatalog,
         ]);
         if (!hasPermission) {
@@ -436,14 +436,16 @@ export class ProductOptionGroupService {
                     input.channelId,
                 );
                 variantCount = counts.variantCount;
+            }
 
-                const isInUse = !!variantCount;
-                let result: Translated<ProductOptionGroup> | undefined;
+            const isInUse = !!variantCount;
+            let result: Translated<ProductOptionGroup> | undefined;
 
-                if (!isInUse || input.force) {
-                    await this.channelService.removeFromChannels(ctx, ProductOptionGroup, group.id, [
-                        input.channelId,
-                    ]);
+            if (!isInUse || input.force) {
+                await this.channelService.removeFromChannels(ctx, ProductOptionGroup, group.id, [
+                    input.channelId,
+                ]);
+                if (group.options.length) {
                     await Promise.all(
                         group.options.map(o =>
                             this.channelService.removeFromChannels(ctx, ProductOption, o.id, [
@@ -451,13 +453,13 @@ export class ProductOptionGroupService {
                             ]),
                         ),
                     );
-                    result = await this.findOne(ctx, group.id);
-                    if (result) {
-                        results.push(result);
-                    }
-                } else {
-                    results.push(new OptionGroupInUseError({ optionGroupCode: group.code, variantCount }));
                 }
+                result = await this.findOne(ctx, group.id);
+                if (result) {
+                    results.push(result);
+                }
+            } else {
+                results.push(new OptionGroupInUseError({ optionGroupCode: group.code, variantCount }));
             }
         }
 
