@@ -63,10 +63,13 @@ async function addApiExtension(
 
     // In non-interactive mode, we need all required values upfront
     if (options?.isNonInteractive) {
-        if (!options?.queryName && !options?.mutationName) {
+        const hasValidQueryName = options?.queryName && options.queryName.trim() !== '';
+        const hasValidMutationName = options?.mutationName && options.mutationName.trim() !== '';
+
+        if (!hasValidQueryName && !hasValidMutationName) {
             throw new Error(
-                'At least one of queryName or mutationName must be specified in non-interactive mode.\n' +
-                    'Usage: npx vendure add -a <PluginName> --queryName <n> --mutationName <n>',
+                'At least one of queryName or mutationName must be specified as a non-empty string in non-interactive mode.\n' +
+                    'Usage: npx vendure add -a <PluginName> --queryName <name> --mutationName <name>',
             );
         }
     }
@@ -122,9 +125,12 @@ async function addApiExtension(
     let mutationName = '';
     if (!serviceEntityRef) {
         if (options?.isNonInteractive) {
-            // Use provided values - we already validated at least one exists
-            queryName = options?.queryName || '';
-            mutationName = options?.mutationName || '';
+            // Use provided values - we already validated at least one exists and is non-empty
+            queryName = options?.queryName && options.queryName.trim() !== '' ? options.queryName.trim() : '';
+            mutationName =
+                options?.mutationName && options.mutationName.trim() !== ''
+                    ? options.mutationName.trim()
+                    : '';
         } else {
             const queryNameResult =
                 options?.queryName ??
