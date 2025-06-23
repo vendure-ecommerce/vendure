@@ -32,6 +32,14 @@ export interface AddOperationOptions {
     mutationName?: string;
     /** Name of the service to use (used with jobQueue) */
     selectedService?: string;
+    /** Plugin name for entity/service commands */
+    pluginName?: string;
+    /** Add custom fields support to entity */
+    customFields?: boolean;
+    /** Make entity translatable */
+    translatable?: boolean;
+    /** Service type: basic or entity */
+    type?: string;
 }
 
 export interface AddOperationResult {
@@ -63,24 +71,53 @@ export async function performAddOperation(options: AddOperationOptions): Promise
         if (options.entity) {
             // Validate that an entity name was provided
             if (typeof options.entity !== 'string' || !options.entity.trim()) {
-                throw new Error('Entity name is required. Usage: vendure add -e <entity-name>');
+                throw new Error(
+                    'Entity name is required. Usage: vendure add -e <entity-name> --plugin <plugin-name>',
+                );
             }
-            // We pass the class name; the command will prompt for plugin etc. if needed.
-            await addEntityCommand.run({ className: options.entity });
+            // Validate that a plugin name was provided for non-interactive mode
+            if (!options.pluginName || typeof options.pluginName !== 'string' || !options.pluginName.trim()) {
+                throw new Error(
+                    'Plugin name is required when running in non-interactive mode. Usage: vendure add -e <entity-name> --plugin <plugin-name>',
+                );
+            }
+            // Pass the class name and plugin name with additional options
+            await addEntityCommand.run({
+                className: options.entity,
+                isNonInteractive: true,
+                config: options.config,
+                pluginName: options.pluginName,
+                customFields: options.customFields,
+                translatable: options.translatable,
+            });
             return {
                 success: true,
-                message: `Entity "${options.entity}" added successfully`,
+                message: `Entity "${options.entity}" added successfully to plugin "${options.pluginName}"`,
             };
         }
         if (options.service) {
             // Validate that a service name was provided
             if (typeof options.service !== 'string' || !options.service.trim()) {
-                throw new Error('Service name is required. Usage: vendure add -s <service-name>');
+                throw new Error(
+                    'Service name is required. Usage: vendure add -s <service-name> --plugin <plugin-name>',
+                );
             }
-            await addServiceCommand.run({ serviceName: options.service });
+            // Validate that a plugin name was provided for non-interactive mode
+            if (!options.pluginName || typeof options.pluginName !== 'string' || !options.pluginName.trim()) {
+                throw new Error(
+                    'Plugin name is required when running in non-interactive mode. Usage: vendure add -s <service-name> --plugin <plugin-name>',
+                );
+            }
+            await addServiceCommand.run({
+                serviceName: options.service,
+                isNonInteractive: true,
+                config: options.config,
+                pluginName: options.pluginName,
+                serviceType: options.type || 'basic',
+            });
             return {
                 success: true,
-                message: `Service "${options.service}" added successfully`,
+                message: `Service "${options.service}" added successfully to plugin "${options.pluginName}"`,
             };
         }
         if (options.jobQueue) {

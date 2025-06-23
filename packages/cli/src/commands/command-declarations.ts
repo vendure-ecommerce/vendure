@@ -12,21 +12,50 @@ export const cliCommands: CliCommandDefinition[] = [
             },
             {
                 short: '-p',
-                long: '--plugin <name>',
+                long: '--plugin <n>',
                 description: 'Create a new plugin with the specified name',
                 required: false,
             },
             {
                 short: '-e',
                 long: '--entity <name>',
-                description: 'Add a new entity with the specified class name (requires plugin context)',
+                description: 'Add a new entity with the specified class name',
                 required: false,
+                subOptions: [
+                    {
+                        long: '--plugin <name>',
+                        description: 'Name of the plugin to add the entity to (required with -e)',
+                        required: false,
+                    },
+                    {
+                        long: '--custom-fields',
+                        description: 'Add custom fields support to the entity',
+                        required: false,
+                    },
+                    {
+                        long: '--translatable',
+                        description: 'Make the entity translatable',
+                        required: false,
+                    },
+                ],
             },
             {
                 short: '-s',
                 long: '--service <name>',
-                description: 'Add a new service with the specified class name (requires plugin context)',
+                description: 'Add a new service with the specified class name',
                 required: false,
+                subOptions: [
+                    {
+                        long: '--plugin <name>',
+                        description: 'Name of the plugin to add the service to (required with -s)',
+                        required: false,
+                    },
+                    {
+                        long: '--type <type>',
+                        description: 'Type of service: basic or entity (default: basic)',
+                        required: false,
+                    },
+                ],
             },
             {
                 short: '-j',

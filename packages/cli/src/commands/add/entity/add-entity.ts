@@ -8,7 +8,7 @@ import { CliCommand, CliCommandReturnVal } from '../../../shared/cli-command';
 import { EntityRef } from '../../../shared/entity-ref';
 import { analyzeProject, selectPlugin } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
-import { createFile } from '../../../utilities/ast-utils';
+import { createFile, getPluginClasses } from '../../../utilities/ast-utils';
 import { pauseForPromptDisplay, withInteractiveTimeout } from '../../../utilities/utils';
 
 import { addEntityToPlugin } from './codemods/add-entity-to-plugin/add-entity-to-plugin';
@@ -26,6 +26,9 @@ export interface AddEntityOptions {
     };
     config?: string;
     isNonInteractive?: boolean;
+    pluginName?: string;
+    customFields?: boolean;
+    translatable?: boolean;
 }
 
 export const addEntityCommand = new CliCommand({
@@ -46,13 +49,28 @@ async function addEntity(
     });
 
     // In non-interactive mode with no plugin specified, we cannot proceed
-    if (options?.className && !providedVendurePlugin) {
+    if (options?.className && !providedVendurePlugin && options?.isNonInteractive) {
         throw new Error(
             'Plugin must be specified when running in non-interactive mode. Use selectPlugin in interactive mode.',
         );
     }
 
-    const vendurePlugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
+    let vendurePlugin = providedVendurePlugin;
+
+    // If pluginName is provided (from CLI), find the plugin by name
+    if (options?.pluginName && !vendurePlugin) {
+        const pluginClasses = getPluginClasses(project);
+        const pluginClass = pluginClasses.find((p: ClassDeclaration) => p.getName() === options.pluginName);
+        if (!pluginClass) {
+            const availablePlugins = pluginClasses.map((p: ClassDeclaration) => p.getName()).join(', ');
+            throw new Error(
+                `Plugin "${options.pluginName}" not found. Available plugins: ${availablePlugins}`,
+            );
+        }
+        vendurePlugin = new VendurePluginRef(pluginClass);
+    }
+
+    vendurePlugin = vendurePlugin ?? (await selectPlugin(project, cancelledMessage));
     const modifiedSourceFiles: SourceFile[] = [];
 
     const customEntityName = options?.className ?? (await getCustomEntityName(cancelledMessage));
@@ -92,6 +110,15 @@ async function getFeatures(options?: Partial<AddEntityOptions>): Promise<AddEnti
     if (options?.features) {
         return options?.features;
     }
+
+    // Handle non-interactive mode with explicit feature flags
+    if (options?.isNonInteractive) {
+        return {
+            customFields: options?.customFields ?? false,
+            translatable: options?.translatable ?? false,
+        };
+    }
+
     // Default features for non-interactive mode when not specified
     if (options?.className && !options?.features) {
         return {

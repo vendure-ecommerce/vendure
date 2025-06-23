@@ -13,6 +13,7 @@ import {
     addImportsToFile,
     createFile,
     customizeCreateUpdateInputInterfaces,
+    getPluginClasses,
 } from '../../../utilities/ast-utils';
 import { pauseForPromptDisplay, withInteractiveTimeout } from '../../../utilities/utils';
 import { addEntityCommand } from '../entity/add-entity';
@@ -26,6 +27,8 @@ interface AddServiceOptions {
     entityRef?: EntityRef;
     config?: string;
     isNonInteractive?: boolean;
+    pluginName?: string;
+    serviceType?: string;
 }
 
 export const addServiceCommand = new CliCommand({
@@ -46,17 +49,35 @@ async function addService(
     });
 
     // In non-interactive mode with no plugin specified, we cannot proceed
-    const isNonInteractive = providedOptions?.serviceName !== undefined;
-    if (isNonInteractive && !providedVendurePlugin) {
+    const isNonInteractive = providedOptions?.serviceName !== undefined || providedOptions?.isNonInteractive;
+    if (isNonInteractive && !providedVendurePlugin && !providedOptions?.pluginName) {
         throw new Error(
             'Plugin must be specified when running in non-interactive mode. Use selectPlugin in interactive mode.',
         );
     }
 
-    const vendurePlugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
+    let vendurePlugin = providedVendurePlugin;
+
+    // If pluginName is provided (from CLI), find the plugin by name
+    if (providedOptions?.pluginName && !vendurePlugin) {
+        const pluginClasses = getPluginClasses(project);
+        const pluginClass = pluginClasses.find(
+            (p: ClassDeclaration) => p.getName() === providedOptions.pluginName,
+        );
+        if (!pluginClass) {
+            const availablePlugins = pluginClasses.map((p: ClassDeclaration) => p.getName()).join(', ');
+            throw new Error(
+                `Plugin "${providedOptions.pluginName}" not found. Available plugins: ${availablePlugins}`,
+            );
+        }
+        vendurePlugin = new VendurePluginRef(pluginClass);
+    }
+
+    vendurePlugin = vendurePlugin ?? (await selectPlugin(project, cancelledMessage));
     const modifiedSourceFiles: SourceFile[] = [];
     const type =
         providedOptions?.type ??
+        (providedOptions?.serviceType as 'basic' | 'entity') ??
         (isNonInteractive
             ? 'basic'
             : await withInteractiveTimeout(async () => {
@@ -74,7 +95,7 @@ async function addService(
         process.exit(0);
     }
     const options: AddServiceOptions = {
-        type: type as AddServiceOptions['type'],
+        type,
         serviceName: providedOptions?.serviceName ?? 'MyService',
         config: providedOptions?.config,
     };
