@@ -7,7 +7,7 @@ This document describes the CLI command structure that supports both interactive
 The Vendure CLI supports two modes of operation:
 
 - **Interactive Mode**: Provides guided prompts and menus for easy use during development
-- **Non-Interactive Mode**: Allows direct command execution with flags, perfect for automation, CI/CD, and AI agents
+- **Non-Interactive Mode**: Allows direct command execution with arguments and options, perfect for scripting, CI/CD, and AI agents
 
 The CLI uses a structured approach where all commands are defined in an array of `CliCommandDefinition` objects, making it easy to add, remove, and modify commands.
 
