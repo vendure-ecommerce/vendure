@@ -114,6 +114,14 @@ export type FacetedFilterConfig<T extends TypedDocumentNode<any, any>> = {
     [Key in AllItemFieldKeys<T>]?: FacetedFilter;
 };
 
+export type ListQueryFields<T extends TypedDocumentNode<any, any>> = {
+    [Key in keyof ResultOf<T>]: ResultOf<T>[Key] extends { items: infer U }
+        ? U extends any[]
+            ? U[number]
+            : never
+        : never;
+}[keyof ResultOf<T>];
+
 export type ListQueryShape =
     | {
           [key: string]: {
@@ -185,7 +193,7 @@ export type PaginatedListRefresherRegisterFn = (refreshFn: () => void) => void;
 
 export interface PaginatedListDataTableProps<
     T extends TypedDocumentNode<U, V>,
-    U extends any,
+    U extends ListQueryShape,
     V extends ListQueryOptionsShape,
     AC extends AdditionalColumns<T>,
 > {
@@ -195,7 +203,7 @@ export interface PaginatedListDataTableProps<
     transformVariables?: (variables: V) => V;
     customizeColumns?: CustomizeColumnConfig<T>;
     additionalColumns?: AC;
-    defaultColumnOrder?: (AllItemFieldKeys<T> | AC[number]['id'])[];
+    defaultColumnOrder?: (keyof ListQueryFields<T> | keyof AC | CustomFieldKeysOfItem<ListQueryFields<T>>)[];
     defaultVisibility?: Partial<Record<AllItemFieldKeys<T>, boolean>>;
     onSearchTermChange?: (searchTerm: string) => NonNullable<V['options']>['filter'];
     page: number;
@@ -407,10 +415,10 @@ export function PaginatedListDataTable<
             // appear as the first columns in sequence, and leave the remainder in the
             // existing order
             const orderedColumns = finalColumns
-                .filter(column => column.id && defaultColumnOrder.includes(column.id))
-                .sort((a, b) => defaultColumnOrder.indexOf(a.id) - defaultColumnOrder.indexOf(b.id));
+                .filter(column => column.id && defaultColumnOrder.includes(column.id as any))
+                .sort((a, b) => defaultColumnOrder.indexOf(a.id as any) - defaultColumnOrder.indexOf(b.id as any));
             const remainingColumns = finalColumns.filter(
-                column => !column.id || !defaultColumnOrder.includes(column.id),
+                column => !column.id || !defaultColumnOrder.includes(column.id as any),
             );
             finalColumns = [...orderedColumns, ...remainingColumns];
         }

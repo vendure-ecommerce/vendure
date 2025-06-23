@@ -26,7 +26,7 @@ export function viteConfigPlugin({ packageRoot }: { packageRoot: string }): Plug
                     ? outDirIsAbsolute
                         ? (buildConfig.outDir as string)
                         : path.resolve(process.cwd(), buildConfig.outDir as string)
-                    : path.resolve(process.cwd(), 'dist/vendure-dashboard');
+                    : path.resolve(process.cwd(), 'dist');
 
                 config.build = {
                     ...buildConfig,

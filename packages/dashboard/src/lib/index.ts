@@ -67,6 +67,7 @@ export * from './components/shared/rich-text-editor.js';
 export * from './components/shared/role-code-label.js';
 export * from './components/shared/role-selector.js';
 export * from './components/shared/seller-selector.js';
+export * from './components/shared/stock-level-label.js';
 export * from './components/shared/tax-category-selector.js';
 export * from './components/shared/translatable-form-field.js';
 export * from './components/shared/vendure-image.js';

@@ -5,6 +5,7 @@ import {
     FacetedFilterConfig,
     ListQueryOptionsShape,
     ListQueryShape,
+    ListQueryFields,
     PaginatedListDataTable,
     RowAction,
 } from '@/components/shared/paginated-list-data-table.js';
@@ -13,7 +14,6 @@ import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRoute, AnyRouter, useNavigate } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
 import { TableOptions } from '@tanstack/table-core';
-import { ResultOf } from 'gql.tada';
 
 import { addCustomFields } from '../document-introspection/add-custom-fields.js';
 import {
@@ -23,14 +23,6 @@ import {
     PageLayout,
     PageTitle,
 } from '../layout-engine/page-layout.js';
-
-type ListQueryFields<T extends TypedDocumentNode<any, any>> = {
-    [Key in keyof ResultOf<T>]: ResultOf<T>[Key] extends { items: infer U }
-        ? U extends any[]
-            ? U[number]
-            : never
-        : never;
-}[keyof ResultOf<T>];
 
 /**
  * @description

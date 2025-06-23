@@ -1,10 +1,18 @@
 import { VendureConfig } from '@vendure/core';
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { register } from 'ts-node';
 
 import { VendureConfigRef } from '../../shared/vendure-config-ref';
 import { selectTsConfigFile } from '../../utilities/ast-utils';
 import { isRunningInTsNode } from '../../utilities/utils';
+
+function stripJsonComments(jsonString: string): string {
+    return jsonString
+        .replace(/\/\*[\s\S]+?\*\//g, '')
+        .replace(/\/\/.*$/gm, '')
+        .replace(/^\s*$[\r\n]/gm, '');
+}
 
 export async function loadVendureConfigFile(
     vendureConfig: VendureConfigRef,
@@ -19,12 +27,31 @@ export async function loadVendureConfigFile(
             const tsConfigFile = await selectTsConfigFile();
             tsConfigPath = path.join(process.cwd(), tsConfigFile);
         }
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const compilerOptions = require(tsConfigPath).compilerOptions;
+
+        let tsConfigFileContent: string;
+        let tsConfigJson: any;
+
+        try {
+            tsConfigFileContent = readFileSync(tsConfigPath, 'utf-8');
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            throw new Error(`Failed to read TypeScript config file at ${tsConfigPath}: ${errorMessage}`);
+        }
+
+        try {
+            tsConfigJson = JSON.parse(stripJsonComments(tsConfigFileContent));
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            throw new Error(`Failed to parse TypeScript config file at ${tsConfigPath}: ${errorMessage}`);
+        }
+
+        const compilerOptions = tsConfigJson.compilerOptions;
+
         register({
             compilerOptions: { ...compilerOptions, moduleResolution: 'NodeNext', module: 'NodeNext' },
             transpileOnly: true,
         });
+
         if (compilerOptions.paths) {
             // eslint-disable-next-line @typescript-eslint/no-var-requires
             const tsConfigPaths = require('tsconfig-paths');

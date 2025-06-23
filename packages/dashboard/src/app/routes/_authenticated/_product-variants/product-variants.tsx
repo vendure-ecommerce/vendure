@@ -1,6 +1,6 @@
 import { Money } from '@/components/data-display/money.js';
 import { DetailPageButton } from '@/components/shared/detail-page-button.js';
-import { PageActionBar } from '@/framework/layout-engine/page-layout.js';
+import { StockLevelLabel } from '@/components/shared/stock-level-label.js';
 import { ListPage } from '@/framework/page/list-page.js';
 import { useLocalFormat } from '@/hooks/use-local-format.js';
 import { Trans } from '@/lib/trans.js';
@@ -23,48 +23,19 @@ function ProductListPage() {
             customizeColumns={{
                 name: {
                     header: 'Product Name',
-                    cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
+                    cell: ({ row: { original } }) => <DetailPageButton id={original.id} label={original.name} />,
                 },
                 currencyCode: {
-                    cell: ({ cell, row }) => {
-                        const value = cell.getValue();
-                        return formatCurrencyName(value as string, 'full');
-                    },
+                    cell: ({ row: { original } }) => formatCurrencyName(original.currencyCode, 'full'),
                 },
                 price: {
-                    cell: ({ cell, row }) => {
-                        const value = cell.getValue();
-                        const currencyCode = row.original.currencyCode;
-                        if (typeof value === 'number') {
-                            return <Money value={value} currency={currencyCode} />;
-                        }
-                        return value;
-                    },
+                    cell: ({ row: { original } }) => <Money value={original.price} currency={original.currencyCode} />,
                 },
                 priceWithTax: {
-                    cell: ({ cell, row }) => {
-                        const value = cell.getValue();
-                        const currencyCode = row.original.currencyCode;
-                        if (typeof value === 'number') {
-                            return <Money value={value} currency={currencyCode} />;
-                        }
-                        return value;
-                    },
+                    cell: ({ row: { original } }) => <Money value={original.priceWithTax} currency={original.currencyCode} />,
                 },
                 stockLevels: {
-                    cell: ({ cell, row }) => {
-                        const value = cell.getValue();
-                        if (Array.isArray(value)) {
-                            const totalOnHand = value.reduce((acc, curr) => acc + curr.stockOnHand, 0);
-                            const totalAllocated = value.reduce((acc, curr) => acc + curr.stockAllocated, 0);
-                            return (
-                                <span>
-                                    {totalOnHand} / {totalAllocated}
-                                </span>
-                            );
-                        }
-                        return value;
-                    },
+                    cell: ({ row: { original } }) => <StockLevelLabel stockLevels={original.stockLevels} />,
                 },
             }}
             onSearchTermChange={searchTerm => {
