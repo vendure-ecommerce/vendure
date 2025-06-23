@@ -70,6 +70,40 @@ function CustomFieldItem({ fieldDef, control, fieldName, getTranslation }: Custo
     const hasCustomFormComponent = fieldDef.ui && fieldDef.ui.component;
     const isLocaleField = fieldDef.type === 'localeString' || fieldDef.type === 'localeText';
 
+    // For locale fields, always use TranslatableFormField regardless of custom components
+    if (isLocaleField) {
+        return (
+            <TranslatableFormField
+                control={control}
+                name={fieldName}
+                render={({ field, ...props }) => (
+                    <FormItem>
+                        <FormLabel>{getTranslation(fieldDef.label) ?? field.name}</FormLabel>
+                        <FormControl>
+                            {hasCustomFormComponent ? (
+                                <CustomFormComponent
+                                    fieldDef={fieldDef}
+                                    fieldProps={{
+                                        ...props,
+                                        field: {
+                                            ...field,
+                                            disabled: fieldDef.readonly ?? false,
+                                        },
+                                    }}
+                                />
+                            ) : (
+                                <FormInputForType fieldDef={fieldDef} field={field} />
+                            )}
+                        </FormControl>
+                        <FormDescription>{getTranslation(fieldDef.description)}</FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+        );
+    }
+
+    // For non-locale fields with custom components
     if (hasCustomFormComponent) {
         return (
             <FormField
@@ -97,23 +131,7 @@ function CustomFieldItem({ fieldDef, control, fieldName, getTranslation }: Custo
         );
     }
 
-    if (isLocaleField) {
-        return (
-            <TranslatableFormField
-                control={control}
-                name={fieldName}
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>{getTranslation(fieldDef.label) ?? field.name}</FormLabel>
-                        <FormControl>
-                            <FormInputForType fieldDef={fieldDef} field={field} />
-                        </FormControl>
-                    </FormItem>
-                )}
-            />
-        );
-    }
-
+    // For regular fields without custom components
     return (
         <FormField
             control={control}
