@@ -17,11 +17,12 @@ import {
     useReactTable,
     VisibilityState,
 } from '@tanstack/react-table';
-import { TableOptions } from '@tanstack/table-core';
+import { RowSelectionState, TableOptions } from '@tanstack/table-core';
 import React, { Suspense, useEffect } from 'react';
 import { AddFilterMenu } from './add-filter-menu.js';
 import { DataTableFacetedFilter, DataTableFacetedFilterOption } from './data-table-faceted-filter.js';
 import { DataTableFilterBadge } from './data-table-filter-badge.js';
+import { DataTableBulkActions } from './data-table-bulk-actions.js';
 import { useChannel } from '@/hooks/use-channel.js';
 import { RefreshButton } from '@/components/data-table/refresh-button.js';
 
@@ -85,6 +86,9 @@ export function DataTable<TData>({
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>(
         defaultColumnVisibility ?? {},
     );
+    const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
+
+    console.log('rowSelection', rowSelection);
 
     useEffect(() => {
         // If the defaultColumnVisibility changes externally (e.g. the user reset the table settings),
@@ -98,6 +102,7 @@ export function DataTable<TData>({
     let tableOptions: TableOptions<TData> = {
         data,
         columns,
+        getRowId: (row) => (row as { id: string }).id,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         manualPagination: true,
@@ -108,11 +113,13 @@ export function DataTable<TData>({
         onSortingChange: setSorting,
         onColumnVisibilityChange: setColumnVisibility,
         onColumnFiltersChange: setColumnFilters,
+        onRowSelectionChange: setRowSelection,
         state: {
             pagination,
             sorting,
             columnVisibility,
             columnFilters,
+            rowSelection,
         },
     };
 
@@ -185,6 +192,10 @@ export function DataTable<TData>({
                     {onRefresh && <RefreshButton onRefresh={onRefresh} />}
                 </div>
             </div>
+            <DataTableBulkActions 
+                table={table} 
+                selectedRows={Object.keys(rowSelection).length} 
+            />
             <div className="rounded-md border my-2">
                 <Table>
                     <TableHeader>

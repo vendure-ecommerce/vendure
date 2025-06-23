@@ -11,12 +11,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
 
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
-import {
     AlertDialog,
     AlertDialogAction,
     AlertDialogCancel,
@@ -27,6 +21,12 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog.js';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu.js';
 import { DisplayComponent } from '@/framework/component-registry/dynamic-component.js';
 import { ResultOf } from '@/graphql/graphql.js';
 import { Trans, useLingui } from '@/lib/trans.js';
@@ -44,6 +44,7 @@ import { EllipsisIcon, TrashIcon } from 'lucide-react';
 import React, { useMemo } from 'react';
 import { toast } from 'sonner';
 import { Button } from '../ui/button.js';
+import { Checkbox } from '../ui/checkbox.js';
 
 // Type that identifies a paginated list structure (has items array and totalItems)
 type IsPaginatedList<T> = T extends { items: any[]; totalItems: number } ? true : false;
@@ -427,7 +428,10 @@ export function PaginatedListDataTable<
             // existing order
             const orderedColumns = finalColumns
                 .filter(column => column.id && defaultColumnOrder.includes(column.id as any))
-                .sort((a, b) => defaultColumnOrder.indexOf(a.id as any) - defaultColumnOrder.indexOf(b.id as any));
+                .sort(
+                    (a, b) =>
+                        defaultColumnOrder.indexOf(a.id as any) - defaultColumnOrder.indexOf(b.id as any),
+                );
             const remainingColumns = finalColumns.filter(
                 column => !column.id || !defaultColumnOrder.includes(column.id as any),
             );
@@ -440,6 +444,31 @@ export function PaginatedListDataTable<
                 finalColumns.push(rowActionColumn);
             }
         }
+
+        // Add the row selection column
+        finalColumns.unshift({
+            id: 'selection',
+            accessorKey: 'selection',
+            header: ({ table }) => (
+                <Checkbox
+                    className="mx-1"
+                    checked={table.getIsAllRowsSelected()}
+                    onCheckedChange={checked =>
+                        table.toggleAllRowsSelected(checked === 'indeterminate' ? undefined : checked)
+                    }
+                />
+            ),
+            enableColumnFilter: false,
+            cell: ({ row }) => {
+                return (
+                    <Checkbox
+                        className="mx-1"
+                        checked={row.getIsSelected()}
+                        onCheckedChange={row.getToggleSelectedHandler()}
+                    />
+                );
+            },
+        });
 
         return { columns: finalColumns, customFieldColumnNames };
     }, [fields, customizeColumns, rowActions]);
@@ -536,7 +565,7 @@ function DeleteMutationRowAction({
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                <DropdownMenuItem onSelect={e => e.preventDefault()}>
                     <div className="flex items-center gap-2 text-destructive">
                         <TrashIcon className="w-4 h-4 text-destructive" />
                         <Trans>Delete</Trans>
@@ -549,7 +578,9 @@ function DeleteMutationRowAction({
                         <Trans>Confirm deletion</Trans>
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        <Trans>Are you sure you want to delete this item? This action cannot be undone.</Trans>
+                        <Trans>
+                            Are you sure you want to delete this item? This action cannot be undone.
+                        </Trans>
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
