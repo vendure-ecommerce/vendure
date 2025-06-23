@@ -65,11 +65,17 @@ npx vendure add
 # Create a new plugin
 npx vendure add -p MyPlugin
 
-# Add an entity (requires plugin context)
-npx vendure add -e MyEntity
+# Add an entity to a plugin
+npx vendure add -e MyEntity --plugin MyPlugin
 
-# Add a service (requires plugin context)
-npx vendure add -s MyService
+# Add an entity with features
+npx vendure add -e MyEntity --plugin MyPlugin --custom-fields --translatable
+
+# Add a service to a plugin
+npx vendure add -s MyService --plugin MyPlugin
+
+# Add a service with specific type
+npx vendure add -s MyService --plugin MyPlugin --type entity
 
 # Add job queue support to a plugin
 npx vendure add -j MyPlugin --name my-job --selected-service MyService
@@ -126,7 +132,7 @@ npx vendure migrate -g my-migration -o ./custom/migrations
         {
             short: '-e',
             long: '--entity <name>',
-            description: 'Add a new entity with the specified class name',
+            description: 'Add a new entity to a plugin',
             required: false,
         },
         // ... more options
@@ -159,12 +165,48 @@ npx vendure migrate -g my-migration -o ./custom/migrations
             required: false,
         },
     ],
+},
+{
+    short: '-e',
+    long: '--entity <name>',
+    description: 'Add a new entity with the specified class name',
+    required: false,
+    subOptions: [
+        {
+            long: '--plugin <name>',
+            description: 'Name of the plugin to add the entity to (required with -e)',
+            required: false,
+        },
+        {
+            long: '--custom-fields',
+            description: 'Add custom fields support to the entity',
+            required: false,
+        },
+        {
+            long: '--translatable',
+            description: 'Make the entity translatable',
+            required: false,
+        },
+    ],
 }
 ```
 
 ### Non-Interactive Mode Validation
 
 Commands implement validation for non-interactive mode to ensure all required parameters are provided.
+
+### Entity and Service Commands
+
+Entity and service commands now support non-interactive mode with the `--plugin` parameter to specify the target plugin. Both commands support additional options for customization:
+
+- Entity commands support `--custom-fields` and `--translatable` flags
+- Service commands support `--type` parameter to specify service type (basic or entity)
+
+**Example Error Handling:**
+```bash
+$ npx vendure add -e MyEntity --plugin NonExistentPlugin
+Error: Plugin "NonExistentPlugin" not found. Available plugins: MyActualPlugin, AnotherPlugin
+```
 
 ## Interactive Mode Features
 
