@@ -67,6 +67,14 @@ import { ReviewState } from './types';
                 ui: { component: 'textarea' },
             },
         ];
+        config.customFields.ProductReview.push({
+            name: 'verifiedReviewerName',
+            label: [{ languageCode: LanguageCode.en, value: 'Verified reviewer name' }],
+            public: true,
+            nullable: true,
+            type: 'string',
+            readonly: true,
+        });
         return config;
     },
     dashboard: './dashboard/index.tsx',

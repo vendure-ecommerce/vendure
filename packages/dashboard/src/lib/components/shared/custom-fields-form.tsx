@@ -81,11 +81,16 @@ function CustomFieldItem({ fieldDef, control, fieldName, getTranslation }: Custo
                         getTranslation={getTranslation}
                         fieldName={fieldProps.field.name}
                     >
-                        {fieldDef.readonly ? (
-                            fieldProps.field.value
-                        ) : (
-                            <CustomFormComponent fieldDef={fieldDef} fieldProps={fieldProps} />
-                        )}
+                        <CustomFormComponent
+                            fieldDef={fieldDef}
+                            fieldProps={{
+                                ...fieldProps,
+                                field: {
+                                    ...fieldProps.field,
+                                    disabled: fieldDef.readonly ?? false,
+                                },
+                            }}
+                        />
                     </CustomFieldFormItem>
                 )}
             />
@@ -101,11 +106,7 @@ function CustomFieldItem({ fieldDef, control, fieldName, getTranslation }: Custo
                     <FormItem>
                         <FormLabel>{getTranslation(fieldDef.label) ?? field.name}</FormLabel>
                         <FormControl>
-                            {fieldDef.readonly ? (
-                                field.value
-                            ) : (
-                                <FormInputForType fieldDef={fieldDef} field={field} />
-                            )}
+                            <FormInputForType fieldDef={fieldDef} field={field} />
                         </FormControl>
                     </FormItem>
                 )}
@@ -123,7 +124,7 @@ function CustomFieldItem({ fieldDef, control, fieldName, getTranslation }: Custo
                     getTranslation={getTranslation}
                     fieldName={field.name}
                 >
-                    {fieldDef.readonly ? field.value : <FormInputForType fieldDef={fieldDef} field={field} />}
+                    <FormInputForType fieldDef={fieldDef} field={field} />
                 </CustomFieldFormItem>
             )}
         />
@@ -157,15 +158,24 @@ function FormInputForType({
     fieldDef: CustomFieldConfig;
     field: ControllerRenderProps<any, any>;
 }) {
+    const isReadonly = fieldDef.readonly ?? false;
+
     switch (fieldDef.type as CustomFieldType) {
         case 'string':
-            return <Input {...field} />;
+            return <Input {...field} disabled={isReadonly} />;
         case 'float':
         case 'int':
-            return <Input type="number" {...field} onChange={e => field.onChange(e.target.valueAsNumber)} />;
+            return (
+                <Input
+                    type="number"
+                    {...field}
+                    disabled={isReadonly}
+                    onChange={e => field.onChange(e.target.valueAsNumber)}
+                />
+            );
         case 'boolean':
-            return <Switch checked={field.value} onCheckedChange={field.onChange} />;
+            return <Switch checked={field.value} onCheckedChange={field.onChange} disabled={isReadonly} />;
         default:
-            return <Input {...field} />;
+            return <Input {...field} disabled={isReadonly} />;
     }
 }
