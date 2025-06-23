@@ -41,7 +41,7 @@ yarn add -D @vendure/cli
 The Vendure CLI supports both **interactive** and **non-interactive** modes:
 
 - **Interactive mode**: Provides guided prompts and menus for easy use during development
-- **Non-interactive mode**: Allows direct command execution with flags, perfect for automation, CI/CD, and AI agents
+- **Non-interactive mode**: Allows direct command execution with arguments and options, perfect for automation, CI/CD, and AI agents
 
 ## The Add Command
 
@@ -77,7 +77,7 @@ analyze your project source code to deeply understand and correctly update your 
 
 ### Non-Interactive Mode
 
-For automation or when you know exactly what you need to add, you can use the non-interactive mode with specific flags:
+For automation or when you know exactly what you need to add, you can use the non-interactive mode with specific arguments and options:
 
 <Tabs groupId="package-manager">
 <TabItem value="npm" label="npm" default>
@@ -217,7 +217,7 @@ yarn vendure migrate
 
 ### Non-Interactive Mode
 
-For migration operations, use specific flags:
+For migration operations, use specific arguments and options:
 
 <Tabs groupId="package-manager">
 <TabItem value="npm" label="npm" default>
