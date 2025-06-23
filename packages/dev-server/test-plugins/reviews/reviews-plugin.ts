@@ -64,6 +64,7 @@ import { ReviewState } from './types';
                 label: [{ languageCode: LanguageCode.en, value: 'Reviewer name' }],
                 public: true,
                 nullable: true,
+                ui: { component: 'textarea' },
             },
         ];
         return config;

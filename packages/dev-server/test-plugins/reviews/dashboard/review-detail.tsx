@@ -69,6 +69,9 @@ export const reviewDetail: DashboardRouteDefinition = {
                         authorLocation: review.authorLocation,
                         upvotes: review.upvotes,
                         downvotes: review.downvotes,
+                        customFields: {
+                            reviewerName: review.customFields?.reviewerName ?? '',
+                        },
                     };
                 }}
             />
