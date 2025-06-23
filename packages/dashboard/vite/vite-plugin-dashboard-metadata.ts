@@ -44,7 +44,7 @@ export function dashboardMetadataPlugin(options: { rootDir: string }): Plugin {
                     export async function runDashboardExtensions() {
                         ${pluginsWithExtensions
                             .map(extension => {
-                                return `await import('${extension}');`;
+                                return `await import(\`${extension}\`);`;
                             })
                             .join('\n')}
                 }`;
