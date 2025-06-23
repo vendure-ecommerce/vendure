@@ -57,26 +57,49 @@ export async function performAddOperation(options: AddOperationOptions): Promise
             await createNewPluginCommand.run({ name: options.plugin, config: options.config });
             return {
                 success: true,
-                message: `Plugin \"${options.plugin}\" created successfully`,
+                message: `Plugin "${options.plugin}" created successfully`,
             };
         }
         if (options.entity) {
+            // Validate that an entity name was provided
+            if (typeof options.entity !== 'string' || !options.entity.trim()) {
+                throw new Error('Entity name is required. Usage: vendure add -e <entity-name>');
+            }
             // We pass the class name; the command will prompt for plugin etc. if needed.
             await addEntityCommand.run({ className: options.entity });
             return {
                 success: true,
-                message: `Entity \"${options.entity}\" added successfully`,
+                message: `Entity "${options.entity}" added successfully`,
             };
         }
         if (options.service) {
+            // Validate that a service name was provided
+            if (typeof options.service !== 'string' || !options.service.trim()) {
+                throw new Error('Service name is required. Usage: vendure add -s <service-name>');
+            }
             await addServiceCommand.run({ serviceName: options.service });
             return {
                 success: true,
-                message: `Service \"${options.service}\" added successfully`,
+                message: `Service "${options.service}" added successfully`,
             };
         }
         if (options.jobQueue) {
             const pluginName = typeof options.jobQueue === 'string' ? options.jobQueue : undefined;
+            // Validate required parameters for job queue
+            if (!options.name || typeof options.name !== 'string' || !options.name.trim()) {
+                throw new Error(
+                    'Job queue name is required. Usage: vendure add -j [plugin-name] --name <job-name>',
+                );
+            }
+            if (
+                !options.selectedService ||
+                typeof options.selectedService !== 'string' ||
+                !options.selectedService.trim()
+            ) {
+                throw new Error(
+                    'Service name is required for job queue. Usage: vendure add -j [plugin-name] --name <job-name> --selectedService <service-name>',
+                );
+            }
             await addJobQueueCommand.run({
                 isNonInteractive: true,
                 config: options.config,
@@ -91,6 +114,13 @@ export async function performAddOperation(options: AddOperationOptions): Promise
         }
         if (options.codegen) {
             const pluginName = typeof options.codegen === 'string' ? options.codegen : undefined;
+            // For codegen, if a boolean true is passed, plugin selection will be handled interactively
+            // If a string is passed, it should be a valid plugin name
+            if (typeof options.codegen === 'string' && !options.codegen.trim()) {
+                throw new Error(
+                    'Plugin name cannot be empty when specified. Usage: vendure add --codegen [plugin-name]',
+                );
+            }
             await addCodegenCommand.run({
                 isNonInteractive: true,
                 config: options.config,
@@ -103,6 +133,29 @@ export async function performAddOperation(options: AddOperationOptions): Promise
         }
         if (options.apiExtension) {
             const pluginName = typeof options.apiExtension === 'string' ? options.apiExtension : undefined;
+            // Validate that at least one of queryName or mutationName is provided and not empty
+            const hasValidQueryName =
+                options.queryName && typeof options.queryName === 'string' && options.queryName.trim() !== '';
+            const hasValidMutationName =
+                options.mutationName &&
+                typeof options.mutationName === 'string' &&
+                options.mutationName.trim() !== '';
+
+            if (!hasValidQueryName && !hasValidMutationName) {
+                throw new Error(
+                    'At least one of queryName or mutationName must be specified as a non-empty string. ' +
+                        'Usage: vendure add -a [plugin-name] --queryName <name> --mutationName <name>',
+                );
+            }
+
+            // If a string is passed for apiExtension, it should be a valid plugin name
+            if (typeof options.apiExtension === 'string' && !options.apiExtension.trim()) {
+                throw new Error(
+                    'Plugin name cannot be empty when specified. ' +
+                        'Usage: vendure add -a [plugin-name] --queryName <name> --mutationName <name>',
+                );
+            }
+
             await addApiExtensionCommand.run({
                 isNonInteractive: true,
                 config: options.config,
@@ -117,6 +170,13 @@ export async function performAddOperation(options: AddOperationOptions): Promise
         }
         if (options.uiExtensions) {
             const pluginName = typeof options.uiExtensions === 'string' ? options.uiExtensions : undefined;
+            // For UI extensions, if a boolean true is passed, plugin selection will be handled interactively
+            // If a string is passed, it should be a valid plugin name
+            if (typeof options.uiExtensions === 'string' && !options.uiExtensions.trim()) {
+                throw new Error(
+                    'Plugin name cannot be empty when specified. Usage: vendure add --uiExtensions [plugin-name]',
+                );
+            }
             await addUiExtensionsCommand.run({
                 isNonInteractive: true,
                 config: options.config,
@@ -134,12 +194,16 @@ export async function performAddOperation(options: AddOperationOptions): Promise
         };
     } catch (error: any) {
         // Re-throw validation errors so they can be properly handled with stack trace
-        if (error.message.includes('Plugin name is required')) {
+        if (
+            error.message.includes('is required') ||
+            error.message.includes('cannot be empty') ||
+            error.message.includes('must be specified')
+        ) {
             throw error;
         }
         return {
             success: false,
-            message: error.message || 'Add operation failed',
+            message: error.message ?? 'Add operation failed',
         };
     }
 }
