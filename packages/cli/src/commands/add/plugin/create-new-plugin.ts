@@ -9,7 +9,7 @@ import { analyzeProject } from '../../../shared/shared-prompts';
 import { VendureConfigRef } from '../../../shared/vendure-config-ref';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
 import { addImportsToFile, createFile, getPluginClasses } from '../../../utilities/ast-utils';
-import { pauseForPromptDisplay } from '../../../utilities/utils';
+import { pauseForPromptDisplay, withInteractiveTimeout } from '../../../utilities/utils';
 import { addApiExtensionCommand } from '../api-extension/add-api-extension';
 import { addCodegenCommand } from '../codegen/add-codegen';
 import { addEntityCommand } from '../entity/add-entity';
@@ -117,16 +117,19 @@ export async function createNewPlugin(
     ];
     let allModifiedSourceFiles = [...modifiedSourceFiles];
     while (!done) {
-        const featureType = await select({
-            message: `Add features to ${options.name}?`,
-            options: [
-                { value: 'no', label: "[Finish] No, I'm done!" },
-                ...followUpCommands.map(c => ({
-                    value: c.id,
-                    label: `[${c.category}] ${c.description}`,
-                })),
-            ],
+        const featureType = await withInteractiveTimeout(async () => {
+            return await select({
+                message: `Add features to ${options.name ?? 'plugin'}?`,
+                options: [
+                    { value: 'no', label: "[Finish] No, I'm done!" },
+                    ...followUpCommands.map(c => ({
+                        value: c.id,
+                        label: `[${c.category}] ${c.description}`,
+                    })),
+                ],
+            });
         });
+
         if (isCancel(featureType)) {
             done = true;
         }

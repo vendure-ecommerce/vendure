@@ -3,7 +3,7 @@ import pc from 'picocolors';
 
 import { Messages } from '../../constants';
 import { CliCommand } from '../../shared/cli-command';
-import { pauseForPromptDisplay } from '../../utilities/utils';
+import { pauseForPromptDisplay, withInteractiveTimeout } from '../../utilities/utils';
 
 import { AddOperationOptions, performAddOperation } from './add-operations';
 import { addApiExtensionCommand } from './api-extension/add-api-extension';
@@ -73,13 +73,17 @@ async function handleInteractiveMode() {
         addUiExtensionsCommand,
         addCodegenCommand,
     ];
-    const featureType = await select({
-        message: 'Which feature would you like to add?',
-        options: addCommands.map(c => ({
-            value: c.id,
-            label: `${pc.blue(`${c.category}`)} ${c.description}`,
-        })),
+
+    const featureType = await withInteractiveTimeout(async () => {
+        return await select({
+            message: 'Which feature would you like to add?',
+            options: addCommands.map(c => ({
+                value: c.id,
+                label: `${pc.blue(`${c.category}`)} ${c.description}`,
+            })),
+        });
     });
+
     if (isCancel(featureType)) {
         cancel(cancelledMessage);
         process.exit(0);

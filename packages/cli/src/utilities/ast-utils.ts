@@ -6,6 +6,8 @@ import { Directory, Node, Project, ProjectOptions, ScriptKind, SourceFile } from
 import { defaultManipulationSettings } from '../constants';
 import { EntityRef } from '../shared/entity-ref';
 
+import { withInteractiveTimeout } from './utils';
+
 export async function selectTsConfigFile() {
     const tsConfigFiles = fs.readdirSync(process.cwd()).filter(f => /^tsconfig.*\.json$/.test(f));
     if (tsConfigFiles.length === 0) {
@@ -14,14 +16,18 @@ export async function selectTsConfigFile() {
     if (tsConfigFiles.length === 1) {
         return tsConfigFiles[0];
     }
-    const selectedConfigFile = await select({
-        message: 'Multiple tsconfig files found. Select one:',
-        options: tsConfigFiles.map(c => ({
-            value: c,
-            label: path.basename(c),
-        })),
-        maxItems: 10,
+
+    const selectedConfigFile = await withInteractiveTimeout(async () => {
+        return await select({
+            message: 'Multiple tsconfig files found. Select one:',
+            options: tsConfigFiles.map(c => ({
+                value: c,
+                label: path.basename(c),
+            })),
+            maxItems: 10,
+        });
     });
+
     if (isCancel(selectedConfigFile)) {
         cancel();
         process.exit(0);

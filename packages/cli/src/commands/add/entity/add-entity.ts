@@ -9,7 +9,7 @@ import { EntityRef } from '../../../shared/entity-ref';
 import { analyzeProject, selectPlugin } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
 import { createFile } from '../../../utilities/ast-utils';
-import { pauseForPromptDisplay } from '../../../utilities/utils';
+import { pauseForPromptDisplay, withInteractiveTimeout } from '../../../utilities/utils';
 
 import { addEntityToPlugin } from './codemods/add-entity-to-plugin/add-entity-to-plugin';
 
@@ -39,11 +39,17 @@ async function addEntity(
     options?: Partial<AddEntityOptions>,
 ): Promise<CliCommandReturnVal<{ entityRef: EntityRef }>> {
     const providedVendurePlugin = options?.plugin;
-    const { project } = await analyzeProject({ providedVendurePlugin, cancelledMessage, config: options?.config });
+    const { project } = await analyzeProject({
+        providedVendurePlugin,
+        cancelledMessage,
+        config: options?.config,
+    });
 
     // In non-interactive mode with no plugin specified, we cannot proceed
     if (options?.className && !providedVendurePlugin) {
-        throw new Error('Plugin must be specified when running in non-interactive mode. Use selectPlugin in interactive mode.');
+        throw new Error(
+            'Plugin must be specified when running in non-interactive mode. Use selectPlugin in interactive mode.',
+        );
     }
 
     const vendurePlugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
@@ -93,23 +99,27 @@ async function getFeatures(options?: Partial<AddEntityOptions>): Promise<AddEnti
             translatable: false,
         };
     }
-    const features = await multiselect({
-        message: 'Entity features (use ↑, ↓, space to select)',
-        required: false,
-        initialValues: ['customFields'],
-        options: [
-            {
-                label: 'Custom fields',
-                value: 'customFields',
-                hint: 'Adds support for custom fields on this entity',
-            },
-            {
-                label: 'Translatable',
-                value: 'translatable',
-                hint: 'Adds support for localized properties on this entity',
-            },
-        ],
+
+    const features = await withInteractiveTimeout(async () => {
+        return await multiselect({
+            message: 'Entity features (use ↑, ↓, space to select)',
+            required: false,
+            initialValues: ['customFields'],
+            options: [
+                {
+                    label: 'Custom fields',
+                    value: 'customFields',
+                    hint: 'Adds support for custom fields on this entity',
+                },
+                {
+                    label: 'Translatable',
+                    value: 'translatable',
+                    hint: 'Adds support for localized properties on this entity',
+                },
+            ],
+        });
     });
+
     if (isCancel(features)) {
         cancel(cancelledMessage);
         process.exit(0);

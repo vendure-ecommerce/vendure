@@ -8,6 +8,7 @@ import { ServiceRef } from '../../../shared/service-ref';
 import { analyzeProject, getServices, selectPlugin, selectServiceRef } from '../../../shared/shared-prompts';
 import { VendurePluginRef } from '../../../shared/vendure-plugin-ref';
 import { addImportsToFile } from '../../../utilities/ast-utils';
+import { withInteractiveTimeout } from '../../../utilities/utils';
 
 const cancelledMessage = 'Add API extension cancelled';
 
@@ -100,14 +101,16 @@ async function addJobQueue(
 
     const jobQueueName =
         options?.name ??
-        (await text({
-            message: 'What is the name of the job queue?',
-            initialValue: 'my-background-task',
-            validate: input => {
-                if (!/^[a-z][a-z-0-9]+$/.test(input)) {
-                    return 'The job queue name must be lowercase and contain only letters, numbers and dashes';
-                }
-            },
+        (await withInteractiveTimeout(async () => {
+            return await text({
+                message: 'What is the name of the job queue?',
+                initialValue: 'my-background-task',
+                validate: input => {
+                    if (!/^[a-z][a-z-0-9]+$/.test(input)) {
+                        return 'The job queue name must be lowercase and contain only letters, numbers and dashes';
+                    }
+                },
+            });
         }));
 
     if (!options?.isNonInteractive && isCancel(jobQueueName)) {

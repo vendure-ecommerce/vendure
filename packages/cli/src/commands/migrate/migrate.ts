@@ -1,6 +1,8 @@
 import { cancel, intro, isCancel, log, outro, select } from '@clack/prompts';
 import pc from 'picocolors';
 
+import { withInteractiveTimeout } from '../../utilities/utils';
+
 import {
     generateMigrationOperation,
     revertMigrationOperation,
@@ -83,14 +85,18 @@ async function handleInteractiveMode() {
     // eslint-disable-next-line no-console
     console.log(`\n`);
     intro(pc.blue('🛠️️ Vendure migrations'));
-    const action = await select({
-        message: 'What would you like to do?',
-        options: [
-            { value: 'generate', label: 'Generate a new migration' },
-            { value: 'run', label: 'Run pending migrations' },
-            { value: 'revert', label: 'Revert the last migration' },
-        ],
+
+    const action = await withInteractiveTimeout(async () => {
+        return await select({
+            message: 'What would you like to do?',
+            options: [
+                { value: 'generate', label: 'Generate a new migration' },
+                { value: 'run', label: 'Run pending migrations' },
+                { value: 'revert', label: 'Revert the last migration' },
+            ],
+        });
     });
+
     if (isCancel(action)) {
         cancel(cancelledMessage);
         process.exit(0);

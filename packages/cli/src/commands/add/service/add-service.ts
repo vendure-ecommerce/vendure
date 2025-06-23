@@ -14,7 +14,7 @@ import {
     createFile,
     customizeCreateUpdateInputInterfaces,
 } from '../../../utilities/ast-utils';
-import { pauseForPromptDisplay } from '../../../utilities/utils';
+import { pauseForPromptDisplay, withInteractiveTimeout } from '../../../utilities/utils';
 import { addEntityCommand } from '../entity/add-entity';
 
 const cancelledMessage = 'Add service cancelled';
@@ -39,26 +39,36 @@ async function addService(
     providedOptions?: Partial<AddServiceOptions>,
 ): Promise<CliCommandReturnVal<{ serviceRef: ServiceRef }>> {
     const providedVendurePlugin = providedOptions?.plugin;
-    const { project } = await analyzeProject({ providedVendurePlugin, cancelledMessage, config: providedOptions?.config });
+    const { project } = await analyzeProject({
+        providedVendurePlugin,
+        cancelledMessage,
+        config: providedOptions?.config,
+    });
 
     // In non-interactive mode with no plugin specified, we cannot proceed
     const isNonInteractive = providedOptions?.serviceName !== undefined;
     if (isNonInteractive && !providedVendurePlugin) {
-        throw new Error('Plugin must be specified when running in non-interactive mode. Use selectPlugin in interactive mode.');
+        throw new Error(
+            'Plugin must be specified when running in non-interactive mode. Use selectPlugin in interactive mode.',
+        );
     }
 
     const vendurePlugin = providedVendurePlugin ?? (await selectPlugin(project, cancelledMessage));
     const modifiedSourceFiles: SourceFile[] = [];
     const type =
         providedOptions?.type ??
-        (isNonInteractive ? 'basic' : await select({
-            message: 'What type of service would you like to add?',
-            options: [
-                { value: 'basic', label: 'Basic empty service' },
-                { value: 'entity', label: 'Service to perform CRUD operations on an entity' },
-            ],
-            maxItems: 10,
-        }));
+        (isNonInteractive
+            ? 'basic'
+            : await withInteractiveTimeout(async () => {
+                  return await select({
+                      message: 'What type of service would you like to add?',
+                      options: [
+                          { value: 'basic', label: 'Basic empty service' },
+                          { value: 'entity', label: 'Service to perform CRUD operations on an entity' },
+                      ],
+                      maxItems: 10,
+                  });
+              }));
     if (!isNonInteractive && isCancel(type)) {
         cancel('Cancelled');
         process.exit(0);
@@ -91,20 +101,21 @@ async function addService(
     let serviceSourceFile: SourceFile;
     let serviceClassDeclaration: ClassDeclaration;
     if (options.type === 'basic') {
-        const name = options.serviceName !== 'MyService'
-            ? options.serviceName
-            : await text({
-                message: 'What is the name of the new service?',
-                initialValue: 'MyService',
-                validate: input => {
-                    if (!input) {
-                        return 'The service name cannot be empty';
-                    }
-                    if (!pascalCaseRegex.test(input)) {
-                        return 'The service name must be in PascalCase, e.g. "MyService"';
-                    }
-                },
-            });
+        const name =
+            options.serviceName !== 'MyService'
+                ? options.serviceName
+                : await text({
+                      message: 'What is the name of the new service?',
+                      initialValue: 'MyService',
+                      validate: input => {
+                          if (!input) {
+                              return 'The service name cannot be empty';
+                          }
+                          if (!pascalCaseRegex.test(input)) {
+                              return 'The service name must be in PascalCase, e.g. "MyService"';
+                          }
+                      },
+                  });
 
         if (!isNonInteractive && isCancel(name)) {
             cancel(cancelledMessage);
