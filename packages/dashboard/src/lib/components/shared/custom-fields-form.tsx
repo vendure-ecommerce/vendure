@@ -29,104 +29,124 @@ export function CustomFieldsForm({ entityType, control, formPathPrefix }: Custom
     const {
         settings: { displayLanguage },
     } = useUserSettings();
-    function getTranslation(input: Array<{ languageCode: string; value: string }> | null | undefined) {
+
+    const getTranslation = (input: Array<{ languageCode: string; value: string }> | null | undefined) => {
         return input?.find(t => t.languageCode === displayLanguage)?.value;
-    }
+    };
+
     const customFields = useCustomFieldConfig(entityType);
+
+    const getFieldName = (fieldDefName: string) => {
+        return formPathPrefix
+            ? `${formPathPrefix}.customFields.${fieldDefName}`
+            : `customFields.${fieldDefName}`;
+    };
 
     return (
         <div className="grid grid-cols-2 gap-4">
-            {customFields?.map(fieldDef => {
-                const hasCustomFormComponent = fieldDef.ui && fieldDef.ui.component;
-                return (
-                    <div key={fieldDef.name}>
-                        {hasCustomFormComponent && (
-                            <FormField
-                                control={control}
-                                name={
-                                    formPathPrefix
-                                        ? `${formPathPrefix}.customFields.${fieldDef.name}`
-                                        : `customFields.${fieldDef.name}`
-                                }
-                                render={fieldProps => (
-                                    <FormItem>
-                                        <FormLabel>
-                                            {getTranslation(fieldDef.label) ?? fieldProps.field.name}
-                                        </FormLabel>
-                                        <FormControl>
-                                            {fieldDef.readonly ? (
-                                                fieldProps.field.value
-                                            ) : (
-                                                <CustomFormComponent
-                                                    fieldDef={fieldDef}
-                                                    fieldProps={fieldProps}
-                                                />
-                                            )}
-                                        </FormControl>
-                                        <FormDescription>
-                                            {getTranslation(fieldDef.description)}
-                                        </FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        )}
-                        {!hasCustomFormComponent &&
-                            (fieldDef.type === 'localeString' || fieldDef.type === 'localeText' ? (
-                                <TranslatableFormField
-                                    control={control}
-                                    name={
-                                        formPathPrefix
-                                            ? `${formPathPrefix}.customFields.${fieldDef.name}`
-                                            : `customFields.${fieldDef.name}`
-                                    }
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>
-                                                {getTranslation(fieldDef.label) ?? field.name}
-                                            </FormLabel>
-                                            <FormControl>
-                                                {fieldDef.readonly ? (
-                                                    field.value
-                                                ) : (
-                                                    <FormInputForType fieldDef={fieldDef} field={field} />
-                                                )}
-                                            </FormControl>
-                                        </FormItem>
-                                    )}
-                                />
-                            ) : (
-                                <FormField
-                                    control={control}
-                                    name={
-                                        formPathPrefix
-                                            ? `${formPathPrefix}.customFields.${fieldDef.name}`
-                                            : `customFields.${fieldDef.name}`
-                                    }
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>
-                                                {getTranslation(fieldDef.label) ?? field.name}
-                                            </FormLabel>
-                                            <FormControl>
-                                                {fieldDef.readonly ? (
-                                                    field.value
-                                                ) : (
-                                                    <FormInputForType fieldDef={fieldDef} field={field} />
-                                                )}
-                                            </FormControl>
-                                            <FormDescription>
-                                                {getTranslation(fieldDef.description)}
-                                            </FormDescription>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            ))}
-                    </div>
-                );
-            })}
+            {customFields?.map(fieldDef => (
+                <CustomFieldItem
+                    key={fieldDef.name}
+                    fieldDef={fieldDef}
+                    control={control}
+                    fieldName={getFieldName(fieldDef.name)}
+                    getTranslation={getTranslation}
+                />
+            ))}
         </div>
+    );
+}
+
+interface CustomFieldItemProps {
+    fieldDef: CustomFieldConfig;
+    control: Control<any, any>;
+    fieldName: string;
+    getTranslation: (
+        input: Array<{ languageCode: string; value: string }> | null | undefined,
+    ) => string | undefined;
+}
+
+function CustomFieldItem({ fieldDef, control, fieldName, getTranslation }: CustomFieldItemProps) {
+    const hasCustomFormComponent = fieldDef.ui && fieldDef.ui.component;
+    const isLocaleField = fieldDef.type === 'localeString' || fieldDef.type === 'localeText';
+
+    if (hasCustomFormComponent) {
+        return (
+            <FormField
+                control={control}
+                name={fieldName}
+                render={fieldProps => (
+                    <CustomFieldFormItem
+                        fieldDef={fieldDef}
+                        getTranslation={getTranslation}
+                        fieldName={fieldProps.field.name}
+                    >
+                        {fieldDef.readonly ? (
+                            fieldProps.field.value
+                        ) : (
+                            <CustomFormComponent fieldDef={fieldDef} fieldProps={fieldProps} />
+                        )}
+                    </CustomFieldFormItem>
+                )}
+            />
+        );
+    }
+
+    if (isLocaleField) {
+        return (
+            <TranslatableFormField
+                control={control}
+                name={fieldName}
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>{getTranslation(fieldDef.label) ?? field.name}</FormLabel>
+                        <FormControl>
+                            {fieldDef.readonly ? (
+                                field.value
+                            ) : (
+                                <FormInputForType fieldDef={fieldDef} field={field} />
+                            )}
+                        </FormControl>
+                    </FormItem>
+                )}
+            />
+        );
+    }
+
+    return (
+        <FormField
+            control={control}
+            name={fieldName}
+            render={({ field }) => (
+                <CustomFieldFormItem
+                    fieldDef={fieldDef}
+                    getTranslation={getTranslation}
+                    fieldName={field.name}
+                >
+                    {fieldDef.readonly ? field.value : <FormInputForType fieldDef={fieldDef} field={field} />}
+                </CustomFieldFormItem>
+            )}
+        />
+    );
+}
+
+interface CustomFieldFormItemProps {
+    fieldDef: CustomFieldConfig;
+    getTranslation: (
+        input: Array<{ languageCode: string; value: string }> | null | undefined,
+    ) => string | undefined;
+    fieldName: string;
+    children: React.ReactNode;
+}
+
+function CustomFieldFormItem({ fieldDef, getTranslation, fieldName, children }: CustomFieldFormItemProps) {
+    return (
+        <FormItem>
+            <FormLabel>{getTranslation(fieldDef.label) ?? fieldName}</FormLabel>
+            <FormControl>{children}</FormControl>
+            <FormDescription>{getTranslation(fieldDef.description)}</FormDescription>
+            <FormMessage />
+        </FormItem>
     );
 }
 
