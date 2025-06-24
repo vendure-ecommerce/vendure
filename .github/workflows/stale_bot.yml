@@ -31,6 +31,8 @@ jobs:
                       type: security 🔐,
                       👋 contributions welcome,
                       🚀 good first task,
+                      status: blocked 🚧,
+                      status: research needed 🔍,
                       @vendure/admin-ui,
                       @vendure/admin-ui-plugin,
                       @vendure/asset-server-plugin,
