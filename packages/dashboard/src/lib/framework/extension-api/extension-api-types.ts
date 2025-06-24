@@ -150,7 +150,6 @@ export interface DashboardExtension {
      * given components and optionally also add a nav menu item.
      */
     widgets?: DashboardWidgetDefinition[];
-
     /**
      * @description
      * Allows you to define custom form components for custom fields in the dashboard.
