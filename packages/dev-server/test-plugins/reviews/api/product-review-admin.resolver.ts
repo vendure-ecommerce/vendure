@@ -4,15 +4,16 @@ import {
     Ctx,
     EntityNotFoundError,
     ListQueryBuilder,
-    patchEntity,
     Permission,
     Product,
     RequestContext,
     Transaction,
     TransactionalConnection,
+    TranslatableSaver,
     translateDeep,
 } from '@vendure/core';
 
+import { ProductReviewTranslation } from '../entities/product-review-translation.entity';
 import { ProductReview } from '../entities/product-review.entity';
 import {
     MutationApproveProductReviewArgs,
@@ -27,6 +28,7 @@ export class ProductReviewAdminResolver {
     constructor(
         private connection: TransactionalConnection,
         private listQueryBuilder: ListQueryBuilder,
+        private translatableSaver: TranslatableSaver,
     ) {}
 
     @Query()
@@ -72,11 +74,13 @@ export class ProductReviewAdminResolver {
     ) {
         const review = await this.connection.getEntityOrThrow(ctx, ProductReview, input.id);
         const originalResponse = review.response;
-        const updatedProductReview = patchEntity(review, input);
-        if (input.response !== originalResponse) {
-            updatedProductReview.responseCreatedAt = new Date();
-        }
-        return this.connection.getRepository(ctx, ProductReview).save(updatedProductReview);
+
+        return this.translatableSaver.update({
+            ctx,
+            input,
+            entityType: ProductReview,
+            translationType: ProductReviewTranslation,
+        });
     }
 
     @Transaction()

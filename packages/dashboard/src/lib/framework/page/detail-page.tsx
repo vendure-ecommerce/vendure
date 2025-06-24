@@ -116,6 +116,7 @@ export function DetailPage<
         queryDocument,
         updateDocument,
         createDocument,
+        entityName,
         params: { id: params.id },
         setValuesForUpdate,
         onSuccess: async data => {

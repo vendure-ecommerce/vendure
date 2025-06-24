@@ -1,5 +1,7 @@
 import { NEW_ENTITY_PATH } from '@/constants.js';
 import { api, Variables } from '@/graphql/api.js';
+import { useCustomFieldConfig } from '@/hooks/use-custom-field-config.js';
+import { removeReadonlyCustomFields } from '@/lib/utils.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import {
     DefinedInitialDataOptions,
@@ -59,6 +61,12 @@ export interface DetailPageOptions<
     params: {
         id: string;
     };
+    /**
+     * @description
+     * The entity type name for custom field configuration lookup.
+     * Required to filter out readonly custom fields before mutations.
+     */
+    entityName?: string;
     /**
      * @description
      * The document to create the entity.
@@ -232,11 +240,13 @@ export function useDetailPage<
         transformUpdateInput,
         params,
         entityField,
+        entityName,
         onSuccess,
         onError,
     } = options;
     const isNew = params.id === NEW_ENTITY_PATH;
     const queryClient = useQueryClient();
+    const customFieldConfig = useCustomFieldConfig(entityName || '');
     const detailQueryOptions = getDetailQueryOptions(addCustomFields(queryDocument), {
         id: isNew ? '__NEW__' : params.id,
     });
@@ -280,10 +290,15 @@ export function useDetailPage<
         entity,
         setValues: setValuesForUpdate,
         onSubmit(values: any) {
+            // Filter out readonly custom fields before submitting
+            const filteredValues = removeReadonlyCustomFields(values, customFieldConfig || []);
+
             if (isNew) {
-                createMutation.mutate({ input: transformCreateInput?.(values) ?? values });
+                const finalInput = transformCreateInput?.(filteredValues) ?? filteredValues;
+                createMutation.mutate({ input: finalInput });
             } else {
-                updateMutation.mutate({ input: transformUpdateInput?.(values) ?? values });
+                const finalInput = transformUpdateInput?.(filteredValues) ?? filteredValues;
+                updateMutation.mutate({ input: finalInput });
             }
         },
     });

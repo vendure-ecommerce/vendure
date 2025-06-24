@@ -122,3 +122,52 @@ export function deepMerge<T extends Record<string, any>, U extends Record<string
 
     return result;
 }
+
+/**
+ * Removes any readonly custom fields from form values before submission.
+ * This prevents errors when submitting readonly custom field values to mutations.
+ *
+ * @param values - The form values that may contain custom fields
+ * @param customFieldConfigs - Array of custom field configurations for the entity
+ * @returns The values with readonly custom fields removed
+ */
+export function removeReadonlyCustomFields<T extends Record<string, any>>(
+    values: T,
+    customFieldConfigs: Array<{ name: string; readonly?: boolean | null }> = [],
+): T {
+    if (!values || !customFieldConfigs?.length) {
+        return values;
+    }
+
+    // Create a deep copy to avoid mutating the original values
+    const result = structuredClone(values);
+
+    // Get readonly field names
+    const readonlyFieldNames = customFieldConfigs
+        .filter(config => config.readonly === true)
+        .map(config => config.name);
+
+    if (readonlyFieldNames.length === 0) {
+        return result;
+    }
+
+    // Remove readonly fields from main customFields
+    if (result.customFields && typeof result.customFields === 'object') {
+        for (const fieldName of readonlyFieldNames) {
+            delete result.customFields[fieldName];
+        }
+    }
+
+    // Remove readonly fields from translations customFields
+    if (Array.isArray(result.translations)) {
+        for (const translation of result.translations) {
+            if (translation?.customFields && typeof translation.customFields === 'object') {
+                for (const fieldName of readonlyFieldNames) {
+                    delete translation.customFields[fieldName];
+                }
+            }
+        }
+    }
+
+    return result;
+}

@@ -30,7 +30,6 @@ export const TranslatableFormField = <
     const index = translations?.findIndex(
         (translation: any) => translation?.languageCode === contentLanguage,
     );
-    console.log({ formValues });
     if (index === undefined || index === -1) {
         return null;
     }
