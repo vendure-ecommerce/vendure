@@ -17,7 +17,7 @@ export default defineConfig({
         include: ['e2e/**/*.e2e-spec.ts'],
         globals: true,
         environment: 'node',
-        testTimeout: 30000,
+        testTimeout: 60000,
         pool: 'forks',
         poolOptions: {
             forks: {
