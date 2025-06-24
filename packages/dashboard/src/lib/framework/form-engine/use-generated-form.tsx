@@ -5,7 +5,6 @@ import {
 } from '@/framework/form-engine/form-schema-tools.js';
 import { useChannel } from '@/hooks/use-channel.js';
 import { useServerConfig } from '@/hooks/use-server-config.js';
-import { deepMerge } from '@/lib/utils.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { VariablesOf } from 'gql.tada';
@@ -48,12 +47,17 @@ export function useGeneratedForm<
     const defaultValues = getDefaultValuesFromFields(updateFields, activeChannel?.defaultLanguageCode);
     const processedEntity = ensureTranslationsForAllLanguages(entity, availableLanguages, defaultValues);
 
-    const finalDefaultValues = deepMerge(defaultValues, processedEntity);
-
     const form = useForm({
-        resolver: zodResolver(schema),
+        resolver: async (values, context, options) => {
+            const result = await zodResolver(schema)(values, context, options);
+            if (Object.keys(result.errors).length > 0) {
+                console.log('Zod form validation errors:', result.errors);
+            }
+            return result;
+        },
         mode: 'onChange',
-        defaultValues: finalDefaultValues as any,
+        defaultValues,
+        values: processedEntity ? processedEntity : defaultValues,
     });
     let submitHandler = (event: FormEvent) => {
         event.preventDefault();
