@@ -55,6 +55,12 @@ export const cliCommands: CliCommandDefinition[] = [
                         description: 'Type of service: basic or entity (default: basic)',
                         required: false,
                     },
+                    {
+                        long: '--selected-entity <n>',
+                        description:
+                            'Name of the entity for entity service (automatically sets type to entity)',
+                        required: false,
+                    },
                 ],
             },
             {

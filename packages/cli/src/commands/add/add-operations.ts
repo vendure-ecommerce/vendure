@@ -40,6 +40,8 @@ export interface AddOperationOptions {
     translatable?: boolean;
     /** Service type: basic or entity */
     type?: string;
+    /** Selected entity name for entity service commands */
+    selectedEntity?: string;
 }
 
 export interface AddOperationResult {
@@ -121,7 +123,8 @@ export async function performAddOperation(options: AddOperationOptions): Promise
                 isNonInteractive: true,
                 config: options.config,
                 pluginName: options.selectedPlugin,
-                serviceType: options.type || 'basic',
+                serviceType: options.selectedEntity ? 'entity' : options.type || 'basic',
+                selectedEntityName: options.selectedEntity,
             });
             return {
                 success: true,

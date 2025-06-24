@@ -29,6 +29,7 @@ interface AddServiceOptions {
     isNonInteractive?: boolean;
     pluginName?: string;
     serviceType?: string;
+    selectedEntityName?: string;
 }
 
 export const addServiceCommand = new CliCommand({
@@ -101,16 +102,32 @@ async function addService(
     };
     if (type === 'entity') {
         let entityRef: EntityRef;
-        try {
-            entityRef = await selectEntity(vendurePlugin);
-        } catch (e: any) {
-            if (e.message === Messages.NoEntitiesFound) {
-                log.info(`No entities found in plugin ${vendurePlugin.name}. Let's create one first.`);
-                const result = await addEntityCommand.run({ plugin: vendurePlugin });
-                entityRef = result.entityRef;
-                modifiedSourceFiles.push(...result.modifiedSourceFiles);
-            } else {
-                throw e;
+
+        // If selectedEntityName is provided (non-interactive mode), find the entity by name
+        if (providedOptions?.selectedEntityName && isNonInteractive) {
+            const entities = vendurePlugin.getEntities();
+            const foundEntity = entities.find(entity => entity.name === providedOptions.selectedEntityName);
+
+            if (!foundEntity) {
+                const availableEntities = entities.map(entity => entity.name).join(', ');
+                throw new Error(
+                    `Entity "${providedOptions.selectedEntityName}" not found in plugin "${vendurePlugin.name}". Available entities: ${availableEntities || 'none'}`,
+                );
+            }
+            entityRef = foundEntity;
+        } else {
+            // Interactive mode or no selectedEntityName provided
+            try {
+                entityRef = await selectEntity(vendurePlugin);
+            } catch (e: any) {
+                if (e.message === Messages.NoEntitiesFound) {
+                    log.info(`No entities found in plugin ${vendurePlugin.name}. Let's create one first.`);
+                    const result = await addEntityCommand.run({ plugin: vendurePlugin });
+                    entityRef = result.entityRef;
+                    modifiedSourceFiles.push(...result.modifiedSourceFiles);
+                } else {
+                    throw e;
+                }
             }
         }
         options.entityRef = entityRef;
