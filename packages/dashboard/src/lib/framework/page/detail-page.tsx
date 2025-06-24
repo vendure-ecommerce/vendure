@@ -1,6 +1,5 @@
 import { DateTimeInput } from '@/components/data-input/datetime-input.js';
 import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
-import { TranslatableFormFieldWrapper } from '@/components/shared/translatable-form-field.js';
 import { Button } from '@/components/ui/button.js';
 import { Checkbox } from '@/components/ui/checkbox.js';
 import { Input } from '@/components/ui/input.js';
@@ -13,6 +12,7 @@ import { ResultOf, VariablesOf } from 'gql.tada';
 import { toast } from 'sonner';
 import { getOperationVariablesFields } from '../document-introspection/get-document-structure.js';
 
+import { TranslatableFormFieldWrapper } from '@/components/shared/translatable-form-field.js';
 import {
     CustomFieldsPageBlock,
     DetailFormGrid,
@@ -82,6 +82,30 @@ export interface DetailPageProps<
 }
 
 /**
+ * Renders form input components based on field type
+ */
+function renderFieldInput(fieldInfo: { type: string }, field: any) {
+    switch (fieldInfo.type) {
+        case 'Int':
+        case 'Float':
+            return (
+                <Input
+                    type="number"
+                    value={field.value}
+                    onChange={e => field.onChange(e.target.valueAsNumber)}
+                />
+            );
+        case 'DateTime':
+            return <DateTimeInput {...field} />;
+        case 'Boolean':
+            return <Checkbox value={field.value} onCheckedChange={field.onChange} />;
+        case 'String':
+        default:
+            return <Input {...field} />;
+    }
+}
+
+/**
  * @description
  * **Status: Developer Preview**
  *
@@ -135,6 +159,7 @@ export function DetailPage<
     });
 
     const updateFields = getOperationVariablesFields(updateDocument, 'input');
+    const translations = updateFields.filter(fieldInfo => fieldInfo.name === 'translations').at(0);
 
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler}>
@@ -159,55 +184,33 @@ export function DetailPage<
                                 if (fieldInfo.name === 'id' && fieldInfo.type === 'ID') {
                                     return null;
                                 }
-
-                                const renderField = ({ field }: { field: any }) => {
-                                    switch (fieldInfo.type) {
-                                        case 'Int':
-                                        case 'Float':
-                                            return (
-                                                <Input
-                                                    type="number"
-                                                    value={field.value}
-                                                    onChange={e => field.onChange(e.target.valueAsNumber)}
-                                                />
-                                            );
-                                        case 'DateTime':
-                                            return <DateTimeInput {...field} />;
-                                        case 'Boolean':
-                                            return (
-                                                <Checkbox
-                                                    checked={field.value}
-                                                    onCheckedChange={field.onChange}
-                                                />
-                                            );
-                                        case 'String':
-                                        default:
-                                            return <Input {...field} />;
-                                    }
-                                };
-
-                                if (fieldInfo.isTranslatable) {
+                                return (
+                                    <FormFieldWrapper
+                                        key={fieldInfo.name}
+                                        control={form.control}
+                                        name={fieldInfo.name as never}
+                                        label={fieldInfo.name}
+                                        render={({ field }) => renderFieldInput(fieldInfo, field)}
+                                    />
+                                );
+                            })}
+                        {translations &&
+                            translations.typeInfo
+                                ?.filter(
+                                    fieldInfo =>
+                                        !['customFields', 'id', 'languageCode'].includes(fieldInfo.name),
+                                )
+                                .map(fieldInfo => {
                                     return (
                                         <TranslatableFormFieldWrapper
                                             key={fieldInfo.name}
                                             control={form.control}
                                             name={fieldInfo.name as never}
                                             label={fieldInfo.name}
-                                            render={renderField}
+                                            render={({ field }) => renderFieldInput(fieldInfo, field)}
                                         />
                                     );
-                                } else {
-                                    return (
-                                        <FormFieldWrapper
-                                            key={fieldInfo.name}
-                                            control={form.control}
-                                            name={fieldInfo.name as never}
-                                            label={fieldInfo.name}
-                                            render={renderField}
-                                        />
-                                    );
-                                }
-                            })}
+                                })}
                     </DetailFormGrid>
                 </PageBlock>
                 {entityName && (
