@@ -48,13 +48,6 @@ async function addEntity(
         config: options?.config,
     });
 
-    // In non-interactive mode with no plugin specified, we cannot proceed
-    if (options?.className && !providedVendurePlugin && options?.isNonInteractive) {
-        throw new Error(
-            'Plugin must be specified when running in non-interactive mode. Use selectPlugin in interactive mode.',
-        );
-    }
-
     let vendurePlugin = providedVendurePlugin;
 
     // If pluginName is provided (from CLI), find the plugin by name
@@ -68,6 +61,13 @@ async function addEntity(
             );
         }
         vendurePlugin = new VendurePluginRef(pluginClass);
+    }
+
+    // In non-interactive mode with no plugin specified after checking for pluginName, we cannot proceed
+    if (options?.isNonInteractive && !vendurePlugin) {
+        throw new Error(
+            'Plugin must be specified when running in non-interactive mode. Usage: vendure add -e <entity-name> --selected-plugin <plugin-name>',
+        );
     }
 
     vendurePlugin = vendurePlugin ?? (await selectPlugin(project, cancelledMessage));
