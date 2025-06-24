@@ -9,5 +9,5 @@
     "sourceMap": true,
     "allowJs": true
   },
-  "exclude": ["e2e/**/*"]
+  "exclude": ["dist/**/*"]
 }

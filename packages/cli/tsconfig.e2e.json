@@ -1,9 +1,0 @@
-{
-  "extends": "../../e2e-common/tsconfig.e2e.json",
-  "compilerOptions": {
-    "outDir": "./dist-e2e"
-  },
-  "include": [
-    "e2e/**/*"
-  ]
-} 

@@ -1,3 +1,4 @@
+import path from 'path';
 import swc from 'unplugin-swc';
 import { defineConfig } from 'vitest/config';
 
@@ -22,6 +23,9 @@ export default defineConfig({
             forks: {
                 singleFork: true,
             },
+        },
+        typecheck: {
+            tsconfig: path.join(__dirname, 'config/tsconfig.e2e.json'),
         },
     },
 });

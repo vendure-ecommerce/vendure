@@ -56,13 +56,7 @@ module.exports = {
                 sourceType: 'module',
             },
         },
-        {
-            files: ['./packages/cli/e2e/**/*'],
-            parserOptions: {
-                project: './packages/cli/tsconfig.e2e.json',
-                sourceType: 'module',
-            },
-        },
+
     ],
     rules: {
         '@typescript-eslint/adjacent-overload-signatures': 'error',
