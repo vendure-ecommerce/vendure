@@ -2,15 +2,18 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     Allow,
     Ctx,
+    EntityNotFoundError,
     ListQueryBuilder,
-    patchEntity,
     Permission,
     Product,
     RequestContext,
     Transaction,
     TransactionalConnection,
+    TranslatableSaver,
+    translateDeep,
 } from '@vendure/core';
 
+import { ProductReviewTranslation } from '../entities/product-review-translation.entity';
 import { ProductReview } from '../entities/product-review.entity';
 import {
     MutationApproveProductReviewArgs,
@@ -22,7 +25,11 @@ import {
 
 @Resolver()
 export class ProductReviewAdminResolver {
-    constructor(private connection: TransactionalConnection, private listQueryBuilder: ListQueryBuilder) {}
+    constructor(
+        private connection: TransactionalConnection,
+        private listQueryBuilder: ListQueryBuilder,
+        private translatableSaver: TranslatableSaver,
+    ) {}
 
     @Query()
     @Allow(Permission.ReadCatalog)
@@ -42,7 +49,7 @@ export class ProductReviewAdminResolver {
     @Query()
     @Allow(Permission.ReadCatalog)
     async productReview(@Ctx() ctx: RequestContext, @Args() args: QueryProductReviewArgs) {
-        return this.connection.getRepository(ctx, ProductReview).findOne({
+        const review = await this.connection.getRepository(ctx, ProductReview).findOne({
             where: { id: args.id },
             relations: {
                 author: true,
@@ -50,6 +57,12 @@ export class ProductReviewAdminResolver {
                 productVariant: true,
             },
         });
+
+        if (!review) {
+            throw new EntityNotFoundError(ProductReview.name, args.id);
+        }
+
+        return translateDeep(review, ctx.languageCode);
     }
 
     @Transaction()
@@ -61,11 +74,13 @@ export class ProductReviewAdminResolver {
     ) {
         const review = await this.connection.getEntityOrThrow(ctx, ProductReview, input.id);
         const originalResponse = review.response;
-        const updatedProductReview = patchEntity(review, input);
-        if (input.response !== originalResponse) {
-            updatedProductReview.responseCreatedAt = new Date();
-        }
-        return this.connection.getRepository(ctx, ProductReview).save(updatedProductReview);
+
+        return this.translatableSaver.update({
+            ctx,
+            input,
+            entityType: ProductReview,
+            translationType: ProductReviewTranslation,
+        });
     }
 
     @Transaction()

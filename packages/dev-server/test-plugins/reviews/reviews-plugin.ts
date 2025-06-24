@@ -6,6 +6,7 @@ import {
     ProductVariant,
     RequestContextService,
     TransactionalConnection,
+    TranslatableSaver,
     VendurePlugin,
 } from '@vendure/core';
 import { AdminUiExtension } from '@vendure/ui-devkit/compiler';
@@ -18,7 +19,6 @@ import { ProductReviewEntityResolver } from './api/product-review-entity.resolve
 import { ProductReviewShopResolver } from './api/product-review-shop.resolver';
 import { ProductReviewTranslation } from './entities/product-review-translation.entity';
 import { ProductReview } from './entities/product-review.entity';
-import { ReviewState } from './types';
 
 @VendurePlugin({
     imports: [PluginCommonModule],
@@ -57,15 +57,31 @@ import { ReviewState } from './types';
             ui: { tab: 'Reviews', component: 'review-selector-form-input' },
             inverseSide: undefined,
         });
+        config.customFields.Product.push({
+            name: 'translatableText',
+            label: [{ languageCode: LanguageCode.en, value: 'Translatable text' }],
+            public: true,
+            type: 'localeText',
+        });
+
         config.customFields.ProductReview = [
             {
-                type: 'string',
+                type: 'localeText',
                 name: 'reviewerName',
                 label: [{ languageCode: LanguageCode.en, value: 'Reviewer name' }],
                 public: true,
                 nullable: true,
+                ui: { component: 'textarea' },
             },
         ];
+        config.customFields.ProductReview.push({
+            name: 'verifiedReviewerName',
+            label: [{ languageCode: LanguageCode.en, value: 'Verified reviewer name' }],
+            public: true,
+            nullable: true,
+            type: 'string',
+            readonly: true,
+        });
         return config;
     },
     dashboard: './dashboard/index.tsx',
@@ -74,6 +90,7 @@ export class ReviewsPlugin implements OnApplicationBootstrap {
     constructor(
         private readonly connection: TransactionalConnection,
         private readonly requestContextService: RequestContextService,
+        private readonly translatableSaver: TranslatableSaver,
     ) {}
 
     static uiExtensions: AdminUiExtension = {
@@ -103,8 +120,17 @@ export class ReviewsPlugin implements OnApplicationBootstrap {
                     authorName: 'John Smith',
                     authorLocation: 'New York, USA',
                     state: 'approved',
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            text: 'Great product, highly recommend!',
+                            customFields: {
+                                reviewerName: 'JSmith123',
+                            },
+                        },
+                    ],
                     customFields: {
-                        reviewerName: 'JSmith123',
+                        verifiedReviewerName: 'JSmith123 verified',
                     },
                 },
                 {
@@ -114,8 +140,17 @@ export class ReviewsPlugin implements OnApplicationBootstrap {
                     authorName: 'Sarah Wilson',
                     authorLocation: 'London, UK',
                     state: 'approved',
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            text: 'Good value for money',
+                            customFields: {
+                                reviewerName: 'SarahW',
+                            },
+                        },
+                    ],
                     customFields: {
-                        reviewerName: 'SarahW',
+                        verifiedReviewerName: 'SarahW verified',
                     },
                 },
                 {
@@ -125,8 +160,17 @@ export class ReviewsPlugin implements OnApplicationBootstrap {
                     authorName: 'Mike Johnson',
                     authorLocation: 'Toronto, Canada',
                     state: 'approved',
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            text: 'Decent but could be better',
+                            customFields: {
+                                reviewerName: 'MikeJ',
+                            },
+                        },
+                    ],
                     customFields: {
-                        reviewerName: 'MikeJ',
+                        verifiedReviewerName: 'MikeJ verified',
                     },
                 },
                 {
@@ -136,8 +180,17 @@ export class ReviewsPlugin implements OnApplicationBootstrap {
                     authorName: 'Emma Brown',
                     authorLocation: 'Sydney, Australia',
                     state: 'approved',
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            text: 'Exceeded expectations',
+                            customFields: {
+                                reviewerName: 'EmmaB',
+                            },
+                        },
+                    ],
                     customFields: {
-                        reviewerName: 'EmmaB',
+                        verifiedReviewerName: 'EmmaB verified',
                     },
                 },
                 {
@@ -147,8 +200,17 @@ export class ReviewsPlugin implements OnApplicationBootstrap {
                     authorName: 'David Lee',
                     authorLocation: 'Singapore',
                     state: 'approved',
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            text: 'Good product, fast delivery',
+                            customFields: {
+                                reviewerName: 'DavidL',
+                            },
+                        },
+                    ],
                     customFields: {
-                        reviewerName: 'DavidL',
+                        verifiedReviewerName: 'DavidL verified',
                     },
                 },
             ];
@@ -160,11 +222,17 @@ export class ReviewsPlugin implements OnApplicationBootstrap {
                 });
                 const randomVariant = productVariants[Math.floor(Math.random() * productVariants.length)];
 
-                await this.connection.getRepository(ctx, ProductReview).save({
+                const input = {
                     ...review,
-                    state: review.state as ReviewState,
                     product: randomProduct,
                     productVariant: randomVariant,
+                };
+
+                const createdReview = await this.translatableSaver.create({
+                    ctx,
+                    input,
+                    entityType: ProductReview,
+                    translationType: ProductReviewTranslation,
                 });
             }
         }

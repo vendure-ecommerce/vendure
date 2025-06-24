@@ -6,8 +6,8 @@ export function LogoMark(props: React.ComponentProps<'svg'>) {
                 fill="currentColor"
             />
             <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
+                fillRule="evenodd"
+                clipRule="evenodd"
                 d="M174.388 4.798a2.148 2.148 0 0 0-2.136 2.157c0 1.191.957 2.158 2.136 2.158a2.149 2.149 0 0 0 2.137-2.158c0-1.19-.958-2.157-2.137-2.157Zm-2.611 2.157c0-1.456 1.169-2.637 2.611-2.637 1.443 0 2.612 1.181 2.612 2.637 0 1.457-1.169 2.638-2.612 2.638-1.442 0-2.611-1.181-2.611-2.638Z"
                 fill="currentColor"
             />

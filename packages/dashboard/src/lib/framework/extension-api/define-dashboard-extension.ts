@@ -1,4 +1,5 @@
 import { registerDashboardWidget } from '../dashboard-widget/widget-extensions.js';
+import { addCustomFormComponent } from '../form-engine/custom-form-component-extensions.js';
 import {
     registerDashboardActionBarItem,
     registerDashboardPageBlock,
@@ -74,6 +75,11 @@ export function defineDashboardExtension(extension: DashboardExtension) {
         if (extension.widgets) {
             for (const widget of extension.widgets) {
                 registerDashboardWidget(widget);
+            }
+        }
+        if (extension.customFormComponents) {
+            for (const component of extension.customFormComponents) {
+                addCustomFormComponent(component);
             }
         }
         const callbacks = globalRegistry.get('extensionSourceChangeCallbacks');
