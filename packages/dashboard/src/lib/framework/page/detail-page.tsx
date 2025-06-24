@@ -1,5 +1,6 @@
 import { DateTimeInput } from '@/components/data-input/datetime-input.js';
 import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
+import { TranslatableFormFieldWrapper } from '@/components/shared/translatable-form-field.js';
 import { Button } from '@/components/ui/button.js';
 import { Checkbox } from '@/components/ui/checkbox.js';
 import { Input } from '@/components/ui/input.js';
@@ -156,41 +157,54 @@ export function DetailPage<
                                 if (fieldInfo.name === 'id' && fieldInfo.type === 'ID') {
                                     return null;
                                 }
-                                return (
-                                    <FormFieldWrapper
-                                        key={fieldInfo.name}
-                                        control={form.control}
-                                        name={fieldInfo.name as never}
-                                        label={fieldInfo.name}
-                                        render={({ field }) => {
-                                            switch (fieldInfo.type) {
-                                                case 'Int':
-                                                case 'Float':
-                                                    return (
-                                                        <Input
-                                                            type="number"
-                                                            value={field.value}
-                                                            onChange={e =>
-                                                                field.onChange(e.target.valueAsNumber)
-                                                            }
-                                                        />
-                                                    );
-                                                case 'DateTime':
-                                                    return <DateTimeInput {...field} />;
-                                                case 'Boolean':
-                                                    return (
-                                                        <Checkbox
-                                                            value={field.value}
-                                                            onCheckedChange={field.onChange}
-                                                        />
-                                                    );
-                                                case 'String':
-                                                default:
-                                                    return <Input {...field} />;
-                                            }
-                                        }}
-                                    />
-                                );
+
+                                const renderField = ({ field }: { field: any }) => {
+                                    switch (fieldInfo.type) {
+                                        case 'Int':
+                                        case 'Float':
+                                            return (
+                                                <Input
+                                                    type="number"
+                                                    value={field.value}
+                                                    onChange={e => field.onChange(e.target.valueAsNumber)}
+                                                />
+                                            );
+                                        case 'DateTime':
+                                            return <DateTimeInput {...field} />;
+                                        case 'Boolean':
+                                            return (
+                                                <Checkbox
+                                                    checked={field.value}
+                                                    onCheckedChange={field.onChange}
+                                                />
+                                            );
+                                        case 'String':
+                                        default:
+                                            return <Input {...field} />;
+                                    }
+                                };
+
+                                if (fieldInfo.isTranslatable) {
+                                    return (
+                                        <TranslatableFormFieldWrapper
+                                            key={fieldInfo.name}
+                                            control={form.control}
+                                            name={fieldInfo.name as never}
+                                            label={fieldInfo.name}
+                                            render={renderField}
+                                        />
+                                    );
+                                } else {
+                                    return (
+                                        <FormFieldWrapper
+                                            key={fieldInfo.name}
+                                            control={form.control}
+                                            name={fieldInfo.name as never}
+                                            label={fieldInfo.name}
+                                            render={renderField}
+                                        />
+                                    );
+                                }
                             })}
                     </DetailFormGrid>
                 </PageBlock>

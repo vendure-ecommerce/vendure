@@ -2,6 +2,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     Allow,
     Ctx,
+    EntityNotFoundError,
     ListQueryBuilder,
     patchEntity,
     Permission,
@@ -9,6 +10,7 @@ import {
     RequestContext,
     Transaction,
     TransactionalConnection,
+    translateDeep,
 } from '@vendure/core';
 
 import { ProductReview } from '../entities/product-review.entity';
@@ -22,7 +24,10 @@ import {
 
 @Resolver()
 export class ProductReviewAdminResolver {
-    constructor(private connection: TransactionalConnection, private listQueryBuilder: ListQueryBuilder) {}
+    constructor(
+        private connection: TransactionalConnection,
+        private listQueryBuilder: ListQueryBuilder,
+    ) {}
 
     @Query()
     @Allow(Permission.ReadCatalog)
@@ -42,7 +47,7 @@ export class ProductReviewAdminResolver {
     @Query()
     @Allow(Permission.ReadCatalog)
     async productReview(@Ctx() ctx: RequestContext, @Args() args: QueryProductReviewArgs) {
-        return this.connection.getRepository(ctx, ProductReview).findOne({
+        const review = await this.connection.getRepository(ctx, ProductReview).findOne({
             where: { id: args.id },
             relations: {
                 author: true,
@@ -50,6 +55,12 @@ export class ProductReviewAdminResolver {
                 productVariant: true,
             },
         });
+
+        if (!review) {
+            throw new EntityNotFoundError(ProductReview.name, args.id);
+        }
+
+        return translateDeep(review, ctx.languageCode);
     }
 
     @Transaction()

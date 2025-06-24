@@ -26,7 +26,16 @@ const reviewDetailDocument = graphql(`
             state
             response
             responseCreatedAt
+            translations {
+                id
+                languageCode
+                text
+                customFields {
+                    reviewerName
+                }
+            }
             customFields {
+                verifiedReviewerName
                 reviewerName
             }
         }
@@ -64,14 +73,9 @@ export const reviewDetail: DashboardRouteDefinition = {
                         id: review.id,
                         summary: review.summary,
                         body: review.body,
-                        rating: review.rating,
-                        authorName: review.authorName,
-                        authorLocation: review.authorLocation,
-                        upvotes: review.upvotes,
-                        downvotes: review.downvotes,
-                        customFields: {
-                            reviewerName: review.customFields?.reviewerName ?? '',
-                        },
+                        response: review.response,
+                        customFields: review.customFields,
+                        translations: review.translations,
                     };
                 }}
             />
