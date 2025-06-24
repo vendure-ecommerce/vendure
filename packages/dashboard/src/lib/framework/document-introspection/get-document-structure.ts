@@ -230,6 +230,38 @@ export function getQueryName(documentNode: DocumentNode): string {
 
 /**
  * @description
+ * This function is used to get the entity name from a DocumentNode.
+ *
+ * For example, in the following query:
+ *
+ * ```graphql
+ * query ProductDetail($id: ID!) {
+ *   product(id: $id) {
+ *     ...ProductDetail
+ *   }
+ * }
+ * ```
+ *
+ * The entity name is `Product`.
+ */
+export function getEntityName(documentNode: DocumentNode): string {
+    const operationDefinition = documentNode.definitions.find(
+        (def): def is OperationDefinitionNode =>
+            def.kind === 'OperationDefinition' && def.operation === 'query',
+    );
+    const firstSelection = operationDefinition?.selectionSet.selections[0];
+    if (firstSelection?.kind === 'Field') {
+        // Get the return type from the field definition
+        const fieldName = firstSelection.name.value;
+        const queryInfo = getQueryInfo(fieldName);
+        return queryInfo.type;
+    } else {
+        throw new Error('Could not determine entity name');
+    }
+}
+
+/**
+ * @description
  * This function is used to get the type information of the query from a DocumentNode.
  *
  * For example, in the following query:

@@ -66,7 +66,7 @@ export interface DetailPageOptions<
      * The entity type name for custom field configuration lookup.
      * Required to filter out readonly custom fields before mutations.
      */
-    entityName?: string;
+    entityName: string;
     /**
      * @description
      * The document to create the entity.
@@ -246,12 +246,13 @@ export function useDetailPage<
     } = options;
     const isNew = params.id === NEW_ENTITY_PATH;
     const queryClient = useQueryClient();
-    const customFieldConfig = useCustomFieldConfig(entityName || '');
+    const customFieldConfig = useCustomFieldConfig(entityName);
     const detailQueryOptions = getDetailQueryOptions(addCustomFields(queryDocument), {
         id: isNew ? '__NEW__' : params.id,
     });
     const detailQuery = useSuspenseQuery(detailQueryOptions);
     const entityQueryField = entityField ?? getQueryName(queryDocument);
+
     const entity = (detailQuery?.data as any)[entityQueryField] as
         | DetailPageEntity<T, EntityField>
         | undefined;

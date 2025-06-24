@@ -62,7 +62,6 @@ export const reviewDetail: DashboardRouteDefinition = {
     component: route => {
         return (
             <DetailPage
-                entityName="ProductReview"
                 pageId="review-detail"
                 queryDocument={reviewDetailDocument}
                 updateDocument={updateReviewDocument}

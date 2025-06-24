@@ -10,7 +10,10 @@ import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRoute, useNavigate } from '@tanstack/react-router';
 import { ResultOf, VariablesOf } from 'gql.tada';
 import { toast } from 'sonner';
-import { getOperationVariablesFields } from '../document-introspection/get-document-structure.js';
+import {
+    getEntityName,
+    getOperationVariablesFields,
+} from '../document-introspection/get-document-structure.js';
 
 import { TranslatableFormFieldWrapper } from '@/components/shared/translatable-form-field.js';
 import {
@@ -42,6 +45,7 @@ export interface DetailPageProps<
     /**
      * @description
      * The name of the entity.
+     * If not provided, it will be inferred from the query document.
      */
     entityName?: string;
     /**
@@ -124,7 +128,7 @@ export function DetailPage<
 >({
     pageId,
     route,
-    entityName,
+    entityName: passedEntityName,
     queryDocument,
     createDocument,
     updateDocument,
@@ -134,6 +138,9 @@ export function DetailPage<
     const params = route.useParams();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const navigate = useNavigate();
+    const inferredEntityName = getEntityName(queryDocument);
+
+    const entityName = passedEntityName ?? inferredEntityName;
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage<any, any, any>({
         queryDocument,
