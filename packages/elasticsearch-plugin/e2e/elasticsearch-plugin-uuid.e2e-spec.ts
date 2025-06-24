@@ -66,7 +66,7 @@ describe('Elasticsearch plugin with UuidIdStrategy', () => {
         expect(search.totalItems).toBe(21);
     });
 
-    it('no term or filters', async () => {
+    it('no term or filters grouped by SKU', async () => {
         const { search } = await shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
             SEARCH_PRODUCTS_SHOP,
             {
@@ -91,7 +91,7 @@ describe('Elasticsearch plugin with UuidIdStrategy', () => {
         expect(search.totalItems).toBe(1);
     });
 
-        it('with search term', async () => {
+        it('with search term grouped by SKU', async () => {
         const { search } = await shopClient.query<SearchProductsShopQuery, SearchProductsShopQueryVariables>(
             SEARCH_PRODUCTS_SHOP,
             {

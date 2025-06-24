@@ -194,7 +194,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
 
         if (groupByProduct && groupBySKU) {
             throw new InternalServerError(
-                'groupByProduct and groupBySKU cannot be used at the same time, you can only group by one attribute.',
+                'Cannot use both groupByProduct and groupBySKU simultaneously. Please set only one of these options to true.',
             );
         }
 
@@ -205,11 +205,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                     body: elasticSearchBody,
                 });
 
-                let totalItems: number | undefined  = 0
-                if (groupByProduct)
-                    totalItems = await this.totalHits(ctx, input, groupByProduct);
-                else if (groupBySKU)
-                    totalItems = await this.totalHits(ctx, input, groupBySKU); 
+                const totalItems = await this.totalHits(ctx, input, enabledOnly);
 
                 await this.eventBus.publish(new SearchEvent(ctx, input));
                 return {
@@ -548,7 +544,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             'variant',
         );
         return result;
-    }
+    } 
 
     private mapProductToSearchResult(hit: SearchHit<VariantIndexItem>, groupByProduct: boolean = false, groupBySKU: boolean = false): ElasticSearchResult {
         const source = hit._source;
