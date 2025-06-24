@@ -103,6 +103,11 @@ export const cliCommands: CliCommandDefinition[] = [
                         description: 'Name for the mutation (used with -a)',
                         required: false,
                     },
+                    {
+                        long: '--selected-service <name>',
+                        description: 'Name of the service to add the API extension to (required with -a)',
+                        required: false,
+                    },
                 ],
             },
             {

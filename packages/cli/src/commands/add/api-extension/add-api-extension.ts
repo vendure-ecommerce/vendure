@@ -36,6 +36,7 @@ export interface AddApiExtensionOptions {
     mutationName?: string;
     config?: string;
     isNonInteractive?: boolean;
+    selectedService?: string;
 }
 
 export const addApiExtensionCommand = new CliCommand({
@@ -76,15 +77,7 @@ async function addApiExtension(
 
     const plugin = resolvedPlugin ?? (await selectPlugin(project, cancelledMessage));
 
-    if (options?.isNonInteractive) {
-        // In non-interactive mode, require explicit service specification
-        throw new Error(
-            'Service selection is not supported in non-interactive mode.\n' +
-                'Please first create a service using: npx vendure add -s <ServiceName>\n' +
-                'Then add the API extension interactively.',
-        );
-    }
-
+    // NEW: Retrieve services of the plugin early so they can be used in both interactive and non-interactive flows
     const services = getServices(project).filter(sr => {
         return sr.classDeclaration
             .getSourceFile()
@@ -97,14 +90,45 @@ async function addApiExtension(
 
     const scaffoldSpinner = spinner();
 
-    if (services.length === 0) {
-        log.info("No services found in the selected plugin. Let's create one first!");
-        const result = await addServiceCommand.run({
-            plugin,
-        });
-        serviceRef = result.serviceRef;
-    } else {
-        serviceRef = await selectServiceRef(project, plugin);
+    if (options?.isNonInteractive) {
+        // Validate that a service has been specified
+        if (!options.selectedService || options.selectedService.trim() === '') {
+            throw new Error(
+                'Service must be specified in non-interactive mode.\n' +
+                    'Usage: npx vendure add -a <PluginName> --queryName <name> --mutationName <name> --selectedService <service-name>',
+            );
+        }
+
+        const selectedService = services.find(sr => sr.name === options.selectedService);
+
+        if (!selectedService) {
+            const availableServices = services.map(sr => sr.name);
+            if (availableServices.length === 0) {
+                throw new Error(
+                    `No services found in plugin "${plugin.name}".\n` +
+                        'Please first create a service using: npx vendure add -s <ServiceName>',
+                );
+            }
+            throw new Error(
+                `Service "${options.selectedService}" not found in plugin "${plugin.name}". Available services:\n` +
+                    availableServices.map(name => `  - ${name}`).join('\n'),
+            );
+        }
+        serviceRef = selectedService;
+        log.info(`Using service: ${serviceRef.name}`);
+    }
+
+    // INTERACTIVE FLOW: If not in non-interactive mode, allow the user to select or create a service
+    if (!options?.isNonInteractive) {
+        if (services.length === 0) {
+            log.info("No services found in the selected plugin. Let's create one first!");
+            const result = await addServiceCommand.run({
+                plugin,
+            });
+            serviceRef = result.serviceRef;
+        } else {
+            serviceRef = await selectServiceRef(project, plugin);
+        }
     }
 
     if (!serviceRef) {

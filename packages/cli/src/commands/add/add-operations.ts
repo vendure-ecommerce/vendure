@@ -204,12 +204,24 @@ export async function performAddOperation(options: AddOperationOptions): Promise
                 );
             }
 
+            if (
+                !options.selectedService ||
+                typeof options.selectedService !== 'string' ||
+                !options.selectedService.trim()
+            ) {
+                throw new Error(
+                    'Service name is required for API extension. Usage: vendure add -a [plugin-name] --queryName <name> --mutationName <name> ' +
+                        '--selectedService <service-name>',
+                );
+            }
+
             await addApiExtensionCommand.run({
                 isNonInteractive: true,
                 config: options.config,
                 pluginName,
                 queryName: options.queryName,
                 mutationName: options.mutationName,
+                selectedService: options.selectedService,
             });
             return {
                 success: true,
