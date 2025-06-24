@@ -133,7 +133,23 @@ const sidebars = {
         },
         {
             type: 'category',
-            label: 'Extending the Admin UI',
+            label: 'React Admin Dashboard',
+            customProps: {
+                icon: icon.reactLogo,
+            },
+            items: [
+                'guides/extending-the-dashboard/getting-started/index',
+                'guides/extending-the-dashboard/cms-tutorial/index',
+                'guides/extending-the-dashboard/navigation/index',
+                'guides/extending-the-dashboard/page-blocks/index',
+                'guides/extending-the-dashboard/action-bar-items/index',
+                'guides/extending-the-dashboard/custom-form-components/index',
+                'guides/extending-the-dashboard/tech-stack/index',
+            ],
+        },
+        {
+            type: 'category',
+            label: 'Angular Admin UI',
             customProps: {
                 icon: icon.computer,
             },
@@ -167,14 +183,6 @@ const sidebars = {
                 'guides/extending-the-admin-ui/creating-list-views/index',
                 'guides/extending-the-admin-ui/creating-detail-views/index',
             ],
-        },
-        {
-            type: 'category',
-            label: 'Dashboard (BETA)',
-            customProps: {
-                icon: icon.reactLogo,
-            },
-            items: ['guides/extending-the-dashboard/getting-started/index'],
         },
         {
             type: 'category',
