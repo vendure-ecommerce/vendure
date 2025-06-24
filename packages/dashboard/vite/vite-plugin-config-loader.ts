@@ -24,6 +24,7 @@ export function configLoaderPlugin(options: ConfigLoaderOptions): Plugin {
             try {
                 const startTime = Date.now();
                 result = await loadVendureConfig({
+                    pathAdapter: options.pathAdapter,
                     tempDir: options.tempDir,
                     vendureConfigPath: options.vendureConfigPath,
                     vendureConfigExport: options.vendureConfigExport,
@@ -42,7 +43,11 @@ export function configLoaderPlugin(options: ConfigLoaderOptions): Plugin {
                 );
             } catch (e: unknown) {
                 if (e instanceof Error) {
-                    this.error(`Error loading Vendure config: ${e.message}`);
+                    const message = [
+                        e.message,
+                        `If you are using a monorepo, you may need to provide a custom pathAdapter to resolve the paths correctly.`,
+                    ].join('\n');
+                    this.error(`Error loading Vendure config: ${message}`);
                 }
             }
             onConfigLoaded.forEach(fn => fn());
