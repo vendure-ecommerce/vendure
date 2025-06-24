@@ -33,6 +33,7 @@ jobs:
                       🚀 good first task,
                       status: blocked 🚧,
                       status: research needed 🔍,
+                      ORM,
                       @vendure/admin-ui,
                       @vendure/admin-ui-plugin,
                       @vendure/asset-server-plugin,
