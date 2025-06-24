@@ -153,6 +153,7 @@ export function DetailPage<
                     <DetailFormGrid>
                         {updateFields
                             .filter(fieldInfo => fieldInfo.name !== 'customFields')
+                            .filter(fieldInfo => fieldInfo.name !== 'translations')
                             .map(fieldInfo => {
                                 if (fieldInfo.name === 'id' && fieldInfo.type === 'ID') {
                                     return null;
