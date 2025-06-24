@@ -6,7 +6,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 :::warning
-The `@vendure/dashboard` package is currently **beta** and is not yet recommended for production use. The API may change in future releases.
+The `@vendure/dashboard` package is currently **beta** and is not yet recommended for production use. The API may change in future releases. **The first stable release is targeted for the end of July 2025.**
 :::
 
 Our new React-based dashboard is currently in beta, and you can try it out now!
