@@ -32,8 +32,8 @@ export interface AddOperationOptions {
     mutationName?: string;
     /** Name of the service to use (used with jobQueue) */
     selectedService?: string;
-    /** Plugin name for entity/service commands */
-    pluginName?: string;
+    /** Selected plugin name for entity/service commands */
+    selectedPlugin?: string;
     /** Add custom fields support to entity */
     customFields?: boolean;
     /** Make entity translatable */
@@ -72,13 +72,17 @@ export async function performAddOperation(options: AddOperationOptions): Promise
             // Validate that an entity name was provided
             if (typeof options.entity !== 'string' || !options.entity.trim()) {
                 throw new Error(
-                    'Entity name is required. Usage: vendure add -e <entity-name> --plugin <plugin-name>',
+                    'Entity name is required. Usage: vendure add -e <entity-name> --selected-plugin <plugin-name>',
                 );
             }
             // Validate that a plugin name was provided for non-interactive mode
-            if (!options.pluginName || typeof options.pluginName !== 'string' || !options.pluginName.trim()) {
+            if (
+                !options.selectedPlugin ||
+                typeof options.selectedPlugin !== 'string' ||
+                !options.selectedPlugin.trim()
+            ) {
                 throw new Error(
-                    'Plugin name is required when running in non-interactive mode. Usage: vendure add -e <entity-name> --plugin <plugin-name>',
+                    'Plugin name is required when running in non-interactive mode. Usage: vendure add -e <entity-name> --selected-plugin <plugin-name>',
                 );
             }
             // Pass the class name and plugin name with additional options
@@ -86,38 +90,42 @@ export async function performAddOperation(options: AddOperationOptions): Promise
                 className: options.entity,
                 isNonInteractive: true,
                 config: options.config,
-                pluginName: options.pluginName,
+                pluginName: options.selectedPlugin,
                 customFields: options.customFields,
                 translatable: options.translatable,
             });
             return {
                 success: true,
-                message: `Entity "${options.entity}" added successfully to plugin "${options.pluginName}"`,
+                message: `Entity "${options.entity}" added successfully to plugin "${options.selectedPlugin}"`,
             };
         }
         if (options.service) {
             // Validate that a service name was provided
             if (typeof options.service !== 'string' || !options.service.trim()) {
                 throw new Error(
-                    'Service name is required. Usage: vendure add -s <service-name> --plugin <plugin-name>',
+                    'Service name is required. Usage: vendure add -s <service-name> --selected-plugin <plugin-name>',
                 );
             }
             // Validate that a plugin name was provided for non-interactive mode
-            if (!options.pluginName || typeof options.pluginName !== 'string' || !options.pluginName.trim()) {
+            if (
+                !options.selectedPlugin ||
+                typeof options.selectedPlugin !== 'string' ||
+                !options.selectedPlugin.trim()
+            ) {
                 throw new Error(
-                    'Plugin name is required when running in non-interactive mode. Usage: vendure add -s <service-name> --plugin <plugin-name>',
+                    'Plugin name is required when running in non-interactive mode. Usage: vendure add -s <service-name> --selected-plugin <plugin-name>',
                 );
             }
             await addServiceCommand.run({
                 serviceName: options.service,
                 isNonInteractive: true,
                 config: options.config,
-                pluginName: options.pluginName,
+                pluginName: options.selectedPlugin,
                 serviceType: options.type || 'basic',
             });
             return {
                 success: true,
-                message: `Service "${options.service}" added successfully to plugin "${options.pluginName}"`,
+                message: `Service "${options.service}" added successfully to plugin "${options.selectedPlugin}"`,
             };
         }
         if (options.jobQueue) {

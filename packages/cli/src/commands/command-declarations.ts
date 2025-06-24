@@ -12,7 +12,7 @@ export const cliCommands: CliCommandDefinition[] = [
             },
             {
                 short: '-p',
-                long: '--plugin <n>',
+                long: '--plugin <name>',
                 description: 'Create a new plugin with the specified name',
                 required: false,
             },
@@ -23,7 +23,7 @@ export const cliCommands: CliCommandDefinition[] = [
                 required: false,
                 subOptions: [
                     {
-                        long: '--plugin <name>',
+                        long: '--selected-plugin <name>',
                         description: 'Name of the plugin to add the entity to (required with -e)',
                         required: false,
                     },
@@ -46,7 +46,7 @@ export const cliCommands: CliCommandDefinition[] = [
                 required: false,
                 subOptions: [
                     {
-                        long: '--plugin <name>',
+                        long: '--selected-plugin <name>',
                         description: 'Name of the plugin to add the service to (required with -s)',
                         required: false,
                     },
@@ -64,12 +64,12 @@ export const cliCommands: CliCommandDefinition[] = [
                 required: false,
                 subOptions: [
                     {
-                        long: '--name <n>',
+                        long: '--name <name>',
                         description: 'Name for the job queue (required with -j)',
                         required: false,
                     },
                     {
-                        long: '--selected-service <n>',
+                        long: '--selected-service <name>',
                         description: 'Name of the service to add the job queue to (required with -j)',
                         required: false,
                     },
@@ -88,12 +88,12 @@ export const cliCommands: CliCommandDefinition[] = [
                 required: false,
                 subOptions: [
                     {
-                        long: '--queryName <n>',
+                        long: '--queryName <name>',
                         description: 'Name for the query (used with -a)',
                         required: false,
                     },
                     {
-                        long: '--mutationName <n>',
+                        long: '--mutationName <name>',
                         description: 'Name for the mutation (used with -a)',
                         required: false,
                     },

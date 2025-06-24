@@ -87,16 +87,16 @@ For automation or when you know exactly what you need to add, you can use the no
 npx vendure add -p MyPlugin
 
 # Add an entity to a plugin
-npx vendure add -e MyEntity --plugin MyPlugin
+npx vendure add -e MyEntity --selected-plugin MyPlugin
 
 # Add an entity with features
-npx vendure add -e MyEntity --plugin MyPlugin --custom-fields --translatable
+npx vendure add -e MyEntity --selected-plugin MyPlugin --custom-fields --translatable
 
 # Add a service to a plugin
-npx vendure add -s MyService --plugin MyPlugin
+npx vendure add -s MyService --selected-plugin MyPlugin
 
 # Add a service with specific type
-npx vendure add -s MyService --plugin MyPlugin --type entity
+npx vendure add -s MyService --selected-plugin MyPlugin --type entity
 
 # Add job queue support to a plugin
 npx vendure add -j MyPlugin --name my-job --selected-service MyService
@@ -122,16 +122,16 @@ npx vendure add -p MyPlugin --config ./custom-vendure.config.ts
 yarn vendure add -p MyPlugin
 
 # Add an entity to a plugin
-yarn vendure add -e MyEntity --plugin MyPlugin
+yarn vendure add -e MyEntity --selected-plugin MyPlugin
 
 # Add an entity with features
-yarn vendure add -e MyEntity --plugin MyPlugin --custom-fields --translatable
+yarn vendure add -e MyEntity --selected-plugin MyPlugin --custom-fields --translatable
 
 # Add a service to a plugin
-yarn vendure add -s MyService --plugin MyPlugin
+yarn vendure add -s MyService --selected-plugin MyPlugin
 
 # Add a service with specific type
-yarn vendure add -s MyService --plugin MyPlugin --type entity
+yarn vendure add -s MyService --selected-plugin MyPlugin --type entity
 
 # Add job queue support to a plugin
 yarn vendure add -j MyPlugin --name my-job --selected-service MyService
@@ -156,9 +156,9 @@ yarn vendure add -p MyPlugin --config ./custom-vendure.config.ts
 
 | Flag | Long Form | Description | Example |
 |------|-----------|-------------|---------|
-| `-p` | `--plugin <name>` | Create a new plugin | `vendure add -p MyPlugin` |
-| `-e` | `--entity <name>` | Add a new entity to a plugin | `vendure add -e MyEntity --plugin MyPlugin` |
-| `-s` | `--service <name>` | Add a new service to a plugin | `vendure add -s MyService --plugin MyPlugin` |
+| `-p` | `--plugin <n>` | Create a new plugin | `vendure add -p MyPlugin` |
+| `-e` | `--entity <n>` | Add a new entity to a plugin | `vendure add -e MyEntity --selected-plugin MyPlugin` |
+| `-s` | `--service <n>` | Add a new service to a plugin | `vendure add -s MyService --selected-plugin MyPlugin` |
 | `-j` | `--job-queue [plugin]` | Add job queue support | `vendure add -j MyPlugin --name job-name --selected-service ServiceName` |
 | `-c` | `--codegen [plugin]` | Add GraphQL codegen configuration | `vendure add -c MyPlugin` |
 | `-a` | `--api-extension [plugin]` | Add API extension scaffold | `vendure add -a MyPlugin --queryName getName --mutationName setName` |
@@ -168,12 +168,12 @@ yarn vendure add -p MyPlugin --config ./custom-vendure.config.ts
 #### Sub-options for specific commands
 
 **Entity (`-e`) additional options:**
-- `--plugin <name>`: Name of the plugin to add the entity to (required)
+- `--selected-plugin <n>`: Name of the plugin to add the entity to (required)
 - `--custom-fields`: Add custom fields support to the entity
 - `--translatable`: Make the entity translatable
 
 **Service (`-s`) additional options:**
-- `--plugin <name>`: Name of the plugin to add the service to (required)
+- `--selected-plugin <n>`: Name of the plugin to add the service to (required)
 - `--type <type>`: Type of service: basic or entity (default: basic)
 
 **Job Queue (`-j`) additional options:**

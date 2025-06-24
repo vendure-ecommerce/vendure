@@ -66,16 +66,16 @@ npx vendure add
 npx vendure add -p MyPlugin
 
 # Add an entity to a plugin
-npx vendure add -e MyEntity --plugin MyPlugin
+npx vendure add -e MyEntity --selected-plugin MyPlugin
 
 # Add an entity with features
-npx vendure add -e MyEntity --plugin MyPlugin --custom-fields --translatable
+npx vendure add -e MyEntity --selected-plugin MyPlugin --custom-fields --translatable
 
 # Add a service to a plugin
-npx vendure add -s MyService --plugin MyPlugin
+npx vendure add -s MyService --selected-plugin MyPlugin
 
 # Add a service with specific type
-npx vendure add -s MyService --plugin MyPlugin --type entity
+npx vendure add -s MyService --selected-plugin MyPlugin --type entity
 
 # Add job queue support to a plugin
 npx vendure add -j MyPlugin --name my-job --selected-service MyService
@@ -173,7 +173,7 @@ npx vendure migrate -g my-migration -o ./custom/migrations
     required: false,
     subOptions: [
         {
-            long: '--plugin <name>',
+            long: '--selected-plugin <name>',
             description: 'Name of the plugin to add the entity to (required with -e)',
             required: false,
         },
@@ -188,6 +188,24 @@ npx vendure migrate -g my-migration -o ./custom/migrations
             required: false,
         },
     ],
+},
+{
+    short: '-s',
+    long: '--service <name>',
+    description: 'Add a new service with the specified class name',
+    required: false,
+    subOptions: [
+        {
+            long: '--selected-plugin <name>',
+            description: 'Name of the plugin to add the service to (required with -s)',
+            required: false,
+        },
+        {
+            long: '--type <type>',
+            description: 'Type of service: basic or entity (default: basic)',
+            required: false,
+        },
+    ],
 }
 ```
 
@@ -197,14 +215,14 @@ Commands implement validation for non-interactive mode to ensure all required pa
 
 ### Entity and Service Commands
 
-Entity and service commands now support non-interactive mode with the `--plugin` parameter to specify the target plugin. Both commands support additional options for customization:
+Entity and service commands now support non-interactive mode with the `--selected-plugin` parameter to specify the target plugin. Both commands support additional options for customization:
 
 - Entity commands support `--custom-fields` and `--translatable` flags
 - Service commands support `--type` parameter to specify service type (basic or entity)
 
 **Example Error Handling:**
 ```bash
-$ npx vendure add -e MyEntity --plugin NonExistentPlugin
+$ npx vendure add -e MyEntity --selected-plugin NonExistentPlugin
 Error: Plugin "NonExistentPlugin" not found. Available plugins: MyActualPlugin, AnotherPlugin
 ```
 
