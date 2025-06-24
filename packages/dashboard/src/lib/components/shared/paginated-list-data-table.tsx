@@ -45,6 +45,7 @@ import React, { useMemo } from 'react';
 import { toast } from 'sonner';
 import { Button } from '../ui/button.js';
 import { Checkbox } from '../ui/checkbox.js';
+import { BulkAction } from '../data-table/data-table-types.js';
 
 // Type that identifies a paginated list structure (has items array and totalItems)
 type IsPaginatedList<T> = T extends { items: any[]; totalItems: number } ? true : false;
@@ -228,6 +229,7 @@ export interface PaginatedListDataTableProps<
     onColumnVisibilityChange?: (table: Table<any>, columnVisibility: VisibilityState) => void;
     facetedFilters?: FacetedFilterConfig<T>;
     rowActions?: RowAction<PaginatedListItemFields<T>>[];
+    bulkActions?: BulkAction[];
     disableViewOptions?: boolean;
     transformData?: (data: PaginatedListItemFields<T>[]) => PaginatedListItemFields<T>[];
     setTableOptions?: (table: TableOptions<any>) => TableOptions<any>;
@@ -266,6 +268,7 @@ export function PaginatedListDataTable<
     onColumnVisibilityChange,
     facetedFilters,
     rowActions,
+    bulkActions,
     disableViewOptions,
     setTableOptions,
     transformData,
@@ -494,6 +497,7 @@ export function PaginatedListDataTable<
                 defaultColumnVisibility={columnVisibility}
                 facetedFilters={facetedFilters}
                 disableViewOptions={disableViewOptions}
+                bulkActions={bulkActions}
                 setTableOptions={setTableOptions}
                 onRefresh={refetchPaginatedList}
             />

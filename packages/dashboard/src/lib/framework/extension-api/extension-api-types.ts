@@ -96,6 +96,13 @@ export interface DashboardPageBlockDefinition {
     requiresPermission?: string | string[];
 }
 
+export interface DashboardBulkActionDefinition {
+    id: string;
+    title: string;
+    component: React.FunctionComponent<{ context: PageContextValue }>;
+    requiresPermission?: string | string[];
+}
+
 /**
  * @description
  * **Status: Developer Preview**

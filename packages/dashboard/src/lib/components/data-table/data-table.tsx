@@ -1,5 +1,6 @@
 'use client';
 
+import React, { Suspense, useEffect } from 'react';
 import { DataTablePagination } from '@/components/data-table/data-table-pagination.js';
 import { DataTableViewOptions } from '@/components/data-table/data-table-view-options.js';
 import { Input } from '@/components/ui/input.js';
@@ -18,13 +19,14 @@ import {
     VisibilityState,
 } from '@tanstack/react-table';
 import { RowSelectionState, TableOptions } from '@tanstack/table-core';
-import React, { Suspense, useEffect } from 'react';
+import { useChannel } from '@/hooks/use-channel.js';
+import { RefreshButton } from '@/components/data-table/refresh-button.js';
+
 import { AddFilterMenu } from './add-filter-menu.js';
 import { DataTableFacetedFilter, DataTableFacetedFilterOption } from './data-table-faceted-filter.js';
 import { DataTableFilterBadge } from './data-table-filter-badge.js';
 import { DataTableBulkActions } from './data-table-bulk-actions.js';
-import { useChannel } from '@/hooks/use-channel.js';
-import { RefreshButton } from '@/components/data-table/refresh-button.js';
+import { BulkAction } from './data-table-types.js';
 
 export interface FacetedFilter {
     title: string;
@@ -49,6 +51,7 @@ interface DataTableProps<TData> {
     defaultColumnVisibility?: VisibilityState;
     facetedFilters?: { [key: string]: FacetedFilter | undefined };
     disableViewOptions?: boolean;
+    bulkActions?: BulkAction[];
     /**
      * This property allows full control over _all_ features of TanStack Table
      * when needed.
@@ -73,6 +76,7 @@ export function DataTable<TData>({
                                      defaultColumnVisibility,
                                      facetedFilters,
                                      disableViewOptions,
+                                     bulkActions,
                                      setTableOptions,
                                      onRefresh,
                                  }: DataTableProps<TData>) {
@@ -193,8 +197,8 @@ export function DataTable<TData>({
                 </div>
             </div>
             <DataTableBulkActions 
-                table={table} 
-                selectedRows={Object.keys(rowSelection).length} 
+                bulkActions={bulkActions ?? []}
+                table={table}
             />
             <div className="rounded-md border my-2">
                 <Table>

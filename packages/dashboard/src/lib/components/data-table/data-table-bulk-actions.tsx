@@ -7,24 +7,26 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.js';
-import { ChevronDown, Users } from 'lucide-react';
-import { Table } from '@tanstack/react-table';
 import { Trans } from '@/lib/trans.js';
+import { Table } from '@tanstack/react-table';
+import { ChevronDown } from 'lucide-react';
+import { BulkAction } from './data-table-types.js';
 
 interface DataTableBulkActionsProps<TData> {
     table: Table<TData>;
-    selectedRows: number;
+    bulkActions: BulkAction[];
 }
 
-export function DataTableBulkActions<TData>({ table, selectedRows }: DataTableBulkActionsProps<TData>) {
-    if (selectedRows === 0) {
+export function DataTableBulkActions<TData>({ table, bulkActions }: DataTableBulkActionsProps<TData>) {
+    const selection = Object.keys(table.getState().rowSelection).map(key => table.getRow(key).original);
+    if (selection.length === 0) {
         return null;
     }
 
     return (
         <div className="flex items-center gap-2 px-2 py-1 bg-muted/50 rounded-md border">
             <span className="text-sm text-muted-foreground">
-                <Trans>{selectedRows} selected</Trans>
+                <Trans>{selection.length} selected</Trans>
             </span>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -34,20 +36,21 @@ export function DataTableBulkActions<TData>({ table, selectedRows }: DataTableBu
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
-                    <DropdownMenuItem>
-                        <Users className="mr-2 h-4 w-4" />
-                        <Trans>Bulk action 1</Trans>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        <Users className="mr-2 h-4 w-4" />
-                        <Trans>Bulk action 2</Trans>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        <Users className="mr-2 h-4 w-4" />
-                        <Trans>Bulk action 3</Trans>
-                    </DropdownMenuItem>
+                    {bulkActions.length > 0 ? bulkActions
+                        ?.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+                        .map((action, index) => (
+                            <action.component
+                                key={`bulk-action-${index}`}
+                                selection={selection}
+                                table={table}
+                            />
+                        )) : (
+                        <DropdownMenuItem className='text-muted-foreground' disabled>
+                            <Trans>No actions available</Trans>
+                        </DropdownMenuItem>
+                    )}
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>
     );
-} 
+}
