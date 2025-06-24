@@ -2864,7 +2864,6 @@ export type ProvinceList = PaginatedList & {
 
 export type PublicPaymentMethod = {
     code: Scalars['String']['output'];
-    customFields?: Maybe<Scalars['JSON']['output']>;
     description?: Maybe<Scalars['String']['output']>;
     id: Scalars['ID']['output'];
     name: Scalars['String']['output'];
@@ -2873,7 +2872,6 @@ export type PublicPaymentMethod = {
 
 export type PublicShippingMethod = {
     code: Scalars['String']['output'];
-    customFields?: Maybe<Scalars['JSON']['output']>;
     description?: Maybe<Scalars['String']['output']>;
     id: Scalars['ID']['output'];
     name: Scalars['String']['output'];
