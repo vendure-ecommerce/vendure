@@ -49,8 +49,11 @@ jobs:
                       P3: minor,
                       P4: low
                   stale-issue-label: stale
+                  stale-issue-message: >
+                      This issue has been automatically marked as stale because it has not had any recent activity in the last 30 days.
+                      Please comment with new information and remove the label to re-open.
                   close-issue-message: >
-                      Closed automatically because there has been no activity for {{days-before-close}}
+                      Closed automatically because there has been no activity for 3
                       days after a reminder.  Please comment with new information and
-                      remove the label to re-open.
+                      remove the `stale` label to re-open.
                   operations-per-run: 1000
