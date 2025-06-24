@@ -99,7 +99,6 @@ function renderFieldInput(fieldInfo: { type: string }, field: any) {
             return <DateTimeInput {...field} />;
         case 'Boolean':
             return <Checkbox value={field.value} onCheckedChange={field.onChange} />;
-        case 'String':
         default:
             return <Input {...field} />;
     }
@@ -159,7 +158,7 @@ export function DetailPage<
     });
 
     const updateFields = getOperationVariablesFields(updateDocument, 'input');
-    const translations = updateFields.filter(fieldInfo => fieldInfo.name === 'translations').at(0);
+    const translations = updateFields.find(fieldInfo => fieldInfo.name === 'translations');
 
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler}>
@@ -194,23 +193,21 @@ export function DetailPage<
                                     />
                                 );
                             })}
-                        {translations &&
-                            translations.typeInfo
-                                ?.filter(
-                                    fieldInfo =>
-                                        !['customFields', 'id', 'languageCode'].includes(fieldInfo.name),
-                                )
-                                .map(fieldInfo => {
-                                    return (
-                                        <TranslatableFormFieldWrapper
-                                            key={fieldInfo.name}
-                                            control={form.control}
-                                            name={fieldInfo.name as never}
-                                            label={fieldInfo.name}
-                                            render={({ field }) => renderFieldInput(fieldInfo, field)}
-                                        />
-                                    );
-                                })}
+                        {translations?.typeInfo
+                            ?.filter(
+                                fieldInfo => !['customFields', 'id', 'languageCode'].includes(fieldInfo.name),
+                            )
+                            .map(fieldInfo => {
+                                return (
+                                    <TranslatableFormFieldWrapper
+                                        key={fieldInfo.name}
+                                        control={form.control}
+                                        name={fieldInfo.name as never}
+                                        label={fieldInfo.name}
+                                        render={({ field }) => renderFieldInput(fieldInfo, field)}
+                                    />
+                                );
+                            })}
                     </DetailFormGrid>
                 </PageBlock>
                 {entityName && (
