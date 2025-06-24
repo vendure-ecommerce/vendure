@@ -6,7 +6,7 @@
  */
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
     generateMigrationOperation,
@@ -227,29 +227,41 @@ describe('Migrate Command E2E', () => {
         it('should handle database connection errors gracefully', async () => {
             process.chdir(TEST_PROJECT_DIR);
 
-            // Temporarily modify config to have invalid database settings
-            const configPath = path.join(TEST_PROJECT_DIR, 'src', 'vendure-config.ts');
-            const configContent = await fs.readFile(configPath, 'utf-8');
+            // Ensure a clean module state before mocking
+            vi.resetModules();
 
-            // Make the path absolute and invalid
-            await fs.writeFile(configPath, configContent.replace('../test.db', '/nonexistent/dir/test.db'));
+            // Mock the loadVendureConfigFile helper to return a config with an invalid database path
+            vi.doMock('../src/commands/migrate/load-vendure-config-file', async () => {
+                const { config: realConfig }: { config: any } = await vi.importActual(
+                    path.join(TEST_PROJECT_DIR, 'src', 'vendure-config.ts'),
+                );
 
-            try {
-                const result = await runMigrationsOperation();
+                return {
+                    __esModule: true,
+                    loadVendureConfigFile: () =>
+                        Promise.resolve({
+                            ...realConfig,
+                            dbConnectionOptions: {
+                                ...realConfig.dbConnectionOptions,
+                                database: '/nonexistent/dir/test.db',
+                            },
+                        }),
+                };
+            });
 
-                // SQLite might create parent directories, so check the actual error
-                if (result.success) {
-                    // If it succeeded, it means SQLite created the directory
-                    // This is acceptable behavior for SQLite
-                    expect(result.message).toBeDefined();
-                } else {
-                    expect(result.success).toBe(false);
-                    expect(result.message).toBeDefined();
-                    expect(result.migrationsRan).toBeUndefined();
-                }
-            } finally {
-                await fs.writeFile(configPath, configContent);
-            }
+            // Re-import the operation after the mock so that it picks up the mocked helper
+            const { runMigrationsOperation: runMigrationsWithInvalidDb } = await import(
+                '../src/commands/migrate/migration-operations'
+            );
+
+            const result = await runMigrationsWithInvalidDb();
+
+            expect(result.success).toBe(false);
+            expect(result.message).toBeDefined();
+            expect(result.migrationsRan).toBeUndefined();
+
+            // Clean up mock for subsequent tests
+            vi.unmock('../src/commands/migrate/load-vendure-config-file');
         });
     });
 
