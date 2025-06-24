@@ -11,7 +11,7 @@ export class ProductReviewTranslation
     extends VendureEntity
     implements Translation<ProductReview>, HasCustomFields
 {
-    constructor(input?: DeepPartial<Translation<ProductReviewTranslation>>) {
+    constructor(input?: DeepPartial<ProductReviewTranslation>) {
         super(input);
     }
 
