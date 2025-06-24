@@ -174,7 +174,15 @@ const sidebars = {
             customProps: {
                 icon: icon.reactLogo,
             },
-            items: ['guides/extending-the-dashboard/getting-started/index'],
+            items: [
+                'guides/extending-the-dashboard/getting-started/index',
+                'guides/extending-the-dashboard/cms-tutorial/index',
+                'guides/extending-the-dashboard/navigation/index',
+                'guides/extending-the-dashboard/page-blocks/index',
+                'guides/extending-the-dashboard/action-bar-items/index',
+                'guides/extending-the-dashboard/custom-form-components/index',
+                'guides/extending-the-dashboard/tech-stack/index',
+            ],
         },
         {
             type: 'category',
