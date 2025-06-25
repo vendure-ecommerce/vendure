@@ -5,7 +5,7 @@ import { Column, Entity, Index } from 'typeorm';
 import { VendureEntity } from '../../entity/base/base.entity';
 
 // createdAt is coming from base entity VendureEntity and is not explicitly defined here
-@Index('IDX_job_record_createdAt', ['createdAt'])
+@Index(['createdAt'])
 @Entity()
 export class JobRecord extends VendureEntity {
     constructor(input: DeepPartial<JobRecord>) {
