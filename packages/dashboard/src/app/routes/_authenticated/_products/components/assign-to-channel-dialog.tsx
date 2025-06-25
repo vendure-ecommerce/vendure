@@ -1,7 +1,8 @@
+import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { useMutation } from '@tanstack/react-query';
 
+import { ChannelCodeLabel } from '@/components/shared/channel-code-label.js';
 import { Button } from '@/components/ui/button.js';
 import {
     Dialog,
@@ -11,14 +12,14 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog.js';
+import { Input } from '@/components/ui/input.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.js';
-import { ChannelCodeLabel } from '@/components/shared/channel-code-label.js';
 import { api } from '@/graphql/api.js';
 import { ResultOf } from '@/graphql/graphql.js';
 import { Trans, useLingui } from '@/lib/trans.js';
 
-import { assignProductsToChannelDocument } from '../products.graphql.js';
 import { useChannel } from '@/hooks/use-channel.js';
+import { assignProductsToChannelDocument } from '../products.graphql.js';
 
 interface AssignToChannelDialogProps {
     open: boolean;
@@ -27,7 +28,12 @@ interface AssignToChannelDialogProps {
     onSuccess?: () => void;
 }
 
-export function AssignToChannelDialog({ open, onOpenChange, productIds, onSuccess }: AssignToChannelDialogProps) {
+export function AssignToChannelDialog({
+    open,
+    onOpenChange,
+    productIds,
+    onSuccess,
+}: AssignToChannelDialogProps) {
     const { i18n } = useLingui();
     const [selectedChannelId, setSelectedChannelId] = useState<string>('');
     const [priceFactor, setPriceFactor] = useState<number>(1);
@@ -67,7 +73,9 @@ export function AssignToChannelDialog({ open, onOpenChange, productIds, onSucces
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle><Trans>Assign products to channel</Trans></DialogTitle>
+                    <DialogTitle>
+                        <Trans>Assign products to channel</Trans>
+                    </DialogTitle>
                     <DialogDescription>
                         <Trans>Select a channel to assign {productIds.length} products to</Trans>
                     </DialogDescription>
@@ -94,14 +102,13 @@ export function AssignToChannelDialog({ open, onOpenChange, productIds, onSucces
                         <label className="text-sm font-medium">
                             <Trans>Price conversion factor</Trans>
                         </label>
-                        <input
+                        <Input
                             type="number"
                             min="0"
                             max="99999"
                             step="0.01"
                             value={priceFactor}
                             onChange={e => setPriceFactor(parseFloat(e.target.value) || 1)}
-                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                         />
                     </div>
                 </div>
@@ -116,4 +123,4 @@ export function AssignToChannelDialog({ open, onOpenChange, productIds, onSucces
             </DialogContent>
         </Dialog>
     );
-} 
+}

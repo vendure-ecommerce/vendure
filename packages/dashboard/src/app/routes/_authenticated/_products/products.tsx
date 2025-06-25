@@ -6,12 +6,12 @@ import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
-import { 
-    DeleteProductsBulkAction, 
-    AssignProductsToChannelBulkAction, 
-    RemoveProductsFromChannelBulkAction, 
-    AssignFacetValuesToProductsBulkAction, 
-    DuplicateProductsBulkAction 
+import {
+    AssignFacetValuesToProductsBulkAction,
+    AssignProductsToChannelBulkAction,
+    DeleteProductsBulkAction,
+    DuplicateProductsBulkAction,
+    RemoveProductsFromChannelBulkAction,
 } from './components/product-bulk-actions.js';
 import { deleteProductDocument, productListDocument } from './products.graphql.js';
 
@@ -41,27 +41,22 @@ function ProductListPage() {
             route={Route}
             bulkActions={[
                 {
-                    requiresPermission: ['UpdateCatalog', 'UpdateProduct'],
                     component: AssignProductsToChannelBulkAction,
                     order: 100,
                 },
                 {
-                    requiresPermission: ['UpdateCatalog', 'UpdateProduct'],
                     component: RemoveProductsFromChannelBulkAction,
                     order: 200,
                 },
                 {
-                    requiresPermission: ['UpdateCatalog', 'UpdateProduct'],
                     component: AssignFacetValuesToProductsBulkAction,
                     order: 300,
                 },
                 {
-                    requiresPermission: ['CreateProduct', 'CreateCatalog'],
                     component: DuplicateProductsBulkAction,
                     order: 400,
                 },
                 {
-                    requiresPermission: ['DeleteProduct', 'DeleteCatalog'],
                     component: DeleteProductsBulkAction,
                     order: 500,
                 },

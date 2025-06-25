@@ -1,4 +1,6 @@
+import { usePermissions } from '@/hooks/use-permissions.js';
 import { Trans } from '@/lib/trans.js';
+import { cn } from '@/lib/utils.js';
 import { LucideIcon } from 'lucide-react';
 import { useState } from 'react';
 import {
@@ -13,7 +15,6 @@ import {
     AlertDialogTrigger,
 } from '../ui/alert-dialog.js';
 import { DropdownMenuItem } from '../ui/dropdown-menu.js';
-import { cn } from '@/lib/utils.js';
 
 export interface DataTableBulkActionItemProps {
     label: React.ReactNode;
@@ -21,6 +22,7 @@ export interface DataTableBulkActionItemProps {
     confirmationText?: React.ReactNode;
     onClick: () => void;
     className?: string;
+    requiresPermission?: string[];
 }
 
 export function DataTableBulkActionItem({
@@ -29,12 +31,18 @@ export function DataTableBulkActionItem({
     confirmationText,
     className,
     onClick,
+    requiresPermission,
 }: DataTableBulkActionItemProps) {
     const [isOpen, setIsOpen] = useState(false);
+    const { hasPermissions } = usePermissions();
+    const userHasPermission = hasPermissions(requiresPermission ?? []);
 
     const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
         e.preventDefault();
         e.stopPropagation();
+        if (!userHasPermission) {
+            return;
+        }
         if (confirmationText) {
             setIsOpen(true);
         } else {
@@ -55,9 +63,9 @@ export function DataTableBulkActionItem({
         return (
             <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
                 <AlertDialogTrigger asChild>
-                    <DropdownMenuItem onClick={handleClick}>
-                        {Icon && <Icon className={cn("mr-1 h-4 w-4", className)} />}
-                        <span className={cn("text-sm", className)}>
+                    <DropdownMenuItem onClick={handleClick} disabled={!userHasPermission}>
+                        {Icon && <Icon className={cn('mr-1 h-4 w-4', className)} />}
+                        <span className={cn('text-sm', className)}>
                             <Trans>{label}</Trans>
                         </span>
                     </DropdownMenuItem>
@@ -67,9 +75,7 @@ export function DataTableBulkActionItem({
                         <AlertDialogTitle>
                             <Trans>Confirm Action</Trans>
                         </AlertDialogTitle>
-                        <AlertDialogDescription>
-                            {confirmationText}
-                        </AlertDialogDescription>
+                        <AlertDialogDescription>{confirmationText}</AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel onClick={handleCancel}>
@@ -86,8 +92,8 @@ export function DataTableBulkActionItem({
 
     return (
         <DropdownMenuItem onClick={handleClick}>
-            {Icon && <Icon className={cn("mr-1 h-4 w-4", className)} />}
-            <span className={cn("text-sm", className)}>
+            {Icon && <Icon className={cn('mr-1 h-4 w-4', className)} />}
+            <span className={cn('text-sm', className)}>
                 <Trans>{label}</Trans>
             </span>
         </DropdownMenuItem>

@@ -10,6 +10,7 @@ import { ResultOf } from '@/graphql/graphql.js';
 import { useChannel, usePaginatedList } from '@/index.js';
 import { Trans, useLingui } from '@/lib/trans.js';
 
+import { Permission } from '@vendure/common/lib/generated-types';
 import {
     deleteProductsDocument,
     duplicateEntityDocument,
@@ -48,6 +49,7 @@ export const DeleteProductsBulkAction: BulkActionComponent<any> = ({ selection, 
     });
     return (
         <DataTableBulkActionItem
+            requiresPermission={[Permission.DeleteCatalog, Permission.DeleteProduct]}
             onClick={() => mutate({ ids: selection.map(s => s.id) })}
             label={<Trans>Delete</Trans>}
             confirmationText={<Trans>Are you sure you want to delete {selection.length} products?</Trans>}
@@ -74,6 +76,7 @@ export const AssignProductsToChannelBulkAction: BulkActionComponent<any> = ({ se
     return (
         <>
             <DataTableBulkActionItem
+                requiresPermission={[Permission.UpdateCatalog, Permission.UpdateProduct]}
                 onClick={() => setDialogOpen(true)}
                 label={<Trans>Assign to channel</Trans>}
                 icon={LayersIcon}
@@ -144,6 +147,7 @@ export const AssignFacetValuesToProductsBulkAction: BulkActionComponent<any> = (
     return (
         <>
             <DataTableBulkActionItem
+                requiresPermission={[Permission.UpdateCatalog, Permission.UpdateProduct]}
                 onClick={() => setDialogOpen(true)}
                 label={<Trans>Edit facet values</Trans>}
                 icon={TagIcon}
@@ -161,54 +165,103 @@ export const AssignFacetValuesToProductsBulkAction: BulkActionComponent<any> = (
 export const DuplicateProductsBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
     const { refetchPaginatedList } = usePaginatedList();
     const { i18n } = useLingui();
-    const { mutate, isPending } = useMutation({
+    const [isDuplicating, setIsDuplicating] = useState(false);
+    const [progress, setProgress] = useState({ completed: 0, total: 0 });
+
+    const { mutateAsync } = useMutation({
         mutationFn: api.mutate(duplicateEntityDocument),
-        onSuccess: (result: ResultOf<typeof duplicateEntityDocument>) => {
-            if ('newEntityId' in result.duplicateEntity) {
-                toast.success(i18n.t(`Successfully duplicated ${selection.length} products`));
-                refetchPaginatedList();
-                table.resetRowSelection();
-            } else {
-                toast.error(
-                    `Failed to duplicate products: ${result.duplicateEntity.message || result.duplicateEntity.duplicationError}`,
-                );
-            }
-        },
-        onError: () => {
-            toast.error(`Failed to duplicate ${selection.length} products`);
-        },
     });
 
-    const handleDuplicate = () => {
-        if (isPending) return;
+    const handleDuplicate = async () => {
+        if (isDuplicating) return;
 
-        // For now, we'll duplicate products one by one
-        // In a real implementation, you might want to batch this or show progress
-        const duplicatePromises = selection.map(product =>
-            mutate({
-                input: {
-                    entityName: 'Product',
-                    entityId: product.id,
-                    duplicatorInput: {
-                        code: 'product-duplicator',
-                        arguments: [
-                            {
-                                name: 'includeVariants',
-                                value: 'true',
+        setIsDuplicating(true);
+        setProgress({ completed: 0, total: selection.length });
+
+        const results = {
+            success: 0,
+            failed: 0,
+            errors: [] as string[],
+        };
+
+        try {
+            // Process products sequentially to avoid overwhelming the server
+            for (let i = 0; i < selection.length; i++) {
+                const product = selection[i];
+
+                try {
+                    const result = await mutateAsync({
+                        input: {
+                            entityName: 'Product',
+                            entityId: product.id,
+                            duplicatorInput: {
+                                code: 'product-duplicator',
+                                arguments: [
+                                    {
+                                        name: 'includeVariants',
+                                        value: 'true',
+                                    },
+                                ],
                             },
-                        ],
-                    },
-                },
-            }),
-        );
+                        },
+                    });
 
-        // Execute all duplications
-        Promise.all(duplicatePromises).catch(() => {
-            // Error handling is done in the mutation onError
-        });
+                    if ('newEntityId' in result.duplicateEntity) {
+                        results.success++;
+                    } else {
+                        results.failed++;
+                        const errorMsg =
+                            result.duplicateEntity.message ||
+                            result.duplicateEntity.duplicationError ||
+                            'Unknown error';
+                        results.errors.push(`Product ${product.name || product.id}: ${errorMsg}`);
+                    }
+                } catch (error) {
+                    results.failed++;
+                    results.errors.push(
+                        `Product ${product.name || product.id}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                    );
+                }
+
+                setProgress({ completed: i + 1, total: selection.length });
+            }
+
+            // Show results
+            if (results.success > 0) {
+                toast.success(i18n.t(`Successfully duplicated ${results.success} products`));
+            }
+            if (results.failed > 0) {
+                const errorMessage =
+                    results.errors.length > 3
+                        ? `${results.errors.slice(0, 3).join(', ')}... and ${results.errors.length - 3} more`
+                        : results.errors.join(', ');
+                toast.error(`Failed to duplicate ${results.failed} products: ${errorMessage}`);
+            }
+
+            if (results.success > 0) {
+                refetchPaginatedList();
+                table.resetRowSelection();
+            }
+        } finally {
+            setIsDuplicating(false);
+            setProgress({ completed: 0, total: 0 });
+        }
     };
 
     return (
-        <DataTableBulkActionItem onClick={handleDuplicate} label={<Trans>Duplicate</Trans>} icon={CopyIcon} />
+        <DataTableBulkActionItem
+            requiresPermission={[Permission.UpdateCatalog, Permission.UpdateProduct]}
+            onClick={handleDuplicate}
+            label={
+                isDuplicating ? (
+                    <Trans>
+                        Duplicating... ({progress.completed}/{progress.total})
+                    </Trans>
+                ) : (
+                    <Trans>Duplicate</Trans>
+                )
+            }
+            icon={CopyIcon}
+        />
     );
 };
