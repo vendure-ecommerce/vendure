@@ -1,7 +1,7 @@
+import { useMutation } from '@tanstack/react-query';
+import { CopyIcon, LayersIcon, TagIcon, TrashIcon } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { TrashIcon, LayersIcon, TagIcon, CopyIcon } from 'lucide-react';
-import { useMutation } from '@tanstack/react-query';
 
 import { DataTableBulkActionItem } from '@/components/data-table/data-table-bulk-action-item.js';
 import { BulkActionComponent } from '@/components/data-table/data-table-types.js';
@@ -10,15 +10,13 @@ import { ResultOf } from '@/graphql/graphql.js';
 import { useChannel, usePaginatedList } from '@/index.js';
 import { Trans, useLingui } from '@/lib/trans.js';
 
-import { 
-    deleteProductsDocument, 
-    assignProductsToChannelDocument, 
-    removeProductsFromChannelDocument, 
-    updateProductsDocument, 
-    duplicateEntityDocument 
+import {
+    deleteProductsDocument,
+    duplicateEntityDocument,
+    removeProductsFromChannelDocument,
 } from '../products.graphql.js';
-import { AssignToChannelDialog } from './assign-to-channel-dialog.js';
 import { AssignFacetValuesDialog } from './assign-facet-values-dialog.js';
+import { AssignToChannelDialog } from './assign-to-channel-dialog.js';
 
 export const DeleteProductsBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
     const { refetchPaginatedList } = usePaginatedList();
@@ -101,8 +99,7 @@ export const RemoveProductsFromChannelBulkAction: BulkActionComponent<any> = ({ 
             refetchPaginatedList();
             table.resetRowSelection();
         },
-        onError: (error
-        ) => {
+        onError: error => {
             toast.error(`Failed to remove ${selection.length} products from channel: ${error.message}`);
         },
     });
@@ -124,7 +121,11 @@ export const RemoveProductsFromChannelBulkAction: BulkActionComponent<any> = ({ 
         <DataTableBulkActionItem
             onClick={handleRemove}
             label={<Trans>Remove from current channel</Trans>}
-            confirmationText={<Trans>Are you sure you want to remove {selection.length} products from the current channel?</Trans>}
+            confirmationText={
+                <Trans>
+                    Are you sure you want to remove {selection.length} products from the current channel?
+                </Trans>
+            }
             icon={LayersIcon}
             className="text-warning"
         />
@@ -168,7 +169,9 @@ export const DuplicateProductsBulkAction: BulkActionComponent<any> = ({ selectio
                 refetchPaginatedList();
                 table.resetRowSelection();
             } else {
-                toast.error(`Failed to duplicate products: ${result.duplicateEntity.message || result.duplicateEntity.duplicationError}`);
+                toast.error(
+                    `Failed to duplicate products: ${result.duplicateEntity.message || result.duplicateEntity.duplicationError}`,
+                );
             }
         },
         onError: () => {
@@ -178,10 +181,10 @@ export const DuplicateProductsBulkAction: BulkActionComponent<any> = ({ selectio
 
     const handleDuplicate = () => {
         if (isPending) return;
-        
+
         // For now, we'll duplicate products one by one
         // In a real implementation, you might want to batch this or show progress
-        const duplicatePromises = selection.map(product => 
+        const duplicatePromises = selection.map(product =>
             mutate({
                 input: {
                     entityName: 'Product',
@@ -195,8 +198,8 @@ export const DuplicateProductsBulkAction: BulkActionComponent<any> = ({ selectio
                             },
                         ],
                     },
-                }
-            })
+                },
+            }),
         );
 
         // Execute all duplications
@@ -206,10 +209,6 @@ export const DuplicateProductsBulkAction: BulkActionComponent<any> = ({ selectio
     };
 
     return (
-        <DataTableBulkActionItem
-            onClick={handleDuplicate}
-            label={<Trans>Duplicate</Trans>}
-            icon={CopyIcon}
-        />
+        <DataTableBulkActionItem onClick={handleDuplicate} label={<Trans>Duplicate</Trans>} icon={CopyIcon} />
     );
 };
