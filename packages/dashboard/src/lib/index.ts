@@ -162,6 +162,8 @@ export * from './framework/page/use-detail-page.js';
 export * from './framework/page/use-extended-router.js';
 export * from './framework/registry/global-registry.js';
 export * from './framework/registry/registry-types.js';
+export * from './graphql/api.js';
+export * from './graphql/fragments.js';
 export * from './hooks/use-auth.js';
 export * from './hooks/use-channel.js';
 export * from './hooks/use-custom-field-config.js';
