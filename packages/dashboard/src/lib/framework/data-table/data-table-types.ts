@@ -22,5 +22,4 @@ export type BulkActionComponent<Item extends { id: string } & Record<string, any
 export type BulkAction = {
     order?: number;
     component: BulkActionComponent<any>;
-    requiresPermission?: string | string[];
 };
