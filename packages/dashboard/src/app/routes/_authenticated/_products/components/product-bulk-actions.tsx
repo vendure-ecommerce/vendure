@@ -122,6 +122,7 @@ export const RemoveProductsFromChannelBulkAction: BulkActionComponent<any> = ({ 
 
     return (
         <DataTableBulkActionItem
+            requiresPermission={[Permission.UpdateCatalog, Permission.UpdateProduct]}
             onClick={handleRemove}
             label={<Trans>Remove from current channel</Trans>}
             confirmationText={
