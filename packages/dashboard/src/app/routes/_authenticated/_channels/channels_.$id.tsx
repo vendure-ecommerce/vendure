@@ -100,7 +100,7 @@ function ChannelDetailPage() {
     const codeIsDefault = entity?.code === DEFAULT_CHANNEL_CODE;
 
     return (
-        <Page pageId="channel-detail" form={form} submitHandler={submitHandler}>
+        <Page pageId="channel-detail" form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
                 {creatingNewEntity ? (
                     <Trans>New channel</Trans>

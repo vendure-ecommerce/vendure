@@ -72,7 +72,7 @@ function CustomerGroupDetailPage() {
     });
 
     return (
-        <Page pageId="customer-group-detail" form={form} submitHandler={submitHandler}>
+        <Page pageId="customer-group-detail" form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
                 {creatingNewEntity ? <Trans>New customer group</Trans> : (entity?.name ?? '')}
             </PageTitle>

@@ -65,7 +65,7 @@ function SellerDetailPage() {
     });
 
     return (
-        <Page pageId="seller-detail" form={form} submitHandler={submitHandler}>
+        <Page pageId="seller-detail" form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New seller</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>

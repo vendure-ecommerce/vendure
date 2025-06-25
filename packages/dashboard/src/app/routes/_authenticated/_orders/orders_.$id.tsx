@@ -27,10 +27,7 @@ import { orderDetailDocument } from './orders.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_orders/orders_/$id')({
     component: OrderDetailPage,
-    loader: async ({
-        context,
-        params,
-    }) => {
+    loader: async ({ context, params }) => {
         if (!params.id) {
             throw new Error('ID param is required');
         }
@@ -86,7 +83,7 @@ function OrderDetailPage() {
     }
 
     return (
-        <Page pageId="order-detail" form={form} submitHandler={submitHandler}>
+        <Page pageId="order-detail" form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{entity?.code ?? ''}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>

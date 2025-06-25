@@ -114,7 +114,7 @@ function PromotionDetailPage() {
     });
 
     return (
-        <Page pageId="promotion-detail" form={form} submitHandler={submitHandler}>
+        <Page pageId="promotion-detail" form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New promotion</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>

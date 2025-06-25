@@ -77,7 +77,7 @@ function TaxRateDetailPage() {
     });
 
     return (
-        <Page pageId="tax-rate-detail" form={form} submitHandler={submitHandler}>
+        <Page pageId="tax-rate-detail" form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New tax rate</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>

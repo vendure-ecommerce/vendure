@@ -87,7 +87,7 @@ function AdministratorDetailPage() {
     const roleIds = form.watch('roleIds');
 
     return (
-        <Page pageId="administrator-detail" form={form} submitHandler={submitHandler}>
+        <Page pageId="administrator-detail" form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New administrator</Trans> : name}</PageTitle>
 
             <PageActionBar>

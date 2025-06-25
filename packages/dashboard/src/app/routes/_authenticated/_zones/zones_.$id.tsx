@@ -66,7 +66,7 @@ function ZoneDetailPage() {
     });
 
     return (
-        <Page pageId="zone-detail" form={form} submitHandler={submitHandler}>
+        <Page pageId="zone-detail" form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New zone</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>

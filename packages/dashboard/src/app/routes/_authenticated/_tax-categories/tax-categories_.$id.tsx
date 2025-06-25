@@ -73,7 +73,7 @@ function TaxCategoryDetailPage() {
     });
 
     return (
-        <Page pageId="tax-category-detail" form={form} submitHandler={submitHandler}>
+        <Page pageId="tax-category-detail" form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
                 {creatingNewEntity ? <Trans>New tax category</Trans> : (entity?.name ?? '')}
             </PageTitle>
