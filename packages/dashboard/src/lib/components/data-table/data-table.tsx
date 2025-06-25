@@ -5,6 +5,7 @@ import { DataTableViewOptions } from '@/components/data-table/data-table-view-op
 import { RefreshButton } from '@/components/data-table/refresh-button.js';
 import { Input } from '@/components/ui/input.js';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.js';
+import { BulkAction } from '@/framework/data-table/data-table-types.js';
 import { useChannel } from '@/hooks/use-channel.js';
 import {
     ColumnDef,
@@ -21,12 +22,10 @@ import {
 } from '@tanstack/react-table';
 import { RowSelectionState, TableOptions } from '@tanstack/table-core';
 import React, { Suspense, useEffect } from 'react';
-
 import { AddFilterMenu } from './add-filter-menu.js';
 import { DataTableBulkActions } from './data-table-bulk-actions.js';
 import { DataTableFacetedFilter, DataTableFacetedFilterOption } from './data-table-faceted-filter.js';
 import { DataTableFilterBadge } from './data-table-filter-badge.js';
-import { BulkAction } from './data-table-types.js';
 
 export interface FacetedFilter {
     title: string;

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { DataTableBulkActionItem } from '@/components/data-table/data-table-bulk-action-item.js';
-import { BulkActionComponent } from '@/components/data-table/data-table-types.js';
+import { BulkActionComponent } from '@/framework/data-table/data-table-types.js';
 import { api } from '@/graphql/api.js';
 import { ResultOf } from '@/graphql/graphql.js';
 import { useChannel, usePaginatedList } from '@/index.js';

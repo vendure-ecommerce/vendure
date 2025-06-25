@@ -7,10 +7,13 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.js';
+import { getBulkActions } from '@/framework/data-table/data-table-extensions.js';
+import { BulkAction } from '@/framework/data-table/data-table-types.js';
+import { usePageBlock } from '@/hooks/use-page-block.js';
+import { usePage } from '@/hooks/use-page.js';
 import { Trans } from '@/lib/trans.js';
 import { Table } from '@tanstack/react-table';
 import { ChevronDown } from 'lucide-react';
-import { BulkAction } from './data-table-types.js';
 
 interface DataTableBulkActionsProps<TData> {
     table: Table<TData>;
@@ -18,10 +21,15 @@ interface DataTableBulkActionsProps<TData> {
 }
 
 export function DataTableBulkActions<TData>({ table, bulkActions }: DataTableBulkActionsProps<TData>) {
+    const { pageId } = usePage();
+    const { blockId } = usePageBlock();
     const selection = Object.keys(table.getState().rowSelection).map(key => table.getRow(key).original);
     if (selection.length === 0) {
         return null;
     }
+    const extendedBulkActions = pageId ? getBulkActions(pageId, blockId) : [];
+    const allBulkActions = [...extendedBulkActions, ...(bulkActions ?? [])];
+    allBulkActions.sort((a, b) => (a.order ?? 10_000) - (b.order ?? 10_000));
 
     return (
         <div className="flex items-center gap-2 px-2 py-1 bg-muted/50 rounded-md border">
@@ -36,16 +44,16 @@ export function DataTableBulkActions<TData>({ table, bulkActions }: DataTableBul
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
-                    {bulkActions.length > 0 ? bulkActions
-                        ?.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-                        .map((action, index) => (
+                    {allBulkActions.length > 0 ? (
+                        allBulkActions.map((action, index) => (
                             <action.component
                                 key={`bulk-action-${index}`}
                                 selection={selection}
                                 table={table}
                             />
-                        )) : (
-                        <DropdownMenuItem className='text-muted-foreground' disabled>
+                        ))
+                    ) : (
+                        <DropdownMenuItem className="text-muted-foreground" disabled>
                             <Trans>No actions available</Trans>
                         </DropdownMenuItem>
                     )}

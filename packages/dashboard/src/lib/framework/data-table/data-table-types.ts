@@ -1,7 +1,5 @@
 import { Table } from '@tanstack/react-table';
 
-export type ColumnDataType = 'String' | 'Int' | 'Float' | 'DateTime' | 'Boolean' | 'ID' | 'Money';
-
 export type BulkActionContext<Item extends { id: string } & Record<string, any>> = {
     selection: Item[];
     table: Table<Item>;

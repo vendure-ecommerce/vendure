@@ -7,7 +7,7 @@ import {
 } from '@/framework/document-introspection/get-document-structure.js';
 import { useListQueryFields } from '@/framework/document-introspection/hooks.js';
 import { api } from '@/graphql/api.js';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
 
 import {
@@ -28,10 +28,10 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.js';
 import { DisplayComponent } from '@/framework/component-registry/dynamic-component.js';
+import { BulkAction } from '@/framework/data-table/data-table-types.js';
 import { ResultOf } from '@/graphql/graphql.js';
 import { Trans, useLingui } from '@/lib/trans.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import { useQuery } from '@tanstack/react-query';
 import {
     ColumnFiltersState,
     ColumnSort,
@@ -45,7 +45,6 @@ import React, { useMemo } from 'react';
 import { toast } from 'sonner';
 import { Button } from '../ui/button.js';
 import { Checkbox } from '../ui/checkbox.js';
-import { BulkAction } from '../data-table/data-table-types.js';
 
 // Type that identifies a paginated list structure (has items array and totalItems)
 type IsPaginatedList<T> = T extends { items: any[]; totalItems: number } ? true : false;
@@ -313,6 +312,7 @@ export function PaginatedListDataTable<
     function refetchPaginatedList() {
         queryClient.invalidateQueries({ queryKey });
     }
+
     registerRefresher?.(refetchPaginatedList);
 
     const { data } = useQuery({
@@ -602,6 +602,7 @@ function DeleteMutationRowAction({
         </AlertDialog>
     );
 }
+
 /**
  * Returns the default column visibility configuration.
  */

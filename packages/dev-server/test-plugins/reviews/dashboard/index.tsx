@@ -1,4 +1,6 @@
-import { Button, defineDashboardExtension } from '@vendure/dashboard';
+import { Button, DataTableBulkActionItem, defineDashboardExtension } from '@vendure/dashboard';
+import { InfoIcon } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { TextareaCustomField } from './custom-form-components';
 import { CustomWidget } from './custom-widget';
@@ -51,6 +53,24 @@ export default defineDashboardExtension({
         {
             id: 'textarea',
             component: TextareaCustomField,
+        },
+    ],
+    dataTables: [
+        {
+            pageId: 'product-list',
+            bulkActions: [
+                {
+                    component: props => (
+                        <DataTableBulkActionItem
+                            onClick={() =>
+                                toast.message(`There are ${props.selection.length} selected items`)
+                            }
+                            label="My Custom Action"
+                            icon={InfoIcon}
+                        />
+                    ),
+                },
+            ],
         },
     ],
 });
