@@ -7,15 +7,9 @@ import {
 } from '@/framework/document-introspection/get-document-structure.js';
 import { useListQueryFields } from '@/framework/document-introspection/hooks.js';
 import { api } from '@/graphql/api.js';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
 
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -27,11 +21,17 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog.js';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu.js';
 import { DisplayComponent } from '@/framework/component-registry/dynamic-component.js';
+import { BulkAction } from '@/framework/data-table/data-table-types.js';
 import { ResultOf } from '@/graphql/graphql.js';
 import { Trans, useLingui } from '@/lib/trans.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import { useQuery } from '@tanstack/react-query';
 import {
     ColumnFiltersState,
     ColumnSort,
@@ -44,6 +44,7 @@ import { EllipsisIcon, TrashIcon } from 'lucide-react';
 import React, { useMemo } from 'react';
 import { toast } from 'sonner';
 import { Button } from '../ui/button.js';
+import { Checkbox } from '../ui/checkbox.js';
 
 // Type that identifies a paginated list structure (has items array and totalItems)
 type IsPaginatedList<T> = T extends { items: any[]; totalItems: number } ? true : false;
@@ -227,6 +228,7 @@ export interface PaginatedListDataTableProps<
     onColumnVisibilityChange?: (table: Table<any>, columnVisibility: VisibilityState) => void;
     facetedFilters?: FacetedFilterConfig<T>;
     rowActions?: RowAction<PaginatedListItemFields<T>>[];
+    bulkActions?: BulkAction[];
     disableViewOptions?: boolean;
     transformData?: (data: PaginatedListItemFields<T>[]) => PaginatedListItemFields<T>[];
     setTableOptions?: (table: TableOptions<any>) => TableOptions<any>;
@@ -265,6 +267,7 @@ export function PaginatedListDataTable<
     onColumnVisibilityChange,
     facetedFilters,
     rowActions,
+    bulkActions,
     disableViewOptions,
     setTableOptions,
     transformData,
@@ -309,6 +312,7 @@ export function PaginatedListDataTable<
     function refetchPaginatedList() {
         queryClient.invalidateQueries({ queryKey });
     }
+
     registerRefresher?.(refetchPaginatedList);
 
     const { data } = useQuery({
@@ -427,7 +431,10 @@ export function PaginatedListDataTable<
             // existing order
             const orderedColumns = finalColumns
                 .filter(column => column.id && defaultColumnOrder.includes(column.id as any))
-                .sort((a, b) => defaultColumnOrder.indexOf(a.id as any) - defaultColumnOrder.indexOf(b.id as any));
+                .sort(
+                    (a, b) =>
+                        defaultColumnOrder.indexOf(a.id as any) - defaultColumnOrder.indexOf(b.id as any),
+                );
             const remainingColumns = finalColumns.filter(
                 column => !column.id || !defaultColumnOrder.includes(column.id as any),
             );
@@ -440,6 +447,31 @@ export function PaginatedListDataTable<
                 finalColumns.push(rowActionColumn);
             }
         }
+
+        // Add the row selection column
+        finalColumns.unshift({
+            id: 'selection',
+            accessorKey: 'selection',
+            header: ({ table }) => (
+                <Checkbox
+                    className="mx-1"
+                    checked={table.getIsAllRowsSelected()}
+                    onCheckedChange={checked =>
+                        table.toggleAllRowsSelected(checked === 'indeterminate' ? undefined : checked)
+                    }
+                />
+            ),
+            enableColumnFilter: false,
+            cell: ({ row }) => {
+                return (
+                    <Checkbox
+                        className="mx-1"
+                        checked={row.getIsSelected()}
+                        onCheckedChange={row.getToggleSelectedHandler()}
+                    />
+                );
+            },
+        });
 
         return { columns: finalColumns, customFieldColumnNames };
     }, [fields, customizeColumns, rowActions]);
@@ -465,6 +497,7 @@ export function PaginatedListDataTable<
                 defaultColumnVisibility={columnVisibility}
                 facetedFilters={facetedFilters}
                 disableViewOptions={disableViewOptions}
+                bulkActions={bulkActions}
                 setTableOptions={setTableOptions}
                 onRefresh={refetchPaginatedList}
             />
@@ -536,7 +569,7 @@ function DeleteMutationRowAction({
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                <DropdownMenuItem onSelect={e => e.preventDefault()}>
                     <div className="flex items-center gap-2 text-destructive">
                         <TrashIcon className="w-4 h-4 text-destructive" />
                         <Trans>Delete</Trans>
@@ -549,7 +582,9 @@ function DeleteMutationRowAction({
                         <Trans>Confirm deletion</Trans>
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        <Trans>Are you sure you want to delete this item? This action cannot be undone.</Trans>
+                        <Trans>
+                            Are you sure you want to delete this item? This action cannot be undone.
+                        </Trans>
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -567,6 +602,7 @@ function DeleteMutationRowAction({
         </AlertDialog>
     );
 }
+
 /**
  * Returns the default column visibility configuration.
  */

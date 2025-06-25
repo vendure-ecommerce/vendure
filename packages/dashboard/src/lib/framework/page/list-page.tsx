@@ -3,12 +3,13 @@ import {
     CustomFieldKeysOfItem,
     CustomizeColumnConfig,
     FacetedFilterConfig,
+    ListQueryFields,
     ListQueryOptionsShape,
     ListQueryShape,
-    ListQueryFields,
     PaginatedListDataTable,
     RowAction,
 } from '@/components/shared/paginated-list-data-table.js';
+import { BulkAction } from '@/framework/data-table/data-table-types.js';
 import { useUserSettings } from '@/hooks/use-user-settings.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRoute, AnyRouter, useNavigate } from '@tanstack/react-router';
@@ -16,13 +17,7 @@ import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
 import { TableOptions } from '@tanstack/table-core';
 
 import { addCustomFields } from '../document-introspection/add-custom-fields.js';
-import {
-    FullWidthPageBlock,
-    Page,
-    PageActionBar,
-    PageLayout,
-    PageTitle,
-} from '../layout-engine/page-layout.js';
+import { FullWidthPageBlock, Page, PageActionBar, PageLayout, PageTitle } from '../layout-engine/page-layout.js';
 
 /**
  * @description
@@ -57,6 +52,7 @@ export interface ListPageProps<
     rowActions?: RowAction<ListQueryFields<T>>[];
     transformData?: (data: any[]) => any[];
     setTableOptions?: (table: TableOptions<any>) => TableOptions<any>;
+    bulkActions?: BulkAction[];
 }
 
 /**
@@ -93,6 +89,7 @@ export function ListPage<
     rowActions,
     transformData,
     setTableOptions,
+    bulkActions,
 }: ListPageProps<T, U, V, AC>) {
     const route = typeof routeOrFn === 'function' ? routeOrFn() : routeOrFn;
     const routeSearch = route.useSearch();
@@ -191,6 +188,7 @@ export function ListPage<
                         }}
                         facetedFilters={facetedFilters}
                         rowActions={rowActions}
+                        bulkActions={bulkActions}
                         setTableOptions={setTableOptions}
                         transformData={transformData}
                     />

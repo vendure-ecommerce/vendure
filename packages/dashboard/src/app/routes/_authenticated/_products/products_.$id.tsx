@@ -50,9 +50,11 @@ function ProductDetailPage() {
     const navigate = useNavigate();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const { i18n } = useLingui();
-    const refreshRef = useRef<() => void>(() => {});
+    const refreshRef = useRef<() => void>(() => {
+    });
 
     const { form, submitHandler, entity, isPending, refreshEntity, resetForm } = useDetailPage({
+        entityName: 'Product',
         queryDocument: productDetailDocument,
         createDocument: createProductDocument,
         updateDocument: updateProductDocument,

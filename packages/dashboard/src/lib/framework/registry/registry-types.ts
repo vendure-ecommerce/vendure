@@ -1,5 +1,8 @@
+import React from 'react';
+
 import { DashboardAlertDefinition } from '../alert/types.js';
 import { DashboardWidgetDefinition } from '../dashboard-widget/types.js';
+import { BulkAction } from '../data-table/data-table-types.js';
 import {
     DashboardActionBarItem,
     DashboardPageBlockDefinition,
@@ -16,6 +19,5 @@ export interface GlobalRegistryContents {
     dashboardWidgetRegistry: Map<string, DashboardWidgetDefinition>;
     dashboardAlertRegistry: Map<string, DashboardAlertDefinition>;
     customFormComponents: Map<string, React.FunctionComponent<CustomFormComponentInputProps>>;
+    bulkActionsRegistry: Map<string, BulkAction[]>;
 }
-
-export type GlobalRegistryKey = keyof GlobalRegistryContents;

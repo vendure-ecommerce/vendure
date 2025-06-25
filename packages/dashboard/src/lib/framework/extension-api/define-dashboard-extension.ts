@@ -1,3 +1,5 @@
+import { addBulkAction } from '@/framework/data-table/data-table-extensions.js';
+
 import { registerDashboardWidget } from '../dashboard-widget/widget-extensions.js';
 import { addCustomFormComponent } from '../form-engine/custom-form-component-extensions.js';
 import {
@@ -80,6 +82,15 @@ export function defineDashboardExtension(extension: DashboardExtension) {
         if (extension.customFormComponents) {
             for (const component of extension.customFormComponents) {
                 addCustomFormComponent(component);
+            }
+        }
+        if (extension.dataTables) {
+            for (const dataTable of extension.dataTables) {
+                if (dataTable.bulkActions?.length) {
+                    for (const action of dataTable.bulkActions) {
+                        addBulkAction(dataTable.pageId, dataTable.blockId, action);
+                    }
+                }
             }
         }
         const callbacks = globalRegistry.get('extensionSourceChangeCallbacks');

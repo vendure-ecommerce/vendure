@@ -2,8 +2,11 @@
 
 import { DataTablePagination } from '@/components/data-table/data-table-pagination.js';
 import { DataTableViewOptions } from '@/components/data-table/data-table-view-options.js';
+import { RefreshButton } from '@/components/data-table/refresh-button.js';
 import { Input } from '@/components/ui/input.js';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.js';
+import { BulkAction } from '@/framework/data-table/data-table-types.js';
+import { useChannel } from '@/hooks/use-channel.js';
 import {
     ColumnDef,
     ColumnFilter,
@@ -17,13 +20,12 @@ import {
     useReactTable,
     VisibilityState,
 } from '@tanstack/react-table';
-import { TableOptions } from '@tanstack/table-core';
+import { RowSelectionState, TableOptions } from '@tanstack/table-core';
 import React, { Suspense, useEffect } from 'react';
 import { AddFilterMenu } from './add-filter-menu.js';
+import { DataTableBulkActions } from './data-table-bulk-actions.js';
 import { DataTableFacetedFilter, DataTableFacetedFilterOption } from './data-table-faceted-filter.js';
 import { DataTableFilterBadge } from './data-table-filter-badge.js';
-import { useChannel } from '@/hooks/use-channel.js';
-import { RefreshButton } from '@/components/data-table/refresh-button.js';
 
 export interface FacetedFilter {
     title: string;
@@ -48,6 +50,7 @@ interface DataTableProps<TData> {
     defaultColumnVisibility?: VisibilityState;
     facetedFilters?: { [key: string]: FacetedFilter | undefined };
     disableViewOptions?: boolean;
+    bulkActions?: BulkAction[];
     /**
      * This property allows full control over _all_ features of TanStack Table
      * when needed.
@@ -57,24 +60,25 @@ interface DataTableProps<TData> {
 }
 
 export function DataTable<TData>({
-                                     columns,
-                                     data,
-                                     totalItems,
-                                     page,
-                                     itemsPerPage,
-                                     sorting: sortingInitialState,
-                                     columnFilters: filtersInitialState,
-                                     onPageChange,
-                                     onSortChange,
-                                     onFilterChange,
-                                     onSearchTermChange,
-                                     onColumnVisibilityChange,
-                                     defaultColumnVisibility,
-                                     facetedFilters,
-                                     disableViewOptions,
-                                     setTableOptions,
-                                     onRefresh,
-                                 }: DataTableProps<TData>) {
+    columns,
+    data,
+    totalItems,
+    page,
+    itemsPerPage,
+    sorting: sortingInitialState,
+    columnFilters: filtersInitialState,
+    onPageChange,
+    onSortChange,
+    onFilterChange,
+    onSearchTermChange,
+    onColumnVisibilityChange,
+    defaultColumnVisibility,
+    facetedFilters,
+    disableViewOptions,
+    bulkActions,
+    setTableOptions,
+    onRefresh,
+}: DataTableProps<TData>) {
     const [sorting, setSorting] = React.useState<SortingState>(sortingInitialState || []);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(filtersInitialState || []);
     const { activeChannel } = useChannel();
@@ -85,11 +89,15 @@ export function DataTable<TData>({
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>(
         defaultColumnVisibility ?? {},
     );
+    const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
 
     useEffect(() => {
         // If the defaultColumnVisibility changes externally (e.g. the user reset the table settings),
         // we want to reset the column visibility to the default.
-        if (defaultColumnVisibility && JSON.stringify(defaultColumnVisibility) !== JSON.stringify(columnVisibility)) {
+        if (
+            defaultColumnVisibility &&
+            JSON.stringify(defaultColumnVisibility) !== JSON.stringify(columnVisibility)
+        ) {
             setColumnVisibility(defaultColumnVisibility);
         }
         // We intentionally do not include `columnVisibility` in the dependency array
@@ -98,6 +106,7 @@ export function DataTable<TData>({
     let tableOptions: TableOptions<TData> = {
         data,
         columns,
+        getRowId: row => (row as { id: string }).id,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         manualPagination: true,
@@ -108,11 +117,13 @@ export function DataTable<TData>({
         onSortingChange: setSorting,
         onColumnVisibilityChange: setColumnVisibility,
         onColumnFiltersChange: setColumnFilters,
+        onRowSelectionChange: setRowSelection,
         state: {
             pagination,
             sorting,
             columnVisibility,
             columnFilters,
+            rowSelection,
         },
     };
 
@@ -171,12 +182,19 @@ export function DataTable<TData>({
                             .map(f => {
                                 const column = table.getColumn(f.id);
                                 const currency = activeChannel?.defaultCurrencyCode ?? 'USD';
-                                return <DataTableFilterBadge
-                                    key={f.id}
-                                    filter={f}
-                                    currencyCode={currency}
-                                    dataType={(column?.columnDef.meta as any)?.fieldInfo?.type ?? 'String'}
-                                    onRemove={() => setColumnFilters(old => old.filter(x => x.id !== f.id))} />;
+                                return (
+                                    <DataTableFilterBadge
+                                        key={f.id}
+                                        filter={f}
+                                        currencyCode={currency}
+                                        dataType={
+                                            (column?.columnDef.meta as any)?.fieldInfo?.type ?? 'String'
+                                        }
+                                        onRemove={() =>
+                                            setColumnFilters(old => old.filter(x => x.id !== f.id))
+                                        }
+                                    />
+                                );
                             })}
                     </div>
                 </div>
@@ -185,6 +203,7 @@ export function DataTable<TData>({
                     {onRefresh && <RefreshButton onRefresh={onRefresh} />}
                 </div>
             </div>
+            <DataTableBulkActions bulkActions={bulkActions ?? []} table={table} />
             <div className="rounded-md border my-2">
                 <Table>
                     <TableHeader>
@@ -196,9 +215,9 @@ export function DataTable<TData>({
                                             {header.isPlaceholder
                                                 ? null
                                                 : flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext(),
-                                                )}
+                                                      header.column.columnDef.header,
+                                                      header.getContext(),
+                                                  )}
                                         </TableHead>
                                     );
                                 })}
