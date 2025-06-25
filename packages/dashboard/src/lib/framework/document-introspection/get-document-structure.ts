@@ -201,6 +201,23 @@ function unwrapVariableDefinitionType(type: TypeNode): NamedTypeNode {
 
 /**
  * @description
+ * Helper function to get the first field selection from a query operation definition.
+ */
+function getFirstQueryField(documentNode: DocumentNode): FieldNode {
+    const operationDefinition = documentNode.definitions.find(
+        (def): def is OperationDefinitionNode =>
+            def.kind === 'OperationDefinition' && def.operation === 'query',
+    );
+    const firstSelection = operationDefinition?.selectionSet.selections[0];
+    if (firstSelection?.kind === 'Field') {
+        return firstSelection;
+    } else {
+        throw new Error('Could not determine query field');
+    }
+}
+
+/**
+ * @description
  * This function is used to get the name of the query from a DocumentNode.
  *
  * For example, in the following query:
@@ -216,16 +233,32 @@ function unwrapVariableDefinitionType(type: TypeNode): NamedTypeNode {
  * The query name is `product`.
  */
 export function getQueryName(documentNode: DocumentNode): string {
-    const operationDefinition = documentNode.definitions.find(
-        (def): def is OperationDefinitionNode =>
-            def.kind === 'OperationDefinition' && def.operation === 'query',
-    );
-    const firstSelection = operationDefinition?.selectionSet.selections[0];
-    if (firstSelection?.kind === 'Field') {
-        return firstSelection.name.value;
-    } else {
-        throw new Error('Could not determine query name');
-    }
+    const firstField = getFirstQueryField(documentNode);
+    return firstField.name.value;
+}
+
+/**
+ * @description
+ * This function is used to get the entity name from a DocumentNode.
+ *
+ * For example, in the following query:
+ *
+ * ```graphql
+ * query ProductDetail($id: ID!) {
+ *   product(id: $id) {
+ *     ...ProductDetail
+ *   }
+ * }
+ * ```
+ *
+ * The entity name is `Product`.
+ */
+export function getEntityName(documentNode: DocumentNode): string {
+    const firstField = getFirstQueryField(documentNode);
+    // Get the return type from the field definition
+    const fieldName = firstField.name.value;
+    const queryInfo = getQueryInfo(fieldName);
+    return queryInfo.type;
 }
 
 /**

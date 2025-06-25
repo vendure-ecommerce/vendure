@@ -10,8 +10,12 @@ import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRoute, useNavigate } from '@tanstack/react-router';
 import { ResultOf, VariablesOf } from 'gql.tada';
 import { toast } from 'sonner';
-import { getOperationVariablesFields } from '../document-introspection/get-document-structure.js';
+import {
+    getEntityName,
+    getOperationVariablesFields,
+} from '../document-introspection/get-document-structure.js';
 
+import { TranslatableFormFieldWrapper } from '@/components/shared/translatable-form-field.js';
 import {
     CustomFieldsPageBlock,
     DetailFormGrid,
@@ -41,6 +45,7 @@ export interface DetailPageProps<
     /**
      * @description
      * The name of the entity.
+     * If not provided, it will be inferred from the query document.
      */
     entityName?: string;
     /**
@@ -81,6 +86,29 @@ export interface DetailPageProps<
 }
 
 /**
+ * Renders form input components based on field type
+ */
+function renderFieldInput(fieldInfo: { type: string }, field: any) {
+    switch (fieldInfo.type) {
+        case 'Int':
+        case 'Float':
+            return (
+                <Input
+                    type="number"
+                    value={field.value}
+                    onChange={e => field.onChange(e.target.valueAsNumber)}
+                />
+            );
+        case 'DateTime':
+            return <DateTimeInput {...field} />;
+        case 'Boolean':
+            return <Checkbox value={field.value} onCheckedChange={field.onChange} />;
+        default:
+            return <Input {...field} />;
+    }
+}
+
+/**
  * @description
  * **Status: Developer Preview**
  *
@@ -100,7 +128,7 @@ export function DetailPage<
 >({
     pageId,
     route,
-    entityName,
+    entityName: passedEntityName,
     queryDocument,
     createDocument,
     updateDocument,
@@ -110,11 +138,15 @@ export function DetailPage<
     const params = route.useParams();
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const navigate = useNavigate();
+    const inferredEntityName = getEntityName(queryDocument);
+
+    const entityName = passedEntityName ?? inferredEntityName;
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage<any, any, any>({
         queryDocument,
         updateDocument,
         createDocument,
+        entityName,
         params: { id: params.id },
         setValuesForUpdate,
         onSuccess: async data => {
@@ -133,6 +165,7 @@ export function DetailPage<
     });
 
     const updateFields = getOperationVariablesFields(updateDocument, 'input');
+    const translations = updateFields.find(fieldInfo => fieldInfo.name === 'translations');
 
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler}>
@@ -152,6 +185,7 @@ export function DetailPage<
                     <DetailFormGrid>
                         {updateFields
                             .filter(fieldInfo => fieldInfo.name !== 'customFields')
+                            .filter(fieldInfo => fieldInfo.name !== 'translations')
                             .map(fieldInfo => {
                                 if (fieldInfo.name === 'id' && fieldInfo.type === 'ID') {
                                     return null;
@@ -162,33 +196,22 @@ export function DetailPage<
                                         control={form.control}
                                         name={fieldInfo.name as never}
                                         label={fieldInfo.name}
-                                        render={({ field }) => {
-                                            switch (fieldInfo.type) {
-                                                case 'Int':
-                                                case 'Float':
-                                                    return (
-                                                        <Input
-                                                            type="number"
-                                                            value={field.value}
-                                                            onChange={e =>
-                                                                field.onChange(e.target.valueAsNumber)
-                                                            }
-                                                        />
-                                                    );
-                                                case 'DateTime':
-                                                    return <DateTimeInput {...field} />;
-                                                case 'Boolean':
-                                                    return (
-                                                        <Checkbox
-                                                            value={field.value}
-                                                            onCheckedChange={field.onChange}
-                                                        />
-                                                    );
-                                                case 'String':
-                                                default:
-                                                    return <Input {...field} />;
-                                            }
-                                        }}
+                                        render={({ field }) => renderFieldInput(fieldInfo, field)}
+                                    />
+                                );
+                            })}
+                        {translations?.typeInfo
+                            ?.filter(
+                                fieldInfo => !['customFields', 'id', 'languageCode'].includes(fieldInfo.name),
+                            )
+                            .map(fieldInfo => {
+                                return (
+                                    <TranslatableFormFieldWrapper
+                                        key={fieldInfo.name}
+                                        control={form.control}
+                                        name={fieldInfo.name as never}
+                                        label={fieldInfo.name}
+                                        render={({ field }) => renderFieldInput(fieldInfo, field)}
                                     />
                                 );
                             })}

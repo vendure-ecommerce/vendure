@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const TARGET_DIRS = ['components', 'framework', 'hooks', 'lib'];
+const TARGET_DIRS = ['components', 'framework', 'hooks', 'lib', 'graphql'];
 const LIB_DIR = path.join(__dirname, 'src', 'lib');
 const INDEX_FILE = path.join(LIB_DIR, 'index.ts');
 

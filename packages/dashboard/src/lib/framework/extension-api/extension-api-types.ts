@@ -5,7 +5,20 @@ import type React from 'react';
 
 import { DashboardAlertDefinition } from '../alert/types.js';
 import { DashboardWidgetDefinition } from '../dashboard-widget/types.js';
+import { CustomFormComponentInputProps } from '../form-engine/custom-form-component.js';
 import { NavMenuItem } from '../nav-menu/nav-menu-extensions.js';
+
+/**
+ * @description
+ * Allows you to define custom form components for custom fields in the dashboard.
+ *
+ * @docsCategory extensions
+ * @since 3.4.0
+ */
+export interface DashboardCustomFormComponent {
+    id: string;
+    component: React.FunctionComponent<CustomFormComponentInputProps>;
+}
 
 export interface DashboardRouteDefinition {
     component: (route: AnyRoute) => React.ReactNode;
@@ -144,4 +157,9 @@ export interface DashboardExtension {
      * given components and optionally also add a nav menu item.
      */
     widgets?: DashboardWidgetDefinition[];
+    /**
+     * @description
+     * Allows you to define custom form components for custom fields in the dashboard.
+     */
+    customFormComponents?: DashboardCustomFormComponent[];
 }

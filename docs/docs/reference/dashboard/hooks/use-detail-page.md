@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## useDetailPage
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/use-detail-page.ts" sourceLine="216" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/use-detail-page.ts" sourceLine="224" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
@@ -89,7 +89,7 @@ Parameters
 
 ## DetailPageOptions
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/use-detail-page.ts" sourceLine="37" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/use-detail-page.ts" sourceLine="39" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
@@ -100,6 +100,7 @@ interface DetailPageOptions<T extends TypedDocumentNode<any, any>, C extends Typ
     params: {
         id: string;
     };
+    entityName: string;
     createDocument?: C;
     updateDocument?: U;
     setValuesForUpdate: (entity: NonNullable<ResultOf<T>[EntityField]>) => VariablesOf<U>[VarNameUpdate];
@@ -127,6 +128,12 @@ The field of the query document that contains the entity.
 <MemberInfo kind="property" type={`{         id: string;     }`}   />
 
 The parameters used to identify the entity.
+### entityName
+
+<MemberInfo kind="property" type={`string`}   />
+
+The entity type name for custom field configuration lookup.
+Required to filter out readonly custom fields before mutations.
 ### createDocument
 
 <MemberInfo kind="property" type={`C`}   />
@@ -169,7 +176,7 @@ The function to call when the update is successful.
 
 ## UseDetailPageResult
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/use-detail-page.ts" sourceLine="133" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/use-detail-page.ts" sourceLine="141" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 

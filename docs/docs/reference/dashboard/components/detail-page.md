@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DetailPage
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/detail-page.tsx" sourceLine="90" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/detail-page.tsx" sourceLine="124" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
@@ -32,12 +32,13 @@ Parameters
 
 ## DetailPageProps
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/detail-page.tsx" sourceLine="34" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/detail-page.tsx" sourceLine="39" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
 ```ts title="Signature"
 interface DetailPageProps<T extends TypedDocumentNode<any, any>, C extends TypedDocumentNode<any, any>, U extends TypedDocumentNode<any, any>, EntityField extends keyof ResultOf<T> = DetailEntityPath<T>> {
+    entityName?: string;
     pageId: string;
     route: AnyRoute;
     title: (entity: ResultOf<T>[EntityField]) => string;
@@ -50,6 +51,12 @@ interface DetailPageProps<T extends TypedDocumentNode<any, any>, C extends Typed
 
 <div className="members-wrapper">
 
+### entityName
+
+<MemberInfo kind="property" type={`string`}   />
+
+The name of the entity.
+If not provided, it will be inferred from the query document.
 ### pageId
 
 <MemberInfo kind="property" type={`string`}   />
