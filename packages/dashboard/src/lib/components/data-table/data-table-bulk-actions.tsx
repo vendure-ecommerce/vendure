@@ -14,6 +14,7 @@ import { usePage } from '@/hooks/use-page.js';
 import { Trans } from '@/lib/trans.js';
 import { Table } from '@tanstack/react-table';
 import { ChevronDown } from 'lucide-react';
+import { useRef } from 'react';
 
 interface DataTableBulkActionsProps<TData> {
     table: Table<TData>;
@@ -23,7 +24,31 @@ interface DataTableBulkActionsProps<TData> {
 export function DataTableBulkActions<TData>({ table, bulkActions }: DataTableBulkActionsProps<TData>) {
     const { pageId } = usePage();
     const { blockId } = usePageBlock();
-    const selection = Object.keys(table.getState().rowSelection).map(key => table.getRow(key).original);
+
+    // Cache to store selected items across page changes
+    const selectedItemsCache = useRef<Map<string, TData>>(new Map());
+    const selectedRowIds = Object.keys(table.getState().rowSelection);
+
+    // Get selection from cache instead of trying to get from table
+    const selection = selectedRowIds
+        .map(key => {
+            try {
+                const row = table.getRow(key);
+                if (row) {
+                    selectedItemsCache.current.set(key, row.original);
+                    return row.original;
+                }
+            } catch (error) {
+                // ignore the error, it just means the row is not on the
+                // current page.
+            }
+            if (selectedItemsCache.current.has(key)) {
+                return selectedItemsCache.current.get(key);
+            }
+            return undefined;
+        })
+        .filter((item): item is TData => item !== undefined);
+
     if (selection.length === 0) {
         return null;
     }

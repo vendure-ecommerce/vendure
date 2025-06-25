@@ -62,9 +62,10 @@ export default defineDashboardExtension({
                 {
                     component: props => (
                         <DataTableBulkActionItem
-                            onClick={() =>
-                                toast.message(`There are ${props.selection.length} selected items`)
-                            }
+                            onClick={() => {
+                                console.log('Selection:', props.selection);
+                                toast.message(`There are ${props.selection.length} selected items`);
+                            }}
                             label="My Custom Action"
                             icon={InfoIcon}
                         />
