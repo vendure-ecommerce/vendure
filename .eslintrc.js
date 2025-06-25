@@ -56,7 +56,6 @@ module.exports = {
                 sourceType: 'module',
             },
         },
-
     ],
     rules: {
         '@typescript-eslint/adjacent-overload-signatures': 'error',
