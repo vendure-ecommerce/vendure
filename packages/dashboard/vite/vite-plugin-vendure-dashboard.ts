@@ -10,9 +10,10 @@ import { configLoaderPlugin } from './vite-plugin-config-loader.js';
 import { viteConfigPlugin } from './vite-plugin-config.js';
 import { dashboardMetadataPlugin } from './vite-plugin-dashboard-metadata.js';
 import { gqlTadaPlugin } from './vite-plugin-gql-tada.js';
-import { ThemeVariablesPluginOptions, themeVariablesPlugin } from './vite-plugin-theme.js';
+import { dashboardTailwindSourcePlugin } from './vite-plugin-tailwind-source.js';
+import { themeVariablesPlugin, ThemeVariablesPluginOptions } from './vite-plugin-theme.js';
 import { transformIndexHtmlPlugin } from './vite-plugin-transform-index.js';
-import { UiConfigPluginOptions, uiConfigPlugin } from './vite-plugin-ui-config.js';
+import { uiConfigPlugin, UiConfigPluginOptions } from './vite-plugin-ui-config.js';
 
 /**
  * @description
@@ -121,6 +122,7 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
             // },
         }),
         themeVariablesPlugin({ theme: options.theme }),
+        dashboardTailwindSourcePlugin(),
         tailwindcss(),
         configLoaderPlugin({
             vendureConfigPath: normalizedVendureConfigPath,
@@ -130,7 +132,7 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
         }),
         viteConfigPlugin({ packageRoot }),
         adminApiSchemaPlugin(),
-        dashboardMetadataPlugin({ rootDir: tempDir }),
+        dashboardMetadataPlugin(),
         uiConfigPlugin({ adminUiConfig: options.adminUiConfig }),
         ...(options.gqlTadaOutputPath
             ? [gqlTadaPlugin({ gqlTadaOutputPath: options.gqlTadaOutputPath, tempDir, packageRoot })]

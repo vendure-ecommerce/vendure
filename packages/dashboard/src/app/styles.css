@@ -4,6 +4,8 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* @source rules from extensions will be added here by the dashboardTailwindSourcePlugin */
+
 /*
 * Important: This is not an actual import. We are pre-processing this CSS file
 * to inject the theme variables into the CSS. This import will be replaced
@@ -64,6 +66,7 @@
     * {
         @apply border-border outline-ring/50;
     }
+
     body {
         @apply bg-background text-foreground;
     }
