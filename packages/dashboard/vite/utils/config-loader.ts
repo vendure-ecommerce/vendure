@@ -328,12 +328,17 @@ export async function compileFile({
     }
 
     async function collectImports(node: ts.Node) {
-        if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
+        if (
+            (ts.isExportDeclaration(node) || ts.isImportDeclaration(node)) &&
+            node.moduleSpecifier &&
+            ts.isStringLiteral(node.moduleSpecifier)
+        ) {
             const importPath = node.moduleSpecifier.text;
 
             // Handle relative imports
             if (importPath.startsWith('.')) {
                 const resolvedPath = path.resolve(path.dirname(absoluteInputPath), importPath);
+                // TODO: does this handle index files correctly?
                 let resolvedTsPath = resolvedPath + '.ts';
                 // Also check for .tsx if .ts doesn't exist
                 if (!(await fs.pathExists(resolvedTsPath))) {
@@ -384,7 +389,9 @@ export async function compileFile({
                             const potentialPathBase = path.resolve(tsConfigInfo.baseUrl, patternPrefix);
                             const resolvedPath = path.join(potentialPathBase, remainingImportPath);
 
-                            let resolvedTsPath = resolvedPath + '.ts';
+                            let resolvedTsPath = resolvedPath.endsWith('.ts')
+                                ? resolvedPath
+                                : resolvedPath + '.ts';
                             // Similar existence checks as relative paths
                             if (!(await fs.pathExists(resolvedTsPath))) {
                                 const resolvedTsxPath = resolvedPath + '.tsx';
@@ -429,6 +436,7 @@ export async function compileFile({
                     ts.isModuleBlock(child) ||
                     ts.isModuleDeclaration(child) ||
                     ts.isImportDeclaration(child) ||
+                    ts.isExportDeclaration(child) ||
                     child.kind === ts.SyntaxKind.SyntaxList
                 ) {
                     await collectImports(child);
