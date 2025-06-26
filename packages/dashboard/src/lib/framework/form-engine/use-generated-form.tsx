@@ -1,5 +1,9 @@
 import { getOperationVariablesFields } from '@/framework/document-introspection/get-document-structure.js';
-import { createFormSchemaFromFields, getDefaultValuesFromFields } from '@/framework/form-engine/form-schema-tools.js';
+import {
+    createFormSchemaFromFields,
+    getDefaultValuesFromFields,
+} from '@/framework/form-engine/form-schema-tools.js';
+import { transformRelationFields } from '@/framework/form-engine/utils.js';
 import { useChannel } from '@/hooks/use-channel.js';
 import { useServerConfig } from '@/hooks/use-server-config.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
@@ -54,7 +58,9 @@ export function useGeneratedForm<
         },
         mode: 'onChange',
         defaultValues,
-        values: processedEntity ? setValues(processedEntity) : defaultValues,
+        values: processedEntity
+            ? transformRelationFields(updateFields, setValues(processedEntity))
+            : defaultValues,
     });
     let submitHandler = (event: FormEvent) => {
         event.preventDefault();

@@ -54,7 +54,7 @@ import { ProductReview } from './entities/product-review.entity';
             public: true,
             type: 'relation',
             entity: ProductReview,
-            ui: { tab: 'Reviews', component: 'review-selector-form-input', fullWidth: true },
+            ui: { tab: 'Reviews', fullWidth: true },
             inverseSide: undefined,
         });
         config.customFields.Product.push({

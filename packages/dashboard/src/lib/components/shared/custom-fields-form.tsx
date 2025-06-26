@@ -40,10 +40,9 @@ export function CustomFieldsForm({ entityType, control, formPathPrefix }: Custom
 
     const customFields = useCustomFieldConfig(entityType);
 
-    const getFieldName = (fieldDefName: string) => {
-        return formPathPrefix
-            ? `${formPathPrefix}.customFields.${fieldDefName}`
-            : `customFields.${fieldDefName}`;
+    const getFieldName = (fieldDef: CustomFieldConfig) => {
+        const name = fieldDef.type === 'relation' ? fieldDef.name + 'Id' : fieldDef.name;
+        return formPathPrefix ? `${formPathPrefix}.customFields.${name}` : `customFields.${name}`;
     };
 
     // Group custom fields by tabs
@@ -86,7 +85,7 @@ export function CustomFieldsForm({ entityType, control, formPathPrefix }: Custom
                         key={fieldDef.name}
                         fieldDef={fieldDef}
                         control={control}
-                        fieldName={getFieldName(fieldDef.name)}
+                        fieldName={getFieldName(fieldDef)}
                         getTranslation={getTranslation}
                     />
                 ))}
@@ -112,7 +111,7 @@ export function CustomFieldsForm({ entityType, control, formPathPrefix }: Custom
                                 key={fieldDef.name}
                                 fieldDef={fieldDef}
                                 control={control}
-                                fieldName={getFieldName(fieldDef.name)}
+                                fieldName={getFieldName(fieldDef)}
                                 getTranslation={getTranslation}
                             />
                         ))}
