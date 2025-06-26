@@ -7,7 +7,7 @@ import {
 } from '@/framework/document-introspection/get-document-structure.js';
 import { useListQueryFields } from '@/framework/document-introspection/hooks.js';
 import { api } from '@/graphql/api.js';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
 
 import {
@@ -315,7 +315,7 @@ export function PaginatedListDataTable<
 
     registerRefresher?.(refetchPaginatedList);
 
-    const { data } = useQuery({
+    const { data, isFetching } = useQuery({
         queryFn: () => {
             const searchFilter = onSearchTermChange ? onSearchTermChange(debouncedSearchTerm) : {};
             const mergedFilter = { ...filter, ...searchFilter };
@@ -332,6 +332,7 @@ export function PaginatedListDataTable<
             return api.query(listQuery, transformedVariables);
         },
         queryKey,
+        placeholderData: keepPreviousData,
     });
 
     const fields = useListQueryFields(listQuery);
@@ -484,6 +485,7 @@ export function PaginatedListDataTable<
             <DataTable
                 columns={columns}
                 data={transformedData}
+                isLoading={isFetching}
                 page={page}
                 itemsPerPage={itemsPerPage}
                 sorting={sorting}

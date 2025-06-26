@@ -90,7 +90,7 @@
     }
 
     .animate-rotate {
-        animation: rotate 0.5s linear;
+        animation: rotate 0.5s linear infinite;
     }
 }
 
