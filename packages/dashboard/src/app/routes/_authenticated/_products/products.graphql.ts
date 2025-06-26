@@ -167,6 +167,27 @@ export const updateProductsDocument = graphql(`
     }
 `);
 
+export const getProductsWithFacetValuesByIdsDocument = graphql(`
+    query GetProductsWithFacetValuesByIds($ids: [String!]!) {
+        products(options: { filter: { id: { in: $ids } } }) {
+            items {
+                id
+                name
+                facetValues {
+                    id
+                    name
+                    code
+                    facet {
+                        id
+                        name
+                        code
+                    }
+                }
+            }
+        }
+    }
+`);
+
 export const duplicateEntityDocument = graphql(`
     mutation DuplicateEntity($input: DuplicateEntityInput!) {
         duplicateEntity(input: $input) {

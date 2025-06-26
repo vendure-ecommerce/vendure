@@ -61,7 +61,7 @@ export const DeleteProductsBulkAction: BulkActionComponent<any> = ({ selection, 
 
 export const AssignProductsToChannelBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
     const { refetchPaginatedList } = usePaginatedList();
-    const { channels, selectedChannel } = useChannel();
+    const { channels } = useChannel();
     const [dialogOpen, setDialogOpen] = useState(false);
 
     if (channels.length < 2) {
