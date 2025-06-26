@@ -8,6 +8,10 @@ export function transformRelationFields<E extends Record<string, any>>(fields: F
             continue;
         }
 
+        if (!entity.customFields || !processedEntity.customFields) {
+            continue;
+        }
+
         for (const customField of field.typeInfo) {
             if (customField.type === 'ID') {
                 const relationField = customField.name;
