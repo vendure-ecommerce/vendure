@@ -148,6 +148,7 @@ function ProductDetailPage() {
                             registerRefresher={refresher => {
                                 refreshRef.current = refresher;
                             }}
+                            fromProductDetailPage={true}
                         />
                         <div className="mt-4">
                             <AddProductVariantDialog
