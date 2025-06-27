@@ -74,7 +74,7 @@ function StockLocationDetailPage() {
     });
 
     return (
-        <Page pageId="stock-location-detail" form={form} submitHandler={submitHandler}>
+        <Page pageId="stock-location-detail" form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
                 {creatingNewEntity ? <Trans>New stock location</Trans> : (entity?.name ?? '')}
             </PageTitle>

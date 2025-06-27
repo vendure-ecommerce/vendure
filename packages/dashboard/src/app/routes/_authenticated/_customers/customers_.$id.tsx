@@ -137,7 +137,7 @@ function CustomerDetailPage() {
     const customerName = entity ? `${entity.firstName} ${entity.lastName}` : '';
 
     return (
-        <Page pageId="customer-detail" form={form} submitHandler={submitHandler}>
+        <Page pageId="customer-detail" form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New customer</Trans> : customerName}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>

@@ -71,7 +71,7 @@ function RoleDetailPage() {
     });
 
     return (
-        <Page pageId="role-detail" form={form} submitHandler={submitHandler}>
+        <Page pageId="role-detail" form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New role</Trans> : (entity?.description ?? '')}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>

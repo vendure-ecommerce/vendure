@@ -4,14 +4,16 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import { PluginOption } from 'vite';
 
+import { PathAdapter } from './utils/config-loader.js';
 import { adminApiSchemaPlugin } from './vite-plugin-admin-api-schema.js';
 import { configLoaderPlugin } from './vite-plugin-config-loader.js';
 import { viteConfigPlugin } from './vite-plugin-config.js';
 import { dashboardMetadataPlugin } from './vite-plugin-dashboard-metadata.js';
 import { gqlTadaPlugin } from './vite-plugin-gql-tada.js';
-import { ThemeVariablesPluginOptions, themeVariablesPlugin } from './vite-plugin-theme.js';
+import { dashboardTailwindSourcePlugin } from './vite-plugin-tailwind-source.js';
+import { themeVariablesPlugin, ThemeVariablesPluginOptions } from './vite-plugin-theme.js';
 import { transformIndexHtmlPlugin } from './vite-plugin-transform-index.js';
-import { UiConfigPluginOptions, uiConfigPlugin } from './vite-plugin-ui-config.js';
+import { uiConfigPlugin, UiConfigPluginOptions } from './vite-plugin-ui-config.js';
 
 /**
  * @description
@@ -23,6 +25,46 @@ export type VitePluginVendureDashboardOptions = {
      * The path to the Vendure server configuration file.
      */
     vendureConfigPath: string | URL;
+    /**
+     * @description
+     * The {@link PathAdapter} allows you to customize the resolution of paths
+     * in the compiled Vendure source code which is used as part of the
+     * introspection step of building the dashboard.
+     *
+     * It enables support for more complex repository structures, such as
+     * monorepos, where the Vendure server configuration file may not
+     * be located in the root directory of the project.
+     *
+     * If you get compilation errors like "Error loading Vendure config: Cannot find module",
+     * you probably need to provide a custom `pathAdapter` to resolve the paths correctly.
+     *
+     * @example
+     * ```ts
+     * vendureDashboardPlugin({
+     *     tempCompilationDir: join(__dirname, './__vendure-dashboard-temp'),
+     *     pathAdapter: {
+     *         getCompiledConfigPath: ({ inputRootDir, outputPath, configFileName }) => {
+     *             const projectName = inputRootDir.split('/libs/')[1].split('/')[0];
+     *             const pathAfterProject = inputRootDir.split(`/libs/${projectName}`)[1];
+     *             const compiledConfigFilePath = `${outputPath}/${projectName}${pathAfterProject}`;
+     *             return path.join(compiledConfigFilePath, configFileName);
+     *         },
+     *         transformTsConfigPathMappings: ({ phase, patterns }) => {
+     *             // "loading" phase is when the compiled Vendure code is being loaded by
+     *             // the plugin, in order to introspect the configuration of your app.
+     *             if (phase === 'loading') {
+     *                 return patterns.map((p) =>
+     *                     p.replace('libs/', '').replace(/.ts$/, '.js'),
+     *                 );
+     *             }
+     *             return patterns;
+     *         },
+     *     },
+     *     // ...
+     * }),
+     * ```
+     */
+    pathAdapter?: PathAdapter;
     /**
      * @description
      * The name of the exported variable from the Vendure server configuration file.
@@ -80,15 +122,17 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
             // },
         }),
         themeVariablesPlugin({ theme: options.theme }),
+        dashboardTailwindSourcePlugin(),
         tailwindcss(),
         configLoaderPlugin({
             vendureConfigPath: normalizedVendureConfigPath,
             tempDir,
             reportCompilationErrors: options.reportCompilationErrors,
+            pathAdapter: options.pathAdapter,
         }),
         viteConfigPlugin({ packageRoot }),
         adminApiSchemaPlugin(),
-        dashboardMetadataPlugin({ rootDir: tempDir }),
+        dashboardMetadataPlugin(),
         uiConfigPlugin({ adminUiConfig: options.adminUiConfig }),
         ...(options.gqlTadaOutputPath
             ? [gqlTadaPlugin({ gqlTadaOutputPath: options.gqlTadaOutputPath, tempDir, packageRoot })]

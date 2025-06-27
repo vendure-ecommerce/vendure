@@ -63,6 +63,7 @@ export function viteConfigPlugin({ packageRoot }: { packageRoot: string }): Plug
                     ...(config.optimizeDeps?.include || []),
                     '@/components > recharts',
                     '@/components > react-dropzone',
+                    '@vendure/common/lib/generated-types',
                 ],
             };
             return config;

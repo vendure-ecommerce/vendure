@@ -71,7 +71,7 @@ function CountryDetailPage() {
     });
 
     return (
-        <Page pageId="country-detail" form={form} submitHandler={submitHandler}>
+        <Page pageId="country-detail" form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New country</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>

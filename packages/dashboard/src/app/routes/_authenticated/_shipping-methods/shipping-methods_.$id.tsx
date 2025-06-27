@@ -94,7 +94,7 @@ function ShippingMethodDetailPage() {
     });
 
     return (
-        <Page pageId="shipping-method-detail" form={form} submitHandler={submitHandler}>
+        <Page pageId="shipping-method-detail" form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
                 {creatingNewEntity ? <Trans>New shipping method</Trans> : (entity?.name ?? '')}
             </PageTitle>

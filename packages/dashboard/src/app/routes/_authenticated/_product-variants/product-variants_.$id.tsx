@@ -102,7 +102,7 @@ function ProductVariantDetailPage() {
     const [price, taxCategoryId] = form.watch(['price', 'taxCategoryId']);
 
     return (
-        <Page pageId="product-variant-detail" form={form} submitHandler={submitHandler}>
+        <Page pageId="product-variant-detail" form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
                 {creatingNewEntity ? <Trans>New product variant</Trans> : (entity?.name ?? '')}
             </PageTitle>

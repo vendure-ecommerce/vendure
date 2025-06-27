@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DashboardExtension
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/extension-api-types.ts" sourceLine="100" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/extension-api-types.ts" sourceLine="121" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
@@ -20,10 +20,12 @@ This is used to define the routes, widgets, etc. that will be displayed in the d
 ```ts title="Signature"
 interface DashboardExtension {
     routes?: DashboardRouteDefinition[];
+    navSections?: DashboardNavSectionDefinition[];
     pageBlocks?: DashboardPageBlockDefinition[];
     actionBarItems?: DashboardActionBarItem[];
     alerts?: DashboardAlertDefinition[];
     widgets?: DashboardWidgetDefinition[];
+    customFormComponents?: DashboardCustomFormComponent[];
 }
 ```
 
@@ -34,6 +36,11 @@ interface DashboardExtension {
 <MemberInfo kind="property" type={`DashboardRouteDefinition[]`}   />
 
 Allows you to define custom routes such as list or detail views.
+### navSections
+
+<MemberInfo kind="property" type={`DashboardNavSectionDefinition[]`}   />
+
+Allows you to define custom nav sections for the dashboard.
 ### pageBlocks
 
 <MemberInfo kind="property" type={`<a href='/reference/dashboard/extensions/dashboard-page-block-definition#dashboardpageblockdefinition'>DashboardPageBlockDefinition</a>[]`}   />
@@ -55,6 +62,11 @@ Not yet implemented
 
 Allows you to define custom routes for the dashboard, which will render the
 given components and optionally also add a nav menu item.
+### customFormComponents
+
+<MemberInfo kind="property" type={`<a href='/reference/dashboard/extensions/dashboard-custom-form-component#dashboardcustomformcomponent'>DashboardCustomFormComponent</a>[]`}   />
+
+Allows you to define custom form components for custom fields in the dashboard.
 
 
 </div>

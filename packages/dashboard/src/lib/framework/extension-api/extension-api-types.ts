@@ -5,7 +5,21 @@ import type React from 'react';
 
 import { DashboardAlertDefinition } from '../alert/types.js';
 import { DashboardWidgetDefinition } from '../dashboard-widget/types.js';
+import { BulkAction } from '../data-table/data-table-types.js';
+import { CustomFormComponentInputProps } from '../form-engine/custom-form-component.js';
 import { NavMenuItem } from '../nav-menu/nav-menu-extensions.js';
+
+/**
+ * @description
+ * Allows you to define custom form components for custom fields in the dashboard.
+ *
+ * @docsCategory extensions
+ * @since 3.4.0
+ */
+export interface DashboardCustomFormComponent {
+    id: string;
+    component: React.FunctionComponent<CustomFormComponentInputProps>;
+}
 
 export interface DashboardRouteDefinition {
     component: (route: AnyRoute) => React.ReactNode;
@@ -100,6 +114,35 @@ export interface DashboardPageBlockDefinition {
  * @description
  * **Status: Developer Preview**
  *
+ * This allows you to customize aspects of existing data tables in the dashboard.
+ *
+ * @docsCategory extensions
+ * @since 3.4.0
+ */
+export interface DashboardDataTableDefinition {
+    /**
+     * @description
+     * The ID of the page where the data table is located, e.g. `'product-list'`, `'order-list'`.
+     */
+    pageId: string;
+    /**
+     * @description
+     * The ID of the data table block. Defaults to `'list-table'`, which is the default blockId
+     * for the standard list pages. However, some other pages may use a different blockId,
+     * such as `'product-variants-table'` on the `'product-detail'` page.
+     */
+    blockId?: string;
+    /**
+     * @description
+     * An array of additional bulk actions that will be available on the data table.
+     */
+    bulkActions?: BulkAction[];
+}
+
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
  * This is used to define the routes, widgets, etc. that will be displayed in the dashboard.
  *
  * @docsCategory extensions
@@ -137,4 +180,14 @@ export interface DashboardExtension {
      * given components and optionally also add a nav menu item.
      */
     widgets?: DashboardWidgetDefinition[];
+    /**
+     * @description
+     * Allows you to define custom form components for custom fields in the dashboard.
+     */
+    customFormComponents?: DashboardCustomFormComponent[];
+    /**
+     * @description
+     * Allows you to customize aspects of existing data tables in the dashboard.
+     */
+    dataTables?: DashboardDataTableDefinition[];
 }

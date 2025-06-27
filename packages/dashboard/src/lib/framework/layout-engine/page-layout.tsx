@@ -1,20 +1,21 @@
 import { CustomFieldsForm } from '@/components/shared/custom-fields-form.js';
+import { NavigationConfirmation } from '@/components/shared/navigation-confirmation.js';
 import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.js';
 import { Form } from '@/components/ui/form.js';
 import { useCustomFieldConfig } from '@/hooks/use-custom-field-config.js';
 import { usePage } from '@/hooks/use-page.js';
 import { cn } from '@/lib/utils.js';
-import { NavigationConfirmation } from '@/components/shared/navigation-confirmation.js';
 import { useMediaQuery } from '@uidotdev/usehooks';
 import React, { ComponentProps } from 'react';
 import { Control, UseFormReturn } from 'react-hook-form';
 
 import { DashboardActionBarItem } from '../extension-api/extension-api-types.js';
 
+import { PageBlockContext } from '@/framework/layout-engine/page-block-provider.js';
+import { PageContext, PageContextValue } from '@/framework/layout-engine/page-provider.js';
 import { getDashboardActionBarItems, getDashboardPageBlocks } from './layout-extensions.js';
 import { LocationWrapper } from './location-wrapper.js';
-import { PageContext, PageContextValue } from '@/framework/layout-engine/page-provider.js';
 
 export interface PageProps extends ComponentProps<'div'> {
     pageId?: string;
@@ -45,9 +46,7 @@ export function Page({ children, pageId, entity, form, submitHandler, ...props }
     const childArray = React.Children.toArray(children);
 
     const pageTitle = childArray.find(child => React.isValidElement(child) && child.type === PageTitle);
-    const pageActionBar = childArray.find(
-        child => isOfType(child, PageActionBar),
-    );
+    const pageActionBar = childArray.find(child => isOfType(child, PageActionBar));
 
     const pageContent = childArray.filter(
         child => !isOfType(child, PageTitle) && !isOfType(child, PageActionBar),
@@ -73,7 +72,13 @@ export function Page({ children, pageId, entity, form, submitHandler, ...props }
     );
 }
 
-function PageContent({ pageHeader, pageContent, form, submitHandler, ...props }: {
+function PageContent({
+    pageHeader,
+    pageContent,
+    form,
+    submitHandler,
+    ...props
+}: {
     pageHeader: React.ReactNode;
     pageContent: React.ReactNode;
     form?: UseFormReturn<any>;
@@ -94,9 +99,14 @@ function PageContent({ pageHeader, pageContent, form, submitHandler, ...props }:
     );
 }
 
-export function PageContentWithOptionalForm({ form, pageHeader, pageContent, submitHandler }: {
+export function PageContentWithOptionalForm({
+    form,
+    pageHeader,
+    pageContent,
+    submitHandler,
+}: {
     form?: UseFormReturn<any>;
-    pageHeader: React.ReactNode
+    pageHeader: React.ReactNode;
     pageContent: React.ReactNode;
     submitHandler?: any;
 }) {
@@ -261,12 +271,8 @@ export function PageTitle({ children }: { children: React.ReactNode }) {
 export function PageActionBar({ children }: { children: React.ReactNode }) {
     let childArray = React.Children.toArray(children);
 
-    const leftContent = childArray.filter(
-        child => isOfType(child, PageActionBarLeft),
-    );
-    const rightContent = childArray.filter(
-        child => isOfType(child, PageActionBarRight),
-    );
+    const leftContent = childArray.filter(child => isOfType(child, PageActionBarLeft));
+    const rightContent = childArray.filter(child => isOfType(child, PageActionBarRight));
 
     return (
         <div className={cn('flex gap-2', leftContent.length > 0 ? 'justify-between' : 'justify-end')}>
@@ -348,18 +354,20 @@ export type PageBlockProps = {
  * @docsWeight 0
  * @since 3.3.0
  */
-export function PageBlock({ children, title, description, className, blockId }: PageBlockProps) {
+export function PageBlock({ children, title, description, className, blockId, column }: PageBlockProps) {
     return (
         <LocationWrapper blockId={blockId}>
-            <Card className={cn('w-full', className)}>
-                {title || description ? (
-                    <CardHeader>
-                        {title && <CardTitle>{title}</CardTitle>}
-                        {description && <CardDescription>{description}</CardDescription>}
-                    </CardHeader>
-                ) : null}
-                <CardContent className={cn(!title ? 'pt-6' : '')}>{children}</CardContent>
-            </Card>
+            <PageBlockContext.Provider value={{ blockId, title, description, column }}>
+                <Card className={cn('w-full', className)}>
+                    {title || description ? (
+                        <CardHeader>
+                            {title && <CardTitle>{title}</CardTitle>}
+                            {description && <CardDescription>{description}</CardDescription>}
+                        </CardHeader>
+                    ) : null}
+                    <CardContent className={cn(!title ? 'pt-6' : '')}>{children}</CardContent>
+                </Card>
+            </PageBlockContext.Provider>
         </LocationWrapper>
     );
 }
@@ -376,13 +384,15 @@ export function PageBlock({ children, title, description, className, blockId }: 
  * @since 3.3.0
  */
 export function FullWidthPageBlock({
-                                       children,
-                                       className,
-                                       blockId,
-                                   }: Pick<PageBlockProps, 'children' | 'className' | 'blockId'>) {
+    children,
+    className,
+    blockId,
+}: Pick<PageBlockProps, 'children' | 'className' | 'blockId'>) {
     return (
         <LocationWrapper blockId={blockId}>
-            <div className={cn('w-full', className)}>{children}</div>
+            <PageBlockContext.Provider value={{ blockId, column: 'main' }}>
+                <div className={cn('w-full', className)}>{children}</div>
+            </PageBlockContext.Provider>
         </LocationWrapper>
     );
 }
@@ -398,10 +408,10 @@ export function FullWidthPageBlock({
  * @since 3.3.0
  */
 export function CustomFieldsPageBlock({
-                                          column,
-                                          entityType,
-                                          control,
-                                      }: {
+    column,
+    entityType,
+    control,
+}: {
     column: 'main' | 'side';
     entityType: string;
     control: Control<any, any>;

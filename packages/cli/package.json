@@ -1,6 +1,6 @@
 {
     "name": "@vendure/cli",
-    "version": "3.3.4",
+    "version": "3.3.5",
     "description": "A modern, headless ecommerce framework",
     "repository": {
         "type": "git",
@@ -36,7 +36,7 @@
     ],
     "dependencies": {
         "@clack/prompts": "^0.7.0",
-        "@vendure/common": "3.3.4",
+        "@vendure/common": "3.3.5",
         "change-case": "^4.1.2",
         "commander": "^11.0.0",
         "dotenv": "^16.4.5",
@@ -47,7 +47,7 @@
         "tsconfig-paths": "^4.2.0"
     },
     "devDependencies": {
-        "@vendure/core": "3.3.4",
+        "@vendure/core": "3.3.5",
         "typescript": "5.8.2"
     }
 }

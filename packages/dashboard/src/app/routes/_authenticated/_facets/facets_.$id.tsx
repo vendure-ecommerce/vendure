@@ -82,7 +82,7 @@ function FacetDetailPage() {
     });
 
     return (
-        <Page pageId="facet-detail" form={form} submitHandler={submitHandler}>
+        <Page pageId="facet-detail" form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New facet</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>

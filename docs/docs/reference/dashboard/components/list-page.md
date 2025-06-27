@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ListPage
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="78" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="73" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
@@ -30,7 +30,7 @@ Parameters
 
 ## ListPageProps
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="42" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/page/list-page.tsx" sourceLine="35" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 
@@ -45,9 +45,11 @@ interface ListPageProps<T extends TypedDocumentNode<U, V>, U extends ListQuerySh
     onSearchTermChange?: (searchTerm: string) => NonNullable<V['options']>['filter'];
     customizeColumns?: CustomizeColumnConfig<T>;
     additionalColumns?: AC;
-    defaultColumnOrder?: (keyof ListQueryFields<T> | keyof AC)[];
+    defaultColumnOrder?: (keyof ListQueryFields<T> | keyof AC | CustomFieldKeysOfItem<ListQueryFields<T>>)[];
     defaultSort?: SortingState;
-    defaultVisibility?: Partial<Record<keyof ListQueryFields<T> | keyof AC, boolean>>;
+    defaultVisibility?: Partial<
+        Record<keyof ListQueryFields<T> | keyof AC | CustomFieldKeysOfItem<ListQueryFields<T>>, boolean>
+    >;
     children?: React.ReactNode;
     facetedFilters?: FacetedFilterConfig<T>;
     rowActions?: RowAction<ListQueryFields<T>>[];
@@ -105,7 +107,7 @@ interface ListPageProps<T extends TypedDocumentNode<U, V>, U extends ListQuerySh
 
 ### defaultColumnOrder
 
-<MemberInfo kind="property" type={`(keyof ListQueryFields&#60;T&#62; | keyof AC)[]`}   />
+<MemberInfo kind="property" type={`(keyof ListQueryFields&#60;T&#62; | keyof AC | CustomFieldKeysOfItem&#60;ListQueryFields&#60;T&#62;&#62;)[]`}   />
 
 
 ### defaultSort
@@ -115,7 +117,7 @@ interface ListPageProps<T extends TypedDocumentNode<U, V>, U extends ListQuerySh
 
 ### defaultVisibility
 
-<MemberInfo kind="property" type={`Partial&#60;Record&#60;keyof ListQueryFields&#60;T&#62; | keyof AC, boolean&#62;&#62;`}   />
+<MemberInfo kind="property" type={`Partial&#60;         Record&#60;keyof ListQueryFields&#60;T&#62; | keyof AC | CustomFieldKeysOfItem&#60;ListQueryFields&#60;T&#62;&#62;, boolean&#62;     &#62;`}   />
 
 
 ### children

@@ -78,7 +78,7 @@ function GlobalSettingsPage() {
     });
 
     return (
-        <Page pageId="global-settings" form={form} submitHandler={submitHandler}>
+        <Page pageId="global-settings" form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
                 <Trans>Global settings</Trans>
             </PageTitle>

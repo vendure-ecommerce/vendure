@@ -6,6 +6,17 @@ import { DetailPageButton } from "@/index.js";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { useState } from "react";
 import { productVariantListDocument } from "../products.graphql.js";
+import { graphql } from '@/graphql/graphql.js';
+
+export const deleteProductVariantDocument = graphql(`
+    mutation DeleteProductVariant($id: ID!) {
+        deleteProductVariant(id: $id) {
+            result
+            message
+        }
+    }
+`);
+
 
 interface ProductVariantsTableProps {
     productId: string;
@@ -22,6 +33,7 @@ export function ProductVariantsTable({ productId, registerRefresher }: ProductVa
     return <PaginatedListDataTable
         registerRefresher={registerRefresher}
         listQuery={productVariantListDocument}
+        deleteMutation={deleteProductVariantDocument}
         transformVariables={variables => ({
             ...variables,
             productId,

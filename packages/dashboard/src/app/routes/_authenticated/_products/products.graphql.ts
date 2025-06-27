@@ -119,3 +119,88 @@ export const deleteProductDocument = graphql(`
         }
     }
 `);
+
+export const deleteProductsDocument = graphql(`
+    mutation DeleteProducts($ids: [ID!]!) {
+        deleteProducts(ids: $ids) {
+            result
+            message
+        }
+    }
+`);
+
+export const assignProductsToChannelDocument = graphql(`
+    mutation AssignProductsToChannel($input: AssignProductsToChannelInput!) {
+        assignProductsToChannel(input: $input) {
+            id
+            channels {
+                id
+                code
+            }
+        }
+    }
+`);
+
+export const removeProductsFromChannelDocument = graphql(`
+    mutation RemoveProductsFromChannel($input: RemoveProductsFromChannelInput!) {
+        removeProductsFromChannel(input: $input) {
+            id
+            channels {
+                id
+                code
+            }
+        }
+    }
+`);
+
+export const updateProductsDocument = graphql(`
+    mutation UpdateProducts($input: [UpdateProductInput!]!) {
+        updateProducts(input: $input) {
+            id
+            name
+            facetValues {
+                id
+                name
+                code
+            }
+        }
+    }
+`);
+
+export const getProductsWithFacetValuesByIdsDocument = graphql(`
+    query GetProductsWithFacetValuesByIds($ids: [String!]!) {
+        products(options: { filter: { id: { in: $ids } } }) {
+            items {
+                id
+                name
+                facetValues {
+                    id
+                    name
+                    code
+                    facet {
+                        id
+                        name
+                        code
+                    }
+                }
+            }
+        }
+    }
+`);
+
+export const duplicateEntityDocument = graphql(`
+    mutation DuplicateEntity($input: DuplicateEntityInput!) {
+        duplicateEntity(input: $input) {
+            ... on DuplicateEntitySuccess {
+                newEntityId
+            }
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+            ... on DuplicateEntityError {
+                duplicationError
+            }
+        }
+    }
+`);

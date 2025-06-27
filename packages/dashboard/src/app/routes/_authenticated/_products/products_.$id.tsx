@@ -24,12 +24,12 @@ import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader
 import { useDetailPage } from '@/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@/lib/trans.js';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { useRef } from 'react';
 import { toast } from 'sonner';
+import { AddProductVariantDialog } from './components/add-product-variant-dialog.js';
 import { CreateProductVariantsDialog } from './components/create-product-variants-dialog.js';
 import { ProductVariantsTable } from './components/product-variants-table.js';
-import { AddProductVariantDialog } from './components/add-product-variant-dialog.js';
 import { createProductDocument, productDetailDocument, updateProductDocument } from './products.graphql.js';
-import { useRef } from 'react';
 
 export const Route = createFileRoute('/_authenticated/_products/products_/$id')({
     component: ProductDetailPage,
@@ -53,6 +53,7 @@ function ProductDetailPage() {
     const refreshRef = useRef<() => void>(() => {});
 
     const { form, submitHandler, entity, isPending, refreshEntity, resetForm } = useDetailPage({
+        entityName: 'Product',
         queryDocument: productDetailDocument,
         createDocument: createProductDocument,
         updateDocument: updateProductDocument,
@@ -88,9 +89,9 @@ function ProductDetailPage() {
             });
         },
     });
-    
+
     return (
-        <Page pageId="product-detail" entity={entity} form={form} submitHandler={submitHandler}>
+        <Page pageId="product-detail" form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New product</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>
@@ -142,10 +143,13 @@ function ProductDetailPage() {
                 <CustomFieldsPageBlock column="main" entityType="Product" control={form.control} />
                 {entity && entity.variantList.totalItems > 0 && (
                     <PageBlock column="main" blockId="product-variants-table">
-                        <ProductVariantsTable productId={params.id} registerRefresher={refresher => {
-                            refreshRef.current = refresher;
-                        }} />
-                         <div className="mt-4">
+                        <ProductVariantsTable
+                            productId={params.id}
+                            registerRefresher={refresher => {
+                                refreshRef.current = refresher;
+                            }}
+                        />
+                        <div className="mt-4">
                             <AddProductVariantDialog
                                 productId={params.id}
                                 onSuccess={() => {

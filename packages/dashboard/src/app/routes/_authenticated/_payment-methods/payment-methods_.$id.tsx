@@ -102,7 +102,7 @@ function PaymentMethodDetailPage() {
     });
 
     return (
-        <Page pageId="payment-method-detail" form={form} submitHandler={submitHandler}>
+        <Page pageId="payment-method-detail" form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
                 {creatingNewEntity ? <Trans>New payment method</Trans> : (entity?.name ?? '')}
             </PageTitle>

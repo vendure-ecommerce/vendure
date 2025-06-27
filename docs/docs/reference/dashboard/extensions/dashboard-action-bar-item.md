@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## DashboardActionBarItem
 
-<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/extension-api-types.ts" sourceLine="30" packageName="@vendure/dashboard" since="3.3.0" />
+<GenerationInfo sourceFile="packages/dashboard/src/lib/framework/extension-api/extension-api-types.ts" sourceLine="51" packageName="@vendure/dashboard" since="3.3.0" />
 
 **Status: Developer Preview**
 

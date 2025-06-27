@@ -1,5 +1,8 @@
-import { Button, defineDashboardExtension } from '@vendure/dashboard';
+import { Button, DataTableBulkActionItem, defineDashboardExtension } from '@vendure/dashboard';
+import { InfoIcon } from 'lucide-react';
+import { toast } from 'sonner';
 
+import { TextareaCustomField } from './custom-form-components';
 import { CustomWidget } from './custom-widget';
 import { reviewDetail } from './review-detail';
 import { reviewList } from './review-list';
@@ -18,9 +21,16 @@ export default defineDashboardExtension({
         {
             label: 'Custom Action Bar Item',
             component: props => {
-                return <Button type="button" onClick={() => {
-                    console.log('Clicked custom action bar item');
-                }}>Test Button</Button>;
+                return (
+                    <Button
+                        type="button"
+                        onClick={() => {
+                            console.log('Clicked custom action bar item');
+                        }}
+                    >
+                        Test Button
+                    </Button>
+                );
             },
             locationId: 'product-detail',
         },
@@ -37,6 +47,31 @@ export default defineDashboardExtension({
                 column: 'side',
                 position: { blockId: 'main-form', order: 'after' },
             },
+        },
+    ],
+    customFormComponents: [
+        {
+            id: 'textarea',
+            component: TextareaCustomField,
+        },
+    ],
+    dataTables: [
+        {
+            pageId: 'product-list',
+            bulkActions: [
+                {
+                    component: props => (
+                        <DataTableBulkActionItem
+                            onClick={() => {
+                                console.log('Selection:', props.selection);
+                                toast.message(`There are ${props.selection.length} selected items`);
+                            }}
+                            label="My Custom Action"
+                            icon={InfoIcon}
+                        />
+                    ),
+                },
+            ],
         },
     ],
 });
