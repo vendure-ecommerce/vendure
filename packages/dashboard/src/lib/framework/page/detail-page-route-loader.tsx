@@ -3,10 +3,11 @@ import { NEW_ENTITY_PATH } from '@/constants.js';
 import { PageBreadcrumb } from '@/components/layout/generated-breadcrumbs.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { FileBaseRouteOptions } from '@tanstack/react-router';
+import { addCustomFields } from '../document-introspection/add-custom-fields.js';
 import { getQueryName, getQueryTypeFieldInfo } from '../document-introspection/get-document-structure.js';
 import { DetailEntity } from './page-types.js';
 import { getDetailQueryOptions } from './use-detail-page.js';
-import { addCustomFields } from '../document-introspection/add-custom-fields.js';
+
 export interface DetailPageRouteLoaderConfig<T extends TypedDocumentNode<any, any>> {
     queryDocument: T;
     breadcrumb: (isNew: boolean, entity: DetailEntity<T>) => Array<PageBreadcrumb | undefined>;
