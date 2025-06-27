@@ -1,3 +1,36 @@
+## <small>3.3.5 (2025-06-27)</small>
+
+
+#### Fixes
+
+* **cli** Allow comments in tsconfig for the migrate command (#3604) ([957c5e8](https://github.com/vendure-ecommerce/vendure/commit/957c5e8)), closes [#3604](https://github.com/vendure-ecommerce/vendure/issues/3604)
+* **dashboard** Add order property to navigation items for improved sorting ([82a1b7f](https://github.com/vendure-ecommerce/vendure/commit/82a1b7f))
+* **dashboard** Enable tailwind processing of dashboard extension files ([694d0dd](https://github.com/vendure-ecommerce/vendure/commit/694d0dd))
+* **dashboard** Fix asset imports in built index.html ([3ad6634](https://github.com/vendure-ecommerce/vendure/commit/3ad6634))
+* **dashboard** Fix bulk editing of product facet values ([943b71f](https://github.com/vendure-ecommerce/vendure/commit/943b71f))
+* **dashboard** Fix extension loading on Windows ([bbaa3e9](https://github.com/vendure-ecommerce/vendure/commit/bbaa3e9)), closes [#3593](https://github.com/vendure-ecommerce/vendure/issues/3593)
+* **dashboard** Fix handling of Vite base option ([f21a0b6](https://github.com/vendure-ecommerce/vendure/commit/f21a0b6))
+* **dashboard** Fix plugin detection from barrel files ([aa12ac7](https://github.com/vendure-ecommerce/vendure/commit/aa12ac7))
+* **dashboard** Improve data table loading UX ([2227598](https://github.com/vendure-ecommerce/vendure/commit/2227598))
+* **dashboard** Only transform base path in build phase ([3a031b3](https://github.com/vendure-ecommerce/vendure/commit/3a031b3))
+* **dashboard** Update Vite plugin output directory to 'dist' for consistency ([8526da9](https://github.com/vendure-ecommerce/vendure/commit/8526da9))
+* **email-plugin** Fix Dynamic smtp config require server restart to reflect changes (#3282) ([d6d967d](https://github.com/vendure-ecommerce/vendure/commit/d6d967d)), closes [#3282](https://github.com/vendure-ecommerce/vendure/issues/3282)
+* **job-queue-plugin** Correctly list running jobs ([391e314](https://github.com/vendure-ecommerce/vendure/commit/391e314))
+* **job-queue-plugin** Do not throw on unknown job state ([bb91f26](https://github.com/vendure-ecommerce/vendure/commit/bb91f26))
+
+#### Features
+
+* **core** Only use shipping address for tax zone determination (#3367) ([8977d9f](https://github.com/vendure-ecommerce/vendure/commit/8977d9f)), closes [#3367](https://github.com/vendure-ecommerce/vendure/issues/3367)
+* **dashboard** Add entity prop to detail pages for improved context ([4c20cae](https://github.com/vendure-ecommerce/vendure/commit/4c20cae))
+* **dashboard** Add relation field transformation (#3619) ([caa18ac](https://github.com/vendure-ecommerce/vendure/commit/caa18ac)), closes [#3619](https://github.com/vendure-ecommerce/vendure/issues/3619)
+* **dashboard** Add support for monorepo setups ([76759d9](https://github.com/vendure-ecommerce/vendure/commit/76759d9))
+* **dashboard** Confirmation on deletion from list views ([d88a0a7](https://github.com/vendure-ecommerce/vendure/commit/d88a0a7))
+* **dashboard** Custom form components for custom fields (#3610) ([155f376](https://github.com/vendure-ecommerce/vendure/commit/155f376)), closes [#3610](https://github.com/vendure-ecommerce/vendure/issues/3610)
+* **dashboard** Dashboard bulk actions (#3615) ([39edc18](https://github.com/vendure-ecommerce/vendure/commit/39edc18)), closes [#3615](https://github.com/vendure-ecommerce/vendure/issues/3615)
+* **dashboard** Implement tabbed interface for custom fields in forms ([68af675](https://github.com/vendure-ecommerce/vendure/commit/68af675))
+* **dashboard** Improve display of variant stock levels in lists ([1ce87ed](https://github.com/vendure-ecommerce/vendure/commit/1ce87ed))
+* **dashboard** Respect base path of Vite config in router ([7716ece](https://github.com/vendure-ecommerce/vendure/commit/7716ece))
+
 ## <small>3.3.4 (2025-06-19)</small>
 
 
