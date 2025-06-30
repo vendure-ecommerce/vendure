@@ -5,7 +5,7 @@ import { RequestContext } from '../../api';
 import { Customer, Order } from '../../entity';
 import { VendureEntityEvent } from '../vendure-entity-event';
 
-type OrderInputTypes = Order | Customer | ModifyOrderInput | ID | { customFields: any };
+type OrderInputTypes = Customer | ModifyOrderInput | { customFields: any };
 
 /**
  * @description
@@ -23,5 +23,15 @@ export class OrderEvent extends VendureEntityEvent<Order, OrderInputTypes> {
         input?: OrderInputTypes,
     ) {
         super(order, type, ctx, input);
+    }
+
+    /**
+     * Return a customer field to become compatible with the
+     * deprecated old version of CustomerEvent
+     * @deprecated Use `entity` instead
+     * @since 1.4
+     */
+    get order(): Order {
+        return this.entity;
     }
 }
