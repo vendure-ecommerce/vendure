@@ -27,6 +27,7 @@ import { camelCase } from 'typeorm/util/StringUtils';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
+import { Instrument } from '../../common';
 import { isGraphQlErrorResult } from '../../common/error/error-result';
 import { ForbiddenError, InternalServerError } from '../../common/error/errors';
 import { MimeTypeError } from '../../common/error/generated-graphql-admin-errors';
@@ -39,8 +40,8 @@ import { Asset } from '../../entity/asset/asset.entity';
 import { OrderableAsset } from '../../entity/asset/orderable-asset.entity';
 import { VendureEntity } from '../../entity/base/base.entity';
 import { Collection } from '../../entity/collection/collection.entity';
-import { Product } from '../../entity/product/product.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
+import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AssetChannelEvent } from '../../event-bus/events/asset-channel-event';
 import { AssetEvent } from '../../event-bus/events/asset-event';
@@ -88,6 +89,7 @@ export interface EntityAssetInput {
  * @docsWeight 0
  */
 @Injectable()
+@Instrument()
 export class AssetService {
     private permittedMimeTypes: Array<{ type: string; subtype: string }> = [];
 

@@ -1,0 +1,15 @@
+.graphiql-container.embedded-mode {
+    --sidebar-width: 0px;
+    border-radius: var(--border-radius-12);
+}
+.graphiql-container.embedded-mode .graphiql-sidebar {
+    padding: 0;
+}
+
+.graphiql-container.embedded-mode .graphiql-sessions {
+    margin: 0;
+}
+
+.graphiql-container.embedded-mode .graphiql-logo {
+    display: none;
+}

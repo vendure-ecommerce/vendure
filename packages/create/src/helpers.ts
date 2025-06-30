@@ -1,7 +1,7 @@
 import { cancel, isCancel, spinner } from '@clack/prompts';
 import spawn from 'cross-spawn';
 import fs from 'fs-extra';
-import { execFile, execSync, execFileSync } from 'node:child_process';
+import { execFile, execFileSync, execSync } from 'node:child_process';
 import { platform } from 'node:os';
 import { promisify } from 'node:util';
 import path from 'path';
@@ -219,6 +219,7 @@ export function getDependencies(
         `@vendure/email-plugin${vendurePkgVersion}`,
         `@vendure/asset-server-plugin${vendurePkgVersion}`,
         `@vendure/admin-ui-plugin${vendurePkgVersion}`,
+        `@vendure/graphiql-plugin${vendurePkgVersion}`,
         'dotenv',
         dbDriverPackage(dbType),
     ];

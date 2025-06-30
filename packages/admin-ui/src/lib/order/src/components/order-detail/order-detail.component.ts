@@ -63,6 +63,7 @@ export const SET_ORDER_CUSTOMER_MUTATION = gql`
     templateUrl: './order-detail.component.html',
     styleUrls: ['./order-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OrderDetailComponent
     extends TypedBaseDetailComponent<typeof OrderDetailQueryDocument, 'order'>

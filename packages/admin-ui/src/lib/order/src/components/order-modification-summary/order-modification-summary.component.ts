@@ -9,6 +9,7 @@ import { AddedLine, ModifyOrderData, OrderSnapshot } from '../../common/modify-o
     templateUrl: './order-modification-summary.component.html',
     styleUrls: ['./order-modification-summary.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OrderModificationSummaryComponent {
     @Input() orderSnapshot: OrderSnapshot;

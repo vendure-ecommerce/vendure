@@ -96,7 +96,7 @@ export class TranslatableSaver {
         const existingTranslations = await this.connection.getRepository(ctx, translationType).find({
             relationLoadStrategy: 'query',
             loadEagerRelations: false,
-            where: { base: { id: input.id } },
+            where: { base: { id: input.id } } as Translation<T>,
             relations: ['base'],
         } as FindManyOptions<Translation<T>>);
 

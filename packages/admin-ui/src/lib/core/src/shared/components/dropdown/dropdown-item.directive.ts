@@ -6,6 +6,7 @@ import { DropdownComponent } from './dropdown.component';
     selector: '[vdrDropdownItem]',
     // eslint-disable-next-line
     host: { '[class.dropdown-item]': 'true' },
+    standalone: false,
 })
 export class DropdownItemDirective {
     constructor(

@@ -28,6 +28,7 @@ export const GET_PAYMENT_METHOD_LIST = gql`
     templateUrl: './payment-method-list.component.html',
     styleUrls: ['./payment-method-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class PaymentMethodListComponent extends TypedBaseListComponent<
     typeof GetPaymentMethodListDocument,

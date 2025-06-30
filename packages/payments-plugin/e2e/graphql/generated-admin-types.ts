@@ -861,6 +861,7 @@ export type CreateProductOptionInput = {
 export type CreateProductVariantInput = {
   assetIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   customFields?: InputMaybe<Scalars['JSON']['input']>;
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
   facetValueIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   featuredAssetId?: InputMaybe<Scalars['ID']['input']>;
   optionIds?: InputMaybe<Array<Scalars['ID']['input']>>;
@@ -2951,6 +2952,7 @@ export type Mutation = {
   /** Removes StockLocations from the specified Channel */
   removeStockLocationsFromChannel: Array<StockLocation>;
   runPendingSearchIndexUpdates: Success;
+  runScheduledTask: Success;
   setCustomerForDraftOrder: SetCustomerForDraftOrderResult;
   /** Sets the billing address for a draft Order */
   setDraftOrderBillingAddress: Order;
@@ -3005,6 +3007,8 @@ export type Mutation = {
   updateProductOption: ProductOption;
   /** Update an existing ProductOptionGroup */
   updateProductOptionGroup: ProductOptionGroup;
+  /** Update an existing ProductVariant */
+  updateProductVariant: ProductVariant;
   /** Update existing ProductVariants */
   updateProductVariants: Array<Maybe<ProductVariant>>;
   /** Update multiple existing Products */
@@ -3014,6 +3018,7 @@ export type Mutation = {
   updateProvince: Province;
   /** Update an existing Role */
   updateRole: Role;
+  updateScheduledTask: ScheduledTask;
   /** Update an existing Seller */
   updateSeller: Seller;
   /** Update an existing ShippingMethod */
@@ -3639,6 +3644,11 @@ export type MutationRemoveStockLocationsFromChannelArgs = {
 };
 
 
+export type MutationRunScheduledTaskArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type MutationSetCustomerForDraftOrderArgs = {
   customerId?: InputMaybe<Scalars['ID']['input']>;
   input?: InputMaybe<CreateCustomerInput>;
@@ -3808,6 +3818,11 @@ export type MutationUpdateProductOptionGroupArgs = {
 };
 
 
+export type MutationUpdateProductVariantArgs = {
+  input: UpdateProductVariantInput;
+};
+
+
 export type MutationUpdateProductVariantsArgs = {
   input: Array<UpdateProductVariantInput>;
 };
@@ -3830,6 +3845,11 @@ export type MutationUpdateProvinceArgs = {
 
 export type MutationUpdateRoleArgs = {
   input: UpdateRoleInput;
+};
+
+
+export type MutationUpdateScheduledTaskArgs = {
+  input: UpdateScheduledTaskInput;
 };
 
 
@@ -5074,6 +5094,7 @@ export type Query = {
   provinces: ProvinceList;
   role?: Maybe<Role>;
   roles: RoleList;
+  scheduledTasks: Array<ScheduledTask>;
   search: SearchResponse;
   seller?: Maybe<Seller>;
   sellers: SellerList;
@@ -5623,6 +5644,18 @@ export type Sale = Node & StockMovement & {
   quantity: Scalars['Int']['output'];
   type: StockMovementType;
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type ScheduledTask = {
+  description: Scalars['String']['output'];
+  enabled: Scalars['Boolean']['output'];
+  id: Scalars['String']['output'];
+  isRunning: Scalars['Boolean']['output'];
+  lastExecutedAt?: Maybe<Scalars['DateTime']['output']>;
+  lastResult?: Maybe<Scalars['JSON']['output']>;
+  nextExecutionAt?: Maybe<Scalars['DateTime']['output']>;
+  schedule: Scalars['String']['output'];
+  scheduleDescription: Scalars['String']['output'];
 };
 
 export type SearchInput = {
@@ -6543,6 +6576,11 @@ export type UpdateRoleInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
   permissions?: InputMaybe<Array<Permission>>;
+};
+
+export type UpdateScheduledTaskInput = {
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  id: Scalars['String']['input'];
 };
 
 export type UpdateSellerInput = {

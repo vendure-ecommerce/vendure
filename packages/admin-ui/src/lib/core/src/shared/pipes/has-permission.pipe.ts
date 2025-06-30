@@ -16,6 +16,7 @@ import { PermissionsService } from '../../providers/permissions/permissions.serv
 @Pipe({
     name: 'hasPermission',
     pure: false,
+    standalone: false,
 })
 export class HasPermissionPipe implements PipeTransform, OnDestroy {
     private hasPermission = false;

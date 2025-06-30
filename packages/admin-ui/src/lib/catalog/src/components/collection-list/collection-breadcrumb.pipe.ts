@@ -6,6 +6,7 @@ import { GetCollectionListQuery, ItemOf } from '@vendure/admin-ui/core';
  */
 @Pipe({
     name: 'collectionBreadcrumb',
+    standalone: false
 })
 export class CollectionBreadcrumbPipe implements PipeTransform {
     transform(value: ItemOf<GetCollectionListQuery, 'collections'>): unknown {

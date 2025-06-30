@@ -11,13 +11,14 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## SessionService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/session.service.ts" sourceLine="28" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/session.service.ts" sourceLine="33" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/session#session'>Session</a> entities.
 
 ```ts title="Signature"
-class SessionService implements EntitySubscriberInterface {
-    constructor(connection: TransactionalConnection, configService: ConfigService, orderService: OrderService)
+class SessionService implements EntitySubscriberInterface, OnApplicationBootstrap {
+    constructor(connection: TransactionalConnection, configService: ConfigService, orderService: OrderService, jobQueueService: JobQueueService, requestContextService: RequestContextService)
+    onApplicationBootstrap() => ;
     createNewAuthenticatedSession(ctx: RequestContext, user: User, authenticationStrategyName: string) => Promise<AuthenticatedSession>;
     createAnonymousSession() => Promise<CachedSession>;
     getSessionFromToken(sessionToken: string) => Promise<CachedSession | undefined>;
@@ -27,9 +28,11 @@ class SessionService implements EntitySubscriberInterface {
     setActiveChannel(serializedSession: CachedSession, channel: Channel) => Promise<CachedSession>;
     deleteSessionsByUser(ctx: RequestContext, user: User) => Promise<void>;
     deleteSessionsByActiveOrderId(ctx: RequestContext, activeOrderId: ID) => Promise<void>;
+    triggerCleanSessionsJob(batchSize: number) => ;
+    cleanExpiredSessions(ctx: RequestContext, batchSize: number) => ;
 }
 ```
-* Implements: <code>EntitySubscriberInterface</code>
+* Implements: <code>EntitySubscriberInterface</code>, <code>OnApplicationBootstrap</code>
 
 
 
@@ -37,7 +40,12 @@ class SessionService implements EntitySubscriberInterface {
 
 ### constructor
 
-<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, orderService: <a href='/reference/typescript-api/services/order-service#orderservice'>OrderService</a>) => SessionService`}   />
+<MemberInfo kind="method" type={`(connection: <a href='/reference/typescript-api/data-access/transactional-connection#transactionalconnection'>TransactionalConnection</a>, configService: ConfigService, orderService: <a href='/reference/typescript-api/services/order-service#orderservice'>OrderService</a>, jobQueueService: <a href='/reference/typescript-api/job-queue/job-queue-service#jobqueueservice'>JobQueueService</a>, requestContextService: <a href='/reference/typescript-api/request/request-context-service#requestcontextservice'>RequestContextService</a>) => SessionService`}   />
+
+
+### onApplicationBootstrap
+
+<MemberInfo kind="method" type={`() => `}   />
 
 
 ### createNewAuthenticatedSession
@@ -86,6 +94,16 @@ Deletes all existing sessions for the given user.
 <MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, activeOrderId: <a href='/reference/typescript-api/common/id#id'>ID</a>) => Promise&#60;void&#62;`}   />
 
 Deletes all existing sessions with the given activeOrder.
+### triggerCleanSessionsJob
+
+<MemberInfo kind="method" type={`(batchSize: number) => `}   />
+
+Triggers the clean sessions job.
+### cleanExpiredSessions
+
+<MemberInfo kind="method" type={`(ctx: <a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>, batchSize: number) => `}   />
+
+Cleans expired sessions from the database & the session cache.
 
 
 </div>

@@ -22,6 +22,7 @@ import { DataService } from '../../../data/providers/data.service';
     templateUrl: './product-selector-form-input.component.html',
     styleUrls: ['./product-selector-form-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ProductSelectorFormInputComponent implements FormInputComponent, OnInit {
     static readonly id: DefaultFormComponentId = 'product-selector-form-input';

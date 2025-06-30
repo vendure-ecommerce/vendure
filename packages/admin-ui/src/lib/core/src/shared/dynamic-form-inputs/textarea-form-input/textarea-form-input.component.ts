@@ -16,6 +16,7 @@ import { FormInputComponent, InputComponentConfig } from '../../../common/compon
     templateUrl: './textarea-form-input.component.html',
     styleUrls: ['./textarea-form-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class TextareaFormInputComponent implements FormInputComponent {
     static readonly id: DefaultFormComponentId = 'textarea-form-input';

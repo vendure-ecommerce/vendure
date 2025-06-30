@@ -32,7 +32,7 @@ export default [
 ```
 
 ```ts title="Signature"
-function registerPageTab(config: PageTabConfig): Provider
+function registerPageTab(config: PageTabConfig): void
 ```
 Parameters
 

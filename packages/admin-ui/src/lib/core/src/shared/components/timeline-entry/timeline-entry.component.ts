@@ -16,6 +16,7 @@ export type TimelineDisplayType = 'success' | 'error' | 'warning' | 'default' | 
     templateUrl: './timeline-entry.component.html',
     styleUrls: ['./timeline-entry.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class TimelineEntryComponent {
     @Input() displayType: TimelineDisplayType;

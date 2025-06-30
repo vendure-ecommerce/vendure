@@ -35,6 +35,7 @@ export const GET_ZONE_DETAIL = gql`
     templateUrl: './zone-detail.component.html',
     styleUrls: ['./zone-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ZoneDetailComponent
     extends TypedBaseDetailComponent<typeof GetZoneDetailDocument, 'zone'>

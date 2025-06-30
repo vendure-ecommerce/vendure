@@ -41,8 +41,11 @@ type Mutation {
 
     "Update existing ProductVariants"
     updateProductVariants(input: [UpdateProductVariantInput!]!): [ProductVariant]!
+        
+    "Update an existing ProductVariant"
+    updateProductVariant(input: UpdateProductVariantInput!): ProductVariant! 
 
-    "Delete a ProductVariant"
+    "Delete a ProductVariant" 
     deleteProductVariant(id: ID!): DeletionResponse!
 
     "Delete multiple ProductVariants"
@@ -148,6 +151,7 @@ input UpdateProductVariantPriceInput {
 
 input CreateProductVariantInput {
     productId: ID!
+    enabled: Boolean
     translations: [ProductVariantTranslationInput!]!
     facetValueIds: [ID!]
     sku: String!

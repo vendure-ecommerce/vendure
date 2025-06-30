@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## ShippingMethodService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/shipping-method.service.ts" sourceLine="44" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/shipping-method.service.ts" sourceLine="45" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/shipping-method#shippingmethod'>ShippingMethod</a> entities.
 

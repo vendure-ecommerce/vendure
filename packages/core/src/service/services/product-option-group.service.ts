@@ -5,18 +5,19 @@ import {
     UpdateProductOptionGroupInput,
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
-import { FindManyOptions, Like } from 'typeorm';
+import { FindManyOptions, IsNull, Like } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
+import { Instrument } from '../../common/instrument-decorator';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { Logger } from '../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { Product } from '../../entity/product/product.entity';
 import { ProductOptionGroupTranslation } from '../../entity/product-option-group/product-option-group-translation.entity';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
+import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus';
 import { ProductOptionGroupEvent } from '../../event-bus/events/product-option-group-event';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
@@ -32,6 +33,7 @@ import { ProductOptionService } from './product-option.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class ProductOptionGroupService {
     constructor(
         private connection: TransactionalConnection,
@@ -49,10 +51,14 @@ export class ProductOptionGroupService {
     ): Promise<Array<Translated<ProductOptionGroup>>> {
         const findOptions: FindManyOptions = {
             relations: relations ?? ['options'],
+            where: {
+                deletedAt: IsNull(),
+            },
         };
         if (filterTerm) {
             findOptions.where = {
                 code: Like(`%${filterTerm}%`),
+                ...findOptions.where,
             };
         }
         return this.connection
@@ -65,11 +71,15 @@ export class ProductOptionGroupService {
         ctx: RequestContext,
         id: ID,
         relations?: RelationPaths<ProductOptionGroup>,
+        findOneOptions?: { includeSoftDeleted: boolean },
     ): Promise<Translated<ProductOptionGroup> | undefined> {
         return this.connection
             .getRepository(ctx, ProductOptionGroup)
             .findOne({
-                where: { id },
+                where: {
+                    id,
+                    deletedAt: !findOneOptions?.includeSoftDeleted ? IsNull() : undefined,
+                },
                 relations: relations ?? ['options'],
             })
             .then(group => (group && this.translator.translate(group, ctx, ['options'])) ?? undefined);
@@ -82,6 +92,7 @@ export class ProductOptionGroupService {
                 relations: ['options'],
                 where: {
                     product: { id },
+                    deletedAt: IsNull(),
                 },
                 order: {
                     id: 'ASC',

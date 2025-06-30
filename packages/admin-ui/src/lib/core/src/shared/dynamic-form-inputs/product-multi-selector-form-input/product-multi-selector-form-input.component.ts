@@ -12,6 +12,7 @@ import { ProductMultiSelectorDialogComponent } from '../../components/product-mu
     templateUrl: './product-multi-selector-form-input.component.html',
     styleUrls: ['./product-multi-selector-form-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ProductMultiSelectorFormInputComponent implements OnInit, FormInputComponent {
     @Input() config: DefaultFormComponentConfig<'product-multi-form-input'>;

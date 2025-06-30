@@ -11,6 +11,7 @@ import { LocalStorageService } from './providers/local-storage/local-storage.ser
     selector: 'vdr-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
+    standalone: false,
 })
 export class AppComponent implements OnInit {
     loading$: Observable<boolean>;

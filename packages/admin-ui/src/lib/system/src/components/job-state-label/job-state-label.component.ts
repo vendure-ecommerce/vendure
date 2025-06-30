@@ -6,6 +6,7 @@ import { JobInfoFragment, JobState } from '@vendure/admin-ui/core';
     templateUrl: './job-state-label.component.html',
     styleUrls: ['./job-state-label.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class JobStateLabelComponent {
     @Input()

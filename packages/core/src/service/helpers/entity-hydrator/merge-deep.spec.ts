@@ -42,4 +42,33 @@ describe('mergeDeep()', () => {
         expect(line2?.sales[0].id).toBe('sale-of-line-2');
         expect(line2?.productVariant?.id).toBe('variant-of-line-2');
     });
+
+    it('should handle circular objects', () => {
+        const first = {
+            name: 'John',
+            age: 30,
+            address: {
+              city: 'New York',
+              zip: '10001',
+            },
+        };
+        
+        const second = {
+            name: 'Jane',
+            age: 25,
+            address: {
+              city: 'Los Angeles',
+              zip: '90001',
+            },
+        };
+
+        // @ts-ignore
+        first.entity = first;
+        // @ts-ignore
+        second.entity = second;
+
+        const merged = mergeDeep(first, second);
+
+        expect(merged.name).toBe('Jane');
+    });
 });

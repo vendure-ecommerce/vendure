@@ -17,6 +17,7 @@ import { CustomerGroupMemberFetchParams } from '../customer-group-member-list/cu
     templateUrl: './add-customer-to-group-dialog.component.html',
     styleUrls: ['./add-customer-to-group-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class AddCustomerToGroupDialogComponent implements Dialog<string[]>, OnInit {
     resolveWith: (result?: string[]) => void;

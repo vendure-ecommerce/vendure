@@ -66,7 +66,7 @@ export class AssetServer {
     createAssetServer(serverConfig: {
         presets: ImageTransformPreset[];
         imageTransformStrategies: ImageTransformStrategy[];
-    }) {
+    }): express.Router {
         this.presets = serverConfig.presets;
         this.imageTransformStrategies = serverConfig.imageTransformStrategies;
         const assetServer = express.Router();

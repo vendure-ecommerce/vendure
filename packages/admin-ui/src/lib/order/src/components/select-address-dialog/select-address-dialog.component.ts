@@ -20,6 +20,7 @@ import { Customer } from '../select-customer-dialog/select-customer-dialog.compo
     templateUrl: './select-address-dialog.component.html',
     styleUrls: ['./select-address-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SelectAddressDialogComponent implements OnInit, Dialog<CreateAddressInput> {
     resolveWith: (result?: CreateAddressInput) => void;

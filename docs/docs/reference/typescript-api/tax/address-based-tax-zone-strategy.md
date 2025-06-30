@@ -11,10 +11,11 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AddressBasedTaxZoneStrategy
 
-<GenerationInfo sourceFile="packages/core/src/config/tax/address-based-tax-zone-strategy.ts" sourceLine="39" packageName="@vendure/core" since="3.1.0" />
+<GenerationInfo sourceFile="packages/core/src/config/tax/address-based-tax-zone-strategy.ts" sourceLine="40" packageName="@vendure/core" since="3.1.0" />
 
 Address based <a href='/reference/typescript-api/tax/tax-zone-strategy#taxzonestrategy'>TaxZoneStrategy</a> which tries to find the applicable <a href='/reference/typescript-api/entities/zone#zone'>Zone</a> based on the
-country of the billing address, or else the country of the shipping address of the Order.
+country of the shipping address of the Order.
+This is useful for shops that do cross-border B2C orders and use the One-Stop-Shop (OSS) VAT scheme.
 
 Returns the default <a href='/reference/typescript-api/entities/channel#channel'>Channel</a>'s default tax zone if no applicable zone is found.
 

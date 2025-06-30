@@ -10,11 +10,12 @@ import {
 import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
+import { Instrument } from '../../common/instrument-decorator';
 import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
 import { ConfigService } from '../../config/config.service';
 import { TransactionalConnection } from '../../connection/transactional-connection';
-import { Order } from '../../entity/order/order.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
+import { Order } from '../../entity/order/order.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
@@ -32,6 +33,7 @@ import { TranslatorService } from '../helpers/translator/translator.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class OrderTestingService {
     constructor(
         private connection: TransactionalConnection,

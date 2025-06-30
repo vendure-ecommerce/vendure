@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, FactoryProvider } from '@angular/core';
+import { inject, provideAppInitializer } from '@angular/core';
 
 import { BulkActionRegistryService } from '../providers/bulk-action-registry/bulk-action-registry.service';
 import { BulkAction } from '../providers/bulk-action-registry/bulk-action-types';
@@ -49,13 +49,11 @@ import { BulkAction } from '../providers/bulk-action-registry/bulk-action-types'
  * @since 1.8.0
  * @docsCategory bulk-actions
  */
-export function registerBulkAction(bulkAction: BulkAction): FactoryProvider {
-    return {
-        provide: APP_INITIALIZER,
-        multi: true,
-        useFactory: (registry: BulkActionRegistryService) => () => {
+export function registerBulkAction(bulkAction: BulkAction) {
+    return provideAppInitializer(() => {
+        const initializerFn = ((registry: BulkActionRegistryService) => () => {
             registry.registerBulkAction(bulkAction);
-        },
-        deps: [BulkActionRegistryService],
-    };
+        })(inject(BulkActionRegistryService));
+        return initializerFn();
+    });
 }

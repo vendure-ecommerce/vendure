@@ -41,6 +41,7 @@ export const GET_PAYMENT_METHOD_DETAIL = gql`
     templateUrl: './payment-method-detail.component.html',
     styleUrls: ['./payment-method-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class PaymentMethodDetailComponent
     extends TypedBaseDetailComponent<typeof GetPaymentMethodDetailDocument, 'paymentMethod'>

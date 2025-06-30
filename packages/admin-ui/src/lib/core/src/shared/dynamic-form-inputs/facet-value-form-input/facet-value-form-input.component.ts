@@ -18,6 +18,7 @@ import { FacetValueFragment } from '../../../common/generated-types';
     templateUrl: './facet-value-form-input.component.html',
     styleUrls: ['./facet-value-form-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class FacetValueFormInputComponent implements FormInputComponent {
     static readonly id: DefaultFormComponentId = 'facet-value-form-input';

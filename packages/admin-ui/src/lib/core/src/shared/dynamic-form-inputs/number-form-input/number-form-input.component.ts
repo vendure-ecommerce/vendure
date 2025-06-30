@@ -16,6 +16,7 @@ import { FormInputComponent } from '../../../common/component-registry-types';
     templateUrl: './number-form-input.component.html',
     styleUrls: ['./number-form-input.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class NumberFormInputComponent implements FormInputComponent {
     static readonly id: DefaultFormComponentId = 'number-form-input';

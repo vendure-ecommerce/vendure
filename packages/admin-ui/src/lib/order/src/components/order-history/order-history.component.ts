@@ -12,6 +12,7 @@ import {
     templateUrl: './order-history.component.html',
     styleUrls: ['./order-history.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OrderHistoryComponent {
     @Input() order: OrderDetailFragment;

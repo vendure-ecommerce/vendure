@@ -6,6 +6,7 @@ import { Dialog, OrderDetailFragment } from '@vendure/admin-ui/core';
     templateUrl: './settle-refund-dialog.component.html',
     styleUrls: ['./settle-refund-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class SettleRefundDialogComponent implements Dialog<string> {
     resolveWith: (result?: string) => void;

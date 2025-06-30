@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import {
     DataService,
     Dialog,
-    FacetWithValuesFragment,
+    FacetValueFragment,
     GetProductsWithFacetValuesByIdsQuery,
     GetProductsWithFacetValuesByIdsQueryVariables,
     GetVariantsWithFacetValuesByIdsQuery,
@@ -13,7 +13,6 @@ import {
 } from '@vendure/admin-ui/core';
 import { unique } from '@vendure/common/lib/unique';
 import { Observable, Subscription } from 'rxjs';
-import { shareReplay, switchMap } from 'rxjs/operators';
 
 import {
     GET_PRODUCTS_WITH_FACET_VALUES_BY_IDS,
@@ -43,21 +42,23 @@ interface ProductOrVariant {
     templateUrl: './bulk-add-facet-values-dialog.component.html',
     styleUrls: ['./bulk-add-facet-values-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
-export class BulkAddFacetValuesDialogComponent
-    implements OnInit, OnDestroy, Dialog<FacetWithValuesFragment[]>
-{
-    resolveWith: (result?: FacetWithValuesFragment[]) => void;
+export class BulkAddFacetValuesDialogComponent implements OnInit, OnDestroy, Dialog<FacetValueFragment[]> {
+    resolveWith: (result?: FacetValueFragment[]) => void;
     /* provided by call to ModalService */
     mode: 'product' | 'variant' = 'product';
     ids?: string[];
     state: 'loading' | 'ready' | 'saving' = 'loading';
 
-    selectedValues: FacetWithValuesFragment[] = [];
+    selectedValues: FacetValueFragment[] = [];
     items: ProductOrVariant[] = [];
     facetValuesRemoved = false;
     private subscription: Subscription;
-    constructor(private dataService: DataService, private changeDetectorRef: ChangeDetectorRef) {}
+    constructor(
+        private dataService: DataService,
+        private changeDetectorRef: ChangeDetectorRef,
+    ) {}
 
     ngOnInit(): void {
         const fetchData$: Observable<any> =

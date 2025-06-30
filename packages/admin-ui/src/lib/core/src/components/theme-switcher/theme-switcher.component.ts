@@ -10,11 +10,15 @@ import { LocalStorageService } from '../../providers/local-storage/local-storage
     templateUrl: './theme-switcher.component.html',
     styleUrls: ['./theme-switcher.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class ThemeSwitcherComponent implements OnInit {
     activeTheme$: Observable<string>;
 
-    constructor(private dataService: DataService, private localStorageService: LocalStorageService) {}
+    constructor(
+        private dataService: DataService,
+        private localStorageService: LocalStorageService,
+    ) {}
 
     ngOnInit() {
         this.activeTheme$ = this.dataService.client.uiState().mapStream(data => data.uiState.theme);

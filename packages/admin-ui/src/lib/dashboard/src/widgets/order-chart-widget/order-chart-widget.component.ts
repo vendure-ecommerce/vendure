@@ -28,6 +28,7 @@ export const GET_ORDER_CHART_DATA = gql`
     templateUrl: './order-chart-widget.component.html',
     styleUrls: ['./order-chart-widget.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class OrderChartWidgetComponent implements OnInit {
     constructor(private dataService: DataService) {}

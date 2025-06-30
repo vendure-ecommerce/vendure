@@ -6,6 +6,7 @@
     "add-asset": "Legg til ressurs",
     "add-asset-with-count": "Legg til {count, plural, =0 {ressurser} one {1 ressurs} other {{count} ressurser}}",
     "assets-selected-count": "{ count } ressurser valgt",
+    "change-asset": "Endre medie",
     "dimensions": "Dimensjoner",
     "focal-point": "Fokuspunkt",
     "notify-create-assets-success": "Opprettet {count, plural, one {ny ressurs} other {{count} nye ressurser}}",
@@ -16,6 +17,7 @@
     "select-assets": "Velg ressurser",
     "set-as-featured-asset": "Sett som fremhevet ressurs",
     "set-focal-point": "Sett fokuspunkt",
+    "size": "Størrelse",
     "source-file": "Kildefil",
     "unset-focal-point": "Fjern fokuspunkt",
     "update-focal-point": "Oppdater fokuspunkt",
@@ -45,6 +47,7 @@
     "profile": "Profil",
     "promotions": "Promosjoner",
     "roles": "Roller",
+    "scheduled-tasks": "Planlagte oppgaver",
     "seller-orders": "Selgerordrer",
     "sellers": "Selgere",
     "shipping-methods": "Fraktmetoder",
@@ -71,6 +74,8 @@
     "assign-variants-to-channel": "Legg til produktvarianter til kanal",
     "auto-update-option-variant-name": "Oppdater automatisk navnene på produktvarianter ved bruk av dette alternativet",
     "auto-update-product-variant-name": "Oppdater automatisk navnene på produktvarianter",
+    "calculated-price": "Beregnet pris",
+    "calculated-price-tooltip": "Prisene for produktvarianter beregnes automatisk basert på prisene for produktalternativer",
     "cannot-create-variants-without-options": "Produktvarianter kan ikke opprettes før en alternativgruppe med minst to produktalternativer er definert",
     "channel-price-preview": "Forhåndsvisning av pris i kanal",
     "collection": "Samling",
@@ -235,12 +240,14 @@
     "delete": "Slett",
     "description": "Beskrivelse",
     "details": "Detaljer",
+    "disable": "Deaktivert",
     "disabled": "Deaktivert",
     "discard-changes": "Forkast endringer",
     "duplicate": "Duplisere",
     "edit": "Rediger",
     "edit-field": "Rediger felt",
     "edit-note": "Rediger notat",
+    "enable": "Aktiver",
     "enabled": "Aktivert",
     "end-date": "Sluttdato",
     "expand-entries": "Utvid oppføringer",
@@ -272,7 +279,7 @@
     "name": "Navn",
     "no-alerts": "Ingen varsler",
     "no-bulk-actions-available": "Ingen massehandlinger tilgjengelige",
-    "no-channel-selected": "",
+    "no-channel-selected": "Ingen kanal valgt",
     "no-results": "Ingen resultater",
     "not-applicable": "Ikke relevant",
     "not-set": "Ikke satt",
@@ -473,6 +480,7 @@
     "year": "år"
   },
   "editor": {
+    "height": "Høyde",
     "image-alt": "Beskrivelse (alt)",
     "image-src": "Kilde",
     "image-title": "Tittel",
@@ -481,7 +489,8 @@
     "link-target": "Lenkemål",
     "link-title": "Lenketittel",
     "remove-link": "Fjern",
-    "set-link": "Sett lenke"
+    "set-link": "Sett lenke",
+    "width": "Bredde"
   },
   "error": {
     "403-forbidden": "Du har for øyeblikket ikke autorisasjon til å få tilgang til \"{ path }\". Enten mangler du tillatelser, eller økten din har utløpt.",
@@ -526,6 +535,7 @@
     "promotions": "Promosjoner",
     "roles": " Roller",
     "sales": "Salg",
+    "scheduled-tasks": "Planlagte oppgaver",
     "sellers": "Selgere",
     "settings": "Innstillinger",
     "shipping-methods": "Fraktmetoder",
@@ -559,7 +569,7 @@
     "cancel-selected-items": "Avbryt valgte varer",
     "cancel-specified-items": "Avbryt spesifikke varer",
     "cancellation-reason": "Årsak til avbestilling",
-    "cancelled-order-items-success": "",
+    "cancelled-order-items-success": "Varer ble avlyst",
     "cancelled-order-success": "Ordren ble avlyst",
     "complete-draft-order": "Fullfør utkast",
     "confirm-modifications": "Bekreft endringer",
@@ -641,6 +651,7 @@
     "previous-customer": "Tidligere kunde",
     "product-name": "Produktnavn",
     "product-sku": "SKU",
+    "product-variant": "Produktvariant",
     "promotions-applied": "Promosjoner brukt",
     "prorated-unit-price": "Fordelt enhetspris",
     "quantity": "Antall",
@@ -673,7 +684,7 @@
     "set-billing-address": "Sett faktureringsadresse",
     "set-coupon-codes": "Angi kupongkoder",
     "set-customer-for-order": "Sett kunde",
-    "set-customer-success": "",
+    "set-customer-success": "Kunde ble satt",
     "set-fulfillment-state": "Merk som {state}",
     "set-shipping-address": "Sett leveringsadresse",
     "set-shipping-method": "Sett leveringsmetode",
@@ -703,8 +714,8 @@
     "transitioned-payment-to-state-success": "Betaling ble vellykket overført til { state }",
     "transitioned-to-state-success": "Overgangen til { state } ble vellykket",
     "unable-to-transition-to-state-try-another": "Ordren kunne ikke overføres tilbake til tilstanden \"{state}\". Velg en alternativ tilstand.",
-    "unfulfilled": "",
-    "unit-price": ""
+    "unfulfilled": "Ikke utført",
+    "unit-price": "Enhetspris"
   },
   "settings": {
     "add-countries-to-zone": "Legg til land i { zoneName }",
@@ -788,6 +799,7 @@
   },
   "system": {
     "all-job-queues": "Alle jobbkøer",
+    "could-not-trigger-task": "Kunne ikke aktivere jobben",
     "health-all-systems-up": "Alle systemer er oppe",
     "health-error": "Feil: ett eller flere systemer er nede!",
     "health-last-checked": "Sist sjekket",
@@ -807,6 +819,13 @@
     "job-state-completed": "Fullført",
     "job-state-failed": "Feilet",
     "job-state-pending": "Venter",
-    "job-state-running": "Kjører"
+    "job-state-running": "Kjører",
+    "last-executed-at": "Sist kjørt",
+    "last-result": "Siste resultat",
+    "next-execution-at": "Neste kjøring",
+    "run-task": "Kjør jobb",
+    "schedule": "Plan",
+    "task-id": "Jobb-ID",
+    "task-will-be-triggered": "Jobben vil bli kjørt"
   }
 }

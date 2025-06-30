@@ -6,6 +6,7 @@ import { FulfillmentFragment, OrderDetailFragment } from '@vendure/admin-ui/core
     templateUrl: './fulfillment-card.component.html',
     styleUrls: ['./fulfillment-card.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false,
 })
 export class FulfillmentCardComponent {
     @Input() fulfillment: FulfillmentFragment | undefined;

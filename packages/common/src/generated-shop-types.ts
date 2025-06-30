@@ -2896,6 +2896,24 @@ export type ProvinceList = PaginatedList & {
   totalItems: Scalars['Int']['output'];
 };
 
+export type PublicPaymentMethod = {
+  __typename?: 'PublicPaymentMethod';
+  code: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  translations: Array<PaymentMethodTranslation>;
+};
+
+export type PublicShippingMethod = {
+  __typename?: 'PublicShippingMethod';
+  code: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  translations: Array<ShippingMethodTranslation>;
+};
+
 export type Query = {
   __typename?: 'Query';
   /** The active Channel */
@@ -2908,6 +2926,10 @@ export type Query = {
    * query will once again return `null`.
    */
   activeOrder?: Maybe<Order>;
+  /** Get active payment methods */
+  activePaymentMethods: Array<Maybe<PublicPaymentMethod>>;
+  /** Get active shipping methods */
+  activeShippingMethods: Array<Maybe<PublicShippingMethod>>;
   /** An array of supported Countries */
   availableCountries: Array<Country>;
   /** Returns a Collection either by its id or slug. If neither 'id' nor 'slug' is specified, an error will result. */

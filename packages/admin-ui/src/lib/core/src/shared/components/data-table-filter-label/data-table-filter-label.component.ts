@@ -9,6 +9,7 @@ import { FilterWithValue } from '../../../providers/data-table/data-table-filter
     templateUrl: './data-table-filter-label.component.html',
     styleUrls: ['./data-table-filter-label.component.scss'],
     changeDetection: ChangeDetectionStrategy.Default,
+    standalone: false,
 })
 export class DataTableFilterLabelComponent implements OnInit {
     @Input() filterWithValue: FilterWithValue;
