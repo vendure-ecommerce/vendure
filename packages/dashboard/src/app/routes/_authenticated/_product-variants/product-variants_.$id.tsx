@@ -40,8 +40,15 @@ export const Route = createFileRoute('/_authenticated/_product-variants/product-
     component: ProductVariantDetailPage,
     loader: detailPageRouteLoader({
         queryDocument: productVariantDetailDocument,
-        breadcrumb(_isNew, entity) {
-            return [{ path: '/product-variants', label: 'Product variants' }, entity?.name];
+        breadcrumb(_isNew, entity, location) {
+            if ((location.search as any).from === 'product') {
+                return [
+                    { path: '/product', label: 'Products' },
+                    { path: `/products/${entity?.product.id}`, label: entity?.product.name ?? '' },
+                    entity?.name,
+                ];
+            }
+            return [{ path: '/product-variants', label: 'Product Variants' }, entity?.name];
         },
     }),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,

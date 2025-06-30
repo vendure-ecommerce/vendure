@@ -1,6 +1,7 @@
+import { CurrencyCode } from '@vendure/core';
 import { BraintreeGateway, Environment, Transaction } from 'braintree';
 
-import { BraintreePluginOptions, PaymentMethodArgsHash } from './types';
+import { BraintreeMerchantAccountIds, BraintreePluginOptions, PaymentMethodArgsHash } from './types';
 
 export function getGateway(args: PaymentMethodArgsHash, options: BraintreePluginOptions): BraintreeGateway {
     return new BraintreeGateway({
@@ -73,4 +74,22 @@ function decodeAvsCode(code: string): string {
         default:
             return 'Unknown';
     }
+}
+
+/**
+ * @description
+ * Looks up a single merchantAccountId from `merchantAccountIds` passed through the plugin options.
+ * Example: `{NOK: BRAINTREE_MERCHANT_ACCOUNT_ID_NOK}` for Norway.
+ * Merchant Account IDs have to be setup in the Braintree dashboard,
+ * see: https://developer.paypal.com/braintree/articles/control-panel/important-gateway-credentials#merchant-account-id
+ */
+export function lookupMerchantAccountIdByCurrency(
+    merchantAccountIds: BraintreeMerchantAccountIds | undefined,
+    currencyCode: CurrencyCode,
+): string | undefined {
+    if (!merchantAccountIds || !currencyCode) {
+        return undefined;
+    }
+    const merchantAccountIdForCurrency = merchantAccountIds[currencyCode];
+    return merchantAccountIdForCurrency;
 }
