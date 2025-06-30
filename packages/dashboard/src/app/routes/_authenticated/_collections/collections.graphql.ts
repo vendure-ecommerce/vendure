@@ -131,3 +131,19 @@ export const getCollectionFiltersQueryOptions = queryOptions({
     queryKey: ['getCollectionFilters'],
     queryFn: () => api.query(getCollectionFiltersDocument),
 }) as DefinedInitialDataOptions<ResultOf<typeof getCollectionFiltersDocument>>;
+
+export const assignCollectionToChannelDocument = graphql(`
+    mutation AssignCollectionsToChannel($input: AssignCollectionsToChannelInput!) {
+        assignCollectionsToChannel(input: $input) {
+            id
+        }
+    }
+`);
+
+export const removeCollectionFromChannelDocument = graphql(`
+    mutation RemoveCollectionsFromChannel($input: RemoveCollectionsFromChannelInput!) {
+        removeCollectionsFromChannel(input: $input) {
+            id
+        }
+    }
+`);

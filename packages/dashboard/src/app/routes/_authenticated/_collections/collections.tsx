@@ -5,7 +5,7 @@ import { PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
 import { ListPage } from '@/framework/page/list-page.js';
 import { api } from '@/graphql/api.js';
 import { Trans } from '@/lib/trans.js';
-import { useQueries } from '@tanstack/react-query';
+import { FetchQueryOptions, useQueries } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ExpandedState, getExpandedRowModel } from '@tanstack/react-table';
 import { TableOptions } from '@tanstack/table-core';
@@ -14,6 +14,10 @@ import { Folder, FolderOpen, PlusIcon } from 'lucide-react';
 import { useState } from 'react';
 
 import { collectionListDocument, deleteCollectionDocument } from './collections.graphql.js';
+import {
+    AssignCollectionsToChannelBulkAction,
+    RemoveCollectionsFromChannelBulkAction,
+} from './components/collection-bulk-actions.js';
 import { CollectionContentsSheet } from './components/collection-contents-sheet.js';
 
 export const Route = createFileRoute('/_authenticated/_collections/collections')({
@@ -38,7 +42,7 @@ function CollectionListPage() {
                         },
                     }),
                 staleTime: 1000 * 60 * 5,
-            };
+            } satisfies FetchQueryOptions;
         }),
     });
     const childCollectionsByParentId = childrenQueries.reduce(
@@ -179,6 +183,16 @@ function CollectionListPage() {
                 };
             }}
             route={Route}
+            bulkActions={[
+                {
+                    component: AssignCollectionsToChannelBulkAction,
+                    order: 100,
+                },
+                {
+                    component: RemoveCollectionsFromChannelBulkAction,
+                    order: 200,
+                },
+            ]}
         >
             <PageActionBarRight>
                 <PermissionGuard requires={['CreateCollection', 'CreateCatalog']}>
