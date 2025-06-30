@@ -1,3 +1,4 @@
+import { DocumentNode } from 'graphql';
 import React from 'react';
 
 import { DashboardAlertDefinition } from '../alert/types.js';
@@ -20,4 +21,5 @@ export interface GlobalRegistryContents {
     dashboardAlertRegistry: Map<string, DashboardAlertDefinition>;
     customFormComponents: Map<string, React.FunctionComponent<CustomFormComponentInputProps>>;
     bulkActionsRegistry: Map<string, BulkAction[]>;
+    listQueryDocumentRegistry: Map<string, DocumentNode[]>;
 }

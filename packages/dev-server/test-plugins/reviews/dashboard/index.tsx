@@ -72,6 +72,23 @@ export default defineDashboardExtension({
                     ),
                 },
             ],
+            extendListDocument: `
+                query {
+                    products {
+                        items {
+                            customFields {
+                                featuredReview {
+                                    id
+                                    productVariant {
+                                        id
+                                        name
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            `,
         },
     ],
 });

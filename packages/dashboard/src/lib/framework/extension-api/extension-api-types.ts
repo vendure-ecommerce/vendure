@@ -1,5 +1,6 @@
 import { PageContextValue } from '@/framework/layout-engine/page-provider.js';
 import { AnyRoute, RouteOptions } from '@tanstack/react-router';
+import { DocumentNode } from 'graphql';
 import { LucideIcon } from 'lucide-react';
 import type React from 'react';
 
@@ -137,6 +138,11 @@ export interface DashboardDataTableDefinition {
      * An array of additional bulk actions that will be available on the data table.
      */
     bulkActions?: BulkAction[];
+    /**
+     * @description
+     * Allows you to extend the list document for the data table.
+     */
+    extendListDocument?: string | DocumentNode | (() => DocumentNode | string);
 }
 
 /**

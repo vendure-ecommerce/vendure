@@ -1,4 +1,5 @@
-import { addBulkAction } from '@/framework/data-table/data-table-extensions.js';
+import { addBulkAction, addListQueryDocument } from '@/framework/data-table/data-table-extensions.js';
+import { parse } from 'graphql';
 
 import { registerDashboardWidget } from '../dashboard-widget/widget-extensions.js';
 import { addCustomFormComponent } from '../form-engine/custom-form-component-extensions.js';
@@ -90,6 +91,18 @@ export function defineDashboardExtension(extension: DashboardExtension) {
                     for (const action of dataTable.bulkActions) {
                         addBulkAction(dataTable.pageId, dataTable.blockId, action);
                     }
+                }
+                if (dataTable.extendListDocument) {
+                    const document =
+                        typeof dataTable.extendListDocument === 'function'
+                            ? dataTable.extendListDocument()
+                            : dataTable.extendListDocument;
+
+                    addListQueryDocument(
+                        dataTable.pageId,
+                        dataTable.blockId,
+                        typeof document === 'string' ? parse(document) : document,
+                    );
                 }
             }
         }

@@ -3,7 +3,7 @@ import { graphql } from '@/graphql/graphql.js';
 
 export const productVariantListDocument = graphql(
     `
-        query ProductVariantLis($options: ProductVariantListOptions) {
+        query ProductVariantList($options: ProductVariantListOptions) {
             productVariants(options: $options) {
                 items {
                     id

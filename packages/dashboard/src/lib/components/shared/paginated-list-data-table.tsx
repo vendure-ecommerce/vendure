@@ -30,6 +30,7 @@ import {
 import { DisplayComponent } from '@/framework/component-registry/dynamic-component.js';
 import { BulkAction } from '@/framework/data-table/data-table-types.js';
 import { ResultOf } from '@/graphql/graphql.js';
+import { useExtendedListQuery } from '@/hooks/use-extended-list-query.js';
 import { Trans, useLingui } from '@/lib/trans.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import {
@@ -276,6 +277,7 @@ export function PaginatedListDataTable<
     const [searchTerm, setSearchTerm] = React.useState<string>('');
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
     const queryClient = useQueryClient();
+    const extendedListQuery = useExtendedListQuery(listQuery);
 
     const sort = sorting?.reduce((acc: any, sort: ColumnSort) => {
         const direction = sort.desc ? 'DESC' : 'ASC';
@@ -300,7 +302,7 @@ export function PaginatedListDataTable<
 
     const defaultQueryKey = [
         PaginatedListDataTableKey,
-        listQuery,
+        extendedListQuery,
         page,
         itemsPerPage,
         sorting,
@@ -329,14 +331,14 @@ export function PaginatedListDataTable<
             } as V;
 
             const transformedVariables = transformVariables ? transformVariables(variables) : variables;
-            return api.query(listQuery, transformedVariables);
+            return api.query(extendedListQuery, transformedVariables);
         },
         queryKey,
         placeholderData: keepPreviousData,
     });
 
-    const fields = useListQueryFields(listQuery);
-    const paginatedListObjectPath = getObjectPathToPaginatedList(listQuery);
+    const fields = useListQueryFields(extendedListQuery);
+    const paginatedListObjectPath = getObjectPathToPaginatedList(extendedListQuery);
 
     let listData = data as any;
     for (const path of paginatedListObjectPath) {
