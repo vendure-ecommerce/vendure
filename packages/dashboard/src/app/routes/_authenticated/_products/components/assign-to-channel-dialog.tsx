@@ -14,24 +14,26 @@ import {
 } from '@/components/ui/dialog.js';
 import { Input } from '@/components/ui/input.js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.js';
-import { api } from '@/graphql/api.js';
 import { ResultOf } from '@/graphql/graphql.js';
 import { Trans, useLingui } from '@/lib/trans.js';
 
 import { useChannel } from '@/hooks/use-channel.js';
-import { assignProductsToChannelDocument } from '../products.graphql.js';
 
 interface AssignToChannelDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    productIds: string[];
+    entityIds: string[];
+    entityType: 'products' | 'variants';
+    mutationFn: (variables: any) => Promise<ResultOf<any>>;
     onSuccess?: () => void;
 }
 
 export function AssignToChannelDialog({
     open,
     onOpenChange,
-    productIds,
+    entityIds,
+    entityType,
+    mutationFn,
     onSuccess,
 }: AssignToChannelDialogProps) {
     const { i18n } = useLingui();
@@ -43,14 +45,14 @@ export function AssignToChannelDialog({
     const availableChannels = channels.filter(channel => channel.id !== selectedChannel?.id);
 
     const { mutate, isPending } = useMutation({
-        mutationFn: api.mutate(assignProductsToChannelDocument),
-        onSuccess: (result: ResultOf<typeof assignProductsToChannelDocument>) => {
-            toast.success(i18n.t(`Successfully assigned ${productIds.length} products to channel`));
+        mutationFn,
+        onSuccess: () => {
+            toast.success(i18n.t(`Successfully assigned ${entityIds.length} ${entityType} to channel`));
             onSuccess?.();
             onOpenChange(false);
         },
         onError: () => {
-            toast.error(`Failed to assign ${productIds.length} products to channel`);
+            toast.error(`Failed to assign ${entityIds.length} ${entityType} to channel`);
         },
     });
 
@@ -60,13 +62,20 @@ export function AssignToChannelDialog({
             return;
         }
 
-        mutate({
-            input: {
-                productIds,
-                channelId: selectedChannelId,
-                priceFactor,
-            },
-        });
+        const input =
+            entityType === 'products'
+                ? {
+                      productIds: entityIds,
+                      channelId: selectedChannelId,
+                      priceFactor,
+                  }
+                : {
+                      productVariantIds: entityIds,
+                      channelId: selectedChannelId,
+                      priceFactor,
+                  };
+
+        mutate({ input });
     };
 
     return (
@@ -74,10 +83,12 @@ export function AssignToChannelDialog({
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>
-                        <Trans>Assign products to channel</Trans>
+                        <Trans>Assign {entityType} to channel</Trans>
                     </DialogTitle>
                     <DialogDescription>
-                        <Trans>Select a channel to assign {productIds.length} products to</Trans>
+                        <Trans>
+                            Select a channel to assign {entityIds.length} {entityType} to
+                        </Trans>
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">

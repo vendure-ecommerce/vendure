@@ -121,3 +121,64 @@ export const deleteProductVariantDocument = graphql(`
         }
     }
 `);
+
+export const deleteProductVariantsDocument = graphql(`
+    mutation DeleteProductVariants($ids: [ID!]!) {
+        deleteProductVariants(ids: $ids) {
+            result
+            message
+        }
+    }
+`);
+
+export const assignProductVariantsToChannelDocument = graphql(`
+    mutation AssignProductVariantsToChannel($input: AssignProductVariantsToChannelInput!) {
+        assignProductVariantsToChannel(input: $input) {
+            id
+        }
+    }
+`);
+
+export const removeProductVariantsFromChannelDocument = graphql(`
+    mutation RemoveProductVariantsFromChannel($input: RemoveProductVariantsFromChannelInput!) {
+        removeProductVariantsFromChannel(input: $input) {
+            id
+        }
+    }
+`);
+
+export const getProductVariantsWithFacetValuesByIdsDocument = graphql(`
+    query GetProductVariantsWithFacetValuesByIds($ids: [String!]!) {
+        productVariants(options: { filter: { id: { in: $ids } } }) {
+            items {
+                id
+                name
+                sku
+                facetValues {
+                    id
+                    name
+                    code
+                    facet {
+                        id
+                        name
+                        code
+                    }
+                }
+            }
+        }
+    }
+`);
+
+export const updateProductVariantsDocument = graphql(`
+    mutation UpdateProductVariants($input: [UpdateProductVariantInput!]!) {
+        updateProductVariants(input: $input) {
+            id
+            name
+            facetValues {
+                id
+                name
+                code
+            }
+        }
+    }
+`);

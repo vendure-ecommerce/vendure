@@ -12,9 +12,13 @@ import { Trans, useLingui } from '@/lib/trans.js';
 
 import { Permission } from '@vendure/common/lib/generated-types';
 import {
+    assignProductsToChannelDocument,
     deleteProductsDocument,
     duplicateEntityDocument,
+    getProductsWithFacetValuesByIdsDocument,
+    productDetailDocument,
     removeProductsFromChannelDocument,
+    updateProductsDocument,
 } from '../products.graphql.js';
 import { AssignFacetValuesDialog } from './assign-facet-values-dialog.js';
 import { AssignToChannelDialog } from './assign-to-channel-dialog.js';
@@ -84,7 +88,9 @@ export const AssignProductsToChannelBulkAction: BulkActionComponent<any> = ({ se
             <AssignToChannelDialog
                 open={dialogOpen}
                 onOpenChange={setDialogOpen}
-                productIds={selection.map(s => s.id)}
+                entityIds={selection.map(s => s.id)}
+                entityType="products"
+                mutationFn={api.mutate(assignProductsToChannelDocument)}
                 onSuccess={handleSuccess}
             />
         </>
@@ -156,7 +162,11 @@ export const AssignFacetValuesToProductsBulkAction: BulkActionComponent<any> = (
             <AssignFacetValuesDialog
                 open={dialogOpen}
                 onOpenChange={setDialogOpen}
-                productIds={selection.map(s => s.id)}
+                entityIds={selection.map(s => s.id)}
+                entityType="products"
+                queryFn={variables => api.query(getProductsWithFacetValuesByIdsDocument, variables)}
+                mutationFn={api.mutate(updateProductsDocument)}
+                detailDocument={productDetailDocument}
                 onSuccess={handleSuccess}
             />
         </>
