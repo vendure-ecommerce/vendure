@@ -20,7 +20,7 @@ export function DetailPageButton({
     }
     return (
         <Button asChild variant="ghost" disabled={disabled}>
-            <Link to={href ?? `./${id}`} search={search ?? {}}>
+            <Link to={href ?? `./${id}`} search={search ?? {}} preload={false}>
                 {label}
                 {!disabled && <ChevronRight className="h-3 w-3 text-muted-foreground" />}
             </Link>
