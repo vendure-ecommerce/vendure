@@ -6,6 +6,7 @@ import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
+import { DeleteCustomerGroupsBulkAction } from './components/customer-group-bulk-actions.js';
 import { CustomerGroupMembersSheet } from './components/customer-group-members-sheet.js';
 import { customerGroupListDocument, deleteCustomerGroupDocument } from './customer-groups.graphql.js';
 
@@ -52,6 +53,12 @@ function CustomerGroupListPage() {
                     name: { contains: searchTerm },
                 };
             }}
+            bulkActions={[
+                {
+                    component: DeleteCustomerGroupsBulkAction,
+                    order: 500,
+                },
+            ]}
         >
             <PageActionBarRight>
                 <PermissionGuard requires={['CreateCustomerGroup']}>
