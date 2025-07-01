@@ -9,13 +9,11 @@ import { duplicateEntityDocument } from '@/graphql/common-operations.js';
 import { usePaginatedList } from '@/index.js';
 import { Trans, useLingui } from '@/lib/trans.js';
 
-import { Permission } from '@vendure/common/lib/generated-types';
-
 interface DuplicateBulkActionProps {
     entityType: 'Product' | 'Collection';
     duplicatorCode: string;
     duplicatorArguments?: Array<{ name: string; value: string }>;
-    requiredPermissions: Permission[];
+    requiredPermissions: string[];
     entityName: string; // For display purposes in error messages
     onSuccess?: () => void;
     selection: any[];

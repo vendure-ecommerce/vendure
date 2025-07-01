@@ -10,7 +10,6 @@ import { ResultOf } from '@/graphql/graphql.js';
 import { useChannel, usePaginatedList } from '@/index.js';
 import { Trans, useLingui } from '@/lib/trans.js';
 
-import { Permission } from '@vendure/common/lib/generated-types';
 import { AssignFacetValuesDialog } from '../../_products/components/assign-facet-values-dialog.js';
 import { AssignToChannelDialog } from '../../_products/components/assign-to-channel-dialog.js';
 import {
@@ -52,7 +51,7 @@ export const DeleteProductVariantsBulkAction: BulkActionComponent<any> = ({ sele
     });
     return (
         <DataTableBulkActionItem
-            requiresPermission={[Permission.DeleteCatalog, Permission.DeleteProduct]}
+            requiresPermission={['DeleteCatalog', 'DeleteProduct']}
             onClick={() => mutate({ ids: selection.map(s => s.id) })}
             label={<Trans>Delete</Trans>}
             confirmationText={
@@ -81,7 +80,7 @@ export const AssignProductVariantsToChannelBulkAction: BulkActionComponent<any> 
     return (
         <>
             <DataTableBulkActionItem
-                requiresPermission={[Permission.UpdateCatalog, Permission.UpdateProduct]}
+                requiresPermission={['UpdateCatalog', 'UpdateProduct']}
                 onClick={() => setDialogOpen(true)}
                 label={<Trans>Assign to channel</Trans>}
                 icon={LayersIcon}
@@ -134,7 +133,7 @@ export const RemoveProductVariantsFromChannelBulkAction: BulkActionComponent<any
 
     return (
         <DataTableBulkActionItem
-            requiresPermission={[Permission.UpdateCatalog, Permission.UpdateProduct]}
+            requiresPermission={['UpdateCatalog', 'UpdateProduct']}
             onClick={handleRemove}
             label={<Trans>Remove from current channel</Trans>}
             confirmationText={
@@ -164,7 +163,7 @@ export const AssignFacetValuesToProductVariantsBulkAction: BulkActionComponent<a
     return (
         <>
             <DataTableBulkActionItem
-                requiresPermission={[Permission.UpdateCatalog, Permission.UpdateProduct]}
+                requiresPermission={['UpdateCatalog', 'UpdateProduct']}
                 onClick={() => setDialogOpen(true)}
                 label={<Trans>Edit facet values</Trans>}
                 icon={TagIcon}

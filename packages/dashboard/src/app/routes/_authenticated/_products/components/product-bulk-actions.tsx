@@ -9,7 +9,6 @@ import { api } from '@/graphql/api.js';
 import { ResultOf } from '@/graphql/graphql.js';
 import { useChannel, usePaginatedList } from '@/index.js';
 import { Trans, useLingui } from '@/lib/trans.js';
-import { Permission } from '@vendure/common/lib/generated-types';
 import { DuplicateBulkAction } from '../../../../common/duplicate-bulk-action.js';
 import {
     assignProductsToChannelDocument,
@@ -52,7 +51,7 @@ export const DeleteProductsBulkAction: BulkActionComponent<any> = ({ selection, 
     });
     return (
         <DataTableBulkActionItem
-            requiresPermission={[Permission.DeleteCatalog, Permission.DeleteProduct]}
+            requiresPermission={['DeleteCatalog', 'DeleteProduct']}
             onClick={() => mutate({ ids: selection.map(s => s.id) })}
             label={<Trans>Delete</Trans>}
             confirmationText={<Trans>Are you sure you want to delete {selection.length} products?</Trans>}
@@ -79,7 +78,7 @@ export const AssignProductsToChannelBulkAction: BulkActionComponent<any> = ({ se
     return (
         <>
             <DataTableBulkActionItem
-                requiresPermission={[Permission.UpdateCatalog, Permission.UpdateProduct]}
+                requiresPermission={['UpdateCatalog', 'UpdateProduct']}
                 onClick={() => setDialogOpen(true)}
                 label={<Trans>Assign to channel</Trans>}
                 icon={LayersIcon}
@@ -127,7 +126,7 @@ export const RemoveProductsFromChannelBulkAction: BulkActionComponent<any> = ({ 
 
     return (
         <DataTableBulkActionItem
-            requiresPermission={[Permission.UpdateCatalog, Permission.UpdateProduct]}
+            requiresPermission={['UpdateCatalog', 'UpdateProduct']}
             onClick={handleRemove}
             label={<Trans>Remove from current channel</Trans>}
             confirmationText={
@@ -153,7 +152,7 @@ export const AssignFacetValuesToProductsBulkAction: BulkActionComponent<any> = (
     return (
         <>
             <DataTableBulkActionItem
-                requiresPermission={[Permission.UpdateCatalog, Permission.UpdateProduct]}
+                requiresPermission={['UpdateCatalog', 'UpdateProduct']}
                 onClick={() => setDialogOpen(true)}
                 label={<Trans>Edit facet values</Trans>}
                 icon={TagIcon}
@@ -183,7 +182,7 @@ export const DuplicateProductsBulkAction: BulkActionComponent<any> = ({ selectio
                     value: 'true',
                 },
             ]}
-            requiredPermissions={[Permission.UpdateCatalog, Permission.UpdateProduct]}
+            requiredPermissions={['UpdateCatalog', 'UpdateProduct']}
             entityName="Product"
             selection={selection}
             table={table}

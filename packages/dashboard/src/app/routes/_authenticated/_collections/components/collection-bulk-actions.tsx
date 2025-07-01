@@ -8,7 +8,6 @@ import { BulkActionComponent } from '@/framework/data-table/data-table-types.js'
 import { api } from '@/graphql/api.js';
 import { ResultOf, useChannel, usePaginatedList } from '@/index.js';
 import { Trans, useLingui } from '@/lib/trans.js';
-import { Permission } from '@vendure/common/lib/generated-types';
 import { DuplicateBulkAction } from '../../../../common/duplicate-bulk-action.js';
 import {
     assignCollectionToChannelDocument,
@@ -36,7 +35,7 @@ export const AssignCollectionsToChannelBulkAction: BulkActionComponent<any> = ({
     return (
         <>
             <DataTableBulkActionItem
-                requiresPermission={[Permission.UpdateCatalog, Permission.UpdateCollection]}
+                requiresPermission={['UpdateCatalog', 'UpdateCollection']}
                 onClick={() => setDialogOpen(true)}
                 label={<Trans>Assign to channel</Trans>}
                 icon={LayersIcon}
@@ -85,7 +84,7 @@ export const RemoveCollectionsFromChannelBulkAction: BulkActionComponent<any> = 
 
     return (
         <DataTableBulkActionItem
-            requiresPermission={[Permission.UpdateCatalog, Permission.UpdateCollection]}
+            requiresPermission={['UpdateCatalog', 'UpdateCollection']}
             onClick={handleRemove}
             label={<Trans>Remove from current channel</Trans>}
             confirmationText={
@@ -106,7 +105,7 @@ export const DuplicateCollectionsBulkAction: BulkActionComponent<any> = ({ selec
             entityType="Collection"
             duplicatorCode="collection-duplicator"
             duplicatorArguments={[]}
-            requiredPermissions={[Permission.UpdateCatalog, Permission.UpdateCollection]}
+            requiredPermissions={['UpdateCatalog', 'UpdateCollection']}
             entityName="Collection"
             selection={selection}
             table={table}
@@ -149,7 +148,7 @@ export const DeleteCollectionsBulkAction: BulkActionComponent<any> = ({ selectio
     });
     return (
         <DataTableBulkActionItem
-            requiresPermission={[Permission.DeleteCatalog, Permission.DeleteCollection]}
+            requiresPermission={['DeleteCatalog', 'DeleteCollection']}
             onClick={() => mutate({ ids: selection.map(s => s.id) })}
             label={<Trans>Delete</Trans>}
             confirmationText={<Trans>Are you sure you want to delete {selection.length} collections?</Trans>}
