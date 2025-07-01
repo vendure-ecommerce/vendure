@@ -94,3 +94,28 @@ export const deletePromotionDocument = graphql(`
         }
     }
 `);
+
+export const assignPromotionsToChannelDocument = graphql(`
+    mutation AssignPromotionsToChannel($input: AssignPromotionsToChannelInput!) {
+        assignPromotionsToChannel(input: $input) {
+            id
+        }
+    }
+`);
+
+export const removePromotionsFromChannelDocument = graphql(`
+    mutation RemovePromotionsFromChannel($input: RemovePromotionsFromChannelInput!) {
+        removePromotionsFromChannel(input: $input) {
+            id
+        }
+    }
+`);
+
+export const deletePromotionsDocument = graphql(`
+    mutation DeletePromotions($ids: [ID!]!) {
+        deletePromotions(ids: $ids) {
+            result
+            message
+        }
+    }
+`);
