@@ -59,3 +59,12 @@ export const deleteSellerDocument = graphql(`
         }
     }
 `);
+
+export const deleteSellersDocument = graphql(`
+    mutation DeleteSellers($ids: [ID!]!) {
+        deleteSellers(ids: $ids) {
+            result
+            message
+        }
+    }
+`);
