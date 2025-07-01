@@ -16,6 +16,8 @@ import { useState } from 'react';
 import { collectionListDocument, deleteCollectionDocument } from './collections.graphql.js';
 import {
     AssignCollectionsToChannelBulkAction,
+    DeleteCollectionsBulkAction,
+    DuplicateCollectionsBulkAction,
     RemoveCollectionsFromChannelBulkAction,
 } from './components/collection-bulk-actions.js';
 import { CollectionContentsSheet } from './components/collection-contents-sheet.js';
@@ -191,6 +193,14 @@ function CollectionListPage() {
                 {
                     component: RemoveCollectionsFromChannelBulkAction,
                     order: 200,
+                },
+                {
+                    component: DuplicateCollectionsBulkAction,
+                    order: 300,
+                },
+                {
+                    component: DeleteCollectionsBulkAction,
+                    order: 400,
                 },
             ]}
         >

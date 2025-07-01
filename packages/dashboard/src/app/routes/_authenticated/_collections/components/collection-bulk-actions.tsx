@@ -1,17 +1,18 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { LayersIcon } from 'lucide-react';
+import { LayersIcon, TrashIcon } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { DataTableBulkActionItem } from '@/components/data-table/data-table-bulk-action-item.js';
 import { BulkActionComponent } from '@/framework/data-table/data-table-types.js';
 import { api } from '@/graphql/api.js';
-import { useChannel, usePaginatedList } from '@/index.js';
+import { ResultOf, useChannel, usePaginatedList } from '@/index.js';
 import { Trans, useLingui } from '@/lib/trans.js';
-
 import { Permission } from '@vendure/common/lib/generated-types';
+import { DuplicateBulkAction } from '../../../../common/duplicate-bulk-action.js';
 import {
     assignCollectionToChannelDocument,
+    deleteCollectionsDocument,
     removeCollectionFromChannelDocument,
 } from '../collections.graphql.js';
 import { AssignCollectionsToChannelDialog } from './assign-collections-to-channel-dialog.js';
@@ -94,6 +95,66 @@ export const RemoveCollectionsFromChannelBulkAction: BulkActionComponent<any> = 
             }
             icon={LayersIcon}
             className="text-warning"
+        />
+    );
+};
+
+export const DuplicateCollectionsBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
+    const queryClient = useQueryClient();
+    return (
+        <DuplicateBulkAction
+            entityType="Collection"
+            duplicatorCode="collection-duplicator"
+            duplicatorArguments={[]}
+            requiredPermissions={[Permission.UpdateCatalog, Permission.UpdateCollection]}
+            entityName="Collection"
+            selection={selection}
+            table={table}
+            onSuccess={() => {
+                queryClient.invalidateQueries({ queryKey: ['childCollections'] });
+            }}
+        />
+    );
+};
+
+export const DeleteCollectionsBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
+    const { refetchPaginatedList } = usePaginatedList();
+    const { i18n } = useLingui();
+    const queryClient = useQueryClient();
+    const { mutate } = useMutation({
+        mutationFn: api.mutate(deleteCollectionsDocument),
+        onSuccess: (result: ResultOf<typeof deleteCollectionsDocument>) => {
+            let deleted = 0;
+            const errors: string[] = [];
+            for (const item of result.deleteCollections) {
+                if (item.result === 'DELETED') {
+                    deleted++;
+                } else if (item.message) {
+                    errors.push(item.message);
+                }
+            }
+            if (0 < deleted) {
+                toast.success(i18n.t(`Deleted ${deleted} collections`));
+            }
+            if (0 < errors.length) {
+                toast.error(i18n.t(`Failed to delete ${errors.length} collections`));
+            }
+            refetchPaginatedList();
+            table.resetRowSelection();
+            queryClient.invalidateQueries({ queryKey: ['childCollections'] });
+        },
+        onError: () => {
+            toast.error(`Failed to delete ${selection.length} collections`);
+        },
+    });
+    return (
+        <DataTableBulkActionItem
+            requiresPermission={[Permission.DeleteCatalog, Permission.DeleteCollection]}
+            onClick={() => mutate({ ids: selection.map(s => s.id) })}
+            label={<Trans>Delete</Trans>}
+            confirmationText={<Trans>Are you sure you want to delete {selection.length} collections?</Trans>}
+            icon={TrashIcon}
+            className="text-destructive"
         />
     );
 };

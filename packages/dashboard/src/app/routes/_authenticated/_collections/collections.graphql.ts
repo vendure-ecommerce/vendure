@@ -147,3 +147,12 @@ export const removeCollectionFromChannelDocument = graphql(`
         }
     }
 `);
+
+export const deleteCollectionsDocument = graphql(`
+    mutation DeleteCollections($ids: [ID!]!) {
+        deleteCollections(ids: $ids) {
+            result
+            message
+        }
+    }
+`);
