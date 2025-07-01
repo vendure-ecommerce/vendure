@@ -25,9 +25,13 @@ import { FocusIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { assetDetailDocument, assetUpdateDocument } from './assets.graphql.js';
+
+const pageId = 'asset-detail';
+
 export const Route = createFileRoute('/_authenticated/_assets/assets_/$id')({
     component: AssetDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: assetDetailDocument,
         breadcrumb(isNew, entity) {
             return [
@@ -49,7 +53,8 @@ function AssetDetailPage() {
     const [height, setHeight] = useState(0);
     const [focalPoint, setFocalPoint] = useState<Point | undefined>(undefined);
     const [settingFocalPoint, setSettingFocalPoint] = useState(false);
-    const { form, submitHandler, entity, isPending } = useDetailPage({
+    const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
         queryDocument: assetDetailDocument,
         updateDocument: assetUpdateDocument,
         setValuesForUpdate: entity => {
@@ -86,7 +91,7 @@ function AssetDetailPage() {
         return null;
     }
     return (
-        <Page pageId="asset-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
                 <Trans>Edit asset</Trans>
             </PageTitle>

@@ -30,9 +30,12 @@ import {
     updateShippingMethodDocument,
 } from './shipping-methods.graphql.js';
 
+const pageId = 'shipping-method-detail';
+
 export const Route = createFileRoute('/_authenticated/_shipping-methods/shipping-methods_/$id')({
     component: ShippingMethodDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: shippingMethodDetailDocument,
         breadcrumb(isNew, entity) {
             return [
@@ -51,6 +54,7 @@ function ShippingMethodDetailPage() {
     const { i18n } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
         queryDocument: shippingMethodDetailDocument,
         createDocument: createShippingMethodDocument,
         updateDocument: updateShippingMethodDocument,
@@ -94,7 +98,7 @@ function ShippingMethodDetailPage() {
     });
 
     return (
-        <Page pageId="shipping-method-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
                 {creatingNewEntity ? <Trans>New shipping method</Trans> : (entity?.name ?? '')}
             </PageTitle>

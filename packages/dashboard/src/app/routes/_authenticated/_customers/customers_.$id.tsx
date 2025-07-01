@@ -47,9 +47,12 @@ import {
     updateCustomerDocument,
 } from './customers.graphql.js';
 
+const pageId = 'customer-detail';
+
 export const Route = createFileRoute('/_authenticated/_customers/customers_/$id')({
     component: CustomerDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: customerDetailDocument,
         breadcrumb: (isNew, entity) => [
             { path: '/customers', label: 'Customers' },
@@ -67,6 +70,7 @@ function CustomerDetailPage() {
     const [newAddressOpen, setNewAddressOpen] = useState(false);
 
     const { form, submitHandler, entity, isPending, refreshEntity, resetForm } = useDetailPage({
+        pageId,
         queryDocument: customerDetailDocument,
         createDocument: createCustomerDocument,
         updateDocument: updateCustomerDocument,
@@ -137,7 +141,7 @@ function CustomerDetailPage() {
     const customerName = entity ? `${entity.firstName} ${entity.lastName}` : '';
 
     return (
-        <Page pageId="customer-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New customer</Trans> : customerName}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>

@@ -37,7 +37,7 @@ export const taxRateListQuery = graphql(
     [taxRateItemFragment],
 );
 
-export const taxRateDetailQuery = graphql(
+export const taxRateDetailDocument = graphql(
     `
         query TaxRateDetail($id: ID!) {
             taxRate(id: $id) {

@@ -23,12 +23,15 @@ import { useDetailPage } from '@/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@/lib/trans.js';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
-import { createTaxRateDocument, taxRateDetailQuery, updateTaxRateDocument } from './tax-rates.graphql.js';
+import { createTaxRateDocument, taxRateDetailDocument, updateTaxRateDocument } from './tax-rates.graphql.js';
+
+const pageId = 'tax-rate-detail';
 
 export const Route = createFileRoute('/_authenticated/_tax-rates/tax-rates_/$id')({
     component: TaxRateDetailPage,
     loader: detailPageRouteLoader({
-        queryDocument: taxRateDetailQuery,
+        pageId,
+        queryDocument: taxRateDetailDocument,
         breadcrumb(isNew, entity) {
             return [
                 { path: '/tax-rates', label: 'Tax rates' },
@@ -46,7 +49,8 @@ function TaxRateDetailPage() {
     const { i18n } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
-        queryDocument: taxRateDetailQuery,
+        pageId,
+        queryDocument: taxRateDetailDocument,
         createDocument: createTaxRateDocument,
         updateDocument: updateTaxRateDocument,
         setValuesForUpdate: entity => {
@@ -77,7 +81,7 @@ function TaxRateDetailPage() {
     });
 
     return (
-        <Page pageId="tax-rate-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New tax rate</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>

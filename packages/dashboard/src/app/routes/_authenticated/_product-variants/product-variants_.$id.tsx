@@ -36,9 +36,12 @@ import {
     updateProductVariantDocument,
 } from './product-variants.graphql.js';
 
+const pageId = 'product-variant-detail';
+
 export const Route = createFileRoute('/_authenticated/_product-variants/product-variants_/$id')({
     component: ProductVariantDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: productVariantDetailDocument,
         breadcrumb(_isNew, entity, location) {
             if ((location.search as any).from === 'product') {
@@ -62,6 +65,7 @@ function ProductVariantDetailPage() {
     const { activeChannel } = useChannel();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
         queryDocument: productVariantDetailDocument,
         createDocument: createProductVariantDocument,
         updateDocument: updateProductVariantDocument,
@@ -109,7 +113,7 @@ function ProductVariantDetailPage() {
     const [price, taxCategoryId] = form.watch(['price', 'taxCategoryId']);
 
     return (
-        <Page pageId="product-variant-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
                 {creatingNewEntity ? <Trans>New product variant</Trans> : (entity?.name ?? '')}
             </PageTitle>

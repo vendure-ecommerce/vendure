@@ -26,9 +26,12 @@ import {
     updateStockLocationDocument,
 } from './stock-locations.graphql.js';
 
+const pageId = 'stock-location-detail';
+
 export const Route = createFileRoute('/_authenticated/_stock-locations/stock-locations_/$id')({
     component: StockLocationDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: stockLocationDetailQuery,
         breadcrumb(isNew, entity) {
             return [
@@ -47,6 +50,7 @@ function StockLocationDetailPage() {
     const { i18n } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
         queryDocument: stockLocationDetailQuery,
         createDocument: createStockLocationDocument,
         updateDocument: updateStockLocationDocument,
@@ -74,7 +78,7 @@ function StockLocationDetailPage() {
     });
 
     return (
-        <Page pageId="stock-location-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
                 {creatingNewEntity ? <Trans>New stock location</Trans> : (entity?.name ?? '')}
             </PageTitle>

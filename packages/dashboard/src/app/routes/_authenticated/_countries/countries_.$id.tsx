@@ -21,12 +21,15 @@ import { useDetailPage } from '@/framework/page/use-detail-page.js';
 import { Trans, useLingui } from '@/lib/trans.js';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
-import { countryDetailQuery, createCountryDocument, updateCountryDocument } from './countries.graphql.js';
+import { countryDetailDocument, createCountryDocument, updateCountryDocument } from './countries.graphql.js';
+
+const pageId = 'country-detail';
 
 export const Route = createFileRoute('/_authenticated/_countries/countries_/$id')({
     component: CountryDetailPage,
     loader: detailPageRouteLoader({
-        queryDocument: countryDetailQuery,
+        pageId,
+        queryDocument: countryDetailDocument,
         breadcrumb: (isNew, entity) => [
             { path: '/countries', label: 'Countries' },
             isNew ? <Trans>New country</Trans> : entity?.name,
@@ -41,8 +44,9 @@ function CountryDetailPage() {
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const { i18n } = useLingui();
 
-    const { form, submitHandler, entity, isPending } = useDetailPage({
-        queryDocument: countryDetailQuery,
+    const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
+        queryDocument: countryDetailDocument,
         createDocument: createCountryDocument,
         updateDocument: updateCountryDocument,
         setValuesForUpdate: entity => {
@@ -71,7 +75,7 @@ function CountryDetailPage() {
     });
 
     return (
-        <Page pageId="country-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New country</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>

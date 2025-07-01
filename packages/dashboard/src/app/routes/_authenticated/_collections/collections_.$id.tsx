@@ -33,9 +33,12 @@ import { CollectionContentsPreviewTable } from './components/collection-contents
 import { CollectionContentsTable } from './components/collection-contents-table.js';
 import { CollectionFiltersSelector } from './components/collection-filters-selector.js';
 
+const pageId = 'collection-detail';
+
 export const Route = createFileRoute('/_authenticated/_collections/collections_/$id')({
     component: CollectionDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: collectionDetailDocument,
         breadcrumb: (isNew, entity) => [
             { path: '/collections', label: 'Collections' },
@@ -52,6 +55,7 @@ function CollectionDetailPage() {
     const { i18n } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
         queryDocument: collectionDetailDocument,
         createDocument: createCollectionDocument,
         transformCreateInput: values => {
@@ -105,7 +109,7 @@ function CollectionDetailPage() {
     const currentInheritFiltersValue = form.watch('inheritFilters');
 
     return (
-        <Page pageId="collection-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New collection</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>

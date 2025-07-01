@@ -24,9 +24,12 @@ import { toast } from 'sonner';
 import { FacetValuesTable } from './components/facet-values-table.js';
 import { createFacetDocument, facetDetailDocument, updateFacetDocument } from './facets.graphql.js';
 
+const pageId = 'facet-detail';
+
 export const Route = createFileRoute('/_authenticated/_facets/facets_/$id')({
     component: FacetDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: facetDetailDocument,
         breadcrumb(isNew, entity) {
             return [{ path: '/facets', label: 'Facets' }, isNew ? <Trans>New facet</Trans> : entity?.name];
@@ -42,6 +45,7 @@ function FacetDetailPage() {
     const { i18n } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
         queryDocument: facetDetailDocument,
         createDocument: createFacetDocument,
         updateDocument: updateFacetDocument,
@@ -82,7 +86,7 @@ function FacetDetailPage() {
     });
 
     return (
-        <Page pageId="facet-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New facet</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>

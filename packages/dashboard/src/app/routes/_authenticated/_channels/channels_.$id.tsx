@@ -27,9 +27,12 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { channelDetailDocument, createChannelDocument, updateChannelDocument } from './channels.graphql.js';
 
+const pageId = 'channel-detail';
+
 export const Route = createFileRoute('/_authenticated/_channels/channels_/$id')({
     component: ChannelDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: channelDetailDocument,
         breadcrumb(isNew, entity) {
             return [
@@ -48,6 +51,7 @@ function ChannelDetailPage() {
     const { i18n } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
         queryDocument: channelDetailDocument,
         createDocument: createChannelDocument,
         updateDocument: updateChannelDocument,
@@ -100,7 +104,7 @@ function ChannelDetailPage() {
     const codeIsDefault = entity?.code === DEFAULT_CHANNEL_CODE;
 
     return (
-        <Page pageId="channel-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
                 {creatingNewEntity ? (
                     <Trans>New channel</Trans>

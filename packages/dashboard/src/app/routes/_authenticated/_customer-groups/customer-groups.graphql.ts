@@ -33,7 +33,7 @@ export const removeCustomersFromGroupDocument = graphql(`
     }
 `);
 
-export const customerGroupDocument = graphql(`
+export const customerGroupDetailDocument = graphql(`
     query CustomerGroup($id: ID!) {
         customerGroup(id: $id) {
             id

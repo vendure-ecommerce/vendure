@@ -30,9 +30,12 @@ import {
     updatePaymentMethodDocument,
 } from './payment-methods.graphql.js';
 
+const pageId = 'payment-method-detail';
+
 export const Route = createFileRoute('/_authenticated/_payment-methods/payment-methods_/$id')({
     component: PaymentMethodDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: paymentMethodDetailDocument,
         breadcrumb(_isNew, entity) {
             return [{ path: '/payment-methods', label: 'Payment methods' }, entity?.name];
@@ -48,6 +51,7 @@ function PaymentMethodDetailPage() {
     const { i18n } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
         queryDocument: paymentMethodDetailDocument,
         createDocument: createPaymentMethodDocument,
         updateDocument: updatePaymentMethodDocument,
@@ -102,7 +106,7 @@ function PaymentMethodDetailPage() {
     });
 
     return (
-        <Page pageId="payment-method-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
                 {creatingNewEntity ? <Trans>New payment method</Trans> : (entity?.name ?? '')}
             </PageTitle>

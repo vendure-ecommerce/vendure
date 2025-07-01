@@ -20,9 +20,12 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { createSellerDocument, sellerDetailDocument, updateSellerDocument } from './sellers.graphql.js';
 
+const pageId = 'seller-detail';
+
 export const Route = createFileRoute('/_authenticated/_sellers/sellers_/$id')({
     component: SellerDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: sellerDetailDocument,
         breadcrumb: (isNew, entity) => [
             { path: '/sellers', label: 'Sellers' },
@@ -38,7 +41,8 @@ function SellerDetailPage() {
     const creatingNewEntity = params.id === NEW_ENTITY_PATH;
     const { i18n } = useLingui();
 
-    const { form, submitHandler, entity, isPending } = useDetailPage({
+    const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
         queryDocument: sellerDetailDocument,
         createDocument: createSellerDocument,
         updateDocument: updateSellerDocument,
@@ -65,7 +69,7 @@ function SellerDetailPage() {
     });
 
     return (
-        <Page pageId="seller-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New seller</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>

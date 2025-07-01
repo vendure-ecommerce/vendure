@@ -4,7 +4,6 @@ import { PermissionGuard } from '@/components/shared/permission-guard.js';
 import { Button } from '@/components/ui/button.js';
 import { Input } from '@/components/ui/input.js';
 import { NEW_ENTITY_PATH } from '@/constants.js';
-import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
 import {
     CustomFieldsPageBlock,
     DetailFormGrid,
@@ -23,14 +22,17 @@ import { toast } from 'sonner';
 import { CustomerGroupMembersTable } from './components/customer-group-members-table.js';
 import {
     createCustomerGroupDocument,
-    customerGroupDocument,
+    customerGroupDetailDocument,
     updateCustomerGroupDocument,
 } from './customer-groups.graphql.js';
+
+const pageId = 'customer-group-detail';
 
 export const Route = createFileRoute('/_authenticated/_customer-groups/customer-groups_/$id')({
     component: CustomerGroupDetailPage,
     loader: detailPageRouteLoader({
-        queryDocument: customerGroupDocument,
+        pageId,
+        queryDocument: customerGroupDetailDocument,
         breadcrumb: (isNew, entity) => [
             { path: '/customer-groups', label: 'Customer groups' },
             isNew ? <Trans>New customer group</Trans> : entity?.name,
@@ -46,7 +48,8 @@ function CustomerGroupDetailPage() {
     const { i18n } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
-        queryDocument: addCustomFields(customerGroupDocument),
+        pageId,
+        queryDocument: customerGroupDetailDocument,
         createDocument: createCustomerGroupDocument,
         updateDocument: updateCustomerGroupDocument,
         setValuesForUpdate: entity => {
@@ -72,7 +75,7 @@ function CustomerGroupDetailPage() {
     });
 
     return (
-        <Page pageId="customer-group-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
                 {creatingNewEntity ? <Trans>New customer group</Trans> : (entity?.name ?? '')}
             </PageTitle>

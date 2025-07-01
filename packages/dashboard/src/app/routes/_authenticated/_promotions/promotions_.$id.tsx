@@ -31,9 +31,12 @@ import {
     updatePromotionDocument,
 } from './promotions.graphql.js';
 
+const pageId = 'promotion-detail';
+
 export const Route = createFileRoute('/_authenticated/_promotions/promotions_/$id')({
     component: PromotionDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: promotionDetailDocument,
         breadcrumb(isNew, entity) {
             return [
@@ -52,6 +55,7 @@ function PromotionDetailPage() {
     const { i18n } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
         queryDocument: promotionDetailDocument,
         createDocument: createPromotionDocument,
         transformCreateInput: values => {
@@ -114,7 +118,7 @@ function PromotionDetailPage() {
     });
 
     return (
-        <Page pageId="promotion-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New promotion</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>

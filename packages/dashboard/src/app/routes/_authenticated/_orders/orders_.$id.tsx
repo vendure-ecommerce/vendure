@@ -25,6 +25,8 @@ import { OrderTaxSummary } from './components/order-tax-summary.js';
 import { PaymentDetails } from './components/payment-details.js';
 import { orderDetailDocument } from './orders.graphql.js';
 
+const pageId = 'order-detail';
+
 export const Route = createFileRoute('/_authenticated/_orders/orders_/$id')({
     component: OrderDetailPage,
     loader: async ({ context, params }) => {
@@ -58,7 +60,8 @@ function OrderDetailPage() {
     const params = Route.useParams();
     const { i18n } = useLingui();
 
-    const { form, submitHandler, entity, isPending } = useDetailPage({
+    const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
         queryDocument: orderDetailDocument,
         setValuesForUpdate: entity => {
             return {
@@ -83,7 +86,7 @@ function OrderDetailPage() {
     }
 
     return (
-        <Page pageId="order-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{entity?.code ?? ''}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>

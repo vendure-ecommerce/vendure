@@ -22,9 +22,12 @@ import { toast } from 'sonner';
 import { PermissionsGrid } from './components/permissions-grid.js';
 import { createRoleDocument, roleDetailDocument, updateRoleDocument } from './roles.graphql.js';
 
+const pageId = 'role-detail';
+
 export const Route = createFileRoute('/_authenticated/_roles/roles_/$id')({
     component: RoleDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: roleDetailDocument,
         breadcrumb(isNew, entity) {
             return [
@@ -43,6 +46,7 @@ function RoleDetailPage() {
     const { i18n } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
         queryDocument: roleDetailDocument,
         createDocument: createRoleDocument,
         updateDocument: updateRoleDocument,
@@ -71,7 +75,7 @@ function RoleDetailPage() {
     });
 
     return (
-        <Page pageId="role-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New role</Trans> : (entity?.description ?? '')}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>

@@ -42,7 +42,7 @@ export const zoneMembersQuery = graphql(`
     }
 `);
 
-export const zoneDetailQuery = graphql(
+export const zoneDetailDocument = graphql(
     `
         query ZoneDetail($id: ID!) {
             zone(id: $id) {

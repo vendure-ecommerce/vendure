@@ -24,7 +24,7 @@ export const taxCategoryListQuery = graphql(
     [taxCategoryItemFragment],
 );
 
-export const taxCategoryDetailQuery = graphql(`
+export const taxCategoryDetailDocument = graphql(`
     query TaxCategoryDetail($id: ID!) {
         taxCategory(id: $id) {
             id

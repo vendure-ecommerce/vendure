@@ -24,7 +24,7 @@ export const countriesListQuery = graphql(
     [countryItemFragment],
 );
 
-export const countryDetailQuery = graphql(`
+export const countryDetailDocument = graphql(`
     query CountryDetail($id: ID!) {
         country(id: $id) {
             id

@@ -26,9 +26,12 @@ import {
 } from './administrators.graphql.js';
 import { RolePermissionsDisplay } from './components/role-permissions-display.js';
 
+const pageId = 'administrator-detail';
+
 export const Route = createFileRoute('/_authenticated/_administrators/administrators_/$id')({
     component: AdministratorDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: administratorDetailDocument,
         breadcrumb: (isNew, entity) => {
             const name = `${entity?.firstName} ${entity?.lastName}`;
@@ -48,6 +51,7 @@ function AdministratorDetailPage() {
     const { i18n } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
         queryDocument: administratorDetailDocument,
         createDocument: createAdministratorDocument,
         updateDocument: updateAdministratorDocument,
@@ -87,7 +91,7 @@ function AdministratorDetailPage() {
     const roleIds = form.watch('roleIds');
 
     return (
-        <Page pageId="administrator-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New administrator</Trans> : name}</PageTitle>
 
             <PageActionBar>

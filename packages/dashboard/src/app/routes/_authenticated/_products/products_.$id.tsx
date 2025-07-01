@@ -31,9 +31,12 @@ import { CreateProductVariantsDialog } from './components/create-product-variant
 import { ProductVariantsTable } from './components/product-variants-table.js';
 import { createProductDocument, productDetailDocument, updateProductDocument } from './products.graphql.js';
 
+const pageId = 'product-detail';
+
 export const Route = createFileRoute('/_authenticated/_products/products_/$id')({
     component: ProductDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: productDetailDocument,
         breadcrumb(isNew, entity) {
             return [
@@ -53,6 +56,7 @@ function ProductDetailPage() {
     const refreshRef = useRef<() => void>(() => {});
 
     const { form, submitHandler, entity, isPending, refreshEntity, resetForm } = useDetailPage({
+        pageId,
         entityName: 'Product',
         queryDocument: productDetailDocument,
         createDocument: createProductDocument,
@@ -91,7 +95,7 @@ function ProductDetailPage() {
     });
 
     return (
-        <Page pageId="product-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New product</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>

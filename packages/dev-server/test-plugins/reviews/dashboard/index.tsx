@@ -7,7 +7,7 @@ import { CustomWidget } from './custom-widget';
 import { reviewDetail } from './review-detail';
 import { reviewList } from './review-list';
 
-export default defineDashboardExtension({
+defineDashboardExtension({
     routes: [reviewList, reviewDetail],
     widgets: [
         {
@@ -19,7 +19,7 @@ export default defineDashboardExtension({
     ],
     actionBarItems: [
         {
-            label: 'Custom Action Bar Item',
+            pageId: 'product-detail',
             component: props => {
                 return (
                     <Button
@@ -32,7 +32,6 @@ export default defineDashboardExtension({
                     </Button>
                 );
             },
-            locationId: 'product-detail',
         },
     ],
     pageBlocks: [
@@ -53,6 +52,39 @@ export default defineDashboardExtension({
         {
             id: 'textarea',
             component: TextareaCustomField,
+        },
+    ],
+    detailForms: [
+        {
+            pageId: 'product-variant-detail',
+            extendDetailDocument: `
+                query {
+                    productVariant(id: $id) {
+                        stockOnHand
+                        product {
+                          facetValues {
+                            id
+                            name
+                            facet {
+                            code
+                            }
+                          }
+                          customFields {
+                            featuredReview {
+                                id
+                                productVariant {
+                                    id
+                                    name
+                                }
+                                product {
+                                name
+                                }
+                            }
+                          }
+                        }
+                    }
+                }
+            `,
         },
     ],
     dataTables: [
