@@ -1,14 +1,14 @@
 import { useMutation } from '@tanstack/react-query';
-import { LayersIcon, TagIcon, TrashIcon } from 'lucide-react';
+import { LayersIcon, TagIcon } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { DataTableBulkActionItem } from '@/components/data-table/data-table-bulk-action-item.js';
 import { BulkActionComponent } from '@/framework/data-table/data-table-types.js';
 import { api } from '@/graphql/api.js';
-import { ResultOf } from '@/graphql/graphql.js';
 import { useChannel, usePaginatedList } from '@/index.js';
 import { Trans, useLingui } from '@/lib/trans.js';
+import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
 
 import { AssignFacetValuesDialog } from '../../_products/components/assign-facet-values-dialog.js';
 import { AssignToChannelDialog } from '../../_products/components/assign-to-channel-dialog.js';
@@ -22,43 +22,13 @@ import {
 } from '../product-variants.graphql.js';
 
 export const DeleteProductVariantsBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
-    const { refetchPaginatedList } = usePaginatedList();
-    const { i18n } = useLingui();
-    const { mutate } = useMutation({
-        mutationFn: api.mutate(deleteProductVariantsDocument),
-        onSuccess: (result: ResultOf<typeof deleteProductVariantsDocument>) => {
-            let deleted = 0;
-            const errors: string[] = [];
-            for (const item of result.deleteProductVariants) {
-                if (item.result === 'DELETED') {
-                    deleted++;
-                } else if (item.message) {
-                    errors.push(item.message);
-                }
-            }
-            if (0 < deleted) {
-                toast.success(i18n.t(`Deleted ${deleted} product variants`));
-            }
-            if (0 < errors.length) {
-                toast.error(i18n.t(`Failed to delete ${errors.length} product variants`));
-            }
-            refetchPaginatedList();
-            table.resetRowSelection();
-        },
-        onError: () => {
-            toast.error(`Failed to delete ${selection.length} product variants`);
-        },
-    });
     return (
-        <DataTableBulkActionItem
-            requiresPermission={['DeleteCatalog', 'DeleteProduct']}
-            onClick={() => mutate({ ids: selection.map(s => s.id) })}
-            label={<Trans>Delete</Trans>}
-            confirmationText={
-                <Trans>Are you sure you want to delete {selection.length} product variants?</Trans>
-            }
-            icon={TrashIcon}
-            className="text-destructive"
+        <DeleteBulkAction
+            mutationDocument={deleteProductVariantsDocument}
+            entityName="product variants"
+            requiredPermissions={['DeleteCatalog', 'DeleteProduct']}
+            selection={selection}
+            table={table}
         />
     );
 };

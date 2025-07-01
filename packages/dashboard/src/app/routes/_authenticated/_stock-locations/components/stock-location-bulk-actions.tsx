@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { LayersIcon, TrashIcon } from 'lucide-react';
+import { LayersIcon } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -10,6 +10,7 @@ import { api } from '@/graphql/api.js';
 import { ResultOf } from '@/graphql/graphql.js';
 import { useChannel, usePaginatedList } from '@/index.js';
 import { Trans, useLingui } from '@/lib/trans.js';
+import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
 
 import {
     assignStockLocationsToChannelDocument,
@@ -18,43 +19,13 @@ import {
 } from '../stock-locations.graphql.js';
 
 export const DeleteStockLocationsBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
-    const { refetchPaginatedList } = usePaginatedList();
-    const { i18n } = useLingui();
-    const { mutate } = useMutation({
-        mutationFn: api.mutate(deleteStockLocationsDocument),
-        onSuccess: (result: ResultOf<typeof deleteStockLocationsDocument>) => {
-            let deleted = 0;
-            const errors: string[] = [];
-            for (const item of result.deleteStockLocations) {
-                if (item.result === 'DELETED') {
-                    deleted++;
-                } else if (item.message) {
-                    errors.push(item.message);
-                }
-            }
-            if (0 < deleted) {
-                toast.success(i18n.t(`Deleted ${deleted} stock locations`));
-            }
-            if (0 < errors.length) {
-                toast.error(i18n.t(`Failed to delete ${errors.length} stock locations`));
-            }
-            refetchPaginatedList();
-            table.resetRowSelection();
-        },
-        onError: () => {
-            toast.error(`Failed to delete ${selection.length} stock locations`);
-        },
-    });
     return (
-        <DataTableBulkActionItem
-            requiresPermission={['DeleteStockLocation']}
-            onClick={() => mutate({ input: selection.map(s => ({ id: s.id })) })}
-            label={<Trans>Delete</Trans>}
-            confirmationText={
-                <Trans>Are you sure you want to delete {selection.length} stock locations?</Trans>
-            }
-            icon={TrashIcon}
-            className="text-destructive"
+        <DeleteBulkAction
+            mutationDocument={deleteStockLocationsDocument}
+            entityName="stock locations"
+            requiredPermissions={['DeleteStockLocation']}
+            selection={selection}
+            table={table}
         />
     );
 };

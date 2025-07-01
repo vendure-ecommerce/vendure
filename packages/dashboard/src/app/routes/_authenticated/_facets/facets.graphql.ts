@@ -125,8 +125,8 @@ export const removeFacetsFromChannelDocument = graphql(`
 `);
 
 export const deleteFacetsDocument = graphql(`
-    mutation DeleteFacets($input: [ID!]!) {
-        deleteFacets(ids: $input) {
+    mutation DeleteFacets($ids: [ID!]!) {
+        deleteFacets(ids: $ids) {
             result
             message
         }

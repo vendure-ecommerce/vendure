@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { LayersIcon, TrashIcon } from 'lucide-react';
+import { LayersIcon } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -9,6 +9,7 @@ import { api } from '@/graphql/api.js';
 import { ResultOf } from '@/graphql/graphql.js';
 import { useChannel, usePaginatedList } from '@/index.js';
 import { Trans, useLingui } from '@/lib/trans.js';
+import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
 
 import {
     assignPaymentMethodsToChannelDocument,
@@ -18,43 +19,13 @@ import {
 import { AssignToChannelDialog } from './assign-to-channel-dialog.js';
 
 export const DeletePaymentMethodsBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
-    const { refetchPaginatedList } = usePaginatedList();
-    const { i18n } = useLingui();
-    const { mutate } = useMutation({
-        mutationFn: api.mutate(deletePaymentMethodsDocument),
-        onSuccess: (result: ResultOf<typeof deletePaymentMethodsDocument>) => {
-            let deleted = 0;
-            let failed = 0;
-            for (const item of result.deletePaymentMethods) {
-                if (item.result === 'DELETED') {
-                    deleted++;
-                } else {
-                    failed++;
-                }
-            }
-            if (0 < deleted) {
-                toast.success(i18n.t(`Deleted ${deleted} payment methods`));
-            }
-            if (0 < failed) {
-                toast.error(i18n.t(`Failed to delete ${failed} payment methods`));
-            }
-            refetchPaginatedList();
-            table.resetRowSelection();
-        },
-        onError: () => {
-            toast.error(`Failed to delete ${selection.length} payment methods`);
-        },
-    });
     return (
-        <DataTableBulkActionItem
-            requiresPermission={['DeletePaymentMethod']}
-            onClick={() => mutate({ ids: selection.map(s => s.id) })}
-            label={<Trans>Delete</Trans>}
-            confirmationText={
-                <Trans>Are you sure you want to delete {selection.length} payment methods?</Trans>
-            }
-            icon={TrashIcon}
-            className="text-destructive"
+        <DeleteBulkAction
+            mutationDocument={deletePaymentMethodsDocument}
+            entityName="payment methods"
+            requiredPermissions={['DeletePaymentMethod']}
+            selection={selection}
+            table={table}
         />
     );
 };
