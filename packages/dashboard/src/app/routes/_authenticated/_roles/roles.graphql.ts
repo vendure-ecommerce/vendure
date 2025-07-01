@@ -65,3 +65,12 @@ export const deleteRoleDocument = graphql(`
         }
     }
 `);
+
+export const deleteRolesDocument = graphql(`
+    mutation DeleteRoles($ids: [ID!]!) {
+        deleteRoles(ids: $ids) {
+            result
+            message
+        }
+    }
+`);

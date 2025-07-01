@@ -11,6 +11,7 @@ import { Trans } from '@/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { LayersIcon, PlusIcon } from 'lucide-react';
 import { ExpandablePermissions } from './components/expandable-permissions.js';
+import { DeleteRolesBulkAction } from './components/role-bulk-actions.js';
 import { deleteRoleDocument, roleListQuery } from './roles.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_roles/roles')({
@@ -80,6 +81,12 @@ function RoleListPage() {
                     },
                 },
             }}
+            bulkActions={[
+                {
+                    component: DeleteRolesBulkAction,
+                    order: 500,
+                },
+            ]}
         >
             <PageActionBarRight>
                 <PermissionGuard requires={['CreateAdministrator']}>
