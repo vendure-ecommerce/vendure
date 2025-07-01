@@ -7,6 +7,7 @@ import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
+import { DeleteTaxCategoriesBulkAction } from './components/tax-category-bulk-actions.js';
 import { deleteTaxCategoryDocument, taxCategoryListQuery } from './tax-categories.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_tax-categories/tax-categories')({
@@ -49,6 +50,12 @@ function TaxCategoryListPage() {
                     ),
                 },
             }}
+            bulkActions={[
+                {
+                    component: DeleteTaxCategoriesBulkAction,
+                    order: 500,
+                },
+            ]}
         >
             <PageActionBarRight>
                 <PermissionGuard requires={['CreateTaxCategory']}>

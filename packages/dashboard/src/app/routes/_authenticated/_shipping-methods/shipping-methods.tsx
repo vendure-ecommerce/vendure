@@ -6,6 +6,11 @@ import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
+import {
+    AssignShippingMethodsToChannelBulkAction,
+    DeleteShippingMethodsBulkAction,
+    RemoveShippingMethodsFromChannelBulkAction,
+} from './components/shipping-method-bulk-actions.js';
 import { TestShippingMethodDialog } from './components/test-shipping-method-dialog.js';
 import { deleteShippingMethodDocument, shippingMethodListQuery } from './shipping-methods.graphql.js';
 
@@ -38,6 +43,20 @@ function ShippingMethodListPage() {
                     name: { contains: searchTerm },
                 };
             }}
+            bulkActions={[
+                {
+                    component: AssignShippingMethodsToChannelBulkAction,
+                    order: 100,
+                },
+                {
+                    component: RemoveShippingMethodsFromChannelBulkAction,
+                    order: 200,
+                },
+                {
+                    component: DeleteShippingMethodsBulkAction,
+                    order: 500,
+                },
+            ]}
         >
             <PageActionBarRight>
                 <PermissionGuard requires={['CreateShippingMethod']}>

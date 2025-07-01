@@ -6,6 +6,7 @@ import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
+import { DeleteZonesBulkAction } from './components/zone-bulk-actions.js';
 import { ZoneCountriesSheet } from './components/zone-countries-sheet.js';
 import { deleteZoneDocument, zoneListQuery } from './zones.graphql.js';
 
@@ -41,6 +42,12 @@ function ZoneListPage() {
                     ),
                 },
             }}
+            bulkActions={[
+                {
+                    component: DeleteZonesBulkAction,
+                    order: 500,
+                },
+            ]}
         >
             <PageActionBarRight>
                 <PermissionGuard requires={['CreateZone']}>

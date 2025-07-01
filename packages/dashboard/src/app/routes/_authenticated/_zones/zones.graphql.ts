@@ -94,3 +94,12 @@ export const deleteZoneDocument = graphql(`
         }
     }
 `);
+
+export const deleteZonesDocument = graphql(`
+    mutation DeleteZones($ids: [ID!]!) {
+        deleteZones(ids: $ids) {
+            result
+            message
+        }
+    }
+`);
