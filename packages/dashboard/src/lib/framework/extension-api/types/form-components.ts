@@ -25,10 +25,19 @@ export interface DashboardCustomFormComponent {
 export interface DashboardInputComponent {
     /**
      * @description
-     * A unique identifier for the input component. This will be used to reference
-     * the component in form fields.
+     * The ID of the page where this input component should be used.
      */
-    id: string;
+    pageId: string;
+    /**
+     * @description
+     * The ID of the block where this input component should be used.
+     */
+    blockId: string;
+    /**
+     * @description
+     * The name of the field where this input component should be used.
+     */
+    field: string;
     /**
      * @description
      * The React component that will be rendered as the input.
@@ -40,7 +49,7 @@ export interface DashboardInputComponent {
 /**
  * @description
  * Allows you to define custom display components that can be used to render
- * data in tables, detail views, and other places in the dashboard.
+ * data in forms, tables, detail views, and other places in the dashboard.
  *
  * @docsCategory extensions
  * @since 3.4.0
@@ -48,10 +57,19 @@ export interface DashboardInputComponent {
 export interface DashboardDisplayComponent {
     /**
      * @description
-     * A unique identifier for the display component. This will be used to reference
-     * the component in data displays.
+     * The ID of the page where this display component should be used.
      */
-    id: string;
+    pageId: string;
+    /**
+     * @description
+     * The ID of the block where this display component should be used.
+     */
+    blockId: string;
+    /**
+     * @description
+     * The name of the field where this display component should be used.
+     */
+    field: string;
     /**
      * @description
      * The React component that will be rendered as the display.
@@ -63,7 +81,7 @@ export interface DashboardDisplayComponent {
 /**
  * @description
  * Unified interface for registering custom form components in the dashboard.
- * This includes both custom field components and input components.
+ * This includes custom field components, input components, and display components.
  *
  * @docsCategory extensions
  * @since 3.4.0
@@ -81,4 +99,10 @@ export interface DashboardCustomFormComponents {
      * where input components are rendered.
      */
     inputs?: DashboardInputComponent[];
+    /**
+     * @description
+     * Custom display components that can be used in forms and other places
+     * where display components are rendered.
+     */
+    displays?: DashboardDisplayComponent[];
 }

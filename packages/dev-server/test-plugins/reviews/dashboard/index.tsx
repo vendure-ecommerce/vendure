@@ -57,17 +57,21 @@ defineDashboardExtension({
         ],
         inputs: [
             {
-                id: 'review-detail_main-form_body',
+                pageId: 'review-detail',
+                blockId: 'main-form',
+                field: 'body',
                 component: BodyInputComponent,
             },
         ],
+        displays: [
+            {
+                pageId: 'review-detail',
+                blockId: 'main-form',
+                field: 'response',
+                component: ResponseDisplay,
+            },
+        ],
     },
-    displayComponents: [
-        {
-            id: 'review-detail_main-form_response',
-            component: ResponseDisplay,
-        },
-    ],
     detailForms: [
         {
             pageId: 'product-variant-detail',

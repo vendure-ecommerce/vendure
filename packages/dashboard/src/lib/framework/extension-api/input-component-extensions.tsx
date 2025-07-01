@@ -5,7 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox.js';
 import { Input } from '@/components/ui/input.js';
 import { DataInputComponent } from '../component-registry/component-registry.js';
 import { globalRegistry } from '../registry/global-registry.js';
-import { DashboardInputComponent } from './extension-api-types.js';
+import { DashboardInputComponent } from './types/form-components.js';
 
 globalRegistry.register('inputComponents', new Map<string, DataInputComponent>());
 
@@ -37,11 +37,24 @@ export function getInputComponent(id: string): DataInputComponent | undefined {
     return globalRegistry.get('inputComponents').get(id);
 }
 
-export function addInputComponent({ id, component }: DashboardInputComponent) {
+/**
+ * @description
+ * Generates a component key based on the targeting properties.
+ * Follows the existing pattern: pageId_blockId_fieldName
+ */
+export function generateInputComponentKey(pageId: string, blockId: string, field: string): string {
+    return `${pageId}_${blockId}_${field}`;
+}
+
+export function addInputComponent({ pageId, blockId, field, component }: DashboardInputComponent) {
     const inputComponents = globalRegistry.get('inputComponents');
-    if (inputComponents.has(id)) {
+
+    // Generate the key using the helper function
+    const key = generateInputComponentKey(pageId, blockId, field);
+
+    if (inputComponents.has(key)) {
         // eslint-disable-next-line no-console
-        console.warn(`Input component with id "${id}" is already registered and will be overwritten.`);
+        console.warn(`Input component with key "${key}" is already registered and will be overwritten.`);
     }
-    inputComponents.set(id, component);
+    inputComponents.set(key, component);
 }

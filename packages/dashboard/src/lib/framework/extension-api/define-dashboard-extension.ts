@@ -45,8 +45,8 @@ export function defineDashboardExtension(extension: DashboardExtension) {
         // Register widget extensions
         registerWidgetExtensions(extension.widgets);
 
-        // Register form component extensions (custom form components and display components)
-        registerFormComponentExtensions(extension.customFormComponents, extension.displayComponents);
+        // Register form component extensions (custom form components, input components, and display components)
+        registerFormComponentExtensions(extension.customFormComponents);
 
         // Register data table extensions
         registerDataTableExtensions(extension.dataTables);

@@ -19,6 +19,7 @@ import {
 import { TranslatableFormFieldWrapper } from '@/components/shared/translatable-form-field.js';
 import { ControllerRenderProps, FieldPath, FieldValues } from 'react-hook-form';
 import { useComponentRegistry } from '../component-registry/component-registry.js';
+import { generateInputComponentKey } from '../extension-api/input-component-extensions.js';
 import {
     CustomFieldsPageBlock,
     DetailFormGrid,
@@ -106,7 +107,7 @@ function FieldInputRenderer<
     TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({ fieldInfo, field, blockId, pageId }: DetailPageFieldProps<TFieldValues, TName>) {
     const componentRegistry = useComponentRegistry();
-    const customInputComponentKey = `${pageId}_${blockId}_${fieldInfo.name}`;
+    const customInputComponentKey = generateInputComponentKey(pageId, blockId, fieldInfo.name);
 
     const DisplayComponent = componentRegistry.getDisplayComponent(customInputComponentKey);
     const InputComponent = componentRegistry.getInputComponent(customInputComponentKey);

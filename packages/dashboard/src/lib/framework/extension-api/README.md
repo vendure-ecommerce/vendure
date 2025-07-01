@@ -1,206 +1,200 @@
 # Dashboard Extension API
 
-This directory contains the extension API for the Vendure dashboard, organized into domain-specific modules for better maintainability and readability.
+This directory contains the extension API for the Vendure Dashboard, allowing you to customize and extend the dashboard functionality.
 
 ## Structure
 
-```
-extension-api/
-├── types/                    # Domain-specific type definitions
-│   ├── alerts.ts            # Alert types
-│   ├── form-components.ts    # Form component types
-│   ├── navigation.ts         # Navigation types
-│   ├── layout.ts            # Layout types
-│   ├── data-table.ts        # Data table types
-│   ├── detail-forms.ts      # Detail form types
-│   ├── widgets.ts           # Widget types
-│   └── index.ts             # Type exports
-├── logic/                   # Domain-specific logic
-│   ├── alerts.ts           # Alert registration logic
-│   ├── form-components.ts   # Form component registration logic
-│   ├── navigation.ts        # Navigation registration logic
-│   ├── layout.ts           # Layout registration logic
-│   ├── data-table.ts       # Data table registration logic
-│   ├── widgets.ts          # Widget registration logic
-│   └── index.ts            # Logic exports
-├── input-component-extensions.tsx    # Input component registry
-├── display-component-extensions.tsx  # Display component registry
-├── extension-api-types.ts           # Main extension interface
-├── define-dashboard-extension.ts    # Main extension registration
-└── README.md                        # This file
-```
+The extension API is organized into domain-specific files for better maintainability:
 
-## Domain-Specific Organization
+### Types (`types/`)
 
-### Types (`/types`)
+- `form-components.ts` - Custom form components, input components, and display components
+- `navigation.ts` - Navigation-related extensions
+- `layout.ts` - Layout-related extensions
+- `data-table.ts` - Data table extensions
+- `detail-forms.ts` - Detail form extensions
+- `alerts.ts` - Alert definition extensions
+- `widgets.ts` - Widget definition extensions
+- `index.ts` - Main export file
 
-Each domain has its own type definitions:
+### Logic (`logic/`)
 
-- **`alerts.ts`** - Alert definitions and types
-- **`form-components.ts`** - Custom form components, input components, and display components
-- **`navigation.ts`** - Routes and navigation sections
-- **`layout.ts`** - Action bar items and page blocks
-- **`data-table.ts`** - Data table extensions and bulk actions
-- **`detail-forms.ts`** - Detail form document extensions
-- **`widgets.ts`** - Widget definitions and types
-
-### Logic (`/logic`)
-
-Each domain has its own registration logic:
-
-- **`alerts.ts`** - Handles registration of dashboard alerts
-- **`form-components.ts`** - Handles registration of custom form components and display components
-- **`navigation.ts`** - Handles registration of navigation sections and routes
-- **`layout.ts`** - Handles registration of action bar items and page blocks
-- **`data-table.ts`** - Handles registration of data table extensions and detail form extensions
-- **`widgets.ts`** - Handles registration of dashboard widgets
+- `form-components.ts` - Logic for registering custom form components
+- `navigation.ts` - Logic for navigation extensions
+- `layout.ts` - Logic for layout extensions
+- `data-table.ts` - Logic for data table extensions
+- `detail-forms.ts` - Logic for detail form extensions
+- `alerts.ts` - Logic for alert extensions
+- `widgets.ts` - Logic for widget extensions
+- `index.ts` - Main export file
 
 ## Usage
 
-### Main Extension Interface
-
-The main entry point is `defineDashboardExtension()` which accepts a `DashboardExtension` object:
-
-```typescript
-import { defineDashboardExtension } from '@vendure/dashboard';
-
-defineDashboardExtension({
-    // Navigation
-    navSections: [...],
-    routes: [...],
-
-    // Layout
-    actionBarItems: [...],
-    pageBlocks: [...],
-
-    // Form Components
-    customFormComponents: {
-        customFields: [...],
-        inputs: [...],
-    },
-    displayComponents: [...],
-
-    // Data Tables
-    dataTables: [...],
-    detailForms: [...],
-
-    // Widgets
-    widgets: [...],
-
-    // Alerts
-    alerts: [...],
-});
-```
-
 ### Custom Form Components
 
-The unified form component system allows registration of both custom field components and input components:
+#### Custom Field Components
 
 ```typescript
+import { defineDashboardExtension } from './extension-api/define-dashboard-extension.js';
+
 defineDashboardExtension({
     customFormComponents: {
-        // Custom field components (for custom fields)
         customFields: [
             {
                 id: 'my-custom-field',
                 component: MyCustomFieldComponent,
             },
         ],
-        // Input components (for detail forms)
+    },
+});
+```
+
+#### Input Components
+
+Input components can be targeted to specific pages, blocks, and fields using dedicated properties during registration. The system uses the existing key pattern (`pageId_blockId_fieldName`) for component lookup. All targeting properties are required:
+
+```typescript
+import { defineDashboardExtension } from './extension-api/define-dashboard-extension.js';
+
+defineDashboardExtension({
+    customFormComponents: {
         inputs: [
+            // Field-specific input component (all properties required)
             {
-                id: 'my-custom-input',
-                component: MyCustomInputComponent,
+                id: 'product-name-input',
+                pageId: 'product-detail',
+                blockId: 'main-form',
+                field: 'name',
+                component: ProductNameInput,
+            },
+
+            // Another field-specific input component
+            {
+                id: 'product-description-input',
+                pageId: 'product-detail',
+                blockId: 'main-form',
+                field: 'description',
+                component: ProductDescriptionInput,
             },
         ],
     },
-    // Display components (for data display)
-    displayComponents: [
+});
+```
+
+**Registration Key Generation:**
+The dedicated properties (`pageId`, `blockId`, `field`) are used to generate the component key during registration:
+
+- All components use the pattern: `pageId_blockId_field`
+
+**Component Lookup:**
+Components are always retrieved from the registry using the same key pattern: `${pageId}_${blockId}_${fieldName}`
+
+### Navigation Extensions
+
+```typescript
+import { defineDashboardExtension } from './extension-api/define-dashboard-extension.js';
+
+defineDashboardExtension({
+    navigation: [
         {
-            id: 'my-custom-display',
-            component: MyCustomDisplayComponent,
+            id: 'custom-nav-item',
+            label: 'Custom Item',
+            routerLink: ['/custom'],
+            icon: 'custom-icon',
         },
     ],
 });
 ```
 
-### Alerts
-
-Alerts can be defined to show important information to users:
+### Layout Extensions
 
 ```typescript
+import { defineDashboardExtension } from './extension-api/define-dashboard-extension.js';
+
+defineDashboardExtension({
+    layout: [
+        {
+            id: 'custom-layout',
+            component: CustomLayoutComponent,
+        },
+    ],
+});
+```
+
+### Data Table Extensions
+
+```typescript
+import { defineDashboardExtension } from './extension-api/define-dashboard-extension.js';
+
+defineDashboardExtension({
+    dataTable: [
+        {
+            id: 'custom-table',
+            component: CustomTableComponent,
+        },
+    ],
+});
+```
+
+### Detail Form Extensions
+
+```typescript
+import { defineDashboardExtension } from './extension-api/define-dashboard-extension.js';
+
+defineDashboardExtension({
+    detailForms: [
+        {
+            id: 'custom-detail-form',
+            component: CustomDetailFormComponent,
+        },
+    ],
+});
+```
+
+### Alert Extensions
+
+```typescript
+import { defineDashboardExtension } from './extension-api/define-dashboard-extension.js';
+
 defineDashboardExtension({
     alerts: [
         {
-            id: 'system-maintenance',
-            title: 'System Maintenance',
-            description: 'Scheduled maintenance in 2 hours',
-            severity: 'warning',
-            check: async () => {
-                // Check if maintenance is scheduled
-                return { maintenanceScheduled: true };
+            id: 'custom-alert',
+            component: CustomAlertComponent,
+            props: {
+                message: 'This is a custom alert',
+                type: 'info',
             },
-            recheckInterval: 60000, // Check every minute
         },
     ],
 });
 ```
 
-### Widgets
-
-Widgets can be added to the dashboard:
+### Widget Extensions
 
 ```typescript
+import { defineDashboardExtension } from './extension-api/define-dashboard-extension.js';
+
 defineDashboardExtension({
     widgets: [
         {
-            id: 'sales-chart',
-            name: 'Sales Chart',
-            component: SalesChartWidget,
-            defaultSize: { w: 6, h: 4, x: 0, y: 0 },
-            minSize: { w: 4, h: 3 },
-            maxSize: { w: 12, h: 8 },
+            id: 'custom-widget',
+            component: CustomWidgetComponent,
+            props: {
+                title: 'Custom Widget',
+                data: {
+                    /* widget data */
+                },
+            },
         },
     ],
 });
 ```
 
-## Benefits of Domain-Specific Organization
+## Component Registration
 
-1. **Better Maintainability** - Related functionality is grouped together
-2. **Improved Readability** - Smaller, focused files are easier to understand
-3. **Easier Testing** - Domain-specific logic can be tested independently
-4. **Better Code Organization** - Clear separation of concerns
-5. **Easier Extension** - New domains can be added without affecting existing code
+All components are registered in a global registry that serves as a single source of truth. This ensures consistency across the dashboard and allows for better component management.
 
-## Adding New Domains
+## Backward Compatibility
 
-To add a new domain:
-
-1. Create a new type file in `/types/` (e.g., `new-domain.ts`)
-2. Create a new logic file in `/logic/` (e.g., `new-domain.ts`)
-3. Export the types from `/types/index.ts`
-4. Export the logic from `/logic/index.ts`
-5. Add the new domain to the `DashboardExtension` interface in `extension-api-types.ts`
-6. Add the registration logic to `define-dashboard-extension.ts`
-
-## Built-in Components
-
-The following components are automatically registered:
-
-### Input Components
-
-- `vendure:textInput` - Basic text input
-- `vendure:numberInput` - Number input
-- `vendure:dateTimeInput` - DateTime picker
-- `vendure:checkboxInput` - Checkbox
-- `vendure:moneyInput` - Money input
-- `vendure:facetValueInput` - Facet value selector
-
-### Display Components
-
-- `vendure:booleanCheckbox` - Boolean as checkbox
-- `vendure:booleanBadge` - Boolean as badge
-- `vendure:dateTime` - DateTime display
-- `vendure:asset` - Asset/image display
-- `vendure:money` - Money display
+The extension API maintains backward compatibility with existing implementations while providing new functionality through the domain-specific structure.
