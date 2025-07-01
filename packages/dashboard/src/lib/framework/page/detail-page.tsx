@@ -11,11 +11,14 @@ import { AnyRoute, useNavigate } from '@tanstack/react-router';
 import { ResultOf, VariablesOf } from 'gql.tada';
 import { toast } from 'sonner';
 import {
+    FieldInfo,
     getEntityName,
     getOperationVariablesFields,
 } from '../document-introspection/get-document-structure.js';
 
 import { TranslatableFormFieldWrapper } from '@/components/shared/translatable-form-field.js';
+import { ControllerRenderProps, FieldPath, FieldValues } from 'react-hook-form';
+import { useComponentRegistry } from '../component-registry/component-registry.js';
 import {
     CustomFieldsPageBlock,
     DetailFormGrid,
@@ -85,10 +88,37 @@ export interface DetailPageProps<
     setValuesForUpdate: (entity: ResultOf<T>[EntityField]) => VariablesOf<U>['input'];
 }
 
+export interface DetailPageFieldProps<
+    TFieldValues extends FieldValues = FieldValues,
+    TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> {
+    fieldInfo: FieldInfo;
+    field: ControllerRenderProps<TFieldValues, TName>;
+    blockId: string;
+    pageId: string;
+}
+
 /**
  * Renders form input components based on field type
  */
-function renderFieldInput(fieldInfo: { type: string }, field: any) {
+function FieldInputRenderer<
+    TFieldValues extends FieldValues = FieldValues,
+    TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({ fieldInfo, field, blockId, pageId }: DetailPageFieldProps<TFieldValues, TName>) {
+    const componentRegistry = useComponentRegistry();
+    const customInputComponentKey = `${pageId}_${blockId}_${fieldInfo.name}`;
+
+    const DisplayComponent = componentRegistry.getDisplayComponent(customInputComponentKey);
+    const InputComponent = componentRegistry.getInputComponent(customInputComponentKey);
+
+    if (DisplayComponent) {
+        return <DisplayComponent value={field.value} />;
+    }
+
+    if (InputComponent) {
+        return <InputComponent {...field} />;
+    }
+
     switch (fieldInfo.type) {
         case 'Int':
         case 'Float':
@@ -196,7 +226,14 @@ export function DetailPage<
                                         control={form.control}
                                         name={fieldInfo.name as never}
                                         label={fieldInfo.name}
-                                        render={({ field }) => renderFieldInput(fieldInfo, field)}
+                                        render={({ field }) => (
+                                            <FieldInputRenderer
+                                                fieldInfo={fieldInfo}
+                                                field={field}
+                                                blockId="main-form"
+                                                pageId={pageId}
+                                            />
+                                        )}
                                     />
                                 );
                             })}
@@ -211,7 +248,14 @@ export function DetailPage<
                                         control={form.control}
                                         name={fieldInfo.name as never}
                                         label={fieldInfo.name}
-                                        render={({ field }) => renderFieldInput(fieldInfo, field)}
+                                        render={({ field }) => (
+                                            <FieldInputRenderer
+                                                fieldInfo={fieldInfo}
+                                                field={field}
+                                                blockId="main-form"
+                                                pageId={pageId}
+                                            />
+                                        )}
                                     />
                                 );
                             })}
