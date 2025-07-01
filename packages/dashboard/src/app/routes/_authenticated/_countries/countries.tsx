@@ -6,6 +6,7 @@ import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
+import { DeleteCountriesBulkAction } from './components/country-bulk-actions.js';
 import { countriesListQuery, deleteCountryDocument } from './countries.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_countries/countries')({
@@ -51,6 +52,12 @@ function CountryListPage() {
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
             }}
+            bulkActions={[
+                {
+                    component: DeleteCountriesBulkAction,
+                    order: 500,
+                },
+            ]}
         >
             <PageActionBarRight>
                 <PermissionGuard requires={['CreateCountry']}>

@@ -7,6 +7,12 @@ import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
+import {
+    AssignPromotionsToChannelBulkAction,
+    DeletePromotionsBulkAction,
+    DuplicatePromotionsBulkAction,
+    RemovePromotionsFromChannelBulkAction,
+} from './components/promotion-bulk-actions.js';
 import { deletePromotionDocument, promotionListDocument } from './promotions.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_promotions/promotions')({
@@ -45,6 +51,24 @@ function PromotionListPage() {
                     cell: ({ row }) => <BooleanDisplayBadge value={row.original.enabled} />,
                 },
             }}
+            bulkActions={[
+                {
+                    order: 100,
+                    component: AssignPromotionsToChannelBulkAction,
+                },
+                {
+                    order: 200,
+                    component: RemovePromotionsFromChannelBulkAction,
+                },
+                {
+                    order: 300,
+                    component: DuplicatePromotionsBulkAction,
+                },
+                {
+                    order: 400,
+                    component: DeletePromotionsBulkAction,
+                },
+            ]}
         >
             <PageActionBarRight>
                 <PermissionGuard requires={['CreatePromotion']}>

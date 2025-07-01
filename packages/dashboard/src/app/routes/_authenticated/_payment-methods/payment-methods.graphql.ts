@@ -81,3 +81,30 @@ export const deletePaymentMethodDocument = graphql(`
         }
     }
 `);
+
+export const deletePaymentMethodsDocument = graphql(`
+    mutation DeletePaymentMethods($ids: [ID!]!) {
+        deletePaymentMethods(ids: $ids) {
+            result
+            message
+        }
+    }
+`);
+
+export const assignPaymentMethodsToChannelDocument = graphql(`
+    mutation AssignPaymentMethodsToChannel($input: AssignPaymentMethodsToChannelInput!) {
+        assignPaymentMethodsToChannel(input: $input) {
+            id
+            name
+        }
+    }
+`);
+
+export const removePaymentMethodsFromChannelDocument = graphql(`
+    mutation RemovePaymentMethodsFromChannel($input: RemovePaymentMethodsFromChannelInput!) {
+        removePaymentMethodsFromChannel(input: $input) {
+            id
+            name
+        }
+    }
+`);

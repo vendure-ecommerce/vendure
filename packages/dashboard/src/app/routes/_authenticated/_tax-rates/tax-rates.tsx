@@ -10,6 +10,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { taxCategoryListQuery } from '../_tax-categories/tax-categories.graphql.js';
 import { zoneListQuery } from '../_zones/zones.graphql.js';
+import { DeleteTaxRatesBulkAction } from './components/tax-rate-bulk-actions.js';
 import { deleteTaxRateDocument, taxRateListQuery } from './tax-rates.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_tax-rates/tax-rates')({
@@ -92,6 +93,12 @@ function TaxRateListPage() {
                     cell: ({ row }) => `${row.original.value}%`,
                 },
             }}
+            bulkActions={[
+                {
+                    component: DeleteTaxRatesBulkAction,
+                    order: 500,
+                },
+            ]}
         >
             <PageActionBarRight>
                 <PermissionGuard requires={['CreateTaxRate']}>

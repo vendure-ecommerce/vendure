@@ -102,7 +102,7 @@ function PromotionDetailPage() {
                 toast.success(i18n.t('Successfully updated promotion'));
                 resetForm();
                 if (creatingNewEntity) {
-                    await navigate({ to: `../${data.id}`, from: Route.id });
+                    await navigate({ to: `../$id`, params: { id: data.id } });
                 }
             } else {
                 toast.error(i18n.t('Failed to update promotion'), {

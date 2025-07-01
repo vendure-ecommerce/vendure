@@ -102,3 +102,33 @@ export const deleteFacetDocument = graphql(`
         }
     }
 `);
+
+export const assignFacetsToChannelDocument = graphql(`
+    mutation AssignFacetsToChannel($input: AssignFacetsToChannelInput!) {
+        assignFacetsToChannel(input: $input) {
+            id
+        }
+    }
+`);
+
+export const removeFacetsFromChannelDocument = graphql(`
+    mutation RemoveFacetsFromChannel($input: RemoveFacetsFromChannelInput!) {
+        removeFacetsFromChannel(input: $input) {
+            ... on Facet {
+                id
+            }
+            ... on ErrorResult {
+                message
+            }
+        }
+    }
+`);
+
+export const deleteFacetsDocument = graphql(`
+    mutation DeleteFacets($ids: [ID!]!) {
+        deleteFacets(ids: $ids) {
+            result
+            message
+        }
+    }
+`);

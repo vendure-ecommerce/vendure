@@ -77,3 +77,12 @@ export const deleteAdministratorDocument = graphql(`
         }
     }
 `);
+
+export const deleteAdministratorsDocument = graphql(`
+    mutation DeleteAdministrators($ids: [ID!]!) {
+        deleteAdministrators(ids: $ids) {
+            result
+            message
+        }
+    }
+`);

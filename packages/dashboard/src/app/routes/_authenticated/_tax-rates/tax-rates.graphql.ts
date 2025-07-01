@@ -73,3 +73,12 @@ export const deleteTaxRateDocument = graphql(`
         }
     }
 `);
+
+export const deleteTaxRatesDocument = graphql(`
+    mutation DeleteTaxRates($ids: [ID!]!) {
+        deleteTaxRates(ids: $ids) {
+            result
+            message
+        }
+    }
+`);

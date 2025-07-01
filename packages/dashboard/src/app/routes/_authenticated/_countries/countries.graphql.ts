@@ -67,3 +67,12 @@ export const deleteCountryDocument = graphql(`
         }
     }
 `);
+
+export const deleteCountriesDocument = graphql(`
+    mutation DeleteCountries($ids: [ID!]!) {
+        deleteCountries(ids: $ids) {
+            result
+            message
+        }
+    }
+`);

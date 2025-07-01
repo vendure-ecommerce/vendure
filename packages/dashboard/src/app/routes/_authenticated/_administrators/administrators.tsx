@@ -9,6 +9,7 @@ import { Trans } from '@/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { administratorListDocument, deleteAdministratorDocument } from './administrators.graphql.js';
+import { DeleteAdministratorsBulkAction } from './components/administrator-bulk-actions.js';
 
 export const Route = createFileRoute('/_authenticated/_administrators/administrators')({
     component: AdministratorListPage,
@@ -70,6 +71,12 @@ function AdministratorListPage() {
                 emailAddress: true,
             }}
             defaultColumnOrder={['name', 'emailAddress', 'roles']}
+            bulkActions={[
+                {
+                    component: DeleteAdministratorsBulkAction,
+                    order: 500,
+                },
+            ]}
         >
             <PageActionBarRight>
                 <PermissionGuard requires={['CreateAdministrator']}>

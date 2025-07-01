@@ -1,5 +1,4 @@
 import { graphql } from '@/graphql/graphql.js';
-import { gql } from 'awesome-graphql-client';
 
 export const customerListDocument = graphql(`
     query GetCustomerList($options: CustomerListOptions) {
@@ -199,6 +198,15 @@ export const removeCustomerFromGroupDocument = graphql(`
     mutation RemoveCustomerFromGroup($customerId: ID!, $groupId: ID!) {
         removeCustomersFromGroup(customerIds: [$customerId], customerGroupId: $groupId) {
             id
+        }
+    }
+`);
+
+export const deleteCustomersDocument = graphql(`
+    mutation DeleteCustomers($ids: [ID!]!) {
+        deleteCustomers(ids: $ids) {
+            result
+            message
         }
     }
 `);

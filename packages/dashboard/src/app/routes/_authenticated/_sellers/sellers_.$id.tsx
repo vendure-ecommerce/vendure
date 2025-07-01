@@ -58,7 +58,7 @@ function SellerDetailPage() {
             toast(i18n.t('Successfully updated seller'));
             form.reset(form.getValues());
             if (creatingNewEntity) {
-                await navigate({ to: `../${data?.id}`, from: Route.id });
+                await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {

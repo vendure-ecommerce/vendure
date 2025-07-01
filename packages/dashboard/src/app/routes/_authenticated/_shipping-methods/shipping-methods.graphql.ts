@@ -81,3 +81,30 @@ export const deleteShippingMethodDocument = graphql(`
         }
     }
 `);
+
+export const deleteShippingMethodsDocument = graphql(`
+    mutation DeleteShippingMethods($ids: [ID!]!) {
+        deleteShippingMethods(ids: $ids) {
+            result
+            message
+        }
+    }
+`);
+
+export const assignShippingMethodsToChannelDocument = graphql(`
+    mutation AssignShippingMethodsToChannel($input: AssignShippingMethodsToChannelInput!) {
+        assignShippingMethodsToChannel(input: $input) {
+            id
+            name
+        }
+    }
+`);
+
+export const removeShippingMethodsFromChannelDocument = graphql(`
+    mutation RemoveShippingMethodsFromChannel($input: RemoveShippingMethodsFromChannelInput!) {
+        removeShippingMethodsFromChannel(input: $input) {
+            id
+            name
+        }
+    }
+`);

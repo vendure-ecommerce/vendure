@@ -10,7 +10,7 @@ import { usePaginatedList } from '@/index.js';
 import { Trans, useLingui } from '@/lib/trans.js';
 
 interface DuplicateBulkActionProps {
-    entityType: 'Product' | 'Collection';
+    entityType: 'Product' | 'Collection' | 'Facet' | 'Promotion';
     duplicatorCode: string;
     duplicatorArguments?: Array<{ name: string; value: string }>;
     requiredPermissions: string[];

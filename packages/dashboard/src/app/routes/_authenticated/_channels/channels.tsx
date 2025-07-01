@@ -9,6 +9,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { channelListQuery, deleteChannelDocument } from './channels.graphql.js';
 import { useLocalFormat } from '@/hooks/use-local-format.js';
+import { DeleteChannelsBulkAction } from './components/channel-bulk-actions.js';
 
 export const Route = createFileRoute('/_authenticated/_channels/channels')({
     component: ChannelListPage,
@@ -62,6 +63,12 @@ function ChannelListPage() {
                     }
                 },
             }}
+            bulkActions={[
+                {
+                    component: DeleteChannelsBulkAction,
+                    order: 500,
+                },
+            ]}
         >
             <PageActionBarRight>
                 <PermissionGuard requires={['CreateChannel']}>

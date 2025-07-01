@@ -38,7 +38,10 @@ export const Route = createFileRoute('/_authenticated/_payment-methods/payment-m
         pageId,
         queryDocument: paymentMethodDetailDocument,
         breadcrumb(_isNew, entity) {
-            return [{ path: '/payment-methods', label: 'Payment methods' }, entity?.name];
+            return [
+                { path: '/payment-methods', label: 'Payment methods' },
+                _isNew ? <Trans>New payment method</Trans> : entity?.name,
+            ];
         },
     }),
     errorComponent: ({ error }) => <ErrorPage message={error.message} />,

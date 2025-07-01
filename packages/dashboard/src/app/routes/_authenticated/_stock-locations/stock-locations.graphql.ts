@@ -60,3 +60,28 @@ export const deleteStockLocationDocument = graphql(`
         }
     }
 `);
+
+export const deleteStockLocationsDocument = graphql(`
+    mutation DeleteStockLocations($input: [DeleteStockLocationInput!]!) {
+        deleteStockLocations(input: $input) {
+            result
+            message
+        }
+    }
+`);
+
+export const assignStockLocationsToChannelDocument = graphql(`
+    mutation AssignStockLocationsToChannel($input: AssignStockLocationsToChannelInput!) {
+        assignStockLocationsToChannel(input: $input) {
+            id
+        }
+    }
+`);
+
+export const removeStockLocationsFromChannelDocument = graphql(`
+    mutation RemoveStockLocationsFromChannel($input: RemoveStockLocationsFromChannelInput!) {
+        removeStockLocationsFromChannel(input: $input) {
+            id
+        }
+    }
+`);

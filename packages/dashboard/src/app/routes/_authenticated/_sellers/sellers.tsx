@@ -7,6 +7,7 @@ import { Trans } from '@/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { deleteSellerDocument, sellerListQuery } from './sellers.graphql.js';
+import { DeleteSellersBulkAction } from './components/seller-bulk-actions.js';
 
 export const Route = createFileRoute('/_authenticated/_sellers/sellers')({
     component: SellerListPage,
@@ -35,6 +36,12 @@ function SellerListPage() {
                     cell: ({ row }) => <DetailPageButton id={row.original.id} label={row.original.name} />,
                 },
             }}
+            bulkActions={[
+                {
+                    component: DeleteSellersBulkAction,
+                    order: 500,
+                },
+            ]}
         >
             <PageActionBarRight>
                 <PermissionGuard requires={['CreateSeller']}>

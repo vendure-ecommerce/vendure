@@ -6,6 +6,7 @@ import { ListPage } from '@/framework/page/list-page.js';
 import { Trans } from '@/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
+import { DeleteCustomersBulkAction } from './components/customer-bulk-actions.js';
 import { CustomerStatusBadge } from './components/customer-status-badge.js';
 import { customerListDocument, deleteCustomerDocument } from './customers.graphql.js';
 
@@ -66,6 +67,12 @@ function CustomerListPage() {
                 firstName: false,
                 lastName: false,
             }}
+            bulkActions={[
+                {
+                    component: DeleteCustomersBulkAction,
+                    order: 500,
+                },
+            ]}
         >
             <PageActionBarRight>
                 <PermissionGuard requires={['CreateCustomer']}>
