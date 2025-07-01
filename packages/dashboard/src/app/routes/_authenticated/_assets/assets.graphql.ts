@@ -24,3 +24,14 @@ export const assetUpdateDocument = graphql(`
         }
     }
 `);
+
+export const deleteAssetsDocument = graphql(`
+    mutation DeleteAssets($input: DeleteAssetsInput!) {
+        deleteAssets(input: $input) {
+            ... on DeletionResponse {
+                result
+                message
+            }
+        }
+    }
+`);
