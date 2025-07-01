@@ -1,16 +1,13 @@
-import { getOperationVariablesFields } from '@/framework/document-introspection/get-document-structure.js';
-import {
-    createFormSchemaFromFields,
-    getDefaultValuesFromFields,
-} from '@/framework/form-engine/form-schema-tools.js';
-import { transformRelationFields } from '@/framework/form-engine/utils.js';
-import { useChannel } from '@/hooks/use-channel.js';
-import { useServerConfig } from '@/hooks/use-server-config.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { VariablesOf } from 'gql.tada';
 import { FormEvent } from 'react';
 import { useForm } from 'react-hook-form';
+import { useChannel } from '../../hooks/use-channel.js';
+import { useServerConfig } from '../../hooks/use-server-config.js';
+import { getOperationVariablesFields } from '../document-introspection/get-document-structure.js';
+import { createFormSchemaFromFields, getDefaultValuesFromFields } from './form-schema-tools.js';
+import { transformRelationFields } from './utils.js';
 
 export interface GeneratedFormOptions<
     T extends TypedDocumentNode<any, any>,

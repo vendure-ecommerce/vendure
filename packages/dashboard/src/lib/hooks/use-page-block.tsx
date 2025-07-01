@@ -1,5 +1,5 @@
-import { PageBlockContext } from '@/framework/layout-engine/page-block-provider.js';
 import { useContext } from 'react';
+import { PageBlockContext } from '../framework/layout-engine/page-block-provider.js';
 
 export function usePageBlock() {
     const pageBlock = useContext(PageBlockContext);

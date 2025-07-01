@@ -1,6 +1,7 @@
-import { useAuth } from '@/hooks/use-auth.js';
-import { useChannel } from '@/hooks/use-channel.js';
 import { Permission } from '@vendure/common/lib/generated-types';
+
+import { useAuth } from './use-auth.js';
+import { useChannel } from './use-channel.js';
 
 /**
  * @description

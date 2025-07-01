@@ -1,7 +1,3 @@
-import { NEW_ENTITY_PATH } from '@/constants.js';
-import { api, Variables } from '@/graphql/api.js';
-import { useCustomFieldConfig } from '@/hooks/use-custom-field-config.js';
-import { useExtendedDetailQuery } from '@/hooks/use-extended-detail-query.js';
 import { removeReadonlyCustomFields } from '@/lib/utils.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import {
@@ -16,6 +12,10 @@ import { DocumentNode } from 'graphql';
 import { FormEvent } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 
+import { NEW_ENTITY_PATH } from '../../constants.js';
+import { api, Variables } from '../../graphql/api.js';
+import { useCustomFieldConfig } from '../../hooks/use-custom-field-config.js';
+import { useExtendedDetailQuery } from '../../hooks/use-extended-detail-query.js';
 import { addCustomFields } from '../document-introspection/add-custom-fields.js';
 import {
     getEntityName,

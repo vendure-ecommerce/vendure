@@ -1,10 +1,9 @@
-import { ErrorPage } from '@/components/shared/error-page.js';
-import { useDashboardExtensions } from '@/framework/extension-api/use-dashboard-extensions.js';
-import { ListPage } from '@/framework/page/list-page.js';
-import { extensionRoutes } from '@/framework/page/page-api.js';
-import { AUTHENTICATED_ROUTE_PREFIX } from '@/constants.js';
 import { AnyRoute, createRoute, Router } from '@tanstack/react-router';
 import { useMemo } from 'react';
+import { ErrorPage } from '../../components/shared/error-page.js';
+import { AUTHENTICATED_ROUTE_PREFIX } from '../../constants.js';
+import { useDashboardExtensions } from '../extension-api/use-dashboard-extensions.js';
+import { extensionRoutes } from './page-api.js';
 
 /**
  * Extends the TanStack Router with additional routes for each dashboard
