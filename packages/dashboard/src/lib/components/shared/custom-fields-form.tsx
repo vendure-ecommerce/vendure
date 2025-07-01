@@ -41,7 +41,12 @@ export function CustomFieldsForm({ entityType, control, formPathPrefix }: Custom
     const customFields = useCustomFieldConfig(entityType);
 
     const getFieldName = (fieldDef: CustomFieldConfig) => {
-        const name = fieldDef.type === 'relation' ? fieldDef.name + 'Id' : fieldDef.name;
+        const name =
+            fieldDef.type === 'relation'
+                ? fieldDef.list
+                    ? fieldDef.name + 'Ids'
+                    : fieldDef.name + 'Id'
+                : fieldDef.name;
         return formPathPrefix ? `${formPathPrefix}.customFields.${name}` : `customFields.${name}`;
     };
 
@@ -266,6 +271,18 @@ function FormInputForType({
             );
         case 'boolean':
             return <Switch checked={field.value} onCheckedChange={field.onChange} disabled={isReadonly} />;
+        case 'relation':
+            if (fieldDef.list) {
+                return (
+                    <Input
+                        {...field}
+                        onChange={e => field.onChange(e.target.value.split(','))}
+                        disabled={isReadonly}
+                    />
+                );
+            } else {
+                return <Input {...field} disabled={isReadonly} />;
+            }
         default:
             return <Input {...field} disabled={isReadonly} />;
     }
