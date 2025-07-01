@@ -76,7 +76,7 @@ export function DeleteBulkAction({
     invalidateQueries = [],
     selection,
     table,
-}: DeleteBulkActionProps) {
+}: Readonly<DeleteBulkActionProps>) {
     const { refetchPaginatedList } = usePaginatedList();
     const { i18n } = useLingui();
     const queryClient = useQueryClient();
@@ -109,7 +109,7 @@ export function DeleteBulkAction({
             if (0 < failed) {
                 const errorMessage =
                     errors.length > 0
-                        ? i18n.t(`Failed to delete ${failed} ${entityName}`)
+                        ? i18n.t(`Failed to delete ${failed} ${entityName}: ${errors.join(', ')}`)
                         : i18n.t(`Failed to delete ${failed} ${entityName}`);
                 toast.error(errorMessage);
             }

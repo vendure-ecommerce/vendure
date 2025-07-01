@@ -18,7 +18,7 @@ export function AssignToChannelDialog({
     entityType,
     mutationFn,
     onSuccess,
-}: AssignPromotionsToChannelDialogProps) {
+}: Readonly<AssignPromotionsToChannelDialogProps>) {
     return (
         <SharedAssignToChannelDialog
             open={open}

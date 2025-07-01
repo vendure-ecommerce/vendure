@@ -21,7 +21,7 @@ export function AssignToChannelDialog({
     entityType,
     mutationFn,
     onSuccess,
-}: AssignProductsToChannelDialogProps) {
+}: Readonly<AssignProductsToChannelDialogProps>) {
     const { priceFactor, priceFactorField } = usePriceFactor();
 
     return (

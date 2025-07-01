@@ -18,7 +18,7 @@ export function AssignToChannelDialog({
     entityType,
     mutationFn,
     onSuccess,
-}: AssignPaymentMethodsToChannelDialogProps) {
+}: Readonly<AssignPaymentMethodsToChannelDialogProps>) {
     return (
         <SharedAssignToChannelDialog
             open={open}

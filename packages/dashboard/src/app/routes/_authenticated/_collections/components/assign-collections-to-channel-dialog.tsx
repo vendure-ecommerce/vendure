@@ -16,7 +16,7 @@ export function AssignCollectionsToChannelDialog({
     entityIds,
     mutationFn,
     onSuccess,
-}: AssignCollectionsToChannelDialogProps) {
+}: Readonly<AssignCollectionsToChannelDialogProps>) {
     return (
         <AssignToChannelDialog
             open={open}

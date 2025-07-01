@@ -6,11 +6,16 @@ import { DataTableBulkActionItem } from '@/components/data-table/data-table-bulk
 import { api } from '@/graphql/api.js';
 import { AssetFragment } from '@/graphql/fragments.js';
 import { ResultOf } from '@/graphql/graphql.js';
-import { usePaginatedList } from '@/index.js';
 import { Trans, useLingui } from '@/lib/trans.js';
 import { deleteAssetsDocument } from '../assets.graphql.js';
 
-export const DeleteAssetsBulkAction = ({ selection, refetch }: { selection: AssetFragment[]; refetch: () => void }) => {
+export const DeleteAssetsBulkAction = ({
+    selection,
+    refetch,
+}: {
+    selection: AssetFragment[];
+    refetch: () => void;
+}) => {
     const { i18n } = useLingui();
     const { mutate } = useMutation({
         mutationFn: api.mutate(deleteAssetsDocument),

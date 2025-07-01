@@ -53,7 +53,7 @@ export function AssignToChannelDialog({
     buildInput,
     additionalFields,
     additionalData = {},
-}: AssignToChannelDialogProps) {
+}: Readonly<AssignToChannelDialogProps>) {
     const { i18n } = useLingui();
     const [selectedChannelId, setSelectedChannelId] = useState<string>('');
     const { channels, selectedChannel } = useChannel();
