@@ -3,7 +3,7 @@
     "admin-ui/**/*.html": ["npm run format", "git add"],
     "packages/!(dev-server)/**/*.ts": ["npm run lint", "npm run format", "git add"],
     "packages/dashboard/src/lib/**/use-*.{ts,tsx}": [
-        "cd packages/dashboard && node scripts/check-lib-imports.js",
+        "node packages/dashboard/scripts/check-lib-imports.js",
         "git add"
     ]
 }

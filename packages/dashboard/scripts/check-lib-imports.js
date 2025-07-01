@@ -7,7 +7,12 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const LIB_DIR = path.join(__dirname, '../src/lib');
+// Check if we're running from the dashboard directory or root directory
+const currentDir = process.cwd();
+const isDashboardDir = currentDir.endsWith('packages/dashboard');
+const LIB_DIR = isDashboardDir
+    ? path.join(__dirname, '../src/lib')
+    : path.join(currentDir, 'packages/dashboard/src/lib');
 
 // Allowlist of @/ imports that are safe to keep
 const ALLOWED_IMPORTS = ['@/lib/trans.js', '@/lib/utils.js', '@/components/ui'];
