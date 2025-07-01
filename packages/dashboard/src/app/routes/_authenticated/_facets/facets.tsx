@@ -8,6 +8,12 @@ import { Trans } from '@/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ResultOf } from 'gql.tada';
 import { PlusIcon } from 'lucide-react';
+import {
+    AssignFacetsToChannelBulkAction,
+    DeleteFacetsBulkAction,
+    DuplicateFacetsBulkAction,
+    RemoveFacetsFromChannelBulkAction,
+} from './components/facet-bulk-actions.js';
 import { FacetValuesSheet } from './components/facet-values-sheet.js';
 import { deleteFacetDocument, facetListDocument } from './facets.graphql.js';
 
@@ -80,6 +86,24 @@ function FacetListPage() {
                     },
                 };
             }}
+            bulkActions={[
+                {
+                    order: 100,
+                    component: AssignFacetsToChannelBulkAction,
+                },
+                {
+                    order: 200,
+                    component: RemoveFacetsFromChannelBulkAction,
+                },
+                {
+                    order: 300,
+                    component: DuplicateFacetsBulkAction,
+                },
+                {
+                    order: 400,
+                    component: DeleteFacetsBulkAction,
+                },
+            ]}
             route={Route}
         >
             <PageActionBarRight>
