@@ -1,10 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
 import { LayersIcon } from 'lucide-react';
-import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { DataTableBulkActionItem } from '@/components/data-table/data-table-bulk-action-item.js';
-import { AssignToChannelDialog } from '@/components/shared/assign-to-channel-dialog.js';
+import { AssignToChannelBulkAction } from '@/components/shared/assign-to-channel-bulk-action.js';
 import { BulkActionComponent } from '@/framework/data-table/data-table-types.js';
 import { api } from '@/graphql/api.js';
 import { ResultOf } from '@/graphql/graphql.js';
@@ -31,40 +30,18 @@ export const DeleteStockLocationsBulkAction: BulkActionComponent<any> = ({ selec
 };
 
 export const AssignStockLocationsToChannelBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
-    const { refetchPaginatedList } = usePaginatedList();
-    const { channels } = useChannel();
-    const [dialogOpen, setDialogOpen] = useState(false);
-
-    if (channels.length < 2) {
-        return null;
-    }
-
-    const handleSuccess = () => {
-        refetchPaginatedList();
-        table.resetRowSelection();
-    };
-
     return (
-        <>
-            <DataTableBulkActionItem
-                requiresPermission={['UpdateStockLocation']}
-                onClick={() => setDialogOpen(true)}
-                label={<Trans>Assign to channel</Trans>}
-                icon={LayersIcon}
-            />
-            <AssignToChannelDialog
-                open={dialogOpen}
-                onOpenChange={setDialogOpen}
-                entityIds={selection.map(s => s.id)}
-                entityType="stock locations"
-                mutationFn={api.mutate(assignStockLocationsToChannelDocument)}
-                onSuccess={handleSuccess}
-                buildInput={channelId => ({
-                    stockLocationIds: selection.map(s => s.id),
-                    channelId,
-                })}
-            />
-        </>
+        <AssignToChannelBulkAction
+            selection={selection}
+            table={table}
+            entityType="stock locations"
+            mutationFn={api.mutate(assignStockLocationsToChannelDocument)}
+            requiredPermissions={['UpdateStockLocation']}
+            buildInput={(channelId: string) => ({
+                stockLocationIds: selection.map(s => s.id),
+                channelId,
+            })}
+        />
     );
 };
 

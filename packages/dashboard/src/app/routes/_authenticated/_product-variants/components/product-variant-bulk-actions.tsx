@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { DataTableBulkActionItem } from '@/components/data-table/data-table-bulk-action-item.js';
+import { AssignToChannelBulkAction } from '@/components/shared/assign-to-channel-bulk-action.js';
+import { usePriceFactor } from '@/components/shared/assign-to-channel-dialog.js';
 import { BulkActionComponent } from '@/framework/data-table/data-table-types.js';
 import { api } from '@/graphql/api.js';
 import { useChannel, usePaginatedList } from '@/index.js';
@@ -11,7 +13,6 @@ import { Trans, useLingui } from '@/lib/trans.js';
 import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
 
 import { AssignFacetValuesDialog } from '../../_products/components/assign-facet-values-dialog.js';
-import { AssignToChannelDialog } from '../../_products/components/assign-to-channel-dialog.js';
 import {
     assignProductVariantsToChannelDocument,
     deleteProductVariantsDocument,
@@ -34,36 +35,22 @@ export const DeleteProductVariantsBulkAction: BulkActionComponent<any> = ({ sele
 };
 
 export const AssignProductVariantsToChannelBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
-    const { refetchPaginatedList } = usePaginatedList();
-    const { channels } = useChannel();
-    const [dialogOpen, setDialogOpen] = useState(false);
-
-    if (channels.length < 2) {
-        return null;
-    }
-
-    const handleSuccess = () => {
-        refetchPaginatedList();
-        table.resetRowSelection();
-    };
+    const { priceFactor, priceFactorField } = usePriceFactor();
 
     return (
-        <>
-            <DataTableBulkActionItem
-                requiresPermission={['UpdateCatalog', 'UpdateProduct']}
-                onClick={() => setDialogOpen(true)}
-                label={<Trans>Assign to channel</Trans>}
-                icon={LayersIcon}
-            />
-            <AssignToChannelDialog
-                open={dialogOpen}
-                onOpenChange={setDialogOpen}
-                entityIds={selection.map(s => s.id)}
-                entityType="variants"
-                mutationFn={api.mutate(assignProductVariantsToChannelDocument)}
-                onSuccess={handleSuccess}
-            />
-        </>
+        <AssignToChannelBulkAction
+            selection={selection}
+            table={table}
+            entityType="variants"
+            mutationFn={api.mutate(assignProductVariantsToChannelDocument)}
+            requiredPermissions={['UpdateCatalog', 'UpdateProduct']}
+            buildInput={(channelId: string) => ({
+                productVariantIds: selection.map(s => s.id),
+                channelId,
+                priceFactor,
+            })}
+            additionalFields={priceFactorField}
+        />
     );
 };
 

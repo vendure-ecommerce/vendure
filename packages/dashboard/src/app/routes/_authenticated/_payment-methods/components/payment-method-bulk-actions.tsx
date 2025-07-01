@@ -1,9 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
 import { LayersIcon } from 'lucide-react';
-import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { DataTableBulkActionItem } from '@/components/data-table/data-table-bulk-action-item.js';
+import { AssignToChannelBulkAction } from '@/components/shared/assign-to-channel-bulk-action.js';
 import { BulkActionComponent } from '@/framework/data-table/data-table-types.js';
 import { api } from '@/graphql/api.js';
 import { ResultOf } from '@/graphql/graphql.js';
@@ -16,7 +16,6 @@ import {
     deletePaymentMethodsDocument,
     removePaymentMethodsFromChannelDocument,
 } from '../payment-methods.graphql.js';
-import { AssignToChannelDialog } from './assign-to-channel-dialog.js';
 
 export const DeletePaymentMethodsBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
     return (
@@ -31,36 +30,18 @@ export const DeletePaymentMethodsBulkAction: BulkActionComponent<any> = ({ selec
 };
 
 export const AssignPaymentMethodsToChannelBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
-    const { refetchPaginatedList } = usePaginatedList();
-    const { channels } = useChannel();
-    const [dialogOpen, setDialogOpen] = useState(false);
-
-    if (channels.length < 2) {
-        return null;
-    }
-
-    const handleSuccess = () => {
-        refetchPaginatedList();
-        table.resetRowSelection();
-    };
-
     return (
-        <>
-            <DataTableBulkActionItem
-                requiresPermission={['UpdatePaymentMethod']}
-                onClick={() => setDialogOpen(true)}
-                label={<Trans>Assign to channel</Trans>}
-                icon={LayersIcon}
-            />
-            <AssignToChannelDialog
-                open={dialogOpen}
-                onOpenChange={setDialogOpen}
-                entityIds={selection.map(s => s.id)}
-                entityType="payment methods"
-                mutationFn={api.mutate(assignPaymentMethodsToChannelDocument)}
-                onSuccess={handleSuccess}
-            />
-        </>
+        <AssignToChannelBulkAction
+            selection={selection}
+            table={table}
+            entityType="payment methods"
+            mutationFn={api.mutate(assignPaymentMethodsToChannelDocument)}
+            requiredPermissions={['UpdatePaymentMethod']}
+            buildInput={(channelId: string) => ({
+                paymentMethodIds: selection.map(s => s.id),
+                channelId,
+            })}
+        />
     );
 };
 

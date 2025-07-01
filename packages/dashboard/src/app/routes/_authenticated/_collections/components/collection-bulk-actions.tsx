@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { LayersIcon } from 'lucide-react';
-import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { DataTableBulkActionItem } from '@/components/data-table/data-table-bulk-action-item.js';
+import { AssignToChannelBulkAction } from '@/components/shared/assign-to-channel-bulk-action.js';
 import { BulkActionComponent } from '@/framework/data-table/data-table-types.js';
 import { api } from '@/graphql/api.js';
 import { useChannel, usePaginatedList } from '@/index.js';
@@ -15,40 +15,25 @@ import {
     deleteCollectionsDocument,
     removeCollectionFromChannelDocument,
 } from '../collections.graphql.js';
-import { AssignCollectionsToChannelDialog } from './assign-collections-to-channel-dialog.js';
 
 export const AssignCollectionsToChannelBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
-    const { refetchPaginatedList } = usePaginatedList();
-    const { channels } = useChannel();
-    const [dialogOpen, setDialogOpen] = useState(false);
     const queryClient = useQueryClient();
 
-    if (channels.length < 2) {
-        return null;
-    }
-
-    const handleSuccess = () => {
-        refetchPaginatedList();
-        table.resetRowSelection();
-        queryClient.invalidateQueries({ queryKey: ['childCollections'] });
-    };
-
     return (
-        <>
-            <DataTableBulkActionItem
-                requiresPermission={['UpdateCatalog', 'UpdateCollection']}
-                onClick={() => setDialogOpen(true)}
-                label={<Trans>Assign to channel</Trans>}
-                icon={LayersIcon}
-            />
-            <AssignCollectionsToChannelDialog
-                open={dialogOpen}
-                onOpenChange={setDialogOpen}
-                entityIds={selection.map(s => s.id)}
-                mutationFn={api.mutate(assignCollectionToChannelDocument)}
-                onSuccess={handleSuccess}
-            />
-        </>
+        <AssignToChannelBulkAction
+            selection={selection}
+            table={table}
+            entityType="collections"
+            mutationFn={api.mutate(assignCollectionToChannelDocument)}
+            requiredPermissions={['UpdateCatalog', 'UpdateCollection']}
+            buildInput={(channelId: string) => ({
+                collectionIds: selection.map(s => s.id),
+                channelId,
+            })}
+            onSuccess={() => {
+                queryClient.invalidateQueries({ queryKey: ['childCollections'] });
+            }}
+        />
     );
 };
 
