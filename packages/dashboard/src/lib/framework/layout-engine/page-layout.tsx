@@ -194,6 +194,7 @@ export function PageLayout({ children, className }: PageLayoutProps) {
             if (extensionBlock) {
                 const ExtensionBlock = (
                     <PageBlock
+                        key={childBlock.key}
                         column={extensionBlock.location.column}
                         blockId={extensionBlock.id}
                         title={extensionBlock.title}

@@ -546,4 +546,339 @@ describe('extendDocument', () => {
             `),
         );
     });
+
+    it('should extend detail query with fragments', () => {
+        const detailDocument = graphql(`
+            fragment ProductDetail on Product {
+                id
+                name
+                slug
+                description
+                featuredAsset {
+                    id
+                    preview
+                }
+            }
+
+            query ProductDetail($id: ID!) {
+                product(id: $id) {
+                    ...ProductDetail
+                }
+            }
+        `);
+
+        const extended = extendDocument(
+            detailDocument as any,
+            `
+            fragment ProductDetail on Product {
+                enabled
+                createdAt
+                updatedAt
+                assets {
+                    id
+                    preview
+                }
+            }
+
+            query ProductDetail($id: ID!) {
+                product(id: $id) {
+                    customFields
+                }
+            }
+            `,
+        );
+
+        const printed = print(extended);
+
+        expect(expectedSDL(printed)).toBe(
+            expectedSDL(`
+                query ProductDetail($id: ID!) {
+                    product(id: $id) {
+                        ...ProductDetail
+                        customFields
+                    }
+                }
+                fragment ProductDetail on Product {
+                    id
+                    name
+                    slug
+                    description
+                    featuredAsset {
+                        id
+                        preview
+                    }
+                }
+                fragment ProductDetail on Product {
+                    enabled
+                    createdAt
+                    updatedAt
+                    assets {
+                        id
+                        preview
+                    }
+                }
+            `),
+        );
+    });
+
+    it('should extend detail query with nested translations', () => {
+        const detailDocument = graphql(`
+            query ProductDetail($id: ID!) {
+                product(id: $id) {
+                    id
+                    name
+                    slug
+                    translations {
+                        id
+                        languageCode
+                        name
+                    }
+                }
+            }
+        `);
+
+        const extended = extendDocument(
+            detailDocument as any,
+            `
+            query ProductDetail($id: ID!) {
+                product(id: $id) {
+                    translations {
+                        slug
+                        description
+                    }
+                    facetValues {
+                        id
+                        name
+                        code
+                        facet {
+                            id
+                            name
+                            code
+                        }
+                    }
+                }
+            }
+            `,
+        );
+
+        const printed = print(extended);
+
+        expect(expectedSDL(printed)).toBe(
+            expectedSDL(`
+                query ProductDetail($id: ID!) {
+                    product(id: $id) {
+                        id
+                        name
+                        slug
+                        translations {
+                            id
+                            languageCode
+                            name
+                            slug
+                            description
+                        }
+                        facetValues {
+                            id
+                            name
+                            code
+                            facet {
+                                id
+                                name
+                                code
+                            }
+                        }
+                    }
+                }
+            `),
+        );
+    });
+
+    it('should extend detail query with asset fragments', () => {
+        const detailDocument = graphql(`
+            fragment Asset on Asset {
+                id
+                preview
+            }
+
+            query ProductDetail($id: ID!) {
+                product(id: $id) {
+                    id
+                    featuredAsset {
+                        ...Asset
+                    }
+                }
+            }
+        `);
+
+        const extended = extendDocument(
+            detailDocument as any,
+            `
+            fragment Asset on Asset {
+                name
+                source
+            }
+
+            query ProductDetail($id: ID!) {
+                product(id: $id) {
+                    assets {
+                        ...Asset
+                    }
+                }
+            }
+            `,
+        );
+
+        const printed = print(extended);
+
+        expect(expectedSDL(printed)).toBe(
+            expectedSDL(`
+                query ProductDetail($id: ID!) {
+                    product(id: $id) {
+                        id
+                        featuredAsset {
+                            ...Asset
+                        }
+                        assets {
+                            ...Asset
+                        }
+                    }
+                }
+                fragment Asset on Asset {
+                    id
+                    preview
+                }
+                fragment Asset on Asset {
+                    name
+                    source
+                }
+            `),
+        );
+    });
+
+    it('should extend detail query with custom fields', () => {
+        const detailDocument = graphql(`
+            query ProductDetail($id: ID!) {
+                product(id: $id) {
+                    id
+                    name
+                    customFields
+                }
+            }
+        `);
+
+        const extended = extendDocument(
+            detailDocument as any,
+            `
+            query ProductDetail($id: ID!) {
+                product(id: $id) {
+                    enabled
+                    createdAt
+                    updatedAt
+                    customFields
+                }
+            }
+            `,
+        );
+
+        const printed = print(extended);
+
+        expect(expectedSDL(printed)).toBe(
+            expectedSDL(`
+                query ProductDetail($id: ID!) {
+                    product(id: $id) {
+                        id
+                        name
+                        customFields
+                        enabled
+                        createdAt
+                        updatedAt
+                    }
+                }
+            `),
+        );
+    });
+
+    it('should extend detail query with complex nested structure', () => {
+        const detailDocument = graphql(`
+            query ProductDetail($id: ID!) {
+                product(id: $id) {
+                    id
+                    name
+                    featuredAsset {
+                        id
+                        preview
+                    }
+                    facetValues {
+                        id
+                        name
+                    }
+                }
+            }
+        `);
+
+        const extended = extendDocument(
+            detailDocument as any,
+            `
+            query ProductDetail($id: ID!) {
+                product(id: $id) {
+                    featuredAsset {
+                        name
+                        source
+                    }
+                    facetValues {
+                        code
+                        facet {
+                            id
+                            name
+                            code
+                        }
+                    }
+                    translations {
+                        id
+                        languageCode
+                        name
+                        slug
+                        description
+                    }
+                }
+            }
+            `,
+        );
+
+        const printed = print(extended);
+
+        expect(expectedSDL(printed)).toBe(
+            expectedSDL(`
+                query ProductDetail($id: ID!) {
+                    product(id: $id) {
+                        id
+                        name
+                        featuredAsset {
+                            id
+                            preview
+                            name
+                            source
+                        }
+                        facetValues {
+                            id
+                            name
+                            code
+                            facet {
+                                id
+                                name
+                                code
+                            }
+                        }
+                        translations {
+                            id
+                            languageCode
+                            name
+                            slug
+                            description
+                        }
+                    }
+                }
+            `),
+        );
+    });
 });

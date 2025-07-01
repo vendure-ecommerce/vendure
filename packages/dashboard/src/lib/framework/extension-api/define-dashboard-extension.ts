@@ -2,7 +2,10 @@ import { addBulkAction, addListQueryDocument } from '@/framework/data-table/data
 import { parse } from 'graphql';
 
 import { registerDashboardWidget } from '../dashboard-widget/widget-extensions.js';
-import { addCustomFormComponent } from '../form-engine/custom-form-component-extensions.js';
+import {
+    addCustomFormComponent,
+    addDetailQueryDocument,
+} from '../form-engine/custom-form-component-extensions.js';
 import {
     registerDashboardActionBarItem,
     registerDashboardPageBlock,
@@ -101,6 +104,21 @@ export function defineDashboardExtension(extension: DashboardExtension) {
                     addListQueryDocument(
                         dataTable.pageId,
                         dataTable.blockId,
+                        typeof document === 'string' ? parse(document) : document,
+                    );
+                }
+            }
+        }
+        if (extension.detailForms) {
+            for (const detailForm of extension.detailForms) {
+                if (detailForm.extendDetailDocument) {
+                    const document =
+                        typeof detailForm.extendDetailDocument === 'function'
+                            ? detailForm.extendDetailDocument()
+                            : detailForm.extendDetailDocument;
+
+                    addDetailQueryDocument(
+                        detailForm.pageId,
                         typeof document === 'string' ? parse(document) : document,
                     );
                 }

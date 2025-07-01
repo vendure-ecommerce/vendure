@@ -22,4 +22,5 @@ export interface GlobalRegistryContents {
     customFormComponents: Map<string, React.FunctionComponent<CustomFormComponentInputProps>>;
     bulkActionsRegistry: Map<string, BulkAction[]>;
     listQueryDocumentRegistry: Map<string, DocumentNode[]>;
+    detailQueryDocumentRegistry: Map<string, DocumentNode[]>;
 }

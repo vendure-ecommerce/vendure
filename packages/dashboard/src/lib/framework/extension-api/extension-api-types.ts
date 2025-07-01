@@ -120,7 +120,7 @@ export interface DashboardPageBlockDefinition {
  * @docsCategory extensions
  * @since 3.4.0
  */
-export interface DashboardDataTableDefinition {
+export interface DashboardDataTableExtensionDefinition {
     /**
      * @description
      * The ID of the page where the data table is located, e.g. `'product-list'`, `'order-list'`.
@@ -143,6 +143,18 @@ export interface DashboardDataTableDefinition {
      * Allows you to extend the list document for the data table.
      */
     extendListDocument?: string | DocumentNode | (() => DocumentNode | string);
+}
+
+export interface DashboardDetailFormExtensionDefinition {
+    /**
+     * @description
+     * The ID of the page where the detail form is located, e.g. `'product-detail'`, `'order-detail'`.
+     */
+    pageId: string;
+    /**
+     * @description
+     */
+    extendDetailDocument?: string | DocumentNode | (() => DocumentNode | string);
 }
 
 /**
@@ -195,5 +207,6 @@ export interface DashboardExtension {
      * @description
      * Allows you to customize aspects of existing data tables in the dashboard.
      */
-    dataTables?: DashboardDataTableDefinition[];
+    dataTables?: DashboardDataTableExtensionDefinition[];
+    detailForms?: DashboardDetailFormExtensionDefinition[];
 }

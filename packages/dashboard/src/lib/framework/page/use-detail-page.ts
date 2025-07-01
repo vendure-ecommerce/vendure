@@ -1,6 +1,7 @@
 import { NEW_ENTITY_PATH } from '@/constants.js';
 import { api, Variables } from '@/graphql/api.js';
 import { useCustomFieldConfig } from '@/hooks/use-custom-field-config.js';
+import { useExtendedDetailQuery } from '@/hooks/use-extended-detail-query.js';
 import { removeReadonlyCustomFields } from '@/lib/utils.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import {
@@ -48,6 +49,12 @@ export interface DetailPageOptions<
     VarNameCreate extends keyof VariablesOf<C> = 'input',
     VarNameUpdate extends keyof VariablesOf<U> = 'input',
 > {
+    /**
+     * @description
+     * The page id. This is optional, but if provided, it will be used to
+     * identify the page when extending the detail page query
+     */
+    pageId?: string;
     /**
      * @description
      * The query document to fetch the entity.
@@ -237,6 +244,7 @@ export function useDetailPage<
     options: DetailPageOptions<T, C, U, EntityField, VarNameCreate, VarNameUpdate>,
 ): UseDetailPageResult<T, C, U, EntityField> {
     const {
+        pageId,
         queryDocument,
         createDocument,
         updateDocument,
@@ -253,11 +261,12 @@ export function useDetailPage<
     const queryClient = useQueryClient();
     const returnEntityName = entityName ?? getEntityName(queryDocument);
     const customFieldConfig = useCustomFieldConfig(returnEntityName);
-    const detailQueryOptions = getDetailQueryOptions(addCustomFields(queryDocument), {
+    const extendedDetailQuery = useExtendedDetailQuery(addCustomFields(queryDocument), pageId);
+    const detailQueryOptions = getDetailQueryOptions(extendedDetailQuery, {
         id: isNew ? '__NEW__' : params.id,
     });
     const detailQuery = useSuspenseQuery(detailQueryOptions);
-    const entityQueryField = entityField ?? getQueryName(queryDocument);
+    const entityQueryField = entityField ?? getQueryName(extendedDetailQuery);
 
     const entity = (detailQuery?.data as any)[entityQueryField] as
         | DetailPageEntity<T, EntityField>
