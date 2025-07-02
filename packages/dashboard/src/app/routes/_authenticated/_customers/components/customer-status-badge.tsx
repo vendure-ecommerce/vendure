@@ -1,6 +1,6 @@
-import { Badge } from '@/components/ui/badge.js';
-import { BadgeX, BadgeCheck } from 'lucide-react';
-import { Trans } from '@/lib/trans.js';
+import { Badge } from '@/vdb/components/ui/badge.js';
+import { Trans } from '@/vdb/lib/trans.js';
+import { BadgeCheck, BadgeX } from 'lucide-react';
 
 export type CustomerStatus = 'guest' | 'registered' | 'verified';
 

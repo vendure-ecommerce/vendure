@@ -1,4 +1,4 @@
-import { graphql } from '@/graphql/graphql.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 import { print } from 'graphql';
 import { describe, expect, it } from 'vitest';
 

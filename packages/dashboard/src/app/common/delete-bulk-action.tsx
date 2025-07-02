@@ -2,10 +2,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { TrashIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { DataTableBulkActionItem } from '@/components/data-table/data-table-bulk-action-item.js';
-import { api } from '@/graphql/api.js';
-import { getMutationName, usePaginatedList } from '@/index.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+import { DataTableBulkActionItem } from '@/vdb/components/data-table/data-table-bulk-action-item.js';
+import { api } from '@/vdb/graphql/api.js';
+import { getMutationName, usePaginatedList } from '@/vdb/index.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
 
 interface DeleteBulkActionProps {
     /** The GraphQL mutation document to execute */

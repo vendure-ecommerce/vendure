@@ -1,6 +1,6 @@
-import { MoneyInput } from '@/components/data-input/money-input.js';
-import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
-import { Button } from '@/components/ui/button.js';
+import { MoneyInput } from '@/vdb/components/data-input/money-input.js';
+import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     Dialog,
     DialogContent,
@@ -8,13 +8,13 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from '@/components/ui/dialog.js';
-import { Form } from '@/components/ui/form.js';
-import { Input } from '@/components/ui/input.js';
-import { api } from '@/graphql/api.js';
-import { graphql, ResultOf, VariablesOf } from '@/graphql/graphql.js';
-import { useChannel } from '@/hooks/use-channel.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/components/ui/dialog.js';
+import { Form } from '@/vdb/components/ui/form.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql, ResultOf, VariablesOf } from '@/vdb/graphql/graphql.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';

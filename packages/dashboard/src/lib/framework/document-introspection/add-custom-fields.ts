@@ -1,9 +1,9 @@
-import { Variables } from '@/graphql/api.js';
+import { Variables } from '@/vdb/graphql/api.js';
 import {
     getServerConfigDocument,
     relationCustomFieldFragment,
     structCustomFieldFragment,
-} from '@/providers/server-config.js';
+} from '@/vdb/providers/server-config.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { CustomFieldConfig } from '@vendure/common/lib/generated-types';
 import { ResultOf } from 'gql.tada';

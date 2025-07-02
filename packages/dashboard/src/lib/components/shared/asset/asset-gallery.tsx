@@ -1,8 +1,8 @@
-import { VendureImage } from '@/components/shared/vendure-image.js';
-import { Button } from '@/components/ui/button.js';
-import { Card, CardContent } from '@/components/ui/card.js';
-import { Checkbox } from '@/components/ui/checkbox.js';
-import { Input } from '@/components/ui/input.js';
+import { VendureImage } from '@/vdb/components/shared/vendure-image.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Card, CardContent } from '@/vdb/components/ui/card.js';
+import { Checkbox } from '@/vdb/components/ui/checkbox.js';
+import { Input } from '@/vdb/components/ui/input.js';
 import {
     Pagination,
     PaginationContent,
@@ -11,13 +11,13 @@ import {
     PaginationLink,
     PaginationNext,
     PaginationPrevious,
-} from '@/components/ui/pagination.js';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.js';
-import { api } from '@/graphql/api.js';
-import { assetFragment, AssetFragment } from '@/graphql/fragments.js';
-import { graphql } from '@/graphql/graphql.js';
-import { Trans } from '@/lib/trans.js';
-import { formatFileSize } from '@/lib/utils.js';
+} from '@/vdb/components/ui/pagination.js';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
+import { api } from '@/vdb/graphql/api.js';
+import { assetFragment, AssetFragment } from '@/vdb/graphql/fragments.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { Trans } from '@/vdb/lib/trans.js';
+import { formatFileSize } from '@/vdb/lib/utils.js';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
 import { Loader2, Search, Upload, X } from 'lucide-react';

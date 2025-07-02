@@ -1,20 +1,18 @@
-import * as React from 'react';
 import { ChevronsUpDown, Plus } from 'lucide-react';
 
+import { ChannelCodeLabel } from '@/vdb/components/shared/channel-code-label.js';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
-    DropdownMenuShortcut,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar.js';
-import { Trans } from '@/lib/trans.js';
-import { useChannel } from '@/hooks/use-channel.js';
+} from '@/vdb/components/ui/dropdown-menu.js';
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/vdb/components/ui/sidebar.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { Link } from '@tanstack/react-router';
-import { ChannelCodeLabel } from '@/components/shared/channel-code-label.js';
 
 export function ChannelSwitcher() {
     const { isMobile } = useSidebar();
@@ -38,7 +36,9 @@ export function ChannelSwitcher() {
                                 </span>
                             </div>
                             <div className="grid flex-1 text-left text-sm leading-tight">
-                                <span className="truncate font-semibold"><ChannelCodeLabel code={displayChannel?.code} /></span>
+                                <span className="truncate font-semibold">
+                                    <ChannelCodeLabel code={displayChannel?.code} />
+                                </span>
                                 <span className="truncate text-xs">
                                     Default Language: {displayChannel?.defaultLanguageCode?.toUpperCase()}
                                 </span>

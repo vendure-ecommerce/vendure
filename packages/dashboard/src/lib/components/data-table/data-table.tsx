@@ -1,13 +1,13 @@
 'use client';
 
-import { DataTablePagination } from '@/components/data-table/data-table-pagination.js';
-import { DataTableViewOptions } from '@/components/data-table/data-table-view-options.js';
-import { RefreshButton } from '@/components/data-table/refresh-button.js';
-import { Input } from '@/components/ui/input.js';
-import { Skeleton } from '@/components/ui/skeleton.js';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.js';
-import { BulkAction } from '@/framework/data-table/data-table-types.js';
-import { useChannel } from '@/hooks/use-channel.js';
+import { DataTablePagination } from '@/vdb/components/data-table/data-table-pagination.js';
+import { DataTableViewOptions } from '@/vdb/components/data-table/data-table-view-options.js';
+import { RefreshButton } from '@/vdb/components/data-table/refresh-button.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { Skeleton } from '@/vdb/components/ui/skeleton.js';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/vdb/components/ui/table.js';
+import { BulkAction } from '@/vdb/framework/data-table/data-table-types.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
 import {
     ColumnDef,
     ColumnFilter,

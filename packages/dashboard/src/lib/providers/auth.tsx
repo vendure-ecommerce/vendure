@@ -1,6 +1,6 @@
-import { api } from '@/graphql/api.js';
-import { graphql, ResultOf } from '@/graphql/graphql.js';
-import { useUserSettings } from '@/hooks/use-user-settings.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql, ResultOf } from '@/vdb/graphql/graphql.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as React from 'react';
 

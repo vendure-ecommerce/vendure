@@ -1,7 +1,5 @@
-
-
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select.js";
-import { PreviewPreset } from "./asset-preview.js";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
+import { PreviewPreset } from './asset-preview.js';
 
 export interface AssetPreviewSelectorProps {
     size: PreviewPreset;

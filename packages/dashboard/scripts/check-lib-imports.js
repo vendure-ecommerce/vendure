@@ -2,6 +2,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import process from 'process';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -10,32 +11,29 @@ const __dirname = path.dirname(__filename);
 // Check if we're running from the dashboard directory or root directory
 const currentDir = process.cwd();
 const isDashboardDir = currentDir.endsWith('packages/dashboard');
-const LIB_DIR = isDashboardDir
-    ? path.join(__dirname, '../src/lib')
-    : path.join(currentDir, 'packages/dashboard/src/lib');
+const HOOKS_DIR = isDashboardDir
+    ? path.join(__dirname, '../src/lib/hooks')
+    : path.join(currentDir, 'packages/dashboard/src/lib/hooks');
 
-// Allowlist of @/ imports that are safe to keep
-const ALLOWED_IMPORTS = ['@/lib/trans.js', '@/lib/utils.js', '@/components/ui'];
+// Required prefix for imports in hook files
+const REQUIRED_PREFIX = '@/vdb';
 
 function findHookFiles(dir) {
     const files = [];
 
-    function traverse(currentDir) {
-        const items = fs.readdirSync(currentDir);
+    // Since we're now looking directly in the hooks directory,
+    // we can just get all .ts and .tsx files that start with 'use-'
+    const items = fs.readdirSync(dir);
 
-        for (const item of items) {
-            const fullPath = path.join(currentDir, item);
-            const stat = fs.statSync(fullPath);
+    for (const item of items) {
+        const fullPath = path.join(dir, item);
+        const stat = fs.statSync(fullPath);
 
-            if (stat.isDirectory()) {
-                traverse(fullPath);
-            } else if (item.startsWith('use-') && (item.endsWith('.ts') || item.endsWith('.tsx'))) {
-                files.push(fullPath);
-            }
+        if (stat.isFile() && item.startsWith('use-') && (item.endsWith('.ts') || item.endsWith('.tsx'))) {
+            files.push(fullPath);
         }
     }
 
-    traverse(dir);
     return files;
 }
 
@@ -48,23 +46,23 @@ function checkFileForBadImports(filePath) {
         const line = lines[i];
         const trimmedLine = line.trim();
 
-        // Check for import statements that start with @/
-        if (trimmedLine.startsWith('import') && trimmedLine.includes('@/')) {
-            // Check if this import is in the allowlist
-            const isAllowed = ALLOWED_IMPORTS.some(allowed => {
-                if (allowed.endsWith('/')) {
-                    // For directory patterns like '@/components/ui'
-                    return trimmedLine.includes(allowed);
-                } else {
-                    // For exact file matches
-                    return trimmedLine.includes(allowed);
-                }
-            });
-
-            if (!isAllowed) {
+        // Check for import statements
+        if (trimmedLine.startsWith('import')) {
+            // Check for relative imports that go up directories (../)
+            if (trimmedLine.includes('../')) {
                 badImports.push({
                     line: i + 1,
                     content: trimmedLine,
+                    reason: 'Relative imports going up directories (../) are not allowed in hook files',
+                });
+            }
+
+            // Check for @/ imports that don't start with @/vdb
+            if (trimmedLine.includes('@/') && !trimmedLine.includes(REQUIRED_PREFIX)) {
+                badImports.push({
+                    line: i + 1,
+                    content: trimmedLine,
+                    reason: `Import must start with ${REQUIRED_PREFIX}`,
                 });
             }
         }
@@ -74,19 +72,21 @@ function checkFileForBadImports(filePath) {
 }
 
 function main() {
-    console.log('🔍 Checking for @/ imports in hook files (use-*.ts/tsx) in src/lib directory...\n');
-    console.log('✅ Allowed imports:');
-    ALLOWED_IMPORTS.forEach(allowed => {
-        console.log(`   - ${allowed}`);
-    });
+    console.log(
+        '🔍 Checking for import patterns in hook files (use-*.ts/tsx) in src/lib/hooks directory...\n',
+    );
+    console.log('✅ Requirements:');
+    console.log(`   - All imports must start with ${REQUIRED_PREFIX}`);
+    console.log('   - Relative imports going up directories (../) are not allowed');
+    console.log('   - Relative imports in same directory (./) are allowed');
     console.log('');
 
-    if (!fs.existsSync(LIB_DIR)) {
-        console.error('❌ src/lib directory not found!');
+    if (!fs.existsSync(HOOKS_DIR)) {
+        console.error('❌ src/lib/hooks directory not found!');
         process.exit(1);
     }
 
-    const files = findHookFiles(LIB_DIR);
+    const files = findHookFiles(HOOKS_DIR);
     let hasBadImports = false;
     let totalBadImports = 0;
 
@@ -101,6 +101,7 @@ function main() {
             console.log(`❌ ${relativePath}:`);
             for (const badImport of badImports) {
                 console.log(`   Line ${badImport.line}: ${badImport.content}`);
+                console.log(`      Reason: ${badImport.reason}`);
             }
             console.log('');
         }
@@ -108,11 +109,13 @@ function main() {
 
     if (hasBadImports) {
         console.log(`❌ Found ${totalBadImports} bad import(s) in ${files.length} hook file(s)`);
-        console.log('💡 All imports in hook files should use relative paths, except for allowed imports');
+        console.log(
+            `💡 All imports in hook files must start with ${REQUIRED_PREFIX} and must not use relative paths going up directories`,
+        );
         process.exit(1);
     } else {
         console.log(`✅ No bad imports found in ${files.length} hook file(s)`);
-        console.log('🎉 All imports in hook files are using relative paths or allowed @/ paths');
+        console.log(`🎉 All imports in hook files are using ${REQUIRED_PREFIX} prefix`);
     }
 }
 

@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     DialogClose,
     DialogContent,
@@ -6,8 +6,8 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from '@/components/ui/dialog.js';
-import { Trans } from '@/lib/trans.js';
+} from '@/vdb/components/ui/dialog.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { Column } from '@tanstack/react-table';
 import { useState } from 'react';
 import { DataTableBooleanFilter } from './filters/data-table-boolean-filter.js';

@@ -1,10 +1,9 @@
-import { useLingui } from '@/lib/trans.js';
+import { getListQueryDocuments } from '@/vdb/framework/data-table/data-table-extensions.js';
+import { extendDocument } from '@/vdb/framework/document-extension/extend-document.js';
+import { useLingui } from '@/vdb/lib/trans.js';
 import { DocumentNode } from 'graphql';
 import { useEffect, useMemo, useRef } from 'react';
 import { toast } from 'sonner';
-
-import { getListQueryDocuments } from '../framework/data-table/data-table-extensions.js';
-import { extendDocument } from '../framework/document-extension/extend-document.js';
 
 import { usePageBlock } from './use-page-block.js';
 import { usePage } from './use-page.js';

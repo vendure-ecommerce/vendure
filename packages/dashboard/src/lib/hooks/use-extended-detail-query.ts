@@ -1,9 +1,8 @@
-import { useLingui } from '@/lib/trans.js';
+import { extendDetailFormQuery } from '@/vdb/framework/document-extension/extend-detail-form-query.js';
+import { useLingui } from '@/vdb/lib/trans.js';
 import { DocumentNode } from 'graphql';
 import { useEffect, useMemo, useRef } from 'react';
 import { toast } from 'sonner';
-
-import { extendDetailFormQuery } from '../framework/document-extension/extend-detail-form-query.js';
 
 /**
  * @description

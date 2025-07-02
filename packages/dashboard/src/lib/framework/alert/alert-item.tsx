@@ -1,8 +1,9 @@
-import { Button } from '@/components/ui/button.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { cn } from '@/vdb/lib/utils.js';
 import { useQuery } from '@tanstack/react-query';
 import { ComponentProps } from 'react';
 import { DashboardAlertDefinition } from './types.js';
-import { cn } from '@/lib/utils.js';
+
 interface AlertItemProps extends ComponentProps<'div'> {
     alert: DashboardAlertDefinition;
 }

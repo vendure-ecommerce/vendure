@@ -1,4 +1,4 @@
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible.js';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/vdb/components/ui/collapsible.js';
 import {
     SidebarGroup,
     SidebarGroupLabel,
@@ -8,12 +8,12 @@ import {
     SidebarMenuSub,
     SidebarMenuSubButton,
     SidebarMenuSubItem,
-} from '@/components/ui/sidebar.js';
+} from '@/vdb/components/ui/sidebar.js';
 import {
     NavMenuItem,
     NavMenuSection,
     NavMenuSectionPlacement,
-} from '@/framework/nav-menu/nav-menu-extensions.js';
+} from '@/vdb/framework/nav-menu/nav-menu-extensions.js';
 import { Link, useLocation } from '@tanstack/react-router';
 import { ChevronRight } from 'lucide-react';
 import * as React from 'react';

@@ -1,10 +1,10 @@
-import { api } from '@/graphql/api.js';
+import { api } from '@/vdb/graphql/api.js';
 import {
     assetFragment,
     configurableOperationDefFragment,
     configurableOperationFragment,
-} from '@/graphql/fragments.js';
-import { graphql, ResultOf } from '@/graphql/graphql.js';
+} from '@/vdb/graphql/fragments.js';
+import { graphql, ResultOf } from '@/vdb/graphql/graphql.js';
 import { DefinedInitialDataOptions, queryOptions } from '@tanstack/react-query';
 
 export const collectionListDocument = graphql(

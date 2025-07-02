@@ -2,9 +2,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { FacetValueChip } from '@/components/shared/facet-value-chip.js';
-import { FacetValue, FacetValueSelector } from '@/components/shared/facet-value-selector.js';
-import { Button } from '@/components/ui/button.js';
+import { FacetValueChip } from '@/vdb/components/shared/facet-value-chip.js';
+import { FacetValue, FacetValueSelector } from '@/vdb/components/shared/facet-value-selector.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     Dialog,
     DialogContent,
@@ -12,11 +12,11 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from '@/components/ui/dialog.js';
-import { ResultOf } from '@/graphql/graphql.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/components/ui/dialog.js';
+import { ResultOf } from '@/vdb/graphql/graphql.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
 
-import { getDetailQueryOptions } from '@/framework/page/use-detail-page.js';
+import { getDetailQueryOptions } from '@/vdb/framework/page/use-detail-page.js';
 
 interface EntityWithFacetValues {
     id: string;

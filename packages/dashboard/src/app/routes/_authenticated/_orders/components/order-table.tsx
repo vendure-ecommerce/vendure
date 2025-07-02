@@ -1,6 +1,6 @@
-import { VendureImage } from '@/components/shared/vendure-image.js';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.js';
-import { ResultOf } from '@/graphql/graphql.js';
+import { VendureImage } from '@/vdb/components/shared/vendure-image.js';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/vdb/components/ui/table.js';
+import { ResultOf } from '@/vdb/graphql/graphql.js';
 import {
     ColumnDef,
     flexRender,

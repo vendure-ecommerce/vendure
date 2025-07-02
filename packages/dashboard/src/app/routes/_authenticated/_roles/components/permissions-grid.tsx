@@ -3,13 +3,13 @@ import {
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
-} from "@/components/ui/accordion.js";
-import { Button } from '@/components/ui/button.js';
-import { Switch } from '@/components/ui/switch.js';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip.js';
-import { useGroupedPermissions } from '@/hooks/use-grouped-permissions.js';
-import { ServerConfig } from '@/providers/server-config.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/components/ui/accordion.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Switch } from '@/vdb/components/ui/switch.js';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/vdb/components/ui/tooltip.js';
+import { useGroupedPermissions } from '@/vdb/hooks/use-grouped-permissions.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { ServerConfig } from '@/vdb/providers/server-config.js';
 import { useState } from 'react';
 
 interface PermissionsGridProps {
@@ -41,24 +41,25 @@ export function PermissionsGrid({ value, onChange, readonly = false }: Permissio
 
     // Get default expanded sections based on which ones have active permissions
     const defaultExpandedSections = groupedPermissions
-        .map((section) => ({
+        .map(section => ({
             section,
             hasActivePermissions: section.permissions.some(permission => value.includes(permission.name)),
         }))
         .filter(({ hasActivePermissions }) => hasActivePermissions)
         .map(({ section }) => section.id);
-    
+
     const [accordionValue, setAccordionValue] = useState<string[]>(defaultExpandedSections);
 
     return (
         <div className="w-full">
-            <Accordion type="multiple" value={accordionValue.length ? accordionValue : defaultExpandedSections} onValueChange={setAccordionValue} className="space-y-4">
+            <Accordion
+                type="multiple"
+                value={accordionValue.length ? accordionValue : defaultExpandedSections}
+                onValueChange={setAccordionValue}
+                className="space-y-4"
+            >
                 {groupedPermissions.map((section, index) => (
-                    <AccordionItem
-                        key={index}
-                        value={section.id}
-                        className="border rounded-lg px-6"
-                    >
+                    <AccordionItem key={index} value={section.id} className="border rounded-lg px-6">
                         <AccordionTrigger className="hover:no-underline">
                             <div className="flex flex-col items-start gap-1 text-sm py-2">
                                 <div>{i18n.t(section.label)}</div>
@@ -94,7 +95,10 @@ export function PermissionsGrid({ value, onChange, readonly = false }: Permissio
                                             <TooltipProvider>
                                                 <Tooltip>
                                                     <TooltipTrigger asChild>
-                                                        <label htmlFor={permission.name} className="text-sm whitespace-nowrap">
+                                                        <label
+                                                            htmlFor={permission.name}
+                                                            className="text-sm whitespace-nowrap"
+                                                        >
                                                             {i18n.t(permission.name)}
                                                         </label>
                                                     </TooltipTrigger>

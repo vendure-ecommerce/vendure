@@ -1,8 +1,8 @@
-import { api } from '@/graphql/api.js';
-import { graphql } from '@/graphql/graphql.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { useLingui } from '@/vdb/lib/trans.js';
 import { useQuery } from '@tanstack/react-query';
 import { MultiSelect } from './multi-select.js';
-import { useLingui } from '@/lib/trans.js';
 
 const rolesDocument = graphql(`
     query Roles($options: RoleListOptions) {
@@ -40,7 +40,7 @@ export function RoleSelector<T extends boolean>(props: RoleSelectorProps<T>) {
     const items = (data ?? []).map(role => ({
         value: role.id,
         label: role.code,
-        display: role.description ? role.description : role.code
+        display: role.description ? role.description : role.code,
     }));
 
     return (

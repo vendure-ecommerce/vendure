@@ -1,12 +1,12 @@
 import { toast } from 'sonner';
 
-import { AssignToChannelBulkAction } from '@/components/shared/assign-to-channel-bulk-action.js';
-import { RemoveFromChannelBulkAction } from '@/components/shared/remove-from-channel-bulk-action.js';
-import { BulkActionComponent } from '@/framework/data-table/data-table-types.js';
-import { api } from '@/graphql/api.js';
-import { ResultOf } from '@/graphql/graphql.js';
-import { useChannel } from '@/index.js';
-import { useLingui } from '@/lib/trans.js';
+import { AssignToChannelBulkAction } from '@/vdb/components/shared/assign-to-channel-bulk-action.js';
+import { RemoveFromChannelBulkAction } from '@/vdb/components/shared/remove-from-channel-bulk-action.js';
+import { BulkActionComponent } from '@/vdb/framework/data-table/data-table-types.js';
+import { api } from '@/vdb/graphql/api.js';
+import { ResultOf } from '@/vdb/graphql/graphql.js';
+import { useChannel } from '@/vdb/index.js';
+import { useLingui } from '@/vdb/lib/trans.js';
 import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
 import { DuplicateBulkAction } from '../../../../common/duplicate-bulk-action.js';
 

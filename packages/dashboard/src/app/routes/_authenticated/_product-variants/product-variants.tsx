@@ -1,9 +1,9 @@
-import { Money } from '@/components/data-display/money.js';
-import { DetailPageButton } from '@/components/shared/detail-page-button.js';
-import { StockLevelLabel } from '@/components/shared/stock-level-label.js';
-import { ListPage } from '@/framework/page/list-page.js';
-import { useLocalFormat } from '@/hooks/use-local-format.js';
-import { Trans } from '@/lib/trans.js';
+import { Money } from '@/vdb/components/data-display/money.js';
+import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
+import { StockLevelLabel } from '@/vdb/components/shared/stock-level-label.js';
+import { ListPage } from '@/vdb/framework/page/list-page.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { createFileRoute } from '@tanstack/react-router';
 import {
     AssignFacetValuesToProductVariantsBulkAction,

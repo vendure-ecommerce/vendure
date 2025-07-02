@@ -1,8 +1,8 @@
-import { Button } from '@/components/ui/button.js';
-import { Card, CardContent } from '@/components/ui/card.js';
-import { Input } from '@/components/ui/input.js';
-import { Trans } from '@/lib/trans.js';
-import { cn } from '@/lib/utils.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Card, CardContent } from '@/vdb/components/ui/card.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { Trans } from '@/vdb/lib/trans.js';
+import { cn } from '@/vdb/lib/utils.js';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import * as React from 'react';

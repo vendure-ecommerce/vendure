@@ -3,11 +3,11 @@ import { CopyIcon } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-import { DataTableBulkActionItem } from '@/components/data-table/data-table-bulk-action-item.js';
-import { api } from '@/graphql/api.js';
-import { duplicateEntityDocument } from '@/graphql/common-operations.js';
-import { usePaginatedList } from '@/index.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+import { DataTableBulkActionItem } from '@/vdb/components/data-table/data-table-bulk-action-item.js';
+import { api } from '@/vdb/graphql/api.js';
+import { duplicateEntityDocument } from '@/vdb/graphql/common-operations.js';
+import { usePaginatedList } from '@/vdb/index.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
 
 interface DuplicateBulkActionProps {
     entityType: 'Product' | 'Collection' | 'Facet' | 'Promotion';

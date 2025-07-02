@@ -2,10 +2,10 @@ import { useMutation } from '@tanstack/react-query';
 import { LayersIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { DataTableBulkActionItem } from '@/components/data-table/data-table-bulk-action-item.js';
-import { ResultOf } from '@/graphql/graphql.js';
-import { useChannel, usePaginatedList } from '@/index.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+import { DataTableBulkActionItem } from '@/vdb/components/data-table/data-table-bulk-action-item.js';
+import { ResultOf } from '@/vdb/graphql/graphql.js';
+import { useChannel, usePaginatedList } from '@/vdb/index.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
 
 interface RemoveFromChannelBulkActionProps {
     selection: any[];

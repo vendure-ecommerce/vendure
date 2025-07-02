@@ -8,16 +8,22 @@ import {
     ListQueryShape,
     PaginatedListDataTable,
     RowAction,
-} from '@/components/shared/paginated-list-data-table.js';
-import { BulkAction } from '@/framework/data-table/data-table-types.js';
-import { useUserSettings } from '@/hooks/use-user-settings.js';
+} from '@/vdb/components/shared/paginated-list-data-table.js';
+import { BulkAction } from '@/vdb/framework/data-table/data-table-types.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRoute, AnyRouter, useNavigate } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
 import { TableOptions } from '@tanstack/table-core';
 
 import { addCustomFields } from '../document-introspection/add-custom-fields.js';
-import { FullWidthPageBlock, Page, PageActionBar, PageLayout, PageTitle } from '../layout-engine/page-layout.js';
+import {
+    FullWidthPageBlock,
+    Page,
+    PageActionBar,
+    PageLayout,
+    PageTitle,
+} from '../layout-engine/page-layout.js';
 
 /**
  * @description

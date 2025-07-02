@@ -1,19 +1,19 @@
-import { CustomFieldsForm } from '@/components/shared/custom-fields-form.js';
-import { NavigationConfirmation } from '@/components/shared/navigation-confirmation.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.js';
-import { Form } from '@/components/ui/form.js';
-import { useCustomFieldConfig } from '@/hooks/use-custom-field-config.js';
-import { usePage } from '@/hooks/use-page.js';
-import { cn } from '@/lib/utils.js';
+import { CustomFieldsForm } from '@/vdb/components/shared/custom-fields-form.js';
+import { NavigationConfirmation } from '@/vdb/components/shared/navigation-confirmation.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/vdb/components/ui/card.js';
+import { Form } from '@/vdb/components/ui/form.js';
+import { useCustomFieldConfig } from '@/vdb/hooks/use-custom-field-config.js';
+import { usePage } from '@/vdb/hooks/use-page.js';
+import { cn } from '@/vdb/lib/utils.js';
 import { useMediaQuery } from '@uidotdev/usehooks';
 import React, { ComponentProps } from 'react';
 import { Control, UseFormReturn } from 'react-hook-form';
 
 import { DashboardActionBarItem } from '../extension-api/extension-api-types.js';
 
-import { PageBlockContext } from '@/framework/layout-engine/page-block-provider.js';
-import { PageContext, PageContextValue } from '@/framework/layout-engine/page-provider.js';
+import { PageBlockContext } from '@/vdb/framework/layout-engine/page-block-provider.js';
+import { PageContext, PageContextValue } from '@/vdb/framework/layout-engine/page-provider.js';
 import { getDashboardActionBarItems, getDashboardPageBlocks } from './layout-extensions.js';
 import { LocationWrapper } from './location-wrapper.js';
 

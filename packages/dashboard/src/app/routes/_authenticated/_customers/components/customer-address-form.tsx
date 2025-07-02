@@ -1,5 +1,5 @@
-import { Button } from '@/components/ui/button.js';
-import { Checkbox } from '@/components/ui/checkbox.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Checkbox } from '@/vdb/components/ui/checkbox.js';
 import {
     Form,
     FormControl,
@@ -8,15 +8,15 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from '@/components/ui/form.js';
-import { Input } from '@/components/ui/input.js';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.js';
-import { api } from '@/graphql/api.js';
-import { graphql, ResultOf } from '@/graphql/graphql.js';
+} from '@/vdb/components/ui/form.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql, ResultOf } from '@/vdb/graphql/graphql.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Trans, useLingui } from '@/lib/trans.js';
 import { useQuery } from '@tanstack/react-query';
-import { ControllerRenderProps, FieldPath, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { addressFragment } from '../customers.graphql.js';
 

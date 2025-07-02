@@ -1,5 +1,5 @@
-import { Checkbox } from '@/components/ui/checkbox.js';
-import { Trans } from '@/lib/trans.js';
+import { Checkbox } from '@/vdb/components/ui/checkbox.js';
+import { Trans } from '@/vdb/lib/trans.js';
 
 interface HistoryNoteCheckboxProps {
     value: boolean;

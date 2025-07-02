@@ -1,10 +1,10 @@
-import { Alert, AlertDescription } from '@/components/ui/alert.js';
-import { Skeleton } from '@/components/ui/skeleton.js';
-import { Trans } from '@/lib/trans.js';
+import { Alert, AlertDescription } from '@/vdb/components/ui/alert.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Skeleton } from '@/vdb/components/ui/skeleton.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { TriangleAlert } from 'lucide-react';
 import { CustomerHistory } from './customer-history.js';
 import { useCustomerHistory } from './use-customer-history.js';
-import { Button } from '@/components/ui/button.js';
 
 interface CustomerHistoryContainerProps {
     customerId: string;

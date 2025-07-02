@@ -1,16 +1,16 @@
 'use client';
 
-import { Button } from '@/components/ui/button.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
-import { getBulkActions } from '@/framework/data-table/data-table-extensions.js';
-import { usePageBlock } from '@/hooks/use-page-block.js';
-import { usePage } from '@/hooks/use-page.js';
-import { Trans } from '@/lib/trans.js';
+} from '@/vdb/components/ui/dropdown-menu.js';
+import { getBulkActions } from '@/vdb/framework/data-table/data-table-extensions.js';
+import { usePageBlock } from '@/vdb/hooks/use-page-block.js';
+import { usePage } from '@/vdb/hooks/use-page.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { ChevronDown } from 'lucide-react';
 import { Asset } from './asset-gallery.js';
 
@@ -76,7 +76,11 @@ export function AssetBulkActions({ selection, bulkActions, refetch }: AssetBulkA
                 <DropdownMenuContent align="start">
                     {allBulkActions.length > 0 ? (
                         allBulkActions.map((action, index) => (
-                            <action.component key={`asset-bulk-action-${index}`} selection={selection} refetch={refetch} />
+                            <action.component
+                                key={`asset-bulk-action-${index}`}
+                                selection={selection}
+                                refetch={refetch}
+                            />
                         ))
                     ) : (
                         <DropdownMenuItem className="text-muted-foreground" disabled>

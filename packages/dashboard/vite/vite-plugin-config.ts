@@ -37,7 +37,8 @@ export function viteConfigPlugin({ packageRoot }: { packageRoot: string }): Plug
             config.resolve = {
                 alias: {
                     ...(config.resolve?.alias ?? {}),
-                    '@': path.resolve(packageRoot, './src/lib'),
+                    '@/vdb': path.resolve(packageRoot, './src/lib'),
+                    '@/graphql': path.resolve(packageRoot, './src/lib/graphql'),
                 },
             };
             // This is required to prevent Vite from pre-bundling the
@@ -47,11 +48,7 @@ export function viteConfigPlugin({ packageRoot }: { packageRoot: string }): Plug
                 exclude: [
                     ...(config.optimizeDeps?.exclude || []),
                     '@vendure/dashboard',
-                    '@/providers',
-                    '@/framework',
-                    '@/lib',
-                    '@/components',
-                    '@/hooks',
+                    '@/vdb',
                     'virtual:vendure-ui-config',
                     'virtual:admin-api-schema',
                     'virtual:dashboard-extensions',

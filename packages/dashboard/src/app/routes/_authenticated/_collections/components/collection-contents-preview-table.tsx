@@ -1,8 +1,8 @@
-import { PaginatedListDataTable } from '@/components/shared/paginated-list-data-table.js';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.js';
-import { Button } from '@/components/ui/button.js';
-import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
-import { graphql } from '@/graphql/graphql.js';
+import { PaginatedListDataTable } from '@/vdb/components/shared/paginated-list-data-table.js';
+import { Alert, AlertDescription, AlertTitle } from '@/vdb/components/ui/alert.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
@@ -65,9 +65,8 @@ export function CollectionContentsPreviewTable({
                 <Eye className="h-4 w-4" />
                 <AlertTitle>Preview</AlertTitle>
                 <AlertDescription>
-                    This is a preview of the collection contents based on the current
-                    filter settings. Once you save the collection, the contents will be
-                    updated to reflect the new filter settings.
+                    This is a preview of the collection contents based on the current filter settings. Once
+                    you save the collection, the contents will be updated to reflect the new filter settings.
                 </AlertDescription>
             </Alert>
 

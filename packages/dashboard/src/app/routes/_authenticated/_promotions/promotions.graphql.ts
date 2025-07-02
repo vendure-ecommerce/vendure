@@ -1,5 +1,5 @@
-import { configurableOperationFragment } from '@/graphql/fragments.js';
-import { graphql } from '@/graphql/graphql.js';
+import { configurableOperationFragment } from '@/vdb/graphql/fragments.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const promotionListDocument = graphql(`
     query PromotionList {

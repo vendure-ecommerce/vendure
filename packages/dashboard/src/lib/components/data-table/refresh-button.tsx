@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import { RefreshCw } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
