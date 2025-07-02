@@ -111,7 +111,7 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
             : [
                   TanStackRouterVite({
                       autoCodeSplitting: true,
-                      routeFileIgnorePattern: '.graphql.ts|components',
+                      routeFileIgnorePattern: '.graphql.ts|components|hooks',
                       routesDirectory: path.join(packageRoot, 'src/app/routes'),
                       generatedRouteTree: path.join(packageRoot, 'src/app/routeTree.gen.ts'),
                   }),
