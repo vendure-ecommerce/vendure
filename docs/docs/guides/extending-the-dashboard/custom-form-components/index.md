@@ -661,4 +661,3 @@ For detailed information about specific types of custom form elements, see these
 
 - **[Input Components](./input-components)** - Learn how to create custom input controls for forms with advanced examples like multi-currency inputs, auto-generating slugs, and rich text editors
 - **[Display Components](./display-components)** - Discover how to customize data visualization with enhanced displays for prices, dates, avatars, and progress indicators
-- **[Component Targeting Guide](./targeting-guide)** - Master the targeting system to precisely control where your components appear using pageId, blockId, and field identifiers

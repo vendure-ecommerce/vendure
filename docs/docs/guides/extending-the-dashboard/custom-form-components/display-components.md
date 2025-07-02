@@ -556,4 +556,3 @@ Display components should adapt to their context. A component used in a table sh
 
 - **[Custom Form Elements Overview](./)** - Learn about the unified system for custom field components, input components, and display components
 - **[Input Components](./input-components)** - Create custom input controls for forms with specialized functionality
-- **[Component Targeting Guide](./targeting-guide)** - Master the targeting system to precisely control where your components appear

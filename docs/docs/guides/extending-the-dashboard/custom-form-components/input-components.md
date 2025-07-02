@@ -465,4 +465,3 @@ Input components should be focused and specific. If you need to customize multip
 
 - **[Custom Form Elements Overview](./)** - Learn about the unified system for custom field components, input components, and display components
 - **[Display Components](./display-components)** - Create custom readonly data visualizations for tables, detail views, and forms
-- **[Component Targeting Guide](./targeting-guide)** - Master the targeting system to precisely control where your components appear
