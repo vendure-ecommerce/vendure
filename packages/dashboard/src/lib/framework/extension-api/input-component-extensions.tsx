@@ -1,8 +1,8 @@
-import { DateTimeInput } from '@/components/data-input/datetime-input.js';
-import { FacetValueInput } from '@/components/data-input/facet-value-input.js';
-import { MoneyInput } from '@/components/data-input/money-input.js';
-import { Checkbox } from '@/components/ui/checkbox.js';
-import { Input } from '@/components/ui/input.js';
+import { DateTimeInput } from '@/vdb/components/data-input/datetime-input.js';
+import { FacetValueInput } from '@/vdb/components/data-input/facet-value-input.js';
+import { MoneyInput } from '@/vdb/components/data-input/money-input.js';
+import { Checkbox } from '@/vdb/components/ui/checkbox.js';
+import { Input } from '@/vdb/components/ui/input.js';
 import { DataInputComponent } from '../component-registry/component-registry.js';
 import { globalRegistry } from '../registry/global-registry.js';
 

@@ -1,4 +1,4 @@
-import { setNavMenuConfig } from '@/framework/nav-menu/nav-menu-extensions.js';
+import { setNavMenuConfig } from '@/vdb/framework/nav-menu/nav-menu-extensions.js';
 import {
     LayoutDashboardIcon,
     Mail,

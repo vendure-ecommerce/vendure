@@ -1,5 +1,5 @@
-import { useChannel } from '@/index.js';
-import { useLocalFormat } from '@/index.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { motion, useSpring, useTransform } from 'motion/react';
 import { useEffect } from 'react';
 

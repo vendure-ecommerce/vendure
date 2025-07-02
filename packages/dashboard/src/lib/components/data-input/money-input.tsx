@@ -1,6 +1,6 @@
-import { useUserSettings } from '@/hooks/use-user-settings.js';
-import { useMemo, useState, useEffect } from 'react';
-import { useLocalFormat } from '@/hooks/use-local-format.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
+import { useEffect, useMemo, useState } from 'react';
 import { AffixedInput } from './affixed-input.js';
 
 // Original component

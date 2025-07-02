@@ -1,10 +1,9 @@
-import * as React from 'react';
 import { Column } from '@tanstack/react-table';
-import { Check, FilterIcon, PlusCircle } from 'lucide-react';
+import { Check, FilterIcon } from 'lucide-react';
+import * as React from 'react';
 
-import { cn } from '@/lib/utils.js';
-import { Badge } from '@/components/ui/badge.js';
-import { Button } from '@/components/ui/button.js';
+import { Badge } from '@/vdb/components/ui/badge.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     Command,
     CommandEmpty,
@@ -13,9 +12,10 @@ import {
     CommandItem,
     CommandList,
     CommandSeparator,
-} from '@/components/ui/command.js';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.js';
-import { Separator } from '@/components/ui/separator.js';
+} from '@/vdb/components/ui/command.js';
+import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
+import { Separator } from '@/vdb/components/ui/separator.js';
+import { cn } from '@/vdb/lib/utils.js';
 
 export interface DataTableFacetedFilterOption {
     label: string;

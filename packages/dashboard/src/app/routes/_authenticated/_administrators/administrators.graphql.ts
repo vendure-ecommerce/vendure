@@ -1,4 +1,4 @@
-import { graphql } from '@/graphql/graphql.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const administratorItemFragment = graphql(`
     fragment AdministratorItem on Administrator {

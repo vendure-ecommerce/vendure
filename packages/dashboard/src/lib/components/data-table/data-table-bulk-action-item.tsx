@@ -1,6 +1,6 @@
-import { usePermissions } from '@/hooks/use-permissions.js';
-import { Trans } from '@/lib/trans.js';
-import { cn } from '@/lib/utils.js';
+import { usePermissions } from '@/vdb/hooks/use-permissions.js';
+import { Trans } from '@/vdb/lib/trans.js';
+import { cn } from '@/vdb/lib/utils.js';
 import { LucideIcon } from 'lucide-react';
 import { useState } from 'react';
 import {

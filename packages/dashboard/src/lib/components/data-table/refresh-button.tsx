@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import { RefreshCw } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -22,7 +22,10 @@ function useDelayedLoading(isLoading: boolean, delayMs: number = 100) {
     return delayedLoading;
 }
 
-export function RefreshButton({ onRefresh, isLoading }: { onRefresh: () => void; isLoading: boolean }) {
+export function RefreshButton({
+    onRefresh,
+    isLoading,
+}: Readonly<{ onRefresh: () => void; isLoading: boolean }>) {
     const delayedLoading = useDelayedLoading(isLoading, 100);
 
     const handleClick = () => {

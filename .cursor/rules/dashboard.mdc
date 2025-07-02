@@ -161,3 +161,13 @@ export function MyComponent() {
     )
 }
 ```
+
+## Typing React Components
+
+React components should have their props objects set to `Readonly<>`, for instance:
+
+```ts
+export function PaymentDetails({ payment, currencyCode }: Readonly<PaymentDetailsProps>) {
+  //...
+}
+```

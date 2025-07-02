@@ -1,14 +1,14 @@
-import { formatFileSize } from "@/lib/utils.js";
+import { formatFileSize } from '@/vdb/lib/utils.js';
 
-import { Label } from "@/components/ui/label.js";
-import { AssetFragment } from "@/graphql/fragments.js";
-import { ExternalLink } from "lucide-react";
+import { Label } from '@/vdb/components/ui/label.js';
+import { AssetFragment } from '@/vdb/graphql/fragments.js';
+import { ExternalLink } from 'lucide-react';
 
 export interface AssetPropertiesProps {
     asset: AssetFragment;
 }
 
-export function AssetProperties({ asset }: AssetPropertiesProps) {
+export function AssetProperties({ asset }: Readonly<AssetPropertiesProps>) {
     return (
         <div className="space-y-4">
             <div>
@@ -30,9 +30,7 @@ export function AssetProperties({ asset }: AssetPropertiesProps) {
 
             <div>
                 <Label>File Size</Label>
-                <p className="text-sm text-muted-foreground">
-                    {formatFileSize(asset.fileSize)}
-                </p>
+                <p className="text-sm text-muted-foreground">{formatFileSize(asset.fileSize)}</p>
             </div>
 
             <div>

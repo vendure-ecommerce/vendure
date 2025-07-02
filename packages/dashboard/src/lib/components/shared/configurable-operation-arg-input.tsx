@@ -1,5 +1,5 @@
-import { InputComponent } from '@/framework/component-registry/dynamic-component.js';
-import { ConfigurableOperationDefFragment } from '@/graphql/fragments.js';
+import { InputComponent } from '@/vdb/framework/component-registry/dynamic-component.js';
+import { ConfigurableOperationDefFragment } from '@/vdb/graphql/fragments.js';
 import { ConfigArgType } from '@vendure/core';
 import { FacetValueInput } from '../data-input/facet-value-input.js';
 

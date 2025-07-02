@@ -1,24 +1,28 @@
-import { FullWidthPageBlock, Page, PageLayout, PageTitle } from '@/framework/layout-engine/page-layout.js';
-import { api } from '@/graphql/api.js';
-import { graphql } from '@/graphql/graphql.js';
-import { DataTable } from '@/components/data-table/data-table.js';
-import { Trans, useLingui } from '@/lib/trans.js';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
-import { createColumnHelper } from '@tanstack/react-table';
-import { ResultOf } from '@/graphql/graphql.js';
-import { PayloadDialog } from './components/payload-dialog.js';
-import { Button } from '@/components/ui/button.js';
-import { Badge } from '@/components/ui/badge.js';
-import { useLocalFormat } from '@/hooks/use-local-format.js';
+import { DataTable } from '@/vdb/components/data-table/data-table.js';
+import { Badge } from '@/vdb/components/ui/badge.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
+} from '@/vdb/components/ui/dropdown-menu.js';
+import {
+    FullWidthPageBlock,
+    Page,
+    PageLayout,
+    PageTitle,
+} from '@/vdb/framework/layout-engine/page-layout.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql, ResultOf } from '@/vdb/graphql/graphql.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { createFileRoute } from '@tanstack/react-router';
+import { createColumnHelper } from '@tanstack/react-table';
 import { CirclePlay, EllipsisIcon } from 'lucide-react';
 import { toast } from 'sonner';
+import { PayloadDialog } from './components/payload-dialog.js';
 
 export const Route = createFileRoute('/_authenticated/_system/scheduled-tasks')({
     component: ScheduledTasksPage,
@@ -53,7 +57,7 @@ const updateScheduledTaskDocument = graphql(`
 const runScheduledTaskDocument = graphql(`
     mutation RunScheduledTask($id: String!) {
         runScheduledTask(id: $id) {
-          success
+            success
         }
     }
 `);
@@ -69,16 +73,16 @@ function ScheduledTasksPage() {
     const queryClient = useQueryClient();
     const { mutate: updateScheduledTask } = useMutation({
         mutationFn: api.mutate(updateScheduledTaskDocument),
-        onSuccess: (result) => {
+        onSuccess: result => {
             refreshScheduledTasks();
         },
     });
     const refreshScheduledTasks = () => {
         queryClient.invalidateQueries({ queryKey: ['scheduledTasks'] });
-    }
+    };
     const { mutate: runScheduledTask } = useMutation({
         mutationFn: api.mutate(runScheduledTaskDocument),
-        onSuccess: (result) => {
+        onSuccess: result => {
             if ((result as ResultOf<typeof runScheduledTaskDocument>).runScheduledTask.success) {
                 toast.success(i18n.t(`Scheduled task will be executed`));
                 queryClient.invalidateQueries({ queryKey: ['scheduledTasks'] });
@@ -194,16 +198,18 @@ function ScheduledTasksPage() {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                            {row.original.enabled && <DropdownMenuItem
-                                onClick={() =>
-                                    runScheduledTask({
-                                        id: row.original.id,
-                                    })
-                                }
-                            >
-                                <CirclePlay className="w-4 h-4" />
-                                <Trans>Run</Trans>
-                            </DropdownMenuItem>}
+                            {row.original.enabled && (
+                                <DropdownMenuItem
+                                    onClick={() =>
+                                        runScheduledTask({
+                                            id: row.original.id,
+                                        })
+                                    }
+                                >
+                                    <CirclePlay className="w-4 h-4" />
+                                    <Trans>Run</Trans>
+                                </DropdownMenuItem>
+                            )}
                             <DropdownMenuItem
                                 onClick={() =>
                                     updateScheduledTask({

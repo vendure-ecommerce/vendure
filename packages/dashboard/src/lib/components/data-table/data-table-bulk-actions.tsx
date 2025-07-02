@@ -1,17 +1,17 @@
 'use client';
 
-import { Button } from '@/components/ui/button.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
-import { getBulkActions } from '@/framework/data-table/data-table-extensions.js';
-import { BulkAction } from '@/framework/data-table/data-table-types.js';
-import { usePageBlock } from '@/hooks/use-page-block.js';
-import { usePage } from '@/hooks/use-page.js';
-import { Trans } from '@/lib/trans.js';
+} from '@/vdb/components/ui/dropdown-menu.js';
+import { getBulkActions } from '@/vdb/framework/data-table/data-table-extensions.js';
+import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
+import { usePageBlock } from '@/vdb/hooks/use-page-block.js';
+import { usePage } from '@/vdb/hooks/use-page.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { Table } from '@tanstack/react-table';
 import { ChevronDown } from 'lucide-react';
 import { useRef } from 'react';

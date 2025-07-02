@@ -2,11 +2,11 @@ import { useMutation } from '@tanstack/react-query';
 import { TrashIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { DataTableBulkActionItem } from '@/components/data-table/data-table-bulk-action-item.js';
-import { api } from '@/graphql/api.js';
-import { AssetFragment } from '@/graphql/fragments.js';
-import { ResultOf } from '@/graphql/graphql.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+import { DataTableBulkActionItem } from '@/vdb/components/data-table/data-table-bulk-action-item.js';
+import { api } from '@/vdb/graphql/api.js';
+import { AssetFragment } from '@/vdb/graphql/fragments.js';
+import { ResultOf } from '@/vdb/graphql/graphql.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { deleteAssetsDocument } from '../assets.graphql.js';
 
 export const DeleteAssetsBulkAction = ({

@@ -1,4 +1,4 @@
-import { BulkActionComponent } from '@/framework/data-table/data-table-types.js';
+import { BulkActionComponent } from '@/vdb/framework/extension-api/types/index.js';
 import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
 import { deleteCustomerGroupsDocument } from '../customer-groups.graphql.js';
 

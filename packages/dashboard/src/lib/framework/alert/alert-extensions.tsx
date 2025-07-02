@@ -1,7 +1,6 @@
-import { useEffect } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { DashboardAlertDefinition } from '../extension-api/types/alerts.js';
 import { globalRegistry } from '../registry/global-registry.js';
-import { DashboardAlertDefinition } from './types.js';
 
 globalRegistry.register('dashboardAlertRegistry', new Map<string, DashboardAlertDefinition>());
 

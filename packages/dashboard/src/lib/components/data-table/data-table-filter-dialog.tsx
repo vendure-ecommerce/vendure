@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     DialogClose,
     DialogContent,
@@ -6,8 +6,8 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from '@/components/ui/dialog.js';
-import { Trans } from '@/lib/trans.js';
+} from '@/vdb/components/ui/dialog.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { Column } from '@tanstack/react-table';
 import { useState } from 'react';
 import { DataTableBooleanFilter } from './filters/data-table-boolean-filter.js';
@@ -21,7 +21,7 @@ export interface DataTableFilterDialogProps {
     column: Column<any>;
 }
 
-export function DataTableFilterDialog({ column }: DataTableFilterDialogProps) {
+export function DataTableFilterDialog({ column }: Readonly<DataTableFilterDialogProps>) {
     const columnFilter = column.getFilterValue() as Record<string, string> | undefined;
     const [filter, setFilter] = useState(columnFilter);
 

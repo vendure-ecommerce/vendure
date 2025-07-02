@@ -1,8 +1,7 @@
-import { AssignToChannelBulkAction } from '@/components/shared/assign-to-channel-bulk-action.js';
-import { RemoveFromChannelBulkAction } from '@/components/shared/remove-from-channel-bulk-action.js';
-import { BulkActionComponent } from '@/framework/data-table/data-table-types.js';
-import { api } from '@/graphql/api.js';
-import { useChannel } from '@/index.js';
+import { AssignToChannelBulkAction } from '@/vdb/components/shared/assign-to-channel-bulk-action.js';
+import { RemoveFromChannelBulkAction } from '@/vdb/components/shared/remove-from-channel-bulk-action.js';
+import { api } from '@/vdb/graphql/api.js';
+import { BulkActionComponent, useChannel } from '@/vdb/index.js';
 import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
 
 import {

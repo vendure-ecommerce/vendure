@@ -1,8 +1,8 @@
-import { useAuth } from '@/hooks/use-auth.js';
+import { useAuth } from '@/vdb/hooks/use-auth.js';
 import { Link, useNavigate, useRouter } from '@tanstack/react-router';
 import { ChevronsUpDown, LogOut, Monitor, Moon, Sparkles, Sun } from 'lucide-react';
 
-// import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.js';
+// import { Avatar, AvatarFallback, AvatarImage } from '@/vdb/components/ui/avatar.js';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -17,11 +17,11 @@ import {
     DropdownMenuSubContent,
     DropdownMenuSubTrigger,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar.js';
-import { useUserSettings } from '@/hooks/use-user-settings.js';
-import { Trans } from '@/lib/trans.js';
-import { Theme } from '@/providers/theme-provider.js';
+} from '@/vdb/components/ui/dropdown-menu.js';
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/vdb/components/ui/sidebar.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
+import { Trans } from '@/vdb/lib/trans.js';
+import { Theme } from '@/vdb/providers/theme-provider.js';
 import { useMemo } from 'react';
 import { Dialog, DialogTrigger } from '../ui/dialog.js';
 import { LanguageDialog } from './language-dialog.js';

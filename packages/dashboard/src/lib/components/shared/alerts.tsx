@@ -1,10 +1,10 @@
+import { useAlerts } from '@/vdb/framework/alert/alert-extensions.js';
+import { AlertItem } from '@/vdb/framework/alert/alert-item.js';
+import { AlertsIndicator } from '@/vdb/framework/alert/alerts-indicator.js';
 import { BellIcon } from 'lucide-react';
 import { Button } from '../ui/button.js';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog.js';
-import { useAlerts } from '../../framework/alert/alert-extensions.js';
-import { AlertItem } from '../../framework/alert/alert-item.js';
 import { ScrollArea } from '../ui/scroll-area.js';
-import { AlertsIndicator } from '../../framework/alert/alerts-indicator.js';
 
 export function Alerts() {
     const { alerts } = useAlerts();

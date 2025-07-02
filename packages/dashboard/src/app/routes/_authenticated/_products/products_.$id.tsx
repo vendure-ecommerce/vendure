@@ -1,15 +1,15 @@
-import { RichTextInput } from '@/components/data-input/richt-text-input.js';
-import { AssignedFacetValues } from '@/components/shared/assigned-facet-values.js';
-import { EntityAssets } from '@/components/shared/entity-assets.js';
-import { ErrorPage } from '@/components/shared/error-page.js';
-import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { TranslatableFormFieldWrapper } from '@/components/shared/translatable-form-field.js';
-import { Button } from '@/components/ui/button.js';
-import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from '@/components/ui/form.js';
-import { Input } from '@/components/ui/input.js';
-import { Switch } from '@/components/ui/switch.js';
-import { NEW_ENTITY_PATH } from '@/constants.js';
+import { RichTextInput } from '@/vdb/components/data-input/richt-text-input.js';
+import { AssignedFacetValues } from '@/vdb/components/shared/assigned-facet-values.js';
+import { EntityAssets } from '@/vdb/components/shared/entity-assets.js';
+import { ErrorPage } from '@/vdb/components/shared/error-page.js';
+import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { TranslatableFormFieldWrapper } from '@/vdb/components/shared/translatable-form-field.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from '@/vdb/components/ui/form.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { Switch } from '@/vdb/components/ui/switch.js';
+import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
 import {
     CustomFieldsPageBlock,
     DetailFormGrid,
@@ -19,10 +19,10 @@ import {
     PageBlock,
     PageLayout,
     PageTitle,
-} from '@/framework/layout-engine/page-layout.js';
-import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
-import { useDetailPage } from '@/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/framework/layout-engine/page-layout.js';
+import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
+import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useRef } from 'react';
 import { toast } from 'sonner';

@@ -1,12 +1,12 @@
-import { Money } from '@/components/data-display/money.js';
+import { Money } from '@/vdb/components/data-display/money.js';
 import {
     PaginatedListDataTable,
     PaginatedListRefresherRegisterFn,
-} from '@/components/shared/paginated-list-data-table.js';
-import { StockLevelLabel } from '@/components/shared/stock-level-label.js';
-import { graphql } from '@/graphql/graphql.js';
-import { useLocalFormat } from '@/hooks/use-local-format.js';
-import { DetailPageButton } from '@/index.js';
+} from '@/vdb/components/shared/paginated-list-data-table.js';
+import { StockLevelLabel } from '@/vdb/components/shared/stock-level-label.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
+import { DetailPageButton } from '@/vdb/index.js';
 import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
 import { productVariantListDocument } from '../products.graphql.js';

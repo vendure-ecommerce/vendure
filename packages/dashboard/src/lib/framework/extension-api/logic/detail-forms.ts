@@ -1,4 +1,4 @@
-import { addDetailQueryDocument } from '@/framework/form-engine/custom-form-component-extensions.js';
+import { addDetailQueryDocument } from '@/vdb/framework/form-engine/custom-form-component-extensions.js';
 import { parse } from 'graphql';
 
 import { addDisplayComponent } from '../display-component-extensions.js';

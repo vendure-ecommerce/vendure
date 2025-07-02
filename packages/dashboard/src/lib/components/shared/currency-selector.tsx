@@ -1,9 +1,9 @@
-import { useLocalFormat } from '@/hooks/use-local-format.js';
-import { CurrencyCode } from '@/constants.js';
+import { CurrencyCode } from '@/vdb/constants.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
+import { useLingui } from '@/vdb/lib/trans.js';
 import { MultiSelect } from './multi-select.js';
-import { useLingui } from '@/lib/trans.js';
 
-export interface CurrencySelectorProps<T extends boolean> {    
+export interface CurrencySelectorProps<T extends boolean> {
     value: T extends true ? string[] : string;
     onChange: (value: T extends true ? string[] : string) => void;
     multiple?: T;
@@ -17,7 +17,7 @@ export function CurrencySelector<T extends boolean>(props: CurrencySelectorProps
 
     const items = (availableCurrencyCodes ?? Object.values(CurrencyCode)).map(currencyCode => ({
         value: currencyCode,
-        label: formatCurrencyName(currencyCode)
+        label: formatCurrencyName(currencyCode),
     }));
 
     return (

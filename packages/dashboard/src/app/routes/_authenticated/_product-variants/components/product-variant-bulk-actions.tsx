@@ -1,14 +1,13 @@
 import { TagIcon } from 'lucide-react';
 import { useState } from 'react';
 
-import { DataTableBulkActionItem } from '@/components/data-table/data-table-bulk-action-item.js';
-import { AssignToChannelBulkAction } from '@/components/shared/assign-to-channel-bulk-action.js';
-import { usePriceFactor } from '@/components/shared/assign-to-channel-dialog.js';
-import { RemoveFromChannelBulkAction } from '@/components/shared/remove-from-channel-bulk-action.js';
-import { BulkActionComponent } from '@/framework/data-table/data-table-types.js';
-import { api } from '@/graphql/api.js';
-import { useChannel, usePaginatedList } from '@/index.js';
-import { Trans } from '@/lib/trans.js';
+import { DataTableBulkActionItem } from '@/vdb/components/data-table/data-table-bulk-action-item.js';
+import { AssignToChannelBulkAction } from '@/vdb/components/shared/assign-to-channel-bulk-action.js';
+import { usePriceFactor } from '@/vdb/components/shared/assign-to-channel-dialog.js';
+import { RemoveFromChannelBulkAction } from '@/vdb/components/shared/remove-from-channel-bulk-action.js';
+import { api } from '@/vdb/graphql/api.js';
+import { BulkActionComponent, useChannel, usePaginatedList } from '@/vdb/index.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
 
 import { AssignFacetValuesDialog } from '../../_products/components/assign-facet-values-dialog.js';

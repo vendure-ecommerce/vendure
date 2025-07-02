@@ -2,8 +2,8 @@ import { useMutation } from '@tanstack/react-query';
 import { ReactNode, useState } from 'react';
 import { toast } from 'sonner';
 
-import { ChannelCodeLabel } from '@/components/shared/channel-code-label.js';
-import { Button } from '@/components/ui/button.js';
+import { ChannelCodeLabel } from '@/vdb/components/shared/channel-code-label.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     Dialog,
     DialogContent,
@@ -11,13 +11,13 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from '@/components/ui/dialog.js';
-import { Input } from '@/components/ui/input.js';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.js';
-import { ResultOf } from '@/graphql/graphql.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/components/ui/dialog.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
+import { ResultOf } from '@/vdb/graphql/graphql.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
 
-import { useChannel } from '@/hooks/use-channel.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
 
 interface AssignToChannelDialogProps {
     open: boolean;

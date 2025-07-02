@@ -1,4 +1,4 @@
-import { Button, DataTableBulkActionItem, defineDashboardExtension } from '@vendure/dashboard';
+import { Button, DataTableBulkActionItem, defineDashboardExtension, usePage } from '@vendure/dashboard';
 import { InfoIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -21,6 +21,7 @@ defineDashboardExtension({
         {
             pageId: 'product-detail',
             component: props => {
+                const page = usePage();
                 return (
                     <Button
                         type="button"

@@ -1,12 +1,11 @@
+import { Separator } from '@/vdb/components/ui/separator.js';
 import { ResultOf } from 'gql.tada';
+import { Globe, Phone } from 'lucide-react';
 import { orderAddressFragment } from '../orders.graphql.js';
-import { Phone } from 'lucide-react';
-import { Separator } from '@/components/ui/separator.js';
-import { Globe } from 'lucide-react';
 
 type OrderAddress = ResultOf<typeof orderAddressFragment>;
 
-export function OrderAddress({ address }: { address?: OrderAddress }) {
+export function OrderAddress({ address }: Readonly<{ address?: OrderAddress }>) {
     if (!address) {
         return null;
     }

@@ -1,4 +1,4 @@
-import { Variables } from '@/graphql/api.js';
+import { Variables } from '@/vdb/graphql/api.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import {
     DefinitionNode,

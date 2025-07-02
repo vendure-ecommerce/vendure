@@ -1,5 +1,5 @@
-import { extendDocument } from '@/framework/document-extension/extend-document.js';
-import { getDetailQueryDocuments } from '@/framework/form-engine/custom-form-component-extensions.js';
+import { extendDocument } from '@/vdb/framework/document-extension/extend-document.js';
+import { getDetailQueryDocuments } from '@/vdb/framework/form-engine/custom-form-component-extensions.js';
 import { DocumentNode } from 'graphql';
 
 /**

@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils.js';
+import { cn } from '@/vdb/lib/utils.js';
 import { Image } from 'lucide-react';
 import React from 'react';
 

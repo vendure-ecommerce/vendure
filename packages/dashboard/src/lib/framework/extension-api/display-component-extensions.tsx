@@ -1,7 +1,7 @@
-import { BooleanDisplayBadge, BooleanDisplayCheckbox } from '@/components/data-display/boolean.js';
-import { DateTime } from '@/components/data-display/date-time.js';
-import { Money } from '@/components/data-display/money.js';
-import { VendureImage } from '@/components/shared/vendure-image.js';
+import { BooleanDisplayBadge, BooleanDisplayCheckbox } from '@/vdb/components/data-display/boolean.js';
+import { DateTime } from '@/vdb/components/data-display/date-time.js';
+import { Money } from '@/vdb/components/data-display/money.js';
+import { VendureImage } from '@/vdb/components/shared/vendure-image.js';
 import { DataDisplayComponent } from '../component-registry/component-registry.js';
 import { globalRegistry } from '../registry/global-registry.js';
 

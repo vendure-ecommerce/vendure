@@ -1,13 +1,12 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-
-import { AssignToChannelBulkAction } from '@/components/shared/assign-to-channel-bulk-action.js';
-import { RemoveFromChannelBulkAction } from '@/components/shared/remove-from-channel-bulk-action.js';
-import { BulkActionComponent } from '@/framework/data-table/data-table-types.js';
-import { api } from '@/graphql/api.js';
-import { DataTableBulkActionItem, useChannel, usePaginatedList } from '@/index.js';
-import { Trans } from '@/lib/trans.js';
 import { FolderTree } from 'lucide-react';
+
+import { Trans } from '@/vdb/lib/trans.js';
+import { AssignToChannelBulkAction } from '@/vdb/components/shared/assign-to-channel-bulk-action.js';
+import { RemoveFromChannelBulkAction } from '@/vdb/components/shared/remove-from-channel-bulk-action.js';
+import { api } from '@/vdb/graphql/api.js';
+import { BulkActionComponent, useChannel, DataTableBulkActionItem, usePaginatedList } from '@/vdb/index.js';
 import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
 import { DuplicateBulkAction } from '../../../../common/duplicate-bulk-action.js';
 import {
