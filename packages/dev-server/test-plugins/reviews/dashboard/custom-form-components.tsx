@@ -10,7 +10,7 @@ export function TextareaCustomField({ field }: CustomFormComponentInputProps) {
 }
 
 export function ResponseDisplay({ value }: DataDisplayComponentProps) {
-    return <div>{value}</div>;
+    return <div className="font-mono">{value}</div>;
 }
 
 export function BodyInputComponent(props: DataInputComponentProps) {
