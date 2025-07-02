@@ -81,7 +81,7 @@ export function DataTable<TData>({
     bulkActions,
     setTableOptions,
     onRefresh,
-}: DataTableProps<TData>) {
+}: Readonly<DataTableProps<TData>>) {
     const [sorting, setSorting] = React.useState<SortingState>(sortingInitialState || []);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(filtersInitialState || []);
     const { activeChannel } = useChannel();

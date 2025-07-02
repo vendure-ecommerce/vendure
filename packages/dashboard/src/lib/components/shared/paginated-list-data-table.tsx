@@ -273,7 +273,7 @@ export function PaginatedListDataTable<
     setTableOptions,
     transformData,
     registerRefresher,
-}: PaginatedListDataTableProps<T, U, V, AC>) {
+}: Readonly<PaginatedListDataTableProps<T, U, V, AC>>) {
     const [searchTerm, setSearchTerm] = React.useState<string>('');
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
     const queryClient = useQueryClient();
