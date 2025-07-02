@@ -28,7 +28,7 @@ import {
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { DisplayComponent } from '@/vdb/framework/component-registry/dynamic-component.js';
-import { BulkAction } from '@/vdb/framework/data-table/data-table-types.js';
+import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
 import { useExtendedListQuery } from '@/vdb/hooks/use-extended-list-query.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';

@@ -1,8 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/vdb/components/ui/card.js';
+import { DashboardBaseWidgetProps } from '@/vdb/framework/extension-api/types/index.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { cn } from '@/vdb/lib/utils.js';
-import type React from 'react';
-import { createContext, PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 
 type WidgetDimensions = {
     width: number;
@@ -18,14 +18,6 @@ export const useWidgetDimensions = () => {
     }
     return context;
 };
-
-export type DashboardBaseWidgetProps = PropsWithChildren<{
-    id: string;
-    title?: string;
-    description?: string;
-    config?: Record<string, unknown>;
-    actions?: React.ReactNode;
-}>;
 
 export function DashboardBaseWidget({
     id,

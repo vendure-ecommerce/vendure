@@ -1,4 +1,4 @@
-import type React from 'react';
+import React, { PropsWithChildren } from 'react';
 
 /**
  * @description
@@ -9,10 +9,13 @@ import type React from 'react';
  * @docsCategory extensions
  * @since 3.3.0
  */
-export interface DashboardBaseWidgetProps {
-    widgetId: string;
+export type DashboardBaseWidgetProps = PropsWithChildren<{
+    id: string;
+    title?: string;
+    description?: string;
     config?: Record<string, unknown>;
-}
+    actions?: React.ReactNode;
+}>;
 
 /**
  * @description
