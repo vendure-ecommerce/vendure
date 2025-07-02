@@ -2,7 +2,13 @@ import { Button, DataTableBulkActionItem, defineDashboardExtension, usePage } fr
 import { InfoIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { BodyInputComponent, ResponseDisplay, TextareaCustomField } from './custom-form-components';
+import {
+    BodyInputComponent,
+    ResponseDisplay,
+    ReviewMultiSelect,
+    ReviewSingleSelect,
+    TextareaCustomField,
+} from './custom-form-components';
 import { CustomWidget } from './custom-widget';
 import { reviewDetail } from './review-detail';
 import { reviewList } from './review-list';
@@ -54,6 +60,14 @@ defineDashboardExtension({
             {
                 id: 'textarea',
                 component: TextareaCustomField,
+            },
+            {
+                id: 'review-single-select',
+                component: ReviewSingleSelect,
+            },
+            {
+                id: 'review-multi-select',
+                component: ReviewMultiSelect,
             },
         ],
     },
