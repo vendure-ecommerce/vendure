@@ -406,6 +406,6 @@ Field names are case-sensitive and must match exactly. Use browser dev tools to 
 
 ## Related Guides
 
-- **[Custom Form Elements Overview](./index)** - Learn about the unified system for custom field components, input components, and display components
+- **[Custom Form Elements Overview](./)** - Learn about the unified system for custom field components, input components, and display components
 - **[Input Components](./input-components)** - Create custom input controls for forms with specialized functionality
 - **[Display Components](./display-components)** - Create custom readonly data visualizations for tables, detail views, and forms
