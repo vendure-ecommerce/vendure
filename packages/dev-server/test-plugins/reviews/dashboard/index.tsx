@@ -2,7 +2,7 @@ import { Button, DataTableBulkActionItem, defineDashboardExtension } from '@vend
 import { InfoIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { TextareaCustomField } from './custom-form-components';
+import { BodyInputComponent, ResponseDisplay, TextareaCustomField } from './custom-form-components';
 import { CustomWidget } from './custom-widget';
 import { reviewDetail } from './review-detail';
 import { reviewList } from './review-list';
@@ -48,12 +48,14 @@ defineDashboardExtension({
             },
         },
     ],
-    customFormComponents: [
-        {
-            id: 'textarea',
-            component: TextareaCustomField,
-        },
-    ],
+    customFormComponents: {
+        customFields: [
+            {
+                id: 'textarea',
+                component: TextareaCustomField,
+            },
+        ],
+    },
     detailForms: [
         {
             pageId: 'product-variant-detail',
@@ -85,6 +87,23 @@ defineDashboardExtension({
                     }
                 }
             `,
+        },
+        {
+            pageId: 'review-detail',
+            inputs: [
+                {
+                    blockId: 'main-form',
+                    field: 'body',
+                    component: BodyInputComponent,
+                },
+            ],
+            displays: [
+                {
+                    blockId: 'main-form',
+                    field: 'response',
+                    component: ResponseDisplay,
+                },
+            ],
         },
     ],
     dataTables: [

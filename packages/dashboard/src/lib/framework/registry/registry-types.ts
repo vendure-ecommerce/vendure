@@ -2,6 +2,7 @@ import { DocumentNode } from 'graphql';
 import React from 'react';
 
 import { DashboardAlertDefinition } from '../alert/types.js';
+import { DataDisplayComponent, DataInputComponent } from '../component-registry/component-registry.js';
 import { DashboardWidgetDefinition } from '../dashboard-widget/types.js';
 import { BulkAction } from '../data-table/data-table-types.js';
 import {
@@ -20,6 +21,8 @@ export interface GlobalRegistryContents {
     dashboardWidgetRegistry: Map<string, DashboardWidgetDefinition>;
     dashboardAlertRegistry: Map<string, DashboardAlertDefinition>;
     customFormComponents: Map<string, React.FunctionComponent<CustomFormComponentInputProps>>;
+    inputComponents: Map<string, DataInputComponent>;
+    displayComponents: Map<string, DataDisplayComponent>;
     bulkActionsRegistry: Map<string, BulkAction[]>;
     listQueryDocumentRegistry: Map<string, DocumentNode[]>;
     detailQueryDocumentRegistry: Map<string, DocumentNode[]>;
