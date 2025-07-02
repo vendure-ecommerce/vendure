@@ -1,5 +1,8 @@
+import {
+    DataDisplayComponent,
+    DataInputComponent,
+} from '@/framework/component-registry/component-registry.js';
 import { DocumentNode } from 'graphql';
-import type React from 'react';
 
 /**
  * @description
@@ -25,7 +28,7 @@ export interface DashboardDetailFormInputComponent {
      * The React component that will be rendered as the input.
      * It should accept `value`, `onChange`, and other standard input props.
      */
-    component: React.ComponentType<{ value: any; onChange: (value: any) => void; [key: string]: any }>;
+    component: DataInputComponent;
 }
 
 /**
@@ -52,7 +55,7 @@ export interface DashboardDetailFormDisplayComponent {
      * The React component that will be rendered as the display.
      * It should accept `value` and other standard display props.
      */
-    component: React.ComponentType<{ value: any; [key: string]: any }>;
+    component: DataDisplayComponent;
 }
 
 export interface DashboardDetailFormExtensionDefinition {
