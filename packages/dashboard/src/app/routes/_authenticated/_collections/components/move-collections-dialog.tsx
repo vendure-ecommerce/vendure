@@ -55,6 +55,12 @@ interface TargetAlertProps {
     collectionNameCache: React.MutableRefObject<Map<string, string>>;
 }
 
+interface MoveToTopLevelProps {
+    selectedCollectionId?: string;
+    topLevelCollectionId?: string;
+    onSelect: (id?: string) => void;
+}
+
 function TargetAlert({
     selectedCollectionId,
     collectionsToMove,
@@ -78,6 +84,30 @@ function TargetAlert({
                 )}
             </AlertDescription>
         </Alert>
+    );
+}
+
+function MoveToTopLevel({
+    selectedCollectionId,
+    topLevelCollectionId,
+    onSelect,
+}: Readonly<MoveToTopLevelProps>) {
+    return (
+        <button
+            type="button"
+            className={`flex items-center gap-2 py-2 px-3 hover:bg-accent rounded-sm cursor-pointer w-full text-left ${
+                selectedCollectionId === topLevelCollectionId ? 'bg-accent' : ''
+            }`}
+            onClick={() => onSelect(topLevelCollectionId)}
+        >
+            <div className="w-3 h-3" />
+            <div className="flex items-center gap-2">
+                <Folder className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm font-medium">
+                    <Trans>Move to the top level</Trans>
+                </span>
+            </div>
+        </button>
     );
 }
 
@@ -211,6 +241,7 @@ export function MoveCollectionsDialog({
     });
 
     const topLevelCollectionId = collectionsData?.collections.items[0]?.parentId;
+    const selectionHasTopLevelParent = collectionsToMove.some(c => c.parentId === topLevelCollectionId);
 
     // Load child collections for expanded nodes
     const childrenQueries = useQueries({
@@ -346,24 +377,12 @@ export function MoveCollectionsDialog({
                                     </div>
                                 ) : (
                                     <>
-                                        {!debouncedSearchTerm && (
-                                            <button
-                                                type="button"
-                                                className={`flex items-center gap-2 py-2 px-3 hover:bg-accent rounded-sm cursor-pointer w-full text-left ${
-                                                    selectedCollectionId === topLevelCollectionId
-                                                        ? 'bg-accent'
-                                                        : ''
-                                                }`}
-                                                onClick={() => setSelectedCollectionId(topLevelCollectionId)}
-                                            >
-                                                <div className="w-3 h-3" />
-                                                <div className="flex items-center gap-2">
-                                                    <Folder className="h-4 w-4 text-muted-foreground" />
-                                                    <span className="text-sm font-medium">
-                                                        <Trans>Move to the top level</Trans>
-                                                    </span>
-                                                </div>
-                                            </button>
+                                        {!debouncedSearchTerm && !selectionHasTopLevelParent && (
+                                            <MoveToTopLevel
+                                                selectedCollectionId={selectedCollectionId}
+                                                topLevelCollectionId={topLevelCollectionId}
+                                                onSelect={setSelectedCollectionId}
+                                            />
                                         )}
                                         {collections.map((collection: Collection) => (
                                             <CollectionTreeNode
