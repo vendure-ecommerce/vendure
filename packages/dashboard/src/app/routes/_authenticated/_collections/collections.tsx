@@ -18,6 +18,7 @@ import {
     AssignCollectionsToChannelBulkAction,
     DeleteCollectionsBulkAction,
     DuplicateCollectionsBulkAction,
+    MoveCollectionsBulkAction,
     RemoveCollectionsFromChannelBulkAction,
 } from './components/collection-bulk-actions.js';
 import { CollectionContentsSheet } from './components/collection-contents-sheet.js';
@@ -199,8 +200,12 @@ function CollectionListPage() {
                     order: 300,
                 },
                 {
-                    component: DeleteCollectionsBulkAction,
+                    component: MoveCollectionsBulkAction,
                     order: 400,
+                },
+                {
+                    component: DeleteCollectionsBulkAction,
+                    order: 500,
                 },
             ]}
         >
