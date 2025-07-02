@@ -11,7 +11,7 @@ interface CustomerOrderTableProps {
     customerId: string;
 }
 
-export function CustomerOrderTable({ customerId }: CustomerOrderTableProps) {
+export function CustomerOrderTable({ customerId }: Readonly<CustomerOrderTableProps>) {
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [sorting, setSorting] = useState<SortingState>([{ id: 'orderPlacedAt', desc: true }]);

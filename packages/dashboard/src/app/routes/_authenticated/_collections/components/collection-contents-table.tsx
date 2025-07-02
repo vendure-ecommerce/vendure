@@ -28,7 +28,7 @@ export interface CollectionContentsTableProps {
     collectionId?: string;
 }
 
-export function CollectionContentsTable({ collectionId }: CollectionContentsTableProps) {
+export function CollectionContentsTable({ collectionId }: Readonly<CollectionContentsTableProps>) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);

@@ -34,7 +34,7 @@ interface PromotionActionsSelectorProps {
     onChange: (value: ConfigurableOperationInputType[]) => void;
 }
 
-export function PromotionActionsSelector({ value, onChange }: PromotionActionsSelectorProps) {
+export function PromotionActionsSelector({ value, onChange }: Readonly<PromotionActionsSelectorProps>) {
     const { data: actionsData } = useQuery({
         queryKey: ['promotionActions'],
         queryFn: () => api.query(promotionActionsDocument),

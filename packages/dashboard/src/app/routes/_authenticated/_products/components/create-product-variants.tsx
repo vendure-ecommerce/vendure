@@ -97,7 +97,10 @@ interface CreateProductVariantsProps {
     onChange?: ({ data }: { data: VariantConfiguration }) => void;
 }
 
-export function CreateProductVariants({ currencyCode = 'USD', onChange }: CreateProductVariantsProps) {
+export function CreateProductVariants({
+    currencyCode = 'USD',
+    onChange,
+}: Readonly<CreateProductVariantsProps>) {
     const { data: stockLocationsResult } = useQuery({
         queryKey: ['stockLocations'],
         queryFn: () => api.query(getStockLocationsDocument, { options: { take: 100 } }),

@@ -5,7 +5,7 @@ import { orderAddressFragment } from '../orders.graphql.js';
 
 type OrderAddress = ResultOf<typeof orderAddressFragment>;
 
-export function OrderAddress({ address }: { address?: OrderAddress }) {
+export function OrderAddress({ address }: Readonly<{ address?: OrderAddress }>) {
     if (!address) {
         return null;
     }

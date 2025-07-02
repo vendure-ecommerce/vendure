@@ -28,7 +28,7 @@ interface RolePermissionsDisplayProps {
     value: string[];
 }
 
-export function RolePermissionsDisplay({ value = [] }: RolePermissionsDisplayProps) {
+export function RolePermissionsDisplay({ value = [] }: Readonly<RolePermissionsDisplayProps>) {
     const { i18n } = useLingui();
     const groupedPermissions = useGroupedPermissions();
 

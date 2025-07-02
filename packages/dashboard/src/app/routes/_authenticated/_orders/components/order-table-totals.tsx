@@ -11,7 +11,7 @@ export interface OrderTableTotalsProps {
     columnCount: number;
 }
 
-export function OrderTableTotals({ order, columnCount }: OrderTableTotalsProps) {
+export function OrderTableTotals({ order, columnCount }: Readonly<OrderTableTotalsProps>) {
     const currencyCode = order.currencyCode;
 
     return (
