@@ -86,7 +86,17 @@ to correctly resolve imports of GraphQL types & interpret JSX in your dashboard 
         // highlight-start
         "jsx": "react-jsx",
         "paths": {
-            "@/gql": ["./src/gql/graphql.ts"]
+            "@/gql": [
+                "./src/gql/graphql.ts"
+            ],
+            // This line allows TypeScript to properly resolve internal
+            // Vendure Dashboard imports, which is necessary for
+            // type safety in your dashboard extensions.
+            // This path assumes a root-level tsconfig.json file.
+            // You may need to adjust it if your project structure is different.
+            "@/vdb/*": [
+                "./node_modules/@vendure/dashboard/src/lib/*"
+            ]
         }
         // highlight-end
     },
