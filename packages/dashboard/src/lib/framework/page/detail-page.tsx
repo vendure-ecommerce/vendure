@@ -113,7 +113,7 @@ function FieldInputRenderer<
     const InputComponent = componentRegistry.getInputComponent(customInputComponentKey);
 
     if (DisplayComponent) {
-        return <DisplayComponent value={field.value} />;
+        return <DisplayComponent {...field} />;
     }
 
     if (InputComponent) {

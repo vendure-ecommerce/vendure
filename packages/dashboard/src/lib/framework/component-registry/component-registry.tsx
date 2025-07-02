@@ -35,10 +35,20 @@ export function useComponentRegistry() {
 }
 
 // Legacy registration functions - these now delegate to the global registry
-export function registerInputComponent(id: string, component: DataInputComponent) {
-    addInputComponent({ id, component });
+export function registerInputComponent(
+    pageId: string,
+    blockId: string,
+    field: string,
+    component: DataInputComponent,
+) {
+    addInputComponent({ pageId, blockId, field, component });
 }
 
-export function registerDisplayComponent(id: string, component: DataDisplayComponent) {
-    addDisplayComponent({ id, component });
+export function registerDisplayComponent(
+    pageId: string,
+    blockId: string,
+    field: string,
+    component: DataDisplayComponent,
+) {
+    addDisplayComponent({ pageId, blockId, field, component });
 }

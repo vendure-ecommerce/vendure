@@ -14,7 +14,7 @@ const TextInput: DataInputComponent = props => (
     <Input {...props} onChange={e => props.onChange(e.target.value)} />
 );
 const NumberInput: DataInputComponent = props => (
-    <Input {...props} onChange={e => props.onChange(e.target.value)} type="number" />
+    <Input {...props} onChange={e => props.onChange(e.target.valueAsNumber)} type="number" />
 );
 const CheckboxInput: DataInputComponent = props => (
     <Checkbox
