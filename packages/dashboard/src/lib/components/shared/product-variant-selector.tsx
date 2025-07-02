@@ -40,7 +40,7 @@ export interface ProductVariantSelectorProps {
     onProductVariantIdChange: (productVariantId: string) => void;
 }
 
-export function ProductVariantSelector({ onProductVariantIdChange }: ProductVariantSelectorProps) {
+export function ProductVariantSelector({ onProductVariantIdChange }: Readonly<ProductVariantSelectorProps>) {
     const [search, setSearch] = useState('');
     const [open, setOpen] = useState(false);
     const debouncedSearch = useDebounce(search, 500);

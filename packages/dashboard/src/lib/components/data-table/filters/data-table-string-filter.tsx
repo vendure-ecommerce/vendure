@@ -21,7 +21,10 @@ export const STRING_OPERATORS = [
     'isNull',
 ] as const;
 
-export function DataTableStringFilter({ value: incomingValue, onChange }: DataTableStringFilterProps) {
+export function DataTableStringFilter({
+    value: incomingValue,
+    onChange,
+}: Readonly<DataTableStringFilterProps>) {
     const initialOperator = incomingValue ? Object.keys(incomingValue)[0] : 'contains';
     const initialValue = incomingValue ? Object.values(incomingValue)[0] : '';
     const [operator, setOperator] = useState<string>(initialOperator ?? 'contains');

@@ -7,7 +7,7 @@ interface HistoryNoteInputProps {
     onAddNote: (note: string, isPrivate: boolean) => void;
 }
 
-export function HistoryNoteInput({ onAddNote }: HistoryNoteInputProps) {
+export function HistoryNoteInput({ onAddNote }: Readonly<HistoryNoteInputProps>) {
     const [note, setNote] = useState('');
     const [noteIsPrivate, setNoteIsPrivate] = useState(true);
 

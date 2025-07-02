@@ -22,7 +22,10 @@ function useDelayedLoading(isLoading: boolean, delayMs: number = 100) {
     return delayedLoading;
 }
 
-export function RefreshButton({ onRefresh, isLoading }: { onRefresh: () => void; isLoading: boolean }) {
+export function RefreshButton({
+    onRefresh,
+    isLoading,
+}: Readonly<{ onRefresh: () => void; isLoading: boolean }>) {
     const delayedLoading = useDelayedLoading(isLoading, 100);
 
     const handleClick = () => {

@@ -17,7 +17,7 @@ export interface AddFilterMenuProps {
     columns: Column<any, unknown>[];
 }
 
-export function AddFilterMenu({ columns }: AddFilterMenuProps) {
+export function AddFilterMenu({ columns }: Readonly<AddFilterMenuProps>) {
     const [selectedColumn, setSelectedColumn] = useState<ColumnDef<any> | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 

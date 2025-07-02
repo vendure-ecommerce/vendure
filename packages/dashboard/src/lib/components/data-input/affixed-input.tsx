@@ -6,7 +6,7 @@ interface AffixedInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
     suffix?: ReactNode;
 }
 
-export function AffixedInput({ prefix, suffix, className = '', ...props }: AffixedInputProps) {
+export function AffixedInput({ prefix, suffix, className = '', ...props }: Readonly<AffixedInputProps>) {
     const prefixRef = useRef<HTMLSpanElement>(null);
     const suffixRef = useRef<HTMLSpanElement>(null);
     const [prefixWidth, setPrefixWidth] = useState(0);

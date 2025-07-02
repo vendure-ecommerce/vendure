@@ -11,7 +11,7 @@ export interface ErrorPageProps {
  * @description
  * A generic error page that displays an error message.
  */
-export function ErrorPage({ message }: ErrorPageProps) {
+export function ErrorPage({ message }: Readonly<ErrorPageProps>) {
     return (
         <Page pageId="error-page">
             <PageTitle>

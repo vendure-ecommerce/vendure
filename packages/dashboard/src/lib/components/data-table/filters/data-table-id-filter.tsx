@@ -12,7 +12,7 @@ export interface DataTableIdFilterProps {
 
 export const ID_OPERATORS = ['eq', 'notEq', 'in', 'notIn', 'isNull'] as const;
 
-export function DataTableIdFilter({ value: incomingValue, onChange }: DataTableIdFilterProps) {
+export function DataTableIdFilter({ value: incomingValue, onChange }: Readonly<DataTableIdFilterProps>) {
     const initialOperator = incomingValue ? Object.keys(incomingValue)[0] : 'eq';
     const initialValue = incomingValue ? Object.values(incomingValue)[0] : '';
     const [operator, setOperator] = useState<string>(initialOperator ?? 'eq');

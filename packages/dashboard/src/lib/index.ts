@@ -139,7 +139,6 @@ export * from './framework/dashboard-widget/metrics-widget/metrics-widget.graphq
 export * from './framework/dashboard-widget/orders-summary/order-summary-widget.graphql.js';
 export * from './framework/dashboard-widget/widget-extensions.js';
 export * from './framework/data-table/data-table-extensions.js';
-export * from './framework/data-table/data-table-types.js';
 export * from './framework/defaults.js';
 export * from './framework/document-extension/extend-detail-form-query.js';
 export * from './framework/document-extension/extend-document.js';

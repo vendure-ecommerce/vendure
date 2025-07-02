@@ -70,7 +70,7 @@ const CurrentUserQuery = graphql(`
 
 export const AuthContext = React.createContext<AuthContext | null>(null);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: Readonly<{ children: React.ReactNode }>) {
     const [status, setStatus] = React.useState<AuthContext['status']>('initial');
     const [authenticationError, setAuthenticationError] = React.useState<string | undefined>();
     const [isLoginLogoutInProgress, setIsLoginLogoutInProgress] = React.useState(false);

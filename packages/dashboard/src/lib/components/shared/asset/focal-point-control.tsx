@@ -13,7 +13,7 @@ interface FocalPointControlProps {
     onChange: (point: Point) => void;
 }
 
-export function FocalPointControl({ width, height, point, onChange }: FocalPointControlProps) {
+export function FocalPointControl({ width, height, point, onChange }: Readonly<FocalPointControlProps>) {
     const [dragging, setDragging] = useState(false);
 
     useEffect(() => {

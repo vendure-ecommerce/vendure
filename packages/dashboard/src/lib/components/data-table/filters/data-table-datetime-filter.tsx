@@ -10,7 +10,10 @@ export interface DataTableDateTimeFilterProps {
 
 export const DATETIME_OPERATORS = ['eq', 'before', 'after', 'between', 'isNull'] as const;
 
-export function DataTableDateTimeFilter({ value: incomingValue, onChange }: DataTableDateTimeFilterProps) {
+export function DataTableDateTimeFilter({
+    value: incomingValue,
+    onChange,
+}: Readonly<DataTableDateTimeFilterProps>) {
     const initialOperator = incomingValue ? Object.keys(incomingValue)[0] : 'eq';
     const initialValue = incomingValue ? Object.values(incomingValue)[0] : '';
     const [operator, setOperator] = useState<string>(initialOperator ?? 'eq');

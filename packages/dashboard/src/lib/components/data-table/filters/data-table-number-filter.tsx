@@ -13,7 +13,11 @@ export interface DataTableNumberFilterProps {
 
 export const NUMBER_OPERATORS = ['eq', 'gt', 'gte', 'lt', 'lte', 'isNull', 'between'] as const;
 
-export function DataTableNumberFilter({ mode, value: incomingValue, onChange }: DataTableNumberFilterProps) {
+export function DataTableNumberFilter({
+    mode,
+    value: incomingValue,
+    onChange,
+}: Readonly<DataTableNumberFilterProps>) {
     const { activeChannel } = useChannel();
     const initialOperator = incomingValue ? Object.keys(incomingValue)[0] : 'eq';
     const initialValue = incomingValue ? Object.values(incomingValue)[0] : 0;

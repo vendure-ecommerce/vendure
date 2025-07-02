@@ -8,7 +8,7 @@ export interface AssetPreviewSelectorProps {
     height: number;
 }
 
-export function AssetPreviewSelector({ size, setSize, width, height }: AssetPreviewSelectorProps) {
+export function AssetPreviewSelector({ size, setSize, width, height }: Readonly<AssetPreviewSelectorProps>) {
     return (
         <div className="flex items-center gap-2">
             <Select value={size} onValueChange={value => setSize(value as PreviewPreset)}>

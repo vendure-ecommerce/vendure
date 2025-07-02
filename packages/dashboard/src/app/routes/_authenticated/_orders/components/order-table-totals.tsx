@@ -17,8 +17,8 @@ export function OrderTableTotals({ order, columnCount }: Readonly<OrderTableTota
     return (
         <>
             {order.discounts?.length > 0
-                ? order.discounts.map(discount => (
-                      <TableRow>
+                ? order.discounts.map((discount, index) => (
+                      <TableRow key={`${discount.description}-${index}`}>
                           <TableCell colSpan={columnCount - 1} className="h-12">
                               <Trans>Discount</Trans>: {discount.description}
                           </TableCell>

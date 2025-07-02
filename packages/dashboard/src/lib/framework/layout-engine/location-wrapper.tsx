@@ -18,7 +18,10 @@ const LocationWrapperContext = createContext<{
     setHoveredId: null,
 });
 
-export function LocationWrapper({ children, blockId }: { children: React.ReactNode; blockId?: string }) {
+export function LocationWrapper({
+    children,
+    blockId,
+}: Readonly<{ children: React.ReactNode; blockId?: string }>) {
     const page = usePage();
     const { settings } = useUserSettings();
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);

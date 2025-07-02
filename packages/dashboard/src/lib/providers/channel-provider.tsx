@@ -65,7 +65,7 @@ export const ChannelContext = React.createContext<ChannelContext | undefined>(un
 const SELECTED_CHANNEL_KEY = 'vendure-selected-channel';
 const SELECTED_CHANNEL_TOKEN_KEY = 'vendure-selected-channel-token';
 
-export function ChannelProvider({ children }: { children: React.ReactNode }) {
+export function ChannelProvider({ children }: Readonly<{ children: React.ReactNode }>) {
     const queryClient = useQueryClient();
     const { channels: userChannels, isAuthenticated } = useAuth();
     const [selectedChannelId, setSelectedChannelId] = React.useState<string | undefined>(() => {

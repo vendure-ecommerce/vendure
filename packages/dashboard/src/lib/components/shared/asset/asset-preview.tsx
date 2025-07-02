@@ -19,7 +19,7 @@ interface AssetPreviewProps {
     customFields?: any[];
 }
 
-export function AssetPreview({ asset, assets, customFields = [] }: AssetPreviewProps) {
+export function AssetPreview({ asset, assets, customFields = [] }: Readonly<AssetPreviewProps>) {
     const [size, setSize] = useState<PreviewPreset>('medium');
     const [width, setWidth] = useState(0);
     const [height, setHeight] = useState(0);
