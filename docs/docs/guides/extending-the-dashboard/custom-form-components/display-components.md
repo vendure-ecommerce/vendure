@@ -19,14 +19,10 @@ When data for a matching field is displayed, your custom display component will 
 Display components receive the `value` to display and may receive additional context:
 
 ```tsx title="src/plugins/my-plugin/dashboard/components/status-badge.tsx"
-import { Badge } from '@vendure/dashboard';
+import { Badge, DataDisplayComponentProps } from '@vendure/dashboard';
 import { CheckCircle, Clock, XCircle, AlertCircle } from 'lucide-react';
 
-interface StatusBadgeProps {
-    value: string;
-}
-
-export function StatusBadgeComponent({ value }: StatusBadgeProps) {
+export function StatusBadgeComponent({ value }: DataDisplayComponentProps) {
     const getStatusConfig = (status: string) => {
         switch (status?.toLowerCase()) {
             case 'active':
@@ -113,11 +109,10 @@ export default defineDashboardExtension({
 ### Enhanced Price Display
 
 ```tsx title="src/plugins/my-plugin/dashboard/components/price-display.tsx"
-import { Badge } from '@vendure/dashboard';
+import { Badge, DataDisplayComponentProps } from '@vendure/dashboard';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
-interface PriceDisplayProps {
-    value: number;
+interface PriceDisplayProps extends DataDisplayComponentProps {
     // Additional context that might be passed
     currency?: string;
     originalPrice?: number;
@@ -201,12 +196,11 @@ export function PriceDisplayComponent({
 ### Rich Date/Time Display
 
 ```tsx title="src/plugins/my-plugin/dashboard/components/datetime-display.tsx"
-import { Badge } from '@vendure/dashboard';
+import { Badge, DataDisplayComponentProps } from '@vendure/dashboard';
 import { Calendar, Clock, Users } from 'lucide-react';
 import { formatDistanceToNow, format, isToday, isYesterday } from 'date-fns';
 
-interface DateTimeDisplayProps {
-    value: string | Date;
+interface DateTimeDisplayProps extends DataDisplayComponentProps {
     showRelative?: boolean;
     showTime?: boolean;
     showTimezone?: boolean;
@@ -286,11 +280,10 @@ export function DateTimeDisplayComponent({
 ### Image/Avatar Display
 
 ```tsx title="src/plugins/my-plugin/dashboard/components/avatar-display.tsx"
-import { Avatar, AvatarFallback, AvatarImage, Badge } from '@vendure/dashboard';
+import { Avatar, AvatarFallback, AvatarImage, Badge, DataDisplayComponentProps } from '@vendure/dashboard';
 import { User, Users, Building } from 'lucide-react';
 
-interface AvatarDisplayProps {
-    value: string; // Image URL or identifier
+interface AvatarDisplayProps extends DataDisplayComponentProps {
     name?: string;
     type?: 'user' | 'customer' | 'admin' | 'system';
     size?: 'sm' | 'md' | 'lg';
@@ -377,11 +370,10 @@ export function AvatarDisplayComponent({
 ### Progress/Percentage Display
 
 ```tsx title="src/plugins/my-plugin/dashboard/components/progress-display.tsx"
-import { Progress, Badge } from '@vendure/dashboard';
+import { Progress, Badge, DataDisplayComponentProps } from '@vendure/dashboard';
 import { CheckCircle, AlertCircle, Clock } from 'lucide-react';
 
-interface ProgressDisplayProps {
-    value: number; // Percentage (0-100)
+interface ProgressDisplayProps extends DataDisplayComponentProps {
     total?: number;
     current?: number;
     label?: string;
@@ -490,24 +482,24 @@ For list contexts, balance information density with readability:
 
 ## Component Props
 
-Display components typically receive these props:
+Display components receive these standard props through the `DataDisplayComponentProps` interface:
 
 ```tsx
-interface DisplayComponentProps {
+import { DataDisplayComponentProps } from '@vendure/dashboard';
+
+// The DataDisplayComponentProps interface provides:
+interface DataDisplayComponentProps {
     value: any; // The value to display
-
-    // Context that may be available
-    fieldName?: string; // The name of the field
-    entityType?: string; // Type of entity being displayed
-    entityId?: string; // ID of the entity
-
-    // Display configuration
-    compact?: boolean; // Whether to show compact version
-    interactive?: boolean; // Whether component should be interactive
-
-    // Additional data for complex displays
-    metadata?: Record<string, any>;
+    [key: string]: any; // Additional props that may be passed
 }
+
+// Common additional props that may be available:
+// - fieldName?: string         // The name of the field
+// - entityType?: string        // Type of entity being displayed
+// - entityId?: string          // ID of the entity
+// - compact?: boolean          // Whether to show compact version
+// - interactive?: boolean      // Whether component should be interactive
+// - metadata?: Record<string, any> // Additional data for complex displays
 ```
 
 ## Best Practices
@@ -559,3 +551,9 @@ Display components are primarily for data visualization. If you need interactive
 :::warning Context Awareness
 Display components should adapt to their context. A component used in a table should be more compact than the same component used in a detail view.
 :::
+
+## Related Guides
+
+- **[Custom Form Elements Overview](./index)** - Learn about the unified system for custom field components, input components, and display components
+- **[Input Components](./input-components)** - Create custom input controls for forms with specialized functionality
+- **[Component Targeting Guide](./targeting-guide)** - Master the targeting system to precisely control where your components appear

@@ -143,7 +143,16 @@ const sidebars = {
                 'guides/extending-the-dashboard/navigation/index',
                 'guides/extending-the-dashboard/page-blocks/index',
                 'guides/extending-the-dashboard/action-bar-items/index',
-                'guides/extending-the-dashboard/custom-form-components/index',
+                {
+                    type: 'category',
+                    label: 'Custom Form Elements',
+                    link: { type: 'doc', id: 'guides/extending-the-dashboard/custom-form-components/index' },
+                    items: [
+                        'guides/extending-the-dashboard/custom-form-components/input-components',
+                        'guides/extending-the-dashboard/custom-form-components/display-components',
+                        'guides/extending-the-dashboard/custom-form-components/targeting-guide',
+                    ],
+                },
                 'guides/extending-the-dashboard/tech-stack/index',
             ],
         },

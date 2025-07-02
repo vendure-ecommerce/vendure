@@ -385,26 +385,30 @@ interface CustomFormComponentInputProps {
 
 ### Input Component Props
 
-Input components receive standard input props:
+Input components receive standard input props through the `DataInputComponentProps` interface:
 
 ```tsx
-interface InputComponentProps {
+import { DataInputComponentProps } from '@vendure/dashboard';
+
+// The DataInputComponentProps interface provides:
+interface DataInputComponentProps {
     value: any;
     onChange: (value: any) => void;
-    disabled?: boolean;
-    placeholder?: string;
-    // ... other standard input props
+    [key: string]: any; // Additional props that may be passed
 }
 ```
 
 ### Display Component Props
 
-Display components receive the value and any additional context:
+Display components receive the value and any additional context through the `DataDisplayComponentProps` interface:
 
 ```tsx
-interface DisplayComponentProps {
+import { DataDisplayComponentProps } from '@vendure/dashboard';
+
+// The DataDisplayComponentProps interface provides:
+interface DataDisplayComponentProps {
     value: any;
-    // ... other context props that may be passed
+    [key: string]: any; // Additional props that may be passed
 }
 ```
 
@@ -650,3 +654,11 @@ Always import UI components from the `@vendure/dashboard` package rather than cr
 :::
 
 The unified custom form elements system gives you complete flexibility in how data is presented and edited in the dashboard, while maintaining seamless integration with React Hook Form and the dashboard's design system.
+
+## Further Reading
+
+For detailed information about specific types of custom form elements, see these dedicated guides:
+
+- **[Input Components](./input-components)** - Learn how to create custom input controls for forms with advanced examples like multi-currency inputs, auto-generating slugs, and rich text editors
+- **[Display Components](./display-components)** - Discover how to customize data visualization with enhanced displays for prices, dates, avatars, and progress indicators
+- **[Component Targeting Guide](./targeting-guide)** - Master the targeting system to precisely control where your components appear using pageId, blockId, and field identifiers

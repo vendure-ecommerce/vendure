@@ -19,18 +19,11 @@ When a form renders a field that matches these criteria, your custom input compo
 Input components receive standard input props with `value`, `onChange`, and other common properties:
 
 ```tsx title="src/plugins/my-plugin/dashboard/components/email-input.tsx"
-import { Input, Button } from '@vendure/dashboard';
+import { Input, Button, DataInputComponentProps } from '@vendure/dashboard';
 import { Mail, Check, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
-interface EmailInputProps {
-    value: string;
-    onChange: (value: string) => void;
-    disabled?: boolean;
-    placeholder?: string;
-}
-
-export function EmailInputComponent({ value, onChange, disabled, placeholder }: EmailInputProps) {
+export function EmailInputComponent({ value, onChange, disabled, placeholder }: DataInputComponentProps) {
     const [isValid, setIsValid] = useState(false);
     const [isChecking, setIsChecking] = useState(false);
 
@@ -129,17 +122,12 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
+    DataInputComponentProps,
 } from '@vendure/dashboard';
 import { useState } from 'react';
 import { DollarSign, Euro, Pound, Yen } from 'lucide-react';
 
-interface PriceInputProps {
-    value: number;
-    onChange: (value: number) => void;
-    disabled?: boolean;
-}
-
-export function PriceInputComponent({ value, onChange, disabled }: PriceInputProps) {
+export function PriceInputComponent({ value, onChange, disabled }: DataInputComponentProps) {
     const [currency, setCurrency] = useState('USD');
 
     const currencies = [
@@ -210,14 +198,11 @@ export function PriceInputComponent({ value, onChange, disabled }: PriceInputPro
 ### Auto-generating Slug Input
 
 ```tsx title="src/plugins/my-plugin/dashboard/components/slug-input.tsx"
-import { Input, Button, Switch } from '@vendure/dashboard';
+import { Input, Button, Switch, DataInputComponentProps } from '@vendure/dashboard';
 import { useState, useEffect } from 'react';
 import { RefreshCw, Lock, Unlock } from 'lucide-react';
 
-interface SlugInputProps {
-    value: string;
-    onChange: (value: string) => void;
-    disabled?: boolean;
+interface SlugInputProps extends DataInputComponentProps {
     // Additional context that might be passed
     formData?: { name?: string; title?: string };
 }
@@ -293,18 +278,11 @@ export function SlugInputComponent({ value, onChange, disabled, formData }: Slug
 ### Rich Text Input with Toolbar
 
 ```tsx title="src/plugins/my-plugin/dashboard/components/rich-text-input.tsx"
-import { Button, Card, CardContent } from '@vendure/dashboard';
+import { Button, Card, CardContent, DataInputComponentProps } from '@vendure/dashboard';
 import { useState, useRef } from 'react';
 import { Bold, Italic, Underline, Link, List, ListOrdered } from 'lucide-react';
 
-interface RichTextInputProps {
-    value: string;
-    onChange: (value: string) => void;
-    disabled?: boolean;
-    placeholder?: string;
-}
-
-export function RichTextInputComponent({ value, onChange, disabled, placeholder }: RichTextInputProps) {
+export function RichTextInputComponent({ value, onChange, disabled, placeholder }: DataInputComponentProps) {
     const editorRef = useRef<HTMLDivElement>(null);
     const [isFocused, setIsFocused] = useState(false);
 
@@ -445,21 +423,25 @@ If you're unsure about the exact `pageId` or `blockId`, you can inspect the DOM 
 
 ## Component Props
 
-Input components receive these standard props:
+Input components receive these standard props through the `DataInputComponentProps` interface:
 
 ```tsx
-interface InputComponentProps {
+import { DataInputComponentProps } from '@vendure/dashboard';
+
+// The DataInputComponentProps interface provides:
+interface DataInputComponentProps {
     value: any; // Current field value
     onChange: (value: any) => void; // Function to update the value
-    disabled?: boolean; // Whether the input is disabled
-    placeholder?: string; // Placeholder text
-    required?: boolean; // Whether the field is required
-    readOnly?: boolean; // Whether the field is read-only
-
-    // Additional context that may be available
-    fieldName?: string; // The name of the field
-    formData?: Record<string, any>; // Other form data for context
+    [key: string]: any; // Additional props that may be passed
 }
+
+// Common additional props that may be available:
+// - disabled?: boolean          // Whether the input is disabled
+// - placeholder?: string        // Placeholder text
+// - required?: boolean         // Whether the field is required
+// - readOnly?: boolean         // Whether the field is read-only
+// - fieldName?: string         // The name of the field
+// - formData?: Record<string, any> // Other form data for context
 ```
 
 ## Best Practices
@@ -478,3 +460,9 @@ Input components completely replace the default input for the targeted field. Ma
 :::warning
 Input components should be focused and specific. If you need to customize multiple fields in a form, consider using custom form components or page blocks instead.
 :::
+
+## Related Guides
+
+- **[Custom Form Elements Overview](./index)** - Learn about the unified system for custom field components, input components, and display components
+- **[Display Components](./display-components)** - Create custom readonly data visualizations for tables, detail views, and forms
+- **[Component Targeting Guide](./targeting-guide)** - Master the targeting system to precisely control where your components appear
