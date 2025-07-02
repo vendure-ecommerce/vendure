@@ -33,7 +33,7 @@ interface ShippingCalculatorSelectorProps {
     onChange: (value: ConfigurableOperationInputType | undefined) => void;
 }
 
-export function ShippingCalculatorSelector({ value, onChange }: ShippingCalculatorSelectorProps) {
+export function ShippingCalculatorSelector({ value, onChange }: Readonly<ShippingCalculatorSelectorProps>) {
     const { data: calculatorsData } = useQuery({
         queryKey: ['shippingCalculators'],
         queryFn: () => api.query(shippingCalculatorsDocument),

@@ -10,7 +10,7 @@ interface OrderLineCustomFieldsFormProps {
     form: UseFormReturn<any>;
 }
 
-export function OrderLineCustomFieldsForm({ onUpdate, form }: OrderLineCustomFieldsFormProps) {
+export function OrderLineCustomFieldsForm({ onUpdate, form }: Readonly<OrderLineCustomFieldsFormProps>) {
     const onSubmit = (values: any) => {
         onUpdate(values.input?.customFields);
     };

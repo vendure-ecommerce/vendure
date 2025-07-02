@@ -15,7 +15,7 @@ interface ZoneCountriesTableProps {
     canAddCountries?: boolean;
 }
 
-export function ZoneCountriesTable({ zoneId, canAddCountries = false }: ZoneCountriesTableProps) {
+export function ZoneCountriesTable({ zoneId, canAddCountries = false }: Readonly<ZoneCountriesTableProps>) {
     const { data, refetch } = useQuery({
         queryKey: ['zone', zoneId],
         queryFn: () => api.query(zoneMembersQuery, { zoneId }),

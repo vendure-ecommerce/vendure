@@ -28,7 +28,7 @@ interface CustomFieldsFormProps {
     formPathPrefix?: string;
 }
 
-export function CustomFieldsForm({ entityType, control, formPathPrefix }: CustomFieldsFormProps) {
+export function CustomFieldsForm({ entityType, control, formPathPrefix }: Readonly<CustomFieldsFormProps>) {
     const {
         settings: { displayLanguage },
     } = useUserSettings();

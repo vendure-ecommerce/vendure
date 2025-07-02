@@ -40,7 +40,7 @@ export interface EditFacetValueProps {
     onSuccess?: () => void;
 }
 
-export function EditFacetValue({ facetValueId, onSuccess }: EditFacetValueProps) {
+export function EditFacetValue({ facetValueId, onSuccess }: Readonly<EditFacetValueProps>) {
     const {
         settings: { contentLanguage },
     } = useUserSettings();

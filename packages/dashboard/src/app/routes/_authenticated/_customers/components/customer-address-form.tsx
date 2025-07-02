@@ -58,7 +58,7 @@ interface CustomerAddressFormProps {
     onCancel?: () => void;
 }
 
-export function CustomerAddressForm({ address, onSubmit, onCancel }: CustomerAddressFormProps) {
+export function CustomerAddressForm({ address, onSubmit, onCancel }: Readonly<CustomerAddressFormProps>) {
     const { i18n } = useLingui();
 
     // Fetch available countries

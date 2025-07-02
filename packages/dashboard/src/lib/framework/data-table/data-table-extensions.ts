@@ -1,4 +1,4 @@
-import { BulkAction } from '@/vdb/framework/data-table/data-table-types.js';
+import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
 import { DocumentNode } from 'graphql';
 
 import { globalRegistry } from '../registry/global-registry.js';

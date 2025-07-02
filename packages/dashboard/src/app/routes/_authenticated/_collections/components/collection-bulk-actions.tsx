@@ -2,9 +2,8 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { AssignToChannelBulkAction } from '@/vdb/components/shared/assign-to-channel-bulk-action.js';
 import { RemoveFromChannelBulkAction } from '@/vdb/components/shared/remove-from-channel-bulk-action.js';
-import { BulkActionComponent } from '@/vdb/framework/data-table/data-table-types.js';
 import { api } from '@/vdb/graphql/api.js';
-import { useChannel } from '@/vdb/index.js';
+import { BulkActionComponent, useChannel } from '@/vdb/index.js';
 import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
 import { DuplicateBulkAction } from '../../../../common/duplicate-bulk-action.js';
 import {

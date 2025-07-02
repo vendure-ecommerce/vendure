@@ -24,7 +24,7 @@ export function useHistoryTimeline() {
     return useContext(HistoryTimelineContext);
 }
 
-export function HistoryTimeline({ children, onEditNote, onDeleteNote }: HistoryTimelineProps) {
+export function HistoryTimeline({ children, onEditNote, onDeleteNote }: Readonly<HistoryTimelineProps>) {
     const [noteEditorOpen, setNoteEditorOpen] = useState(false);
     const [noteEditorNote, setNoteEditorNote] = useState<NoteEditorNote>({
         noteId: '',

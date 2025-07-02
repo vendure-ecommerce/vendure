@@ -28,7 +28,7 @@ export interface FacetValuesTableProps {
     facetId: string;
 }
 
-export function FacetValuesTable({ facetId }: FacetValuesTableProps) {
+export function FacetValuesTable({ facetId }: Readonly<FacetValuesTableProps>) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);

@@ -18,7 +18,7 @@ interface PermissionsGridProps {
     readonly?: boolean;
 }
 
-export function PermissionsGrid({ value, onChange, readonly = false }: PermissionsGridProps) {
+export function PermissionsGrid({ value, onChange, readonly = false }: Readonly<PermissionsGridProps>) {
     const { i18n } = useLingui();
     const groupedPermissions = useGroupedPermissions();
 

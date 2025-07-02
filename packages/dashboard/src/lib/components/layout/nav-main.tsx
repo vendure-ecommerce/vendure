@@ -28,7 +28,7 @@ function sortByOrder<T extends { order?: number; title: string }>(a: T, b: T) {
     return orderA - orderB;
 }
 
-export function NavMain({ items }: { items: Array<NavMenuSection | NavMenuItem> }) {
+export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavMenuItem> }>) {
     const location = useLocation();
     // State to track which bottom section is currently open
     const [openBottomSectionId, setOpenBottomSectionId] = React.useState<string | null>(null);

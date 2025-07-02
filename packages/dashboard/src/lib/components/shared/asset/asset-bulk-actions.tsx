@@ -32,7 +32,7 @@ interface AssetBulkActionsProps {
     refetch: () => void;
 }
 
-export function AssetBulkActions({ selection, bulkActions, refetch }: AssetBulkActionsProps) {
+export function AssetBulkActions({ selection, bulkActions, refetch }: Readonly<AssetBulkActionsProps>) {
     const { pageId } = usePage();
     const { blockId } = usePageBlock();
 

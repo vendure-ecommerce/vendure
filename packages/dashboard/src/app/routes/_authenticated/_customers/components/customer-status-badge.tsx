@@ -8,7 +8,7 @@ export interface CustomerStatusBadgeProps {
     user?: { verified: boolean } | null;
 }
 
-export function CustomerStatusBadge({ user }: CustomerStatusBadgeProps) {
+export function CustomerStatusBadge({ user }: Readonly<CustomerStatusBadgeProps>) {
     const status = user ? (user.verified ? 'verified' : 'registered') : 'guest';
     return (
         <Badge variant="outline">

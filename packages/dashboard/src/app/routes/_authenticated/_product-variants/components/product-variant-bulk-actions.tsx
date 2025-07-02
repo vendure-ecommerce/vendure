@@ -5,9 +5,8 @@ import { DataTableBulkActionItem } from '@/vdb/components/data-table/data-table-
 import { AssignToChannelBulkAction } from '@/vdb/components/shared/assign-to-channel-bulk-action.js';
 import { usePriceFactor } from '@/vdb/components/shared/assign-to-channel-dialog.js';
 import { RemoveFromChannelBulkAction } from '@/vdb/components/shared/remove-from-channel-bulk-action.js';
-import { BulkActionComponent } from '@/vdb/framework/data-table/data-table-types.js';
 import { api } from '@/vdb/graphql/api.js';
-import { useChannel, usePaginatedList } from '@/vdb/index.js';
+import { BulkActionComponent, useChannel, usePaginatedList } from '@/vdb/index.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
 

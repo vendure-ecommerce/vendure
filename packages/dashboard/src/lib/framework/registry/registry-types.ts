@@ -1,14 +1,14 @@
+import {
+    BulkAction,
+    DashboardActionBarItem,
+    DashboardPageBlockDefinition,
+    DashboardWidgetDefinition,
+} from '@/vdb/framework/extension-api/types/index.js';
 import { DocumentNode } from 'graphql';
 import React from 'react';
 
-import { DashboardAlertDefinition } from '../alert/types.js';
 import { DataDisplayComponent, DataInputComponent } from '../component-registry/component-registry.js';
-import { DashboardWidgetDefinition } from '../dashboard-widget/types.js';
-import { BulkAction } from '../data-table/data-table-types.js';
-import {
-    DashboardActionBarItem,
-    DashboardPageBlockDefinition,
-} from '../extension-api/extension-api-types.js';
+import { DashboardAlertDefinition } from '../extension-api/types/alerts.js';
 import { CustomFormComponentInputProps } from '../form-engine/custom-form-component.js';
 import { NavMenuConfig } from '../nav-menu/nav-menu-extensions.js';
 

@@ -17,7 +17,7 @@ export interface FacetValuesSheetProps {
     children?: React.ReactNode;
 }
 
-export function FacetValuesSheet({ facetName, facetId, children }: FacetValuesSheetProps) {
+export function FacetValuesSheet({ facetName, facetId, children }: Readonly<FacetValuesSheetProps>) {
     return (
         <Sheet>
             <SheetTrigger asChild>

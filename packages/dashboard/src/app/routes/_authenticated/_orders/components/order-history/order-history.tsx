@@ -17,7 +17,12 @@ interface OrderHistoryProps {
     onDeleteNote?: (entryId: string) => void;
 }
 
-export function OrderHistory({ historyEntries, onAddNote, onUpdateNote, onDeleteNote }: OrderHistoryProps) {
+export function OrderHistory({
+    historyEntries,
+    onAddNote,
+    onUpdateNote,
+    onDeleteNote,
+}: Readonly<OrderHistoryProps>) {
     const getTimelineIcon = (entry: OrderHistoryProps['historyEntries'][0]) => {
         switch (entry.type) {
             case 'ORDER_PAYMENT_TRANSITION':

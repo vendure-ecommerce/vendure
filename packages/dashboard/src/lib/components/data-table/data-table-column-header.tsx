@@ -8,7 +8,7 @@ export interface DataTableColumnHeaderProps {
     headerContext: HeaderContext<any, any>;
 }
 
-export function DataTableColumnHeader({ headerContext, customConfig }: DataTableColumnHeaderProps) {
+export function DataTableColumnHeader({ headerContext, customConfig }: Readonly<DataTableColumnHeaderProps>) {
     const { column } = headerContext;
     const isSortable = column.getCanSort();
 

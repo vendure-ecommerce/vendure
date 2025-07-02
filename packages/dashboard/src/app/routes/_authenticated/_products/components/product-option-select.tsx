@@ -33,7 +33,12 @@ interface ProductOptionSelectProps {
     onCreateOption: (name: string) => void;
 }
 
-export function ProductOptionSelect({ group, value, onChange, onCreateOption }: ProductOptionSelectProps) {
+export function ProductOptionSelect({
+    group,
+    value,
+    onChange,
+    onCreateOption,
+}: Readonly<ProductOptionSelectProps>) {
     const [open, setOpen] = useState(false);
     const [newOptionInput, setNewOptionInput] = useState('');
     const { i18n } = useLingui();

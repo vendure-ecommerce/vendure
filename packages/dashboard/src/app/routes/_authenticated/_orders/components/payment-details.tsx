@@ -8,7 +8,7 @@ type PaymentDetailsProps = {
     currencyCode: string;
 };
 
-export function PaymentDetails({ payment, currencyCode }: PaymentDetailsProps) {
+export function PaymentDetails({ payment, currencyCode }: Readonly<PaymentDetailsProps>) {
     const { formatCurrency, formatDate } = useLocalFormat();
     const t = (key: string) => key;
 
