@@ -55,22 +55,6 @@ defineDashboardExtension({
                 component: TextareaCustomField,
             },
         ],
-        inputs: [
-            {
-                pageId: 'review-detail',
-                blockId: 'main-form',
-                field: 'body',
-                component: BodyInputComponent,
-            },
-        ],
-        displays: [
-            {
-                pageId: 'review-detail',
-                blockId: 'main-form',
-                field: 'response',
-                component: ResponseDisplay,
-            },
-        ],
     },
     detailForms: [
         {
@@ -103,6 +87,23 @@ defineDashboardExtension({
                     }
                 }
             `,
+        },
+        {
+            pageId: 'review-detail',
+            inputs: [
+                {
+                    blockId: 'main-form',
+                    field: 'body',
+                    component: BodyInputComponent,
+                },
+            ],
+            displays: [
+                {
+                    blockId: 'main-form',
+                    field: 'response',
+                    component: ResponseDisplay,
+                },
+            ],
         },
     ],
     dataTables: [

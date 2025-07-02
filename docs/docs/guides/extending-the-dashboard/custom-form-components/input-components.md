@@ -14,6 +14,57 @@ Input components are targeted to specific locations in the dashboard using three
 
 When a form renders a field that matches these criteria, your custom input component will be used instead of the default input.
 
+## Registration Method
+
+Input components are registered by co-locating them with detail form definitions. This approach is consistent and avoids repeating the `pageId`. You can also include display components in the same definition:
+
+```tsx title="src/plugins/my-plugin/dashboard/index.tsx"
+import { defineDashboardExtension } from '@vendure/dashboard';
+import {
+    DescriptionInputComponent,
+    PriceInputComponent,
+    SlugInputComponent,
+    StatusDisplay,
+} from './components';
+
+export default defineDashboardExtension({
+    detailForms: [
+        {
+            pageId: 'product-variant-detail',
+            inputs: [
+                {
+                    blockId: 'main-form',
+                    field: 'description',
+                    component: DescriptionInputComponent,
+                },
+            ],
+            displays: [
+                {
+                    blockId: 'main-form',
+                    field: 'status',
+                    component: StatusDisplay,
+                },
+            ],
+        },
+        {
+            pageId: 'product-detail',
+            inputs: [
+                {
+                    blockId: 'product-form',
+                    field: 'price',
+                    component: PriceInputComponent,
+                },
+                {
+                    blockId: 'product-form',
+                    field: 'slug',
+                    component: SlugInputComponent,
+                },
+            ],
+        },
+    ],
+});
+```
+
 ## Basic Input Component
 
 Input components receive standard input props with `value`, `onChange`, and other common properties:
@@ -71,42 +122,6 @@ export function EmailInputComponent({ value, onChange, disabled, placeholder }: 
         </div>
     );
 }
-```
-
-## Registration and Targeting
-
-Register your input component and specify where it should be used:
-
-```tsx title="src/plugins/my-plugin/dashboard/index.tsx"
-import { defineDashboardExtension } from '@vendure/dashboard';
-import { EmailInputComponent } from './components/email-input';
-import { PriceInputComponent } from './components/price-input';
-import { SlugInputComponent } from './components/slug-input';
-
-export default defineDashboardExtension({
-    customFormComponents: {
-        inputs: [
-            {
-                pageId: 'customer-detail',
-                blockId: 'customer-info',
-                field: 'emailAddress',
-                component: EmailInputComponent,
-            },
-            {
-                pageId: 'product-detail',
-                blockId: 'product-form',
-                field: 'price',
-                component: PriceInputComponent,
-            },
-            {
-                pageId: 'product-detail',
-                blockId: 'product-form',
-                field: 'slug',
-                component: SlugInputComponent,
-            },
-        ],
-    },
-});
 ```
 
 ## Advanced Examples

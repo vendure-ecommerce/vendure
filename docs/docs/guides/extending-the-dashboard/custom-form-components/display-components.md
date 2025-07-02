@@ -2,25 +2,75 @@
 title: 'Display Components'
 ---
 
-Display components allow you to customize how data is displayed in readonly contexts throughout the dashboard. They are used in tables, detail views, form previews, and other places where data needs to be visualized but not edited.
+Display components allow you to customize how data is rendered in forms, tables, detail views, and other places in the dashboard. They provide a way to create rich visualizations and presentations of your data beyond the standard text rendering.
 
 ## How Display Components Work
 
-Display components are targeted to specific locations using the same targeting system as input components:
+Display components are targeted to specific locations in the dashboard using three identifiers:
 
 - **pageId**: The page where the component should appear (e.g., 'product-detail', 'order-list')
-- **blockId**: The specific section within that page (e.g., 'product-info', 'order-table')
-- **field**: The field whose display should be customized (e.g., 'status', 'price', 'createdAt')
+- **blockId**: The block within that page (e.g., 'product-form', 'order-table')
+- **field**: The specific field to customize (e.g., 'status', 'price', 'createdAt')
 
-When data for a matching field is displayed, your custom display component will be used instead of the default text display.
+When the dashboard renders a field that matches these criteria, your custom display component will be used instead of the default rendering.
+
+## Registration Method
+
+Display components are registered by co-locating them with detail form definitions. This approach is consistent and avoids repeating the `pageId`. You can also include input components in the same definition:
+
+```tsx title="src/plugins/my-plugin/dashboard/index.tsx"
+import { defineDashboardExtension } from '@vendure/dashboard';
+import { StatusBadgeComponent, PriceDisplayComponent, MyPriceInput } from './components';
+
+export default defineDashboardExtension({
+    detailForms: [
+        {
+            pageId: 'product-detail',
+            displays: [
+                {
+                    blockId: 'main-form',
+                    field: 'status',
+                    component: StatusBadgeComponent,
+                },
+                {
+                    blockId: 'main-form',
+                    field: 'price',
+                    component: PriceDisplayComponent,
+                },
+            ],
+            inputs: [
+                {
+                    blockId: 'main-form',
+                    field: 'price',
+                    component: MyPriceInput,
+                },
+            ],
+        },
+        {
+            pageId: 'order-detail',
+            displays: [
+                {
+                    blockId: 'order-summary',
+                    field: 'status',
+                    component: StatusBadgeComponent,
+                },
+            ],
+        },
+    ],
+});
+```
 
 ## Basic Display Component
 
-Display components receive the `value` to display and may receive additional context:
+Display components receive the field value and additional context properties:
 
 ```tsx title="src/plugins/my-plugin/dashboard/components/status-badge.tsx"
-import { Badge, DataDisplayComponentProps } from '@vendure/dashboard';
+import { Badge } from '@vendure/dashboard';
 import { CheckCircle, Clock, XCircle, AlertCircle } from 'lucide-react';
+
+interface StatusBadgeProps {
+    value: string;
+}
 
 export function StatusBadgeComponent({ value }: DataDisplayComponentProps) {
     const getStatusConfig = (status: string) => {

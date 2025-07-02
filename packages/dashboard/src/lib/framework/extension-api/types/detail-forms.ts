@@ -1,4 +1,59 @@
 import { DocumentNode } from 'graphql';
+import type React from 'react';
+
+/**
+ * @description
+ * Allows you to define custom input components for specific fields in detail forms.
+ * The pageId is already defined in the detail form extension, so only the blockId and field are needed.
+ *
+ * @docsCategory extensions
+ * @since 3.4.0
+ */
+export interface DashboardDetailFormInputComponent {
+    /**
+     * @description
+     * The ID of the block where this input component should be used.
+     */
+    blockId: string;
+    /**
+     * @description
+     * The name of the field where this input component should be used.
+     */
+    field: string;
+    /**
+     * @description
+     * The React component that will be rendered as the input.
+     * It should accept `value`, `onChange`, and other standard input props.
+     */
+    component: React.ComponentType<{ value: any; onChange: (value: any) => void; [key: string]: any }>;
+}
+
+/**
+ * @description
+ * Allows you to define custom display components for specific fields in detail forms.
+ * The pageId is already defined in the detail form extension, so only the blockId and field are needed.
+ *
+ * @docsCategory extensions
+ * @since 3.4.0
+ */
+export interface DashboardDetailFormDisplayComponent {
+    /**
+     * @description
+     * The ID of the block where this display component should be used.
+     */
+    blockId: string;
+    /**
+     * @description
+     * The name of the field where this display component should be used.
+     */
+    field: string;
+    /**
+     * @description
+     * The React component that will be rendered as the display.
+     * It should accept `value` and other standard display props.
+     */
+    component: React.ComponentType<{ value: any; [key: string]: any }>;
+}
 
 export interface DashboardDetailFormExtensionDefinition {
     /**
@@ -10,4 +65,14 @@ export interface DashboardDetailFormExtensionDefinition {
      * @description
      */
     extendDetailDocument?: string | DocumentNode | (() => DocumentNode | string);
+    /**
+     * @description
+     * Custom input components for specific fields in the detail form.
+     */
+    inputs?: DashboardDetailFormInputComponent[];
+    /**
+     * @description
+     * Custom display components for specific fields in the detail form.
+     */
+    displays?: DashboardDetailFormDisplayComponent[];
 }

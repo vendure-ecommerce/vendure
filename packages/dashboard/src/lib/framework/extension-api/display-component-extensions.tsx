@@ -4,7 +4,6 @@ import { Money } from '@/components/data-display/money.js';
 import { VendureImage } from '@/components/shared/vendure-image.js';
 import { DataDisplayComponent } from '../component-registry/component-registry.js';
 import { globalRegistry } from '../registry/global-registry.js';
-import { DashboardDisplayComponent } from './types/form-components.js';
 
 globalRegistry.register('displayComponents', new Map<string, DataDisplayComponent>());
 
@@ -46,7 +45,17 @@ export function generateDisplayComponentKey(pageId: string, blockId: string, fie
     return `${pageId}_${blockId}_${field}`;
 }
 
-export function addDisplayComponent({ pageId, blockId, field, component }: DashboardDisplayComponent) {
+export function addDisplayComponent({
+    pageId,
+    blockId,
+    field,
+    component,
+}: {
+    pageId: string;
+    blockId: string;
+    field: string;
+    component: React.ComponentType<{ value: any; [key: string]: any }>;
+}) {
     const displayComponents = globalRegistry.get('displayComponents');
 
     // Generate the key using the helper function

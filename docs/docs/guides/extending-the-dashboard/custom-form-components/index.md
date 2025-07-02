@@ -12,17 +12,49 @@ The dashboard allows you to create custom form elements that provide complete co
 Custom form components are heavily bound to the workflow of React Hook Form. The component props interface essentially passes React Hook Form render props (`field`, `fieldState`, `formState`) directly to your component, providing seamless integration with the form state management system.
 :::
 
-## Unified Registration System
+## Registration Approach
 
-All custom form elements are registered through the unified `customFormComponents` property in your dashboard extension:
+Input and display components are registered by co-locating them with detail form definitions. This keeps everything better organized and avoids repeating the `pageId`:
+
+```tsx title="src/plugins/my-plugin/dashboard/index.tsx"
+import { defineDashboardExtension } from '@vendure/dashboard';
+import { MyDescriptionInput, MyPriceInput, StatusBadgeDisplay } from './components';
+
+export default defineDashboardExtension({
+    detailForms: [
+        {
+            pageId: 'product-variant-detail',
+            inputs: [
+                {
+                    blockId: 'main-form',
+                    field: 'description',
+                    component: MyDescriptionInput,
+                },
+                {
+                    blockId: 'main-form',
+                    field: 'price',
+                    component: MyPriceInput,
+                },
+            ],
+            displays: [
+                {
+                    blockId: 'main-form',
+                    field: 'status',
+                    component: StatusBadgeDisplay,
+                },
+            ],
+        },
+    ],
+});
+```
+
+Custom field components continue to use the centralized registration approach:
 
 ```tsx title="src/plugins/my-plugin/dashboard/index.tsx"
 import { defineDashboardExtension } from '@vendure/dashboard';
 import { ColorPickerComponent } from './components/color-picker';
 import { RichTextEditorComponent } from './components/rich-text-editor';
 import { TagsInputComponent } from './components/tags-input';
-import { PriceInputComponent } from './components/price-input';
-import { StatusBadgeComponent } from './components/status-badge';
 
 export default defineDashboardExtension({
     customFormComponents: {
@@ -39,26 +71,6 @@ export default defineDashboardExtension({
             {
                 id: 'tags-input',
                 component: TagsInputComponent,
-            },
-        ],
-
-        // Input components for specific form fields
-        inputs: [
-            {
-                pageId: 'product-detail',
-                blockId: 'product-form',
-                field: 'price',
-                component: PriceInputComponent,
-            },
-        ],
-
-        // Display components for readonly data
-        displays: [
-            {
-                pageId: 'order-detail',
-                blockId: 'order-summary',
-                field: 'status',
-                component: StatusBadgeComponent,
             },
         ],
     },
@@ -124,52 +136,6 @@ export function ColorPickerComponent({ field, fieldState }: CustomFormComponentI
         </div>
     );
 }
-```
-
-### Using Custom Field Components
-
-Once registered, reference your custom field components in your custom field definitions:
-
-```ts title="src/plugins/my-plugin/my-plugin.ts"
-import { PluginCommonModule, VendurePlugin } from '@vendure/core';
-
-@VendurePlugin({
-    imports: [PluginCommonModule],
-    configuration: config => {
-        config.customFields.Product.push(
-            {
-                name: 'brandColor',
-                type: 'string',
-                label: [{ languageCode: LanguageCode.en, value: 'Brand Color' }],
-                description: [
-                    { languageCode: LanguageCode.en, value: 'Primary brand color for this product' },
-                ],
-                ui: {
-                    component: 'color-picker', // References our registered component
-                },
-            },
-            {
-                name: 'description',
-                type: 'text',
-                label: [{ languageCode: LanguageCode.en, value: 'Rich Description' }],
-                ui: {
-                    component: 'rich-text-editor',
-                },
-            },
-            {
-                name: 'tags',
-                type: 'string',
-                label: [{ languageCode: LanguageCode.en, value: 'Product Tags' }],
-                ui: {
-                    component: 'tags-input',
-                },
-            },
-        );
-        return config;
-    },
-    dashboard: './dashboard/index.tsx',
-})
-export class MyPlugin {}
 ```
 
 ## Input Components

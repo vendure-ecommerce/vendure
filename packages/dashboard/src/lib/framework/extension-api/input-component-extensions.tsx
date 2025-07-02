@@ -5,7 +5,6 @@ import { Checkbox } from '@/components/ui/checkbox.js';
 import { Input } from '@/components/ui/input.js';
 import { DataInputComponent } from '../component-registry/component-registry.js';
 import { globalRegistry } from '../registry/global-registry.js';
-import { DashboardInputComponent } from './types/form-components.js';
 
 globalRegistry.register('inputComponents', new Map<string, DataInputComponent>());
 
@@ -46,7 +45,17 @@ export function generateInputComponentKey(pageId: string, blockId: string, field
     return `${pageId}_${blockId}_${field}`;
 }
 
-export function addInputComponent({ pageId, blockId, field, component }: DashboardInputComponent) {
+export function addInputComponent({
+    pageId,
+    blockId,
+    field,
+    component,
+}: {
+    pageId: string;
+    blockId: string;
+    field: string;
+    component: React.ComponentType<{ value: any; onChange: (value: any) => void; [key: string]: any }>;
+}) {
     const inputComponents = globalRegistry.get('inputComponents');
 
     // Generate the key using the helper function
