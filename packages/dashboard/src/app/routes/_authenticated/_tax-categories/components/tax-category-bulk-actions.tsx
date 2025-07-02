@@ -1,4 +1,4 @@
-import { BulkActionComponent } from '@/framework/data-table/data-table-types.js';
+import { BulkActionComponent } from '@/vdb/framework/data-table/data-table-types.js';
 import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
 import { deleteTaxCategoriesDocument } from '../tax-categories.graphql.js';
 

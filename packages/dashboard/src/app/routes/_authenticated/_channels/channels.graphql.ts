@@ -1,4 +1,4 @@
-import { graphql } from '@/graphql/graphql.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const channelItemFragment = graphql(`
     fragment ChannelItem on Channel {

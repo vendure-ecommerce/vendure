@@ -1,4 +1,4 @@
-import { useLocalFormat } from '@/hooks/use-local-format.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 
 export function DateTime({ value }: { value: string | Date }) {
     const { formatDate } = useLocalFormat();

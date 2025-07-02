@@ -1,8 +1,8 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.js';
-import { cn } from '@/lib/utils.js';
-import { Trans } from '@/lib/trans.js';
-import { PropsWithChildren, useRef, useEffect, useState, createContext, useContext } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/vdb/components/ui/card.js';
+import { Trans } from '@/vdb/lib/trans.js';
+import { cn } from '@/vdb/lib/utils.js';
 import type React from 'react';
+import { createContext, PropsWithChildren, useContext, useEffect, useRef, useState } from 'react';
 
 type WidgetDimensions = {
     width: number;

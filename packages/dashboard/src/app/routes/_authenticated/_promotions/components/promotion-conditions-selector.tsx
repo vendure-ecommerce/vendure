@@ -1,19 +1,22 @@
-import { graphql } from '@/graphql/graphql.js';
-import { configurableOperationDefFragment, ConfigurableOperationDefFragment } from '@/graphql/fragments.js';
-import { useQuery } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button.js';
+import { ConfigurableOperationInput } from '@/vdb/components/shared/configurable-operation-input.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
-import { Separator } from '@/components/ui/separator.js';
-import { Plus } from 'lucide-react';
-import { Trans } from '@/lib/trans.js';
-import { ConfigurableOperationInput } from '@/components/shared/configurable-operation-input.js';
-import { api } from '@/graphql/api.js';
+} from '@/vdb/components/ui/dropdown-menu.js';
+import { Separator } from '@/vdb/components/ui/separator.js';
+import { api } from '@/vdb/graphql/api.js';
+import {
+    configurableOperationDefFragment,
+    ConfigurableOperationDefFragment,
+} from '@/vdb/graphql/fragments.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { Trans } from '@/vdb/lib/trans.js';
+import { useQuery } from '@tanstack/react-query';
 import { ConfigurableOperationInput as ConfigurableOperationInputType } from '@vendure/common/lib/generated-types';
+import { Plus } from 'lucide-react';
 
 export const promotionConditionsDocument = graphql(
     `

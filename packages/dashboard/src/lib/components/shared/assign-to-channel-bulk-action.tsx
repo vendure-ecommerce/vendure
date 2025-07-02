@@ -1,10 +1,10 @@
 import { LayersIcon } from 'lucide-react';
 import { useState } from 'react';
 
-import { DataTableBulkActionItem } from '@/components/data-table/data-table-bulk-action-item.js';
-import { AssignToChannelDialog } from '@/components/shared/assign-to-channel-dialog.js';
-import { useChannel, usePaginatedList } from '@/index.js';
-import { Trans } from '@/lib/trans.js';
+import { DataTableBulkActionItem } from '@/vdb/components/data-table/data-table-bulk-action-item.js';
+import { AssignToChannelDialog } from '@/vdb/components/shared/assign-to-channel-dialog.js';
+import { useChannel, usePaginatedList } from '@/vdb/index.js';
+import { Trans } from '@/vdb/lib/trans.js';
 
 interface AssignToChannelBulkActionProps {
     selection: any[];

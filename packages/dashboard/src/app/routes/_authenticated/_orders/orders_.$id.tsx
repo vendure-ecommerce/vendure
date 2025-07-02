@@ -1,8 +1,8 @@
-import { ErrorPage } from '@/components/shared/error-page.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { Badge } from '@/components/ui/badge.js';
-import { Button } from '@/components/ui/button.js';
-import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
+import { ErrorPage } from '@/vdb/components/shared/error-page.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { Badge } from '@/vdb/components/ui/badge.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
 import {
     CustomFieldsPageBlock,
     Page,
@@ -11,10 +11,10 @@ import {
     PageBlock,
     PageLayout,
     PageTitle,
-} from '@/framework/layout-engine/page-layout.js';
-import { getDetailQueryOptions, useDetailPage } from '@/framework/page/use-detail-page.js';
-import { ResultOf } from '@/graphql/graphql.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/framework/layout-engine/page-layout.js';
+import { getDetailQueryOptions, useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { ResultOf } from '@/vdb/graphql/graphql.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { Link, createFileRoute, redirect } from '@tanstack/react-router';
 import { User } from 'lucide-react';
 import { toast } from 'sonner';

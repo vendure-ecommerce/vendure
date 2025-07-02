@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     Dialog,
     DialogContent,
@@ -6,8 +6,8 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from '@/components/ui/dialog.js';
-import { Trans } from '@/lib/trans.js';
+} from '@/vdb/components/ui/dialog.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { TestTube } from 'lucide-react';
 
 export function TestShippingMethodDialog() {

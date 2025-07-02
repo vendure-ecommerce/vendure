@@ -1,7 +1,7 @@
 import {
     DataDisplayComponent,
     DataInputComponent,
-} from '@/framework/component-registry/component-registry.js';
+} from '@/vdb/framework/component-registry/component-registry.js';
 import { DocumentNode } from 'graphql';
 
 /**

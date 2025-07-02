@@ -1,6 +1,6 @@
-import { api } from '@/graphql/api.js';
-import { ResultOf, graphql } from '@/graphql/graphql.js';
-import { useAuth } from '@/hooks/use-auth.js';
+import { api } from '@/vdb/graphql/api.js';
+import { ResultOf, graphql } from '@/vdb/graphql/graphql.js';
+import { useAuth } from '@/vdb/hooks/use-auth.js';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as React from 'react';
 

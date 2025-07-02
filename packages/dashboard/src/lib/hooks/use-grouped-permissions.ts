@@ -1,6 +1,5 @@
+import { ServerConfig } from '@/vdb/providers/server-config.js';
 import { useMemo } from 'react';
-
-import { ServerConfig } from '../providers/server-config.js';
 
 import { useServerConfig } from './use-server-config.js';
 

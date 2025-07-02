@@ -1,4 +1,4 @@
-import { removeReadonlyCustomFields } from '@/lib/utils.js';
+import { removeReadonlyCustomFields } from '@/vdb/lib/utils.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import {
     DefinedInitialDataOptions,

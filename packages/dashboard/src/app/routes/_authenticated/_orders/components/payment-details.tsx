@@ -1,6 +1,6 @@
-import { ResultOf } from '@/graphql/graphql.js';
-import { useLocalFormat } from '@/hooks/use-local-format.js';
-import { Trans } from '@/lib/trans.js';
+import { ResultOf } from '@/vdb/graphql/graphql.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { paymentWithRefundsFragment } from '../orders.graphql.js';
 
 type PaymentDetailsProps = {

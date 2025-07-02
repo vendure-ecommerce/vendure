@@ -5,14 +5,14 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from '@/components/ui/form.js';
-import { Input } from '@/components/ui/input.js';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.js';
-import { CustomFormComponent } from '@/framework/form-engine/custom-form-component.js';
-import { useCustomFieldConfig } from '@/hooks/use-custom-field-config.js';
-import { useUserSettings } from '@/hooks/use-user-settings.js';
-import { useLingui } from '@/lib/trans.js';
-import { customFieldConfigFragment } from '@/providers/server-config.js';
+} from '@/vdb/components/ui/form.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/vdb/components/ui/tabs.js';
+import { CustomFormComponent } from '@/vdb/framework/form-engine/custom-form-component.js';
+import { useCustomFieldConfig } from '@/vdb/hooks/use-custom-field-config.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
+import { useLingui } from '@/vdb/lib/trans.js';
+import { customFieldConfigFragment } from '@/vdb/providers/server-config.js';
 import { CustomFieldType } from '@vendure/common/lib/shared-types';
 import { ResultOf } from 'gql.tada';
 import React, { useMemo } from 'react';

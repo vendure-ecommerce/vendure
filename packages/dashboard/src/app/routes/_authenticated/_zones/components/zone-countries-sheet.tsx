@@ -1,6 +1,6 @@
-import { Button } from '@/components/ui/button.js';
-import { ScrollArea } from '@/components/ui/scroll-area.js';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { ScrollArea } from '@/vdb/components/ui/scroll-area.js';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/vdb/components/ui/sheet.js';
 import { ZoneCountriesTable } from './zone-countries-table.js';
 
 interface ZoneCountriesSheetProps {

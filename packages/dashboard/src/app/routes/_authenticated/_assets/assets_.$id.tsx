@@ -1,13 +1,13 @@
-import { AssetFocalPointEditor } from '@/components/shared/asset/asset-focal-point-editor.js';
-import { AssetPreviewSelector } from '@/components/shared/asset/asset-preview-selector.js';
-import { PreviewPreset } from '@/components/shared/asset/asset-preview.js';
-import { AssetProperties } from '@/components/shared/asset/asset-properties.js';
-import { Point } from '@/components/shared/asset/focal-point-control.js';
-import { ErrorPage } from '@/components/shared/error-page.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { VendureImage } from '@/components/shared/vendure-image.js';
-import { Button } from '@/components/ui/button.js';
-import { Label } from '@/components/ui/label.js';
+import { AssetFocalPointEditor } from '@/vdb/components/shared/asset/asset-focal-point-editor.js';
+import { AssetPreviewSelector } from '@/vdb/components/shared/asset/asset-preview-selector.js';
+import { PreviewPreset } from '@/vdb/components/shared/asset/asset-preview.js';
+import { AssetProperties } from '@/vdb/components/shared/asset/asset-properties.js';
+import { Point } from '@/vdb/components/shared/asset/focal-point-control.js';
+import { ErrorPage } from '@/vdb/components/shared/error-page.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { VendureImage } from '@/vdb/components/shared/vendure-image.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Label } from '@/vdb/components/ui/label.js';
 import {
     CustomFieldsPageBlock,
     Page,
@@ -16,10 +16,10 @@ import {
     PageBlock,
     PageLayout,
     PageTitle,
-} from '@/framework/layout-engine/page-layout.js';
-import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
-import { useDetailPage } from '@/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/framework/layout-engine/page-layout.js';
+import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
+import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { createFileRoute } from '@tanstack/react-router';
 import { FocusIcon } from 'lucide-react';
 import { useRef, useState } from 'react';

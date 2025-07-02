@@ -1,11 +1,11 @@
-import { DateTimeInput } from '@/components/data-input/datetime-input.js';
-import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
-import { Button } from '@/components/ui/button.js';
-import { Checkbox } from '@/components/ui/checkbox.js';
-import { Input } from '@/components/ui/input.js';
-import { NEW_ENTITY_PATH } from '@/constants.js';
-import { useDetailPage } from '@/framework/page/use-detail-page.js';
-import { Trans } from '@/lib/trans.js';
+import { DateTimeInput } from '@/vdb/components/data-input/datetime-input.js';
+import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Checkbox } from '@/vdb/components/ui/checkbox.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
+import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRoute, useNavigate } from '@tanstack/react-router';
 import { ResultOf, VariablesOf } from 'gql.tada';
@@ -16,7 +16,7 @@ import {
     getOperationVariablesFields,
 } from '../document-introspection/get-document-structure.js';
 
-import { TranslatableFormFieldWrapper } from '@/components/shared/translatable-form-field.js';
+import { TranslatableFormFieldWrapper } from '@/vdb/components/shared/translatable-form-field.js';
 import { ControllerRenderProps, FieldPath, FieldValues } from 'react-hook-form';
 import { useComponentRegistry } from '../component-registry/component-registry.js';
 import { generateInputComponentKey } from '../extension-api/input-component-extensions.js';

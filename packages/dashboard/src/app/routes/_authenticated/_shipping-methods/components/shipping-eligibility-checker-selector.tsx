@@ -1,15 +1,18 @@
-import { ConfigurableOperationInput } from '@/components/shared/configurable-operation-input.js';
-import { Button } from '@/components/ui/button.js';
+import { ConfigurableOperationInput } from '@/vdb/components/shared/configurable-operation-input.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
-import { api } from '@/graphql/api.js';
-import { configurableOperationDefFragment, ConfigurableOperationDefFragment } from '@/graphql/fragments.js';
-import { graphql } from '@/graphql/graphql.js';
-import { Trans } from '@/lib/trans.js';
+} from '@/vdb/components/ui/dropdown-menu.js';
+import { api } from '@/vdb/graphql/api.js';
+import {
+    configurableOperationDefFragment,
+    ConfigurableOperationDefFragment,
+} from '@/vdb/graphql/fragments.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { useQuery } from '@tanstack/react-query';
 import { ConfigurableOperationInput as ConfigurableOperationInputType } from '@vendure/common/lib/generated-types';
 import { Plus } from 'lucide-react';
@@ -30,7 +33,10 @@ interface ShippingEligibilityCheckerSelectorProps {
     onChange: (value: ConfigurableOperationInputType | undefined) => void;
 }
 
-export function ShippingEligibilityCheckerSelector({ value, onChange }: ShippingEligibilityCheckerSelectorProps) {
+export function ShippingEligibilityCheckerSelector({
+    value,
+    onChange,
+}: ShippingEligibilityCheckerSelectorProps) {
     const { data: checkersData } = useQuery({
         queryKey: ['shippingEligibilityCheckers'],
         queryFn: () => api.query(shippingEligibilityCheckersDocument),
@@ -44,20 +50,16 @@ export function ShippingEligibilityCheckerSelector({ value, onChange }: Shipping
         if (!checkerDef) {
             return;
         }
-        onChange(
-            {
-                code: checker.code,
-                arguments: checkerDef.args.map(arg => ({
-                    name: arg.name,
-                    value: arg.defaultValue != null ? arg.defaultValue.toString() : '',
-                })),
-            },
-        );
+        onChange({
+            code: checker.code,
+            arguments: checkerDef.args.map(arg => ({
+                name: arg.name,
+                value: arg.defaultValue != null ? arg.defaultValue.toString() : '',
+            })),
+        });
     };
 
-    const onOperationValueChange = (
-        newVal: ConfigurableOperationInputType,
-    ) => {
+    const onOperationValueChange = (newVal: ConfigurableOperationInputType) => {
         onChange(newVal);
     };
 
@@ -84,7 +86,9 @@ export function ShippingEligibilityCheckerSelector({ value, onChange }: Shipping
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline">
                             <Plus />
-                            <Trans context="Add new promotion action">Select Shipping Eligibility Checker</Trans>
+                            <Trans context="Add new promotion action">
+                                Select Shipping Eligibility Checker
+                            </Trans>
                         </Button>
                     </DropdownMenuTrigger>
                 )}

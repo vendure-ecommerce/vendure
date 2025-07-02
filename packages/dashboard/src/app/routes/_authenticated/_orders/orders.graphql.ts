@@ -1,5 +1,5 @@
-import { assetFragment, errorResultFragment } from '@/graphql/fragments.js';
-import { graphql } from '@/graphql/graphql.js';
+import { assetFragment, errorResultFragment } from '@/vdb/graphql/fragments.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const orderListDocument = graphql(`
     query GetOrders($options: OrderListOptions) {

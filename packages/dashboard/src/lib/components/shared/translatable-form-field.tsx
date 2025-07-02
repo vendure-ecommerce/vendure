@@ -1,4 +1,4 @@
-import { useUserSettings } from '@/hooks/use-user-settings.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { Controller, ControllerProps, FieldPath, FieldValues } from 'react-hook-form';
 import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from '../ui/form.js';
 import { FormFieldWrapper } from './form-field-wrapper.js';

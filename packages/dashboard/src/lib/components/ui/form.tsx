@@ -1,6 +1,6 @@
-import * as React from 'react';
 import * as LabelPrimitive from '@radix-ui/react-label';
 import { Slot } from '@radix-ui/react-slot';
+import * as React from 'react';
 import {
     Controller,
     FormProvider,
@@ -11,8 +11,8 @@ import {
     type FieldValues,
 } from 'react-hook-form';
 
-import { cn } from '@/lib/utils.js';
-import { Label } from '@/components/ui/label.js';
+import { Label } from '@/vdb/components/ui/label.js';
+import { cn } from '@/vdb/lib/utils.js';
 
 const Form = FormProvider;
 
@@ -138,4 +138,4 @@ function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
     );
 }
 
-export { useFormField, Form, FormItem, FormLabel, FormControl, FormDescription, FormMessage, FormField };
+export { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, useFormField };

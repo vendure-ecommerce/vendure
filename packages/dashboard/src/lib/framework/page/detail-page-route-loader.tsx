@@ -1,7 +1,7 @@
-import { NEW_ENTITY_PATH } from '@/constants.js';
+import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
 
-import { PageBreadcrumb } from '@/components/layout/generated-breadcrumbs.js';
-import { extendDetailFormQuery } from '@/framework/document-extension/extend-detail-form-query.js';
+import { PageBreadcrumb } from '@/vdb/components/layout/generated-breadcrumbs.js';
+import { extendDetailFormQuery } from '@/vdb/framework/document-extension/extend-detail-form-query.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { FileBaseRouteOptions, ParsedLocation } from '@tanstack/react-router';
 import { addCustomFields } from '../document-introspection/add-custom-fields.js';

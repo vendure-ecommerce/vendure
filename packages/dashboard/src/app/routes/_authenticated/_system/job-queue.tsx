@@ -1,8 +1,8 @@
-import { Badge } from '@/components/ui/badge.js';
-import { Button } from '@/components/ui/button.js';
-import { ListPage } from '@/framework/page/list-page.js';
-import { api } from '@/graphql/api.js';
-import { Trans } from '@/lib/trans.js';
+import { Badge } from '@/vdb/components/ui/badge.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { ListPage } from '@/vdb/framework/page/list-page.js';
+import { api } from '@/vdb/graphql/api.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { createFileRoute } from '@tanstack/react-router';
 import { formatRelative } from 'date-fns';
 import { Ban, CheckCircle2Icon, CircleXIcon, ClockIcon, LoaderIcon, RotateCcw } from 'lucide-react';
@@ -57,7 +57,11 @@ function JobQueuePage() {
             customizeColumns={{
                 createdAt: {
                     header: 'Created At',
-                    cell: ({ row }) => <div title={row.original.createdAt}>{formatRelative(new Date(row.original.createdAt), new Date())}</div>,
+                    cell: ({ row }) => (
+                        <div title={row.original.createdAt}>
+                            {formatRelative(new Date(row.original.createdAt), new Date())}
+                        </div>
+                    ),
                 },
                 data: {
                     header: 'Data',
