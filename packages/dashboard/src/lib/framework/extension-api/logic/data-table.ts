@@ -1,12 +1,8 @@
 import { parse } from 'graphql';
 
 import { addBulkAction, addListQueryDocument } from '../../data-table/data-table-extensions.js';
-import { addDetailQueryDocument } from '../../form-engine/custom-form-component-extensions.js';
 import { addDisplayComponent } from '../display-component-extensions.js';
-import {
-    DashboardDataTableExtensionDefinition,
-    DashboardDetailFormExtensionDefinition,
-} from '../types/index.js';
+import { DashboardDataTableExtensionDefinition } from '../types/index.js';
 
 /**
  * @description
@@ -58,24 +54,6 @@ export function registerDataTableExtensions(dataTables?: DashboardDataTableExten
                         displayComponent.component,
                     );
                 }
-            }
-        }
-    }
-}
-
-export function registerDetailFormExtensions(detailForms?: DashboardDetailFormExtensionDefinition[]) {
-    if (detailForms) {
-        for (const detailForm of detailForms) {
-            if (detailForm.extendDetailDocument) {
-                const document =
-                    typeof detailForm.extendDetailDocument === 'function'
-                        ? detailForm.extendDetailDocument()
-                        : detailForm.extendDetailDocument;
-
-                addDetailQueryDocument(
-                    detailForm.pageId,
-                    typeof document === 'string' ? parse(document) : document,
-                );
             }
         }
     }
