@@ -150,6 +150,7 @@ const sidebars = {
                     items: [
                         'guides/extending-the-dashboard/custom-form-components/input-components',
                         'guides/extending-the-dashboard/custom-form-components/display-components',
+                        'guides/extending-the-dashboard/custom-form-components/relation-selectors',
                     ],
                 },
                 'guides/extending-the-dashboard/tech-stack/index',
