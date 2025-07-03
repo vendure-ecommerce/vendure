@@ -10,7 +10,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { ExpandedState, getExpandedRowModel } from '@tanstack/react-table';
 import { TableOptions } from '@tanstack/table-core';
 import { ResultOf } from 'gql.tada';
-import { Folder, FolderOpen, PlusIcon } from 'lucide-react';
+import { Folder, FolderOpen, FolderTreeIcon, PlusIcon } from 'lucide-react';
 import { useState } from 'react';
 
 import { collectionListDocument, deleteCollectionDocument } from './collections.graphql.js';
@@ -18,9 +18,11 @@ import {
     AssignCollectionsToChannelBulkAction,
     DeleteCollectionsBulkAction,
     DuplicateCollectionsBulkAction,
+    MoveCollectionsBulkAction,
     RemoveCollectionsFromChannelBulkAction,
 } from './components/collection-bulk-actions.js';
 import { CollectionContentsSheet } from './components/collection-contents-sheet.js';
+import { useMoveSingleCollection } from './components/move-single-collection.js';
 
 export const Route = createFileRoute('/_authenticated/_collections/collections')({
     component: CollectionListPage,
@@ -31,6 +33,7 @@ type Collection = ResultOf<typeof collectionListDocument>['collections']['items'
 
 function CollectionListPage() {
     const [expanded, setExpanded] = useState<ExpandedState>({});
+    const { handleMoveClick, MoveDialog } = useMoveSingleCollection();
     const childrenQueries = useQueries({
         queries: Object.entries(expanded).map(([collectionId, isExpanded]) => {
             return {
@@ -77,143 +80,160 @@ function CollectionListPage() {
     };
 
     return (
-        <ListPage
-            pageId="collection-list"
-            title="Collections"
-            listQuery={collectionListDocument}
-            transformVariables={input => {
-                const filterTerm = input.options?.filter?.name?.contains;
-                const isFiltering = !!filterTerm;
-                return {
-                    options: {
-                        ...input.options,
-                        topLevelOnly: !isFiltering,
-                    },
-                };
-            }}
-            deleteMutation={deleteCollectionDocument}
-            customizeColumns={{
-                name: {
-                    header: 'Collection Name',
-                    cell: ({ row }) => {
-                        const isExpanded = row.getIsExpanded();
-                        const hasChildren = !!row.original.children?.length;
-                        return (
-                            <div
-                                style={{ marginLeft: (row.original.breadcrumbs.length - 2) * 20 + 'px' }}
-                                className="flex gap-2 items-center"
-                            >
-                                <Button
-                                    size="icon"
-                                    variant="secondary"
-                                    onClick={row.getToggleExpandedHandler()}
-                                    disabled={!hasChildren}
-                                    className={!hasChildren ? 'opacity-20' : ''}
+        <>
+            <ListPage
+                pageId="collection-list"
+                title="Collections"
+                listQuery={collectionListDocument}
+                transformVariables={input => {
+                    const filterTerm = input.options?.filter?.name?.contains;
+                    const isFiltering = !!filterTerm;
+                    return {
+                        options: {
+                            ...input.options,
+                            topLevelOnly: !isFiltering,
+                        },
+                    };
+                }}
+                deleteMutation={deleteCollectionDocument}
+                customizeColumns={{
+                    name: {
+                        header: 'Collection Name',
+                        cell: ({ row }) => {
+                            const isExpanded = row.getIsExpanded();
+                            const hasChildren = !!row.original.children?.length;
+                            return (
+                                <div
+                                    style={{ marginLeft: (row.original.breadcrumbs.length - 2) * 20 + 'px' }}
+                                    className="flex gap-2 items-center"
                                 >
-                                    {isExpanded ? <FolderOpen /> : <Folder />}
-                                </Button>
-                                <DetailPageButton id={row.original.id} label={row.original.name} />
+                                    <Button
+                                        size="icon"
+                                        variant="secondary"
+                                        onClick={row.getToggleExpandedHandler()}
+                                        disabled={!hasChildren}
+                                        className={!hasChildren ? 'opacity-20' : ''}
+                                    >
+                                        {isExpanded ? <FolderOpen /> : <Folder />}
+                                    </Button>
+                                    <DetailPageButton id={row.original.id} label={row.original.name} />
+                                </div>
+                            );
+                        },
+                    },
+                    breadcrumbs: {
+                        cell: ({ cell }) => {
+                            const value = cell.getValue();
+                            if (!Array.isArray(value)) {
+                                return null;
+                            }
+                            return (
+                                <div>
+                                    {value
+                                        .slice(1)
+                                        .map(breadcrumb => breadcrumb.name)
+                                        .join(' / ')}
+                                </div>
+                            );
+                        },
+                    },
+                    productVariants: {
+                        header: 'Contents',
+                        cell: ({ row }) => {
+                            return (
+                                <CollectionContentsSheet
+                                    collectionId={row.original.id}
+                                    collectionName={row.original.name}
+                                >
+                                    <Trans>{row.original.productVariants.totalItems} variants</Trans>
+                                </CollectionContentsSheet>
+                            );
+                        },
+                    },
+                }}
+                defaultColumnOrder={[
+                    'featuredAsset',
+                    'children',
+                    'name',
+                    'slug',
+                    'breadcrumbs',
+                    'productVariants',
+                ]}
+                transformData={data => {
+                    return addSubCollections(data);
+                }}
+                setTableOptions={(options: TableOptions<any>) => {
+                    options.state = {
+                        ...options.state,
+                        expanded: expanded,
+                    };
+                    options.onExpandedChange = setExpanded;
+                    options.getExpandedRowModel = getExpandedRowModel();
+                    options.getRowCanExpand = () => true;
+                    options.getRowId = row => {
+                        return row.id;
+                    };
+                    return options;
+                }}
+                defaultVisibility={{
+                    id: false,
+                    createdAt: false,
+                    updatedAt: false,
+                    position: false,
+                    parentId: false,
+                    children: false,
+                }}
+                onSearchTermChange={searchTerm => {
+                    return {
+                        name: { contains: searchTerm },
+                    };
+                }}
+                route={Route}
+                rowActions={[
+                    {
+                        label: (
+                            <div className="flex items-center gap-2">
+                                <FolderTreeIcon className="w-4 h-4" /> <Trans>Move</Trans>
                             </div>
-                        );
+                        ),
+                        onClick: row => handleMoveClick(row.original),
                     },
-                },
-                breadcrumbs: {
-                    cell: ({ cell }) => {
-                        const value = cell.getValue();
-                        if (!Array.isArray(value)) {
-                            return null;
-                        }
-                        return (
-                            <div>
-                                {value
-                                    .slice(1)
-                                    .map(breadcrumb => breadcrumb.name)
-                                    .join(' / ')}
-                            </div>
-                        );
+                ]}
+                bulkActions={[
+                    {
+                        component: AssignCollectionsToChannelBulkAction,
+                        order: 100,
                     },
-                },
-                productVariants: {
-                    header: 'Contents',
-                    cell: ({ row }) => {
-                        return (
-                            <CollectionContentsSheet
-                                collectionId={row.original.id}
-                                collectionName={row.original.name}
-                            >
-                                <Trans>{row.original.productVariants.totalItems} variants</Trans>
-                            </CollectionContentsSheet>
-                        );
+                    {
+                        component: RemoveCollectionsFromChannelBulkAction,
+                        order: 200,
                     },
-                },
-            }}
-            defaultColumnOrder={[
-                'featuredAsset',
-                'children',
-                'name',
-                'slug',
-                'breadcrumbs',
-                'productVariants',
-            ]}
-            transformData={data => {
-                return addSubCollections(data);
-            }}
-            setTableOptions={(options: TableOptions<any>) => {
-                options.state = {
-                    ...options.state,
-                    expanded: expanded,
-                };
-                options.onExpandedChange = setExpanded;
-                options.getExpandedRowModel = getExpandedRowModel();
-                options.getRowCanExpand = () => true;
-                options.getRowId = row => {
-                    return row.id;
-                };
-                return options;
-            }}
-            defaultVisibility={{
-                id: false,
-                createdAt: false,
-                updatedAt: false,
-                position: false,
-                parentId: false,
-                children: false,
-            }}
-            onSearchTermChange={searchTerm => {
-                return {
-                    name: { contains: searchTerm },
-                };
-            }}
-            route={Route}
-            bulkActions={[
-                {
-                    component: AssignCollectionsToChannelBulkAction,
-                    order: 100,
-                },
-                {
-                    component: RemoveCollectionsFromChannelBulkAction,
-                    order: 200,
-                },
-                {
-                    component: DuplicateCollectionsBulkAction,
-                    order: 300,
-                },
-                {
-                    component: DeleteCollectionsBulkAction,
-                    order: 400,
-                },
-            ]}
-        >
-            <PageActionBarRight>
-                <PermissionGuard requires={['CreateCollection', 'CreateCatalog']}>
-                    <Button asChild>
-                        <Link to="./new">
-                            <PlusIcon className="mr-2 h-4 w-4" />
-                            <Trans>New Collection</Trans>
-                        </Link>
-                    </Button>
-                </PermissionGuard>
-            </PageActionBarRight>
-        </ListPage>
+                    {
+                        component: DuplicateCollectionsBulkAction,
+                        order: 300,
+                    },
+                    {
+                        component: MoveCollectionsBulkAction,
+                        order: 400,
+                    },
+                    {
+                        component: DeleteCollectionsBulkAction,
+                        order: 500,
+                    },
+                ]}
+            >
+                <PageActionBarRight>
+                    <PermissionGuard requires={['CreateCollection', 'CreateCatalog']}>
+                        <Button asChild>
+                            <Link to="./new">
+                                <PlusIcon className="mr-2 h-4 w-4" />
+                                <Trans>New Collection</Trans>
+                            </Link>
+                        </Button>
+                    </PermissionGuard>
+                </PageActionBarRight>
+            </ListPage>
+            <MoveDialog />
+        </>
     );
 }

@@ -90,7 +90,7 @@ export function ListPage<
     transformData,
     setTableOptions,
     bulkActions,
-}: ListPageProps<T, U, V, AC>) {
+}: Readonly<ListPageProps<T, U, V, AC>>) {
     const route = typeof routeOrFn === 'function' ? routeOrFn() : routeOrFn;
     const routeSearch = route.useSearch();
     const navigate = useNavigate<AnyRouter>({ from: route.fullPath });

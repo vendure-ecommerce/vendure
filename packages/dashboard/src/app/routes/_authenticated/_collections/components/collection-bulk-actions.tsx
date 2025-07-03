@@ -1,9 +1,12 @@
 import { useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import { FolderTree } from 'lucide-react';
 
+import { Trans } from '@/vdb/lib/trans.js';
 import { AssignToChannelBulkAction } from '@/vdb/components/shared/assign-to-channel-bulk-action.js';
 import { RemoveFromChannelBulkAction } from '@/vdb/components/shared/remove-from-channel-bulk-action.js';
 import { api } from '@/vdb/graphql/api.js';
-import { BulkActionComponent, useChannel } from '@/vdb/index.js';
+import { BulkActionComponent, useChannel, DataTableBulkActionItem, usePaginatedList } from '@/vdb/index.js';
 import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
 import { DuplicateBulkAction } from '../../../../common/duplicate-bulk-action.js';
 import {
@@ -11,6 +14,7 @@ import {
     deleteCollectionsDocument,
     removeCollectionFromChannelDocument,
 } from '../collections.graphql.js';
+import { MoveCollectionsDialog } from './move-collections-dialog.js';
 
 export const AssignCollectionsToChannelBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
     const queryClient = useQueryClient();
@@ -83,5 +87,34 @@ export const DeleteCollectionsBulkAction: BulkActionComponent<any> = ({ selectio
             selection={selection}
             table={table}
         />
+    );
+};
+
+export const MoveCollectionsBulkAction: BulkActionComponent<any> = ({ selection, table }) => {
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const queryClient = useQueryClient();
+    const { refetchPaginatedList } = usePaginatedList();
+
+    const handleSuccess = () => {
+        queryClient.invalidateQueries({ queryKey: ['childCollections'] });
+        refetchPaginatedList();
+        table.resetRowSelection();
+    };
+
+    return (
+        <>
+            <DataTableBulkActionItem
+                requiresPermission={['UpdateCatalog', 'UpdateCollection']}
+                onClick={() => setDialogOpen(true)}
+                label={<Trans>Move</Trans>}
+                icon={FolderTree}
+            />
+            <MoveCollectionsDialog
+                open={dialogOpen}
+                onOpenChange={setDialogOpen}
+                collectionsToMove={selection}
+                onSuccess={handleSuccess}
+            />
+        </>
     );
 };

@@ -156,3 +156,35 @@ export const deleteCollectionsDocument = graphql(`
         }
     }
 `);
+
+export const moveCollectionDocument = graphql(`
+    mutation MoveCollection($input: MoveCollectionInput!) {
+        moveCollection(input: $input) {
+            id
+        }
+    }
+`);
+
+export const collectionListForMoveDocument = graphql(`
+    query CollectionListForMove($options: CollectionListOptions) {
+        collections(options: $options) {
+            items {
+                id
+                name
+                slug
+                breadcrumbs {
+                    id
+                    name
+                    slug
+                }
+                children {
+                    id
+                }
+                position
+                isPrivate
+                parentId
+            }
+            totalItems
+        }
+    }
+`);
