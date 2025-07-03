@@ -10,7 +10,7 @@ export { createRelationSelectorConfig };
 export interface SingleRelationInputProps<T = any> {
     value: string;
     onChange: (value: string) => void;
-    config: Parameters<typeof createRelationSelectorConfig>[0];
+    config: Parameters<typeof createRelationSelectorConfig<T>>[0];
     disabled?: boolean;
     className?: string;
 }
@@ -44,7 +44,7 @@ export function SingleRelationInput<T>({
 export interface MultiRelationInputProps<T = any> {
     value: string[];
     onChange: (value: string[]) => void;
-    config: Parameters<typeof createRelationSelectorConfig>[0];
+    config: Parameters<typeof createRelationSelectorConfig<T>>[0];
     disabled?: boolean;
     className?: string;
 }

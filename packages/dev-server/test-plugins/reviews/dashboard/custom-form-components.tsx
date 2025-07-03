@@ -51,7 +51,7 @@ export function ReviewSingleSelect(props: CustomFormComponentInputProps) {
     };
 
     return (
-        <SingleRelationInput<ResultOf<typeof reviewFragment>>
+        <SingleRelationInput
             value={props.field.value}
             onChange={props.field.onChange}
             config={config}
@@ -67,7 +67,7 @@ export function ReviewMultiSelect(props: CustomFormComponentInputProps) {
     };
 
     return (
-        <MultiRelationInput<ResultOf<typeof reviewFragment>>
+        <MultiRelationInput
             value={props.field.value}
             onChange={props.field.onChange}
             config={config}
