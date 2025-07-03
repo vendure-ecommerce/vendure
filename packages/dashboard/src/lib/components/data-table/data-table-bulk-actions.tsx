@@ -21,7 +21,10 @@ interface DataTableBulkActionsProps<TData> {
     bulkActions: BulkAction[];
 }
 
-export function DataTableBulkActions<TData>({ table, bulkActions }: DataTableBulkActionsProps<TData>) {
+export function DataTableBulkActions<TData>({
+    table,
+    bulkActions,
+}: Readonly<DataTableBulkActionsProps<TData>>) {
     const { pageId } = usePage();
     const { blockId } = usePageBlock();
 
@@ -57,13 +60,16 @@ export function DataTableBulkActions<TData>({ table, bulkActions }: DataTableBul
     allBulkActions.sort((a, b) => (a.order ?? 10_000) - (b.order ?? 10_000));
 
     return (
-        <div className="flex items-center gap-2 px-2 py-1 bg-muted/50 rounded-md border">
+        <div
+            className="flex items-center gap-4 px-8 py-2 animate-in fade-in duration-200 absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-white shadow-2xl rounded-md border"
+            style={{ height: 'auto', maxHeight: '60px' }}
+        >
             <span className="text-sm text-muted-foreground">
                 <Trans>{selection.length} selected</Trans>
             </span>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="h-8">
+                    <Button variant="outline" size="sm" className="h-8 shadow-none">
                         <Trans>With selected...</Trans>
                         <ChevronDown className="ml-2 h-4 w-4" />
                     </Button>

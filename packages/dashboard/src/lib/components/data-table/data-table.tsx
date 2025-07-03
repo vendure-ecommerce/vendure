@@ -207,8 +207,8 @@ export function DataTable<TData>({
                     {onRefresh && <RefreshButton onRefresh={onRefresh} isLoading={isLoading ?? false} />}
                 </div>
             </div>
-            <DataTableBulkActions bulkActions={bulkActions ?? []} table={table} />
-            <div className="rounded-md border my-2">
+
+            <div className="rounded-md border my-2 relative">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map(headerGroup => (
@@ -268,6 +268,7 @@ export function DataTable<TData>({
                         )}
                     </TableBody>
                 </Table>
+                <DataTableBulkActions bulkActions={bulkActions ?? []} table={table} />
             </div>
             <DataTablePagination table={table} />
         </>
