@@ -146,6 +146,7 @@ export function RelationSelector<T>({
     className,
 }: RelationSelectorProps<T>) {
     const [open, setOpen] = useState(false);
+    const [selectedItemsCache, setSelectedItemsCache] = useState<T[]>([]);
     const isMultiple = config.multiple ?? false;
 
     const { items, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, searchTerm, setSearchTerm } =
@@ -163,11 +164,26 @@ export function RelationSelector<T>({
         const itemId = String(item[config.idKey]);
 
         if (isMultiple) {
-            const newSelectedIds = selectedIds.includes(itemId)
+            const isCurrentlySelected = selectedIds.includes(itemId);
+            const newSelectedIds = isCurrentlySelected
                 ? selectedIds.filter(id => id !== itemId)
                 : [...selectedIds, itemId];
+
+            // Update cache: add item if selecting, remove if deselecting
+            setSelectedItemsCache(prev => {
+                if (isCurrentlySelected) {
+                    return prev.filter(prevItem => String(prevItem[config.idKey]) !== itemId);
+                } else {
+                    // Only add if not already in cache
+                    const alreadyInCache = prev.some(prevItem => String(prevItem[config.idKey]) === itemId);
+                    return alreadyInCache ? prev : [...prev, item];
+                }
+            });
+
             onChange(newSelectedIds);
         } else {
+            // For single select, update cache with the new item
+            setSelectedItemsCache([item]);
             onChange(itemId);
             setOpen(false);
             setSearchTerm('');
@@ -177,8 +193,12 @@ export function RelationSelector<T>({
     const handleRemove = (itemId: string) => {
         if (isMultiple) {
             const newSelectedIds = selectedIds.filter(id => id !== itemId);
+            // Remove from cache as well
+            setSelectedItemsCache(prev => prev.filter(prevItem => String(prevItem[config.idKey]) !== itemId));
             onChange(newSelectedIds);
         } else {
+            // Clear cache for single select
+            setSelectedItemsCache([]);
             onChange('');
         }
     };
@@ -192,10 +212,31 @@ export function RelationSelector<T>({
         }
     };
 
-    // Get selected items for display
+    // Clean up cache when selectedIds change externally (e.g., form reset)
+    React.useEffect(() => {
+        setSelectedItemsCache(prev => prev.filter(item => selectedIds.includes(String(item[config.idKey]))));
+    }, [selectedIds, config.idKey]);
+
+    // Populate cache with items from search results that are selected but not yet cached
+    React.useEffect(() => {
+        const itemsToAdd = items.filter(item => {
+            const itemId = String(item[config.idKey]);
+            const isSelected = selectedIds.includes(itemId);
+            const isAlreadyCached = selectedItemsCache.some(
+                cachedItem => String(cachedItem[config.idKey]) === itemId,
+            );
+            return isSelected && !isAlreadyCached;
+        });
+
+        if (itemsToAdd.length > 0) {
+            setSelectedItemsCache(prev => [...prev, ...itemsToAdd]);
+        }
+    }, [items, selectedIds, selectedItemsCache, config.idKey]);
+
+    // Get selected items for display from cache, filtered by current selection
     const selectedItems = React.useMemo(() => {
-        return items.filter(item => selectedIds.includes(String(item[config.idKey])));
-    }, [items, selectedIds, config.idKey]);
+        return selectedItemsCache.filter(item => selectedIds.includes(String(item[config.idKey])));
+    }, [selectedItemsCache, selectedIds, config.idKey]);
 
     return (
         <div className={className}>
