@@ -583,3 +583,26 @@ export const fulfillOrderDocument = graphql(
     `,
     [errorResultFragment],
 );
+
+export const transitionFulfillmentToStateDocument = graphql(
+    `
+        mutation TransitionFulfillmentToState($id: ID!, $state: String!) {
+            transitionFulfillmentToState(id: $id, state: $state) {
+                __typename
+                ... on Fulfillment {
+                    id
+                    state
+                    nextStates
+                    method
+                    trackingCode
+                    lines {
+                        orderLineId
+                        quantity
+                    }
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);

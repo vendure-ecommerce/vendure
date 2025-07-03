@@ -185,14 +185,25 @@ function OrderDetailPage() {
                     blockId="fulfillment-details"
                     title={<Trans>Fulfillment details</Trans>}
                 >
-                    {entity?.fulfillments?.map(fulfillment => (
+                    {entity?.fulfillments?.length && entity.fulfillments.length > 0  ? (
+                        <div className="space-y-2">
+                        {entity?.fulfillments?.map(fulfillment => (
                         <FulfillmentDetails
                             key={fulfillment.id}
                             order={entity}
                             fulfillment={fulfillment}
-                            currencyCode={entity.currencyCode}
+                            onSuccess={() => {
+                                refreshEntity();
+                                queryClient.refetchQueries({ queryKey: orderHistoryQueryKey(entity.id) });
+                            }}
                         />
-                    ))}
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-muted-foreground text-xs font-medium p-3 border rounded-md">
+                        <Trans>No fulfillments</Trans>
+                    </div>
+                )}
                 </PageBlock>
             </PageLayout>
         </Page>
