@@ -1,4 +1,8 @@
-import { assetFragment, errorResultFragment } from '@/vdb/graphql/fragments.js';
+import {
+    assetFragment,
+    configurableOperationDefFragment,
+    errorResultFragment,
+} from '@/vdb/graphql/fragments.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const orderListDocument = graphql(`
@@ -20,7 +24,6 @@ export const orderListDocument = graphql(`
                 total
                 totalWithTax
                 currencyCode
-
                 shippingLines {
                     shippingMethod {
                         name
@@ -501,6 +504,101 @@ export const transitionOrderToStateDocument = graphql(
                 __typename
                 ... on Order {
                     id
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const paymentMethodsDocument = graphql(`
+    query GetPaymentMethods($options: PaymentMethodListOptions!) {
+        paymentMethods(options: $options) {
+            items {
+                id
+                createdAt
+                updatedAt
+                name
+                code
+                description
+                enabled
+            }
+            totalItems
+        }
+    }
+`);
+
+export const addManualPaymentToOrderDocument = graphql(
+    `
+        mutation AddManualPaymentToOrder($input: ManualPaymentInput!) {
+            addManualPaymentToOrder(input: $input) {
+                __typename
+                ... on Order {
+                    id
+                    state
+                    payments {
+                        id
+                        amount
+                        method
+                        state
+                    }
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const fulfillmentHandlersDocument = graphql(
+    `
+        query GetFulfillmentHandlers {
+            fulfillmentHandlers {
+                ...ConfigurableOperationDef
+            }
+        }
+    `,
+    [configurableOperationDefFragment],
+);
+
+export const fulfillOrderDocument = graphql(
+    `
+        mutation FulfillOrder($input: FulfillOrderInput!) {
+            addFulfillmentToOrder(input: $input) {
+                __typename
+                ... on Fulfillment {
+                    id
+                    state
+                    method
+                    trackingCode
+                    lines {
+                        orderLineId
+                        quantity
+                    }
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const transitionFulfillmentToStateDocument = graphql(
+    `
+        mutation TransitionFulfillmentToState($id: ID!, $state: String!) {
+            transitionFulfillmentToState(id: $id, state: $state) {
+                __typename
+                ... on Fulfillment {
+                    id
+                    state
+                    nextStates
+                    method
+                    trackingCode
+                    lines {
+                        orderLineId
+                        quantity
+                    }
                 }
                 ...ErrorResult
             }

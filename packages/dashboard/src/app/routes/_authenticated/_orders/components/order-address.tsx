@@ -24,11 +24,11 @@ export function OrderAddress({ address }: Readonly<{ address?: OrderAddress }>) 
     } = address;
 
     return (
-        <div className="space-y-2">
+        <div className="space-y-1 text-sm">
             {fullName && <p className="font-medium">{fullName}</p>}
             {company && <p className="text-sm text-muted-foreground">{company}</p>}
 
-            <div className="text-sm">
+            <div>
                 {streetLine1 && <p>{streetLine1}</p>}
                 {streetLine2 && <p>{streetLine2}</p>}
                 <p>{[city, province].filter(Boolean).join(', ')}</p>

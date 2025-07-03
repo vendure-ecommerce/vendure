@@ -54,7 +54,7 @@ export function EditOrderTable({
     onApplyCouponCode,
     onRemoveCouponCode,
     orderLineForm,
-}: OrderTableProps) {
+}: Readonly<OrderTableProps>) {
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
     const [couponCode, setCouponCode] = useState('');
 
@@ -130,7 +130,7 @@ export function EditOrderTable({
         {
             header: 'Total',
             accessorKey: 'linePriceWithTax',
-            cell: ({ cell, row }) => {
+            cell: ({ row }) => {
                 const value = row.original.linePriceWithTax;
                 const netValue = row.original.linePrice;
                 return <MoneyGrossNet priceWithTax={value} price={netValue} currencyCode={currencyCode} />;
