@@ -1,4 +1,4 @@
-import { RichTextInput } from '@/vdb/components/data-input/richt-text-input.js';
+import { RichTextInput } from '@/vdb/components/data-input/rich-text-input.js';
 import { AssignedFacetValues } from '@/vdb/components/shared/assigned-facet-values.js';
 import { EntityAssets } from '@/vdb/components/shared/entity-assets.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
