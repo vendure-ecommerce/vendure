@@ -1,35 +1,16 @@
-import { Button } from '@/components/ui/button.js';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog.js';
-import { DataTableFilterDialog } from '@/components/data-table/data-table-filter-dialog.js';
-import { FieldInfo } from '@/framework/document-introspection/get-document-structure.js';
-import { camelCaseToTitleCase } from '@/lib/utils.js';
-import { Trans } from '@/lib/trans.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { camelCaseToTitleCase } from '@/vdb/lib/utils.js';
 import { ColumnDef, HeaderContext } from '@tanstack/table-core';
-import { ArrowDown, ArrowUp, ArrowUpDown, EllipsisVertical, Filter } from 'lucide-react';
-import React from 'react';
+import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 
 export interface DataTableColumnHeaderProps {
     customConfig: Partial<ColumnDef<any>>;
     headerContext: HeaderContext<any, any>;
 }
 
-export function DataTableColumnHeader({ headerContext, customConfig }: DataTableColumnHeaderProps) {
+export function DataTableColumnHeader({ headerContext, customConfig }: Readonly<DataTableColumnHeaderProps>) {
     const { column } = headerContext;
     const isSortable = column.getCanSort();
-    const isFilterable = column.getCanFilter();
 
     const customHeader = customConfig.header;
     let display = camelCaseToTitleCase(column.id);
@@ -40,7 +21,6 @@ export function DataTableColumnHeader({ headerContext, customConfig }: DataTable
     }
 
     const columSort = column.getIsSorted();
-    const columnFilter = column.getFilterValue();
     const nextSort = columSort === 'asc' ? true : columSort === 'desc' ? undefined : false;
 
     return (
@@ -57,17 +37,6 @@ export function DataTableColumnHeader({ headerContext, customConfig }: DataTable
                 </Button>
             )}
             <div>{display}</div>
-
-            {isFilterable && (
-                <Dialog>
-                    <DialogTrigger asChild>
-                        <Button size="icon-sm" variant="ghost">
-                            <Filter className={columnFilter ? '' : 'opacity-50'} />
-                        </Button>
-                    </DialogTrigger>
-                    <DataTableFilterDialog column={column} />
-                </Dialog>
-            )}
         </div>
     );
 }

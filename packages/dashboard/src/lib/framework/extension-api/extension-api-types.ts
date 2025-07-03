@@ -1,58 +1,67 @@
-import { NavMenuItem } from '@/framework/nav-menu/nav-menu-extensions.js';
-import { AnyRoute, RouteOptions } from '@tanstack/react-router';
-import React from 'react';
-
-import { DashboardWidgetDefinition } from '../dashboard-widget/types.js';
-import { PageContext } from '../layout-engine/page-layout.js';
-
-export interface DashboardRouteDefinition {
-    component: (route: AnyRoute) => React.ReactNode;
-    path: string;
-    navMenuItem?: Partial<NavMenuItem> & { sectionId: string };
-    loader?: RouteOptions['loader'];
-}
-
-export interface ActionBarButtonState {
-    disabled: boolean;
-    visible: boolean;
-}
-
-export interface DashboardActionBarItem {
-    locationId: string;
-    component: React.FunctionComponent<{ context: PageContext }>;
-    requiresPermission?: string | string[];
-}
-
-export interface DashboardActionBarDropdownMenuItem {
-    locationId: string;
-    component: React.FunctionComponent<{ context: PageContext }>;
-    requiresPermission?: string | string[];
-}
-
-export type PageBlockPosition = { blockId: string; order: 'before' | 'after' | 'replace' };
-
-export type PageBlockLocation = {
-    pageId: string;
-    position: PageBlockPosition;
-    column: 'main' | 'side';
-};
-
-export interface DashboardPageBlockDefinition {
-    id: string;
-    title?: React.ReactNode;
-    location: PageBlockLocation;
-    component: React.FunctionComponent<{ context: PageContext }>;
-    requiresPermission?: string | string[];
-}
+// Import types for the main interface
+import {
+    DashboardActionBarItem,
+    DashboardAlertDefinition,
+    DashboardCustomFormComponents,
+    DashboardDataTableExtensionDefinition,
+    DashboardDetailFormExtensionDefinition,
+    DashboardNavSectionDefinition,
+    DashboardPageBlockDefinition,
+    DashboardRouteDefinition,
+    DashboardWidgetDefinition,
+} from './types/index.js';
 
 /**
  * @description
- * The main entry point for a dashboard extension.
+ * **Status: Developer Preview**
+ *
  * This is used to define the routes, widgets, etc. that will be displayed in the dashboard.
+ *
+ * @docsCategory extensions
+ * @since 3.3.0
  */
 export interface DashboardExtension {
-    routes: DashboardRouteDefinition[];
-    widgets: DashboardWidgetDefinition[];
-    actionBarItems: DashboardActionBarItem[];
-    pageBlocks: DashboardPageBlockDefinition[];
+    /**
+     * @description
+     * Allows you to define custom routes such as list or detail views.
+     */
+    routes?: DashboardRouteDefinition[];
+    /**
+     * @description
+     * Allows you to define custom nav sections for the dashboard.
+     */
+    navSections?: DashboardNavSectionDefinition[];
+    /**
+     * @description
+     * Allows you to define custom page blocks for any page in the dashboard.
+     */
+    pageBlocks?: DashboardPageBlockDefinition[];
+    /**
+     * @description
+     * Allows you to define custom action bar items for any page in the dashboard.
+     */
+    actionBarItems?: DashboardActionBarItem[];
+    /**
+     * @description
+     * Allows you to define custom alerts that can be displayed in the dashboard.
+     */
+    alerts?: DashboardAlertDefinition[];
+    /**
+     * @description
+     * Allows you to define custom routes for the dashboard, which will render the
+     * given components and optionally also add a nav menu item.
+     */
+    widgets?: DashboardWidgetDefinition[];
+    /**
+     * @description
+     * Unified registration for custom form components including custom field components,
+     * input components, and display components.
+     */
+    customFormComponents?: DashboardCustomFormComponents;
+    /**
+     * @description
+     * Allows you to customize aspects of existing data tables in the dashboard.
+     */
+    dataTables?: DashboardDataTableExtensionDefinition[];
+    detailForms?: DashboardDetailFormExtensionDefinition[];
 }

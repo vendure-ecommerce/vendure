@@ -1,87 +1,97 @@
-import { PaginatedListDataTable } from "@/components/shared/paginated-list-data-table.js";
-import { productVariantListDocument } from "../products.graphql.js";
-import { useState } from "react";
-import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
-import { Money } from "@/components/data-display/money.js";
-import { useLocalFormat } from "@/hooks/use-local-format.js";
-import { Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button.js";
+import { Money } from '@/vdb/components/data-display/money.js';
+import {
+    PaginatedListDataTable,
+    PaginatedListRefresherRegisterFn,
+} from '@/vdb/components/shared/paginated-list-data-table.js';
+import { StockLevelLabel } from '@/vdb/components/shared/stock-level-label.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
+import { DetailPageButton } from '@/vdb/index.js';
+import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
+import { useState } from 'react';
+import { productVariantListDocument } from '../products.graphql.js';
+
+export const deleteProductVariantDocument = graphql(`
+    mutation DeleteProductVariant($id: ID!) {
+        deleteProductVariant(id: $id) {
+            result
+            message
+        }
+    }
+`);
 
 interface ProductVariantsTableProps {
     productId: string;
+    registerRefresher?: PaginatedListRefresherRegisterFn;
+    fromProductDetailPage?: boolean;
 }
 
-export function ProductVariantsTable({ productId }: ProductVariantsTableProps) {
+export function ProductVariantsTable({
+    productId,
+    registerRefresher,
+    fromProductDetailPage,
+}: ProductVariantsTableProps) {
     const { formatCurrencyName } = useLocalFormat();
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [sorting, setSorting] = useState<SortingState>([]);
     const [filters, setFilters] = useState<ColumnFiltersState>([]);
 
-    return <PaginatedListDataTable
-        listQuery={productVariantListDocument}
-        transformVariables={variables => ({
-            ...variables,
-            productId,
-        })}
-        defaultVisibility={{
-            id: false,
-            currencyCode: false,
-        }}
-        customizeColumns={{
-            name: {
-                header: 'Variant name',
-                cell: ({ row }) => {
-                    const variant = row.original as any;
-                    return (
-                        <Button asChild variant="ghost">
-                            <Link to={`../../product-variants/${variant.id}`}>{variant.name} </Link>
-                        </Button>
-                    );
+    return (
+        <PaginatedListDataTable
+            registerRefresher={registerRefresher}
+            listQuery={productVariantListDocument}
+            deleteMutation={deleteProductVariantDocument}
+            transformVariables={variables => ({
+                ...variables,
+                productId,
+            })}
+            defaultVisibility={{
+                id: false,
+                currencyCode: false,
+            }}
+            customizeColumns={{
+                name: {
+                    header: 'Variant name',
+                    cell: ({ row: { original } }) => (
+                        <DetailPageButton
+                            href={`../../product-variants/${original.id}`}
+                            label={original.name}
+                            search={fromProductDetailPage ? { from: 'product' } : undefined}
+                        />
+                    ),
                 },
-            },
-            currencyCode: {
-                cell: ({ cell, row }) => {
-                    const value = cell.getValue();
-                    return formatCurrencyName(value as string, 'full');
+                currencyCode: {
+                    cell: ({ row: { original } }) => formatCurrencyName(original.currencyCode, 'full'),
                 },
-            },
-            price: {
-                cell: ({ cell, row }) => {
-                    const variant = row.original as any;
-                    const value = cell.getValue();
-                    const currencyCode = variant.currencyCode;
-                    if (typeof value === 'number') {
-                        return <Money value={value} currency={currencyCode} />;
-                    }
-                    return value;
+                price: {
+                    cell: ({ row: { original } }) => (
+                        <Money value={original.price} currency={original.currencyCode} />
+                    ),
                 },
-            },
-            priceWithTax: {
-                cell: ({ cell, row }) => {
-                    const variant = row.original as any;
-                    const value = cell.getValue();
-                    const currencyCode = variant.currencyCode;
-                    if (typeof value === 'number') {
-                        return <Money value={value} currency={currencyCode} />;
-                    }
-                    return value;
+                priceWithTax: {
+                    cell: ({ row: { original } }) => (
+                        <Money value={original.priceWithTax} currency={original.currencyCode} />
+                    ),
                 },
-            },
-        }}
-        page={page}
-        itemsPerPage={pageSize}
-        sorting={sorting}
-        columnFilters={filters}
-        onPageChange={(_, page, perPage) => {
-            setPage(page);
-            setPageSize(perPage);
-        }}
-        onSortChange={(_, sorting) => {
-            setSorting(sorting);
-        }}
-        onFilterChange={(_, filters) => {
-            setFilters(filters);
-        }}
-    />;
+                stockLevels: {
+                    cell: ({ row: { original } }) => <StockLevelLabel stockLevels={original.stockLevels} />,
+                },
+            }}
+            page={page}
+            itemsPerPage={pageSize}
+            sorting={sorting}
+            columnFilters={filters}
+            onPageChange={(_, page, perPage) => {
+                setPage(page);
+                setPageSize(perPage);
+            }}
+            onSortChange={(_, sorting) => {
+                setSorting(sorting);
+            }}
+            onFilterChange={(_, filters) => {
+                setFilters(filters);
+            }}
+        />
+    );
 }

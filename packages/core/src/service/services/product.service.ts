@@ -5,7 +5,6 @@ import {
     DeletionResponse,
     DeletionResult,
     ProductFilterParameter,
-    ProductListOptions,
     RemoveOptionGroupFromProductResult,
     RemoveProductsFromChannelInput,
     UpdateProductInput,
@@ -19,16 +18,17 @@ import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { ErrorResultUnion } from '../../common/error/error-result';
 import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
 import { ProductOptionInUseError } from '../../common/error/generated-graphql-admin-errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { TransactionalConnection } from '../../connection/transactional-connection';
 import { Channel } from '../../entity/channel/channel.entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
-import { ProductTranslation } from '../../entity/product/product-translation.entity';
-import { Product } from '../../entity/product/product.entity';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
+import { ProductTranslation } from '../../entity/product/product-translation.entity';
+import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { ProductChannelEvent } from '../../event-bus/events/product-channel-event';
 import { ProductEvent } from '../../event-bus/events/product-event';
@@ -52,6 +52,7 @@ import { ProductVariantService } from './product-variant.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class ProductService {
     private readonly relations = ['featuredAsset', 'assets', 'channels', 'facetValues', 'facetValues.facet'];
 
@@ -93,6 +94,7 @@ export class ProductService {
             effectiveRelations.push('variants');
             customPropertyMap.sku = 'variants.sku';
         }
+
         return this.listQueryBuilder
             .build(Product, options, {
                 relations: effectiveRelations,
@@ -153,11 +155,11 @@ export class ProductService {
             .andWhere('product.id IN (:...ids)', { ids: productIds })
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
             .getMany()
-            .then(products =>
-                products.map(product =>
+            .then(products => {
+                return products.map(product =>
                     this.translator.translate(product, ctx, ['facetValues', ['facetValues', 'facet']]),
-                ),
-            );
+                );
+            });
     }
 
     /**
@@ -179,9 +181,12 @@ export class ProductService {
                 where: { id: productId },
                 relations: ['facetValues'],
             })
-            .then(variant =>
-                !variant ? [] : variant.facetValues.map(o => this.translator.translate(o, ctx, ['facet'])),
-            );
+            .then(product => {
+                if (!product) {
+                    return [];
+                }
+                return product.facetValues.map(o => this.translator.translate(o, ctx, ['facet']));
+            });
     }
 
     async findOneBySlug(
@@ -197,7 +202,9 @@ export class ProductService {
             .andWhere('_product_translation.slug = :slug', { slug });
 
         qb.leftJoin('product.translations', 'translation')
+            .leftJoin('product.channels', 'channel')
             .andWhere('product.deletedAt IS NULL')
+            .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
             .andWhere('product.id IN (' + translationQb.getQuery() + ')')
             .setParameters(translationQb.getParameters())
             .select('product.id', 'id')
@@ -236,6 +243,7 @@ export class ProductService {
         await this.customFieldRelationService.updateRelations(ctx, Product, input, product);
         await this.assetService.updateEntityAssets(ctx, product, input);
         await this.eventBus.publish(new ProductEvent(ctx, product, 'created', input));
+
         return assertFound(this.findOne(ctx, product.id));
     }
 
@@ -266,6 +274,7 @@ export class ProductService {
         });
         await this.customFieldRelationService.updateRelations(ctx, Product, input, updatedProduct);
         await this.eventBus.publish(new ProductEvent(ctx, updatedProduct, 'updated', input));
+
         return assertFound(this.findOne(ctx, updatedProduct.id));
     }
 

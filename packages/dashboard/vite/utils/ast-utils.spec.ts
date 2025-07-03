@@ -1,7 +1,7 @@
 import ts from 'typescript';
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
-import { getPluginInfo, findConfigExport } from './ast-utils.js';
+import { findConfigExport, getPluginInfo } from './ast-utils.js';
 
 describe('getPluginInfo', () => {
     it('should return undefined when no plugin class is found', () => {

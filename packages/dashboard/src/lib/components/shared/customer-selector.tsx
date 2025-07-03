@@ -1,11 +1,18 @@
-import { Button } from '@/components/ui/button.js';
-import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/components/ui/command.js';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.js';
-import { api } from '@/graphql/api.js';
-import { graphql } from '@/graphql/graphql.js';
-import { Trans } from '@/lib/trans.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import {
+    Command,
+    CommandEmpty,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from '@/vdb/components/ui/command.js';
+import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { useQuery } from '@tanstack/react-query';
-import { Plus, Search } from 'lucide-react';
+import { useDebounce } from '@uidotdev/usehooks';
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
 
 const customersDocument = graphql(`
@@ -38,19 +45,22 @@ export interface CustomerSelectorProps {
 export function CustomerSelector(props: CustomerSelectorProps) {
     const [open, setOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
     const { data, isLoading } = useQuery({
-        queryKey: ['customers', searchTerm],
+        queryKey: ['customers', debouncedSearchTerm],
         queryFn: () =>
             api.query(customersDocument, {
                 options: {
                     sort: { lastName: 'ASC' },
-                    filter: searchTerm ? {
-                        firstName: { contains: searchTerm },
-                        lastName: { contains: searchTerm },
-                        emailAddress: { contains: searchTerm },
-                    } : undefined,
-                    filterOperator: searchTerm ? 'OR' : undefined,
+                    filter: debouncedSearchTerm
+                        ? {
+                              firstName: { contains: debouncedSearchTerm },
+                              lastName: { contains: debouncedSearchTerm },
+                              emailAddress: { contains: debouncedSearchTerm },
+                          }
+                        : undefined,
+                    filterOperator: debouncedSearchTerm ? 'OR' : undefined,
                 },
             }),
         staleTime: 1000 * 60, // 1 minute
@@ -70,21 +80,14 @@ export function CustomerSelector(props: CustomerSelectorProps) {
             </PopoverTrigger>
             <PopoverContent className="p-0 w-[350px]" align="start">
                 <Command shouldFilter={false}>
-                    <div className="flex items-center border-b px-3">
-                        <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-                        <CommandInput 
-                            placeholder="Search customers..." 
-                            onValueChange={handleSearch}
-                            className="h-10 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
-                        />
-                    </div>
+                    <CommandInput
+                        placeholder="Search customers..."
+                        onValueChange={handleSearch}
+                        className="h-10 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
+                    />
                     <CommandList>
                         <CommandEmpty>
-                            {isLoading ? (
-                                <Trans>Loading...</Trans>
-                            ) : (
-                                <Trans>No customers found</Trans>
-                            )}
+                            {isLoading ? <Trans>Loading...</Trans> : <Trans>No customers found</Trans>}
                         </CommandEmpty>
                         {data?.customers.items.map(customer => (
                             <CommandItem
@@ -95,7 +98,9 @@ export function CustomerSelector(props: CustomerSelectorProps) {
                                 }}
                                 className="flex flex-col items-start"
                             >
-                                <div className="font-medium">{customer.firstName} {customer.lastName}</div>
+                                <div className="font-medium">
+                                    {customer.firstName} {customer.lastName}
+                                </div>
                                 <div className="text-sm text-muted-foreground">{customer.emailAddress}</div>
                             </CommandItem>
                         ))}

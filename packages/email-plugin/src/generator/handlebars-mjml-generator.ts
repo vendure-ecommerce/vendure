@@ -60,7 +60,9 @@ export class HandlebarsMjmlGenerator implements EmailGenerator {
                 // If it's supplied, it means the helper function did not receive the additional, optional parameters.
                 // See https://handlebarsjs.com/api-reference/helpers.html#the-options-parameter
                 if (!currencyCode || typeof currencyCode === 'object') {
-                    return (amount / 100).toFixed(2);
+                    return new Intl.NumberFormat(typeof locale === 'object' ? undefined : locale, {
+                        style: 'decimal',
+                    }).format(amount / 100);
                 }
                 // Same reasoning for `locale` as for `currencyCode` here.
                 return new Intl.NumberFormat(typeof locale === 'object' ? undefined : locale, {

@@ -280,7 +280,8 @@ function customizeCreateMethod(serviceClassDeclaration: ClassDeclaration, entity
                             });`);
             } else {
                 writer.writeLine(
-                    `const newEntity = await this.connection.getRepository(ctx, ${entityRef.name}).save(input);`,
+                    `const newEntityInstance = new ${entityRef.name}(input);
+                    const newEntity = await this.connection.getRepository(ctx, ${entityRef.name}).save(newEntityInstance);`,
                 );
             }
             if (entityRef.hasCustomFields()) {

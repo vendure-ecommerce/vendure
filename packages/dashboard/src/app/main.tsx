@@ -1,15 +1,15 @@
-import { Toaster } from '@/components/ui/sonner.js';
-import { setCustomFieldsMap } from '@/framework/document-introspection/add-custom-fields.js';
-import { useDashboardExtensions } from '@/framework/extension-api/use-dashboard-extensions.js';
-import { useExtendedRouter } from '@/framework/page/use-extended-router.js';
-import { useAuth } from '@/hooks/use-auth.js';
-import { useServerConfig } from '@/hooks/use-server-config.js';
-import { defaultLocale, dynamicActivate } from '@/providers/i18n-provider.js';
+import { Toaster } from '@/vdb/components/ui/sonner.js';
+import { registerDefaults } from '@/vdb/framework/defaults.js';
+import { setCustomFieldsMap } from '@/vdb/framework/document-introspection/add-custom-fields.js';
+import { executeDashboardExtensionCallbacks } from '@/vdb/framework/extension-api/define-dashboard-extension.js';
+import { useDashboardExtensions } from '@/vdb/framework/extension-api/use-dashboard-extensions.js';
+import { useExtendedRouter } from '@/vdb/framework/page/use-extended-router.js';
+import { useAuth } from '@/vdb/hooks/use-auth.js';
+import { useServerConfig } from '@/vdb/hooks/use-server-config.js';
+import { defaultLocale, dynamicActivate } from '@/vdb/providers/i18n-provider.js';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
-import { registerDefaults } from '@/framework/defaults.js';
-import { executeDashboardExtensionCallbacks } from '@/framework/extension-api/define-dashboard-extension.js';
 
 import { AppProviders, queryClient } from './app-providers.js';
 import { routeTree } from './routeTree.gen.js';
@@ -26,6 +26,8 @@ export const router = createRouter({
     routeTree,
     defaultPreload: 'intent',
     scrollRestoration: true,
+    // In case the dashboard gets served from a subpath, we need to set the basepath based on the environment variable
+    ...(import.meta.env.BASE_URL ? { basepath: import.meta.env.BASE_URL } : {}),
     context: {
         /* eslint-disable @typescript-eslint/no-non-null-assertion */
         auth: undefined!, // This will be set after we wrap the app in an AuthProvider
@@ -46,11 +48,11 @@ function InnerApp() {
         }
         setCustomFieldsMap(serverConfig.entityCustomFields);
         setHasSetCustomFieldsMap(true);
-    }, [serverConfig?.entityCustomFields]);
+    }, [serverConfig?.entityCustomFields.length]);
 
     return (
         <>
-            {hasSetCustomFieldsMap && (
+            {(hasSetCustomFieldsMap || auth.status === 'unauthenticated') && (
                 <RouterProvider router={extendedRouter} context={{ auth, queryClient }} />
             )}
         </>

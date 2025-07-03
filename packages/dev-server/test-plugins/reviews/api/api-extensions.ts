@@ -1,6 +1,12 @@
 import { gql } from 'graphql-tag';
 
 export const commonApiExtensions = gql`
+    type ProductReviewTranslation {
+        id: ID!
+        languageCode: LanguageCode!
+        text: String!
+    }
+
     type ProductReview implements Node {
         id: ID!
         createdAt: DateTime!
@@ -17,6 +23,7 @@ export const commonApiExtensions = gql`
         state: String!
         response: String
         responseCreatedAt: DateTime
+        translations: [ProductReviewTranslation!]!
     }
 
     type ProductReviewList implements PaginatedList {
@@ -41,11 +48,18 @@ export const commonApiExtensions = gql`
 export const adminApiExtensions = gql`
     ${commonApiExtensions}
 
+    input ProductReviewTranslationInput {
+        languageCode: LanguageCode!
+        text: String!
+    }
+
     input UpdateProductReviewInput {
         id: ID!
         summary: String
         body: String
         response: String
+        state: String
+        translations: [ProductReviewTranslationInput!]!
     }
 
     extend type ProductReview {

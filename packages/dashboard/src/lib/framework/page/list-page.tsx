@@ -1,36 +1,32 @@
 import {
     AdditionalColumns,
+    CustomFieldKeysOfItem,
     CustomizeColumnConfig,
     FacetedFilterConfig,
+    ListQueryFields,
     ListQueryOptionsShape,
     ListQueryShape,
     PaginatedListDataTable,
     RowAction,
-} from '@/components/shared/paginated-list-data-table.js';
+} from '@/vdb/components/shared/paginated-list-data-table.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRoute, AnyRouter, useNavigate } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
 import { TableOptions } from '@tanstack/table-core';
-import { useUserSettings } from '@/hooks/use-user-settings.js';
-import { ResultOf } from 'gql.tada';
 
+import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
 import { addCustomFields } from '../document-introspection/add-custom-fields.js';
-import {
-    FullWidthPageBlock,
-    Page,
-    PageActionBar,
-    PageLayout,
-    PageTitle,
-} from '../layout-engine/page-layout.js';
+import { FullWidthPageBlock, Page, PageActionBar, PageLayout, PageTitle } from '../layout-engine/page-layout.js';
 
-type ListQueryFields<T extends TypedDocumentNode<any, any>> = {
-    [Key in keyof ResultOf<T>]: ResultOf<T>[Key] extends { items: infer U }
-        ? U extends any[]
-            ? U[number]
-            : never
-        : never;
-}[keyof ResultOf<T>];
-
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * @docsCategory components
+ * @docsPage ListPage
+ * @since 3.3.0
+ */
 export interface ListPageProps<
     T extends TypedDocumentNode<U, V>,
     U extends ListQueryShape,
@@ -46,16 +42,30 @@ export interface ListPageProps<
     onSearchTermChange?: (searchTerm: string) => NonNullable<V['options']>['filter'];
     customizeColumns?: CustomizeColumnConfig<T>;
     additionalColumns?: AC;
-    defaultColumnOrder?: (keyof ListQueryFields<T> | keyof AC)[];
+    defaultColumnOrder?: (keyof ListQueryFields<T> | keyof AC | CustomFieldKeysOfItem<ListQueryFields<T>>)[];
     defaultSort?: SortingState;
-    defaultVisibility?: Partial<Record<keyof ListQueryFields<T> | keyof AC, boolean>>;
+    defaultVisibility?: Partial<
+        Record<keyof ListQueryFields<T> | keyof AC | CustomFieldKeysOfItem<ListQueryFields<T>>, boolean>
+    >;
     children?: React.ReactNode;
     facetedFilters?: FacetedFilterConfig<T>;
     rowActions?: RowAction<ListQueryFields<T>>[];
     transformData?: (data: any[]) => any[];
     setTableOptions?: (table: TableOptions<any>) => TableOptions<any>;
+    bulkActions?: BulkAction[];
 }
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * Auto-generates a list page with columns generated based on the provided query document fields.
+ *
+ * @docsCategory components
+ * @docsPage ListPage
+ * @docsWeight 0
+ * @since 3.3.0
+ */
 export function ListPage<
     T extends TypedDocumentNode<U, V>,
     U extends Record<string, any> = any,
@@ -79,7 +89,8 @@ export function ListPage<
     rowActions,
     transformData,
     setTableOptions,
-}: ListPageProps<T, U, V, AC>) {
+    bulkActions,
+}: Readonly<ListPageProps<T, U, V, AC>>) {
     const route = typeof routeOrFn === 'function' ? routeOrFn() : routeOrFn;
     const routeSearch = route.useSearch();
     const navigate = useNavigate<AnyRouter>({ from: route.fullPath });
@@ -88,11 +99,14 @@ export function ListPage<
 
     const pagination = {
         page: routeSearch.page ? parseInt(routeSearch.page) : 1,
-        itemsPerPage: routeSearch.perPage ? parseInt(routeSearch.perPage) : tableSettings?.pageSize ?? 10,
+        itemsPerPage: routeSearch.perPage ? parseInt(routeSearch.perPage) : (tableSettings?.pageSize ?? 10),
     };
 
-    const columnVisibility = pageId ? tableSettings?.columnVisibility : defaultVisibility;
-    const columnOrder = pageId ? tableSettings?.columnOrder : defaultColumnOrder;
+    const columnVisibility = pageId
+        ? (tableSettings?.columnVisibility ?? defaultVisibility)
+        : defaultVisibility;
+    const columnOrder = pageId ? (tableSettings?.columnOrder ?? defaultColumnOrder) : defaultColumnOrder;
+    const columnFilters = pageId ? tableSettings?.columnFilters : routeSearch.filters;
 
     const sorting: SortingState = (routeSearch.sort ?? '')
         .split(',')
@@ -151,7 +165,7 @@ export function ListPage<
                         page={pagination.page}
                         itemsPerPage={pagination.itemsPerPage}
                         sorting={sorting}
-                        columnFilters={routeSearch.filters}
+                        columnFilters={columnFilters}
                         onPageChange={(table, page, perPage) => {
                             persistListStateToUrl(table, { page, perPage });
                             if (pageId) {
@@ -163,6 +177,9 @@ export function ListPage<
                         }}
                         onFilterChange={(table, filters) => {
                             persistListStateToUrl(table, { filters });
+                            if (pageId) {
+                                setTableSettings(pageId, 'columnFilters', filters);
+                            }
                         }}
                         onColumnVisibilityChange={(table, columnVisibility) => {
                             if (pageId) {
@@ -171,6 +188,7 @@ export function ListPage<
                         }}
                         facetedFilters={facetedFilters}
                         rowActions={rowActions}
+                        bulkActions={bulkActions}
                         setTableOptions={setTableOptions}
                         transformData={transformData}
                     />

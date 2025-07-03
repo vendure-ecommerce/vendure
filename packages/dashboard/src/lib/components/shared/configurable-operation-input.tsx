@@ -1,12 +1,10 @@
-import { ConfigurableOperationDefFragment, ConfigurableOperationFragment } from '@/graphql/fragments.js';
-import { useForm } from 'react-hook-form';
-import * as React from 'react';
-import { Form, FormControl, FormField, FormItem, FormLabel } from '../ui/form.js';
-import { Input } from '../ui/input.js';
+import { ConfigurableOperationDefFragment } from '@/vdb/graphql/fragments.js';
 import { ConfigurableOperationInput as ConfigurableOperationInputType } from '@vendure/common/lib/generated-types';
-import { ConfigurableOperationArgInput } from './configurable-operation-arg-input.js';
-import { Button } from '../ui/button.js';
 import { Trash } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { Button } from '../ui/button.js';
+import { Form, FormControl, FormField, FormItem, FormLabel } from '../ui/form.js';
+import { ConfigurableOperationArgInput } from './configurable-operation-arg-input.js';
 
 export interface ConfigurableOperationInputProps {
     operationDefinition: ConfigurableOperationDefFragment;
@@ -42,12 +40,13 @@ export function ConfigurableOperationInput({
         if (argIndex === -1) {
             updatedArgs = [...value.arguments, { name, value: stringValue }];
         } else {
-            updatedArgs = value.arguments.map(arg => (arg.name === name ? { ...arg, value: stringValue } : arg));
+            updatedArgs = value.arguments.map(arg =>
+                arg.name === name ? { ...arg, value: stringValue } : arg,
+            );
         }
         const newVal: ConfigurableOperationInputType = { ...value, arguments: updatedArgs };
         onChange(newVal);
     };
-
 
     return (
         <Form {...form}>
@@ -73,14 +72,14 @@ export function ConfigurableOperationInput({
                                 key={arg.name}
                                 name={`args.${arg.name}`}
                                 render={() => (
-                                <FormItem>
-                                    <FormLabel>{arg.label || arg.name}</FormLabel>
-                                    <FormControl>
-                                        <ConfigurableOperationArgInput
-                                            definition={arg}
-                                            value={argValue}
-                                            onChange={value => handleInputChange(arg.name, value)}
-                                        />
+                                    <FormItem>
+                                        <FormLabel>{arg.label || arg.name}</FormLabel>
+                                        <FormControl>
+                                            <ConfigurableOperationArgInput
+                                                definition={arg}
+                                                value={argValue}
+                                                onChange={value => handleInputChange(arg.name, value)}
+                                            />
                                         </FormControl>
                                     </FormItem>
                                 )}

@@ -1,5 +1,6 @@
-import { api } from '@/graphql/api.js';
-import { graphql } from '@/graphql/graphql.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { useAuth } from '@/vdb/hooks/use-auth.js';
 import { useQuery } from '@tanstack/react-query';
 import { ResultOf } from 'gql.tada';
 import React from 'react';
@@ -260,18 +261,25 @@ export interface ServerConfig {
 
 // create a provider for the global settings
 export const ServerConfigProvider = ({ children }: { children: React.ReactNode }) => {
+    const { user } = useAuth();
+    const queryKey = ['getServerConfig', user?.id];
     const { data } = useQuery({
-        queryKey: ['getServerConfig'],
+        queryKey,
         queryFn: () => api.query(getServerConfigDocument),
+        retry: false,
+        enabled: !!user?.id,
+        staleTime: 1000,
     });
-    const value: ServerConfig = {
-        availableLanguages: data?.globalSettings.availableLanguages ?? [],
-        moneyStrategyPrecision: data?.globalSettings.serverConfig.moneyStrategyPrecision ?? 2,
-        orderProcess: data?.globalSettings.serverConfig.orderProcess ?? [],
-        permittedAssetTypes: data?.globalSettings.serverConfig.permittedAssetTypes ?? [],
-        permissions: data?.globalSettings.serverConfig.permissions ?? [],
-        entityCustomFields: data?.globalSettings.serverConfig.entityCustomFields ?? [],
-    };
+    const value: ServerConfig | null = data?.globalSettings
+        ? {
+              availableLanguages: data?.globalSettings.availableLanguages ?? [],
+              moneyStrategyPrecision: data?.globalSettings.serverConfig.moneyStrategyPrecision ?? 2,
+              orderProcess: data?.globalSettings.serverConfig.orderProcess ?? [],
+              permittedAssetTypes: data?.globalSettings.serverConfig.permittedAssetTypes ?? [],
+              permissions: data?.globalSettings.serverConfig.permissions ?? [],
+              entityCustomFields: data?.globalSettings.serverConfig.entityCustomFields ?? [],
+          }
+        : null;
 
     return <ServerConfigContext.Provider value={value}>{children}</ServerConfigContext.Provider>;
 };

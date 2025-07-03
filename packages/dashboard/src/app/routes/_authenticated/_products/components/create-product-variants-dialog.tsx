@@ -1,22 +1,22 @@
-import { useCallback, useMemo, useState } from 'react';
-import { CreateProductVariants, VariantConfiguration } from './create-product-variants.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogDescription,
     DialogTrigger,
-} from '@/components/ui/dialog.js';
-import { Button } from '@/components/ui/button.js';
-import { Plus } from 'lucide-react';
-import { useChannel } from '@/hooks/use-channel.js';
-import { Trans } from '@/lib/trans.js';
-import { graphql } from '@/graphql/graphql.js';
-import { api } from '@/graphql/api.js';
+} from '@/vdb/components/ui/dialog.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
+import { Trans } from '@/vdb/lib/trans.js';
+import { normalizeString } from '@/vdb/lib/utils.js';
 import { useMutation } from '@tanstack/react-query';
-import { normalizeString } from '@/lib/utils.js';
+import { Plus } from 'lucide-react';
+import { useCallback, useState } from 'react';
+import { CreateProductVariants, VariantConfiguration } from './create-product-variants.js';
 
 const createProductOptionsMutation = graphql(`
     mutation CreateOptionGroups($input: CreateProductOptionGroupInput!) {

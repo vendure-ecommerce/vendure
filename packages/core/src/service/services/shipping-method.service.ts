@@ -16,6 +16,7 @@ import { IsNull } from 'typeorm';
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { EntityNotFoundError, ForbiddenError, UserInputError } from '../../common/error/errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -42,6 +43,7 @@ import { RoleService } from './role.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class ShippingMethodService {
     constructor(
         private connection: TransactionalConnection,
@@ -267,7 +269,7 @@ export class ShippingMethodService {
 
     async getActiveShippingMethods(ctx: RequestContext): Promise<ShippingMethod[]> {
         const shippingMethods = await this.connection.getRepository(ctx, ShippingMethod).find({
-            relations: ['channels'],
+            relations: ['channels', 'customFields'],
             where: { deletedAt: IsNull() },
         });
         return shippingMethods

@@ -1,8 +1,21 @@
-import { ChannelContext } from '@/providers/channel-provider.js';
+import { ChannelContext } from '@/vdb/providers/channel-provider.js';
 import * as React from 'react';
 
 // Hook to use the channel context
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * Provides access to the {@link ChannelContext} which contains information
+ * about the active channel.
+ *
+ *
+ * @docsCategory hooks
+ * @docsPage useChannel
+ * @docsWeight 0
+ * @since 3.3.0
+ */
 export function useChannel() {
     const context = React.useContext(ChannelContext);
     if (context === undefined) {

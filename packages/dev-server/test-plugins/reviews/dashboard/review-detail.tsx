@@ -1,9 +1,5 @@
 import { graphql } from '@/graphql/graphql';
-import {
-    DashboardRouteDefinition,
-    DetailPage,
-    detailPageRouteLoader
-} from '@vendure/dashboard';
+import { DashboardRouteDefinition, DetailPage, detailPageRouteLoader } from '@vendure/dashboard';
 
 const reviewDetailDocument = graphql(`
     query GetReviewDetail($id: ID!) {
@@ -30,6 +26,18 @@ const reviewDetailDocument = graphql(`
             state
             response
             responseCreatedAt
+            translations {
+                id
+                languageCode
+                text
+                customFields {
+                    reviewerName
+                }
+            }
+            customFields {
+                verifiedReviewerName
+                reviewerName
+            }
         }
     }
 `);
@@ -64,11 +72,10 @@ export const reviewDetail: DashboardRouteDefinition = {
                         id: review.id,
                         summary: review.summary,
                         body: review.body,
-                        rating: review.rating,
-                        authorName: review.authorName,
-                        authorLocation: review.authorLocation,
-                        upvotes: review.upvotes,
-                        downvotes: review.downvotes,
+                        response: review.response,
+                        state: review.state,
+                        customFields: review.customFields,
+                        translations: review.translations,
                     };
                 }}
             />

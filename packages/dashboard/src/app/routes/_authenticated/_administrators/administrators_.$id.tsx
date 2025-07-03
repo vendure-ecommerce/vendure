@@ -1,10 +1,10 @@
-import { ErrorPage } from '@/components/shared/error-page.js';
-import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { RoleSelector } from '@/components/shared/role-selector.js';
-import { Button } from '@/components/ui/button.js';
-import { Input } from '@/components/ui/input.js';
-import { NEW_ENTITY_PATH } from '@/constants.js';
+import { ErrorPage } from '@/vdb/components/shared/error-page.js';
+import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { RoleSelector } from '@/vdb/components/shared/role-selector.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
 import {
     CustomFieldsPageBlock,
     Page,
@@ -13,10 +13,10 @@ import {
     PageBlock,
     PageLayout,
     PageTitle,
-} from '@/framework/layout-engine/page-layout.js';
-import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
-import { useDetailPage } from '@/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/framework/layout-engine/page-layout.js';
+import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
+import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import {
@@ -26,9 +26,12 @@ import {
 } from './administrators.graphql.js';
 import { RolePermissionsDisplay } from './components/role-permissions-display.js';
 
+const pageId = 'administrator-detail';
+
 export const Route = createFileRoute('/_authenticated/_administrators/administrators_/$id')({
     component: AdministratorDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: administratorDetailDocument,
         breadcrumb: (isNew, entity) => {
             const name = `${entity?.firstName} ${entity?.lastName}`;
@@ -48,6 +51,7 @@ function AdministratorDetailPage() {
     const { i18n } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
         queryDocument: administratorDetailDocument,
         createDocument: createAdministratorDocument,
         updateDocument: updateAdministratorDocument,
@@ -70,9 +74,7 @@ function AdministratorDetailPage() {
         },
         params: { id: params.id },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated administrator'), {
-                position: 'top-right',
-            });
+            toast(i18n.t('Successfully updated administrator'));
             resetForm();
             if (creatingNewEntity) {
                 await navigate({ to: `../$id`, params: { id: data.id } });
@@ -80,7 +82,6 @@ function AdministratorDetailPage() {
         },
         onError: err => {
             toast(i18n.t('Failed to update administrator'), {
-                position: 'top-right',
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
@@ -90,7 +91,7 @@ function AdministratorDetailPage() {
     const roleIds = form.watch('roleIds');
 
     return (
-        <Page pageId="administrator-detail" form={form} submitHandler={submitHandler}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New administrator</Trans> : name}</PageTitle>
 
             <PageActionBar>

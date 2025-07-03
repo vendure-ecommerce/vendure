@@ -1,13 +1,7 @@
-import { Controller } from 'react-hook-form';
-import { FieldPath } from 'react-hook-form';
-import { useUserSettings } from '@/hooks/use-user-settings.js';
-import { ControllerProps } from 'react-hook-form';
-import { FieldValues } from 'react-hook-form';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
+import { Controller, ControllerProps, FieldPath, FieldValues } from 'react-hook-form';
+import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from '../ui/form.js';
 import { FormFieldWrapper } from './form-field-wrapper.js';
-import { FormMessage } from '../ui/form.js';
-import { FormControl } from '../ui/form.js';
-import { FormItem } from '../ui/form.js';
-import { FormDescription, FormField, FormLabel } from '../ui/form.js';
 
 export type TranslatableEntity = FieldValues & {
     translations?: Array<{ languageCode: string }> | null;
@@ -55,6 +49,7 @@ export const TranslatableFormFieldWrapper = <
     label,
     description,
     render,
+    renderFormControl,
     ...props
 }: TranslatableFormFieldWrapperProps<TFieldValues>) => {
     return (
@@ -64,7 +59,7 @@ export const TranslatableFormFieldWrapper = <
             render={renderArgs => (
                 <FormItem>
                     {label && <FormLabel>{label}</FormLabel>}
-                    <FormControl>{render(renderArgs)}</FormControl>
+                    {renderFormControl ? <FormControl>{render(renderArgs)}</FormControl> : render(renderArgs)}
                     {description && <FormDescription>{description}</FormDescription>}
                     <FormMessage />
                 </FormItem>

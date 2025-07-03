@@ -1,5 +1,5 @@
-import { api } from '@/graphql/api.js';
-import { graphql } from '@/graphql/graphql.js';
+import { api } from '@/vdb/graphql/api.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 import { useQuery } from '@tanstack/react-query';
 import { CustomerGroupChip } from '../shared/customer-group-chip.js';
 import { CustomerGroupSelector } from '../shared/customer-group-selector.js';

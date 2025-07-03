@@ -1,8 +1,8 @@
-import { VendureImage } from '@/components/shared/vendure-image.js';
-import { Button } from '@/components/ui/button.js';
-import { Card, CardContent } from '@/components/ui/card.js';
-import { Checkbox } from '@/components/ui/checkbox.js';
-import { Input } from '@/components/ui/input.js';
+import { VendureImage } from '@/vdb/components/shared/vendure-image.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Card, CardContent } from '@/vdb/components/ui/card.js';
+import { Checkbox } from '@/vdb/components/ui/checkbox.js';
+import { Input } from '@/vdb/components/ui/input.js';
 import {
     Pagination,
     PaginationContent,
@@ -11,19 +11,20 @@ import {
     PaginationLink,
     PaginationNext,
     PaginationPrevious,
-} from '@/components/ui/pagination.js';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.js';
-import { api } from '@/graphql/api.js';
-import { assetFragment, AssetFragment } from '@/graphql/fragments.js';
-import { graphql } from '@/graphql/graphql.js';
-import { formatFileSize } from '@/lib/utils.js';
-import { Trans } from '@/lib/trans.js';
+} from '@/vdb/components/ui/pagination.js';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
+import { api } from '@/vdb/graphql/api.js';
+import { assetFragment, AssetFragment } from '@/vdb/graphql/fragments.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { Trans } from '@/vdb/lib/trans.js';
+import { formatFileSize } from '@/vdb/lib/utils.js';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useDebounce } from '@uidotdev/usehooks';
 import { Loader2, Search, Upload, X } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { useDebounce } from '@uidotdev/usehooks';
 import { DetailPageButton } from '../detail-page-button.js';
+import { AssetBulkAction, AssetBulkActions } from './asset-bulk-actions.js';
 
 const getAssetListDocument = graphql(
     `
@@ -76,7 +77,7 @@ export interface AssetGalleryProps {
     /**
      * @description
      * Defines whether multiple assets can be selected.
-     * 
+     *
      * If set to 'auto', the asset selection will be toggled when the user clicks on an asset.
      * If set to 'manual', multiple selection will occur only if the user holds down the control/cmd key.
      */
@@ -87,6 +88,7 @@ export interface AssetGalleryProps {
     showHeader?: boolean;
     className?: string;
     onFilesDropped?: (files: File[]) => void;
+    bulkActions?: AssetBulkAction[];
 }
 
 export function AssetGallery({
@@ -99,6 +101,7 @@ export function AssetGallery({
     showHeader = true,
     className = '',
     onFilesDropped,
+    bulkActions,
 }: AssetGalleryProps) {
     // State
     const [page, setPage] = useState(1);
@@ -111,7 +114,7 @@ export function AssetGallery({
     const queryKey = ['AssetGallery', page, pageSize, debouncedSearch, assetType];
 
     // Query for assets
-    const { data, isLoading } = useQuery({
+    const { data, isLoading, refetch } = useQuery({
         queryKey,
         queryFn: () => {
             const filter: Record<string, any> = {};
@@ -172,7 +175,6 @@ export function AssetGallery({
             onSelect?.(newSelected);
             return;
         }
-
 
         // Manual mode - check for modifier key
         const isModifierKeyPressed = event.metaKey || event.ctrlKey;
@@ -269,6 +271,9 @@ export function AssetGallery({
                 </div>
             )}
 
+            {/* Bulk actions bar */}
+            <AssetBulkActions selection={selected} bulkActions={bulkActions} refetch={refetch} />
+
             <div
                 {...getRootProps()}
                 className={`
@@ -300,7 +305,7 @@ export function AssetGallery({
                                     ${isSelected(asset as Asset) ? 'ring-2 ring-primary' : ''}
                                     flex flex-col min-w-[120px]
                                 `}
-                                onClick={(e) => handleSelect(asset as Asset, e)}
+                                onClick={e => handleSelect(asset as Asset, e)}
                             >
                                 <div
                                     className="relative w-full bg-muted/30"
@@ -324,7 +329,7 @@ export function AssetGallery({
                                     <p className="text-xs line-clamp-2 min-h-[2.5rem]" title={asset.name}>
                                         {asset.name}
                                     </p>
-                                    <div className='flex justify-between items-center'>
+                                    <div className="flex justify-between items-center">
                                         {asset.fileSize && (
                                             <p className="text-xs text-muted-foreground mt-1">
                                                 {formatFileSize(asset.fileSize)}

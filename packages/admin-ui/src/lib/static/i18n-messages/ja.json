@@ -5,8 +5,8 @@
   "asset": {
     "add-asset": "アセット追加",
     "add-asset-with-count": "{ count }個のアセットを追加",
-    "change-asset": "アセット変更",
     "assets-selected-count": "{ count }個のアセットを選択",
+    "change-asset": "アセット変更",
     "dimensions": "元画像サイズ",
     "focal-point": "注目点",
     "notify-create-assets-success": "{count}個のアセットが作成されました",
@@ -17,14 +17,14 @@
     "select-assets": "アセット選択",
     "set-as-featured-asset": "代表アセットにする",
     "set-focal-point": "注目点を指定",
+    "size": "サイズ",
     "source-file": "元画像ファイル名",
     "unset-focal-point": "注目点解除",
     "update-focal-point": "注目点更新",
     "update-focal-point-error": "注目点の更新ができませんでした",
     "update-focal-point-success": "注目点を更新しました",
     "upload-assets": "アセットをアップロード",
-    "uploading": "アップロード中...",
-    "size": "サイズ"
+    "uploading": "アップロード中..."
   },
   "breadcrumb": {
     "administrators": "管理者",
@@ -47,6 +47,7 @@
     "profile": "プロフィール",
     "promotions": "プロモーション",
     "roles": "ロール",
+    "scheduled-tasks": "スケジュールされたタスク",
     "seller-orders": "販売者の注文",
     "sellers": "販売者",
     "shipping-methods": "配送方法",
@@ -239,12 +240,14 @@
     "delete": "削除",
     "description": "説明",
     "details": "詳細",
+    "disable": "無効",
     "disabled": "Disabled",
     "discard-changes": "変更の破棄",
     "duplicate": "複製",
     "edit": "編集",
     "edit-field": "フィールドを編集",
     "edit-note": "ノート編集",
+    "enable": "有効",
     "enabled": "Enabled",
     "end-date": "終了日",
     "expand-entries": "折りたたみ開閉",
@@ -290,7 +293,7 @@
     "notify-delete-success-with-count": "{count} 個のアイテムを削除しました。",
     "notify-duplicate-error": "{ name } の複製ができませんでした。エラー: { error }",
     "notify-duplicate-error-excess": "エラーのため追加の { count } 件は複製できませんでした",
-    "notify-duplicate-success": "複製しました。 {count, plural, one {1 item} other {{count} items}}: { names }",
+    "notify-duplicate-success": "複製しました: {count} 件 ({names})",
     "notify-remove-from-channel-success-with-count": "{ count } 個のアイテムをチャンネルから除去しました。",
     "notify-save-changes-error": "エラーが発生しました。変更を保存できませんでした。",
     "notify-saved-changes": "変更を保存しました",
@@ -477,6 +480,7 @@
     "year": "年間"
   },
   "editor": {
+    "height": "高さ",
     "image-alt": "説明文 (alt)",
     "image-src": "ソース",
     "image-title": "題名",
@@ -486,8 +490,7 @@
     "link-title": "リンクタイトル",
     "remove-link": "除去",
     "set-link": "リンクを設定",
-    "width": "幅",
-    "height": "高さ"
+    "width": "幅"
   },
   "error": {
     "403-forbidden": "現在 \"{ path }\" のアクセス権限がありません。権限がないかセッション有効期限が切れています。",
@@ -532,6 +535,7 @@
     "promotions": "プロモーション",
     "roles": "ロール",
     "sales": "販売",
+    "scheduled-tasks": "スケジュールされたタスク",
     "sellers": "販売者",
     "settings": "設定",
     "shipping-methods": "配送方法",
@@ -647,6 +651,7 @@
     "previous-customer": "以前の顧客",
     "product-name": "商品名",
     "product-sku": "SKU",
+    "product-variant": "製品バリアント",
     "promotions-applied": "プロモーション適用済み",
     "prorated-unit-price": "単価",
     "quantity": "個数",
@@ -794,6 +799,7 @@
   },
   "system": {
     "all-job-queues": "全てのジョブキュー",
+    "could-not-trigger-task": "タスクを実行できませんでした",
     "health-all-systems-up": "全システム稼働中",
     "health-error": "エラー: 1つ以上のシステムがダウンしています！",
     "health-last-checked": "最終チェック日時",
@@ -813,6 +819,13 @@
     "job-state-completed": "完了",
     "job-state-failed": "失敗",
     "job-state-pending": "保留中",
-    "job-state-running": "実行中"
+    "job-state-running": "実行中",
+    "last-executed-at": "最後の実行日時",
+    "last-result": "最後の結果",
+    "next-execution-at": "次回の実行日時",
+    "run-task": "タスクを実行",
+    "schedule": "スケジュール",
+    "task-id": "タスクID",
+    "task-will-be-triggered": "タスクが実行されます"
   }
 }

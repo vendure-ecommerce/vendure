@@ -1,10 +1,13 @@
 'use client';
 
-import { DataTablePagination } from '@/components/data-table/data-table-pagination.js';
-import { DataTableViewOptions } from '@/components/data-table/data-table-view-options.js';
-import { Badge } from '@/components/ui/badge.js';
-import { Input } from '@/components/ui/input.js';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.js';
+import { DataTablePagination } from '@/vdb/components/data-table/data-table-pagination.js';
+import { DataTableViewOptions } from '@/vdb/components/data-table/data-table-view-options.js';
+import { RefreshButton } from '@/vdb/components/data-table/refresh-button.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { Skeleton } from '@/vdb/components/ui/skeleton.js';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/vdb/components/ui/table.js';
+import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
 import {
     ColumnDef,
     ColumnFilter,
@@ -18,10 +21,12 @@ import {
     useReactTable,
     VisibilityState,
 } from '@tanstack/react-table';
-import { TableOptions } from '@tanstack/table-core';
-import { CircleX, Filter } from 'lucide-react';
+import { RowSelectionState, TableOptions } from '@tanstack/table-core';
 import React, { Suspense, useEffect } from 'react';
+import { AddFilterMenu } from './add-filter-menu.js';
+import { DataTableBulkActions } from './data-table-bulk-actions.js';
 import { DataTableFacetedFilter, DataTableFacetedFilterOption } from './data-table-faceted-filter.js';
+import { DataTableFilterBadge } from './data-table-filter-badge.js';
 
 export interface FacetedFilter {
     title: string;
@@ -30,10 +35,11 @@ export interface FacetedFilter {
     options?: DataTableFacetedFilterOption[];
 }
 
-interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[];
+interface DataTableProps<TData> {
+    columns: ColumnDef<TData, any>[];
     data: TData[];
     totalItems: number;
+    isLoading?: boolean;
     page?: number;
     itemsPerPage?: number;
     sorting?: SortingState;
@@ -46,17 +52,20 @@ interface DataTableProps<TData, TValue> {
     defaultColumnVisibility?: VisibilityState;
     facetedFilters?: { [key: string]: FacetedFilter | undefined };
     disableViewOptions?: boolean;
+    bulkActions?: BulkAction[];
     /**
      * This property allows full control over _all_ features of TanStack Table
      * when needed.
      */
     setTableOptions?: (table: TableOptions<TData>) => TableOptions<TData>;
+    onRefresh?: () => void;
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData>({
     columns,
     data,
     totalItems,
+    isLoading,
     page,
     itemsPerPage,
     sorting: sortingInitialState,
@@ -69,10 +78,13 @@ export function DataTable<TData, TValue>({
     defaultColumnVisibility,
     facetedFilters,
     disableViewOptions,
+    bulkActions,
     setTableOptions,
-}: DataTableProps<TData, TValue>) {
+    onRefresh,
+}: Readonly<DataTableProps<TData>>) {
     const [sorting, setSorting] = React.useState<SortingState>(sortingInitialState || []);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(filtersInitialState || []);
+    const { activeChannel } = useChannel();
     const [pagination, setPagination] = React.useState<PaginationState>({
         pageIndex: (page ?? 1) - 1,
         pageSize: itemsPerPage ?? 10,
@@ -80,10 +92,24 @@ export function DataTable<TData, TValue>({
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>(
         defaultColumnVisibility ?? {},
     );
+    const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
+
+    useEffect(() => {
+        // If the defaultColumnVisibility changes externally (e.g. the user reset the table settings),
+        // we want to reset the column visibility to the default.
+        if (
+            defaultColumnVisibility &&
+            JSON.stringify(defaultColumnVisibility) !== JSON.stringify(columnVisibility)
+        ) {
+            setColumnVisibility(defaultColumnVisibility);
+        }
+        // We intentionally do not include `columnVisibility` in the dependency array
+    }, [defaultColumnVisibility]);
 
     let tableOptions: TableOptions<TData> = {
         data,
         columns,
+        getRowId: row => (row as { id: string }).id,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         manualPagination: true,
@@ -94,11 +120,13 @@ export function DataTable<TData, TValue>({
         onSortingChange: setSorting,
         onColumnVisibilityChange: setColumnVisibility,
         onColumnFiltersChange: setColumnFilters,
+        onRowSelectionChange: setRowSelection,
         state: {
             pagination,
             sorting,
             columnVisibility,
             columnFilters,
+            rowSelection,
         },
     };
 
@@ -124,6 +152,7 @@ export function DataTable<TData, TValue>({
         onColumnVisibilityChange?.(table, columnVisibility);
     }, [columnVisibility]);
 
+    const visibleColumnCount = Object.values(columnVisibility).filter(Boolean).length;
     return (
         <>
             <div className="flex justify-between items-start">
@@ -149,36 +178,37 @@ export function DataTable<TData, TValue>({
                                 />
                             ))}
                         </Suspense>
+                        <AddFilterMenu columns={table.getAllColumns()} />
                     </div>
                     <div className="flex gap-1">
                         {columnFilters
                             .filter(f => !facetedFilters?.[f.id])
                             .map(f => {
-                                const [operator, value] = Object.entries(
-                                    f.value as Record<string, string>,
-                                )[0];
+                                const column = table.getColumn(f.id);
+                                const currency = activeChannel?.defaultCurrencyCode ?? 'USD';
                                 return (
-                                    <Badge key={f.id} className="flex gap-1 items-center" variant="secondary">
-                                        <Filter size="12" className="opacity-50" />
-                                        <div>{f.id}</div>
-                                        <div>{operator}</div>
-                                        <div>{value}</div>
-                                        <button
-                                            className="cursor-pointer"
-                                            onClick={() =>
-                                                setColumnFilters(old => old.filter(x => x.id !== f.id))
-                                            }
-                                        >
-                                            <CircleX size="14" />
-                                        </button>
-                                    </Badge>
+                                    <DataTableFilterBadge
+                                        key={f.id}
+                                        filter={f}
+                                        currencyCode={currency}
+                                        dataType={
+                                            (column?.columnDef.meta as any)?.fieldInfo?.type ?? 'String'
+                                        }
+                                        onRemove={() =>
+                                            setColumnFilters(old => old.filter(x => x.id !== f.id))
+                                        }
+                                    />
                                 );
                             })}
                     </div>
                 </div>
-                {!disableViewOptions && <DataTableViewOptions table={table} />}
+                <div className="flex items-center justify-start gap-2">
+                    {!disableViewOptions && <DataTableViewOptions table={table} />}
+                    {onRefresh && <RefreshButton onRefresh={onRefresh} isLoading={isLoading ?? false} />}
+                </div>
             </div>
-            <div className="rounded-md border my-2">
+
+            <div className="rounded-md border my-2 relative">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map(headerGroup => (
@@ -199,18 +229,38 @@ export function DataTable<TData, TValue>({
                         ))}
                     </TableHeader>
                     <TableBody>
-                        {table.getRowModel().rows?.length ? (
+                        {isLoading && !data?.length ? (
+                            Array.from({ length: pagination.pageSize }).map((_, index) => (
+                                <TableRow
+                                    key={`skeleton-${index}`}
+                                    className="animate-in fade-in duration-100"
+                                >
+                                    {Array.from({ length: visibleColumnCount }).map((_, cellIndex) => (
+                                        <TableCell
+                                            key={`skeleton-cell-${index}-${cellIndex}`}
+                                            className="h-12"
+                                        >
+                                            <Skeleton className="h-4 my-2 w-full" />
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))
+                        ) : table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map(row => (
-                                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                                <TableRow
+                                    key={row.id}
+                                    data-state={row.getIsSelected() && 'selected'}
+                                    className="animate-in fade-in duration-100"
+                                >
                                     {row.getVisibleCells().map(cell => (
-                                        <TableCell key={cell.id}>
+                                        <TableCell key={cell.id} className="h-12">
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
                                     ))}
                                 </TableRow>
                             ))
                         ) : (
-                            <TableRow>
+                            <TableRow className="animate-in fade-in duration-100">
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
                                     No results.
                                 </TableCell>
@@ -218,6 +268,7 @@ export function DataTable<TData, TValue>({
                         )}
                     </TableBody>
                 </Table>
+                <DataTableBulkActions bulkActions={bulkActions ?? []} table={table} />
             </div>
             <DataTablePagination table={table} />
         </>

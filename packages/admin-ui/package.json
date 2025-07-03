@@ -1,6 +1,6 @@
 {
     "name": "@vendure/admin-ui",
-    "version": "3.2.3",
+    "version": "3.3.5",
     "license": "GPL-3.0-or-later",
     "repository": {
         "type": "git",
@@ -53,7 +53,7 @@
         "@ng-select/ng-select": "^14.2.6",
         "@ngx-translate/core": "^16.0.4",
         "@ngx-translate/http-loader": "^16.0.1",
-        "@vendure/common": "3.2.3",
+        "@vendure/common": "3.3.5",
         "@webcomponents/custom-elements": "^1.6.0",
         "apollo-angular": "^10.0.3",
         "apollo-upload-client": "^18.0.1",
@@ -78,7 +78,7 @@
         "prosemirror-tables": "^1.6.4",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
-        "rxjs": "7.8.1",
+        "rxjs": "^7.8.1",
         "tslib": "^2.6.2",
         "zone.js": "~0.15.0"
     },

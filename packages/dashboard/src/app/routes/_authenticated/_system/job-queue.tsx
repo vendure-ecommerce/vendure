@@ -1,14 +1,13 @@
-import { ListPage } from '@/framework/page/list-page.js';
-import { Trans } from '@/lib/trans.js';
+import { Badge } from '@/vdb/components/ui/badge.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { ListPage } from '@/vdb/framework/page/list-page.js';
+import { api } from '@/vdb/graphql/api.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { createFileRoute } from '@tanstack/react-router';
-import { jobListDocument, jobQueueListDocument } from './job-queue.graphql.js';
-import { Badge } from '@/components/ui/badge.js';
-import { Button } from '@/components/ui/button.js';
+import { formatRelative } from 'date-fns';
+import { Ban, CheckCircle2Icon, CircleXIcon, ClockIcon, LoaderIcon, RotateCcw } from 'lucide-react';
 import { PayloadDialog } from './components/payload-dialog.js';
-import { differenceInMilliseconds, formatDuration, formatRelative } from 'date-fns';
-import { Ban, CircleXIcon, ClockIcon, LoaderIcon, RotateCcw } from 'lucide-react';
-import { CheckCircle2Icon } from 'lucide-react';
-import { api } from '@/graphql/api.js';
+import { jobListDocument, jobQueueListDocument } from './job-queue.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_system/job-queue')({
     component: JobQueuePage,
@@ -58,7 +57,11 @@ function JobQueuePage() {
             customizeColumns={{
                 createdAt: {
                     header: 'Created At',
-                    cell: ({ row }) => formatRelative(row.original.createdAt, new Date()),
+                    cell: ({ row }) => (
+                        <div title={row.original.createdAt}>
+                            {formatRelative(new Date(row.original.createdAt), new Date())}
+                        </div>
+                    ),
                 },
                 data: {
                     header: 'Data',

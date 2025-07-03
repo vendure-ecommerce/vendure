@@ -1,11 +1,11 @@
-import { Button } from '@/components/ui/button.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
-import { AssetFragment } from '@/graphql/fragments.js';
+} from '@/vdb/components/ui/dropdown-menu.js';
+import { AssetFragment } from '@/vdb/graphql/fragments.js';
 import {
     closestCenter,
     DndContext,
@@ -45,6 +45,47 @@ interface EntityAssetsProps {
     value?: EntityAssetValue;
     onBlur?: () => void;
     onChange?: (change: EntityAssetValue) => void;
+}
+
+// FeaturedAsset component
+interface FeaturedAssetProps {
+    featuredAsset?: Asset | null;
+    compact?: boolean;
+    onSelectAssets: () => void;
+    onPreviewAsset: (asset: Asset) => void;
+}
+
+function FeaturedAsset({
+    featuredAsset,
+    compact = false,
+    onSelectAssets,
+    onPreviewAsset,
+}: FeaturedAssetProps) {
+    return (
+        <div
+            className={`flex items-center justify-center ${compact ? 'h-40' : 'h-64'} border border-dashed rounded-md`}
+        >
+            {featuredAsset ? (
+                <VendureImage
+                    asset={featuredAsset}
+                    mode="crop"
+                    preset="small"
+                    onClick={() => onPreviewAsset(featuredAsset)}
+                    className="max-w-full max-h-full object-contain cursor-pointer"
+                />
+            ) : (
+                <div
+                    className="flex flex-col items-center justify-center text-muted-foreground cursor-pointer"
+                    onKeyDown={e => e.key === 'Enter' && onSelectAssets()}
+                    tabIndex={0}
+                    onClick={onSelectAssets}
+                >
+                    <ImageIcon className={compact ? 'h-10 w-10' : 'h-16 w-16'} />
+                    {!compact && <div className="mt-2">No featured asset</div>}
+                </div>
+            )}
+        </div>
+    );
 }
 
 // Sortable asset item component
@@ -234,57 +275,6 @@ export function EntityAssets({
         },
         [featuredAsset],
     );
-
-    const renderAssetList = () => (
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <div className={`${compact ? 'max-h-32' : ''} overflow-auto p-1`}>
-                <SortableContext
-                    items={assets.map(asset => asset.id)}
-                    strategy={horizontalListSortingStrategy}
-                >
-                    <div className="flex flex-wrap gap-2">
-                        {assets.map(asset => (
-                            <SortableAsset
-                                key={asset.id}
-                                asset={asset}
-                                compact={compact}
-                                isFeatured={isFeatured(asset)}
-                                updatePermissions={updatePermissions}
-                                onPreview={setPreviewAsset}
-                                onSetAsFeatured={handleSetAsFeatured}
-                                onRemove={handleRemoveAsset}
-                            />
-                        ))}
-                    </div>
-                </SortableContext>
-            </div>
-        </DndContext>
-    );
-
-    const FeaturedAsset = () => (
-        <div
-            className={`flex items-center justify-center ${compact ? 'h-40' : 'h-64'} border border-dashed rounded-md`}
-        >
-            {featuredAsset ? (
-                <VendureImage
-                    asset={featuredAsset}
-                    mode="crop"
-                    preset="small"
-                    onClick={() => setPreviewAsset(featuredAsset)}
-                    className="max-w-full max-h-full object-contain cursor-pointer"
-                />
-            ) : (
-                <div
-                    className="flex flex-col items-center justify-center text-muted-foreground cursor-pointer"
-                    onClick={handleSelectAssets}
-                >
-                    <ImageIcon className={compact ? 'h-10 w-10' : 'h-16 w-16'} />
-                    {!compact && <div className="mt-2">No featured asset</div>}
-                </div>
-            )}
-        </div>
-    );
-
     // AddAssetButton component
     const AddAssetButton = () =>
         updatePermissions && (
@@ -303,15 +293,45 @@ export function EntityAssets({
         <>
             {compact ? (
                 <div className="flex flex-col gap-3">
-                    <FeaturedAsset />
-                    {renderAssetList()}
+                    <FeaturedAsset
+                        featuredAsset={featuredAsset}
+                        compact={compact}
+                        onSelectAssets={handleSelectAssets}
+                        onPreviewAsset={setPreviewAsset}
+                    />
+                    <AssetList
+                        assets={assets}
+                        compact={compact}
+                        sensors={sensors}
+                        updatePermissions={updatePermissions}
+                        isFeatured={isFeatured}
+                        onPreview={setPreviewAsset}
+                        onSetAsFeatured={handleSetAsFeatured}
+                        onRemove={handleRemoveAsset}
+                        onDragEnd={handleDragEnd}
+                    />
                     <AddAssetButton />
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-[256px_1fr] gap-4">
-                    <FeaturedAsset />
+                    <FeaturedAsset
+                        featuredAsset={featuredAsset}
+                        compact={compact}
+                        onSelectAssets={handleSelectAssets}
+                        onPreviewAsset={setPreviewAsset}
+                    />
                     <div className="flex flex-col gap-4">
-                        {renderAssetList()}
+                        <AssetList
+                            assets={assets}
+                            compact={compact}
+                            sensors={sensors}
+                            updatePermissions={updatePermissions}
+                            isFeatured={isFeatured}
+                            onPreview={setPreviewAsset}
+                            onSetAsFeatured={handleSetAsFeatured}
+                            onRemove={handleRemoveAsset}
+                            onDragEnd={handleDragEnd}
+                        />
                         <AddAssetButton />
                     </div>
                 </div>
@@ -336,5 +356,56 @@ export function EntityAssets({
                 />
             )}
         </>
+    );
+}
+
+// AssetList component
+interface AssetListProps {
+    assets: Asset[];
+    compact: boolean;
+    sensors: ReturnType<typeof useSensors>;
+    updatePermissions: boolean;
+    isFeatured: (asset: Asset) => boolean;
+    onPreview: (asset: Asset) => void;
+    onSetAsFeatured: (asset: Asset) => void;
+    onRemove: (asset: Asset) => void;
+    onDragEnd: (event: DragEndEvent) => void;
+}
+
+function AssetList({
+    assets,
+    compact,
+    sensors,
+    updatePermissions,
+    isFeatured,
+    onPreview,
+    onSetAsFeatured,
+    onRemove,
+    onDragEnd,
+}: AssetListProps) {
+    return (
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+            <div className={`${compact ? 'max-h-32' : ''} overflow-auto p-1`}>
+                <SortableContext
+                    items={assets.map(asset => asset.id)}
+                    strategy={horizontalListSortingStrategy}
+                >
+                    <div className="flex flex-wrap gap-2">
+                        {assets.map(asset => (
+                            <SortableAsset
+                                key={asset.id}
+                                asset={asset}
+                                compact={compact}
+                                isFeatured={isFeatured(asset)}
+                                updatePermissions={updatePermissions}
+                                onPreview={onPreview}
+                                onSetAsFeatured={onSetAsFeatured}
+                                onRemove={onRemove}
+                            />
+                        ))}
+                    </div>
+                </SortableContext>
+            </div>
+        </DndContext>
     );
 }

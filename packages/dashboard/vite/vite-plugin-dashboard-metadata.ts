@@ -12,7 +12,7 @@ const resolvedVirtualModuleId = `\0${virtualModuleId}`;
  * generates an import statement for each one, wrapped up in a `runDashboardExtensions()`
  * function which can then be imported and executed in the Dashboard app.
  */
-export function dashboardMetadataPlugin(options: { rootDir: string }): Plugin {
+export function dashboardMetadataPlugin(): Plugin {
     let configLoaderApi: ConfigLoaderApi;
     let loadVendureConfigResult: LoadVendureConfigResult;
     return {
@@ -44,19 +44,11 @@ export function dashboardMetadataPlugin(options: { rootDir: string }): Plugin {
                     export async function runDashboardExtensions() {
                         ${pluginsWithExtensions
                             .map(extension => {
-                                return `await import('${extension}');`;
+                                return `await import(\`${extension}\`);`;
                             })
                             .join('\n')}
                 }`;
             }
         },
     };
-}
-
-/**
- * Converts an import path to a normalized path relative to the rootDir.
- */
-function normalizeImportPath(rootDir: string, importPath: string): string {
-    const relativePath = path.relative(rootDir, importPath).replace(/\\/g, '/');
-    return relativePath.replace(/\.tsx?$/, '.js');
 }

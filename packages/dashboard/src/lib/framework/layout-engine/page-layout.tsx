@@ -1,17 +1,19 @@
-import { CustomFieldsForm } from '@/components/shared/custom-fields-form.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.js';
-import { Form } from '@/components/ui/form.js';
-import { useCustomFieldConfig } from '@/hooks/use-custom-field-config.js';
-import { usePage } from '@/hooks/use-page.js';
-import { cn } from '@/lib/utils.js';
-import { NavigationConfirmation } from '@/components/shared/navigation-confirmation.js';
+import { CustomFieldsForm } from '@/vdb/components/shared/custom-fields-form.js';
+import { NavigationConfirmation } from '@/vdb/components/shared/navigation-confirmation.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/vdb/components/ui/card.js';
+import { Form } from '@/vdb/components/ui/form.js';
+import { useCustomFieldConfig } from '@/vdb/hooks/use-custom-field-config.js';
+import { usePage } from '@/vdb/hooks/use-page.js';
+import { cn } from '@/vdb/lib/utils.js';
 import { useMediaQuery } from '@uidotdev/usehooks';
-import React, { ComponentProps, createContext } from 'react';
+import React, { ComponentProps } from 'react';
 import { Control, UseFormReturn } from 'react-hook-form';
 
-import { DashboardActionBarItem } from '../extension-api/extension-api-types.js';
+import { DashboardActionBarItem } from '../extension-api/types/layout.js';
 
+import { PageBlockContext } from '@/vdb/framework/layout-engine/page-block-provider.js';
+import { PageContext, PageContextValue } from '@/vdb/framework/layout-engine/page-provider.js';
 import { getDashboardActionBarItems, getDashboardPageBlocks } from './layout-extensions.js';
 import { LocationWrapper } from './location-wrapper.js';
 
@@ -22,18 +24,32 @@ export interface PageProps extends ComponentProps<'div'> {
     submitHandler?: any;
 }
 
-export const PageProvider = createContext<PageContext | undefined>(undefined);
-
-export function Page({ children, pageId, entity, form, submitHandler, ...props }: PageProps) {
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * This component should be used to wrap _all_ pages in the dashboard. It provides
+ * a consistent layout as well as a context for the slot-based PageBlock system.
+ *
+ * The typical hierarchy of a page is as follows:
+ * - `Page`
+ *  - {@link PageTitle}
+ *  - {@link PageActionBar}
+ *  - {@link PageLayout}
+ *
+ * @docsCategory components
+ * @docsPage Page
+ * @docsWeight 0
+ * @since 3.3.0
+ */
+export function Page({ children, pageId, entity, form, submitHandler, ...props }: Readonly<PageProps>) {
     const childArray = React.Children.toArray(children);
 
     const pageTitle = childArray.find(child => React.isValidElement(child) && child.type === PageTitle);
-    const pageActionBar = childArray.find(
-        child => React.isValidElement(child) && child.type === PageActionBar,
-    );
+    const pageActionBar = childArray.find(child => isOfType(child, PageActionBar));
 
     const pageContent = childArray.filter(
-        child => React.isValidElement(child) && child.type !== PageTitle && child.type !== PageActionBar,
+        child => !isOfType(child, PageTitle) && !isOfType(child, PageActionBar),
     );
 
     const pageHeader = (
@@ -43,7 +59,58 @@ export function Page({ children, pageId, entity, form, submitHandler, ...props }
         </div>
     );
 
-    const pageContentWithOptionalForm = form ? (
+    return (
+        <PageContext.Provider value={{ pageId, form, entity }}>
+            <PageContent
+                pageHeader={pageHeader}
+                pageContent={pageContent}
+                form={form}
+                submitHandler={submitHandler}
+                {...props}
+            />
+        </PageContext.Provider>
+    );
+}
+
+function PageContent({
+    pageHeader,
+    pageContent,
+    form,
+    submitHandler,
+    ...props
+}: {
+    pageHeader: React.ReactNode;
+    pageContent: React.ReactNode;
+    form?: UseFormReturn<any>;
+    submitHandler?: any;
+    className?: string;
+}) {
+    return (
+        <div className={cn('m-4', props.className)} {...props}>
+            <LocationWrapper>
+                <PageContentWithOptionalForm
+                    pageHeader={pageHeader}
+                    pageContent={pageContent}
+                    form={form}
+                    submitHandler={submitHandler}
+                />
+            </LocationWrapper>
+        </div>
+    );
+}
+
+export function PageContentWithOptionalForm({
+    form,
+    pageHeader,
+    pageContent,
+    submitHandler,
+}: {
+    form?: UseFormReturn<any>;
+    pageHeader: React.ReactNode;
+    pageContent: React.ReactNode;
+    submitHandler?: any;
+}) {
+    return form ? (
         <Form {...form}>
             <NavigationConfirmation form={form} />
             <form onSubmit={submitHandler} className="space-y-4">
@@ -57,18 +124,16 @@ export function Page({ children, pageId, entity, form, submitHandler, ...props }
             {pageContent}
         </div>
     );
-
-    return (
-        <PageProvider value={{ pageId, form, entity }}>
-            <LocationWrapper>
-                <div className={cn('m-4', props.className)} {...props}>
-                    {pageContentWithOptionalForm}
-                </div>
-            </LocationWrapper>
-        </PageProvider>
-    );
 }
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * @docsCategory components
+ * @docsPage PageLayout
+ * @since 3.3.0
+ */
 export type PageLayoutProps = {
     children: React.ReactNode;
     className?: string;
@@ -87,7 +152,19 @@ function isPageBlock(child: unknown): child is React.ReactElement<PageBlockProps
     return hasColumn || hasBlockId;
 }
 
-export function PageLayout({ children, className }: PageLayoutProps) {
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * This component governs the layout of the contents of a {@link Page} component.
+ * It should contain all the {@link PageBlock} components that are to be displayed on the page.
+ *
+ * @docsCategory components
+ * @docsPage PageLayout
+ * @docsWeight 0
+ * @since 3.3.0
+ */
+export function PageLayout({ children, className }: Readonly<PageLayoutProps>) {
     const page = usePage();
     const isDesktop = useMediaQuery('only screen and (min-width : 769px)');
     // Separate blocks into categories
@@ -112,11 +189,12 @@ export function PageLayout({ children, className }: PageLayoutProps) {
         if (childBlock) {
             const blockId =
                 childBlock.props.blockId ??
-                (childBlock.type === CustomFieldsPageBlock ? 'custom-fields' : undefined);
+                (isOfType(childBlock, CustomFieldsPageBlock) ? 'custom-fields' : undefined);
             const extensionBlock = extensionBlocks.find(block => block.location.position.blockId === blockId);
             if (extensionBlock) {
                 const ExtensionBlock = (
                     <PageBlock
+                        key={childBlock.key}
                         column={extensionBlock.location.column}
                         blockId={extensionBlock.id}
                         title={extensionBlock.title}
@@ -138,7 +216,7 @@ export function PageLayout({ children, className }: PageLayoutProps) {
     }
 
     const fullWidthBlocks = finalChildArray.filter(
-        child => isPageBlock(child) && child.type === FullWidthPageBlock,
+        child => isPageBlock(child) && isOfType(child, FullWidthPageBlock),
     );
     const mainBlocks = finalChildArray.filter(child => isPageBlock(child) && child.props.column === 'main');
     const sideBlocks = finalChildArray.filter(child => isPageBlock(child) && child.props.column === 'side');
@@ -160,29 +238,42 @@ export function PageLayout({ children, className }: PageLayoutProps) {
     );
 }
 
-export function DetailFormGrid({ children }: { children: React.ReactNode }) {
+export function DetailFormGrid({ children }: Readonly<{ children: React.ReactNode }>) {
     return <div className="md:grid md:grid-cols-2 gap-4 items-start mb-4">{children}</div>;
 }
 
-export interface PageContext {
-    pageId?: string;
-    entity?: any;
-    form?: UseFormReturn<any>;
-}
-
-export function PageTitle({ children }: { children: React.ReactNode }) {
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * A component for displaying the title of a page. This should be used inside the {@link Page} component.
+ *
+ * @docsCategory components
+ * @docsPage PageTitle
+ * @since 3.3.0
+ */
+export function PageTitle({ children }: Readonly<{ children: React.ReactNode }>) {
     return <h1 className="text-2xl font-semibold">{children}</h1>;
 }
 
-export function PageActionBar({ children }: { children: React.ReactNode }) {
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * A component for displaying the main actions for a page. This should be used inside the {@link Page} component.
+ * It should be used in conjunction with the {@link PageActionBarLeft} and {@link PageActionBarRight} components
+ * as direct children.
+ *
+ * @docsCategory components
+ * @docsPage PageActionBar
+ * @docsWeight 0
+ * @since 3.3.0
+ */
+export function PageActionBar({ children }: Readonly<{ children: React.ReactNode }>) {
     let childArray = React.Children.toArray(children);
 
-    const leftContent = childArray.filter(
-        child => React.isValidElement(child) && child.type === PageActionBarLeft,
-    );
-    const rightContent = childArray.filter(
-        child => React.isValidElement(child) && child.type === PageActionBarRight,
-    );
+    const leftContent = childArray.filter(child => isOfType(child, PageActionBarLeft));
+    const rightContent = childArray.filter(child => isOfType(child, PageActionBarRight));
 
     return (
         <div className={cn('flex gap-2', leftContent.length > 0 ? 'justify-between' : 'justify-end')}>
@@ -192,11 +283,27 @@ export function PageActionBar({ children }: { children: React.ReactNode }) {
     );
 }
 
-export function PageActionBarLeft({ children }: { children: React.ReactNode }) {
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * @docsCategory components
+ * @docsPage PageActionBar
+ * @since 3.3.0
+ */
+export function PageActionBarLeft({ children }: Readonly<{ children: React.ReactNode }>) {
     return <div className="flex justify-start gap-2">{children}</div>;
 }
 
-export function PageActionBarRight({ children }: { children: React.ReactNode }) {
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * @docsCategory components
+ * @docsPage PageActionBar
+ * @since 3.3.0
+ */
+export function PageActionBarRight({ children }: Readonly<{ children: React.ReactNode }>) {
     const page = usePage();
     const actionBarItems = page.pageId ? getDashboardActionBarItems(page.pageId) : [];
     return (
@@ -209,7 +316,7 @@ export function PageActionBarRight({ children }: { children: React.ReactNode }) 
     );
 }
 
-function PageActionBarItem({ item, page }: { item: DashboardActionBarItem; page: PageContext }) {
+function PageActionBarItem({ item, page }: { item: DashboardActionBarItem; page: PageContextValue }) {
     return (
         <PermissionGuard requires={item.requiresPermission ?? []}>
             <item.component context={page} />
@@ -217,6 +324,14 @@ function PageActionBarItem({ item, page }: { item: DashboardActionBarItem; page:
     );
 }
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * @docsCategory components
+ * @docsPage PageBlock
+ * @since 3.3.0
+ */
 export type PageBlockProps = {
     children?: React.ReactNode;
     /** Which column this block should appear in */
@@ -227,22 +342,55 @@ export type PageBlockProps = {
     className?: string;
 };
 
-export function PageBlock({ children, title, description, className, blockId }: PageBlockProps) {
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * A component for displaying a block of content on a page. This should be used inside the {@link PageLayout} component.
+ * It should be provided with a `column` prop to determine which column it should appear in, and a `blockId` prop
+ * to identify the block.
+ *
+ * @docsCategory components
+ * @docsPage PageBlock
+ * @docsWeight 0
+ * @since 3.3.0
+ */
+export function PageBlock({
+    children,
+    title,
+    description,
+    className,
+    blockId,
+    column,
+}: Readonly<PageBlockProps>) {
     return (
         <LocationWrapper blockId={blockId}>
-            <Card className={cn('w-full', className)}>
-                {title || description ? (
-                    <CardHeader>
-                        {title && <CardTitle>{title}</CardTitle>}
-                        {description && <CardDescription>{description}</CardDescription>}
-                    </CardHeader>
-                ) : null}
-                <CardContent className={cn(!title ? 'pt-6' : '')}>{children}</CardContent>
-            </Card>
+            <PageBlockContext.Provider value={{ blockId, title, description, column }}>
+                <Card className={cn('w-full', className)}>
+                    {title || description ? (
+                        <CardHeader>
+                            {title && <CardTitle>{title}</CardTitle>}
+                            {description && <CardDescription>{description}</CardDescription>}
+                        </CardHeader>
+                    ) : null}
+                    <CardContent className={cn(!title ? 'pt-6' : '')}>{children}</CardContent>
+                </Card>
+            </PageBlockContext.Provider>
         </LocationWrapper>
     );
 }
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * A component for displaying a block of content on a page that takes up the full width of the page.
+ * This should be used inside the {@link PageLayout} component.
+ *
+ * @docsCategory components
+ * @docsPage PageBlock
+ * @since 3.3.0
+ */
 export function FullWidthPageBlock({
     children,
     className,
@@ -250,11 +398,23 @@ export function FullWidthPageBlock({
 }: Pick<PageBlockProps, 'children' | 'className' | 'blockId'>) {
     return (
         <LocationWrapper blockId={blockId}>
-            <div className={cn('w-full', className)}>{children}</div>
+            <PageBlockContext.Provider value={{ blockId, column: 'main' }}>
+                <div className={cn('w-full', className)}>{children}</div>
+            </PageBlockContext.Provider>
         </LocationWrapper>
     );
 }
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * A component for displaying an auto-generated form for custom fields on a page.
+ *
+ * @docsCategory components
+ * @docsPage PageBlock
+ * @since 3.3.0
+ */
 export function CustomFieldsPageBlock({
     column,
     entityType,
@@ -273,4 +433,18 @@ export function CustomFieldsPageBlock({
             <CustomFieldsForm entityType={entityType} control={control} />
         </PageBlock>
     );
+}
+
+/**
+ * @description
+ * This compares the type of a React component to a given type.
+ * It is safer than a simple `el === Component` check, as it also works in the context of
+ * the Vite build where the component is not the same reference.
+ */
+export function isOfType(el: unknown, type: React.FunctionComponent<any>): boolean {
+    if (React.isValidElement(el)) {
+        const elTypeName = typeof el.type === 'string' ? el.type : (el.type as React.FunctionComponent).name;
+        return elTypeName === type.name;
+    }
+    return false;
 }

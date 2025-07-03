@@ -1,5 +1,5 @@
-import { usePermissions } from "@/hooks/use-permissions.js";
-import { Permission } from "@vendure/common/lib/generated-types";
+import { usePermissions } from '@/vdb/hooks/use-permissions.js';
+import { Permission } from '@vendure/common/lib/generated-types';
 
 export interface PermissionGuardProps {
     requires: Permission | string | string[] | Permission[];
@@ -11,7 +11,7 @@ export interface PermissionGuardProps {
  * This component is used to protect a route from unauthorized access.
  * It will render the children if the user has the required permissions.
  */
-export function PermissionGuard({ requires, children }: PermissionGuardProps ) {
+export function PermissionGuard({ requires, children }: Readonly<PermissionGuardProps>) {
     const { hasPermissions } = usePermissions();
     const permissions = Array.isArray(requires) ? requires : [requires];
     if (!hasPermissions(permissions)) {

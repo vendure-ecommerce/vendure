@@ -1,5 +1,5 @@
-import { LoginForm } from '@/components/login/login-form.js';
-import { useAuth } from '@/hooks/use-auth.js';
+import { LoginForm } from '@/vdb/components/login/login-form.js';
+import { useAuth } from '@/vdb/hooks/use-auth.js';
 import { createFileRoute, Navigate, redirect, useRouterState } from '@tanstack/react-router';
 import { z } from 'zod';
 
@@ -34,6 +34,7 @@ function LoginPage() {
     }
 
     const isVerifying = isLoading || auth.status === 'verifying';
+
     return (
         <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
             <div className="w-full max-w-sm md:max-w-4xl">

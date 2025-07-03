@@ -31,11 +31,86 @@ const defaultLogger: Logger = {
     },
 };
 
+/**
+ * @description
+ * The PathAdapter interface allows customization of how paths are handled
+ * when compiling the Vendure config and its imports.
+ *
+ * This is particularly useful in complex project structures, such as monorepos,
+ * where the Vendure config file may not be in the root directory,
+ * or when you need to transform TypeScript path mappings.
+ */
+export interface PathAdapter {
+    /**
+     * @description
+     * A function to determine the path to the compiled Vendure config file. The default implementation
+     * simple joins the output directory with the config file name:
+     *
+     * ```ts
+     * return path.join(outputPath, configFileName)
+     * ```
+     *
+     * However, in some cases with more complex project structures, you may need to
+     * provide a custom implementation to ensure the compiled config file is
+     * correctly located.
+     *
+     * @example
+     * ```ts
+     * getCompiledConfigPath: ({ inputRootDir, outputPath, configFileName }) => {
+     *     const projectName = inputRootDir.split('/libs/')[1].split('/')[0];
+     *     const pathAfterProject = inputRootDir.split(`/libs/${projectName}`)[1];
+     *     const compiledConfigFilePath = `${outputPath}/${projectName}${pathAfterProject}`;
+     *     return path.join(compiledConfigFilePath, configFileName);
+     * },
+     * ```
+     */
+    getCompiledConfigPath?: (params: {
+        inputRootDir: string;
+        outputPath: string;
+        configFileName: string;
+    }) => string;
+    /**
+     * If your project makes use of the TypeScript `paths` configuration, the compiler will
+     * attempt to use these paths when compiling the Vendure config and its imports.
+     *
+     * In certain cases, you may need to transform these paths before they are used. For instance,
+     * if your project is a monorepo and the paths are defined relative to the root of the monorepo,
+     * you may need to adjust them to be relative to the output directory where the compiled files are located.
+     *
+     * @example
+     * ```ts
+     * transformTsConfigPathMappings: ({ phase, patterns }) => {
+     *     // "loading" phase is when the compiled Vendure code is being loaded by
+     *     // the plugin, in order to introspect the configuration of your app.
+     *     if (phase === 'loading') {
+     *         return patterns.map((p) =>
+     *             p.replace('libs/', '').replace(/.ts$/, '.js'),
+     *         );
+     *     }
+     *     return patterns;
+     * },
+     * ```
+     * @param params
+     */
+    transformTsConfigPathMappings?: (params: {
+        phase: 'compiling' | 'loading';
+        alias: string;
+        patterns: string[];
+    }) => string[];
+}
+
+const defaultPathAdapter: Required<PathAdapter> = {
+    getCompiledConfigPath: ({ outputPath, configFileName }) => path.join(outputPath, configFileName),
+    transformTsConfigPathMappings: ({ patterns }) => patterns,
+};
+
 export interface ConfigLoaderOptions {
     vendureConfigPath: string;
     tempDir: string;
+    pathAdapter?: PathAdapter;
     vendureConfigExport?: string;
     logger?: Logger;
+    reportCompilationErrors?: boolean;
 }
 
 export interface LoadVendureConfigResult {
@@ -61,17 +136,30 @@ export interface LoadVendureConfigResult {
  * to handle the compiled JavaScript output.
  */
 export async function loadVendureConfig(options: ConfigLoaderOptions): Promise<LoadVendureConfigResult> {
-    const { vendureConfigPath, vendureConfigExport, tempDir } = options;
+    const { vendureConfigPath, vendureConfigExport, tempDir, pathAdapter } = options;
+    const getCompiledConfigPath =
+        pathAdapter?.getCompiledConfigPath ?? defaultPathAdapter.getCompiledConfigPath;
+    const transformTsConfigPathMappings =
+        pathAdapter?.transformTsConfigPathMappings ?? defaultPathAdapter.transformTsConfigPathMappings;
     const logger = options.logger || defaultLogger;
     const outputPath = tempDir;
     const configFileName = path.basename(vendureConfigPath);
     const inputRootDir = path.dirname(vendureConfigPath);
     await fs.remove(outputPath);
-    const pluginInfo = await compileFile(inputRootDir, vendureConfigPath, outputPath, logger);
-    const compiledConfigFilePath = pathToFileURL(path.join(outputPath, configFileName)).href.replace(
-        /.ts$/,
-        '.js',
-    );
+    const pluginInfo = await compileFile({
+        inputRootDir,
+        inputPath: vendureConfigPath,
+        outputDir: outputPath,
+        logger,
+        transformTsConfigPathMappings,
+    });
+    const compiledConfigFilePath = pathToFileURL(
+        getCompiledConfigPath({
+            inputRootDir,
+            outputPath,
+            configFileName,
+        }),
+    ).href.replace(/.ts$/, '.js');
     // create package.json with type commonjs and save it to the output dir
     await fs.writeFile(path.join(outputPath, 'package.json'), JSON.stringify({ type: 'commonjs' }, null, 2));
 
@@ -92,7 +180,12 @@ export async function loadVendureConfig(options: ConfigLoaderOptions): Promise<L
     }
 
     // Register path aliases from tsconfig before importing
-    const tsConfigInfo = await findTsConfigPaths(vendureConfigPath, logger);
+    const tsConfigInfo = await findTsConfigPaths(
+        vendureConfigPath,
+        logger,
+        'loading',
+        transformTsConfigPathMappings,
+    );
     if (tsConfigInfo) {
         tsConfigPaths.register({
             baseUrl: outputPath,
@@ -116,6 +209,8 @@ export async function loadVendureConfig(options: ConfigLoaderOptions): Promise<L
 async function findTsConfigPaths(
     configPath: string,
     logger: Logger,
+    phase: 'compiling' | 'loading',
+    transformTsConfigPathMappings: Required<PathAdapter>['transformTsConfigPathMappings'],
 ): Promise<{ baseUrl: string; paths: Record<string, string[]> } | undefined> {
     const configDir = path.dirname(configPath);
     let currentDir = configDir;
@@ -141,13 +236,25 @@ async function findTsConfigPaths(
 
                         for (const [alias, patterns] of Object.entries(compilerOptions.paths)) {
                             // Store paths as defined in tsconfig, they will be relative to baseUrl
-                            paths[alias] = (patterns as string[]).map(pattern =>
+                            const normalizedPatterns = (patterns as string[]).map(pattern =>
                                 // Normalize slashes for consistency, keep relative
                                 pattern.replace(/\\/g, '/'),
                             );
+                            paths[alias] = transformTsConfigPathMappings({
+                                phase,
+                                alias,
+                                patterns: normalizedPatterns,
+                            });
                         }
                         logger.debug(
-                            `Found tsconfig paths in ${tsConfigPath}: ${JSON.stringify({ baseUrl: tsConfigBaseUrl, paths }, null, 2)}`,
+                            `Found tsconfig paths in ${tsConfigPath}: ${JSON.stringify(
+                                {
+                                    baseUrl: tsConfigBaseUrl,
+                                    paths,
+                                },
+                                null,
+                                2,
+                            )}`,
                         );
                         return { baseUrl: tsConfigBaseUrl, paths };
                     }
@@ -167,15 +274,29 @@ async function findTsConfigPaths(
     return undefined;
 }
 
-export async function compileFile(
-    inputRootDir: string,
-    inputPath: string,
-    outputDir: string,
-    logger: Logger = defaultLogger,
+type CompileFileOptions = {
+    inputRootDir: string;
+    inputPath: string;
+    outputDir: string;
+    transformTsConfigPathMappings: Required<PathAdapter>['transformTsConfigPathMappings'];
+    logger?: Logger;
+    compiledFiles?: Set<string>;
+    isRoot?: boolean;
+    pluginInfo?: PluginInfo[];
+    reportCompilationErrors?: boolean;
+};
+
+export async function compileFile({
+    inputRootDir,
+    inputPath,
+    outputDir,
+    transformTsConfigPathMappings,
+    logger = defaultLogger,
     compiledFiles = new Set<string>(),
     isRoot = true,
-    pluginInfo: PluginInfo[] = [],
-): Promise<PluginInfo[]> {
+    pluginInfo = [],
+    reportCompilationErrors = false,
+}: CompileFileOptions): Promise<PluginInfo[]> {
     const absoluteInputPath = path.resolve(inputPath);
     if (compiledFiles.has(absoluteInputPath)) {
         return pluginInfo;
@@ -195,19 +316,29 @@ export async function compileFile(
     let tsConfigInfo: { baseUrl: string; paths: Record<string, string[]> } | undefined;
 
     if (isRoot) {
-        tsConfigInfo = await findTsConfigPaths(absoluteInputPath, logger);
+        tsConfigInfo = await findTsConfigPaths(
+            absoluteInputPath,
+            logger,
+            'compiling',
+            transformTsConfigPathMappings,
+        );
         if (tsConfigInfo) {
             logger?.debug(`Using TypeScript configuration: ${JSON.stringify(tsConfigInfo, null, 2)}`);
         }
     }
 
     async function collectImports(node: ts.Node) {
-        if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
+        if (
+            (ts.isExportDeclaration(node) || ts.isImportDeclaration(node)) &&
+            node.moduleSpecifier &&
+            ts.isStringLiteral(node.moduleSpecifier)
+        ) {
             const importPath = node.moduleSpecifier.text;
 
             // Handle relative imports
             if (importPath.startsWith('.')) {
                 const resolvedPath = path.resolve(path.dirname(absoluteInputPath), importPath);
+                // TODO: does this handle index files correctly?
                 let resolvedTsPath = resolvedPath + '.ts';
                 // Also check for .tsx if .ts doesn't exist
                 if (!(await fs.pathExists(resolvedTsPath))) {
@@ -258,7 +389,9 @@ export async function compileFile(
                             const potentialPathBase = path.resolve(tsConfigInfo.baseUrl, patternPrefix);
                             const resolvedPath = path.join(potentialPathBase, remainingImportPath);
 
-                            let resolvedTsPath = resolvedPath + '.ts';
+                            let resolvedTsPath = resolvedPath.endsWith('.ts')
+                                ? resolvedPath
+                                : resolvedPath + '.ts';
                             // Similar existence checks as relative paths
                             if (!(await fs.pathExists(resolvedTsPath))) {
                                 const resolvedTsxPath = resolvedPath + '.tsx';
@@ -303,6 +436,7 @@ export async function compileFile(
                     ts.isModuleBlock(child) ||
                     ts.isModuleDeclaration(child) ||
                     ts.isImportDeclaration(child) ||
+                    ts.isExportDeclaration(child) ||
                     child.kind === ts.SyntaxKind.SyntaxList
                 ) {
                     await collectImports(child);
@@ -325,7 +459,16 @@ export async function compileFile(
     // Recursively collect all files that need to be compiled
     for (const importPath of importPaths) {
         // Pass rootTsConfigInfo down, but set isRoot to false
-        await compileFile(inputRootDir, importPath, outputDir, logger, compiledFiles, false, pluginInfo);
+        await compileFile({
+            inputRootDir,
+            inputPath: importPath,
+            outputDir,
+            logger,
+            transformTsConfigPathMappings,
+            compiledFiles,
+            isRoot: false,
+            pluginInfo,
+        });
     }
 
     // If this is the root file (the one that started the compilation),
@@ -370,10 +513,12 @@ export async function compileFile(
         logger.info(`Emitting compiled files to ${outputDir}`);
         const emitResult = program.emit();
 
-        const hasEmitErrors = reportDiagnostics(program, emitResult, logger);
+        if (reportCompilationErrors) {
+            const hasEmitErrors = reportDiagnostics(program, emitResult, logger);
 
-        if (hasEmitErrors) {
-            throw new Error('TypeScript compilation failed with errors.');
+            if (hasEmitErrors) {
+                throw new Error('TypeScript compilation failed with errors.');
+            }
         }
 
         logger.info(`Successfully compiled ${allFiles.length} files to ${outputDir}`);

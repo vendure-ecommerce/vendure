@@ -1,6 +1,9 @@
-import { assetFragment } from '@/graphql/fragments.js';
-import { graphql } from '@/graphql/graphql.js';
-import { gql } from 'awesome-graphql-client';
+import {
+    assetFragment,
+    configurableOperationDefFragment,
+    errorResultFragment,
+} from '@/vdb/graphql/fragments.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const orderListDocument = graphql(`
     query GetOrders($options: OrderListOptions) {
@@ -21,7 +24,6 @@ export const orderListDocument = graphql(`
                 total
                 totalWithTax
                 currencyCode
-
                 shippingLines {
                     shippingMethod {
                         name
@@ -163,6 +165,7 @@ export const orderLineFragment = graphql(
             linePriceWithTax
             discountedLinePrice
             discountedLinePriceWithTax
+            customFields
         }
     `,
     [assetFragment],
@@ -214,6 +217,7 @@ export const orderDetailFragment = graphql(
             promotions {
                 id
                 couponCode
+                name
             }
             subTotal
             subTotalWithTax
@@ -323,3 +327,282 @@ export const orderHistoryDocument = graphql(`
         }
     }
 `);
+
+export const createDraftOrderDocument = graphql(`
+    mutation CreateDraftOrder {
+        createDraftOrder {
+            id
+        }
+    }
+`);
+
+export const deleteDraftOrderDocument = graphql(`
+    mutation DeleteDraftOrder($orderId: ID!) {
+        deleteDraftOrder(orderId: $orderId) {
+            result
+            message
+        }
+    }
+`);
+
+export const addItemToDraftOrderDocument = graphql(
+    `
+        mutation AddItemToDraftOrder($orderId: ID!, $input: AddItemToDraftOrderInput!) {
+            addItemToDraftOrder(orderId: $orderId, input: $input) {
+                __typename
+                ... on Order {
+                    id
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const adjustDraftOrderLineDocument = graphql(
+    `
+        mutation AdjustDraftOrderLine($orderId: ID!, $input: AdjustDraftOrderLineInput!) {
+            adjustDraftOrderLine(orderId: $orderId, input: $input) {
+                __typename
+                ... on Order {
+                    id
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const removeDraftOrderLineDocument = graphql(
+    `
+        mutation RemoveDraftOrderLine($orderId: ID!, $orderLineId: ID!) {
+            removeDraftOrderLine(orderId: $orderId, orderLineId: $orderLineId) {
+                __typename
+                ... on Order {
+                    id
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const setCustomerForDraftOrderDocument = graphql(
+    `
+        mutation SetCustomerForDraftOrder($orderId: ID!, $customerId: ID, $input: CreateCustomerInput) {
+            setCustomerForDraftOrder(orderId: $orderId, customerId: $customerId, input: $input) {
+                __typename
+                ... on Order {
+                    id
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const setShippingAddressForDraftOrderDocument = graphql(`
+    mutation SetDraftOrderShippingAddress($orderId: ID!, $input: CreateAddressInput!) {
+        setDraftOrderShippingAddress(orderId: $orderId, input: $input) {
+            id
+        }
+    }
+`);
+
+export const setBillingAddressForDraftOrderDocument = graphql(`
+    mutation SetDraftOrderBillingAddress($orderId: ID!, $input: CreateAddressInput!) {
+        setDraftOrderBillingAddress(orderId: $orderId, input: $input) {
+            id
+        }
+    }
+`);
+
+export const unsetShippingAddressForDraftOrderDocument = graphql(`
+    mutation UnsetDraftOrderShippingAddress($orderId: ID!) {
+        unsetDraftOrderShippingAddress(orderId: $orderId) {
+            id
+        }
+    }
+`);
+
+export const unsetBillingAddressForDraftOrderDocument = graphql(`
+    mutation UnsetDraftOrderBillingAddress($orderId: ID!) {
+        unsetDraftOrderBillingAddress(orderId: $orderId) {
+            id
+        }
+    }
+`);
+
+export const applyCouponCodeToDraftOrderDocument = graphql(
+    `
+        mutation ApplyCouponCodeToDraftOrder($orderId: ID!, $couponCode: String!) {
+            applyCouponCodeToDraftOrder(orderId: $orderId, couponCode: $couponCode) {
+                __typename
+                ... on Order {
+                    id
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const removeCouponCodeFromDraftOrderDocument = graphql(`
+    mutation RemoveCouponCodeFromDraftOrder($orderId: ID!, $couponCode: String!) {
+        removeCouponCodeFromDraftOrder(orderId: $orderId, couponCode: $couponCode) {
+            id
+        }
+    }
+`);
+
+export const draftOrderEligibleShippingMethodsDocument = graphql(`
+    query DraftOrderEligibleShippingMethods($orderId: ID!) {
+        eligibleShippingMethodsForDraftOrder(orderId: $orderId) {
+            id
+            name
+            code
+            description
+            price
+            priceWithTax
+            metadata
+        }
+    }
+`);
+
+export const setDraftOrderShippingMethodDocument = graphql(
+    `
+        mutation SetDraftOrderShippingMethod($orderId: ID!, $shippingMethodId: ID!) {
+            setDraftOrderShippingMethod(orderId: $orderId, shippingMethodId: $shippingMethodId) {
+                __typename
+                ... on Order {
+                    id
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const setDraftOrderCustomFieldsDocument = graphql(`
+    mutation SetDraftOrderCustomFields($orderId: ID!, $input: UpdateOrderInput!) {
+        setDraftOrderCustomFields(orderId: $orderId, input: $input) {
+            id
+        }
+    }
+`);
+
+export const transitionOrderToStateDocument = graphql(
+    `
+        mutation TransitionOrderToState($id: ID!, $state: String!) {
+            transitionOrderToState(id: $id, state: $state) {
+                __typename
+                ... on Order {
+                    id
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const paymentMethodsDocument = graphql(`
+    query GetPaymentMethods($options: PaymentMethodListOptions!) {
+        paymentMethods(options: $options) {
+            items {
+                id
+                createdAt
+                updatedAt
+                name
+                code
+                description
+                enabled
+            }
+            totalItems
+        }
+    }
+`);
+
+export const addManualPaymentToOrderDocument = graphql(
+    `
+        mutation AddManualPaymentToOrder($input: ManualPaymentInput!) {
+            addManualPaymentToOrder(input: $input) {
+                __typename
+                ... on Order {
+                    id
+                    state
+                    payments {
+                        id
+                        amount
+                        method
+                        state
+                    }
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const fulfillmentHandlersDocument = graphql(
+    `
+        query GetFulfillmentHandlers {
+            fulfillmentHandlers {
+                ...ConfigurableOperationDef
+            }
+        }
+    `,
+    [configurableOperationDefFragment],
+);
+
+export const fulfillOrderDocument = graphql(
+    `
+        mutation FulfillOrder($input: FulfillOrderInput!) {
+            addFulfillmentToOrder(input: $input) {
+                __typename
+                ... on Fulfillment {
+                    id
+                    state
+                    method
+                    trackingCode
+                    lines {
+                        orderLineId
+                        quantity
+                    }
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const transitionFulfillmentToStateDocument = graphql(
+    `
+        mutation TransitionFulfillmentToState($id: ID!, $state: String!) {
+            transitionFulfillmentToState(id: $id, state: $state) {
+                __typename
+                ... on Fulfillment {
+                    id
+                    state
+                    nextStates
+                    method
+                    trackingCode
+                    lines {
+                        orderLineId
+                        quantity
+                    }
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);

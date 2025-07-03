@@ -1,4 +1,4 @@
-import { graphql } from '@/graphql/graphql.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const channelItemFragment = graphql(`
     fragment ChannelItem on Channel {
@@ -86,6 +86,15 @@ export const updateChannelDocument = graphql(`
 export const deleteChannelDocument = graphql(`
     mutation DeleteChannel($id: ID!) {
         deleteChannel(id: $id) {
+            result
+            message
+        }
+    }
+`);
+
+export const deleteChannelsDocument = graphql(`
+    mutation DeleteChannels($ids: [ID!]!) {
+        deleteChannels(ids: $ids) {
             result
             message
         }

@@ -11,7 +11,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 
 ## AssetService
 
-<GenerationInfo sourceFile="packages/core/src/service/services/asset.service.ts" sourceLine="90" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/asset.service.ts" sourceLine="91" packageName="@vendure/core" />
 
 Contains methods relating to <a href='/reference/typescript-api/entities/asset#asset'>Asset</a> entities.
 
@@ -119,7 +119,7 @@ Create an Asset from a file stream, for example to create an Asset during data i
 
 ## EntityWithAssets
 
-<GenerationInfo sourceFile="packages/core/src/service/services/asset.service.ts" sourceLine="66" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/asset.service.ts" sourceLine="67" packageName="@vendure/core" />
 
 Certain entities (Product, ProductVariant, Collection) use this interface
 to model a featured asset and then a list of assets with a defined order.
@@ -153,7 +153,7 @@ interface EntityWithAssets extends VendureEntity {
 
 ## EntityAssetInput
 
-<GenerationInfo sourceFile="packages/core/src/service/services/asset.service.ts" sourceLine="78" packageName="@vendure/core" />
+<GenerationInfo sourceFile="packages/core/src/service/services/asset.service.ts" sourceLine="79" packageName="@vendure/core" />
 
 Used when updating entities which implement <a href='/reference/typescript-api/services/asset-service#entitywithassets'>EntityWithAssets</a>.
 

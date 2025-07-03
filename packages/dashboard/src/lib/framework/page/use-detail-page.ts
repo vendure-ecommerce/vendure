@@ -1,5 +1,4 @@
-import { NEW_ENTITY_PATH } from '@/constants.js';
-import { api, Variables } from '@/graphql/api.js';
+import { removeReadonlyCustomFields } from '@/vdb/lib/utils.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import {
     DefinedInitialDataOptions,
@@ -13,8 +12,16 @@ import { DocumentNode } from 'graphql';
 import { FormEvent } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 
+import { NEW_ENTITY_PATH } from '../../constants.js';
+import { api, Variables } from '../../graphql/api.js';
+import { useCustomFieldConfig } from '../../hooks/use-custom-field-config.js';
+import { useExtendedDetailQuery } from '../../hooks/use-extended-detail-query.js';
 import { addCustomFields } from '../document-introspection/add-custom-fields.js';
-import { getMutationName, getQueryName } from '../document-introspection/get-document-structure.js';
+import {
+    getEntityName,
+    getMutationName,
+    getQueryName,
+} from '../document-introspection/get-document-structure.js';
 import { useGeneratedForm } from '../form-engine/use-generated-form.js';
 
 import { DetailEntityPath } from './page-types.js';
@@ -26,6 +33,14 @@ type RemoveNullFields<T> = {
     [K in keyof T]: RemoveNull<T[K]>;
 };
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * @docsCategory hooks
+ * @docsPage useDetailPage
+ * @since 3.3.0
+ */
 export interface DetailPageOptions<
     T extends TypedDocumentNode<any, any>,
     C extends TypedDocumentNode<any, any>,
@@ -34,6 +49,12 @@ export interface DetailPageOptions<
     VarNameCreate extends keyof VariablesOf<C> = 'input',
     VarNameUpdate extends keyof VariablesOf<U> = 'input',
 > {
+    /**
+     * @description
+     * The page id. This is optional, but if provided, it will be used to
+     * identify the page when extending the detail page query
+     */
+    pageId?: string;
     /**
      * @description
      * The query document to fetch the entity.
@@ -51,6 +72,13 @@ export interface DetailPageOptions<
     params: {
         id: string;
     };
+    /**
+     * @description
+     * The entity type name for custom field configuration lookup.
+     * Required to filter out readonly custom fields before mutations.
+     * If not provided, the function will try to infer it from the query document.
+     */
+    entityName?: string;
     /**
      * @description
      * The document to create the entity.
@@ -114,6 +142,14 @@ export type DetailPageEntity<
     translations: DetailPageTranslations<T, EntityField>;
 };
 
+/**
+ * @description
+ * **Status: Developer Preview**
+ *
+ * @docsCategory hooks
+ * @docsPage useDetailPage
+ * @since 3.3.0
+ */
 export interface UseDetailPageResult<
     T extends TypedDocumentNode<any, any>,
     C extends TypedDocumentNode<any, any>,
@@ -130,8 +166,72 @@ export interface UseDetailPageResult<
 
 /**
  * @description
+ * **Status: Developer Preview**
+ *
  * This hook is used to create an entity detail page which can read
  * and update an entity.
+ *
+ * @example
+ * ```ts
+ * const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+ *     queryDocument: paymentMethodDetailDocument,
+ *     createDocument: createPaymentMethodDocument,
+ *     updateDocument: updatePaymentMethodDocument,
+ *     setValuesForUpdate: entity => {
+ *         return {
+ *             id: entity.id,
+ *             enabled: entity.enabled,
+ *             name: entity.name,
+ *             code: entity.code,
+ *             description: entity.description,
+ *             checker: entity.checker?.code
+ *                 ? {
+ *                       code: entity.checker?.code,
+ *                       arguments: entity.checker?.args,
+ *                   }
+ *                 : null,
+ *             handler: entity.handler?.code
+ *                 ? {
+ *                       code: entity.handler?.code,
+ *                       arguments: entity.handler?.args,
+ *                   }
+ *                 : null,
+ *             translations: entity.translations.map(translation => ({
+ *                 id: translation.id,
+ *                 languageCode: translation.languageCode,
+ *                 name: translation.name,
+ *                 description: translation.description,
+ *             })),
+ *             customFields: entity.customFields,
+ *         };
+ *     },
+ *     transformCreateInput: input => {
+ *         return {
+ *             ...input,
+ *             checker: input.checker?.code ? input.checker : undefined,
+ *             handler: input.handler,
+ *         };
+ *     },
+ *     params: { id: params.id },
+ *     onSuccess: async data => {
+ *         toast.success(i18n.t('Successfully updated payment method'));
+ *         resetForm();
+ *         if (creatingNewEntity) {
+ *             await navigate({ to: `../$id`, params: { id: data.id } });
+ *         }
+ *     },
+ *     onError: err => {
+ *         toast.error(i18n.t('Failed to update payment method'), {
+ *             description: err instanceof Error ? err.message : 'Unknown error',
+ *         });
+ *     },
+ * });
+ * ```
+ *
+ * @docsCategory hooks
+ * @docsPage useDetailPage
+ * @docsWeight 0
+ * @since 3.3.0
  */
 export function useDetailPage<
     T extends TypedDocumentNode<any, any>,
@@ -144,6 +244,7 @@ export function useDetailPage<
     options: DetailPageOptions<T, C, U, EntityField, VarNameCreate, VarNameUpdate>,
 ): UseDetailPageResult<T, C, U, EntityField> {
     const {
+        pageId,
         queryDocument,
         createDocument,
         updateDocument,
@@ -152,16 +253,21 @@ export function useDetailPage<
         transformUpdateInput,
         params,
         entityField,
+        entityName,
         onSuccess,
         onError,
     } = options;
     const isNew = params.id === NEW_ENTITY_PATH;
     const queryClient = useQueryClient();
-    const detailQueryOptions = getDetailQueryOptions(addCustomFields(queryDocument), {
+    const returnEntityName = entityName ?? getEntityName(queryDocument);
+    const customFieldConfig = useCustomFieldConfig(returnEntityName);
+    const extendedDetailQuery = useExtendedDetailQuery(addCustomFields(queryDocument), pageId);
+    const detailQueryOptions = getDetailQueryOptions(extendedDetailQuery, {
         id: isNew ? '__NEW__' : params.id,
     });
     const detailQuery = useSuspenseQuery(detailQueryOptions);
-    const entityQueryField = entityField ?? getQueryName(queryDocument);
+    const entityQueryField = entityField ?? getQueryName(extendedDetailQuery);
+
     const entity = (detailQuery?.data as any)[entityQueryField] as
         | DetailPageEntity<T, EntityField>
         | undefined;
@@ -178,6 +284,7 @@ export function useDetailPage<
                 onSuccess?.((data as any)[createMutationName]);
             }
         },
+        onError,
     });
 
     const updateMutation = useMutation({
@@ -195,16 +302,29 @@ export function useDetailPage<
     const document = isNew ? (createDocument ?? updateDocument) : updateDocument;
     const { form, submitHandler } = useGeneratedForm({
         document,
+        varName: 'input',
         entity,
         setValues: setValuesForUpdate,
         onSubmit(values: any) {
+            // Filter out readonly custom fields before submitting
+            const filteredValues = removeReadonlyCustomFields(values, customFieldConfig || []);
+
             if (isNew) {
-                createMutation.mutate({ input: transformCreateInput?.(values) ?? values });
+                const finalInput = transformCreateInput?.(filteredValues) ?? filteredValues;
+                createMutation.mutate({ input: finalInput });
             } else {
-                updateMutation.mutate({ input: transformUpdateInput?.(values) ?? values });
+                const finalInput = transformUpdateInput?.(filteredValues) ?? filteredValues;
+                updateMutation.mutate({ input: finalInput });
             }
         },
     });
+
+    // A kind of ridiculous workaround to ensure that the `isDirty` and `isValid` properties
+    // are always up-to-date when used by the consuming component. This seems to be necessary
+    // due to the way that `react-hook-form` uses a Proxy object for the form state.
+    // See https://react-hook-form.com/docs/useform/formstate
+    // noinspection JSUnusedLocalSymbols
+    const { isDirty, isValid } = form.formState;
 
     return {
         form: form as any,

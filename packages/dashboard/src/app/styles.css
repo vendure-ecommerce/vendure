@@ -4,6 +4,8 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* @source rules from extensions will be added here by the dashboardTailwindSourcePlugin */
+
 /*
 * Important: This is not an actual import. We are pre-processing this CSS file
 * to inject the theme variables into the CSS. This import will be replaced
@@ -64,6 +66,7 @@
     * {
         @apply border-border outline-ring/50;
     }
+
     body {
         @apply bg-background text-foreground;
     }
@@ -74,6 +77,21 @@
 }
 @utility col-side {
     grid-column: span 2 / span 2;
+}
+
+@layer utilities {
+    @keyframes rotate {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .animate-rotate {
+        animation: rotate 0.5s linear infinite;
+    }
 }
 
 /* Overrides for the react-grid-layout library */

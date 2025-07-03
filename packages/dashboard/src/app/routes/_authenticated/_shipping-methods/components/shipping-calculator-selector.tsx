@@ -1,15 +1,18 @@
-import { ConfigurableOperationInput } from '@/components/shared/configurable-operation-input.js';
-import { Button } from '@/components/ui/button.js';
+import { ConfigurableOperationInput } from '@/vdb/components/shared/configurable-operation-input.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
-import { api } from '@/graphql/api.js';
-import { configurableOperationDefFragment, ConfigurableOperationDefFragment } from '@/graphql/fragments.js';
-import { graphql } from '@/graphql/graphql.js';
-import { Trans } from '@/lib/trans.js';
+} from '@/vdb/components/ui/dropdown-menu.js';
+import { api } from '@/vdb/graphql/api.js';
+import {
+    configurableOperationDefFragment,
+    ConfigurableOperationDefFragment,
+} from '@/vdb/graphql/fragments.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { useQuery } from '@tanstack/react-query';
 import { ConfigurableOperationInput as ConfigurableOperationInputType } from '@vendure/common/lib/generated-types';
 import { Plus } from 'lucide-react';
@@ -30,7 +33,7 @@ interface ShippingCalculatorSelectorProps {
     onChange: (value: ConfigurableOperationInputType | undefined) => void;
 }
 
-export function ShippingCalculatorSelector({ value, onChange }: ShippingCalculatorSelectorProps) {
+export function ShippingCalculatorSelector({ value, onChange }: Readonly<ShippingCalculatorSelectorProps>) {
     const { data: calculatorsData } = useQuery({
         queryKey: ['shippingCalculators'],
         queryFn: () => api.query(shippingCalculatorsDocument),
@@ -44,20 +47,16 @@ export function ShippingCalculatorSelector({ value, onChange }: ShippingCalculat
         if (!calculatorDef) {
             return;
         }
-        onChange(
-            {
-                code: calculator.code,
-                arguments: calculatorDef.args.map(arg => ({
-                    name: arg.name,
-                    value: arg.defaultValue != null ? arg.defaultValue.toString() : '',
-                })),
-            },
-        );
+        onChange({
+            code: calculator.code,
+            arguments: calculatorDef.args.map(arg => ({
+                name: arg.name,
+                value: arg.defaultValue != null ? arg.defaultValue.toString() : '',
+            })),
+        });
     };
 
-    const onOperationValueChange = (
-        newVal: ConfigurableOperationInputType,
-    ) => {
+    const onOperationValueChange = (newVal: ConfigurableOperationInputType) => {
         onChange(newVal);
     };
 
@@ -90,7 +89,10 @@ export function ShippingCalculatorSelector({ value, onChange }: ShippingCalculat
                 )}
                 <DropdownMenuContent className="w-96">
                     {calculators?.map(calculator => (
-                        <DropdownMenuItem key={calculator.code} onClick={() => onCalculatorSelected(calculator)}>
+                        <DropdownMenuItem
+                            key={calculator.code}
+                            onClick={() => onCalculatorSelected(calculator)}
+                        >
                             {calculator.description}
                         </DropdownMenuItem>
                     ))}

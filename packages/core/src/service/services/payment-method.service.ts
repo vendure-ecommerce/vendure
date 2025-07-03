@@ -16,6 +16,7 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { RelationPaths } from '../../api/decorators/relations.decorator';
 import { ForbiddenError, UserInputError } from '../../common/error/errors';
+import { Instrument } from '../../common/instrument-decorator';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -44,6 +45,7 @@ import { RoleService } from './role.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class PaymentMethodService {
     constructor(
         private connection: TransactionalConnection,
@@ -320,9 +322,10 @@ export class PaymentMethodService {
     }
 
     async getActivePaymentMethods(ctx: RequestContext): Promise<PaymentMethod[]> {
-        const paymentMethods = await this.connection
-            .getRepository(ctx, PaymentMethod)
-            .find({ where: { enabled: true, channels: { id: ctx.channelId } }, relations: ['channels'] });
+        const paymentMethods = await this.connection.getRepository(ctx, PaymentMethod).find({
+            where: { enabled: true, channels: { id: ctx.channelId } },
+            relations: ['channels', 'customFields'],
+        });
         return paymentMethods.map(p => this.translator.translate(p, ctx));
     }
 }

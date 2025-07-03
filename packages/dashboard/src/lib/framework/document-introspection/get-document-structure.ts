@@ -1,10 +1,11 @@
+import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
+import { VariablesOf } from 'gql.tada';
 import {
     DocumentNode,
-    OperationDefinitionNode,
     FieldNode,
     FragmentDefinitionNode,
     FragmentSpreadNode,
-    VariableDefinitionNode,
+    OperationDefinitionNode,
 } from 'graphql';
 import { DefinitionNode, NamedTypeNode, SelectionSetNode, TypeNode } from 'graphql/language/ast.js';
 import { schemaInfo } from 'virtual:admin-api-schema';
@@ -146,7 +147,10 @@ function findNestedPaginatedLists(
  *
  * The operation variables fields are the fields of the `UpdateProductInput` type.
  */
-export function getOperationVariablesFields(documentNode: DocumentNode): FieldInfo[] {
+export function getOperationVariablesFields<T extends TypedDocumentNode<any, any>>(
+    documentNode: T,
+    varName?: keyof VariablesOf<T>,
+): FieldInfo[] {
     const fields: FieldInfo[] = [];
 
     const operationDefinition = documentNode.definitions.find(
@@ -154,11 +158,31 @@ export function getOperationVariablesFields(documentNode: DocumentNode): FieldIn
     );
 
     if (operationDefinition?.variableDefinitions) {
-        operationDefinition.variableDefinitions.forEach(variable => {
-            const unwrappedType = unwrapVariableDefinitionType(variable.type);
-            const inputName = unwrappedType.name.value;
-            const inputFields = getInputTypeInfo(inputName);
-            fields.push(...inputFields);
+        const variableDefinitions = varName
+            ? operationDefinition.variableDefinitions.filter(
+                  variable => variable.variable.name.value === varName,
+              )
+            : operationDefinition.variableDefinitions;
+        variableDefinitions.forEach(variableDef => {
+            const unwrappedType = unwrapVariableDefinitionType(variableDef.type);
+            const isScalar = isScalarType(unwrappedType.name.value);
+            const fieldName = variableDef.variable.name.value;
+            const typeName = unwrappedType.name.value;
+            const inputTypeInfo = isScalar
+                ? {
+                      name: fieldName,
+                      type: typeName,
+                      nullable: false,
+                      list: false,
+                      isScalar: true,
+                      isPaginatedList: false,
+                  }
+                : getInputTypeInfo(fieldName, typeName);
+            if (varName && inputTypeInfo?.name === varName) {
+                fields.push(...(inputTypeInfo.typeInfo ?? []));
+            } else {
+                fields.push(inputTypeInfo);
+            }
         });
     }
 
@@ -173,6 +197,23 @@ function unwrapVariableDefinitionType(type: TypeNode): NamedTypeNode {
         return unwrapVariableDefinitionType(type.type);
     }
     return type;
+}
+
+/**
+ * @description
+ * Helper function to get the first field selection from a query operation definition.
+ */
+function getFirstQueryField(documentNode: DocumentNode): FieldNode {
+    const operationDefinition = documentNode.definitions.find(
+        (def): def is OperationDefinitionNode =>
+            def.kind === 'OperationDefinition' && def.operation === 'query',
+    );
+    const firstSelection = operationDefinition?.selectionSet.selections[0];
+    if (firstSelection?.kind === 'Field') {
+        return firstSelection;
+    } else {
+        throw new Error('Could not determine query field');
+    }
 }
 
 /**
@@ -192,16 +233,32 @@ function unwrapVariableDefinitionType(type: TypeNode): NamedTypeNode {
  * The query name is `product`.
  */
 export function getQueryName(documentNode: DocumentNode): string {
-    const operationDefinition = documentNode.definitions.find(
-        (def): def is OperationDefinitionNode =>
-            def.kind === 'OperationDefinition' && def.operation === 'query',
-    );
-    const firstSelection = operationDefinition?.selectionSet.selections[0];
-    if (firstSelection?.kind === 'Field') {
-        return firstSelection.name.value;
-    } else {
-        throw new Error('Could not determine query name');
-    }
+    const firstField = getFirstQueryField(documentNode);
+    return firstField.name.value;
+}
+
+/**
+ * @description
+ * This function is used to get the entity name from a DocumentNode.
+ *
+ * For example, in the following query:
+ *
+ * ```graphql
+ * query ProductDetail($id: ID!) {
+ *   product(id: $id) {
+ *     ...ProductDetail
+ *   }
+ * }
+ * ```
+ *
+ * The entity name is `Product`.
+ */
+export function getEntityName(documentNode: DocumentNode): string {
+    const firstField = getFirstQueryField(documentNode);
+    // Get the return type from the field definition
+    const fieldName = firstField.name.value;
+    const queryInfo = getQueryInfo(fieldName);
+    return queryInfo.type;
 }
 
 /**
@@ -331,7 +388,9 @@ export function getOperationTypeInfo(
     if (definitionNode.kind === 'OperationDefinition') {
         const firstSelection = definitionNode?.selectionSet.selections[0];
         if (firstSelection?.kind === 'Field') {
-            return getQueryInfo(firstSelection.name.value);
+            return definitionNode.operation === 'query'
+                ? getQueryInfo(firstSelection.name.value)
+                : getMutationInfo(firstSelection.name.value);
         }
     }
     if (definitionNode.kind === 'Field' && parentTypeName) {
@@ -349,7 +408,7 @@ export function getTypeFieldInfo(typeName: string): FieldInfo[] {
             }
             return fieldInfo;
         })
-        .filter(x => x != null) as FieldInfo[];
+        .filter(x => x != null);
 }
 
 function getQueryInfo(name: string): FieldInfo {
@@ -364,8 +423,40 @@ function getQueryInfo(name: string): FieldInfo {
     };
 }
 
-function getInputTypeInfo(name: string): FieldInfo[] {
-    return Object.entries(schemaInfo.inputs[name]).map(([fieldName, fieldInfo]: [string, any]) => {
+function getMutationInfo(name: string): FieldInfo {
+    const fieldInfo = schemaInfo.types.Mutation[name];
+    return {
+        name,
+        type: fieldInfo[0],
+        nullable: fieldInfo[1],
+        list: fieldInfo[2],
+        isPaginatedList: fieldInfo[3],
+        isScalar: schemaInfo.scalars.includes(fieldInfo[0]),
+    };
+}
+
+function getInputTypeInfo(name: string, type: string): FieldInfo {
+    const fieldInfo = schemaInfo.inputs[type];
+    if (!fieldInfo) {
+        throw new Error(`Input type ${type} not found`);
+    }
+    return {
+        name,
+        type,
+        nullable: true,
+        list: false,
+        isPaginatedList: false,
+        isScalar: false,
+        typeInfo: getInputTypeFields(type),
+    };
+}
+
+function getInputTypeFields(name: string): FieldInfo[] {
+    const inputType = schemaInfo.inputs[name];
+    if (!inputType) {
+        throw new Error(`Input type ${name} not found`);
+    }
+    return Object.entries(inputType).map(([fieldName, fieldInfo]: [string, any]) => {
         const type = fieldInfo[0];
         const isScalar = isScalarType(type);
         const isEnum = isEnumType(type);
@@ -376,7 +467,7 @@ function getInputTypeInfo(name: string): FieldInfo[] {
             list: fieldInfo[2],
             isPaginatedList: fieldInfo[3],
             isScalar,
-            typeInfo: !isScalar && !isEnum ? getInputTypeInfo(type) : undefined,
+            typeInfo: !isScalar && !isEnum ? getInputTypeFields(type) : undefined,
         };
     });
 }

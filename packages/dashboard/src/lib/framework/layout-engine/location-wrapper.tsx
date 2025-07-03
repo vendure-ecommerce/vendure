@@ -1,10 +1,10 @@
-import { CopyableText } from '@/components/shared/copyable-text.js';
-import { Button } from '@/components/ui/button.js';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.js';
-import { usePage } from '@/hooks/use-page.js';
-import { useUserSettings } from '@/hooks/use-user-settings.js';
-import { cn } from '@/lib/utils.js';
-import { Trans } from '@/lib/trans.js';
+import { CopyableText } from '@/vdb/components/shared/copyable-text.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
+import { usePage } from '@/vdb/hooks/use-page.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
+import { Trans } from '@/vdb/lib/trans.js';
+import { cn } from '@/vdb/lib/utils.js';
 import { CodeXmlIcon, InfoIcon } from 'lucide-react';
 import { createContext, useContext, useState } from 'react';
 
@@ -18,7 +18,10 @@ const LocationWrapperContext = createContext<{
     setHoveredId: null,
 });
 
-export function LocationWrapper({ children, blockId }: { children: React.ReactNode; blockId?: string }) {
+export function LocationWrapper({
+    children,
+    blockId,
+}: Readonly<{ children: React.ReactNode; blockId?: string }>) {
     const page = usePage();
     const { settings } = useUserSettings();
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);

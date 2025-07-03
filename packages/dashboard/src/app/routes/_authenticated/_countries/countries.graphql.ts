@@ -1,4 +1,4 @@
-import { graphql } from '@/graphql/graphql.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const countryItemFragment = graphql(`
     fragment CountryItem on Country {
@@ -24,7 +24,7 @@ export const countriesListQuery = graphql(
     [countryItemFragment],
 );
 
-export const countryDetailQuery = graphql(`
+export const countryDetailDocument = graphql(`
     query CountryDetail($id: ID!) {
         country(id: $id) {
             id
@@ -62,6 +62,15 @@ export const updateCountryDocument = graphql(`
 export const deleteCountryDocument = graphql(`
     mutation DeleteCountry($id: ID!) {
         deleteCountry(id: $id) {
+            result
+            message
+        }
+    }
+`);
+
+export const deleteCountriesDocument = graphql(`
+    mutation DeleteCountries($ids: [ID!]!) {
+        deleteCountries(ids: $ids) {
             result
             message
         }

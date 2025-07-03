@@ -29,8 +29,8 @@ import { PaginatedList } from '@vendure/common/lib/shared-types';
 import { ErrorResultUnion } from '../../../common/error/error-result';
 import { UserInputError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
-import { Product } from '../../../entity/product/product.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
+import { Product } from '../../../entity/product/product.entity';
 import { FacetValueService } from '../../../service/services/facet-value.service';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { ProductService } from '../../../service/services/product.service';
@@ -135,7 +135,6 @@ export class ProductResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateProductsArgs,
     ): Promise<Array<Translated<Product>>> {
-        const { input } = args;
         return await Promise.all(args.input.map(i => this.productService.update(ctx, i)));
     }
 

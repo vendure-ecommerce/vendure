@@ -4,7 +4,9 @@ on:
   push:
     branches:
       - master
-
+    paths:
+      - 'docs/**'
+    
 jobs:
   index_docs:
     runs-on: ubuntu-latest

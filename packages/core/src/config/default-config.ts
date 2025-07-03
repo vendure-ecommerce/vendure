@@ -10,6 +10,8 @@ import { randomBytes } from 'crypto';
 import { TypeORMHealthCheckStrategy } from '../health-check/typeorm-health-check-strategy';
 import { InMemoryJobQueueStrategy } from '../job-queue/in-memory-job-queue-strategy';
 import { InMemoryJobBufferStorageStrategy } from '../job-queue/job-buffer/in-memory-job-buffer-storage-strategy';
+import { NoopSchedulerStrategy } from '../scheduler/noop-scheduler-strategy';
+import { cleanSessionsTask } from '../scheduler/tasks/clean-sessions-task';
 
 import { DefaultAssetImportStrategy } from './asset-import-strategy/default-asset-import-strategy';
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
@@ -52,6 +54,7 @@ import { defaultShippingCalculator } from './shipping-method/default-shipping-ca
 import { defaultShippingEligibilityChecker } from './shipping-method/default-shipping-eligibility-checker';
 import { DefaultShippingLineAssignmentStrategy } from './shipping-method/default-shipping-line-assignment-strategy';
 import { InMemoryCacheStrategy } from './system/in-memory-cache-strategy';
+import { NoopInstrumentationStrategy } from './system/noop-instrumentation-strategy';
 import { DefaultTaxLineCalculationStrategy } from './tax/default-tax-line-calculation-strategy';
 import { DefaultTaxZoneStrategy } from './tax/default-tax-zone-strategy';
 import { RuntimeVendureConfig } from './vendure-config';
@@ -111,7 +114,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         adminAuthenticationStrategy: [new NativeAuthenticationStrategy()],
         customPermissions: [],
         passwordHashingStrategy: new BcryptPasswordHashingStrategy(),
-        passwordValidationStrategy: new DefaultPasswordValidationStrategy({ minLength: 4 }),
+        passwordValidationStrategy: new DefaultPasswordValidationStrategy({ minLength: 4, maxLength: 72 }),
         verificationTokenStrategy: new DefaultVerificationTokenStrategy(),
         rolePermissionResolverStrategy: new DefaultRolePermissionResolverStrategy(),
     },
@@ -195,6 +198,11 @@ export const defaultConfig: RuntimeVendureConfig = {
         activeQueues: [],
         prefix: '',
     },
+    schedulerOptions: {
+        schedulerStrategy: new NoopSchedulerStrategy(),
+        tasks: [cleanSessionsTask],
+        runTasksInWorkerOnly: true,
+    },
     customFields: {
         Address: [],
         Administrator: [],
@@ -237,5 +245,6 @@ export const defaultConfig: RuntimeVendureConfig = {
         cacheStrategy: new InMemoryCacheStrategy({ cacheSize: 10_000 }),
         healthChecks: [new TypeORMHealthCheckStrategy()],
         errorHandlers: [],
+        instrumentationStrategy: new NoopInstrumentationStrategy(),
     },
 };

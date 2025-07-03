@@ -1,14 +1,14 @@
-import { ConfigurableOperationInput } from '@/components/shared/configurable-operation-input.js';
-import { Button } from '@/components/ui/button.js';
+import { ConfigurableOperationInput } from '@/vdb/components/shared/configurable-operation-input.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
-import { Separator } from '@/components/ui/separator.js';
-import { ConfigurableOperationDefFragment } from '@/graphql/fragments.js';
-import { Trans } from '@/lib/trans.js';
+} from '@/vdb/components/ui/dropdown-menu.js';
+import { Separator } from '@/vdb/components/ui/separator.js';
+import { ConfigurableOperationDefFragment } from '@/vdb/graphql/fragments.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { useQuery } from '@tanstack/react-query';
 import { ConfigurableOperationInput as ConfigurableOperationInputType } from '@vendure/common/lib/generated-types';
 import { Plus } from 'lucide-react';
@@ -19,7 +19,7 @@ export interface CollectionFiltersSelectorProps {
     onChange: (filters: ConfigurableOperationInputType[]) => void;
 }
 
-export function CollectionFiltersSelector({ value, onChange }: CollectionFiltersSelectorProps) {
+export function CollectionFiltersSelector({ value, onChange }: Readonly<CollectionFiltersSelectorProps>) {
     const { data: filtersData } = useQuery(getCollectionFiltersQueryOptions);
 
     const filters = filtersData?.collectionFilters;

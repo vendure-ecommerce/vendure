@@ -8,14 +8,16 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 
+import { IsNull } from 'typeorm';
 import { RequestContext } from '../../api/common/request-context';
+import { Instrument } from '../../common/instrument-decorator';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { Logger } from '../../config/logger/vendure-logger';
 import { TransactionalConnection } from '../../connection/transactional-connection';
+import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductOptionTranslation } from '../../entity/product-option/product-option-translation.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
-import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { EventBus } from '../../event-bus';
 import { ProductOptionEvent } from '../../event-bus/events/product-option-event';
@@ -30,6 +32,7 @@ import { TranslatorService } from '../helpers/translator/translator.service';
  * @docsCategory services
  */
 @Injectable()
+@Instrument()
 export class ProductOptionService {
     constructor(
         private connection: TransactionalConnection,
@@ -44,6 +47,7 @@ export class ProductOptionService {
             .getRepository(ctx, ProductOption)
             .find({
                 relations: ['group'],
+                where: { deletedAt: IsNull() },
             })
             .then(options => options.map(option => this.translator.translate(option, ctx)));
     }
@@ -52,7 +56,7 @@ export class ProductOptionService {
         return this.connection
             .getRepository(ctx, ProductOption)
             .findOne({
-                where: { id },
+                where: { id, deletedAt: IsNull() },
                 relations: ['group'],
             })
             .then(option => (option && this.translator.translate(option, ctx)) ?? undefined);

@@ -1,12 +1,17 @@
-import { Money } from '@/components/data-display/money.js';
-import { DetailPageButton } from '@/components/shared/detail-page-button.js';
-import { Badge } from '@/components/ui/badge.js';
-import { Button } from '@/components/ui/button.js';
-import { ListPage } from '@/framework/page/list-page.js';
-import { Trans } from '@/lib/trans.js';
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { orderListDocument } from './orders.graphql.js';
-import { useServerConfig } from '@/hooks/use-server-config.js';
+import { Money } from '@/vdb/components/data-display/money.js';
+import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
+import { Badge } from '@/vdb/components/ui/badge.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ListPage } from '@/vdb/framework/page/list-page.js';
+import { api } from '@/vdb/graphql/api.js';
+import { ResultOf } from '@/vdb/graphql/graphql.js';
+import { useServerConfig } from '@/vdb/hooks/use-server-config.js';
+import { Trans } from '@/vdb/lib/trans.js';
+import { useMutation } from '@tanstack/react-query';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { PlusIcon } from 'lucide-react';
+import { createDraftOrderDocument, orderListDocument } from './orders.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_orders/orders')({
     component: OrderListPage,
@@ -15,30 +20,39 @@ export const Route = createFileRoute('/_authenticated/_orders/orders')({
 
 function OrderListPage() {
     const serverConfig = useServerConfig();
+    const navigate = useNavigate();
+    const { mutate: createDraftOrder } = useMutation({
+        mutationFn: api.mutate(createDraftOrderDocument),
+        onSuccess: (result: ResultOf<typeof createDraftOrderDocument>) => {
+            navigate({ to: '/orders/draft/$id', params: { id: result.createDraftOrder.id } });
+        },
+    });
     return (
         <ListPage
             pageId="order-list"
             title="Orders"
             onSearchTermChange={searchTerm => {
                 return {
-                    code: {
-                        contains: searchTerm,
-                    },
-                    customerLastName: {
-                        contains: searchTerm,
-                    },
-                    transactionId: {
-                        contains: searchTerm,
-                    },
+                    _or: [
+                        {
+                            code: {
+                                contains: searchTerm,
+                            },
+                        },
+                        {
+                            customerLastName: {
+                                contains: searchTerm,
+                            },
+                        },
+                        {
+                            transactionId: {
+                                contains: searchTerm,
+                            },
+                        },
+                    ],
                 };
             }}
             defaultSort={[{ id: 'orderPlacedAt', desc: true }]}
-            transformVariables={variables => {
-                return {
-                    ...variables,
-                    filterOperator: 'OR',
-                };
-            }}
             listQuery={orderListDocument}
             route={Route}
             customizeColumns={{
@@ -107,14 +121,22 @@ function OrderListPage() {
             facetedFilters={{
                 state: {
                     title: 'State',
-                    options: serverConfig?.orderProcess.map(state => {
-                        return {
-                            label: state.name,
-                            value: state.name,
-                        }
-                    }) ?? [],
+                    options:
+                        serverConfig?.orderProcess.map(state => {
+                            return {
+                                label: state.name,
+                                value: state.name,
+                            };
+                        }) ?? [],
                 },
             }}
-        />
+        >
+            <PageActionBarRight>
+                <Button onClick={() => createDraftOrder({})}>
+                    <PlusIcon className="mr-2 h-4 w-4" />
+                    <Trans>Draft order</Trans>
+                </Button>
+            </PageActionBarRight>
+        </ListPage>
     );
 }

@@ -23,19 +23,19 @@ interface AssignedFacetValuesProps {
 }
 
 export function AssignedFacetValues({
-    value = [],
-    facetValues,
-    canUpdate = true,
-    onBlur,
-    onChange,
-}: AssignedFacetValuesProps) {
+                                        value = [],
+                                        facetValues,
+                                        canUpdate = true,
+                                        onBlur,
+                                        onChange,
+                                    }: AssignedFacetValuesProps) {
     const [knownFacetValues, setKnownFacetValues] = useState<FacetValue[]>(facetValues);
-    
+
     function onSelectHandler(facetValue: FacetValue) {
         setKnownFacetValues(prev => [...prev, facetValue]);
         onChange?.([...new Set([...(value ?? []), facetValue.id])]);
     }
-    
+
     function onRemoveHandler(id: string) {
         onChange?.(value?.filter(fvId => fvId !== id) ?? []);
     }
@@ -47,22 +47,17 @@ export function AssignedFacetValues({
                     const facetValue = knownFacetValues.find(fv => fv.id === id);
                     if (!facetValue) return null;
                     return (
-                        <div className="mb-2 mr-1">
-                        <FacetValueChip
-                            key={facetValue.id}
-                            facetValue={facetValue}
-                            removable={canUpdate}
-                            onRemove={onRemoveHandler}
+                        <div className="mb-2 mr-1" key={facetValue.id}>
+                            <FacetValueChip
+                                facetValue={facetValue}
+                                removable={canUpdate}
+                                onRemove={onRemoveHandler}
                             />
                         </div>
                     );
                 })}
             </div>
-            {canUpdate && (
-                <FacetValueSelector
-                    onValueSelect={onSelectHandler}
-                />
-            )}
+            {canUpdate && <FacetValueSelector onValueSelect={onSelectHandler} />}
         </>
     );
 }

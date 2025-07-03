@@ -1,5 +1,5 @@
-import { assetFragment } from '@/graphql/fragments.js';
-import { graphql } from '@/graphql/graphql.js';
+import { assetFragment } from '@/vdb/graphql/fragments.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const assetDetailDocument = graphql(
     `
@@ -21,6 +21,17 @@ export const assetUpdateDocument = graphql(`
     mutation AssetUpdate($input: UpdateAssetInput!) {
         updateAsset(input: $input) {
             id
+        }
+    }
+`);
+
+export const deleteAssetsDocument = graphql(`
+    mutation DeleteAssets($input: DeleteAssetsInput!) {
+        deleteAssets(input: $input) {
+            ... on DeletionResponse {
+                result
+                message
+            }
         }
     }
 `);

@@ -1,7 +1,7 @@
-import { ErrorPage } from '@/components/shared/error-page.js';
-import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
-import { Button } from '@/components/ui/button.js';
-import { Input } from '@/components/ui/input.js';
+import { ErrorPage } from '@/vdb/components/shared/error-page.js';
+import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Input } from '@/vdb/components/ui/input.js';
 import {
     CustomFieldsPageBlock,
     DetailFormGrid,
@@ -11,10 +11,10 @@ import {
     PageBlock,
     PageLayout,
     PageTitle,
-} from '@/framework/layout-engine/page-layout.js';
-import { useDetailPage } from '@/framework/page/use-detail-page.js';
-import { api } from '@/graphql/api.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/framework/layout-engine/page-layout.js';
+import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { api } from '@/vdb/graphql/api.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { createFileRoute } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { activeAdministratorDocument, updateAdministratorDocument } from './profile.graphql.js';
@@ -58,14 +58,11 @@ function ProfilePage() {
         },
         params: { id: 'undefined' },
         onSuccess: async data => {
-            toast(i18n.t('Successfully updated profile'), {
-                position: 'top-right',
-            });
+            toast(i18n.t('Successfully updated profile'));
             form.reset(form.getValues());
         },
         onError: err => {
             toast(i18n.t('Failed to update profile'), {
-                position: 'top-right',
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },

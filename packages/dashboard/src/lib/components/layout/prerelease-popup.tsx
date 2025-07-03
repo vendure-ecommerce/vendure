@@ -1,4 +1,4 @@
-import { useUserSettings } from '@/hooks/use-user-settings.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -11,16 +11,12 @@ export function PrereleasePopup() {
             description: (
                 <div className="space-y-2">
                     <p>
-                        This is an <span className="font-bold">alpha</span> version of our new Vendure
+                        This is a <span className="font-bold">beta</span> version of our new Vendure
                         Dashboard!
                     </p>
                     <p>
                         This release allows you to explore the new interface and functionality, but it's not
                         yet ready for production use.
-                    </p>
-                    <p>
-                        If you find missing or broken functionality, you don't need to report it on GitHub at
-                        this point - we're already working on it!
                     </p>
                 </div>
             ),
