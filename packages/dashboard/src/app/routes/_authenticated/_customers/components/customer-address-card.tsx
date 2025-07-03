@@ -11,7 +11,6 @@ import {
     DialogTrigger,
 } from '@/vdb/components/ui/dialog.js';
 import { api } from '@/vdb/graphql/api.js';
-import { Button } from '@/vdb/index.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { useMutation } from '@tanstack/react-query';
 import { EditIcon, TrashIcon } from 'lucide-react';
@@ -121,10 +120,8 @@ export function CustomerAddressCard({
                 <div className="flex gap-4 mt-3 pt-3 border-t border-border">
                     {editable && (
                         <Dialog open={open} onOpenChange={setOpen}>
-                            <DialogTrigger asChild>
-                                <Button size="icon" variant="secondary">
-                                    <EditIcon />
-                                </Button>
+                            <DialogTrigger>
+                                <EditIcon className="w-4 h-4" />
                             </DialogTrigger>
                             <DialogContent>
                                 <DialogHeader>
@@ -148,9 +145,7 @@ export function CustomerAddressCard({
                                 onDelete?.();
                             }}
                         >
-                            <Button size="icon" variant="destructive">
-                                <TrashIcon />
-                            </Button>
+                            <TrashIcon className="w-4 h-4 text-destructive" />
                         </ConfirmationDialog>
                     )}
                 </div>
