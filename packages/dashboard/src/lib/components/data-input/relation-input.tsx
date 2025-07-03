@@ -1,9 +1,6 @@
 import { graphql } from '@/vdb/graphql/graphql.js';
 import { createRelationSelectorConfig, RelationSelector } from './relation-selector.js';
 
-// Re-export for convenience
-export { createRelationSelectorConfig };
-
 /**
  * Single relation input component
  */
