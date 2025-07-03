@@ -11,7 +11,7 @@ import { api } from '@/vdb/graphql/api.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -31,7 +31,6 @@ type FulfillmentDetailsProps = {
 export function FulfillmentDetails({ order, fulfillment, onSuccess }: Readonly<FulfillmentDetailsProps>) {
     const { formatDate } = useLocalFormat();
     const { i18n } = useLingui();
-    const queryClient = useQueryClient();
 
     // Create a map of order lines by ID for quick lookup
     const orderLinesMap = new Map(order.lines.map(line => [line.id, line]));
@@ -44,7 +43,7 @@ export function FulfillmentDetails({ order, fulfillment, onSuccess }: Readonly<F
                 toast.success(i18n.t('Fulfillment state updated successfully'));
                 onSuccess?.();
             } else {
-                toast.error(fulfillment.message || i18n.t('Failed to update fulfillment state'));
+                toast.error(fulfillment.message ?? i18n.t('Failed to update fulfillment state'));
             }
         },
         onError: error => {
@@ -102,9 +101,9 @@ export function FulfillmentDetails({ order, fulfillment, onSuccess }: Readonly<F
                             <ChevronDown className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-180" />
                         </CollapsibleTrigger>
                         <CollapsibleContent className="mt-2 space-y-1">
-                            {fulfillment.lines.map((line, index) => {
+                            {fulfillment.lines.map((line) => {
                                 const orderLine = orderLinesMap.get(line.orderLineId);
-                                const productName = orderLine?.productVariant?.name || 'Unknown product';
+                                const productName = orderLine?.productVariant?.name ?? 'Unknown product';
                                 const sku = orderLine?.productVariant?.sku;
 
                                 return (

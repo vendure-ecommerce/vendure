@@ -1,13 +1,10 @@
 import { TableCell, TableRow } from '@/vdb/components/ui/table.js';
-import { ResultOf } from '@/vdb/graphql/graphql.js';
 import { Trans } from '@/vdb/lib/trans.js';
-import { orderDetailDocument } from '../orders.graphql.js';
+import { Order } from '../utils/order-types.js';
 import { MoneyGrossNet } from './money-gross-net.js';
 
-type OrderFragment = NonNullable<ResultOf<typeof orderDetailDocument>['order']>;
-
 export interface OrderTableTotalsProps {
-    order: OrderFragment;
+    order: Order;
     columnCount: number;
 }
 

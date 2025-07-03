@@ -15,7 +15,6 @@ import {
 import { Form } from '@/vdb/components/ui/form.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { api } from '@/vdb/graphql/api.js';
-import { ResultOf } from '@/vdb/graphql/graphql.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { useMutation } from '@tanstack/react-query';
@@ -24,12 +23,10 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import {
     addManualPaymentToOrderDocument,
-    orderDetailDocument,
-    paymentMethodsDocument,
+    paymentMethodsDocument
 } from '../orders.graphql.js';
+import { Order } from '../utils/order-types.js';
 import { calculateOutstandingPaymentAmount } from '../utils/order-utils.js';
-
-type Order = NonNullable<ResultOf<typeof orderDetailDocument>['order']>;
 
 interface AddManualPaymentDialogProps {
     order: Order;

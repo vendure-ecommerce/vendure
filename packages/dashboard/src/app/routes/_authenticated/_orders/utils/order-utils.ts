@@ -1,15 +1,9 @@
-import { ResultOf } from '@/vdb/graphql/graphql.js';
-
-import { orderDetailDocument } from '../orders.graphql.js';
-
-type OrderDetailFragment = ResultOf<typeof orderDetailDocument>['order'];
-type Payment = NonNullable<NonNullable<OrderDetailFragment>['payments']>[number];
-type Fulfillment = NonNullable<NonNullable<OrderDetailFragment>['fulfillments']>[number];
+import { Fulfillment, Order, Payment } from './order-types.js';
 
 /**
  * Calculates the outstanding payment amount for an order
  */
-export function calculateOutstandingPaymentAmount(order: OrderDetailFragment): number {
+export function calculateOutstandingPaymentAmount(order: Order): number {
     if (!order) return 0;
 
     const paymentIsValid = (p: Payment): boolean =>
@@ -27,7 +21,7 @@ export function calculateOutstandingPaymentAmount(order: OrderDetailFragment): n
 /**
  * Checks if an order has unsettled modifications
  */
-export function hasUnsettledModifications(order: OrderDetailFragment): boolean {
+export function hasUnsettledModifications(order: Order): boolean {
     if (!order) return false;
     return order.modifications.some(m => !m.isSettled);
 }
@@ -35,7 +29,7 @@ export function hasUnsettledModifications(order: OrderDetailFragment): boolean {
 /**
  * Determines if the add manual payment button should be displayed
  */
-export function shouldShowAddManualPaymentButton(order: OrderDetailFragment): boolean {
+export function shouldShowAddManualPaymentButton(order: Order): boolean {
     if (!order) return false;
 
     return (
@@ -48,7 +42,7 @@ export function shouldShowAddManualPaymentButton(order: OrderDetailFragment): bo
 /**
  * Determines if we can add a fulfillment to an order
  */
-export function canAddFulfillment(order: OrderDetailFragment): boolean {
+export function canAddFulfillment(order: Order): boolean {
     if (!order) return false;
 
     // Get all fulfillment lines from non-cancelled fulfillments

@@ -13,16 +13,15 @@ import { Form } from '@/vdb/components/ui/form.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { Label } from '@/vdb/components/ui/label.js';
 import { api } from '@/vdb/graphql/api.js';
-import { graphql, ResultOf } from '@/vdb/graphql/graphql.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { ConfigurableOperationInput as ConfigurableOperationInputType } from '@vendure/common/lib/generated-types';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { fulfillmentHandlersDocument, fulfillOrderDocument, orderDetailDocument } from '../orders.graphql.js';
-
-type Order = NonNullable<ResultOf<typeof orderDetailDocument>['order']>;
+import { fulfillmentHandlersDocument, fulfillOrderDocument } from '../orders.graphql.js';
+import { Order } from '../utils/order-types.js';
 
 interface FulfillOrderDialogProps {
     order: Order;
@@ -113,14 +112,14 @@ export function FulfillOrderDialog({ order, onSuccess }: Readonly<FulfillOrderDi
         const defaultHandler =
             fulfillmentHandlersData?.fulfillmentHandlers.find(
                 h => h.code === order.shippingLines[0]?.shippingMethod?.fulfillmentHandlerCode,
-            ) || fulfillmentHandlersData?.fulfillmentHandlers[0];
+            ) ?? fulfillmentHandlersData?.fulfillmentHandlers[0];
 
         if (defaultHandler) {
             form.setValue('handler', {
                 code: defaultHandler.code,
                 arguments: defaultHandler.args.map(arg => ({
                     name: arg.name,
-                    value: arg.defaultValue || '',
+                    value: arg.defaultValue ?? '',
                 })),
             });
         }
