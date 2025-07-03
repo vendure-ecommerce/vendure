@@ -73,6 +73,7 @@ export const reviewDetail: DashboardRouteDefinition = {
                         summary: review.summary,
                         body: review.body,
                         response: review.response,
+                        state: review.state,
                         customFields: review.customFields,
                         translations: review.translations,
                     };

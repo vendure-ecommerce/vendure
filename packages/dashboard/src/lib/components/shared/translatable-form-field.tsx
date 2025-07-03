@@ -49,6 +49,7 @@ export const TranslatableFormFieldWrapper = <
     label,
     description,
     render,
+    renderFormControl,
     ...props
 }: TranslatableFormFieldWrapperProps<TFieldValues>) => {
     return (
@@ -58,7 +59,7 @@ export const TranslatableFormFieldWrapper = <
             render={renderArgs => (
                 <FormItem>
                     {label && <FormLabel>{label}</FormLabel>}
-                    <FormControl>{render(renderArgs)}</FormControl>
+                    {renderFormControl ? <FormControl>{render(renderArgs)}</FormControl> : render(renderArgs)}
                     {description && <FormDescription>{description}</FormDescription>}
                     <FormMessage />
                 </FormItem>

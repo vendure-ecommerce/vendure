@@ -2,9 +2,15 @@ import {
     CustomFormComponentInputProps,
     DataDisplayComponentProps,
     DataInputComponentProps,
+    FormControl,
     MultiRelationInput,
     RelationSelectorConfig,
     ResultOf,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
     SingleRelationInput,
     Textarea,
 } from '@vendure/dashboard';
@@ -72,5 +78,22 @@ export function ReviewMultiSelect(props: CustomFormComponentInputProps) {
             onChange={props.field.onChange}
             config={config}
         ></MultiRelationInput>
+    );
+}
+
+export function ReviewStateSelect(props: DataInputComponentProps) {
+    return (
+        <Select value={props.value} onValueChange={props.onChange} key={props.value}>
+            <FormControl>
+                <SelectTrigger>
+                    <SelectValue placeholder="Select state..."></SelectValue>
+                </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+                <SelectItem value="new">New</SelectItem>
+                <SelectItem value="approved">Approved</SelectItem>
+                <SelectItem value="rejected">Rejected</SelectItem>
+            </SelectContent>
+        </Select>
     );
 }

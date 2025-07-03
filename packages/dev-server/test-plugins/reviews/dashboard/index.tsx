@@ -7,6 +7,7 @@ import {
     ResponseDisplay,
     ReviewMultiSelect,
     ReviewSingleSelect,
+    ReviewStateSelect,
     TextareaCustomField,
 } from './custom-form-components';
 import { CustomWidget } from './custom-widget';
@@ -110,6 +111,11 @@ defineDashboardExtension({
                     blockId: 'main-form',
                     field: 'body',
                     component: BodyInputComponent,
+                },
+                {
+                    blockId: 'main-form',
+                    field: 'state',
+                    component: ReviewStateSelect,
                 },
             ],
             displays: [

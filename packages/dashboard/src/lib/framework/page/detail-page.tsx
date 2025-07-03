@@ -121,31 +121,37 @@ function FieldInputRenderer<
         return <InputComponent {...field} />;
     }
 
-    const DefaultComponent = () => {
-        switch (fieldInfo.type) {
-            case 'Int':
-            case 'Float':
-                return (
+    switch (fieldInfo.type) {
+        case 'Int':
+        case 'Float':
+            return (
+                <FormControl>
                     <Input
                         type="number"
                         value={field.value}
                         onChange={e => field.onChange(e.target.valueAsNumber)}
                     />
-                );
-            case 'DateTime':
-                return <DateTimeInput {...field} />;
-            case 'Boolean':
-                return <Checkbox value={field.value} onCheckedChange={field.onChange} />;
-            default:
-                return <Input {...field} />;
-        }
-    };
-
-    return (
-        <FormControl>
-            <DefaultComponent />
-        </FormControl>
-    );
+                </FormControl>
+            );
+        case 'DateTime':
+            return (
+                <FormControl>
+                    <DateTimeInput {...field} />
+                </FormControl>
+            );
+        case 'Boolean':
+            return (
+                <FormControl>
+                    <Checkbox value={field.value} onCheckedChange={field.onChange} />
+                </FormControl>
+            );
+        default:
+            return (
+                <FormControl>
+                    <Input {...field} />
+                </FormControl>
+            );
+    }
 }
 
 /**
