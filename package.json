@@ -54,6 +54,7 @@
     "klaw-sync": "^6.0.0",
     "lerna": "^8.1.2",
     "lint-staged": "^10.5.4",
+    "playwright": "^1.53.2",
     "prettier": "^3.2.5",
     "prettier-plugin-organize-imports": "^4.1.0",
     "rollup": "^4.18.0",
