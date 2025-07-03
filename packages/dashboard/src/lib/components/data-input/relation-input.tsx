@@ -21,7 +21,7 @@ export function SingleRelationInput<T>({
     config,
     disabled,
     className,
-}: SingleRelationInputProps<T>) {
+}: Readonly<SingleRelationInputProps<T>>) {
     const singleConfig = createRelationSelectorConfig<T>({
         ...config,
         multiple: false,
@@ -55,7 +55,7 @@ export function MultiRelationInput<T>({
     config,
     disabled,
     className,
-}: MultiRelationInputProps<T>) {
+}: Readonly<MultiRelationInputProps<T>>) {
     const multiConfig = createRelationSelectorConfig<T>({
         ...config,
         multiple: true,

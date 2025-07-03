@@ -59,7 +59,7 @@ export function RelationSelectorItem<T>({
     isSelected,
     onSelect,
     showCheckbox = false,
-}: RelationSelectorItemProps<T>) {
+}: Readonly<RelationSelectorItemProps<T>>) {
     const id = String(item[config.idKey]);
     const label = String(item[config.labelKey]);
 
@@ -144,7 +144,7 @@ export function RelationSelector<T>({
     onChange,
     disabled,
     className,
-}: RelationSelectorProps<T>) {
+}: Readonly<RelationSelectorProps<T>>) {
     const [open, setOpen] = useState(false);
     const [selectedItemsCache, setSelectedItemsCache] = useState<T[]>([]);
     const isMultiple = config.multiple ?? false;
@@ -342,7 +342,7 @@ export function RelationSelector<T>({
  * Utility function to create a relation selector configuration
  */
 export function createRelationSelectorConfig<T>(
-    config: RelationSelectorConfig<T>,
+    config: Readonly<RelationSelectorConfig<T>>,
 ): RelationSelectorConfig<T> {
     return config;
 }
