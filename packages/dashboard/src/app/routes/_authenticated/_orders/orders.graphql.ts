@@ -508,3 +508,42 @@ export const transitionOrderToStateDocument = graphql(
     `,
     [errorResultFragment],
 );
+
+export const paymentMethodsDocument = graphql(`
+    query GetPaymentMethods($options: PaymentMethodListOptions!) {
+        paymentMethods(options: $options) {
+            items {
+                id
+                createdAt
+                updatedAt
+                name
+                code
+                description
+                enabled
+            }
+            totalItems
+        }
+    }
+`);
+
+export const addManualPaymentToOrderDocument = graphql(
+    `
+        mutation AddManualPaymentToOrder($input: ManualPaymentInput!) {
+            addManualPaymentToOrder(input: $input) {
+                __typename
+                ... on Order {
+                    id
+                    state
+                    payments {
+                        id
+                        amount
+                        method
+                        state
+                    }
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);

@@ -18,12 +18,14 @@ import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { Link, createFileRoute, redirect } from '@tanstack/react-router';
 import { User } from 'lucide-react';
 import { toast } from 'sonner';
+import { AddManualPaymentDialog } from './components/add-manual-payment-dialog.js';
 import { OrderAddress } from './components/order-address.js';
 import { OrderHistoryContainer } from './components/order-history/order-history-container.js';
 import { OrderTable } from './components/order-table.js';
 import { OrderTaxSummary } from './components/order-tax-summary.js';
 import { PaymentDetails } from './components/payment-details.js';
 import { orderDetailDocument } from './orders.graphql.js';
+import { shouldShowAddManualPaymentButton } from './utils/order-utils.js';
 
 const pageId = 'order-detail';
 
@@ -59,8 +61,7 @@ export const Route = createFileRoute('/_authenticated/_orders/orders_/$id')({
 function OrderDetailPage() {
     const params = Route.useParams();
     const { i18n } = useLingui();
-
-    const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+    const { form, submitHandler, entity, isPending, refreshEntity } = useDetailPage({
         pageId,
         queryDocument: orderDetailDocument,
         setValuesForUpdate: entity => {
@@ -85,11 +86,23 @@ function OrderDetailPage() {
         return null;
     }
 
+    const showAddPaymentButton = shouldShowAddManualPaymentButton(entity);
+
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{entity?.code ?? ''}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>
+                    {showAddPaymentButton && (
+                        <PermissionGuard requires={['UpdateOrder']}>
+                            <AddManualPaymentDialog
+                                order={entity}
+                                onSuccess={() => {
+                                    refreshEntity();
+                                }}
+                            />
+                        </PermissionGuard>
+                    )}
                     <PermissionGuard requires={['UpdateProduct', 'UpdateCatalog']}>
                         <Button
                             type="submit"
