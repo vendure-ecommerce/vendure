@@ -20,7 +20,7 @@ export interface OrderTableProps {
     order: OrderFragment;
 }
 
-export function OrderTable({ order }: OrderTableProps) {
+export function OrderTable({ order }: Readonly<OrderTableProps>) {
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 
     const currencyCode = order.currencyCode;

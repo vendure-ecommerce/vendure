@@ -6,7 +6,7 @@ interface HistoryNoteCheckboxProps {
     onChange: (value: boolean) => void;
 }
 
-export function HistoryNoteCheckbox({ value, onChange }: HistoryNoteCheckboxProps) {
+export function HistoryNoteCheckbox({ value, onChange }: Readonly<HistoryNoteCheckboxProps>) {
     return (
         <div className="flex items-center space-x-2">
             <Checkbox

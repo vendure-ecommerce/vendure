@@ -20,7 +20,7 @@ interface FulfillmentHandlerSelectorProps {
     onChange: (value: string | undefined) => void;
 }
 
-export function FulfillmentHandlerSelector({ value, onChange }: FulfillmentHandlerSelectorProps) {
+export function FulfillmentHandlerSelector({ value, onChange }: Readonly<FulfillmentHandlerSelectorProps>) {
     const { data: fulfillmentHandlersData } = useQuery({
         queryKey: ['fulfillmentHandlers'],
         queryFn: () => api.query(fulfillmentHandlersDocument),

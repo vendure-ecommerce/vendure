@@ -1,6 +1,3 @@
-// Import all domain-specific types
-export * from './types/index.js';
-
 // Import types for the main interface
 import {
     DashboardActionBarItem,

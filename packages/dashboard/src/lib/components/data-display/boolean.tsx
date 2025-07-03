@@ -2,7 +2,7 @@ import { CheckIcon, XIcon } from 'lucide-react';
 import React from 'react';
 import { Badge } from '../ui/badge.js';
 
-export function BooleanDisplayCheckbox({ value }: { value: boolean }) {
+export function BooleanDisplayCheckbox({ value }: Readonly<{ value: boolean }>) {
     return value ? <CheckIcon className="opacity-70" /> : <XIcon className="opacity-70" />;
 }
 

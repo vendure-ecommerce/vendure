@@ -28,7 +28,7 @@ export interface ZoneSelectorProps {
     onChange: (value: string) => void;
 }
 
-export function ZoneSelector({ value, onChange }: ZoneSelectorProps) {
+export function ZoneSelector({ value, onChange }: Readonly<ZoneSelectorProps>) {
     const { data, isLoading, isPending } = useQuery({
         queryKey: ['zones'],
         staleTime: 1000 * 60 * 5,

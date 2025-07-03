@@ -9,7 +9,7 @@ interface ZoneCountriesSheetProps {
     children?: React.ReactNode;
 }
 
-export function ZoneCountriesSheet({ zoneId, zoneName, children }: ZoneCountriesSheetProps) {
+export function ZoneCountriesSheet({ zoneId, zoneName, children }: Readonly<ZoneCountriesSheetProps>) {
     return (
         <Sheet>
             <SheetTrigger asChild>

@@ -10,7 +10,7 @@ interface OrderHistoryContainerProps {
     orderId: string;
 }
 
-export function OrderHistoryContainer({ orderId }: OrderHistoryContainerProps) {
+export function OrderHistoryContainer({ orderId }: Readonly<OrderHistoryContainerProps>) {
     const {
         historyEntries,
         order,

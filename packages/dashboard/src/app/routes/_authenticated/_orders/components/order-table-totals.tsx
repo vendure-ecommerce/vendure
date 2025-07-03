@@ -11,14 +11,14 @@ export interface OrderTableTotalsProps {
     columnCount: number;
 }
 
-export function OrderTableTotals({ order, columnCount }: OrderTableTotalsProps) {
+export function OrderTableTotals({ order, columnCount }: Readonly<OrderTableTotalsProps>) {
     const currencyCode = order.currencyCode;
 
     return (
         <>
             {order.discounts?.length > 0
-                ? order.discounts.map(discount => (
-                      <TableRow>
+                ? order.discounts.map((discount, index) => (
+                      <TableRow key={`${discount.description}-${index}`}>
                           <TableCell colSpan={columnCount - 1} className="h-12">
                               <Trans>Discount</Trans>: {discount.description}
                           </TableCell>

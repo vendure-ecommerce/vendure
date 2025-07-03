@@ -8,7 +8,7 @@ export interface AssetPropertiesProps {
     asset: AssetFragment;
 }
 
-export function AssetProperties({ asset }: AssetPropertiesProps) {
+export function AssetProperties({ asset }: Readonly<AssetPropertiesProps>) {
     return (
         <div className="space-y-4">
             <div>

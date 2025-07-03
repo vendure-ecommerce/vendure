@@ -1,9 +1,9 @@
 import { Button } from '@/vdb/components/ui/button.js';
-import { DashboardWidgetInstance } from '@/vdb/framework/dashboard-widget/types.js';
 import {
     getDashboardWidget,
     getDashboardWidgetRegistry,
 } from '@/vdb/framework/dashboard-widget/widget-extensions.js';
+import { DashboardWidgetInstance } from '@/vdb/framework/extension-api/types/widgets.js';
 import {
     FullWidthPageBlock,
     Page,

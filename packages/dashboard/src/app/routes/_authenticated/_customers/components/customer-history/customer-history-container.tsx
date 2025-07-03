@@ -10,7 +10,7 @@ interface CustomerHistoryContainerProps {
     customerId: string;
 }
 
-export function CustomerHistoryContainer({ customerId }: CustomerHistoryContainerProps) {
+export function CustomerHistoryContainer({ customerId }: Readonly<CustomerHistoryContainerProps>) {
     const {
         historyEntries,
         customer,

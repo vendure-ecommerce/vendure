@@ -33,7 +33,7 @@ interface PaymentHandlerSelectorProps {
     onChange: (value: ConfigurableOperationInputType | undefined) => void;
 }
 
-export function PaymentHandlerSelector({ value, onChange }: PaymentHandlerSelectorProps) {
+export function PaymentHandlerSelector({ value, onChange }: Readonly<PaymentHandlerSelectorProps>) {
     const { data: handlersData } = useQuery({
         queryKey: ['paymentMethodHandlers'],
         queryFn: () => api.query(paymentHandlersDocument),

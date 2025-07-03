@@ -29,7 +29,7 @@ export interface TaxCategorySelectorProps {
     onChange: (value: string) => void;
 }
 
-export function TaxCategorySelector({ value, onChange }: TaxCategorySelectorProps) {
+export function TaxCategorySelector({ value, onChange }: Readonly<TaxCategorySelectorProps>) {
     const { data, isLoading, isPending, status } = useQuery({
         queryKey: ['taxCategories'],
         staleTime: 1000 * 60 * 5,

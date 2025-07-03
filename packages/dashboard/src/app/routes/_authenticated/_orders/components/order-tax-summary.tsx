@@ -1,10 +1,10 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/vdb/components/ui/table.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
-import { Trans } from '@/vdb/lib/trans';
+import { Trans } from '@/vdb/lib/trans.js';
 import { ResultOf } from 'gql.tada';
 import { orderDetailFragment } from '../orders.graphql.js';
 
-export function OrderTaxSummary({ order }: { order: ResultOf<typeof orderDetailFragment> }) {
+export function OrderTaxSummary({ order }: Readonly<{ order: ResultOf<typeof orderDetailFragment> }>) {
     const { formatCurrency } = useLocalFormat();
     return (
         <div>

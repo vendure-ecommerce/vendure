@@ -19,7 +19,7 @@ export interface CollectionFiltersSelectorProps {
     onChange: (filters: ConfigurableOperationInputType[]) => void;
 }
 
-export function CollectionFiltersSelector({ value, onChange }: CollectionFiltersSelectorProps) {
+export function CollectionFiltersSelector({ value, onChange }: Readonly<CollectionFiltersSelectorProps>) {
     const { data: filtersData } = useQuery(getCollectionFiltersQueryOptions);
 
     const filters = filtersData?.collectionFilters;

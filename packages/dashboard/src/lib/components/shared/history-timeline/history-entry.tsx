@@ -33,7 +33,13 @@ interface HistoryEntryProps {
     children: React.ReactNode;
 }
 
-export function HistoryEntry({ entry, isNoteEntry, timelineIcon, title, children }: HistoryEntryProps) {
+export function HistoryEntry({
+    entry,
+    isNoteEntry,
+    timelineIcon,
+    title,
+    children,
+}: Readonly<HistoryEntryProps>) {
     const { formatDate } = useLocalFormat();
     const { editNote, deleteNote } = useHistoryTimeline();
 

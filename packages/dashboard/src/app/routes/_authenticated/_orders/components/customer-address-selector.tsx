@@ -31,7 +31,7 @@ interface CustomerAddressSelectorProps {
     onSelect: (address: ResultOf<typeof addressFragment>) => void;
 }
 
-export function CustomerAddressSelector({ customerId, onSelect }: CustomerAddressSelectorProps) {
+export function CustomerAddressSelector({ customerId, onSelect }: Readonly<CustomerAddressSelectorProps>) {
     const { i18n } = useLingui();
     const [open, setOpen] = useState(false);
 

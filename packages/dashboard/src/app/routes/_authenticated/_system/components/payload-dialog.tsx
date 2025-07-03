@@ -16,7 +16,7 @@ type PayloadDialogProps = {
     description?: string | React.ReactNode;
 };
 
-export function PayloadDialog({ payload, trigger, title, description }: PayloadDialogProps) {
+export function PayloadDialog({ payload, trigger, title, description }: Readonly<PayloadDialogProps>) {
     return (
         <Dialog>
             <DialogTrigger asChild>{trigger}</DialogTrigger>

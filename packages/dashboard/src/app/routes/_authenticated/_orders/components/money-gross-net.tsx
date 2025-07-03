@@ -6,7 +6,7 @@ export interface MoneyGrossNetProps {
     currencyCode: string;
 }
 
-export function MoneyGrossNet({ priceWithTax, price, currencyCode }: MoneyGrossNetProps) {
+export function MoneyGrossNet({ priceWithTax, price, currencyCode }: Readonly<MoneyGrossNetProps>) {
     return (
         <div className="flex flex-col gap-1">
             <div>

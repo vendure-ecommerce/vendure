@@ -8,7 +8,7 @@ import {
     DropdownMenuTrigger,
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { getBulkActions } from '@/vdb/framework/data-table/data-table-extensions.js';
-import { BulkAction } from '@/vdb/framework/data-table/data-table-types.js';
+import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
 import { usePageBlock } from '@/vdb/hooks/use-page-block.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
 import { Trans } from '@/vdb/lib/trans.js';

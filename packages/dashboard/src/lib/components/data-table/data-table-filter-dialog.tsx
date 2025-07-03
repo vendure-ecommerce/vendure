@@ -21,7 +21,7 @@ export interface DataTableFilterDialogProps {
     column: Column<any>;
 }
 
-export function DataTableFilterDialog({ column }: DataTableFilterDialogProps) {
+export function DataTableFilterDialog({ column }: Readonly<DataTableFilterDialogProps>) {
     const columnFilter = column.getFilterValue() as Record<string, string> | undefined;
     const [filter, setFilter] = useState(columnFilter);
 

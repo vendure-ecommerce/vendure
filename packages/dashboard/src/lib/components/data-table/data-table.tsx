@@ -6,7 +6,7 @@ import { RefreshButton } from '@/vdb/components/data-table/refresh-button.js';
 import { Input } from '@/vdb/components/ui/input.js';
 import { Skeleton } from '@/vdb/components/ui/skeleton.js';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/vdb/components/ui/table.js';
-import { BulkAction } from '@/vdb/framework/data-table/data-table-types.js';
+import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
 import { useChannel } from '@/vdb/hooks/use-channel.js';
 import {
     ColumnDef,

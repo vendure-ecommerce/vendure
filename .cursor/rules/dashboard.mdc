@@ -1,5 +1,5 @@
 ---
-description: Dashboard package 
+description: Dashboard package
 globs: packages/dashboard/**/*
 alwaysApply: false
 ---
@@ -154,5 +154,15 @@ export function MyComponent() {
             <Trans>This is a localized string in the markup</Trans>
         </div>
     )
+}
+```
+
+## Typing React Components
+
+React components should have their props objects set to `Readonly<>`, for instance:
+
+```ts
+export function PaymentDetails({ payment, currencyCode }: Readonly<PaymentDetailsProps>) {
+  //...
 }
 ```

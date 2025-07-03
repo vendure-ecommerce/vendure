@@ -32,7 +32,11 @@ interface OptionValueInputProps {
     disabled?: boolean;
 }
 
-export function OptionValueInput({ groupName, groupIndex, disabled = false }: OptionValueInputProps) {
+export function OptionValueInput({
+    groupName,
+    groupIndex,
+    disabled = false,
+}: Readonly<OptionValueInputProps>) {
     const { control, watch } = useFormContext<FormValues>();
     const { fields, append, remove } = useFieldArray({
         control,

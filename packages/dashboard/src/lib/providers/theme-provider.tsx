@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useEffect } from 'react';
 import { useUserSettings } from '../hooks/use-user-settings.js';
 
 export type Theme = 'dark' | 'light' | 'system';
@@ -21,7 +21,7 @@ const initialState: ThemeProviderState = {
 
 export const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
-export function ThemeProvider({ children, defaultTheme = 'system', ...props }: ThemeProviderProps) {
+export function ThemeProvider({ children, defaultTheme = 'system', ...props }: Readonly<ThemeProviderProps>) {
     const { settings, setTheme } = useUserSettings();
 
     useEffect(() => {
@@ -51,4 +51,3 @@ export function ThemeProvider({ children, defaultTheme = 'system', ...props }: T
         </ThemeProviderContext.Provider>
     );
 }
-
