@@ -59,9 +59,9 @@ export class DefaultRolePermissionResolverStrategy implements RolePermissionReso
             roleIds.length === 0
                 ? []
                 : await this.connection.getRepository(ctx, Role).find({
-                      relations: ['channels'],
-                      where: { id: In(roleIds) },
-                  });
+                    relations: ['channels'],
+                    where: { id: In(roleIds) },
+                });
 
         // Early exit if we found all corresponding roles
         if (roles.length === roleIds.length) return roles;
