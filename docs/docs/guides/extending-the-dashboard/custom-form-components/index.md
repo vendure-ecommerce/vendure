@@ -621,9 +621,50 @@ Always import UI components from the `@vendure/dashboard` package rather than cr
 
 The unified custom form elements system gives you complete flexibility in how data is presented and edited in the dashboard, while maintaining seamless integration with React Hook Form and the dashboard's design system.
 
+## Relation Selectors
+
+The dashboard includes powerful relation selector components for selecting related entities with built-in search and pagination:
+
+```tsx title="src/plugins/my-plugin/dashboard/components/product-selector.tsx"
+import { SingleRelationInput, createRelationSelectorConfig, graphql } from '@vendure/dashboard';
+
+const productConfig = createRelationSelectorConfig({
+    listQuery: graphql(`
+        query GetProductsForSelection($options: ProductListOptions) {
+            products(options: $options) {
+                items {
+                    id
+                    name
+                }
+                totalItems
+            }
+        }
+    `),
+    idKey: 'id',
+    labelKey: 'name',
+    placeholder: 'Search products...',
+    buildSearchFilter: (term: string) => ({
+        name: { contains: term },
+    }),
+});
+
+export function ProductSelectorComponent({ value, onChange }: CustomFormComponentInputProps) {
+    return <SingleRelationInput value={value} onChange={onChange} config={productConfig} />;
+}
+```
+
+Features include:
+
+- **Real-time search** with debounced input
+- **Infinite scroll pagination** loading 25 items by default
+- **Single and multi-select modes** with type safety
+- **Customizable GraphQL queries** and search filters
+- **Built-in UI components** using the dashboard design system
+
 ## Further Reading
 
 For detailed information about specific types of custom form elements, see these dedicated guides:
 
 - **[Input Components](./input-components)** - Learn how to create custom input controls for forms with advanced examples like multi-currency inputs, auto-generating slugs, and rich text editors
 - **[Display Components](./display-components)** - Discover how to customize data visualization with enhanced displays for prices, dates, avatars, and progress indicators
+- **[Relation Selectors](./relation-selectors)** - Build powerful entity selection components with search, pagination, and multi-select capabilities for custom fields and form inputs
