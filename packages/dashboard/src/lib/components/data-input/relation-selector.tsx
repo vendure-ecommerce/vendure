@@ -32,6 +32,8 @@ export interface RelationSelectorConfig<T = any> {
     multiple?: boolean;
     /** Custom filter function for search */
     buildSearchFilter?: (searchTerm: string) => any;
+    /** Custom label renderer function for rich display */
+    label?: (item: T) => React.ReactNode;
 }
 
 export interface RelationSelectorProps<T = any> {
@@ -61,7 +63,7 @@ export function RelationSelectorItem<T>({
     showCheckbox = false,
 }: Readonly<RelationSelectorItemProps<T>>) {
     const id = String(item[config.idKey]);
-    const label = String(item[config.labelKey]);
+    const label = config.label ? config.label(item) : String(item[config.labelKey]);
 
     return (
         <CommandItem key={id} value={id} onSelect={onSelect} className="flex items-center gap-2">
@@ -245,7 +247,7 @@ export function RelationSelector<T>({
                 <div className="flex flex-wrap gap-2 mb-2">
                     {selectedItems.map(item => {
                         const itemId = String(item[config.idKey]);
-                        const label = String(item[config.labelKey]);
+                        const label = config.label ? config.label(item) : String(item[config.labelKey]);
                         return (
                             <div
                                 key={itemId}

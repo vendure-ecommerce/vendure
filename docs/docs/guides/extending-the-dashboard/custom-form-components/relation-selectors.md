@@ -97,7 +97,7 @@ interface RelationSelectorConfig<T> {
     listQuery: DocumentNode;
     /** The property key for the entity ID */
     idKey: keyof T;
-    /** The property key for the display label */
+    /** The property key for the display label (used as fallback when label function not provided) */
     labelKey: keyof T;
     /** Number of items to load per page (default: 25) */
     pageSize?: number;
@@ -107,6 +107,176 @@ interface RelationSelectorConfig<T> {
     multiple?: boolean;
     /** Custom filter function for search */
     buildSearchFilter?: (searchTerm: string) => any;
+    /** Custom label renderer function for rich display */
+    label?: (item: T) => React.ReactNode;
+}
+```
+
+## Rich Label Display
+
+The `label` prop allows you to customize how items are displayed in both the dropdown and selected item chips. This enables rich content like images, badges, and multi-line information.
+
+### Product Selector with Images and Pricing
+
+```tsx title="src/plugins/my-plugin/dashboard/components/rich-product-selector.tsx"
+import {
+    SingleRelationInput,
+    createRelationSelectorConfig,
+    graphql,
+    ResultOf,
+    CustomFormComponentInputProps,
+} from '@vendure/dashboard';
+
+const productListQuery = graphql(`
+    query GetProductsWithDetails($options: ProductListOptions) {
+        products(options: $options) {
+            items {
+                id
+                name
+                slug
+                featuredAsset {
+                    id
+                    preview
+                }
+                variants {
+                    id
+                    price
+                    currencyCode
+                }
+            }
+            totalItems
+        }
+    }
+`);
+
+const richProductConfig = createRelationSelectorConfig<
+    ResultOf<typeof productListQuery>['products']['items'][0]
+>({
+    listQuery: productListQuery,
+    idKey: 'id',
+    labelKey: 'name', // Used as fallback
+    placeholder: 'Search products...',
+    label: product => (
+        <div className="flex items-center gap-3 py-1">
+            {product.featuredAsset?.preview && (
+                <img
+                    src={product.featuredAsset.preview}
+                    alt={product.name}
+                    className="w-10 h-10 rounded object-cover"
+                />
+            )}
+            <div className="flex-1 min-w-0">
+                <div className="font-medium truncate">{product.name}</div>
+                <div className="text-sm text-muted-foreground">
+                    {product.variants[0] && (
+                        <span>
+                            {product.variants[0].price / 100} {product.variants[0].currencyCode}
+                        </span>
+                    )}
+                </div>
+            </div>
+        </div>
+    ),
+    buildSearchFilter: (term: string) => ({
+        name: { contains: term },
+    }),
+});
+
+export function RichProductSelectorComponent({ value, onChange, disabled }: CustomFormComponentInputProps) {
+    return (
+        <SingleRelationInput
+            value={value}
+            onChange={onChange}
+            config={richProductConfig}
+            disabled={disabled}
+        />
+    );
+}
+```
+
+### Customer Selector with Status Badges
+
+```tsx title="src/plugins/my-plugin/dashboard/components/customer-selector-with-status.tsx"
+import {
+    MultiRelationInput,
+    createRelationSelectorConfig,
+    graphql,
+    ResultOf,
+    CustomFormComponentInputProps,
+} from '@vendure/dashboard';
+
+const customerListQuery = graphql(`
+    query GetCustomersWithStatus($options: CustomerListOptions) {
+        customers(options: $options) {
+            items {
+                id
+                firstName
+                lastName
+                emailAddress
+                user {
+                    verified
+                    lastLogin
+                }
+                orders {
+                    totalQuantity
+                }
+            }
+            totalItems
+        }
+    }
+`);
+
+const customerConfig = createRelationSelectorConfig<
+    ResultOf<typeof customerListQuery>['customers']['items'][0]
+>({
+    listQuery: customerListQuery,
+    idKey: 'id',
+    labelKey: 'emailAddress',
+    placeholder: 'Search customers...',
+    label: customer => (
+        <div className="flex items-center justify-between py-1 w-full">
+            <div className="flex-1 min-w-0">
+                <div className="font-medium truncate">
+                    {customer.firstName} {customer.lastName}
+                </div>
+                <div className="text-sm text-muted-foreground truncate">{customer.emailAddress}</div>
+            </div>
+            <div className="flex items-center gap-2 ml-2">
+                {customer.user?.verified ? (
+                    <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                        Verified
+                    </span>
+                ) : (
+                    <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">
+                        Unverified
+                    </span>
+                )}
+                <span className="text-xs text-muted-foreground">{customer.orders.totalQuantity} orders</span>
+            </div>
+        </div>
+    ),
+    buildSearchFilter: (term: string) => ({
+        or: [
+            { emailAddress: { contains: term } },
+            { firstName: { contains: term } },
+            { lastName: { contains: term } },
+        ],
+    }),
+});
+
+export function CustomerSelectorWithStatusComponent({
+    value,
+    onChange,
+    disabled,
+}: CustomFormComponentInputProps) {
+    return (
+        <MultiRelationInput
+            value={value || []}
+            onChange={onChange}
+            config={customerConfig}
+            disabled={disabled}
+        />
+    );
 }
 ```
 
@@ -420,6 +590,35 @@ const myEntityConfig = createRelationSelectorConfig<MyEntity>({
         title: { contains: term }, // ✅ Auto-completion and validation
     }),
 });
+```
+
+### Rich Label Design
+
+When using the `label` prop for custom rendering:
+
+1. **Keep it simple**: Avoid overly complex layouts that might impact performance
+2. **Handle missing data**: Always check for optional fields before rendering
+3. **Maintain accessibility**: Use proper semantic HTML and alt text for images
+4. **Consider mobile**: Ensure labels work well on smaller screens
+
+```tsx
+// Good: Simple, robust label design
+label: item => (
+    <div className="flex items-center gap-2">
+        {item.image && <img src={item.image} alt={item.name} className="w-8 h-8 rounded object-cover" />}
+        <div className="flex-1 min-w-0">
+            <div className="font-medium truncate">{item.name}</div>
+            {item.status && <div className="text-sm text-muted-foreground">{item.status}</div>}
+        </div>
+    </div>
+);
+
+// Avoid: Overly complex layouts
+label: item => (
+    <div className="complex-grid-layout-with-many-nested-elements">
+        {/* Too much complexity can hurt performance */}
+    </div>
+);
 ```
 
 ## Troubleshooting
