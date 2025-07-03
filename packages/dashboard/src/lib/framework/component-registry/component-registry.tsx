@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { ControllerRenderProps, FieldPath, FieldValues } from 'react-hook-form';
 import { addDisplayComponent, getDisplayComponent } from '../extension-api/display-component-extensions.js';
 import { addInputComponent, getInputComponent } from '../extension-api/input-component-extensions.js';
 
@@ -13,9 +14,10 @@ export interface DataDisplayComponentProps {
     [key: string]: any;
 }
 
-export interface DataInputComponentProps {
-    value: any;
-    onChange: (value: any) => void;
+export interface DataInputComponentProps<
+    TFieldValues extends FieldValues = FieldValues,
+    TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> extends ControllerRenderProps<TFieldValues, TName> {
     [key: string]: any;
 }
 

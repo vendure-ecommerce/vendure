@@ -1,18 +1,11 @@
+import { DataInputComponentProps } from '@/vdb/framework/component-registry/component-registry.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { useEffect, useMemo, useState } from 'react';
 import { AffixedInput } from './affixed-input.js';
 
 // Original component
-function MoneyInputInternal({
-    value,
-    currency,
-    onChange,
-}: {
-    value: number;
-    currency: string;
-    onChange: (value: number) => void;
-}) {
+function MoneyInputInternal({ value, currency, onChange }: DataInputComponentProps) {
     const {
         settings: { displayLanguage, displayLocale },
     } = useUserSettings();

@@ -17,6 +17,7 @@ import {
 } from '../document-introspection/get-document-structure.js';
 
 import { TranslatableFormFieldWrapper } from '@/vdb/components/shared/translatable-form-field.js';
+import { FormControl } from '@/vdb/components/ui/form.js';
 import { ControllerRenderProps, FieldPath, FieldValues } from 'react-hook-form';
 import { useComponentRegistry } from '../component-registry/component-registry.js';
 import { generateInputComponentKey } from '../extension-api/input-component-extensions.js';
@@ -120,23 +121,31 @@ function FieldInputRenderer<
         return <InputComponent {...field} />;
     }
 
-    switch (fieldInfo.type) {
-        case 'Int':
-        case 'Float':
-            return (
-                <Input
-                    type="number"
-                    value={field.value}
-                    onChange={e => field.onChange(e.target.valueAsNumber)}
-                />
-            );
-        case 'DateTime':
-            return <DateTimeInput {...field} />;
-        case 'Boolean':
-            return <Checkbox value={field.value} onCheckedChange={field.onChange} />;
-        default:
-            return <Input {...field} />;
-    }
+    const DefaultComponent = () => {
+        switch (fieldInfo.type) {
+            case 'Int':
+            case 'Float':
+                return (
+                    <Input
+                        type="number"
+                        value={field.value}
+                        onChange={e => field.onChange(e.target.valueAsNumber)}
+                    />
+                );
+            case 'DateTime':
+                return <DateTimeInput {...field} />;
+            case 'Boolean':
+                return <Checkbox value={field.value} onCheckedChange={field.onChange} />;
+            default:
+                return <Input {...field} />;
+        }
+    };
+
+    return (
+        <FormControl>
+            <DefaultComponent />
+        </FormControl>
+    );
 }
 
 /**
@@ -227,6 +236,7 @@ export function DetailPage<
                                         control={form.control}
                                         name={fieldInfo.name as never}
                                         label={fieldInfo.name}
+                                        renderFormControl={false}
                                         render={({ field }) => (
                                             <FieldInputRenderer
                                                 fieldInfo={fieldInfo}
@@ -249,6 +259,7 @@ export function DetailPage<
                                         control={form.control}
                                         name={fieldInfo.name as never}
                                         label={fieldInfo.name}
+                                        renderFormControl={false}
                                         render={({ field }) => (
                                             <FieldInputRenderer
                                                 fieldInfo={fieldInfo}
