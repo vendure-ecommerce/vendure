@@ -26,7 +26,13 @@ The relation selector system consists of three main components:
 ### Single Selection
 
 ```tsx title="src/plugins/my-plugin/dashboard/components/product-selector.tsx"
-import { SingleRelationInput, createRelationSelectorConfig, graphql, ResultOf } from '@vendure/dashboard';
+import {
+    SingleRelationInput,
+    createRelationSelectorConfig,
+    graphql,
+    ResultOf,
+    CustomFormComponentInputProps,
+} from '@vendure/dashboard';
 
 // Define your GraphQL query
 const productListQuery = graphql(`
@@ -67,7 +73,7 @@ export function ProductSelectorComponent({ value, onChange, disabled }: CustomFo
 ### Multi Selection
 
 ```tsx title="src/plugins/my-plugin/dashboard/components/product-multi-selector.tsx"
-import { MultiRelationInput } from '@vendure/dashboard';
+import { MultiRelationInput, CustomFormComponentInputProps } from '@vendure/dashboard';
 
 export function ProductMultiSelectorComponent({ value, onChange, disabled }: CustomFormComponentInputProps) {
     return (
@@ -109,7 +115,13 @@ interface RelationSelectorConfig<T> {
 ### Custom Entity with Complex Search
 
 ```tsx title="src/plugins/review-plugin/dashboard/components/review-selector.tsx"
-import { SingleRelationInput, createRelationSelectorConfig, graphql, ResultOf } from '@vendure/dashboard';
+import {
+    SingleRelationInput,
+    createRelationSelectorConfig,
+    graphql,
+    ResultOf,
+    CustomFormComponentInputProps,
+} from '@vendure/dashboard';
 
 const reviewFragment = graphql(`
     fragment ReviewForSelector on ProductReview {
@@ -162,7 +174,12 @@ export function ReviewSelectorComponent({ value, onChange }: CustomFormComponent
 ### Asset Selector with Type Filtering
 
 ```tsx title="src/plugins/my-plugin/dashboard/components/image-selector.tsx"
-import { graphql, createRelationSelectorConfig, SingleRelationInput } from '@vendure/dashboard';
+import {
+    graphql,
+    createRelationSelectorConfig,
+    SingleRelationInput,
+    CustomFormComponentInputProps,
+} from '@vendure/dashboard';
 
 const assetListQuery = graphql(`
     query GetAssetsForSelection($options: AssetListOptions) {
@@ -202,7 +219,12 @@ export function ImageSelectorComponent({ value, onChange }: CustomFormComponentI
 ### Multi-Select with Status Filtering
 
 ```tsx title="src/plugins/my-plugin/dashboard/components/active-customer-selector.tsx"
-import { MultiRelationInput, createRelationSelectorConfig, graphql } from '@vendure/dashboard';
+import {
+    MultiRelationInput,
+    createRelationSelectorConfig,
+    graphql,
+    CustomFormComponentInputProps,
+} from '@vendure/dashboard';
 
 const customerListQuery = graphql(`
     query GetCustomersForSelection($options: CustomerListOptions) {
@@ -306,6 +328,7 @@ import {
     collectionRelationConfig,
     SingleRelationInput,
     MultiRelationInput,
+    CustomFormComponentInputProps,
 } from '@vendure/dashboard';
 
 // Use pre-built configurations

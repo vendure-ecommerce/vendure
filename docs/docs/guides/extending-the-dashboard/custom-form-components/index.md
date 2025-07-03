@@ -626,7 +626,12 @@ The unified custom form elements system gives you complete flexibility in how da
 The dashboard includes powerful relation selector components for selecting related entities with built-in search and pagination:
 
 ```tsx title="src/plugins/my-plugin/dashboard/components/product-selector.tsx"
-import { SingleRelationInput, createRelationSelectorConfig, graphql } from '@vendure/dashboard';
+import {
+    SingleRelationInput,
+    createRelationSelectorConfig,
+    graphql,
+    CustomFormComponentInputProps,
+} from '@vendure/dashboard';
 
 const productConfig = createRelationSelectorConfig({
     listQuery: graphql(`
