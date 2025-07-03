@@ -19,13 +19,17 @@ import { Link, createFileRoute, redirect } from '@tanstack/react-router';
 import { User } from 'lucide-react';
 import { toast } from 'sonner';
 import { AddManualPaymentDialog } from './components/add-manual-payment-dialog.js';
+import { FulfillOrderDialog } from './components/fulfill-order-dialog.js';
+import { FulfillmentDetails } from './components/fulfillment-details.js';
 import { OrderAddress } from './components/order-address.js';
 import { OrderHistoryContainer } from './components/order-history/order-history-container.js';
 import { OrderTable } from './components/order-table.js';
 import { OrderTaxSummary } from './components/order-tax-summary.js';
 import { PaymentDetails } from './components/payment-details.js';
 import { orderDetailDocument } from './orders.graphql.js';
-import { shouldShowAddManualPaymentButton } from './utils/order-utils.js';
+import { canAddFulfillment, shouldShowAddManualPaymentButton } from './utils/order-utils.js';
+import { useQueryClient } from '@tanstack/react-query';
+import { orderHistoryQueryKey } from './components/order-history/use-order-history.js';
 
 const pageId = 'order-detail';
 
@@ -61,6 +65,7 @@ export const Route = createFileRoute('/_authenticated/_orders/orders_/$id')({
 function OrderDetailPage() {
     const params = Route.useParams();
     const { i18n } = useLingui();
+    const queryClient = useQueryClient();
     const { form, submitHandler, entity, isPending, refreshEntity } = useDetailPage({
         pageId,
         queryDocument: orderDetailDocument,
@@ -87,6 +92,7 @@ function OrderDetailPage() {
     }
 
     const showAddPaymentButton = shouldShowAddManualPaymentButton(entity);
+    const showFulfillButton = canAddFulfillment(entity);
 
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
@@ -99,6 +105,17 @@ function OrderDetailPage() {
                                 order={entity}
                                 onSuccess={() => {
                                     refreshEntity();
+                                }}
+                            />
+                        </PermissionGuard>
+                    )}
+                    {showFulfillButton && (
+                        <PermissionGuard requires={['UpdateOrder']}>
+                            <FulfillOrderDialog
+                                order={entity}
+                                onSuccess={() => {
+                                    refreshEntity();
+                                    queryClient.refetchQueries({ queryKey: orderHistoryQueryKey(entity.id) });
                                 }}
                             />
                         </PermissionGuard>
@@ -158,6 +175,21 @@ function OrderDetailPage() {
                         <PaymentDetails
                             key={payment.id}
                             payment={payment}
+                            currencyCode={entity.currencyCode}
+                        />
+                    ))}
+                </PageBlock>
+
+                <PageBlock
+                    column="side"
+                    blockId="fulfillment-details"
+                    title={<Trans>Fulfillment details</Trans>}
+                >
+                    {entity?.fulfillments?.map(fulfillment => (
+                        <FulfillmentDetails
+                            key={fulfillment.id}
+                            order={entity}
+                            fulfillment={fulfillment}
                             currencyCode={entity.currencyCode}
                         />
                     ))}

@@ -2,6 +2,7 @@ import { ResultOf } from '@/vdb/graphql/graphql.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { paymentWithRefundsFragment } from '../orders.graphql.js';
+import { LabeledData } from '@/vdb/components/labeled-data.js';
 
 type PaymentDetailsProps = {
     payment: ResultOf<typeof paymentWithRefundsFragment>;
@@ -15,15 +16,11 @@ export function PaymentDetails({ payment, currencyCode }: Readonly<PaymentDetail
     return (
         <div className="space-y-2">
             <LabeledData label={<Trans>Payment method</Trans>} value={payment.method} />
-
             <LabeledData label={<Trans>Amount</Trans>} value={formatCurrency(payment.amount, currencyCode)} />
-
             <LabeledData label={<Trans>Created at</Trans>} value={formatDate(payment.createdAt)} />
-
             {payment.transactionId && (
                 <LabeledData label={<Trans>Transaction ID</Trans>} value={payment.transactionId} />
             )}
-
             {/* We need to check if there is errorMessage field in the Payment type */}
             {payment.errorMessage && (
                 <LabeledData
@@ -32,7 +29,6 @@ export function PaymentDetails({ payment, currencyCode }: Readonly<PaymentDetail
                     className="text-destructive"
                 />
             )}
-
             <LabeledData
                 label={<Trans>Payment metadata</Trans>}
                 value={
@@ -45,17 +41,3 @@ export function PaymentDetails({ payment, currencyCode }: Readonly<PaymentDetail
     );
 }
 
-type LabeledDataProps = {
-    label: string | React.ReactNode;
-    value: React.ReactNode;
-    className?: string;
-};
-
-function LabeledData({ label, value, className }: LabeledDataProps) {
-    return (
-        <div className="">
-            <span className="font-medium text-muted-foreground text-sm">{label}</span>
-            <div className={`col-span-2 ${className}`}>{value}</div>
-        </div>
-    );
-}

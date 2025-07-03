@@ -4,6 +4,7 @@ import { orderDetailDocument } from '../orders.graphql.js';
 
 type OrderDetailFragment = ResultOf<typeof orderDetailDocument>['order'];
 type Payment = NonNullable<NonNullable<OrderDetailFragment>['payments']>[number];
+type Fulfillment = NonNullable<NonNullable<OrderDetailFragment>['fulfillments']>[number];
 
 /**
  * Calculates the outstanding payment amount for an order
@@ -41,5 +42,42 @@ export function shouldShowAddManualPaymentButton(order: OrderDetailFragment): bo
         order.type !== 'Aggregate' &&
         (order.state === 'ArrangingPayment' || order.state === 'ArrangingAdditionalPayment') &&
         (hasUnsettledModifications(order) || calculateOutstandingPaymentAmount(order) > 0)
+    );
+}
+
+/**
+ * Determines if we can add a fulfillment to an order
+ */
+export function canAddFulfillment(order: OrderDetailFragment): boolean {
+    if (!order) return false;
+
+    // Get all fulfillment lines from non-cancelled fulfillments
+    const allFulfillmentLines: Fulfillment['lines'] = (order.fulfillments ?? [])
+        .filter(fulfillment => fulfillment.state !== 'Cancelled')
+        .reduce((all, fulfillment) => [...all, ...fulfillment.lines], [] as Fulfillment['lines']);
+
+    // Check if all items are already fulfilled
+    let allItemsFulfilled = true;
+    for (const line of order.lines) {
+        const totalFulfilledCount = allFulfillmentLines
+            .filter(row => row.orderLineId === line.id)
+            .reduce((sum, row) => sum + row.quantity, 0);
+        if (totalFulfilledCount < line.quantity) {
+            allItemsFulfilled = false;
+            break;
+        }
+    }
+
+    // Check if order is in a fulfillable state
+    const isFulfillableState =
+        order.nextStates.includes('Shipped') ||
+        order.nextStates.includes('PartiallyShipped') ||
+        order.nextStates.includes('Delivered');
+
+    return (
+        !allItemsFulfilled &&
+        !hasUnsettledModifications(order) &&
+        calculateOutstandingPaymentAmount(order) === 0 &&
+        isFulfillableState
     );
 }

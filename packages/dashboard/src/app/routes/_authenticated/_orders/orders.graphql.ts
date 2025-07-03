@@ -1,4 +1,8 @@
-import { assetFragment, errorResultFragment } from '@/vdb/graphql/fragments.js';
+import {
+    assetFragment,
+    configurableOperationDefFragment,
+    errorResultFragment,
+} from '@/vdb/graphql/fragments.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const orderListDocument = graphql(`
@@ -20,7 +24,6 @@ export const orderListDocument = graphql(`
                 total
                 totalWithTax
                 currencyCode
-
                 shippingLines {
                     shippingMethod {
                         name
@@ -539,6 +542,39 @@ export const addManualPaymentToOrderDocument = graphql(
                         amount
                         method
                         state
+                    }
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const fulfillmentHandlersDocument = graphql(
+    `
+        query GetFulfillmentHandlers {
+            fulfillmentHandlers {
+                ...ConfigurableOperationDef
+            }
+        }
+    `,
+    [configurableOperationDefFragment],
+);
+
+export const fulfillOrderDocument = graphql(
+    `
+        mutation FulfillOrder($input: FulfillOrderInput!) {
+            addFulfillmentToOrder(input: $input) {
+                __typename
+                ... on Fulfillment {
+                    id
+                    state
+                    method
+                    trackingCode
+                    lines {
+                        orderLineId
+                        quantity
                     }
                 }
                 ...ErrorResult
