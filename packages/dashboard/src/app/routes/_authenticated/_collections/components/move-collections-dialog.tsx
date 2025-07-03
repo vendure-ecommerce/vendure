@@ -3,8 +3,8 @@ import { useDebounce } from '@uidotdev/usehooks';
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-import { Alert, AlertDescription } from '@/components/ui/alert.js';
-import { Button } from '@/components/ui/button.js';
+import { Alert, AlertDescription } from '@/vdb/components/ui/alert.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     Dialog,
     DialogContent,
@@ -12,11 +12,11 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from '@/components/ui/dialog.js';
-import { Input } from '@/components/ui/input.js';
-import { ScrollArea } from '@/components/ui/scroll-area.js';
-import { api } from '@/graphql/api.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/components/ui/dialog.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { ScrollArea } from '@/vdb/components/ui/scroll-area.js';
+import { api } from '@/vdb/graphql/api.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { ChevronRight, Folder, FolderOpen, Search } from 'lucide-react';
 
 import { collectionListForMoveDocument, moveCollectionDocument } from '../collections.graphql.js';
