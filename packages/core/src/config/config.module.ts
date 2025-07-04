@@ -83,6 +83,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             passwordHashingStrategy,
             passwordValidationStrategy,
             verificationTokenStrategy,
+            rolePermissionResolverStrategy,
         } = this.configService.authOptions;
         const { taxZoneStrategy, taxLineCalculationStrategy } = this.configService.taxOptions;
         const { jobQueueStrategy, jobBufferStorageStrategy } = this.configService.jobQueueOptions;
@@ -121,6 +122,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             passwordHashingStrategy,
             passwordValidationStrategy,
             verificationTokenStrategy,
+            rolePermissionResolverStrategy,
             assetNamingStrategy,
             assetPreviewStrategy,
             assetStorageStrategy,
