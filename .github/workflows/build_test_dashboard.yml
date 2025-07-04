@@ -70,6 +70,10 @@ jobs:
           npm install
         env:
           CI: true
+      - name: Check for banned imports
+        run: |
+          cd $GITHUB_WORKSPACE/packages/dashboard
+          node scripts/check-lib-imports.js
       - name: Build & publish dashboard
         run: |
           nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &
