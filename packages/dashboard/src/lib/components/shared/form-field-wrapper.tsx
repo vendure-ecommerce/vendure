@@ -1,3 +1,5 @@
+import { OverriddenFormComponent } from '@/vdb/framework/form-engine/overridden-form-component.js';
+import { LocationWrapper } from '@/vdb/framework/layout-engine/location-wrapper.js';
 import { FieldPath, FieldValues } from 'react-hook-form';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '../ui/form.js';
 
@@ -30,17 +32,29 @@ export function FormFieldWrapper<
     renderFormControl = true,
 }: FormFieldWrapperProps<TFieldValues, TName>) {
     return (
-        <FormField
-            control={control}
-            name={name}
-            render={renderArgs => (
-                <FormItem>
-                    {label && <FormLabel>{label}</FormLabel>}
-                    {renderFormControl ? <FormControl>{render(renderArgs)}</FormControl> : render(renderArgs)}
-                    {description && <FormDescription>{description}</FormDescription>}
-                    <FormMessage />
-                </FormItem>
-            )}
-        />
+        <LocationWrapper identifier={name}>
+            <FormField
+                control={control}
+                name={name}
+                render={renderArgs => (
+                    <FormItem>
+                        {label && <FormLabel>{label}</FormLabel>}
+                        {renderFormControl ? (
+                            <FormControl>
+                                <OverriddenFormComponent field={renderArgs.field} fieldName={name}>
+                                    {render(renderArgs)}
+                                </OverriddenFormComponent>
+                            </FormControl>
+                        ) : (
+                            <OverriddenFormComponent field={renderArgs.field} fieldName={name}>
+                                {render(renderArgs)}
+                            </OverriddenFormComponent>
+                        )}
+                        {description && <FormDescription>{description}</FormDescription>}
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+        </LocationWrapper>
     );
 }
