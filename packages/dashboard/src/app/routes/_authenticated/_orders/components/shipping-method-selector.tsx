@@ -48,7 +48,7 @@ export function ShippingMethodSelector({
                                     <span className="text-sm font-medium">
                                         <Trans>Price</Trans>
                                     </span>
-                                    <Money value={method.priceWithTax} currencyCode={currencyCode} />
+                                    <Money value={method.priceWithTax} currency={currencyCode} />
                                 </div>
                             </div>
                         </CardContent>

@@ -10,10 +10,10 @@ export function MoneyGrossNet({ priceWithTax, price, currencyCode }: Readonly<Mo
     return (
         <div className="flex flex-col gap-1">
             <div>
-                <Money value={priceWithTax} currencyCode={currencyCode} />
+                <Money value={priceWithTax} currency={currencyCode} />
             </div>
             <div className="text-xs text-muted-foreground">
-                <Money value={price} currencyCode={currencyCode} />
+                <Money value={price} currency={currencyCode} />
             </div>
         </div>
     );
