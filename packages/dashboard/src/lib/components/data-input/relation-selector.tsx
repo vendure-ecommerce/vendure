@@ -213,7 +213,9 @@ export function RelationSelector<T>({
         if (isMultiple) {
             return Array.isArray(value) ? value : value ? [value] : [];
         }
-        return value ? [String(value)] : [];
+        // For single select, ensure we only have at most one ID
+        const singleValue = Array.isArray(value) ? value[0] : value;
+        return singleValue ? [String(singleValue)] : [];
     }, [value, isMultiple]);
 
     // Fetch selected items by IDs on mount and when selectedIds change
@@ -245,11 +247,14 @@ export function RelationSelector<T>({
                     });
 
                     setSelectedItemsCache(prev => {
-                        // Remove items that are no longer selected
+                        if (!isMultiple) {
+                            // For single select, replace the entire cache
+                            return fetchedItems;
+                        }
+                        // For multi-select, filter and append
                         const stillSelected = prev.filter(item =>
                             selectedIds.includes(String(item[config.idKey])),
                         );
-                        // Add newly fetched items
                         return [...stillSelected, ...fetchedItems];
                     });
                 } catch (error) {
@@ -259,9 +264,15 @@ export function RelationSelector<T>({
                 }
             } else {
                 // Just filter out items that are no longer selected
-                setSelectedItemsCache(prev =>
-                    prev.filter(item => selectedIds.includes(String(item[config.idKey]))),
-                );
+                setSelectedItemsCache(prev => {
+                    if (!isMultiple) {
+                        // For single select, if no items need fetching but we have a selection,
+                        // keep only items that are in the current selection
+                        return prev.filter(item => selectedIds.includes(String(item[config.idKey])));
+                    }
+                    // For multi-select, normal filtering
+                    return prev.filter(item => selectedIds.includes(String(item[config.idKey])));
+                });
             }
 
             // Clean up fetched IDs that are no longer selected
@@ -274,7 +285,7 @@ export function RelationSelector<T>({
         };
 
         fetchSelectedItems();
-    }, [selectedIds, config.idKey]);
+    }, [selectedIds, config.idKey, isMultiple]);
 
     const handleSelect = (item: T) => {
         const itemId = String(item[config.idKey]);
@@ -296,10 +307,20 @@ export function RelationSelector<T>({
                 }
             });
 
+            // Mark the item as fetched to prevent duplicate fetching
+            if (!isCurrentlySelected) {
+                fetchedIdsRef.current.add(itemId);
+            } else {
+                fetchedIdsRef.current.delete(itemId);
+            }
+
             onChange(newSelectedIds);
         } else {
             // For single select, update cache with the new item
             setSelectedItemsCache([item]);
+            // Mark as fetched for single select too
+            fetchedIdsRef.current.clear();
+            fetchedIdsRef.current.add(itemId);
             onChange(itemId);
             setOpen(false);
             setSearchTerm('');
@@ -330,8 +351,12 @@ export function RelationSelector<T>({
 
     // Get selected items for display from cache, filtered by current selection
     const selectedItems = React.useMemo(() => {
-        return selectedItemsCache.filter(item => selectedIds.includes(String(item[config.idKey])));
-    }, [selectedItemsCache, selectedIds, config.idKey]);
+        const filteredItems = selectedItemsCache.filter(item =>
+            selectedIds.includes(String(item[config.idKey])),
+        );
+        // For single select, ensure we only display one item
+        return isMultiple ? filteredItems : filteredItems.slice(0, 1);
+    }, [selectedItemsCache, selectedIds, config.idKey, isMultiple]);
 
     return (
         <div className={className}>
