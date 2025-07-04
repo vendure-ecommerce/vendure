@@ -364,8 +364,8 @@ export function PageBlock({
     column,
 }: Readonly<PageBlockProps>) {
     return (
-        <LocationWrapper blockId={blockId}>
-            <PageBlockContext.Provider value={{ blockId, title, description, column }}>
+        <PageBlockContext.Provider value={{ blockId, title, description, column }}>
+            <LocationWrapper>
                 <Card className={cn('w-full', className)}>
                     {title || description ? (
                         <CardHeader>
@@ -375,8 +375,8 @@ export function PageBlock({
                     ) : null}
                     <CardContent className={cn(!title ? 'pt-6' : '')}>{children}</CardContent>
                 </Card>
-            </PageBlockContext.Provider>
-        </LocationWrapper>
+            </LocationWrapper>
+        </PageBlockContext.Provider>
     );
 }
 
@@ -397,11 +397,11 @@ export function FullWidthPageBlock({
     blockId,
 }: Pick<PageBlockProps, 'children' | 'className' | 'blockId'>) {
     return (
-        <LocationWrapper blockId={blockId}>
-            <PageBlockContext.Provider value={{ blockId, column: 'main' }}>
+        <PageBlockContext.Provider value={{ blockId, column: 'main' }}>
+            <LocationWrapper>
                 <div className={cn('w-full', className)}>{children}</div>
-            </PageBlockContext.Provider>
-        </LocationWrapper>
+            </LocationWrapper>
+        </PageBlockContext.Provider>
     );
 }
 

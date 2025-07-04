@@ -19,8 +19,6 @@ import {
 import { TranslatableFormFieldWrapper } from '@/vdb/components/shared/translatable-form-field.js';
 import { FormControl } from '@/vdb/components/ui/form.js';
 import { ControllerRenderProps, FieldPath, FieldValues } from 'react-hook-form';
-import { useComponentRegistry } from '../component-registry/component-registry.js';
-import { generateInputComponentKey } from '../extension-api/input-component-extensions.js';
 import {
     CustomFieldsPageBlock,
     DetailFormGrid,
@@ -96,8 +94,6 @@ export interface DetailPageFieldProps<
 > {
     fieldInfo: FieldInfo;
     field: ControllerRenderProps<TFieldValues, TName>;
-    blockId: string;
-    pageId: string;
 }
 
 /**
@@ -106,21 +102,7 @@ export interface DetailPageFieldProps<
 function FieldInputRenderer<
     TFieldValues extends FieldValues = FieldValues,
     TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
->({ fieldInfo, field, blockId, pageId }: DetailPageFieldProps<TFieldValues, TName>) {
-    const componentRegistry = useComponentRegistry();
-    const customInputComponentKey = generateInputComponentKey(pageId, blockId, fieldInfo.name);
-
-    const DisplayComponent = componentRegistry.getDisplayComponent(customInputComponentKey);
-    const InputComponent = componentRegistry.getInputComponent(customInputComponentKey);
-
-    if (DisplayComponent) {
-        return <DisplayComponent {...field} />;
-    }
-
-    if (InputComponent) {
-        return <InputComponent {...field} />;
-    }
-
+>({ fieldInfo, field }: DetailPageFieldProps<TFieldValues, TName>) {
     switch (fieldInfo.type) {
         case 'Int':
         case 'Float':
@@ -244,12 +226,7 @@ export function DetailPage<
                                         label={fieldInfo.name}
                                         renderFormControl={false}
                                         render={({ field }) => (
-                                            <FieldInputRenderer
-                                                fieldInfo={fieldInfo}
-                                                field={field}
-                                                blockId="main-form"
-                                                pageId={pageId}
-                                            />
+                                            <FieldInputRenderer fieldInfo={fieldInfo} field={field} />
                                         )}
                                     />
                                 );
@@ -267,12 +244,7 @@ export function DetailPage<
                                         label={fieldInfo.name}
                                         renderFormControl={false}
                                         render={({ field }) => (
-                                            <FieldInputRenderer
-                                                fieldInfo={fieldInfo}
-                                                field={field}
-                                                blockId="main-form"
-                                                pageId={pageId}
-                                            />
+                                            <FieldInputRenderer fieldInfo={fieldInfo} field={field} />
                                         )}
                                     />
                                 );
