@@ -96,7 +96,7 @@ jobs:
           cp -v $GITHUB_WORKSPACE/.github/workflows/scripts/vite.config.mts ./vite.config.mts
       - name: Install Playwright
         run: |
-          cd $HOME/install/test-app
+          cd $GITHUB_WORKSPACE
           npm install playwright
           npx playwright install-deps
           npx playwright install chromium
