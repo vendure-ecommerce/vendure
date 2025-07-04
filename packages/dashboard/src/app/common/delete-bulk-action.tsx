@@ -3,8 +3,9 @@ import { TrashIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { DataTableBulkActionItem } from '@/vdb/components/data-table/data-table-bulk-action-item.js';
+import { usePaginatedList } from '@/vdb/components/shared/paginated-list-data-table.js';
+import { getMutationName } from '@/vdb/framework/document-introspection/get-document-structure.js';
 import { api } from '@/vdb/graphql/api.js';
-import { getMutationName, usePaginatedList } from '@/vdb/index.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
 
 interface DeleteBulkActionProps {

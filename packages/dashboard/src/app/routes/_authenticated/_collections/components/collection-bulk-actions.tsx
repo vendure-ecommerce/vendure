@@ -6,7 +6,10 @@ import { Trans } from '@/vdb/lib/trans.js';
 import { AssignToChannelBulkAction } from '@/vdb/components/shared/assign-to-channel-bulk-action.js';
 import { RemoveFromChannelBulkAction } from '@/vdb/components/shared/remove-from-channel-bulk-action.js';
 import { api } from '@/vdb/graphql/api.js';
-import { BulkActionComponent, useChannel, DataTableBulkActionItem, usePaginatedList } from '@/vdb/index.js';
+import { BulkActionComponent } from '@/vdb/framework/extension-api/types/data-table.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
+import { DataTableBulkActionItem } from '@/vdb/components/data-table/data-table-bulk-action-item.js';
+import { usePaginatedList } from '@/vdb/components/shared/paginated-list-data-table.js';
 import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
 import { DuplicateBulkAction } from '../../../../common/duplicate-bulk-action.js';
 import {

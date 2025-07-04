@@ -1,5 +1,6 @@
+import { PaginatedListDataTable } from '@/vdb/components/shared/paginated-list-data-table.js';
 import { Button } from '@/vdb/components/ui/button.js';
-import { PaginatedListDataTable, useLocalFormat } from '@/vdb/index.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { Link } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { formatRelative } from 'date-fns';

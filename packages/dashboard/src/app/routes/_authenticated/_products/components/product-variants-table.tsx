@@ -1,4 +1,5 @@
 import { Money } from '@/vdb/components/data-display/money.js';
+import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
 import {
     PaginatedListDataTable,
     PaginatedListRefresherRegisterFn,
@@ -6,7 +7,6 @@ import {
 import { StockLevelLabel } from '@/vdb/components/shared/stock-level-label.js';
 import { graphql } from '@/vdb/graphql/graphql.js';
 import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
-import { DetailPageButton } from '@/vdb/index.js';
 import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
 import { productVariantListDocument } from '../products.graphql.js';
