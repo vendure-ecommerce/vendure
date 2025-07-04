@@ -15,7 +15,7 @@ import MemberDescription from '@site/src/components/MemberDescription';
 <GenerationInfo sourceFile="packages/email-plugin/src/template-loader/template-loader.ts" sourceLine="32" packageName="@vendure/email-plugin" />
 
 Loads email templates based on the given request context, type and template name
-and return the template as a string.
+and returns the template as a string.
 
 _Example_
 
