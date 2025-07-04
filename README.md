@@ -8,8 +8,8 @@ An open-source headless commerce platform built on [Node.js](https://nodejs.org)
 > We're phasing out our Angular-based Admin UI with support until June 2026:
 > [Read more here](https://vendure.io/blog/2025/02/vendure-react-admin-ui)
 
-[![Build Status](https://github.com/vendure-ecommerce/vendure/actions/workflows/build_and_test_master.yml/badge.svg)](https://github.com/vendure-ecommerce/vendure/actions/workflows/build_and_test_master.yml)
-[![Publish & Install](https://github.com/vendure-ecommerce/vendure/actions/workflows/publish_and_install_master.yml/badge.svg)](https://github.com/vendure-ecommerce/vendure/actions/workflows/publish_and_install_master.yml)
+[![Build Status](https://github.com/vendure-ecommerce/vendure/actions/workflows/build_and_test.yml/badge.svg?branch=master)](https://github.com/vendure-ecommerce/vendure/actions/workflows/build_and_test.yml)
+[![Publish & Install](https://github.com/vendure-ecommerce/vendure/actions/workflows/publish_and_install.yml/badge.svg?branch=master)](https://github.com/vendure-ecommerce/vendure/actions/workflows/publish_and_install.yml)
 [![Lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
 
 ![vendure-github-social-banner](https://github.com/vendure-ecommerce/vendure/assets/24294584/ada25fa3-185d-45ce-896d-bece3685a829)
@@ -45,7 +45,7 @@ vendure/
 
 ## Contributing
 
-You are very much welcome to contribute to Vendure, we appreciate every pull request made, issue reported or any other form of feedback or input. 
+You are very much welcome to contribute to Vendure, we appreciate every pull request made, issue reported or any other form of feedback or input.
 
 Before getting started, please read our [Contribution Guidelines](https://github.com/vendure-ecommerce/vendure/blob/master/CONTRIBUTING.md) first to make the most out of your time and ours.
 
@@ -109,9 +109,11 @@ By default, if you do not specify the `DB` environment variable, it will use **M
 If you want to develop against **PostgreSQL**:
 
 1. Run the `postgres_16` Docker container.
+
 ```bash
 docker-compose up -d postgres_16
 ```
+
 2. Create a .env file in `/packages/dev-server` and declare the `DB` variable inside it:
 
     ```env
@@ -144,15 +146,13 @@ Default Admin UI credentials:
 Username: `superadmin`
 Password: `superadmin`
 
-
 ### Testing Admin UI changes locally
 
 If you are making changes to the Admin UI, you need to start the Admin UI independent from the dev-server:
 
-> [!NOTE] 
+> [!NOTE]
 > You don't need this step when you just use the Admin UI just
-to test backend changes since the `dev-server` package ships with a default admin-ui
-
+> to test backend changes since the `dev-server` package ships with a default admin-ui
 
 ```
 cd packages/admin-ui
@@ -164,11 +164,11 @@ This will run a separate process of admin-ui on "http://localhost:4200", you can
 Username: `superadmin`
 Password: `superadmin`
 
-This will auto restart when you make changes to the Admin UI. 
+This will auto restart when you make changes to the Admin UI.
 
 ### Testing your changes locally
 
-This example shows how to test changes to the `payments-plugin` package locally. 
+This example shows how to test changes to the `payments-plugin` package locally.
 This same workflow can be used for other packages as well.
 
 ### Terminal Setup
@@ -183,6 +183,7 @@ npm run watch
 ```
 
 **Terminal 2** - Run the development server:
+
 ```bash
 cd packages/dev-server
 npm run dev
@@ -191,15 +192,17 @@ npm run dev
 > [!NOTE]
 > After making changes, you need to stop and restart the development server to see your changes.
 
-> [!WARNING] 
+> [!WARNING]
 > If you are developing changes for the `core` package, you also need to watch the `common` package:
 
 in the root of the project:
+
 ```shell
 npm run watch:core-common
 ```
 
 #### Development Workflow Summary
+
 1. Start your package watcher (npm run watch)
 2. Start the dev-server (npm run dev)
 3. Make code changes
