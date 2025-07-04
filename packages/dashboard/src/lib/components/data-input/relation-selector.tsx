@@ -32,6 +32,8 @@ export interface RelationSelectorConfig<T = any> {
     multiple?: boolean;
     /** Custom filter function for search */
     buildSearchFilter?: (searchTerm: string) => any;
+    /** Custom filter function for fetching by IDs */
+    buildIdsFilter?: (ids: string[]) => any;
     /** Custom label renderer function for rich display */
     label?: (item: T) => React.ReactNode;
 }
@@ -96,6 +98,19 @@ export function useRelationSelector<T>(config: RelationSelectorConfig<T>) {
             [config.labelKey]: { contains: term },
         }));
 
+    // Build the default IDs filter if none provided
+    const buildIdsFilter = React.useCallback(
+        (ids: string[]) => {
+            if (config.buildIdsFilter) {
+                return config.buildIdsFilter(ids);
+            }
+            return {
+                [config.idKey]: { in: ids },
+            };
+        },
+        [config.idKey, config.buildIdsFilter],
+    );
+
     const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, error } = useInfiniteQuery({
         queryKey: ['relationSelector', getQueryName(config.listQuery), debouncedSearch],
         queryFn: async ({ pageParam = 0 }) => {
@@ -125,6 +140,30 @@ export function useRelationSelector<T>(config: RelationSelectorConfig<T>) {
 
     const items = data?.pages.flatMap(page => page?.items ?? []) ?? [];
 
+    // Function to fetch items by IDs
+    const fetchItemsByIds = React.useCallback(
+        async (ids: string[]): Promise<T[]> => {
+            if (ids.length === 0) return [];
+
+            const variables: any = {
+                options: {
+                    take: ids.length,
+                    filter: buildIdsFilter(ids),
+                },
+            };
+
+            try {
+                const response = (await api.query(config.listQuery, variables)) as any;
+                const result = response[getQueryName(config.listQuery)];
+                return result?.items ?? [];
+            } catch (error) {
+                console.error('Error fetching items by IDs:', error);
+                return [];
+            }
+        },
+        [buildIdsFilter, config.listQuery],
+    );
+
     return {
         items,
         isLoading,
@@ -134,6 +173,7 @@ export function useRelationSelector<T>(config: RelationSelectorConfig<T>) {
         error,
         searchTerm,
         setSearchTerm,
+        fetchItemsByIds,
     };
 }
 
@@ -149,10 +189,24 @@ export function RelationSelector<T>({
 }: Readonly<RelationSelectorProps<T>>) {
     const [open, setOpen] = useState(false);
     const [selectedItemsCache, setSelectedItemsCache] = useState<T[]>([]);
+    const fetchedIdsRef = React.useRef<Set<string>>(new Set());
+    const fetchingIdsRef = React.useRef<Set<string>>(new Set());
     const isMultiple = config.multiple ?? false;
 
-    const { items, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, searchTerm, setSearchTerm } =
-        useRelationSelector(config);
+    const {
+        items,
+        isLoading,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        searchTerm,
+        setSearchTerm,
+        fetchItemsByIds,
+    } = useRelationSelector(config);
+
+    // Store a stable reference to fetchItemsByIds
+    const fetchItemsByIdsRef = React.useRef(fetchItemsByIds);
+    fetchItemsByIdsRef.current = fetchItemsByIds;
 
     // Normalize value to always be an array for easier handling
     const selectedIds = React.useMemo(() => {
@@ -161,6 +215,66 @@ export function RelationSelector<T>({
         }
         return value ? [String(value)] : [];
     }, [value, isMultiple]);
+
+    // Fetch selected items by IDs on mount and when selectedIds change
+    React.useEffect(() => {
+        const fetchSelectedItems = async () => {
+            if (selectedIds.length === 0) {
+                setSelectedItemsCache([]);
+                fetchedIdsRef.current.clear();
+                fetchingIdsRef.current.clear();
+                return;
+            }
+
+            // Find which selected IDs we haven't fetched yet and aren't currently fetching
+            const missingIds = selectedIds.filter(
+                id => !fetchedIdsRef.current.has(id) && !fetchingIdsRef.current.has(id),
+            );
+
+            if (missingIds.length > 0) {
+                // Mark these IDs as being fetched
+                missingIds.forEach(id => fetchingIdsRef.current.add(id));
+
+                try {
+                    const fetchedItems = await fetchItemsByIdsRef.current(missingIds);
+
+                    // Mark these IDs as fetched and remove from fetching
+                    missingIds.forEach(id => {
+                        fetchedIdsRef.current.add(id);
+                        fetchingIdsRef.current.delete(id);
+                    });
+
+                    setSelectedItemsCache(prev => {
+                        // Remove items that are no longer selected
+                        const stillSelected = prev.filter(item =>
+                            selectedIds.includes(String(item[config.idKey])),
+                        );
+                        // Add newly fetched items
+                        return [...stillSelected, ...fetchedItems];
+                    });
+                } catch (error) {
+                    // Remove from fetching set on error
+                    missingIds.forEach(id => fetchingIdsRef.current.delete(id));
+                    console.error('Error fetching items by IDs:', error);
+                }
+            } else {
+                // Just filter out items that are no longer selected
+                setSelectedItemsCache(prev =>
+                    prev.filter(item => selectedIds.includes(String(item[config.idKey]))),
+                );
+            }
+
+            // Clean up fetched IDs that are no longer selected
+            const selectedIdsSet = new Set(selectedIds);
+            for (const fetchedId of fetchedIdsRef.current) {
+                if (!selectedIdsSet.has(fetchedId)) {
+                    fetchedIdsRef.current.delete(fetchedId);
+                }
+            }
+        };
+
+        fetchSelectedItems();
+    }, [selectedIds, config.idKey]);
 
     const handleSelect = (item: T) => {
         const itemId = String(item[config.idKey]);
@@ -213,27 +327,6 @@ export function RelationSelector<T>({
             fetchNextPage();
         }
     };
-
-    // Clean up cache when selectedIds change externally (e.g., form reset)
-    React.useEffect(() => {
-        setSelectedItemsCache(prev => prev.filter(item => selectedIds.includes(String(item[config.idKey]))));
-    }, [selectedIds, config.idKey]);
-
-    // Populate cache with items from search results that are selected but not yet cached
-    React.useEffect(() => {
-        const itemsToAdd = items.filter(item => {
-            const itemId = String(item[config.idKey]);
-            const isSelected = selectedIds.includes(itemId);
-            const isAlreadyCached = selectedItemsCache.some(
-                cachedItem => String(cachedItem[config.idKey]) === itemId,
-            );
-            return isSelected && !isAlreadyCached;
-        });
-
-        if (itemsToAdd.length > 0) {
-            setSelectedItemsCache(prev => [...prev, ...itemsToAdd]);
-        }
-    }, [items, selectedIds, selectedItemsCache, config.idKey]);
 
     // Get selected items for display from cache, filtered by current selection
     const selectedItems = React.useMemo(() => {
