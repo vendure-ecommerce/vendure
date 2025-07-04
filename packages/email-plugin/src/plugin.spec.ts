@@ -28,7 +28,14 @@ import { EmailEventHandler } from './handler/event-handler';
 import { EmailPlugin } from './plugin';
 import { EmailSender } from './sender/email-sender';
 import { FileBasedTemplateLoader } from './template-loader/file-based-template-loader';
-import { EmailDetails, EmailPluginOptions, EmailTransportOptions } from './types';
+import { TemplateLoader } from './template-loader/template-loader';
+import {
+    EmailDetails,
+    Partial as EmailPartial,
+    EmailPluginOptions,
+    EmailTransportOptions,
+    LoadTemplateInput,
+} from './types';
 
 describe('EmailPlugin', () => {
     let eventBus: EventBus;
@@ -1001,6 +1008,47 @@ describe('EmailPlugin', () => {
             expect(onSend.mock.calls[0][0].subject).toBe('Hello from loaded data and foo');
             expect(onSend.mock.calls[0][0].recipient).toBe('test@test.com');
             expect(onSend.mock.calls[0][0].from).toBe('"test from" <noreply@test.com>');
+        });
+    });
+    // Only in case of custom template loader - part of the jsDoc - not used in the core code
+    describe('CustomLanguageAwareTemplateLoader example', () => {
+        it('loads language-specific template correctly', async () => {
+            class CustomLanguageAwareTemplateLoader implements TemplateLoader {
+                constructor(private templateDir: string) {}
+
+                async loadTemplate(
+                    _injector: Injector,
+                    context: RequestContext,
+                    { type, templateName }: LoadTemplateInput,
+                ) {
+                    const filePath = path.join(
+                        this.templateDir,
+                        type,
+                        `${templateName}.${context.languageCode}.hbs`,
+                    );
+                    return readFileSync(filePath, 'utf-8');
+                }
+
+                async loadPartials(): Promise<EmailPartial[]> {
+                    return [];
+                }
+            }
+
+            const templatePath = path.join(__dirname, '../test-templates');
+            const loader = new CustomLanguageAwareTemplateLoader(templatePath);
+
+            const requestContext = RequestContext.deserialize({
+                _channel: { code: DEFAULT_CHANNEL_CODE },
+                _languageCode: LanguageCode.de,
+            } as any);
+
+            const result = await loader.loadTemplate({} as Injector, requestContext, {
+                type: 'test',
+                templateName: 'body',
+                templateVars: {},
+            });
+
+            expect(result).toContain('German body');
         });
     });
 });
