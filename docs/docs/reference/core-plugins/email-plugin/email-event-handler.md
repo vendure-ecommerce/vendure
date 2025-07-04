@@ -40,20 +40,35 @@ also to locate the directory of the email template files. So in the example abov
 
 ## Handling other languages
 
-By default, the handler will respond to all events on all channels and use the same subject ("Order confirmation for #12345" above)
-and body template. Where the server is intended to support multiple languages, the `.addTemplate()` method may be used
-to define the subject and body template for specific language and channel combinations.
+By default, a handler will respond to all events on all channels and use the same subject ("Order confirmation for #12345" above)
+and body template.
 
-The language is determined by looking at the `languageCode` property of the event's `ctx` (<a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) object.
+Since v2.0 the `.addTemplate()` method has been **deprecated**. To serve different templates—for example, based on the current
+`languageCode`—implement a custom <a href='/reference/core-plugins/email-plugin/template-loader#templateloader'>TemplateLoader</a> and pass it to `EmailPlugin.init({ templateLoader: new MyTemplateLoader() })`.
+
+The language is typically determined by the `languageCode` property of the event's `ctx` (<a href='/reference/typescript-api/request/request-context#requestcontext'>RequestContext</a>) object, so the
+`loadTemplate()` method can use that to locate the correct template file.
 
 _Example_
 
 ```ts
-const extendedConfirmationHandler = confirmationHandler.addTemplate({
-    channelCode: 'default',
-    languageCode: LanguageCode.de,
-    templateFile: 'body.de.hbs',
-    subject: 'Bestellbestätigung für #{{ order.code }}',
+import { EmailPlugin, TemplateLoader } from '@vendure/email-plugin';
+import { readFileSync } from 'fs';
+import path from 'path';
+
+class CustomLanguageAwareTemplateLoader implements TemplateLoader {
+    constructor(private templateDir: string) {}
+
+    async loadTemplate(_injector, ctx, { type, templateName }) {
+        // e.g. returns the content of "body.de.hbs" or "body.en.hbs" depending on ctx.languageCode
+        const filePath = path.join(this.templateDir, type, `${templateName}.${ctx.languageCode}.hbs`);
+        return readFileSync(filePath, 'utf-8');
+    }
+}
+
+EmailPlugin.init({
+    templateLoader: new CustomLanguageAwareTemplateLoader(path.join(__dirname, '../static/email/templates')),
+    handlers: defaultEmailHandlers,
 });
 ```
 
@@ -123,24 +138,6 @@ const config: VendureConfig = {
         }),
     ],
 };
-```
-
-```ts title="Signature"
-class EmailEventHandler<T extends string = string, Event extends EventWithContext = EventWithContext> {
-    constructor(listener: EmailEventListener<T>, event: Type<Event>)
-    filter(filterFn: (event: Event) => boolean) => EmailEventHandler<T, Event>;
-    setRecipient(setRecipientFn: (event: Event) => string) => EmailEventHandler<T, Event>;
-    setLanguageCode(setLanguageCodeFn: (event: Event) => LanguageCode | undefined) => EmailEventHandler<T, Event>;
-    setTemplateVars(templateVarsFn: SetTemplateVarsFn<Event>) => EmailEventHandler<T, Event>;
-    setSubject(defaultSubject: string | SetSubjectFn<Event>) => EmailEventHandler<T, Event>;
-    setFrom(from: string) => EmailEventHandler<T, Event>;
-    setOptionalAddressFields(optionalAddressFieldsFn: SetOptionalAddressFieldsFn<Event>) => ;
-    setMetadata(optionalSetMetadataFn: SetMetadataFn<Event>) => ;
-    setAttachments(setAttachmentsFn: SetAttachmentsFn<Event>) => ;
-    addTemplate(config: EmailTemplateConfig) => EmailEventHandler<T, Event>;
-    loadData(loadDataFn: LoadDataFn<Event, R>) => EmailEventHandlerWithAsyncData<R, T, Event, EventWithAsyncData<Event, R>>;
-    setMockEvent(event: Omit<Event, 'ctx' | 'data'>) => EmailEventHandler<T, Event>;
-}
 ```
 
 <div className="members-wrapper">
@@ -217,7 +214,7 @@ It will be exposed in the <a href='/reference/core-plugins/email-plugin/email-se
     }));
     ```
 - Then, the EmailPlugin tries to send the email and publishes <a href='/reference/core-plugins/email-plugin/email-send-event#emailsendevent'>EmailSendEvent</a>,
-  passing ctx, emailDetails, error or success, and this metadata.
+  passing `ctx`, emailDetails, error or success, and this metadata.
 - In another part of the server, we have an eventBus that subscribes to EmailSendEvent. We can use
   `metadata.type` and `metadata.orderId` to identify the related order. For example, we can indicate on the
   order that the email was successfully sent, or in case of an error, send a notification confirming
@@ -254,7 +251,8 @@ const testAttachmentHandler = new EmailEventListener('activate-voucher')
 
 ### addTemplate
 
-<MemberInfo kind="method" type={`(config: EmailTemplateConfig) => <a href='/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;`} />
+<MemberInfo kind="method" deprecated="Define a custom TemplateLoader on plugin initalization to define templates based on the RequestContext.
+E.g. `EmailPlugin.init({ templateLoader: new CustomTemplateLoader() })`" type={`(config: EmailTemplateConfig) => <a href='/reference/core-plugins/email-plugin/email-event-handler#emaileventhandler'>EmailEventHandler</a>&#60;T, Event&#62;`} />
 
 Add configuration for another template other than the default `"body.hbs"`. Use this method to define specific
 templates for channels or languageCodes other than the default.
