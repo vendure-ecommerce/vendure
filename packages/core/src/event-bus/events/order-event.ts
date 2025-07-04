@@ -1,5 +1,4 @@
 import { ModifyOrderInput } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api';
 import { Customer, Order } from '../../entity';
@@ -29,7 +28,7 @@ export class OrderEvent extends VendureEntityEvent<Order, OrderInputTypes> {
      * Return a customer field to become compatible with the
      * deprecated old version of CustomerEvent
      * @deprecated Use `entity` instead
-     * @since 1.4
+     * @since 3.4.0
      */
     get order(): Order {
         return this.entity;
