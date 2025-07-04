@@ -61,7 +61,7 @@ function OrderListPage() {
                     cell: ({ cell, row }) => {
                         const value = cell.getValue();
                         const currencyCode = row.original.currencyCode;
-                        return <Money value={value} currencyCode={currencyCode} />;
+                        return <Money value={value} currency={currencyCode} />;
                     },
                 },
                 totalWithTax: {
@@ -69,7 +69,7 @@ function OrderListPage() {
                     cell: ({ cell, row }) => {
                         const value = cell.getValue();
                         const currencyCode = row.original.currencyCode;
-                        return <Money value={value} currencyCode={currencyCode} />;
+                        return <Money value={value} currency={currencyCode} />;
                     },
                 },
                 state: {
