@@ -6,7 +6,9 @@ import { AssignToChannelBulkAction } from '@/vdb/components/shared/assign-to-cha
 import { usePriceFactor } from '@/vdb/components/shared/assign-to-channel-dialog.js';
 import { RemoveFromChannelBulkAction } from '@/vdb/components/shared/remove-from-channel-bulk-action.js';
 import { api } from '@/vdb/graphql/api.js';
-import { BulkActionComponent, useChannel, usePaginatedList } from '@/vdb/index.js';
+import { BulkActionComponent } from '@/vdb/framework/extension-api/types/data-table.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
+import { usePaginatedList } from '@/vdb/components/shared/paginated-list-data-table.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
 

@@ -1,7 +1,8 @@
 import { AssignToChannelBulkAction } from '@/vdb/components/shared/assign-to-channel-bulk-action.js';
 import { RemoveFromChannelBulkAction } from '@/vdb/components/shared/remove-from-channel-bulk-action.js';
 import { api } from '@/vdb/graphql/api.js';
-import { BulkActionComponent, useChannel } from '@/vdb/index.js';
+import { BulkActionComponent } from '@/vdb/framework/extension-api/types/data-table.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { DeleteBulkAction } from '../../../../common/delete-bulk-action.js';
 
 import {

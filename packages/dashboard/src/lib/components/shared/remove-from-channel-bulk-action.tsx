@@ -3,8 +3,9 @@ import { LayersIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { DataTableBulkActionItem } from '@/vdb/components/data-table/data-table-bulk-action-item.js';
+import { usePaginatedList } from '@/vdb/components/shared/paginated-list-data-table.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
-import { useChannel, usePaginatedList } from '@/vdb/index.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
 
 interface RemoveFromChannelBulkActionProps {

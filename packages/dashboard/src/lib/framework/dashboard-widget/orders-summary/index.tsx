@@ -1,7 +1,8 @@
 import { AnimatedCurrency, AnimatedNumber } from '@/vdb/components/shared/animated-number.js';
 import { Tabs, TabsList, TabsTrigger } from '@/vdb/components/ui/tabs.js';
 import { api } from '@/vdb/graphql/api.js';
-import { useChannel, useLocalFormat } from '@/vdb/index.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { useQuery } from '@tanstack/react-query';
 import { endOfDay, endOfMonth, startOfDay, startOfMonth, subDays, subMonths } from 'date-fns';
 import { useMemo, useState } from 'react';
