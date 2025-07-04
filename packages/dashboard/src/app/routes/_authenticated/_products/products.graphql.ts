@@ -1,5 +1,5 @@
-import { assetFragment } from '@/graphql/fragments.js';
-import { graphql } from '@/graphql/graphql.js';
+import { assetFragment } from '@/vdb/graphql/fragments.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const productListDocument = graphql(`
     query ProductList($options: ProductListOptions) {
@@ -183,23 +183,6 @@ export const getProductsWithFacetValuesByIdsDocument = graphql(`
                         code
                     }
                 }
-            }
-        }
-    }
-`);
-
-export const duplicateEntityDocument = graphql(`
-    mutation DuplicateEntity($input: DuplicateEntityInput!) {
-        duplicateEntity(input: $input) {
-            ... on DuplicateEntitySuccess {
-                newEntityId
-            }
-            ... on ErrorResult {
-                errorCode
-                message
-            }
-            ... on DuplicateEntityError {
-                duplicationError
             }
         }
     }

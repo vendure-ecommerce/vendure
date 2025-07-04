@@ -1,4 +1,4 @@
-import { ChannelContext } from '@/providers/channel-provider.js';
+import { ChannelContext } from '@/vdb/providers/channel-provider.js';
 import * as React from 'react';
 
 // Hook to use the channel context

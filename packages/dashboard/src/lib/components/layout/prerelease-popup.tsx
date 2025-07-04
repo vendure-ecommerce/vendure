@@ -1,4 +1,4 @@
-import { useUserSettings } from '@/hooks/use-user-settings.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { useState } from 'react';
 import { toast } from 'sonner';
 

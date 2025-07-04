@@ -1,13 +1,13 @@
-import { AffixedInput } from '@/components/data-input/affixed-input.js';
-import { ErrorPage } from '@/components/shared/error-page.js';
-import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { TaxCategorySelector } from '@/components/shared/tax-category-selector.js';
-import { ZoneSelector } from '@/components/shared/zone-selector.js';
-import { Button } from '@/components/ui/button.js';
-import { Input } from '@/components/ui/input.js';
-import { Switch } from '@/components/ui/switch.js';
-import { NEW_ENTITY_PATH } from '@/constants.js';
+import { AffixedInput } from '@/vdb/components/data-input/affixed-input.js';
+import { ErrorPage } from '@/vdb/components/shared/error-page.js';
+import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { TaxCategorySelector } from '@/vdb/components/shared/tax-category-selector.js';
+import { ZoneSelector } from '@/vdb/components/shared/zone-selector.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { Switch } from '@/vdb/components/ui/switch.js';
+import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
 import {
     CustomFieldsPageBlock,
     DetailFormGrid,
@@ -17,18 +17,21 @@ import {
     PageBlock,
     PageLayout,
     PageTitle,
-} from '@/framework/layout-engine/page-layout.js';
-import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
-import { useDetailPage } from '@/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/framework/layout-engine/page-layout.js';
+import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
+import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
-import { createTaxRateDocument, taxRateDetailQuery, updateTaxRateDocument } from './tax-rates.graphql.js';
+import { createTaxRateDocument, taxRateDetailDocument, updateTaxRateDocument } from './tax-rates.graphql.js';
+
+const pageId = 'tax-rate-detail';
 
 export const Route = createFileRoute('/_authenticated/_tax-rates/tax-rates_/$id')({
     component: TaxRateDetailPage,
     loader: detailPageRouteLoader({
-        queryDocument: taxRateDetailQuery,
+        pageId,
+        queryDocument: taxRateDetailDocument,
         breadcrumb(isNew, entity) {
             return [
                 { path: '/tax-rates', label: 'Tax rates' },
@@ -46,7 +49,8 @@ function TaxRateDetailPage() {
     const { i18n } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
-        queryDocument: taxRateDetailQuery,
+        pageId,
+        queryDocument: taxRateDetailDocument,
         createDocument: createTaxRateDocument,
         updateDocument: updateTaxRateDocument,
         setValuesForUpdate: entity => {
@@ -77,7 +81,7 @@ function TaxRateDetailPage() {
     });
 
     return (
-        <Page pageId="tax-rate-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New tax rate</Trans> : (entity?.name ?? '')}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>

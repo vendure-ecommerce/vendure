@@ -5,14 +5,14 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from '@/components/ui/form.js';
-import { Input } from '@/components/ui/input.js';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.js';
-import { CustomFormComponent } from '@/framework/form-engine/custom-form-component.js';
-import { useCustomFieldConfig } from '@/hooks/use-custom-field-config.js';
-import { useUserSettings } from '@/hooks/use-user-settings.js';
-import { useLingui } from '@/lib/trans.js';
-import { customFieldConfigFragment } from '@/providers/server-config.js';
+} from '@/vdb/components/ui/form.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/vdb/components/ui/tabs.js';
+import { CustomFormComponent } from '@/vdb/framework/form-engine/custom-form-component.js';
+import { useCustomFieldConfig } from '@/vdb/hooks/use-custom-field-config.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
+import { useLingui } from '@/vdb/lib/trans.js';
+import { customFieldConfigFragment } from '@/vdb/providers/server-config.js';
 import { CustomFieldType } from '@vendure/common/lib/shared-types';
 import { ResultOf } from 'gql.tada';
 import React, { useMemo } from 'react';
@@ -28,7 +28,7 @@ interface CustomFieldsFormProps {
     formPathPrefix?: string;
 }
 
-export function CustomFieldsForm({ entityType, control, formPathPrefix }: CustomFieldsFormProps) {
+export function CustomFieldsForm({ entityType, control, formPathPrefix }: Readonly<CustomFieldsFormProps>) {
     const {
         settings: { displayLanguage },
     } = useUserSettings();
@@ -41,7 +41,12 @@ export function CustomFieldsForm({ entityType, control, formPathPrefix }: Custom
     const customFields = useCustomFieldConfig(entityType);
 
     const getFieldName = (fieldDef: CustomFieldConfig) => {
-        const name = fieldDef.type === 'relation' ? fieldDef.name + 'Id' : fieldDef.name;
+        const name =
+            fieldDef.type === 'relation'
+                ? fieldDef.list
+                    ? fieldDef.name + 'Ids'
+                    : fieldDef.name + 'Id'
+                : fieldDef.name;
         return formPathPrefix ? `${formPathPrefix}.customFields.${name}` : `customFields.${name}`;
     };
 
@@ -266,6 +271,18 @@ function FormInputForType({
             );
         case 'boolean':
             return <Switch checked={field.value} onCheckedChange={field.onChange} disabled={isReadonly} />;
+        case 'relation':
+            if (fieldDef.list) {
+                return (
+                    <Input
+                        {...field}
+                        onChange={e => field.onChange(e.target.value.split(','))}
+                        disabled={isReadonly}
+                    />
+                );
+            } else {
+                return <Input {...field} disabled={isReadonly} />;
+            }
         default:
             return <Input {...field} disabled={isReadonly} />;
     }

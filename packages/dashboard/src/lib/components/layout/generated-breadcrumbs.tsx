@@ -4,7 +4,7 @@ import {
     BreadcrumbLink,
     BreadcrumbList,
     BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb.js';
+} from '@/vdb/components/ui/breadcrumb.js';
 import { Link, useRouterState } from '@tanstack/react-router';
 import * as React from 'react';
 import { Fragment } from 'react';

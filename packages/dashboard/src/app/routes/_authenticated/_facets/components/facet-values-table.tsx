@@ -1,9 +1,9 @@
-import { PaginatedListDataTable } from '@/components/shared/paginated-list-data-table.js';
-import { Button } from '@/components/ui/button.js';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.js';
-import { addCustomFields } from '@/framework/document-introspection/add-custom-fields.js';
-import { graphql } from '@/graphql/graphql.js';
-import { Trans } from '@/lib/trans.js';
+import { PaginatedListDataTable } from '@/vdb/components/shared/paginated-list-data-table.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
+import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 import { useState } from 'react';
 import { EditFacetValue } from './edit-facet-value.js';
@@ -24,17 +24,16 @@ export const facetValueListDocument = graphql(`
     }
 `);
 
-
 export interface FacetValuesTableProps {
     facetId: string;
 }
 
-export function FacetValuesTable({ facetId }: FacetValuesTableProps) {
+export function FacetValuesTable({ facetId }: Readonly<FacetValuesTableProps>) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [filters, setFilters] = useState<ColumnFiltersState>([]);
-    
+
     return (
         <PaginatedListDataTable
             listQuery={addCustomFields(facetValueListDocument)}
@@ -82,10 +81,15 @@ export function FacetValuesTable({ facetId }: FacetValuesTableProps) {
                         return (
                             <Popover open={open} onOpenChange={setOpen}>
                                 <PopoverTrigger asChild>
-                                    <Button type="button" variant="outline" size="sm"><Trans>Edit</Trans></Button>
+                                    <Button type="button" variant="outline" size="sm">
+                                        <Trans>Edit</Trans>
+                                    </Button>
                                 </PopoverTrigger>
                                 <PopoverContent className="w-80">
-                                    <EditFacetValue facetValueId={facetValue.id} onSuccess={() => setOpen(false)} />
+                                    <EditFacetValue
+                                        facetValueId={facetValue.id}
+                                        onSuccess={() => setOpen(false)}
+                                    />
                                 </PopoverContent>
                             </Popover>
                         );

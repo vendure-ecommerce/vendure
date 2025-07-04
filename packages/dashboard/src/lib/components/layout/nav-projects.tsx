@@ -6,7 +6,7 @@ import {
     DropdownMenuItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
+} from '@/vdb/components/ui/dropdown-menu.js';
 import {
     SidebarGroup,
     SidebarGroupLabel,
@@ -15,7 +15,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
     useSidebar,
-} from '@/components/ui/sidebar.js';
+} from '@/vdb/components/ui/sidebar.js';
 
 export function NavProjects({
     projects,

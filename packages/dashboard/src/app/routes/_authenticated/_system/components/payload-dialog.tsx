@@ -4,9 +4,9 @@ import {
     DialogDescription,
     DialogHeader,
     DialogTitle,
-} from '@/components/ui/dialog.js';
-import { DialogTrigger } from '@/components/ui/dialog.js';
-import { ScrollArea } from '@/components/ui/scroll-area.js';
+    DialogTrigger,
+} from '@/vdb/components/ui/dialog.js';
+import { ScrollArea } from '@/vdb/components/ui/scroll-area.js';
 import { JsonEditor } from 'json-edit-react';
 
 type PayloadDialogProps = {
@@ -16,7 +16,7 @@ type PayloadDialogProps = {
     description?: string | React.ReactNode;
 };
 
-export function PayloadDialog({ payload, trigger, title, description }: PayloadDialogProps) {
+export function PayloadDialog({ payload, trigger, title, description }: Readonly<PayloadDialogProps>) {
     return (
         <Dialog>
             <DialogTrigger asChild>{trigger}</DialogTrigger>

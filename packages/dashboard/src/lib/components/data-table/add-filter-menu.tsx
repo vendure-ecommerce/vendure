@@ -1,30 +1,23 @@
-import { Button } from '@/components/ui/button.js';
+import { DataTableFilterDialog } from '@/vdb/components/data-table/data-table-filter-dialog.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Dialog } from '@/vdb/components/ui/dialog.js';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog.js';
-import { DataTableFilterDialog } from '@/components/data-table/data-table-filter-dialog.js';
+} from '@/vdb/components/ui/dropdown-menu.js';
+import { Trans } from '@/vdb/lib/trans.js';
+import { camelCaseToTitleCase } from '@/vdb/lib/utils.js';
 import { Column, ColumnDef } from '@tanstack/react-table';
 import { PlusCircle } from 'lucide-react';
-import { Trans } from '@/lib/trans.js';
-import React, { useState } from 'react';
-import { camelCaseToTitleCase } from '@/lib/utils.js';
+import { useState } from 'react';
 
 export interface AddFilterMenuProps {
     columns: Column<any, unknown>[];
 }
 
-export function AddFilterMenu({ columns }: AddFilterMenuProps) {
+export function AddFilterMenu({ columns }: Readonly<AddFilterMenuProps>) {
     const [selectedColumn, setSelectedColumn] = useState<ColumnDef<any> | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -53,9 +46,7 @@ export function AddFilterMenu({ columns }: AddFilterMenuProps) {
                     ))}
                 </DropdownMenuContent>
             </DropdownMenu>
-            {selectedColumn && (
-                <DataTableFilterDialog column={selectedColumn as any} />
-            )}
+            {selectedColumn && <DataTableFilterDialog column={selectedColumn as any} />}
         </Dialog>
     );
 }

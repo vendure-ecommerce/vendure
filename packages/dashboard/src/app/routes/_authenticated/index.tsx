@@ -1,9 +1,9 @@
-import { Button } from '@/components/ui/button.js';
-import { DashboardWidgetInstance } from '@/framework/dashboard-widget/types.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     getDashboardWidget,
     getDashboardWidgetRegistry,
-} from '@/framework/dashboard-widget/widget-extensions.js';
+} from '@/vdb/framework/dashboard-widget/widget-extensions.js';
+import { DashboardWidgetInstance } from '@/vdb/framework/extension-api/types/widgets.js';
 import {
     FullWidthPageBlock,
     Page,
@@ -11,7 +11,7 @@ import {
     PageActionBarRight,
     PageLayout,
     PageTitle,
-} from '@/framework/layout-engine/page-layout.js';
+} from '@/vdb/framework/layout-engine/page-layout.js';
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Responsive as ResponsiveGridLayout } from 'react-grid-layout';

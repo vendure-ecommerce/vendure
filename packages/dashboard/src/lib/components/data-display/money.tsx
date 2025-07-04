@@ -1,7 +1,7 @@
-import { useLocalFormat } from "@/hooks/use-local-format.js";
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 
 // Original component
-function MoneyInternal({ value, currency }: { value: number, currency: string }) {
+function MoneyInternal({ value, currency }: { value: number; currency: string }) {
     const { formatCurrency } = useLocalFormat();
     return formatCurrency(value, currency);
 }
@@ -12,4 +12,3 @@ export function Money(props: { value: any; [key: string]: any }) {
     const currency = rest.currency || 'USD'; // Default currency if none provided
     return MoneyInternal({ value, currency });
 }
-

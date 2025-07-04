@@ -1,12 +1,11 @@
+import { Separator } from '@/vdb/components/ui/separator.js';
 import { ResultOf } from 'gql.tada';
+import { Globe, Phone } from 'lucide-react';
 import { orderAddressFragment } from '../orders.graphql.js';
-import { Phone } from 'lucide-react';
-import { Separator } from '@/components/ui/separator.js';
-import { Globe } from 'lucide-react';
 
 type OrderAddress = ResultOf<typeof orderAddressFragment>;
 
-export function OrderAddress({ address }: { address?: OrderAddress }) {
+export function OrderAddress({ address }: Readonly<{ address?: OrderAddress }>) {
     if (!address) {
         return null;
     }
@@ -25,11 +24,11 @@ export function OrderAddress({ address }: { address?: OrderAddress }) {
     } = address;
 
     return (
-        <div className="space-y-2">
+        <div className="space-y-1 text-sm">
             {fullName && <p className="font-medium">{fullName}</p>}
             {company && <p className="text-sm text-muted-foreground">{company}</p>}
 
-            <div className="text-sm">
+            <div>
                 {streetLine1 && <p>{streetLine1}</p>}
                 {streetLine2 && <p>{streetLine2}</p>}
                 <p>{[city, province].filter(Boolean).join(', ')}</p>

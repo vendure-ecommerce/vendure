@@ -1,9 +1,9 @@
-import { Badge } from '@/components/ui/badge.js';
-import { Trans } from '@/lib/trans.js';
+import { HistoryEntry, HistoryEntryItem } from '@/vdb/components/shared/history-timeline/history-entry.js';
+import { HistoryNoteInput } from '@/vdb/components/shared/history-timeline/history-note-input.js';
+import { HistoryTimeline } from '@/vdb/components/shared/history-timeline/history-timeline.js';
+import { Badge } from '@/vdb/components/ui/badge.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { ArrowRightToLine, CheckIcon, CreditCardIcon, SquarePen } from 'lucide-react';
-import { HistoryEntry, HistoryEntryItem } from '@/components/shared/history-timeline/history-entry.js';
-import { HistoryNoteInput } from '@/components/shared/history-timeline/history-note-input.js';
-import { HistoryTimeline } from '@/components/shared/history-timeline/history-timeline.js';
 
 interface OrderHistoryProps {
     order: {
@@ -17,7 +17,12 @@ interface OrderHistoryProps {
     onDeleteNote?: (entryId: string) => void;
 }
 
-export function OrderHistory({ historyEntries, onAddNote, onUpdateNote, onDeleteNote }: OrderHistoryProps) {
+export function OrderHistory({
+    historyEntries,
+    onAddNote,
+    onUpdateNote,
+    onDeleteNote,
+}: Readonly<OrderHistoryProps>) {
     const getTimelineIcon = (entry: OrderHistoryProps['historyEntries'][0]) => {
         switch (entry.type) {
             case 'ORDER_PAYMENT_TRANSITION':

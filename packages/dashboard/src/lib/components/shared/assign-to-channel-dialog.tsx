@@ -1,9 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { toast } from 'sonner';
 
-import { ChannelCodeLabel } from '@/components/shared/channel-code-label.js';
-import { Button } from '@/components/ui/button.js';
+import { ChannelCodeLabel } from '@/vdb/components/shared/channel-code-label.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     Dialog,
     DialogContent,
@@ -11,46 +11,65 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from '@/components/ui/dialog.js';
-import { Input } from '@/components/ui/input.js';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.js';
-import { api } from '@/graphql/api.js';
-import { ResultOf } from '@/graphql/graphql.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/components/ui/dialog.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
+import { ResultOf } from '@/vdb/graphql/graphql.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
 
-import { useChannel } from '@/hooks/use-channel.js';
-import { assignProductsToChannelDocument } from '../products.graphql.js';
+import { useChannel } from '@/vdb/hooks/use-channel.js';
 
 interface AssignToChannelDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    productIds: string[];
+    entityIds: string[];
+    entityType: string;
+    mutationFn: (variables: any) => Promise<ResultOf<any>>;
     onSuccess?: () => void;
+    /**
+     * Function to build the input object for the mutation
+     * @param channelId - The selected channel ID
+     * @param additionalData - Any additional data (like priceFactor for products)
+     * @returns The input object for the mutation
+     */
+    buildInput: (channelId: string, additionalData?: Record<string, any>) => Record<string, any>;
+    /**
+     * Optional additional form fields to render
+     */
+    additionalFields?: ReactNode;
+    /**
+     * Optional additional data to pass to buildInput
+     */
+    additionalData?: Record<string, any>;
 }
 
 export function AssignToChannelDialog({
     open,
     onOpenChange,
-    productIds,
+    entityIds,
+    entityType,
+    mutationFn,
     onSuccess,
-}: AssignToChannelDialogProps) {
+    buildInput,
+    additionalFields,
+    additionalData = {},
+}: Readonly<AssignToChannelDialogProps>) {
     const { i18n } = useLingui();
     const [selectedChannelId, setSelectedChannelId] = useState<string>('');
-    const [priceFactor, setPriceFactor] = useState<number>(1);
     const { channels, selectedChannel } = useChannel();
 
     // Filter out the currently selected channel from available options
     const availableChannels = channels.filter(channel => channel.id !== selectedChannel?.id);
 
     const { mutate, isPending } = useMutation({
-        mutationFn: api.mutate(assignProductsToChannelDocument),
-        onSuccess: (result: ResultOf<typeof assignProductsToChannelDocument>) => {
-            toast.success(i18n.t(`Successfully assigned ${productIds.length} products to channel`));
+        mutationFn,
+        onSuccess: () => {
+            toast.success(i18n.t(`Successfully assigned ${entityIds.length} ${entityType} to channel`));
             onSuccess?.();
             onOpenChange(false);
         },
         onError: () => {
-            toast.error(`Failed to assign ${productIds.length} products to channel`);
+            toast.error(`Failed to assign ${entityIds.length} ${entityType} to channel`);
         },
     });
 
@@ -60,13 +79,8 @@ export function AssignToChannelDialog({
             return;
         }
 
-        mutate({
-            input: {
-                productIds,
-                channelId: selectedChannelId,
-                priceFactor,
-            },
-        });
+        const input = buildInput(selectedChannelId, additionalData);
+        mutate({ input });
     };
 
     return (
@@ -74,10 +88,12 @@ export function AssignToChannelDialog({
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>
-                        <Trans>Assign products to channel</Trans>
+                        <Trans>Assign {entityType} to channel</Trans>
                     </DialogTitle>
                     <DialogDescription>
-                        <Trans>Select a channel to assign {productIds.length} products to</Trans>
+                        <Trans>
+                            Select a channel to assign {entityIds.length} {entityType} to
+                        </Trans>
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
@@ -98,19 +114,7 @@ export function AssignToChannelDialog({
                             </SelectContent>
                         </Select>
                     </div>
-                    <div className="grid gap-2">
-                        <label className="text-sm font-medium">
-                            <Trans>Price conversion factor</Trans>
-                        </label>
-                        <Input
-                            type="number"
-                            min="0"
-                            max="99999"
-                            step="0.01"
-                            value={priceFactor}
-                            onChange={e => setPriceFactor(parseFloat(e.target.value) || 1)}
-                        />
-                    </div>
+                    {additionalFields}
                 </div>
                 <DialogFooter>
                     <Button variant="outline" onClick={() => onOpenChange(false)}>
@@ -123,4 +127,29 @@ export function AssignToChannelDialog({
             </DialogContent>
         </Dialog>
     );
+}
+
+/**
+ * Hook for managing price factor state in assign-to-channel dialogs
+ */
+export function usePriceFactor() {
+    const [priceFactor, setPriceFactor] = useState<number>(1);
+
+    const priceFactorField = (
+        <div className="grid gap-2">
+            <label className="text-sm font-medium">
+                <Trans>Price conversion factor</Trans>
+            </label>
+            <Input
+                type="number"
+                min="0"
+                max="99999"
+                step="0.01"
+                value={priceFactor}
+                onChange={e => setPriceFactor(parseFloat(e.target.value) || 1)}
+            />
+        </div>
+    );
+
+    return { priceFactor, priceFactorField };
 }

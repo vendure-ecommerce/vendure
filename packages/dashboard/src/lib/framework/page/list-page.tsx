@@ -8,14 +8,14 @@ import {
     ListQueryShape,
     PaginatedListDataTable,
     RowAction,
-} from '@/components/shared/paginated-list-data-table.js';
-import { BulkAction } from '@/framework/data-table/data-table-types.js';
-import { useUserSettings } from '@/hooks/use-user-settings.js';
+} from '@/vdb/components/shared/paginated-list-data-table.js';
+import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRoute, AnyRouter, useNavigate } from '@tanstack/react-router';
 import { ColumnFiltersState, SortingState, Table } from '@tanstack/react-table';
 import { TableOptions } from '@tanstack/table-core';
 
+import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
 import { addCustomFields } from '../document-introspection/add-custom-fields.js';
 import { FullWidthPageBlock, Page, PageActionBar, PageLayout, PageTitle } from '../layout-engine/page-layout.js';
 
@@ -90,7 +90,7 @@ export function ListPage<
     transformData,
     setTableOptions,
     bulkActions,
-}: ListPageProps<T, U, V, AC>) {
+}: Readonly<ListPageProps<T, U, V, AC>>) {
     const route = typeof routeOrFn === 'function' ? routeOrFn() : routeOrFn;
     const routeSearch = route.useSearch();
     const navigate = useNavigate<AnyRouter>({ from: route.fullPath });

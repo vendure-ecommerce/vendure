@@ -1,19 +1,19 @@
-import { CustomFieldsForm } from '@/components/shared/custom-fields-form.js';
-import { NavigationConfirmation } from '@/components/shared/navigation-confirmation.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.js';
-import { Form } from '@/components/ui/form.js';
-import { useCustomFieldConfig } from '@/hooks/use-custom-field-config.js';
-import { usePage } from '@/hooks/use-page.js';
-import { cn } from '@/lib/utils.js';
+import { CustomFieldsForm } from '@/vdb/components/shared/custom-fields-form.js';
+import { NavigationConfirmation } from '@/vdb/components/shared/navigation-confirmation.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/vdb/components/ui/card.js';
+import { Form } from '@/vdb/components/ui/form.js';
+import { useCustomFieldConfig } from '@/vdb/hooks/use-custom-field-config.js';
+import { usePage } from '@/vdb/hooks/use-page.js';
+import { cn } from '@/vdb/lib/utils.js';
 import { useMediaQuery } from '@uidotdev/usehooks';
 import React, { ComponentProps } from 'react';
 import { Control, UseFormReturn } from 'react-hook-form';
 
-import { DashboardActionBarItem } from '../extension-api/extension-api-types.js';
+import { DashboardActionBarItem } from '../extension-api/types/layout.js';
 
-import { PageBlockContext } from '@/framework/layout-engine/page-block-provider.js';
-import { PageContext, PageContextValue } from '@/framework/layout-engine/page-provider.js';
+import { PageBlockContext } from '@/vdb/framework/layout-engine/page-block-provider.js';
+import { PageContext, PageContextValue } from '@/vdb/framework/layout-engine/page-provider.js';
 import { getDashboardActionBarItems, getDashboardPageBlocks } from './layout-extensions.js';
 import { LocationWrapper } from './location-wrapper.js';
 
@@ -42,7 +42,7 @@ export interface PageProps extends ComponentProps<'div'> {
  * @docsWeight 0
  * @since 3.3.0
  */
-export function Page({ children, pageId, entity, form, submitHandler, ...props }: PageProps) {
+export function Page({ children, pageId, entity, form, submitHandler, ...props }: Readonly<PageProps>) {
     const childArray = React.Children.toArray(children);
 
     const pageTitle = childArray.find(child => React.isValidElement(child) && child.type === PageTitle);
@@ -164,7 +164,7 @@ function isPageBlock(child: unknown): child is React.ReactElement<PageBlockProps
  * @docsWeight 0
  * @since 3.3.0
  */
-export function PageLayout({ children, className }: PageLayoutProps) {
+export function PageLayout({ children, className }: Readonly<PageLayoutProps>) {
     const page = usePage();
     const isDesktop = useMediaQuery('only screen and (min-width : 769px)');
     // Separate blocks into categories
@@ -194,6 +194,7 @@ export function PageLayout({ children, className }: PageLayoutProps) {
             if (extensionBlock) {
                 const ExtensionBlock = (
                     <PageBlock
+                        key={childBlock.key}
                         column={extensionBlock.location.column}
                         blockId={extensionBlock.id}
                         title={extensionBlock.title}
@@ -237,7 +238,7 @@ export function PageLayout({ children, className }: PageLayoutProps) {
     );
 }
 
-export function DetailFormGrid({ children }: { children: React.ReactNode }) {
+export function DetailFormGrid({ children }: Readonly<{ children: React.ReactNode }>) {
     return <div className="md:grid md:grid-cols-2 gap-4 items-start mb-4">{children}</div>;
 }
 
@@ -251,7 +252,7 @@ export function DetailFormGrid({ children }: { children: React.ReactNode }) {
  * @docsPage PageTitle
  * @since 3.3.0
  */
-export function PageTitle({ children }: { children: React.ReactNode }) {
+export function PageTitle({ children }: Readonly<{ children: React.ReactNode }>) {
     return <h1 className="text-2xl font-semibold">{children}</h1>;
 }
 
@@ -268,7 +269,7 @@ export function PageTitle({ children }: { children: React.ReactNode }) {
  * @docsWeight 0
  * @since 3.3.0
  */
-export function PageActionBar({ children }: { children: React.ReactNode }) {
+export function PageActionBar({ children }: Readonly<{ children: React.ReactNode }>) {
     let childArray = React.Children.toArray(children);
 
     const leftContent = childArray.filter(child => isOfType(child, PageActionBarLeft));
@@ -290,7 +291,7 @@ export function PageActionBar({ children }: { children: React.ReactNode }) {
  * @docsPage PageActionBar
  * @since 3.3.0
  */
-export function PageActionBarLeft({ children }: { children: React.ReactNode }) {
+export function PageActionBarLeft({ children }: Readonly<{ children: React.ReactNode }>) {
     return <div className="flex justify-start gap-2">{children}</div>;
 }
 
@@ -302,7 +303,7 @@ export function PageActionBarLeft({ children }: { children: React.ReactNode }) {
  * @docsPage PageActionBar
  * @since 3.3.0
  */
-export function PageActionBarRight({ children }: { children: React.ReactNode }) {
+export function PageActionBarRight({ children }: Readonly<{ children: React.ReactNode }>) {
     const page = usePage();
     const actionBarItems = page.pageId ? getDashboardActionBarItems(page.pageId) : [];
     return (
@@ -354,10 +355,17 @@ export type PageBlockProps = {
  * @docsWeight 0
  * @since 3.3.0
  */
-export function PageBlock({ children, title, description, className, blockId, column }: PageBlockProps) {
+export function PageBlock({
+    children,
+    title,
+    description,
+    className,
+    blockId,
+    column,
+}: Readonly<PageBlockProps>) {
     return (
-        <LocationWrapper blockId={blockId}>
-            <PageBlockContext.Provider value={{ blockId, title, description, column }}>
+        <PageBlockContext.Provider value={{ blockId, title, description, column }}>
+            <LocationWrapper>
                 <Card className={cn('w-full', className)}>
                     {title || description ? (
                         <CardHeader>
@@ -367,8 +375,8 @@ export function PageBlock({ children, title, description, className, blockId, co
                     ) : null}
                     <CardContent className={cn(!title ? 'pt-6' : '')}>{children}</CardContent>
                 </Card>
-            </PageBlockContext.Provider>
-        </LocationWrapper>
+            </LocationWrapper>
+        </PageBlockContext.Provider>
     );
 }
 
@@ -389,11 +397,11 @@ export function FullWidthPageBlock({
     blockId,
 }: Pick<PageBlockProps, 'children' | 'className' | 'blockId'>) {
     return (
-        <LocationWrapper blockId={blockId}>
-            <PageBlockContext.Provider value={{ blockId, column: 'main' }}>
+        <PageBlockContext.Provider value={{ blockId, column: 'main' }}>
+            <LocationWrapper>
                 <div className={cn('w-full', className)}>{children}</div>
-            </PageBlockContext.Provider>
-        </LocationWrapper>
+            </LocationWrapper>
+        </PageBlockContext.Provider>
     );
 }
 

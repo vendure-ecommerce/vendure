@@ -1,4 +1,4 @@
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible.js';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/vdb/components/ui/collapsible.js';
 import {
     SidebarGroup,
     SidebarGroupLabel,
@@ -8,12 +8,12 @@ import {
     SidebarMenuSub,
     SidebarMenuSubButton,
     SidebarMenuSubItem,
-} from '@/components/ui/sidebar.js';
+} from '@/vdb/components/ui/sidebar.js';
 import {
     NavMenuItem,
     NavMenuSection,
     NavMenuSectionPlacement,
-} from '@/framework/nav-menu/nav-menu-extensions.js';
+} from '@/vdb/framework/nav-menu/nav-menu-extensions.js';
 import { Link, useLocation } from '@tanstack/react-router';
 import { ChevronRight } from 'lucide-react';
 import * as React from 'react';
@@ -28,7 +28,7 @@ function sortByOrder<T extends { order?: number; title: string }>(a: T, b: T) {
     return orderA - orderB;
 }
 
-export function NavMain({ items }: { items: Array<NavMenuSection | NavMenuItem> }) {
+export function NavMain({ items }: Readonly<{ items: Array<NavMenuSection | NavMenuItem> }>) {
     const location = useLocation();
     // State to track which bottom section is currently open
     const [openBottomSectionId, setOpenBottomSectionId] = React.useState<string | null>(null);

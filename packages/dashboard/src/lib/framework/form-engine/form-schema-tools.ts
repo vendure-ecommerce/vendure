@@ -2,7 +2,7 @@ import {
     FieldInfo,
     isEnumType,
     isScalarType,
-} from '@/framework/document-introspection/get-document-structure.js';
+} from '@/vdb/framework/document-introspection/get-document-structure.js';
 import { z, ZodRawShape, ZodType, ZodTypeAny } from 'zod';
 
 export function createFormSchemaFromFields(fields: FieldInfo[]) {

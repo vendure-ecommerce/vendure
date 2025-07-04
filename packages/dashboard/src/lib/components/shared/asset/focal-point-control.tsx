@@ -1,5 +1,5 @@
+import { cn } from '@/vdb/lib/utils.js';
 import { useEffect, useState } from 'react';
-import { cn } from '@/lib/utils.js';
 
 export interface Point {
     x: number;
@@ -13,12 +13,7 @@ interface FocalPointControlProps {
     onChange: (point: Point) => void;
 }
 
-export function FocalPointControl({
-    width,
-    height,
-    point,
-    onChange,
-}: FocalPointControlProps) {
+export function FocalPointControl({ width, height, point, onChange }: Readonly<FocalPointControlProps>) {
     const [dragging, setDragging] = useState(false);
 
     useEffect(() => {
@@ -45,15 +40,12 @@ export function FocalPointControl({
     }, [dragging, onChange]);
 
     return (
-        <div
-            className="absolute inset-0 cursor-crosshair"
-            onMouseDown={() => setDragging(true)}
-        >
+        <div className="absolute inset-0 cursor-crosshair" onMouseDown={() => setDragging(true)}>
             <div
                 className={cn(
                     'absolute w-6 h-6 border-2 border-white rounded-full -translate-x-1/2 -translate-y-1/2',
                     'shadow-[0_0_0_1px_rgba(0,0,0,0.3)]',
-                    dragging && 'scale-75'
+                    dragging && 'scale-75',
                 )}
                 style={{
                     left: `${point.x * width}px`,

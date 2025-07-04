@@ -54,8 +54,17 @@ import { ProductReview } from './entities/product-review.entity';
             public: true,
             type: 'relation',
             entity: ProductReview,
-            ui: { tab: 'Reviews', fullWidth: true },
+            ui: { tab: 'Reviews', fullWidth: true, component: 'review-single-select' },
             inverseSide: undefined,
+        });
+        config.customFields.Product.push({
+            name: 'promotedReviews',
+            label: [{ languageCode: LanguageCode.en, value: 'Promoted Reviews' }],
+            public: true,
+            type: 'relation',
+            list: true,
+            entity: ProductReview,
+            ui: { tab: 'Reviews', fullWidth: true, component: 'review-multi-select' },
         });
         config.customFields.Product.push({
             name: 'translatableText',

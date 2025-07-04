@@ -1,13 +1,13 @@
-import { Button } from '@/components/ui/button.js';
+import { Button } from '@/vdb/components/ui/button.js';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
-import { Separator } from '@/components/ui/separator.js';
-import { useLocalFormat } from '@/hooks/use-local-format.js';
-import { Trans } from '@/lib/trans.js';
+} from '@/vdb/components/ui/dropdown-menu.js';
+import { Separator } from '@/vdb/components/ui/separator.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { MoreVerticalIcon, PencilIcon, TrashIcon } from 'lucide-react';
 import { useCallback } from 'react';
 import { useHistoryTimeline } from './history-timeline.js';
@@ -33,7 +33,13 @@ interface HistoryEntryProps {
     children: React.ReactNode;
 }
 
-export function HistoryEntry({ entry, isNoteEntry, timelineIcon, title, children }: HistoryEntryProps) {
+export function HistoryEntry({
+    entry,
+    isNoteEntry,
+    timelineIcon,
+    title,
+    children,
+}: Readonly<HistoryEntryProps>) {
     const { formatDate } = useLocalFormat();
     const { editNote, deleteNote } = useHistoryTimeline();
 

@@ -1,12 +1,12 @@
-import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header.js';
-import { DataTable, FacetedFilter } from '@/components/data-table/data-table.js';
+import { DataTableColumnHeader } from '@/vdb/components/data-table/data-table-column-header.js';
+import { DataTable, FacetedFilter } from '@/vdb/components/data-table/data-table.js';
 import {
     FieldInfo,
     getObjectPathToPaginatedList,
     getTypeFieldInfo,
-} from '@/framework/document-introspection/get-document-structure.js';
-import { useListQueryFields } from '@/framework/document-introspection/hooks.js';
-import { api } from '@/graphql/api.js';
+} from '@/vdb/framework/document-introspection/get-document-structure.js';
+import { useListQueryFields } from '@/vdb/framework/document-introspection/hooks.js';
+import { api } from '@/vdb/graphql/api.js';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
 
@@ -20,17 +20,18 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger,
-} from '@/components/ui/alert-dialog.js';
+} from '@/vdb/components/ui/alert-dialog.js';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.js';
-import { DisplayComponent } from '@/framework/component-registry/dynamic-component.js';
-import { BulkAction } from '@/framework/data-table/data-table-types.js';
-import { ResultOf } from '@/graphql/graphql.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/components/ui/dropdown-menu.js';
+import { DisplayComponent } from '@/vdb/framework/component-registry/dynamic-component.js';
+import { BulkAction } from '@/vdb/framework/extension-api/types/index.js';
+import { ResultOf } from '@/vdb/graphql/graphql.js';
+import { useExtendedListQuery } from '@/vdb/hooks/use-extended-list-query.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import {
     ColumnFiltersState,
@@ -272,10 +273,11 @@ export function PaginatedListDataTable<
     setTableOptions,
     transformData,
     registerRefresher,
-}: PaginatedListDataTableProps<T, U, V, AC>) {
+}: Readonly<PaginatedListDataTableProps<T, U, V, AC>>) {
     const [searchTerm, setSearchTerm] = React.useState<string>('');
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
     const queryClient = useQueryClient();
+    const extendedListQuery = useExtendedListQuery(listQuery);
 
     const sort = sorting?.reduce((acc: any, sort: ColumnSort) => {
         const direction = sort.desc ? 'DESC' : 'ASC';
@@ -300,7 +302,7 @@ export function PaginatedListDataTable<
 
     const defaultQueryKey = [
         PaginatedListDataTableKey,
-        listQuery,
+        extendedListQuery,
         page,
         itemsPerPage,
         sorting,
@@ -329,14 +331,14 @@ export function PaginatedListDataTable<
             } as V;
 
             const transformedVariables = transformVariables ? transformVariables(variables) : variables;
-            return api.query(listQuery, transformedVariables);
+            return api.query(extendedListQuery, transformedVariables);
         },
         queryKey,
         placeholderData: keepPreviousData,
     });
 
-    const fields = useListQueryFields(listQuery);
-    const paginatedListObjectPath = getObjectPathToPaginatedList(listQuery);
+    const fields = useListQueryFields(extendedListQuery);
+    const paginatedListObjectPath = getObjectPathToPaginatedList(extendedListQuery);
 
     let listData = data as any;
     for (const path of paginatedListObjectPath) {

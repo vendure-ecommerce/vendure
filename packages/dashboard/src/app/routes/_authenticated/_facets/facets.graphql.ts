@@ -1,4 +1,4 @@
-import { graphql } from '@/graphql/graphql.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const facetValueFragment = graphql(`
     fragment FacetValue on FacetValue {
@@ -97,6 +97,36 @@ export const updateFacetDocument = graphql(`
 export const deleteFacetDocument = graphql(`
     mutation DeleteFacet($id: ID!) {
         deleteFacet(id: $id) {
+            result
+            message
+        }
+    }
+`);
+
+export const assignFacetsToChannelDocument = graphql(`
+    mutation AssignFacetsToChannel($input: AssignFacetsToChannelInput!) {
+        assignFacetsToChannel(input: $input) {
+            id
+        }
+    }
+`);
+
+export const removeFacetsFromChannelDocument = graphql(`
+    mutation RemoveFacetsFromChannel($input: RemoveFacetsFromChannelInput!) {
+        removeFacetsFromChannel(input: $input) {
+            ... on Facet {
+                id
+            }
+            ... on ErrorResult {
+                message
+            }
+        }
+    }
+`);
+
+export const deleteFacetsDocument = graphql(`
+    mutation DeleteFacets($ids: [ID!]!) {
+        deleteFacets(ids: $ids) {
             result
             message
         }

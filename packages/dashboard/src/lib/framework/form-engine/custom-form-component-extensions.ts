@@ -1,3 +1,5 @@
+import { DocumentNode } from 'graphql';
+
 import { DashboardCustomFormComponent } from '../extension-api/extension-api-types.js';
 import { globalRegistry } from '../registry/global-registry.js';
 
@@ -8,9 +10,7 @@ globalRegistry.register(
     new Map<string, React.FunctionComponent<CustomFormComponentInputProps>>(),
 );
 
-export function getCustomFormComponents() {
-    return globalRegistry.get('customFormComponents');
-}
+globalRegistry.register('detailQueryDocumentRegistry', new Map<string, DocumentNode[]>());
 
 export function getCustomFormComponent(
     id: string,
@@ -25,4 +25,14 @@ export function addCustomFormComponent({ id, component }: DashboardCustomFormCom
         console.warn(`Custom form component with id "${id}" is already registered and will be overwritten.`);
     }
     customFormComponents.set(id, component);
+}
+
+export function getDetailQueryDocuments(pageId: string): DocumentNode[] {
+    return globalRegistry.get('detailQueryDocumentRegistry').get(pageId) || [];
+}
+
+export function addDetailQueryDocument(pageId: string, document: DocumentNode) {
+    const listQueryDocumentRegistry = globalRegistry.get('detailQueryDocumentRegistry');
+    const existingDocuments = listQueryDocumentRegistry.get(pageId) || [];
+    listQueryDocumentRegistry.set(pageId, [...existingDocuments, document]);
 }

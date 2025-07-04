@@ -8,8 +8,8 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger,
-} from '@/components/ui/alert-dialog.js';
-import { Trans } from '@/lib/trans.js';
+} from '@/vdb/components/ui/alert-dialog.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { useState } from 'react';
 
 export function ConfirmationDialog({

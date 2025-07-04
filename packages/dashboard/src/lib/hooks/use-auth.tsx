@@ -1,5 +1,5 @@
+import { AuthContext } from '@/vdb/providers/auth.js';
 import * as React from 'react';
-import { AuthContext } from '../providers/auth.js';
 
 /**
  * @description

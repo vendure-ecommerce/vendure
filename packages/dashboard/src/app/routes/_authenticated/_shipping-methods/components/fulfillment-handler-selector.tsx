@@ -1,7 +1,7 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.js';
-import { api } from '@/graphql/api.js';
-import { configurableOperationDefFragment } from '@/graphql/fragments.js';
-import { graphql } from '@/graphql/graphql.js';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
+import { api } from '@/vdb/graphql/api.js';
+import { configurableOperationDefFragment } from '@/vdb/graphql/fragments.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 import { useQuery } from '@tanstack/react-query';
 
 export const fulfillmentHandlersDocument = graphql(
@@ -20,8 +20,8 @@ interface FulfillmentHandlerSelectorProps {
     onChange: (value: string | undefined) => void;
 }
 
-export function FulfillmentHandlerSelector({ value, onChange }: FulfillmentHandlerSelectorProps) {
-    const { data: fulfillmentHandlersData } = useQuery({    
+export function FulfillmentHandlerSelector({ value, onChange }: Readonly<FulfillmentHandlerSelectorProps>) {
+    const { data: fulfillmentHandlersData } = useQuery({
         queryKey: ['fulfillmentHandlers'],
         queryFn: () => api.query(fulfillmentHandlersDocument),
         staleTime: 1000 * 60 * 60 * 5,

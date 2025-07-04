@@ -1,4 +1,4 @@
-import { graphql, ResultOf } from "./graphql.js";
+import { graphql, ResultOf } from './graphql.js';
 
 export const assetFragment = graphql(`
     fragment Asset on Asset {
@@ -57,6 +57,5 @@ export const errorResultFragment = graphql(`
         message
     }
 `);
-
 
 export type ConfigurableOperationDefFragment = ResultOf<typeof configurableOperationDefFragment>;

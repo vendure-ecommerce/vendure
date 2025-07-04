@@ -1,10 +1,10 @@
-import { ChannelSelector } from '@/components/shared/channel-selector.js';
-import { ErrorPage } from '@/components/shared/error-page.js';
-import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { Button } from '@/components/ui/button.js';
-import { Input } from '@/components/ui/input.js';
-import { NEW_ENTITY_PATH } from '@/constants.js';
+import { ChannelSelector } from '@/vdb/components/shared/channel-selector.js';
+import { ErrorPage } from '@/vdb/components/shared/error-page.js';
+import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
 import {
     DetailFormGrid,
     Page,
@@ -13,18 +13,21 @@ import {
     PageBlock,
     PageLayout,
     PageTitle,
-} from '@/framework/layout-engine/page-layout.js';
-import { detailPageRouteLoader } from '@/framework/page/detail-page-route-loader.js';
-import { useDetailPage } from '@/framework/page/use-detail-page.js';
-import { Trans, useLingui } from '@/lib/trans.js';
+} from '@/vdb/framework/layout-engine/page-layout.js';
+import { detailPageRouteLoader } from '@/vdb/framework/page/detail-page-route-loader.js';
+import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import { PermissionsGrid } from './components/permissions-grid.js';
 import { createRoleDocument, roleDetailDocument, updateRoleDocument } from './roles.graphql.js';
 
+const pageId = 'role-detail';
+
 export const Route = createFileRoute('/_authenticated/_roles/roles_/$id')({
     component: RoleDetailPage,
     loader: detailPageRouteLoader({
+        pageId,
         queryDocument: roleDetailDocument,
         breadcrumb(isNew, entity) {
             return [
@@ -43,6 +46,7 @@ function RoleDetailPage() {
     const { i18n } = useLingui();
 
     const { form, submitHandler, entity, isPending, resetForm } = useDetailPage({
+        pageId,
         queryDocument: roleDetailDocument,
         createDocument: createRoleDocument,
         updateDocument: updateRoleDocument,
@@ -71,7 +75,7 @@ function RoleDetailPage() {
     });
 
     return (
-        <Page pageId="role-detail" form={form} submitHandler={submitHandler} entity={entity}>
+        <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{creatingNewEntity ? <Trans>New role</Trans> : (entity?.description ?? '')}</PageTitle>
             <PageActionBar>
                 <PageActionBarRight>

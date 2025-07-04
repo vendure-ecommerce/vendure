@@ -1,9 +1,7 @@
-import { Trans } from "@/lib/trans.js";
-import { Select, SelectValue, SelectTrigger, SelectItem } from "@/components/ui/select.js";
-import { SelectContent } from "@/components/ui/select.js";
-import { useEffect, useState } from "react";
-import { DateTimeInput } from "@/components/data-input/datetime-input.js";
-import { HumanReadableOperator } from "../human-readable-operator.js";
+import { DateTimeInput } from '@/vdb/components/data-input/datetime-input.js';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
+import { useEffect, useState } from 'react';
+import { HumanReadableOperator } from '../human-readable-operator.js';
 
 export interface DataTableDateTimeFilterProps {
     value: Record<string, any> | undefined;
@@ -12,7 +10,10 @@ export interface DataTableDateTimeFilterProps {
 
 export const DATETIME_OPERATORS = ['eq', 'before', 'after', 'between', 'isNull'] as const;
 
-export function DataTableDateTimeFilter({ value: incomingValue, onChange }: DataTableDateTimeFilterProps) {
+export function DataTableDateTimeFilter({
+    value: incomingValue,
+    onChange,
+}: Readonly<DataTableDateTimeFilterProps>) {
     const initialOperator = incomingValue ? Object.keys(incomingValue)[0] : 'eq';
     const initialValue = incomingValue ? Object.values(incomingValue)[0] : '';
     const [operator, setOperator] = useState<string>(initialOperator ?? 'eq');
@@ -67,25 +68,15 @@ export function DataTableDateTimeFilter({ value: incomingValue, onChange }: Data
                         ))}
                     </SelectContent>
                 </Select>
-                {operator !== 'isNull' && (
-                    operator === 'between' ? (
+                {operator !== 'isNull' &&
+                    (operator === 'between' ? (
                         <div className="space-y-2">
-                            <DateTimeInput
-                                value={startDate}
-                                onChange={setStartDate}
-                            />
-                            <DateTimeInput
-                                value={endDate}
-                                onChange={setEndDate}
-                            />
+                            <DateTimeInput value={startDate} onChange={setStartDate} />
+                            <DateTimeInput value={endDate} onChange={setEndDate} />
                         </div>
                     ) : (
-                        <DateTimeInput
-                            value={value}
-                            onChange={setValue}
-                        />
-                    )
-                )}
+                        <DateTimeInput value={value} onChange={setValue} />
+                    ))}
             </div>
             {error && <p className="text-sm text-red-500">{error}</p>}
         </div>

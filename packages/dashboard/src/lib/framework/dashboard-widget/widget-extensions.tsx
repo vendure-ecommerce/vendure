@@ -1,4 +1,4 @@
-import { DashboardWidgetDefinition } from './types.js';
+import { DashboardWidgetDefinition } from '@/vdb/framework/extension-api/types/index.js';
 import { globalRegistry } from '../registry/global-registry.js';
 
 globalRegistry.register('dashboardWidgetRegistry', new Map<string, DashboardWidgetDefinition>());

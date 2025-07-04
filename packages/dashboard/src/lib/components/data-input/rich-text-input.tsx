@@ -26,7 +26,7 @@ export interface RichTextInputProps {
     onChange: (value: string) => void;
 }
 
-export function RichTextInput({ value, onChange }: RichTextInputProps) {
+export function RichTextInput({ value, onChange }: Readonly<RichTextInputProps>) {
     const editor = useEditor({
         parseOptions: {
             preserveWhitespace: 'full',

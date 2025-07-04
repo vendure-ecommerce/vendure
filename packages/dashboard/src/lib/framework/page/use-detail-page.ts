@@ -1,7 +1,4 @@
-import { NEW_ENTITY_PATH } from '@/constants.js';
-import { api, Variables } from '@/graphql/api.js';
-import { useCustomFieldConfig } from '@/hooks/use-custom-field-config.js';
-import { removeReadonlyCustomFields } from '@/lib/utils.js';
+import { removeReadonlyCustomFields } from '@/vdb/lib/utils.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import {
     DefinedInitialDataOptions,
@@ -15,8 +12,16 @@ import { DocumentNode } from 'graphql';
 import { FormEvent } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 
+import { NEW_ENTITY_PATH } from '../../constants.js';
+import { api, Variables } from '../../graphql/api.js';
+import { useCustomFieldConfig } from '../../hooks/use-custom-field-config.js';
+import { useExtendedDetailQuery } from '../../hooks/use-extended-detail-query.js';
 import { addCustomFields } from '../document-introspection/add-custom-fields.js';
-import { getMutationName, getQueryName } from '../document-introspection/get-document-structure.js';
+import {
+    getEntityName,
+    getMutationName,
+    getQueryName,
+} from '../document-introspection/get-document-structure.js';
 import { useGeneratedForm } from '../form-engine/use-generated-form.js';
 
 import { DetailEntityPath } from './page-types.js';
@@ -46,6 +51,12 @@ export interface DetailPageOptions<
 > {
     /**
      * @description
+     * The page id. This is optional, but if provided, it will be used to
+     * identify the page when extending the detail page query
+     */
+    pageId?: string;
+    /**
+     * @description
      * The query document to fetch the entity.
      */
     queryDocument: T;
@@ -65,8 +76,9 @@ export interface DetailPageOptions<
      * @description
      * The entity type name for custom field configuration lookup.
      * Required to filter out readonly custom fields before mutations.
+     * If not provided, the function will try to infer it from the query document.
      */
-    entityName: string;
+    entityName?: string;
     /**
      * @description
      * The document to create the entity.
@@ -232,6 +244,7 @@ export function useDetailPage<
     options: DetailPageOptions<T, C, U, EntityField, VarNameCreate, VarNameUpdate>,
 ): UseDetailPageResult<T, C, U, EntityField> {
     const {
+        pageId,
         queryDocument,
         createDocument,
         updateDocument,
@@ -246,12 +259,14 @@ export function useDetailPage<
     } = options;
     const isNew = params.id === NEW_ENTITY_PATH;
     const queryClient = useQueryClient();
-    const customFieldConfig = useCustomFieldConfig(entityName);
-    const detailQueryOptions = getDetailQueryOptions(addCustomFields(queryDocument), {
+    const returnEntityName = entityName ?? getEntityName(queryDocument);
+    const customFieldConfig = useCustomFieldConfig(returnEntityName);
+    const extendedDetailQuery = useExtendedDetailQuery(addCustomFields(queryDocument), pageId);
+    const detailQueryOptions = getDetailQueryOptions(extendedDetailQuery, {
         id: isNew ? '__NEW__' : params.id,
     });
     const detailQuery = useSuspenseQuery(detailQueryOptions);
-    const entityQueryField = entityField ?? getQueryName(queryDocument);
+    const entityQueryField = entityField ?? getQueryName(extendedDetailQuery);
 
     const entity = (detailQuery?.data as any)[entityQueryField] as
         | DetailPageEntity<T, EntityField>

@@ -1,4 +1,4 @@
-import { useLocalFormat } from '@/hooks/use-local-format.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { CircleX, Filter } from 'lucide-react';
 import { Badge } from '../ui/badge.js';
 import { HumanReadableOperator, Operator } from './human-readable-operator.js';

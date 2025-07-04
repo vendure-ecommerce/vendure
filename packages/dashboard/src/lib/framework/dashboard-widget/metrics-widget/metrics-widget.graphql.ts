@@ -1,4 +1,4 @@
-import { graphql } from '@/graphql/graphql.js';
+import { graphql } from '@/vdb/graphql/graphql.js';
 
 export const orderChartDataQuery = graphql(`
     query GetOrderChartData($refresh: Boolean, $types: [MetricType!]!) {

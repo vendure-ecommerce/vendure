@@ -1,5 +1,5 @@
-import { Button } from '@/components/ui/button.js';
-import { Textarea } from '@/components/ui/textarea.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Textarea } from '@/vdb/components/ui/textarea.js';
 import { useState } from 'react';
 import { HistoryNoteCheckbox } from './history-note-checkbox.js';
 
@@ -7,7 +7,7 @@ interface HistoryNoteInputProps {
     onAddNote: (note: string, isPrivate: boolean) => void;
 }
 
-export function HistoryNoteInput({ onAddNote }: HistoryNoteInputProps) {
+export function HistoryNoteInput({ onAddNote }: Readonly<HistoryNoteInputProps>) {
     const [note, setNote] = useState('');
     const [noteIsPrivate, setNoteIsPrivate] = useState(true);
 

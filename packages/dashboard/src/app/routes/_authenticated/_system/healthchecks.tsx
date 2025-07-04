@@ -1,7 +1,7 @@
-import { Button } from '@/components/ui/button.js';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.js';
-import { Page, PageActionBar, PageLayout, PageTitle } from '@/framework/layout-engine/page-layout.js';
-import { Trans } from '@/lib/trans.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Card, CardContent, CardHeader, CardTitle } from '@/vdb/components/ui/card.js';
+import { Page, PageActionBar, PageTitle } from '@/vdb/framework/layout-engine/page-layout.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { formatRelative } from 'date-fns';

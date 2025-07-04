@@ -1,14 +1,15 @@
-import { ChannelCodeLabel } from '@/components/shared/channel-code-label.js';
-import { DetailPageButton } from '@/components/shared/detail-page-button.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { Button } from '@/components/ui/button.js';
-import { PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
-import { ListPage } from '@/framework/page/list-page.js';
-import { Trans } from '@/lib/trans.js';
+import { ChannelCodeLabel } from '@/vdb/components/shared/channel-code-label.js';
+import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ListPage } from '@/vdb/framework/page/list-page.js';
+import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 import { channelListQuery, deleteChannelDocument } from './channels.graphql.js';
-import { useLocalFormat } from '@/hooks/use-local-format.js';
+import { DeleteChannelsBulkAction } from './components/channel-bulk-actions.js';
 
 export const Route = createFileRoute('/_authenticated/_channels/channels')({
     component: ChannelListPage,
@@ -53,15 +54,21 @@ function ChannelListPage() {
                     header: 'Seller',
                     cell: ({ row }) => {
                         return row.original.seller?.name;
-                    }
+                    },
                 },
                 defaultLanguageCode: {
                     header: 'Default Language',
                     cell: ({ row }) => {
                         return formatLanguageName(row.original.defaultLanguageCode);
-                    }
+                    },
                 },
             }}
+            bulkActions={[
+                {
+                    component: DeleteChannelsBulkAction,
+                    order: 500,
+                },
+            ]}
         >
             <PageActionBarRight>
                 <PermissionGuard requires={['CreateChannel']}>

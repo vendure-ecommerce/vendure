@@ -1,8 +1,8 @@
-import { HistoryEntry, HistoryEntryItem } from '@/components/shared/history-timeline/history-entry.js';
-import { HistoryNoteInput } from '@/components/shared/history-timeline/history-note-input.js';
-import { HistoryTimeline } from '@/components/shared/history-timeline/history-timeline.js';
-import { Badge } from '@/components/ui/badge.js';
-import { Trans } from '@/lib/trans.js';
+import { HistoryEntry, HistoryEntryItem } from '@/vdb/components/shared/history-timeline/history-entry.js';
+import { HistoryNoteInput } from '@/vdb/components/shared/history-timeline/history-note-input.js';
+import { HistoryTimeline } from '@/vdb/components/shared/history-timeline/history-timeline.js';
+import { Badge } from '@/vdb/components/ui/badge.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { CheckIcon, SquarePen } from 'lucide-react';
 
 interface CustomerHistoryProps {
@@ -15,7 +15,12 @@ interface CustomerHistoryProps {
     onDeleteNote?: (entryId: string) => void;
 }
 
-export function CustomerHistory({ historyEntries, onAddNote, onUpdateNote, onDeleteNote }: CustomerHistoryProps) {
+export function CustomerHistory({
+    historyEntries,
+    onAddNote,
+    onUpdateNote,
+    onDeleteNote,
+}: CustomerHistoryProps) {
     const getTimelineIcon = (entry: CustomerHistoryProps['historyEntries'][0]) => {
         switch (entry.type) {
             case 'CUSTOMER_NOTE':
@@ -70,7 +75,6 @@ export function CustomerHistory({ historyEntries, onAddNote, onUpdateNote, onDel
                         </div>
                     </HistoryEntry>
                 ))}
-                
             </HistoryTimeline>
         </div>
     );

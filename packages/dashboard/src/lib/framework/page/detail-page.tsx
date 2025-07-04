@@ -1,21 +1,24 @@
-import { DateTimeInput } from '@/components/data-input/datetime-input.js';
-import { FormFieldWrapper } from '@/components/shared/form-field-wrapper.js';
-import { Button } from '@/components/ui/button.js';
-import { Checkbox } from '@/components/ui/checkbox.js';
-import { Input } from '@/components/ui/input.js';
-import { NEW_ENTITY_PATH } from '@/constants.js';
-import { useDetailPage } from '@/framework/page/use-detail-page.js';
-import { Trans } from '@/lib/trans.js';
+import { DateTimeInput } from '@/vdb/components/data-input/datetime-input.js';
+import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { Checkbox } from '@/vdb/components/ui/checkbox.js';
+import { Input } from '@/vdb/components/ui/input.js';
+import { NEW_ENTITY_PATH } from '@/vdb/constants.js';
+import { useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
 import { AnyRoute, useNavigate } from '@tanstack/react-router';
 import { ResultOf, VariablesOf } from 'gql.tada';
 import { toast } from 'sonner';
 import {
+    FieldInfo,
     getEntityName,
     getOperationVariablesFields,
 } from '../document-introspection/get-document-structure.js';
 
-import { TranslatableFormFieldWrapper } from '@/components/shared/translatable-form-field.js';
+import { TranslatableFormFieldWrapper } from '@/vdb/components/shared/translatable-form-field.js';
+import { FormControl } from '@/vdb/components/ui/form.js';
+import { ControllerRenderProps, FieldPath, FieldValues } from 'react-hook-form';
 import {
     CustomFieldsPageBlock,
     DetailFormGrid,
@@ -85,26 +88,51 @@ export interface DetailPageProps<
     setValuesForUpdate: (entity: ResultOf<T>[EntityField]) => VariablesOf<U>['input'];
 }
 
+export interface DetailPageFieldProps<
+    TFieldValues extends FieldValues = FieldValues,
+    TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> {
+    fieldInfo: FieldInfo;
+    field: ControllerRenderProps<TFieldValues, TName>;
+}
+
 /**
  * Renders form input components based on field type
  */
-function renderFieldInput(fieldInfo: { type: string }, field: any) {
+function FieldInputRenderer<
+    TFieldValues extends FieldValues = FieldValues,
+    TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({ fieldInfo, field }: DetailPageFieldProps<TFieldValues, TName>) {
     switch (fieldInfo.type) {
         case 'Int':
         case 'Float':
             return (
-                <Input
-                    type="number"
-                    value={field.value}
-                    onChange={e => field.onChange(e.target.valueAsNumber)}
-                />
+                <FormControl>
+                    <Input
+                        type="number"
+                        value={field.value}
+                        onChange={e => field.onChange(e.target.valueAsNumber)}
+                    />
+                </FormControl>
             );
         case 'DateTime':
-            return <DateTimeInput {...field} />;
+            return (
+                <FormControl>
+                    <DateTimeInput {...field} />
+                </FormControl>
+            );
         case 'Boolean':
-            return <Checkbox value={field.value} onCheckedChange={field.onChange} />;
+            return (
+                <FormControl>
+                    <Checkbox value={field.value} onCheckedChange={field.onChange} />
+                </FormControl>
+            );
         default:
-            return <Input {...field} />;
+            return (
+                <FormControl>
+                    <Input {...field} />
+                </FormControl>
+            );
     }
 }
 
@@ -196,7 +224,10 @@ export function DetailPage<
                                         control={form.control}
                                         name={fieldInfo.name as never}
                                         label={fieldInfo.name}
-                                        render={({ field }) => renderFieldInput(fieldInfo, field)}
+                                        renderFormControl={false}
+                                        render={({ field }) => (
+                                            <FieldInputRenderer fieldInfo={fieldInfo} field={field} />
+                                        )}
                                     />
                                 );
                             })}
@@ -211,7 +242,10 @@ export function DetailPage<
                                         control={form.control}
                                         name={fieldInfo.name as never}
                                         label={fieldInfo.name}
-                                        render={({ field }) => renderFieldInput(fieldInfo, field)}
+                                        renderFormControl={false}
+                                        render={({ field }) => (
+                                            <FieldInputRenderer fieldInfo={fieldInfo} field={field} />
+                                        )}
                                     />
                                 );
                             })}

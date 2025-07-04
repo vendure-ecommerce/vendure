@@ -1,11 +1,16 @@
-import { DetailPageButton } from '@/components/shared/detail-page-button.js';
-import { PermissionGuard } from '@/components/shared/permission-guard.js';
-import { Button } from '@/components/ui/button.js';
-import { PageActionBarRight } from '@/framework/layout-engine/page-layout.js';
-import { ListPage } from '@/framework/page/list-page.js';
-import { Trans } from '@/lib/trans.js';
+import { DetailPageButton } from '@/vdb/components/shared/detail-page-button.js';
+import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
+import { Button } from '@/vdb/components/ui/button.js';
+import { PageActionBarRight } from '@/vdb/framework/layout-engine/page-layout.js';
+import { ListPage } from '@/vdb/framework/page/list-page.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
+import {
+    AssignStockLocationsToChannelBulkAction,
+    DeleteStockLocationsBulkAction,
+    RemoveStockLocationsFromChannelBulkAction,
+} from './components/stock-location-bulk-actions.js';
 import { deleteStockLocationDocument, stockLocationListQuery } from './stock-locations.graphql.js';
 
 export const Route = createFileRoute('/_authenticated/_stock-locations/stock-locations')({
@@ -32,6 +37,20 @@ function StockLocationListPage() {
                     name: { contains: searchTerm },
                 };
             }}
+            bulkActions={[
+                {
+                    component: AssignStockLocationsToChannelBulkAction,
+                    order: 100,
+                },
+                {
+                    component: RemoveStockLocationsFromChannelBulkAction,
+                    order: 200,
+                },
+                {
+                    component: DeleteStockLocationsBulkAction,
+                    order: 500,
+                },
+            ]}
         >
             <PageActionBarRight>
                 <PermissionGuard requires={['CreateStockLocation']}>
