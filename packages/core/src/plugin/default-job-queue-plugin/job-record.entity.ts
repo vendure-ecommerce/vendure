@@ -1,9 +1,11 @@
 import { JobState } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, Index } from 'typeorm';
 
 import { VendureEntity } from '../../entity/base/base.entity';
 
+// createdAt is coming from base entity VendureEntity and is not explicitly defined here
+@Index(['createdAt'])
 @Entity()
 export class JobRecord extends VendureEntity {
     constructor(input: DeepPartial<JobRecord>) {
