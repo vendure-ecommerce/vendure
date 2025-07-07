@@ -84,7 +84,7 @@ function ProductDetailPage() {
             toast.success(i18n.t('Successfully updated product'));
             resetForm();
             if (creatingNewEntity) {
-                await navigate({ to: `../${data.id}`, from: Route.id });
+                await navigate({ to: `../$id`, params: { id: data.id } });
             }
         },
         onError: err => {
