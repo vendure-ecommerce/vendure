@@ -88,6 +88,7 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
      * This is governed by the {@link OrderPlacedStrategy}.
      */
     @Column({ nullable: true })
+    @Index()
     orderPlacedAt?: Date;
 
     @Index()
