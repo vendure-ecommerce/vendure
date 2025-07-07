@@ -7,7 +7,7 @@ import { useChannel } from '../../hooks/use-channel.js';
 import { useServerConfig } from '../../hooks/use-server-config.js';
 import { getOperationVariablesFields } from '../document-introspection/get-document-structure.js';
 import { createFormSchemaFromFields, getDefaultValuesFromFields } from './form-schema-tools.js';
-import { transformRelationFields } from './utils.js';
+import { removeEmptyIdFields, transformRelationFields } from './utils.js';
 
 export interface GeneratedFormOptions<
     T extends TypedDocumentNode<any, any>,
@@ -64,7 +64,10 @@ export function useGeneratedForm<
     };
     if (onSubmit) {
         submitHandler = (event: FormEvent) => {
-            form.handleSubmit(onSubmit as any)(event);
+            const onSubmitWrapper = (values: any) => {
+                onSubmit(removeEmptyIdFields(values, updateFields));
+            };
+            form.handleSubmit(onSubmitWrapper)(event);
         };
     }
 
