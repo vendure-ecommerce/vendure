@@ -1532,12 +1532,13 @@ export class OrderService {
             .getMany();
 
         for (const inputLine of input.lines) {
-            const existingFulfillmentLine = existingFulfillmentLines.find(l =>
+            const fulfillmentLinesForOrderLine = existingFulfillmentLines.filter(l =>
                 idsAreEqual(l.orderLineId, inputLine.orderLineId),
             );
-            if (existingFulfillmentLine) {
+            if (fulfillmentLinesForOrderLine.length) {
+                const fulfilledQuantity = summate(fulfillmentLinesForOrderLine, 'quantity');
                 const unfulfilledQuantity =
-                    existingFulfillmentLine.orderLine.quantity - existingFulfillmentLine.quantity;
+                    fulfillmentLinesForOrderLine[0].orderLine.quantity - fulfilledQuantity;
                 if (unfulfilledQuantity < inputLine.quantity) {
                     return true;
                 }
