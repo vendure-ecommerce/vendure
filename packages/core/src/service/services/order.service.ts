@@ -237,22 +237,45 @@ export class OrderService {
         ) {
             effectiveRelations.push('lines.productVariant.taxCategory');
         }
-        qb.setFindOptions({ relations: effectiveRelations })
+
+        // Split relations into two groups for different loading strategies:
+        // Main order relations - loaded with 'query' strategy for performance
+        const orderRelations = effectiveRelations.filter(r => !r.startsWith('lines'));
+
+        // Lines relations - loaded with 'join' strategy to enable multi-column sorting
+        const lineRelations = effectiveRelations
+            .filter(r => r.startsWith('lines.'))
+            .map(r => r.replace('lines.', ''));
+
+        qb.setFindOptions({
+            relations: orderRelations,
+            relationLoadStrategy: 'query',
+        })
             .leftJoin('order.channels', 'channel')
             .where('order.id = :orderId', { orderId })
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId });
-        if (effectiveRelations.includes('lines')) {
-            qb.addOrderBy(`order__order_lines.${qb.escape('createdAt')}`, 'ASC').addOrderBy(
-                `order__order_lines.${qb.escape('productVariantId')}`,
-                'ASC',
-            );
-        }
 
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
 
         const order = await qb.getOne();
+
         if (order) {
+            const hasLinesRelations = effectiveRelations.some(r => r.startsWith('lines'));
+            if (hasLinesRelations) {
+                const linesQb = this.connection.getRepository(ctx, OrderLine).createQueryBuilder('line');
+                linesQb
+                    .setFindOptions({
+                        relations: lineRelations,
+                    })
+                    .where('line.orderId = :orderId', { orderId })
+                    .addOrderBy('line.createdAt', 'ASC')
+                    .addOrderBy('line.productVariantId', 'ASC');
+
+                const lines = await linesQb.getMany();
+                order.lines = lines;
+            }
+
             if (effectiveRelations.includes('lines.productVariant')) {
                 for (const line of order.lines) {
                     line.productVariant = this.translator.translate(
@@ -1609,6 +1632,7 @@ export class OrderService {
         const order = await this.connection.getEntityOrThrow(ctx, Order, orderId, {
             channelId: ctx.channelId,
             relations: ['surcharges'],
+            relationLoadStrategy: 'query',
         });
         return order.surcharges || [];
     }
