@@ -2,6 +2,7 @@ import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { Badge } from '@/vdb/components/ui/badge.js';
 import { Button } from '@/vdb/components/ui/button.js';
+import { DropdownMenuItem } from '@/vdb/components/ui/dropdown-menu.js';
 import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
 import {
     CustomFieldsPageBlock,
@@ -13,9 +14,11 @@ import {
     PageTitle,
 } from '@/vdb/framework/layout-engine/page-layout.js';
 import { getDetailQueryOptions, useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
+import { api } from '@/vdb/graphql/api.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
-import { Link, createFileRoute, redirect } from '@tanstack/react-router';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Link, createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { User } from 'lucide-react';
 import { toast } from 'sonner';
 import { AddManualPaymentDialog } from './components/add-manual-payment-dialog.js';
@@ -23,13 +26,13 @@ import { FulfillOrderDialog } from './components/fulfill-order-dialog.js';
 import { FulfillmentDetails } from './components/fulfillment-details.js';
 import { OrderAddress } from './components/order-address.js';
 import { OrderHistoryContainer } from './components/order-history/order-history-container.js';
+import { orderHistoryQueryKey } from './components/order-history/use-order-history.js';
 import { OrderTable } from './components/order-table.js';
 import { OrderTaxSummary } from './components/order-tax-summary.js';
 import { PaymentDetails } from './components/payment-details.js';
-import { orderDetailDocument } from './orders.graphql.js';
+import { useTransitionOrderToState } from './components/use-transition-order-to-state.js';
+import { orderDetailDocument, transitionOrderToStateDocument } from './orders.graphql.js';
 import { canAddFulfillment, shouldShowAddManualPaymentButton } from './utils/order-utils.js';
-import { useQueryClient } from '@tanstack/react-query';
-import { orderHistoryQueryKey } from './components/order-history/use-order-history.js';
 
 const pageId = 'order-detail';
 
@@ -55,6 +58,12 @@ export const Route = createFileRoute('/_authenticated/_orders/orders_/$id')({
             });
         }
 
+        if (result.order.state === 'Modifying') {
+            throw redirect({
+                to: `/orders/${params.id}/modify`,
+            });
+        }
+
         return {
             breadcrumb: [{ path: '/orders', label: 'Orders' }, result.order.code],
         };
@@ -65,6 +74,7 @@ export const Route = createFileRoute('/_authenticated/_orders/orders_/$id')({
 function OrderDetailPage() {
     const params = Route.useParams();
     const { i18n } = useLingui();
+    const navigate = useNavigate();
     const queryClient = useQueryClient();
     const { form, submitHandler, entity, isPending, refreshEntity } = useDetailPage({
         pageId,
@@ -86,19 +96,51 @@ function OrderDetailPage() {
             });
         },
     });
+    const { ManuallySelectNextState, selectNextState } = useTransitionOrderToState(entity?.id);
+    const transitionOrderToStateMutation = useMutation({
+        mutationFn: api.mutate(transitionOrderToStateDocument),
+    });
 
     if (!entity) {
         return null;
     }
 
+    const handleModifyClick = async () => {
+        await transitionOrderToStateMutation.mutateAsync({
+            id: entity.id,
+            state: 'Modifying',
+        });
+        const queryKey = getDetailQueryOptions(orderDetailDocument, { id: entity.id }).queryKey;
+        await queryClient.invalidateQueries({ queryKey });
+        await navigate({ to: `/orders/$id/modify`, params: { id: entity.id } });
+    };
+
+    const nextStates = entity.nextStates;
     const showAddPaymentButton = shouldShowAddManualPaymentButton(entity);
     const showFulfillButton = canAddFulfillment(entity);
+
+    function refreshOrderAndHistory() {
+        refreshEntity();
+        if (entity) {
+            queryClient.refetchQueries({ queryKey: orderHistoryQueryKey(entity.id) });
+        }
+    }
 
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{entity?.code ?? ''}</PageTitle>
             <PageActionBar>
-                <PageActionBarRight>
+                <PageActionBarRight
+                    dropdownMenuItems={[
+                        {
+                            component: () => (
+                                <DropdownMenuItem onClick={() => selectNextState({ onSuccess: () => refreshOrderAndHistory() })}>
+                                    <Trans>Transition to state...</Trans>
+                                </DropdownMenuItem>
+                            ),
+                        },
+                    ]}
+                >
                     {showAddPaymentButton && (
                         <PermissionGuard requires={['UpdateOrder']}>
                             <AddManualPaymentDialog
@@ -114,20 +156,16 @@ function OrderDetailPage() {
                             <FulfillOrderDialog
                                 order={entity}
                                 onSuccess={() => {
-                                    refreshEntity();
-                                    queryClient.refetchQueries({ queryKey: orderHistoryQueryKey(entity.id) });
+                                    refreshOrderAndHistory();
                                 }}
                             />
                         </PermissionGuard>
                     )}
-                    <PermissionGuard requires={['UpdateProduct', 'UpdateCatalog']}>
-                        <Button
-                            type="submit"
-                            disabled={!form.formState.isDirty || !form.formState.isValid || isPending}
-                        >
-                            <Trans>Update</Trans>
+                    {nextStates.includes('Modifying') && (
+                        <Button variant="secondary" onClick={handleModifyClick}>
+                            <Trans>Modify</Trans>
                         </Button>
-                    </PermissionGuard>
+                    )}
                 </PageActionBarRight>
             </PageActionBar>
             <PageLayout>
@@ -185,27 +223,30 @@ function OrderDetailPage() {
                     blockId="fulfillment-details"
                     title={<Trans>Fulfillment details</Trans>}
                 >
-                    {entity?.fulfillments?.length && entity.fulfillments.length > 0  ? (
+                    {entity?.fulfillments?.length && entity.fulfillments.length > 0 ? (
                         <div className="space-y-2">
-                        {entity?.fulfillments?.map(fulfillment => (
-                        <FulfillmentDetails
-                            key={fulfillment.id}
-                            order={entity}
-                            fulfillment={fulfillment}
-                            onSuccess={() => {
-                                refreshEntity();
-                                queryClient.refetchQueries({ queryKey: orderHistoryQueryKey(entity.id) });
-                            }}
-                        />
-                        ))}
-                    </div>
-                ) : (
-                    <div className="text-muted-foreground text-xs font-medium p-3 border rounded-md">
-                        <Trans>No fulfillments</Trans>
-                    </div>
-                )}
+                            {entity?.fulfillments?.map(fulfillment => (
+                                <FulfillmentDetails
+                                    key={fulfillment.id}
+                                    order={entity}
+                                    fulfillment={fulfillment}
+                                    onSuccess={() => {
+                                        refreshEntity();
+                                        queryClient.refetchQueries({
+                                            queryKey: orderHistoryQueryKey(entity.id),
+                                        });
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-muted-foreground text-xs font-medium p-3 border rounded-md">
+                            <Trans>No fulfillments</Trans>
+                        </div>
+                    )}
                 </PageBlock>
             </PageLayout>
+            <ManuallySelectNextState availableStates={nextStates} />
         </Page>
     );
 }

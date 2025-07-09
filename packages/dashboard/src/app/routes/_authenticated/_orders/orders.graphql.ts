@@ -506,6 +506,9 @@ export const transitionOrderToStateDocument = graphql(
                     id
                 }
                 ...ErrorResult
+                ... on OrderStateTransitionError {
+                    transitionError
+                }
             }
         }
     `,
@@ -605,4 +608,33 @@ export const transitionFulfillmentToStateDocument = graphql(
         }
     `,
     [errorResultFragment],
+);
+
+export const couponCodeSelectorPromotionListDocument = graphql(`
+    query CouponCodeSelectorPromotionList($options: PromotionListOptions) {
+        promotions(options: $options) {
+            items {
+                id
+                name
+                couponCode
+            }
+            totalItems
+        }
+    }
+`);
+
+export const modifyOrderDocument = graphql(
+    `
+        mutation ModifyOrder($input: ModifyOrderInput!) {
+            modifyOrder(input: $input) {
+                __typename
+                ...OrderDetail
+                ...ErrorResult
+                ... on Order {
+                    customFields
+                }
+            }
+        }
+    `,
+    [orderDetailFragment, errorResultFragment],
 );

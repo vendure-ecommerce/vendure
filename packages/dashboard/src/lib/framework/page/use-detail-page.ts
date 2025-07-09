@@ -111,11 +111,13 @@ export interface DetailPageOptions<
 export function getDetailQueryOptions<T, V extends Variables = Variables>(
     document: TypedDocumentNode<T, V> | DocumentNode,
     variables: V,
+    options: Partial<Parameters<typeof queryOptions>[0]> = {},
 ): DefinedInitialDataOptions {
     const queryName = getQueryName(document);
     return queryOptions({
         queryKey: ['DetailPage', queryName, variables],
         queryFn: () => api.query(document, variables),
+        ...options,
     }) as DefinedInitialDataOptions;
 }
 
