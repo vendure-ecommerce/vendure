@@ -94,12 +94,12 @@ export const cliCommands: CliCommandDefinition[] = [
                 required: false,
                 subOptions: [
                     {
-                        long: '--queryName <name>',
+                        long: '--query-name <name>',
                         description: 'Name for the query (used with -a)',
                         required: false,
                     },
                     {
-                        long: '--mutationName <name>',
+                        long: '--mutation-name <name>',
                         description: 'Name for the mutation (used with -a)',
                         required: false,
                     },

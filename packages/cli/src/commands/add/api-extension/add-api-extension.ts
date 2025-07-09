@@ -32,11 +32,11 @@ const cancelledMessage = 'Add API extension cancelled';
 export interface AddApiExtensionOptions {
     plugin?: VendurePluginRef;
     pluginName?: string;
-    queryName?: string;
-    mutationName?: string;
+    'query-name'?: string;
+    'mutation-name'?: string;
     config?: string;
     isNonInteractive?: boolean;
-    selectedService?: string;
+    'selected-service'?: string;
 }
 
 export const addApiExtensionCommand = new CliCommand({
@@ -64,8 +64,8 @@ async function addApiExtension(
 
     // In non-interactive mode, we need all required values upfront
     if (options?.isNonInteractive) {
-        const hasValidQueryName = options?.queryName && options.queryName.trim() !== '';
-        const hasValidMutationName = options?.mutationName && options.mutationName.trim() !== '';
+        const hasValidQueryName = options?.['query-name'] && options['query-name'].trim() !== '';
+        const hasValidMutationName = options?.['mutation-name'] && options['mutation-name'].trim() !== '';
 
         if (!hasValidQueryName && !hasValidMutationName) {
             throw new Error(
@@ -92,14 +92,14 @@ async function addApiExtension(
 
     if (options?.isNonInteractive) {
         // Validate that a service has been specified
-        if (!options.selectedService || options.selectedService.trim() === '') {
+        if (!options['selected-service'] || options['selected-service'].trim() === '') {
             throw new Error(
                 'Service must be specified in non-interactive mode.\n' +
                     'Usage: npx vendure add -a <PluginName> --queryName <name> --mutationName <name> --selectedService <service-name>',
             );
         }
 
-        const selectedService = services.find(sr => sr.name === options.selectedService);
+        const selectedService = services.find(sr => sr.name === options['selected-service']);
 
         if (!selectedService) {
             const availableServices = services.map(sr => sr.name);
@@ -110,7 +110,7 @@ async function addApiExtension(
                 );
             }
             throw new Error(
-                `Service "${options.selectedService}" not found in plugin "${plugin.name}". Available services:\n` +
+                `Service "${options['selected-service']}" not found in plugin "${plugin.name}". Available services:\n` +
                     availableServices.map(name => `  - ${name}`).join('\n'),
             );
         }
@@ -150,14 +150,17 @@ async function addApiExtension(
     if (!serviceEntityRef) {
         if (options?.isNonInteractive) {
             // Use provided values - we already validated at least one exists and is non-empty
-            queryName = options?.queryName && options.queryName.trim() !== '' ? options.queryName.trim() : '';
+            queryName =
+                options?.['query-name'] && options['query-name'].trim() !== ''
+                    ? options['query-name'].trim()
+                    : '';
             mutationName =
-                options?.mutationName && options.mutationName.trim() !== ''
-                    ? options.mutationName.trim()
+                options?.['mutation-name'] && options['mutation-name'].trim() !== ''
+                    ? options['mutation-name'].trim()
                     : '';
         } else {
             const queryNameResult =
-                options?.queryName ??
+                options?.['query-name'] ??
                 (await text({
                     message: 'Enter a name for the new query',
                     initialValue: 'myNewQuery',
@@ -166,9 +169,9 @@ async function addApiExtension(
                 queryName = queryNameResult;
             }
             const mutationNameResult =
-                options?.mutationName ??
+                options?.['mutation-name'] ??
                 (await text({
-                    message: 'Enter a name for the new mutation',
+                    message: 'Enter a new name for the new mutation',
                     initialValue: 'myNewMutation',
                 }));
             if (!isCancel(mutationNameResult)) {

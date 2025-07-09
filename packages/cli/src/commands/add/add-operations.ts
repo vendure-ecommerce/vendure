@@ -15,33 +15,33 @@ export interface AddOperationOptions {
     /** Add a new service with the given name */
     service?: string;
     /** Add a job-queue handler to the specified plugin */
-    jobQueue?: string | boolean;
+    'job-queue'?: string | boolean;
     /** Add GraphQL codegen configuration to the specified plugin */
     codegen?: string | boolean;
     /** Add an API extension scaffold to the specified plugin */
-    apiExtension?: string | boolean;
+    'api-extension'?: string | boolean;
     /** Add Admin-UI or Storefront UI extensions to the specified plugin */
-    uiExtensions?: string | boolean;
+    'ui-extensions'?: string | boolean;
     /** Specify the path to a custom Vendure config file */
     config?: string;
     /** Name for the job queue (used with jobQueue) */
     name?: string;
     /** Name for the query (used with apiExtension) */
-    queryName?: string;
+    'query-name'?: string;
     /** Name for the mutation (used with apiExtension) */
-    mutationName?: string;
+    'mutation-name'?: string;
     /** Name of the service to use (used with jobQueue) */
-    selectedService?: string;
+    'selected-service'?: string;
     /** Selected plugin name for entity/service commands */
-    selectedPlugin?: string;
+    'selected-plugin'?: string;
     /** Add custom fields support to entity */
-    customFields?: boolean;
+    'custom-fields'?: boolean;
     /** Make entity translatable */
     translatable?: boolean;
     /** Service type: basic or entity */
     type?: string;
     /** Selected entity name for entity service commands */
-    selectedEntity?: string;
+    'selected-entity'?: string;
 }
 
 export interface AddOperationResult {
@@ -79,9 +79,9 @@ export async function performAddOperation(options: AddOperationOptions): Promise
             }
             // Validate that a plugin name was provided for non-interactive mode
             if (
-                !options.selectedPlugin ||
-                typeof options.selectedPlugin !== 'string' ||
-                !options.selectedPlugin.trim()
+                !options['selected-plugin'] ||
+                typeof options['selected-plugin'] !== 'string' ||
+                !options['selected-plugin'].trim()
             ) {
                 throw new Error(
                     'Plugin name is required when running in non-interactive mode. Usage: vendure add -e <entity-name> --selected-plugin <plugin-name>',
@@ -92,13 +92,13 @@ export async function performAddOperation(options: AddOperationOptions): Promise
                 className: options.entity,
                 isNonInteractive: true,
                 config: options.config,
-                pluginName: options.selectedPlugin,
-                customFields: options.customFields,
+                pluginName: options['selected-plugin'],
+                customFields: options['custom-fields'],
                 translatable: options.translatable,
             });
             return {
                 success: true,
-                message: `Entity "${options.entity}" added successfully to plugin "${options.selectedPlugin}"`,
+                message: `Entity "${options.entity}" added successfully to plugin "${options['selected-plugin']}"`,
             };
         }
         if (options.service) {
@@ -110,9 +110,9 @@ export async function performAddOperation(options: AddOperationOptions): Promise
             }
             // Validate that a plugin name was provided for non-interactive mode
             if (
-                !options.selectedPlugin ||
-                typeof options.selectedPlugin !== 'string' ||
-                !options.selectedPlugin.trim()
+                !options['selected-plugin'] ||
+                typeof options['selected-plugin'] !== 'string' ||
+                !options['selected-plugin'].trim()
             ) {
                 throw new Error(
                     'Plugin name is required when running in non-interactive mode. Usage: vendure add -s <service-name> --selected-plugin <plugin-name>',
@@ -122,17 +122,17 @@ export async function performAddOperation(options: AddOperationOptions): Promise
                 serviceName: options.service,
                 isNonInteractive: true,
                 config: options.config,
-                pluginName: options.selectedPlugin,
-                serviceType: options.selectedEntity ? 'entity' : options.type || 'basic',
-                selectedEntityName: options.selectedEntity,
+                pluginName: options['selected-plugin'],
+                serviceType: options['selected-entity'] ? 'entity' : options.type || 'basic',
+                selectedEntityName: options['selected-entity'],
             });
             return {
                 success: true,
-                message: `Service "${options.service}" added successfully to plugin "${options.selectedPlugin}"`,
+                message: `Service "${options.service}" added successfully to plugin "${options['selected-plugin']}"`,
             };
         }
-        if (options.jobQueue) {
-            const pluginName = typeof options.jobQueue === 'string' ? options.jobQueue : undefined;
+        if (options['job-queue']) {
+            const pluginName = typeof options['job-queue'] === 'string' ? options['job-queue'] : undefined;
             // Validate required parameters for job queue
             if (!options.name || typeof options.name !== 'string' || !options.name.trim()) {
                 throw new Error(
@@ -140,9 +140,9 @@ export async function performAddOperation(options: AddOperationOptions): Promise
                 );
             }
             if (
-                !options.selectedService ||
-                typeof options.selectedService !== 'string' ||
-                !options.selectedService.trim()
+                !options['selected-service'] ||
+                typeof options['selected-service'] !== 'string' ||
+                !options['selected-service'].trim()
             ) {
                 throw new Error(
                     'Service name is required for job queue. Usage: vendure add -j [plugin-name] --name <job-name> --selectedService <service-name>',
@@ -153,7 +153,7 @@ export async function performAddOperation(options: AddOperationOptions): Promise
                 config: options.config,
                 pluginName,
                 name: options.name,
-                selectedService: options.selectedService,
+                selectedService: options['selected-service'],
             });
             return {
                 success: true,
@@ -179,15 +179,18 @@ export async function performAddOperation(options: AddOperationOptions): Promise
                 message: 'Codegen configuration added successfully',
             };
         }
-        if (options.apiExtension) {
-            const pluginName = typeof options.apiExtension === 'string' ? options.apiExtension : undefined;
+        if (options['api-extension']) {
+            const pluginName =
+                typeof options['api-extension'] === 'string' ? options['api-extension'] : undefined;
             // Validate that at least one of queryName or mutationName is provided and not empty
             const hasValidQueryName =
-                options.queryName && typeof options.queryName === 'string' && options.queryName.trim() !== '';
+                options['query-name'] &&
+                typeof options['query-name'] === 'string' &&
+                options['query-name'].trim() !== '';
             const hasValidMutationName =
-                options.mutationName &&
-                typeof options.mutationName === 'string' &&
-                options.mutationName.trim() !== '';
+                options['mutation-name'] &&
+                typeof options['mutation-name'] === 'string' &&
+                options['mutation-name'].trim() !== '';
 
             if (!hasValidQueryName && !hasValidMutationName) {
                 throw new Error(
@@ -197,7 +200,7 @@ export async function performAddOperation(options: AddOperationOptions): Promise
             }
 
             // If a string is passed for apiExtension, it should be a valid plugin name
-            if (typeof options.apiExtension === 'string' && !options.apiExtension.trim()) {
+            if (typeof options['api-extension'] === 'string' && !options['api-extension'].trim()) {
                 throw new Error(
                     'Plugin name cannot be empty when specified. ' +
                         'Usage: vendure add -a [plugin-name] --queryName <name> --mutationName <name>',
@@ -208,20 +211,21 @@ export async function performAddOperation(options: AddOperationOptions): Promise
                 isNonInteractive: true,
                 config: options.config,
                 pluginName,
-                queryName: options.queryName,
-                mutationName: options.mutationName,
-                selectedService: options.selectedService,
+                'query-name': options['query-name'],
+                'mutation-name': options['mutation-name'],
+                'selected-service': options['selected-service'],
             });
             return {
                 success: true,
                 message: 'API extension scaffold added successfully',
             };
         }
-        if (options.uiExtensions) {
-            const pluginName = typeof options.uiExtensions === 'string' ? options.uiExtensions : undefined;
+        if (options['ui-extensions']) {
+            const pluginName =
+                typeof options['ui-extensions'] === 'string' ? options['ui-extensions'] : undefined;
             // For UI extensions, if a boolean true is passed, plugin selection will be handled interactively
             // If a string is passed, it should be a valid plugin name
-            if (typeof options.uiExtensions === 'string' && !options.uiExtensions.trim()) {
+            if (typeof options['ui-extensions'] === 'string' && !options['ui-extensions'].trim()) {
                 throw new Error(
                     'Plugin name cannot be empty when specified. Usage: vendure add --uiExtensions [plugin-name]',
                 );
