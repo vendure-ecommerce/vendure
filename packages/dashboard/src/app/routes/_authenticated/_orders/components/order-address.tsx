@@ -2,15 +2,13 @@ import { Separator } from '@/vdb/components/ui/separator.js';
 import { ResultOf } from 'gql.tada';
 import { Globe, Phone } from 'lucide-react';
 import { orderAddressFragment } from '../orders.graphql.js';
+import { Trans } from '@/vdb/lib/trans.js';
 
 type OrderAddress = Omit<ResultOf<typeof orderAddressFragment>, 'country'> & {
     country: string | { code: string; name: string } | null;
 };
 
 export function OrderAddress({ address }: Readonly<{ address?: OrderAddress }>) {
-    if (!address) {
-        return null;
-    }
 
     const {
         fullName,
@@ -27,6 +25,10 @@ export function OrderAddress({ address }: Readonly<{ address?: OrderAddress }>) 
 
     const countryName = typeof country === 'string' ? country : country?.name;
     const countryCodeString = country && typeof country !== 'string' ? country?.code : countryCode;
+
+    if (!address || Object.values(address).every(value => !value)) {
+        return <div className="text-sm text-muted-foreground"><Trans>No address</Trans></div>;
+    }
 
     return (
         <div className="space-y-1 text-sm">

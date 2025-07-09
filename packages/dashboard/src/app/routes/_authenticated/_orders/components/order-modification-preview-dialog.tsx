@@ -1,5 +1,8 @@
+import { MoneyInput } from '@/vdb/components/data-input/money-input.js';
+import { FormFieldWrapper } from '@/vdb/components/shared/form-field-wrapper.js';
 import { Alert, AlertDescription, AlertTitle } from '@/vdb/components/ui/alert.js';
 import { Button } from '@/vdb/components/ui/button.js';
+import { Card, CardContent, CardHeader, CardTitle } from '@/vdb/components/ui/card.js';
 import {
     Dialog,
     DialogClose,
@@ -9,8 +12,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/vdb/components/ui/dialog.js';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/vdb/components/ui/form.js';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/vdb/components/ui/select.js';
+import { FormControl, FormField } from '@/vdb/components/ui/form.js';
 import { Textarea } from '@/vdb/components/ui/textarea.js';
 import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
 import { api } from '@/vdb/graphql/api.js';
@@ -18,12 +20,12 @@ import { useLocalFormat } from '@/vdb/hooks/use-local-format.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { useMutation } from '@tanstack/react-query';
 import { ResultOf, VariablesOf } from 'gql.tada';
-import React, { useEffect, useRef } from 'react';
+import { CheckIcon } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { modifyOrderDocument, orderDetailDocument } from '../orders.graphql.js';
 import { OrderTable } from './order-table.js';
 
-// Types
 export type OrderFragment = NonNullable<ResultOf<typeof orderDetailDocument>['order']>;
 export type ModifyOrderInput = VariablesOf<typeof modifyOrderDocument>['input'];
 
@@ -32,7 +34,16 @@ interface OrderModificationPreviewDialogProps {
     onOpenChange: (open: boolean) => void;
     orderSnapshot: OrderFragment;
     modifyOrderInput: ModifyOrderInput;
-    onResolve: () => void;
+    /**
+     * The price difference between the order snapshot and the preview order.
+     * If the dialog is cancelled, this will be undefined.
+     */
+    onResolve: (priceDifference?: number) => void;
+}
+
+interface PaymentRefundForm {
+    payments: Record<string, number>;
+    note: string;
 }
 
 export function OrderModificationPreviewDialog({
@@ -49,9 +60,20 @@ export function OrderModificationPreviewDialog({
     const previewMutation = useMutation({
         mutationFn: api.mutate(addCustomFields(modifyOrderDocument)),
     });
-    const [showRefundForm, setShowRefundForm] = React.useState(false);
-    const refundForm = useForm<{ paymentId: string; note: string }>({
-        defaultValues: { paymentId: '', note: '' },
+
+    // Create form with dynamic fields for each payment
+    const refundForm = useForm<PaymentRefundForm>({
+        defaultValues: {
+            note: '',
+            payments:
+                orderSnapshot.payments?.reduce(
+                    (acc, payment) => {
+                        acc[payment.id] = 0;
+                        return acc;
+                    },
+                    {} as Record<string, number>,
+                ) || {},
+        },
     });
 
     const confirmMutation = useMutation({
@@ -89,41 +111,41 @@ export function OrderModificationPreviewDialog({
         ? formatCurrency(Math.abs(priceDifference), previewOrder.currencyCode)
         : '';
 
+    // Calculate total refund amount from form
+    const totalRefundAmount =
+        orderSnapshot.payments?.reduce((total, payment) => {
+            const refundAmount = refundForm.watch(`payments.${payment.id}`) || 0;
+            return total + refundAmount;
+        }, 0) || 0;
+
+    // Check if total refund matches the required amount
+    const isRefundComplete = priceDifference > 0 || totalRefundAmount >= Math.abs(priceDifference);
+    const remainingAmount = Math.abs(priceDifference) - totalRefundAmount;
+
     // Confirm handler
     const handleConfirm = async () => {
         if (!previewOrder) return;
-        if (priceDifference >= 0) {
-            // No refund: just send mutation
-            await confirmMutation.mutateAsync({ ...modifyOrderInput, dryRun: false });
-            onResolve();
-        } else {
-            setShowRefundForm(true);
-        }
-    };
-    // Refund form submit
-    const handleRefundSubmit = refundForm.handleSubmit(({ paymentId, note }) => {
-        confirmMutation.mutate(
-            {
-                ...modifyOrderInput,
-                dryRun: false,
-                refund: {
+        const input: ModifyOrderInput = { ...modifyOrderInput, dryRun: false };
+        if (priceDifference < 0) {
+            // Create refunds array from form data
+            const { note, payments } = refundForm.getValues();
+            const refunds = Object.entries(payments)
+                .filter(([_, amount]) => amount > 0)
+                .map(([paymentId, amount]) => ({
                     paymentId,
-                    amount: Math.abs(priceDifference),
+                    amount,
                     reason: note,
-                },
-            },
-            {
-                onSuccess: data => {
-                    setShowRefundForm(false);
-                    onResolve();
-                },
-            },
-        );
-    });
+                }));
+
+            input.refunds = refunds;
+        }
+        await confirmMutation.mutateAsync(input);
+        onResolve(priceDifference);
+    };
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="min-w-[80vw] p-8">
+            <DialogContent className="min-w-[80vw] max-h-[90vh] p-8 overflow-hidden flex flex-col">
                 <DialogHeader>
                     <DialogTitle>
                         <Trans>Preview order modifications</Trans>
@@ -132,7 +154,7 @@ export function OrderModificationPreviewDialog({
                         <Trans>Review the changes before applying them to the order.</Trans>
                     </DialogDescription>
                 </DialogHeader>
-                <div className="space-y-4">
+                <div className="space-y-4 flex-1 overflow-y-auto">
                     {loading && (
                         <div className="text-center py-8">
                             <Trans>Loading preview…</Trans>
@@ -142,107 +164,158 @@ export function OrderModificationPreviewDialog({
                     {previewOrder && !loading && !error && (
                         <>
                             <OrderTable order={previewOrder} />
-                            <div className="w-full flex justify-end">
-                                <div className="max-w-lg">
-                                    {/* Refund/payment UI using Alert */}
-                                    {priceDifference < 0 && !showRefundForm && (
-                                        <Alert variant="destructive">
-                                            <AlertTitle>
-                                                <Trans>Refund required</Trans>
-                                            </AlertTitle>
-                                            <AlertDescription>
-                                                <Trans>
-                                                    A refund of {formattedDiff} is required. Select payment
-                                                    and enter a note to proceed.
-                                                </Trans>
-                                            </AlertDescription>
-                                        </Alert>
-                                    )}
-                                    {priceDifference < 0 && showRefundForm && (
-                                        <FormProvider {...refundForm}>
-                                            <form onSubmit={handleRefundSubmit} className="space-y-4 mt-4">
-                                                <FormField
-                                                    name="paymentId"
-                                                    control={refundForm.control}
-                                                    rules={{ required: true }}
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>
-                                                                <Trans>Select payment to refund</Trans>
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Select
-                                                                    value={field.value}
-                                                                    onValueChange={field.onChange}
+                            {/* Refund/payment UI using Alert */}
+                            {priceDifference < 0 && (
+                                <>
+                                    <Alert variant="destructive">
+                                        <AlertTitle>
+                                            <Trans>Refund required</Trans>
+                                        </AlertTitle>
+                                        <AlertDescription>
+                                            <Trans>
+                                                A refund of {formattedDiff} is required. Select payment
+                                                amounts and enter a note to proceed.
+                                            </Trans>
+                                        </AlertDescription>
+                                    </Alert>
+                                    <FormProvider {...refundForm}>
+                                        <form className="space-y-4 mt-4">
+                                            {/* Payment Cards */}
+                                            <div className="space-y-3">
+                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                    {orderSnapshot.payments?.map(payment => (
+                                                        <Card key={payment.id} className="">
+                                                            <CardHeader className="">
+                                                                <CardTitle className="flex gap-2 items-baseline">
+                                                                    <span className="">{payment.method}</span>
+                                                                    <span className="text-xs text-muted-foreground">
+                                                                        ID: {payment.transactionId}
+                                                                    </span>
+                                                                </CardTitle>
+                                                                <Button
+                                                                    type="button"
+                                                                    size="sm"
+                                                                    variant="outline"
+                                                                    className=""
+                                                                    onClick={() => {
+                                                                        const currentRefundAmount =
+                                                                            refundForm.getValues(
+                                                                                `payments.${payment.id}`,
+                                                                            ) || 0;
+                                                                        const availableAmount =
+                                                                            payment.amount;
+                                                                        const remainingNeeded =
+                                                                            Math.abs(priceDifference) -
+                                                                            totalRefundAmount;
+
+                                                                        // Calculate how much we can still refund from this payment method
+                                                                        const remainingFromThisPayment =
+                                                                            availableAmount -
+                                                                            currentRefundAmount;
+
+                                                                        // Take the minimum of what's needed and what's available
+                                                                        const amountToAdd = Math.min(
+                                                                            remainingFromThisPayment,
+                                                                            remainingNeeded,
+                                                                        );
+
+                                                                        if (amountToAdd > 0) {
+                                                                            refundForm.setValue(
+                                                                                `payments.${payment.id}`,
+                                                                                currentRefundAmount +
+                                                                                    amountToAdd,
+                                                                            );
+                                                                        }
+                                                                    }}
                                                                 >
-                                                                    <SelectTrigger>
-                                                                        <SelectValue
-                                                                            placeholder={i18n.t(
-                                                                                'Select payment',
+                                                                    <Trans>Refund from this method</Trans>
+                                                                </Button>
+                                                            </CardHeader>
+                                                            <CardContent className="pt-0">
+                                                                <div className="flex flex-col gap-3">
+                                                                    <div className="text-sm text-muted-foreground">
+                                                                        <Trans>Available:</Trans>{' '}
+                                                                        {formatCurrency(
+                                                                            payment.amount,
+                                                                            orderSnapshot.currencyCode,
+                                                                        )}
+                                                                    </div>
+                                                                    <div className="w-full">
+                                                                        <FormField
+                                                                            name={`payments.${payment.id}`}
+                                                                            control={refundForm.control}
+                                                                            render={({ field }) => (
+                                                                                <FormControl>
+                                                                                    <MoneyInput
+                                                                                        value={
+                                                                                            field.value || 0
+                                                                                        }
+                                                                                        onChange={
+                                                                                            field.onChange
+                                                                                        }
+                                                                                        currency={
+                                                                                            orderSnapshot.currencyCode
+                                                                                        }
+                                                                                    />
+                                                                                </FormControl>
                                                                             )}
                                                                         />
-                                                                    </SelectTrigger>
-                                                                    <SelectContent>
-                                                                        {orderSnapshot.payments?.map(
-                                                                            payment => (
-                                                                                <SelectItem
-                                                                                    key={payment.id}
-                                                                                    value={payment.id}
-                                                                                >
-                                                                                    {payment.method} (
-                                                                                    {formatCurrency(
-                                                                                        payment.amount,
-                                                                                        orderSnapshot.currencyCode,
-                                                                                    )}
-                                                                                    )
-                                                                                </SelectItem>
-                                                                            ),
-                                                                        )}
-                                                                    </SelectContent>
-                                                                </Select>
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                                <FormField
-                                                    name="note"
-                                                    control={refundForm.control}
-                                                    rules={{ required: true }}
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>
-                                                                <Trans>Refund note</Trans>
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Textarea
-                                                                    {...field}
-                                                                    placeholder={i18n.t('Enter refund note')}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                                <div className="flex gap-2 justify-end">
-                                                    <Button
-                                                        type="button"
-                                                        variant="secondary"
-                                                        onClick={() => setShowRefundForm(false)}
-                                                    >
-                                                        <Trans>Back</Trans>
-                                                    </Button>
-                                                    <Button
-                                                        type="submit"
-                                                        variant="default"
-                                                        disabled={confirmMutation.isPending}
-                                                    >
-                                                        <Trans>Confirm refund</Trans>
-                                                    </Button>
+                                                                    </div>
+                                                                </div>
+                                                            </CardContent>
+                                                        </Card>
+                                                    ))}
                                                 </div>
-                                            </form>
-                                        </FormProvider>
-                                    )}
+                                            </div>
+
+                                            {/* Total Refund Summary */}
+                                            <div className="bg-muted/50 rounded-lg pb-3">
+                                                <div className="flex items-center justify-between p-3">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-sm font-medium">
+                                                            <Trans>Total refund:</Trans>
+                                                        </span>
+                                                        <span className="text-sm">
+                                                            {formatCurrency(
+                                                                totalRefundAmount,
+                                                                orderSnapshot.currencyCode,
+                                                            )}
+                                                        </span>
+                                                        {isRefundComplete && (
+                                                            <CheckIcon className="h-4 w-4 text-green-600" />
+                                                        )}
+                                                    </div>
+                                                    {!isRefundComplete && (
+                                                        <div className="text-sm text-muted-foreground">
+                                                            <Trans>Remaining:</Trans>{' '}
+                                                            {formatCurrency(
+                                                                remainingAmount,
+                                                                orderSnapshot.currencyCode,
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="px-3">
+                                                    <FormFieldWrapper
+                                                        name="note"
+                                                        control={refundForm.control}
+                                                        rules={{ required: true }}
+                                                        render={({ field }) => (
+                                                            <Textarea
+                                                                {...field}
+                                                                className="bg-background"
+                                                                placeholder={i18n.t('Enter refund note')}
+                                                            />
+                                                        )}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </FormProvider>
+                                </>
+                            )}
+                            <div className="w-full flex justify-end">
+                                <div className="max-w-l mb-2">
                                     {priceDifference > 0 && (
                                         <Alert variant="destructive">
                                             <AlertTitle>
@@ -250,7 +323,7 @@ export function OrderModificationPreviewDialog({
                                             </AlertTitle>
                                             <AlertDescription>
                                                 <Trans>
-                                                    An additional payment of {formattedDiff} is required.
+                                                    An additional payment of {formattedDiff} will be required.
                                                 </Trans>
                                             </AlertDescription>
                                         </Alert>
@@ -278,27 +351,14 @@ export function OrderModificationPreviewDialog({
                             <Trans>Cancel</Trans>
                         </Button>
                     </DialogClose>
-                    {priceDifference < 0 ? (
-                        !showRefundForm && (
-                            <Button
-                                type="button"
-                                variant="default"
-                                onClick={handleConfirm}
-                                disabled={loading || !!error || confirmMutation.isPending}
-                            >
-                                <Trans>Confirm</Trans>
-                            </Button>
-                        )
-                    ) : (
-                        <Button
-                            type="button"
-                            variant="default"
-                            onClick={handleConfirm}
-                            disabled={loading || !!error || confirmMutation.isPending}
-                        >
-                            <Trans>Confirm</Trans>
-                        </Button>
-                    )}
+                    <Button
+                        type="button"
+                        variant="default"
+                        onClick={handleConfirm}
+                        disabled={loading || !!error || confirmMutation.isPending || !isRefundComplete}
+                    >
+                        <Trans>Confirm</Trans>
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

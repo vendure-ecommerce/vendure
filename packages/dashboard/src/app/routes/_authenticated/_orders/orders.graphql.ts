@@ -638,3 +638,83 @@ export const modifyOrderDocument = graphql(
     `,
     [orderDetailFragment, errorResultFragment],
 );
+
+export const settlePaymentDocument = graphql(
+    `
+        mutation SettlePayment($id: ID!) {
+            settlePayment(id: $id) {
+                __typename
+                ... on Payment {
+                    id
+                    state
+                    amount
+                    method
+                    metadata
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const transitionPaymentToStateDocument = graphql(
+    `
+        mutation TransitionPaymentToState($id: ID!, $state: String!) {
+            transitionPaymentToState(id: $id, state: $state) {
+                __typename
+                ... on Payment {
+                    id
+                    state
+                    amount
+                    method
+                    metadata
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const cancelPaymentDocument = graphql(
+    `
+        mutation CancelPayment($id: ID!) {
+            cancelPayment(id: $id) {
+                __typename
+                ... on Payment {
+                    id
+                    state
+                    amount
+                    method
+                    metadata
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const settleRefundDocument = graphql(
+    `
+        mutation SettleRefund($input: SettleRefundInput!) {
+            settleRefund(input: $input) {
+                __typename
+                ... on Refund {
+                    id
+                    state
+                    total
+                    items
+                    adjustment
+                    reason
+                    transactionId
+                    method
+                    metadata
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);

@@ -128,7 +128,8 @@ function ModifyOrderPage() {
         enabled: !!entity?.shippingAddress?.streetLine1,
     });
 
-    const { transitionToPreModifyingState, ManuallySelectNextState, selectNextState } = useTransitionOrderToState(entity?.id ?? '');
+    const { transitionToPreModifyingState, ManuallySelectNextState, selectNextState, transitionToState } =
+        useTransitionOrderToState(entity?.id ?? '');
 
     // --- Modification intent state ---
 
@@ -260,7 +261,9 @@ function ModifyOrderPage() {
     const [editingShippingAddress, setEditingShippingAddress] = useState(false);
     const [editingBillingAddress, setEditingBillingAddress] = useState(false);
 
-    function orderAddressToModifyOrderInput(address: AddressFragment): ModifyOrderInput['updateShippingAddress'] {
+    function orderAddressToModifyOrderInput(
+        address: AddressFragment,
+    ): ModifyOrderInput['updateShippingAddress'] {
         return {
             streetLine1: address.streetLine1,
             streetLine2: address.streetLine2,
@@ -369,12 +372,14 @@ function ModifyOrderPage() {
         return null;
     }
 
+    // On successful state transition, invalidate the order detail query and navigate to the order detail page
+    const onSuccess = () => {
+        const queryKey = getDetailQueryOptions(orderDetailDocument, { id: entity.id }).queryKey;
+        queryClient.invalidateQueries({ queryKey });
+        navigate({ to: `/orders/$id`, params: { id: entity?.id } });
+    };
+
     const handleCancelModificationClick = async () => {
-        const onSuccess = () => {
-            const queryKey = getDetailQueryOptions(orderDetailDocument, { id: entity.id }).queryKey;
-            queryClient.invalidateQueries({ queryKey });
-            navigate({ to: `/orders/$id`, params: { id: entity?.id } });
-        };
         const transitionError = await transitionToPreModifyingState();
         if (!transitionError) {
             onSuccess();
@@ -383,13 +388,18 @@ function ModifyOrderPage() {
         }
     };
 
-    const handleModificationSubmit = async () => {
-        const result = await transitionToPreModifyingState();
-        if (result) {
+    const handleModificationSubmit = async (priceDifference?: number) => {
+        const transitionError =
+            priceDifference && priceDifference > 0
+                ? await transitionToState('ArrangingAdditionalPayment')
+                : await transitionToPreModifyingState();
+        if (!transitionError) {
             const queryKey = getDetailQueryOptions(orderDetailDocument, { id: entity.id }).queryKey;
             await queryClient.invalidateQueries({ queryKey });
             setPreviewOpen(false);
             await navigate({ to: `/orders/$id`, params: { id: entity?.id } });
+        } else {
+            selectNextState({ onSuccess });
         }
     };
 
@@ -399,9 +409,13 @@ function ModifyOrderPage() {
                 <Trans>Modify order</Trans>
             </PageTitle>
             <PageActionBar>
-                <PageActionBarRight dropdownMenuItems={[{
-                    component: () => <div>Hello</div>,
-                }]}>
+                <PageActionBarRight
+                    dropdownMenuItems={[
+                        {
+                            component: () => <div>Hello</div>,
+                        },
+                    ]}
+                >
                     <Button type="button" variant="secondary" onClick={handleCancelModificationClick}>
                         <Trans>Cancel modification</Trans>
                     </Button>
@@ -441,7 +455,11 @@ function ModifyOrderPage() {
                         }
                     />
                     <div className="mt-4 flex justify-end">
-                        <Button type="button" onClick={() => setPreviewOpen(true)} disabled={!hasModifications}>
+                        <Button
+                            type="button"
+                            onClick={() => setPreviewOpen(true)}
+                            disabled={!hasModifications}
+                        >
                             <Trans>Preview changes</Trans>
                         </Button>
                     </div>

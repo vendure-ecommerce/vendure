@@ -36,15 +36,23 @@ export function useTransitionOrderToState(orderId: string | undefined) {
     const transitionOrderToStateMutation = useMutation({
         mutationFn: api.mutate(transitionOrderToStateDocument),
     });
-    const transitionToPreModifyingState = async () => {
-        if (data && orderId) {
+
+    const transitionToState = async (state: string) => {
+        if (orderId) {
             const { transitionOrderToState } = await transitionOrderToStateMutation.mutateAsync({
                 id: orderId,
-                state: data,
+                state,
             });
             if (transitionOrderToState?.__typename === 'OrderStateTransitionError') {
                 return transitionOrderToState.transitionError;
             }
+        }
+        return undefined;
+    }
+
+    const transitionToPreModifyingState = async () => {
+        if (data && orderId) {
+            return transitionToState(data);
         } else {
             return 'Could not find the state the order was in before it entered Modifying';
         }
@@ -124,6 +132,7 @@ export function useTransitionOrderToState(orderId: string | undefined) {
         error,
         preModifyingState: data,
         transitionToPreModifyingState,
+        transitionToState,
         ManuallySelectNextState,
         selectNextState: ({ onSuccess }: { onSuccess?: () => void }) => {
             setSelectStateOpen(true);

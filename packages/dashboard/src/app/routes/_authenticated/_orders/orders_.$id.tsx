@@ -19,7 +19,7 @@ import { ResultOf } from '@/vdb/graphql/graphql.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
-import { User } from 'lucide-react';
+import { ArrowRightLeft, Pencil, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { AddManualPaymentDialog } from './components/add-manual-payment-dialog.js';
 import { FulfillOrderDialog } from './components/fulfill-order-dialog.js';
@@ -119,9 +119,10 @@ function OrderDetailPage() {
     const showAddPaymentButton = shouldShowAddManualPaymentButton(entity);
     const showFulfillButton = canAddFulfillment(entity);
 
-    function refreshOrderAndHistory() {
-        refreshEntity();
+    async function refreshOrderAndHistory() {
         if (entity) {
+            const queryKey = getDetailQueryOptions(orderDetailDocument, { id: entity.id }).queryKey;
+            await queryClient.invalidateQueries({ queryKey });
             queryClient.refetchQueries({ queryKey: orderHistoryQueryKey(entity.id) });
         }
     }
@@ -132,9 +133,26 @@ function OrderDetailPage() {
             <PageActionBar>
                 <PageActionBarRight
                     dropdownMenuItems={[
+                        ...(nextStates.includes('Modifying')
+                            ? [
+                                  {
+                                      component: () => (
+                                          <DropdownMenuItem onClick={handleModifyClick}>
+                                              <Pencil className="w-4 h-4" />
+                                              <Trans>Modify</Trans>
+                                          </DropdownMenuItem>
+                                      ),
+                                  },
+                              ]
+                            : []),
                         {
                             component: () => (
-                                <DropdownMenuItem onClick={() => selectNextState({ onSuccess: () => refreshOrderAndHistory() })}>
+                                <DropdownMenuItem
+                                    onClick={() =>
+                                        selectNextState({ onSuccess: () => refreshOrderAndHistory() })
+                                    }
+                                >
+                                    <ArrowRightLeft className="w-4 h-4" />
                                     <Trans>Transition to state...</Trans>
                                 </DropdownMenuItem>
                             ),
@@ -161,11 +179,6 @@ function OrderDetailPage() {
                             />
                         </PermissionGuard>
                     )}
-                    {nextStates.includes('Modifying') && (
-                        <Button variant="secondary" onClick={handleModifyClick}>
-                            <Trans>Modify</Trans>
-                        </Button>
-                    )}
                 </PageActionBarRight>
             </PageActionBar>
             <PageLayout>
@@ -176,6 +189,18 @@ function OrderDetailPage() {
                     <OrderTaxSummary order={entity} />
                 </PageBlock>
                 <CustomFieldsPageBlock column="main" entityType="Order" control={form.control} />
+                <PageBlock column="main" blockId="payment-details" title={<Trans>Payment details</Trans>}>
+                    <div className="grid lg:grid-cols-2 gap-4">
+                        {entity?.payments?.map(payment => (
+                            <PaymentDetails
+                                key={payment.id}
+                                payment={payment}
+                                currencyCode={entity.currencyCode}
+                                onSuccess={() => refreshOrderAndHistory()}
+                            />
+                        ))}
+                    </div>
+                </PageBlock>
                 <PageBlock column="main" blockId="order-history" title={<Trans>Order history</Trans>}>
                     <OrderHistoryContainer orderId={entity.id} />
                 </PageBlock>
@@ -208,16 +233,6 @@ function OrderDetailPage() {
                         )}
                     </div>
                 </PageBlock>
-                <PageBlock column="side" blockId="payment-details" title={<Trans>Payment details</Trans>}>
-                    {entity?.payments?.map(payment => (
-                        <PaymentDetails
-                            key={payment.id}
-                            payment={payment}
-                            currencyCode={entity.currencyCode}
-                        />
-                    ))}
-                </PageBlock>
-
                 <PageBlock
                     column="side"
                     blockId="fulfillment-details"
