@@ -145,7 +145,7 @@ export async function performAddOperation(options: AddOperationOptions): Promise
                 !options['selected-service'].trim()
             ) {
                 throw new Error(
-                    'Service name is required for job queue. Usage: vendure add -j [plugin-name] --name <job-name> --selectedService <service-name>',
+                    'Service name is required for job queue. Usage: vendure add -j [plugin-name] --name <job-name> --selected-service <service-name>',
                 );
             }
             await addJobQueueCommand.run({
@@ -194,8 +194,8 @@ export async function performAddOperation(options: AddOperationOptions): Promise
 
             if (!hasValidQueryName && !hasValidMutationName) {
                 throw new Error(
-                    'At least one of queryName or mutationName must be specified as a non-empty string. ' +
-                        'Usage: vendure add -a [plugin-name] --queryName <name> --mutationName <name>',
+                    'At least one of query-name or mutation-name must be specified as a non-empty string. ' +
+                        'Usage: vendure add -a [plugin-name] --query-name <name> --mutation-name <name>',
                 );
             }
 
@@ -203,7 +203,7 @@ export async function performAddOperation(options: AddOperationOptions): Promise
             if (typeof options['api-extension'] === 'string' && !options['api-extension'].trim()) {
                 throw new Error(
                     'Plugin name cannot be empty when specified. ' +
-                        'Usage: vendure add -a [plugin-name] --queryName <name> --mutationName <name>',
+                        'Usage: vendure add -a [plugin-name] --query-name <name> --mutation-name <name>',
                 );
             }
 
@@ -227,7 +227,7 @@ export async function performAddOperation(options: AddOperationOptions): Promise
             // If a string is passed, it should be a valid plugin name
             if (typeof options['ui-extensions'] === 'string' && !options['ui-extensions'].trim()) {
                 throw new Error(
-                    'Plugin name cannot be empty when specified. Usage: vendure add --uiExtensions [plugin-name]',
+                    'Plugin name cannot be empty when specified. Usage: vendure add --ui-extensions [plugin-name]',
                 );
             }
             await addUiExtensionsCommand.run({

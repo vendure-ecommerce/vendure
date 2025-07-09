@@ -69,8 +69,8 @@ async function addApiExtension(
 
         if (!hasValidQueryName && !hasValidMutationName) {
             throw new Error(
-                'At least one of queryName or mutationName must be specified as a non-empty string in non-interactive mode.\n' +
-                    'Usage: npx vendure add -a <PluginName> --queryName <name> --mutationName <name>',
+                'At least one of query-name or mutation-name must be specified as a non-empty string in non-interactive mode.\n' +
+                    'Usage: npx vendure add -a <PluginName> --query-name <name> --mutation-name <name>',
             );
         }
     }
@@ -95,7 +95,7 @@ async function addApiExtension(
         if (!options['selected-service'] || options['selected-service'].trim() === '') {
             throw new Error(
                 'Service must be specified in non-interactive mode.\n' +
-                    'Usage: npx vendure add -a <PluginName> --queryName <name> --mutationName <name> --selectedService <service-name>',
+                    'Usage: npx vendure add -a <PluginName> --query-name <name> --mutation-name <name> --selected-service <service-name>',
             );
         }
 
