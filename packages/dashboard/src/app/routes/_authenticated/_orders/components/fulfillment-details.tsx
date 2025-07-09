@@ -12,7 +12,7 @@ import {
     orderDetailFragment,
     transitionFulfillmentToStateDocument,
 } from '../orders.graphql.js';
-import { StateTransitionControl } from './state-transition-control.js';
+import { getTypeForState, StateTransitionControl } from './state-transition-control.js';
 
 type Order = NonNullable<ResultOf<typeof orderDetailFragment>>;
 
@@ -87,6 +87,7 @@ export function FulfillmentDetails({ order, fulfillment, onSuccess }: Readonly<F
         nextOtherStates().forEach(state => {
             actions.push({
                 label: `Transition to ${state}`,
+                type: getTypeForState(state),
                 onClick: () => handleStateTransition(state),
                 disabled: transitionFulfillmentMutation.isPending,
             });
@@ -140,11 +141,13 @@ export function FulfillmentDetails({ order, fulfillment, onSuccess }: Readonly<F
                 </div>
             )}
 
-            <StateTransitionControl
-                currentState={fulfillment.state}
-                actions={getFulfillmentActions()}
-                isLoading={transitionFulfillmentMutation.isPending}
-            />
+            <div className="mt-3 pt-3 border-t">
+                <StateTransitionControl
+                    currentState={fulfillment.state}
+                    actions={getFulfillmentActions()}
+                    isLoading={transitionFulfillmentMutation.isPending}
+                />
+            </div>
         </div>
     );
 }

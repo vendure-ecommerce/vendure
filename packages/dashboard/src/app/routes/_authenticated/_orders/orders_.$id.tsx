@@ -1,6 +1,5 @@
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
-import { Badge } from '@/vdb/components/ui/badge.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { DropdownMenuItem } from '@/vdb/components/ui/dropdown-menu.js';
 import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
@@ -19,7 +18,8 @@ import { ResultOf } from '@/vdb/graphql/graphql.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
-import { ArrowRightLeft, Pencil, User } from 'lucide-react';
+import { Pencil, User } from 'lucide-react';
+import { useMemo } from 'react';
 import { toast } from 'sonner';
 import { AddManualPaymentDialog } from './components/add-manual-payment-dialog.js';
 import { FulfillOrderDialog } from './components/fulfill-order-dialog.js';
@@ -30,6 +30,7 @@ import { orderHistoryQueryKey } from './components/order-history/use-order-histo
 import { OrderTable } from './components/order-table.js';
 import { OrderTaxSummary } from './components/order-tax-summary.js';
 import { PaymentDetails } from './components/payment-details.js';
+import { getTypeForState, StateTransitionControl } from './components/state-transition-control.js';
 import { useTransitionOrderToState } from './components/use-transition-order-to-state.js';
 import { orderDetailDocument, transitionOrderToStateDocument } from './orders.graphql.js';
 import { canAddFulfillment, shouldShowAddManualPaymentButton } from './utils/order-utils.js';
@@ -96,7 +97,7 @@ function OrderDetailPage() {
             });
         },
     });
-    const { ManuallySelectNextState, selectNextState } = useTransitionOrderToState(entity?.id);
+    const { transitionToState } = useTransitionOrderToState(entity?.id);
     const transitionOrderToStateMutation = useMutation({
         mutationFn: api.mutate(transitionOrderToStateDocument),
     });
@@ -127,6 +128,23 @@ function OrderDetailPage() {
         }
     }
 
+    const stateTransitionActions = useMemo(() => {
+        return entity.nextStates.map(state => ({
+            label: `Transition to ${state}`,
+            type: getTypeForState(state),
+            onClick: async () => {
+                const transitionError = await transitionToState(state);
+                if (transitionError) {
+                    toast(i18n.t('Failed to transition order to state'), {
+                        description: transitionError,
+                    });
+                } else {
+                    refreshOrderAndHistory();
+                }
+            },
+        }));
+    }, [entity, transitionToState, i18n]);
+
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>{entity?.code ?? ''}</PageTitle>
@@ -145,18 +163,6 @@ function OrderDetailPage() {
                                   },
                               ]
                             : []),
-                        {
-                            component: () => (
-                                <DropdownMenuItem
-                                    onClick={() =>
-                                        selectNextState({ onSuccess: () => refreshOrderAndHistory() })
-                                    }
-                                >
-                                    <ArrowRightLeft className="w-4 h-4" />
-                                    <Trans>Transition to state...</Trans>
-                                </DropdownMenuItem>
-                            ),
-                        },
                     ]}
                 >
                     {showAddPaymentButton && (
@@ -204,8 +210,8 @@ function OrderDetailPage() {
                 <PageBlock column="main" blockId="order-history" title={<Trans>Order history</Trans>}>
                     <OrderHistoryContainer orderId={entity.id} />
                 </PageBlock>
-                <PageBlock column="side" blockId="state" title={<Trans>State</Trans>}>
-                    <Badge variant="outline">{entity?.state}</Badge>
+                <PageBlock column="side" blockId="state">
+                    <StateTransitionControl currentState={entity?.state} actions={stateTransitionActions} isLoading={transitionOrderToStateMutation.isPending} />
                 </PageBlock>
                 <PageBlock column="side" blockId="customer" title={<Trans>Customer</Trans>}>
                     <Button variant="ghost" asChild>
@@ -261,7 +267,6 @@ function OrderDetailPage() {
                     )}
                 </PageBlock>
             </PageLayout>
-            <ManuallySelectNextState availableStates={nextStates} />
         </Page>
     );
 }

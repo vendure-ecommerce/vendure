@@ -18,7 +18,7 @@ import {
     transitionPaymentToStateDocument,
 } from '../orders.graphql.js';
 import { SettleRefundDialog } from './settle-refund-dialog.js';
-import { StateTransitionControl } from './state-transition-control.js';
+import { getTypeForState, StateTransitionControl } from './state-transition-control.js';
 
 type PaymentDetailsProps = {
     payment: ResultOf<typeof paymentWithRefundsFragment>;
@@ -144,6 +144,7 @@ export function PaymentDetails({ payment, currencyCode, onSuccess }: Readonly<Pa
         nextOtherStates().forEach(state => {
             actions.push({
                 label: state === 'Cancelled' ? 'Cancel payment' : `Transition to ${state}`,
+                type: getTypeForState(state),
                 onClick: () => handlePaymentStateTransition(state),
                 disabled: transitionPaymentMutation.isPending || cancelPaymentMutation.isPending,
             });
@@ -250,15 +251,17 @@ export function PaymentDetails({ payment, currencyCode, onSuccess }: Readonly<Pa
                         </CollapsibleContent>
                     </Collapsible>
                 )}
-                <StateTransitionControl
-                    currentState={payment.state}
-                    actions={getPaymentActions()}
-                    isLoading={
-                        settlePaymentMutation.isPending ||
-                        transitionPaymentMutation.isPending ||
-                        cancelPaymentMutation.isPending
-                    }
-                />
+                <div className="mt-3 pt-3 border-t">
+                    <StateTransitionControl
+                        currentState={payment.state}
+                        actions={getPaymentActions()}
+                        isLoading={
+                            settlePaymentMutation.isPending ||
+                            transitionPaymentMutation.isPending ||
+                            cancelPaymentMutation.isPending
+                        }
+                    />
+                </div>
             </div>
             <SettleRefundDialog
                 open={settleRefundDialogOpen}

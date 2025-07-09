@@ -24,8 +24,8 @@ type StateTransitionControlProps = {
     isLoading?: boolean;
 };
 
-function getCurrentStateType(currentState: string): StateType {
-    const currentStateLower = currentState.toLowerCase();
+export function getTypeForState(state: string): StateType {
+    const currentStateLower = state.toLowerCase();
     switch (currentStateLower) {
         case 'cancelled':
         case 'error':
@@ -44,7 +44,7 @@ export function StateTransitionControl({
     actions,
     isLoading,
 }: Readonly<StateTransitionControlProps>) {
-    const currentStateType = getCurrentStateType(currentState);
+    const currentStateType = getTypeForState(currentState);
     let stylesForType = '';
     if (currentStateType === 'destructive') {
         stylesForType = 'border-destructive bg-destructive/10 text-destructive';
@@ -53,47 +53,50 @@ export function StateTransitionControl({
     }
 
     return (
-        <div className="mt-3 pt-3 border-t">
-            <div className="flex">
-                <div
-                    className={cn(
-                        'inline-flex items-center justify-center gap-2 whitespace-nowrap h-8 rounded-md px-3 text-xs font-medium border border-input bg-background',
-                        stylesForType,
-                        actions.length > 0 && 'rounded-r-none',
-                    )}
-                >
-                    <Trans>State: {currentState}</Trans>
-                </div>
-                {actions.length > 0 && (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                disabled={isLoading}
-                                className={cn(
-                                    'rounded-l-none border-l-0 shadow-none',
-                                    stylesForType,
-                                    'bg-background',
-                                )}
-                            >
-                                <EllipsisVertical className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            {actions.map((action, index) => (
+        <div className="flex min-w-0">
+            <div
+                className={cn(
+                    'inline-flex flex-wrap items-center justify-start gap-1 h-8 rounded-md px-3 text-xs font-medium border border-input bg-background min-w-0',
+                    stylesForType,
+                    actions.length > 0 && 'rounded-r-none',
+                )}
+            >
+                <span className="truncate" title={currentState}>
+                    {currentState}
+                </span>
+            </div>
+            {actions.length > 0 && (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={isLoading}
+                            className={cn(
+                                'rounded-l-none border-l-0 shadow-none',
+                                stylesForType,
+                                'bg-background',
+                            )}
+                        >
+                            <EllipsisVertical className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        {actions.map((action, index) => {
+                            return (
                                 <DropdownMenuItem
                                     key={action.label + index}
                                     onClick={action.onClick}
+                                    variant={action.type === 'destructive' ? 'destructive' : 'default'}
                                     disabled={action.disabled || isLoading}
                                 >
                                     <Trans>{action.label}</Trans>
                                 </DropdownMenuItem>
-                            ))}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                )}
-            </div>
+                            );
+                        })}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            )}
         </div>
     );
 }
