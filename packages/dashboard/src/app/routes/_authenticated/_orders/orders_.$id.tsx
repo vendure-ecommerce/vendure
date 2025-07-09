@@ -32,8 +32,10 @@ import { OrderTaxSummary } from './components/order-tax-summary.js';
 import { PaymentDetails } from './components/payment-details.js';
 import { getTypeForState, StateTransitionControl } from './components/state-transition-control.js';
 import { useTransitionOrderToState } from './components/use-transition-order-to-state.js';
-import { orderDetailDocument, transitionOrderToStateDocument } from './orders.graphql.js';
+import { orderDetailDocument, setOrderCustomFieldsDocument, transitionOrderToStateDocument } from './orders.graphql.js';
 import { canAddFulfillment, shouldShowAddManualPaymentButton } from './utils/order-utils.js';
+import { CustomFieldsForm } from '@/vdb/components/shared/custom-fields-form.js';
+import { useCustomFieldConfig } from '@/vdb/hooks/use-custom-field-config.js';
 
 const pageId = 'order-detail';
 
@@ -80,7 +82,8 @@ function OrderDetailPage() {
     const { form, submitHandler, entity, isPending, refreshEntity } = useDetailPage({
         pageId,
         queryDocument: orderDetailDocument,
-        setValuesForUpdate: entity => {
+        updateDocument: setOrderCustomFieldsDocument,
+        setValuesForUpdate: (entity: any) => {
             return {
                 id: entity.id,
                 customFields: entity.customFields,
@@ -101,7 +104,7 @@ function OrderDetailPage() {
     const transitionOrderToStateMutation = useMutation({
         mutationFn: api.mutate(transitionOrderToStateDocument),
     });
-
+    const customFieldConfig = useCustomFieldConfig('Order');
     if (!entity) {
         return null;
     }
@@ -194,7 +197,14 @@ function OrderDetailPage() {
                 <PageBlock column="main" blockId="tax-summary" title={<Trans>Tax summary</Trans>}>
                     <OrderTaxSummary order={entity} />
                 </PageBlock>
-                <CustomFieldsPageBlock column="main" entityType="Order" control={form.control} />
+                {customFieldConfig?.length ? (
+                    <PageBlock column="main" blockId="custom-fields">
+                        <CustomFieldsForm entityType="Order" control={form.control} />
+                        <div className="flex justify-end">
+                            <Button type="submit" disabled={!form.formState.isDirty || !form.formState.isValid}>Save</Button>
+                        </div>
+                    </PageBlock>
+                ) : null}
                 <PageBlock column="main" blockId="payment-details" title={<Trans>Payment details</Trans>}>
                     <div className="grid lg:grid-cols-2 gap-4">
                         {entity?.payments?.map(payment => (

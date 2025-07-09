@@ -165,7 +165,6 @@ export const orderLineFragment = graphql(
             linePriceWithTax
             discountedLinePrice
             discountedLinePriceWithTax
-            customFields
         }
     `,
     [assetFragment],
@@ -278,6 +277,7 @@ export const orderDetailFragment = graphql(
                     id
                 }
             }
+            customFields
         }
     `,
     [
@@ -294,7 +294,6 @@ export const orderDetailDocument = graphql(
         query GetOrder($id: ID!) {
             order(id: $id) {
                 ...OrderDetail
-                customFields
             }
         }
     `,
@@ -718,3 +717,11 @@ export const settleRefundDocument = graphql(
     `,
     [errorResultFragment],
 );
+
+export const setOrderCustomFieldsDocument = graphql(`
+    mutation SetOrderCustomFields($input: UpdateOrderInput!) {
+        setOrderCustomFields(input: $input) {
+            id
+        }
+    }
+`);

@@ -8,7 +8,7 @@ import { usePage } from '@/vdb/hooks/use-page.js';
 import { cn } from '@/vdb/lib/utils.js';
 import { useMediaQuery } from '@uidotdev/usehooks';
 import { EllipsisVerticalIcon } from 'lucide-react';
-import React, { ComponentProps } from 'react';
+import React, { ComponentProps, useMemo } from 'react';
 import { Control, UseFormReturn } from 'react-hook-form';
 
 import { DashboardActionBarItem } from '../extension-api/types/layout.js';
@@ -412,8 +412,9 @@ export function PageBlock({
     blockId,
     column,
 }: Readonly<PageBlockProps>) {
+    const contextValue = useMemo(() => ({ blockId, title, description, column }), [blockId, title, description, column]);
     return (
-        <PageBlockContext.Provider value={{ blockId, title, description, column }}>
+        <PageBlockContext.Provider value={contextValue}>
             <LocationWrapper>
                 <Card className={cn('w-full', className)}>
                     {title || description ? (
@@ -444,9 +445,10 @@ export function FullWidthPageBlock({
     children,
     className,
     blockId,
-}: Pick<PageBlockProps, 'children' | 'className' | 'blockId'>) {
+}: Readonly<Pick<PageBlockProps, 'children' | 'className' | 'blockId'>>) {
+    const contextValue = useMemo(() => ({ blockId, column: 'main' as const }), [blockId]);
     return (
-        <PageBlockContext.Provider value={{ blockId, column: 'main' }}>
+        <PageBlockContext.Provider value={contextValue}>
             <LocationWrapper>
                 <div className={cn('w-full', className)}>{children}</div>
             </LocationWrapper>
@@ -468,11 +470,11 @@ export function CustomFieldsPageBlock({
     column,
     entityType,
     control,
-}: {
+}: Readonly<{
     column: 'main' | 'side';
     entityType: string;
     control: Control<any, any>;
-}) {
+}>) {
     const customFieldConfig = useCustomFieldConfig(entityType);
     if (!customFieldConfig || customFieldConfig.length === 0) {
         return null;

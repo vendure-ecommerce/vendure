@@ -1,4 +1,5 @@
-import { DocumentNode, FieldNode, FragmentDefinitionNode, Kind, OperationTypeNode } from 'graphql';
+import { DocumentNode, FieldNode, FragmentDefinitionNode, Kind, parse } from 'graphql';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { CustomFieldConfig, CustomFields } from '../../common/generated-types';
 
@@ -8,138 +9,45 @@ import { addCustomFields } from './add-custom-fields';
 describe('addCustomFields()', () => {
     let documentNode: DocumentNode;
 
-    function generateFragmentDefinitionFor(type: keyof CustomFields): FragmentDefinitionNode {
-        return {
-            kind: Kind.FRAGMENT_DEFINITION,
-            name: {
-                kind: Kind.NAME,
-                value: type,
-            },
-            typeCondition: {
-                kind: Kind.NAMED_TYPE,
-                name: {
-                    kind: Kind.NAME,
-                    value: type,
-                },
-            },
-            directives: [],
-            selectionSet: {
-                kind: Kind.SELECTION_SET,
-                selections: [],
-            },
-        };
-    }
-
     beforeEach(() => {
-        documentNode = {
-            kind: Kind.DOCUMENT,
-            definitions: [
-                {
-                    kind: Kind.OPERATION_DEFINITION,
-                    operation: OperationTypeNode.QUERY,
-                    name: {
-                        kind: Kind.NAME,
-                        value: 'GetProductWithVariants',
-                    },
-                    variableDefinitions: [],
-                    directives: [],
-                    selectionSet: {
-                        kind: Kind.SELECTION_SET,
-                        selections: [
-                            {
-                                kind: Kind.FIELD,
-                                name: {
-                                    kind: Kind.NAME,
-                                    value: 'product',
-                                },
-                                arguments: [],
-                                directives: [],
-                                selectionSet: {
-                                    kind: Kind.SELECTION_SET,
-                                    selections: [
-                                        {
-                                            kind: Kind.FRAGMENT_SPREAD,
-                                            name: {
-                                                kind: Kind.NAME,
-                                                value: 'ProductWithVariants',
-                                            },
-                                            directives: [],
-                                        },
-                                    ],
-                                },
-                            },
-                        ],
-                    },
-                },
-                {
-                    kind: Kind.FRAGMENT_DEFINITION,
-                    name: {
-                        kind: Kind.NAME,
-                        value: 'ProductWithVariants',
-                    },
-                    typeCondition: {
-                        kind: Kind.NAMED_TYPE,
-                        name: {
-                            kind: Kind.NAME,
-                            value: 'Product',
-                        },
-                    },
-                    directives: [],
-                    selectionSet: {
-                        kind: Kind.SELECTION_SET,
-                        selections: [
-                            {
-                                kind: Kind.FIELD,
-                                name: {
-                                    kind: Kind.NAME,
-                                    value: 'id',
-                                },
-                                arguments: [],
-                                directives: [],
-                            },
-                            {
-                                kind: Kind.FIELD,
-                                name: {
-                                    kind: Kind.NAME,
-                                    value: 'translations',
-                                },
-                                arguments: [],
-                                directives: [],
-                                selectionSet: {
-                                    kind: Kind.SELECTION_SET,
-                                    selections: [
-                                        {
-                                            kind: Kind.FIELD,
-                                            name: {
-                                                kind: Kind.NAME,
-                                                value: 'languageCode',
-                                            },
-                                            arguments: [],
-                                            directives: [],
-                                        },
-                                        {
-                                            kind: Kind.FIELD,
-                                            name: {
-                                                kind: Kind.NAME,
-                                                value: 'name',
-                                            },
-                                            arguments: [],
-                                            directives: [],
-                                        },
-                                    ],
-                                },
-                            },
-                        ],
-                    },
-                },
-                generateFragmentDefinitionFor('ProductVariant'),
-                generateFragmentDefinitionFor('ProductOptionGroup'),
-                generateFragmentDefinitionFor('ProductOption'),
-                generateFragmentDefinitionFor('User'),
-                generateFragmentDefinitionFor('Customer'),
-                generateFragmentDefinitionFor('Address'),
-            ],
-        };
+        const sdl = `
+            query GetProductWithVariants {
+                product {
+                    ...ProductWithVariants
+                }
+            }
+
+            fragment ProductWithVariants on Product {
+                id
+                translations {
+                    languageCode
+                    name
+                }
+                variants {
+                    ...ProductVariant
+                }
+            }
+
+            fragment ProductVariant on ProductVariant {
+            }
+
+            fragment ProductOptionGroup on ProductOptionGroup {
+            }
+
+            fragment ProductOption on ProductOption {
+            }
+
+            fragment User on User {
+            }
+
+            fragment Customer on Customer {
+            }
+
+            fragment Address on Address {
+            }
+        `;
+
+        documentNode = parse(sdl);
     });
 
     it('Adds customFields to Product fragment', () => {
