@@ -7,11 +7,14 @@ import { useCustomFieldConfig } from '@/vdb/hooks/use-custom-field-config.js';
 import { usePage } from '@/vdb/hooks/use-page.js';
 import { cn } from '@/vdb/lib/utils.js';
 import { useMediaQuery } from '@uidotdev/usehooks';
+import { EllipsisVerticalIcon } from 'lucide-react';
 import React, { ComponentProps } from 'react';
 import { Control, UseFormReturn } from 'react-hook-form';
 
 import { DashboardActionBarItem } from '../extension-api/types/layout.js';
 
+import { Button } from '@/vdb/components/ui/button.js';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/vdb/components/ui/dropdown-menu.js';
 import { PageBlockContext } from '@/vdb/framework/layout-engine/page-block-provider.js';
 import { PageContext, PageContextValue } from '@/vdb/framework/layout-engine/page-provider.js';
 import { getDashboardActionBarItems, getDashboardPageBlocks } from './layout-extensions.js';
@@ -295,6 +298,8 @@ export function PageActionBarLeft({ children }: Readonly<{ children: React.React
     return <div className="flex justify-start gap-2">{children}</div>;
 }
 
+type InlineDropdownItem = Omit<DashboardActionBarItem, 'type' | 'pageId'>;
+
 /**
  * @description
  * **Status: Developer Preview**
@@ -303,24 +308,68 @@ export function PageActionBarLeft({ children }: Readonly<{ children: React.React
  * @docsPage PageActionBar
  * @since 3.3.0
  */
-export function PageActionBarRight({ children }: Readonly<{ children: React.ReactNode }>) {
+export function PageActionBarRight({
+    children,
+    dropdownMenuItems,
+}: Readonly<{
+    children: React.ReactNode;
+    dropdownMenuItems?: InlineDropdownItem[];
+}>) {
     const page = usePage();
     const actionBarItems = page.pageId ? getDashboardActionBarItems(page.pageId) : [];
+    const actionBarButtonItems = actionBarItems.filter(item => item.type !== 'dropdown');
+    const actionBarDropdownItems = [
+        ...(dropdownMenuItems ?? []).map(item => ({
+            ...item,
+            pageId: page.pageId ?? '',
+            type: 'dropdown' as const,
+        })),
+        ...actionBarItems.filter(item => item.type === 'dropdown'),
+    ];
+
     return (
         <div className="flex justify-end gap-2">
-            {actionBarItems.map((item, index) => (
-                <PageActionBarItem key={index} item={item} page={page} />
+            {actionBarButtonItems.map((item, index) => (
+                <PageActionBarItem key={item.pageId + index} item={item} page={page} />
             ))}
             {children}
+            {actionBarDropdownItems.length > 0 && (
+                <PageActionBarDropdown items={actionBarDropdownItems} page={page} />
+            )}
         </div>
     );
 }
 
-function PageActionBarItem({ item, page }: { item: DashboardActionBarItem; page: PageContextValue }) {
+function PageActionBarItem({
+    item,
+    page,
+}: Readonly<{ item: DashboardActionBarItem; page: PageContextValue }>) {
     return (
         <PermissionGuard requires={item.requiresPermission ?? []}>
             <item.component context={page} />
         </PermissionGuard>
+    );
+}
+
+function PageActionBarDropdown({
+    items,
+    page,
+}: Readonly<{ items: DashboardActionBarItem[]; page: PageContextValue }>) {
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                    <EllipsisVerticalIcon className="w-4 h-4" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+                {items.map((item, index) => (
+                    <PermissionGuard key={item.pageId + index} requires={item.requiresPermission ?? []}>
+                        <item.component context={page} />
+                    </PermissionGuard>
+                ))}
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 }
 
