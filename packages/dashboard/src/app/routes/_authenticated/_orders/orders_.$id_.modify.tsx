@@ -17,7 +17,6 @@ import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-ro
 import { ResultOf, VariablesOf } from 'gql.tada';
 import { User } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { CustomerAddressSelector } from './components/customer-address-selector.js';
 import { EditOrderTable } from './components/edit-order-table.js';
@@ -72,7 +71,7 @@ export const Route = createFileRoute('/_authenticated/_orders/orders_/$id_/modif
 // --- AddedLine type for added items ---
 interface AddedLine {
     id: string;
-    featuredAsset?: any | null;
+    featuredAsset?: any;
     productVariant: {
         id: string;
         name: string;
@@ -102,7 +101,7 @@ function ModifyOrderPage() {
     const navigate = useNavigate({ from: '/orders/$id/modify' });
     const { i18n } = useLingui();
     const queryClient = useQueryClient();
-    const { form, submitHandler, entity, isPending, refreshEntity } = useDetailPage({
+    const { form, submitHandler, entity } = useDetailPage({
         pageId,
         queryDocument: orderDetailDocument,
         setValuesForUpdate: entity => {
@@ -121,10 +120,6 @@ function ModifyOrderPage() {
                 description: err instanceof Error ? err.message : 'Unknown error',
             });
         },
-    });
-
-    const orderLineForm = useForm<{ input: { customFields: Record<string, any> } }>({
-        defaultValues: {},
     });
 
     const { data: eligibleShippingMethods } = useQuery({
@@ -321,7 +316,7 @@ function ModifyOrderPage() {
             ?.map(item => {
                 const variantInfo = addedVariants.get(item.productVariantId);
                 return variantInfo
-                    ? {
+                    ? ({
                           id: `added-${item.productVariantId}`,
                           featuredAsset: variantInfo.productAsset ?? null,
                           productVariant: {
@@ -334,10 +329,10 @@ function ModifyOrderPage() {
                           quantity: item.quantity,
                           linePrice: (variantInfo.price ?? 0) * item.quantity,
                           linePriceWithTax: (variantInfo.priceWithTax ?? 0) * item.quantity,
-                      }
+                      } as unknown as Order['lines'][number])
                     : null;
             })
-            .filter(Boolean) as Order['lines'];
+            .filter(x => x != null);
         return {
             ...entity,
             lines: [...lines, ...(addedLines ?? [])],
@@ -416,19 +411,16 @@ function ModifyOrderPage() {
         }
     };
 
+    const shippingAddress = modifyOrderInput.updateShippingAddress ?? entity.shippingAddress;
+    const billingAddress = modifyOrderInput.updateBillingAddress ?? entity.billingAddress;
+
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
             <PageTitle>
                 <Trans>Modify order</Trans>
             </PageTitle>
             <PageActionBar>
-                <PageActionBarRight
-                    dropdownMenuItems={[
-                        {
-                            component: () => <div>Hello</div>,
-                        },
-                    ]}
-                >
+                <PageActionBarRight>
                     <Button type="button" variant="secondary" onClick={handleCancelModificationClick}>
                         <Trans>Cancel modification</Trans>
                     </Button>
@@ -515,10 +507,9 @@ function ModifyOrderPage() {
                                 customerId={entity.customer?.id}
                                 onSelect={handleSelectShippingAddress}
                             />
-                        ) : modifyOrderInput.updateShippingAddress ? (
-                            <OrderAddress address={modifyOrderInput.updateShippingAddress} />
-                        ) : entity.shippingAddress ? (
-                            <OrderAddress address={entity.shippingAddress} />
+                        ) : null}
+                        {shippingAddress && !editingShippingAddress ? (
+                            <OrderAddress address={shippingAddress} />
                         ) : (
                             <div className="text-muted-foreground text-xs font-medium">
                                 <Trans>No shipping address</Trans>
@@ -542,10 +533,9 @@ function ModifyOrderPage() {
                                 customerId={entity.customer?.id}
                                 onSelect={handleSelectBillingAddress}
                             />
-                        ) : modifyOrderInput.updateBillingAddress ? (
-                            <OrderAddress address={modifyOrderInput.updateBillingAddress} />
-                        ) : entity.billingAddress ? (
-                            <OrderAddress address={entity.billingAddress} />
+                        ) : null}
+                        {billingAddress && !editingBillingAddress ? (
+                            <OrderAddress address={billingAddress} />
                         ) : (
                             <div className="text-muted-foreground text-xs font-medium">
                                 <Trans>No billing address</Trans>

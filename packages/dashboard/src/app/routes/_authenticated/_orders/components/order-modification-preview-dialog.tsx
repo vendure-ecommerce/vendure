@@ -96,9 +96,7 @@ export function OrderModificationPreviewDialog({
     }, [open, modifyOrderInput]);
 
     const previewOrder =
-        previewMutation.data?.modifyOrder?.__typename === 'Order'
-            ? (previewMutation.data.modifyOrder as OrderFragment)
-            : null;
+        previewMutation.data?.modifyOrder?.__typename === 'Order' ? previewMutation.data.modifyOrder : null;
     const error =
         previewMutation.data && previewMutation.data.modifyOrder?.__typename !== 'Order'
             ? previewMutation.data.modifyOrder?.message || i18n.t('Unknown error')

@@ -146,7 +146,7 @@ export function useGeneratedColumns<T extends TypedDocumentNode<any, any>>({
             if (!id) {
                 throw new Error('Column id is required');
             }
-            finalColumns.push(columnHelper.accessor(id as any, { ...column, id } as any));
+            finalColumns.push(columnHelper.accessor(id as any, { ...column, id }));
         }
 
         if (defaultColumnOrder) {
@@ -224,7 +224,7 @@ function getRowActions(
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                         {rowActions?.map((action, index) => (
-                            <DropdownMenuItem onClick={() => action.onClick?.(row)} key={index}>
+                            <DropdownMenuItem onClick={() => action.onClick?.(row)} key={`${action.label}-${index}`}>
                                 {action.label}
                             </DropdownMenuItem>
                         ))}

@@ -32,21 +32,10 @@ export interface FieldInfo {
  */
 export function getListQueryFields(documentNode: DocumentNode): FieldInfo[] {
     const fields: FieldInfo[] = [];
-    const fragments: Record<string, FragmentDefinitionNode> = {};
+    const fragments = collectFragments(documentNode);
+    const operationDefinition = findQueryOperation(documentNode);
 
-    // Collect all fragment definitions
-    documentNode.definitions.forEach(def => {
-        if (def.kind === 'FragmentDefinition') {
-            fragments[def.name.value] = def;
-        }
-    });
-
-    const operationDefinition = documentNode.definitions.find(
-        (def): def is OperationDefinitionNode =>
-            def.kind === 'OperationDefinition' && def.operation === 'query',
-    );
-
-    for (const query of operationDefinition?.selectionSet.selections ?? []) {
+    for (const query of operationDefinition.selectionSet.selections) {
         if (query.kind === 'Field') {
             const queryField = query;
             const fieldInfo = getQueryInfo(queryField.name.value);
@@ -95,24 +84,8 @@ export function getFieldsFromDocumentNode<
     T extends TypedDocumentNode<any, any>,
     P extends PathTo<ResultOf<T>>,
 >(documentNode: T, path: P): FieldInfo[] {
-    const fields: FieldInfo[] = [];
-    const fragments: Record<string, FragmentDefinitionNode> = {};
-
-    // Collect all fragment definitions
-    documentNode.definitions.forEach(def => {
-        if (def.kind === 'FragmentDefinition') {
-            fragments[def.name.value] = def;
-        }
-    });
-
-    const operationDefinition = documentNode.definitions.find(
-        (def): def is OperationDefinitionNode =>
-            def.kind === 'OperationDefinition' && def.operation === 'query',
-    );
-
-    if (!operationDefinition) {
-        throw new Error('Could not find query operation definition');
-    }
+    const fragments = collectFragments(documentNode);
+    const operationDefinition = findQueryOperation(documentNode);
 
     // Navigate to the target path
     let currentSelections = operationDefinition.selectionSet.selections;
@@ -120,34 +93,12 @@ export function getFieldsFromDocumentNode<
 
     for (let i = 0; i < path.length; i++) {
         const pathSegment = path[i] as string;
-
-        // Look for the field in direct selections and fragment spreads
-        let fieldNode: FieldNode | undefined;
-        let fragmentSelections: readonly any[] = [];
-
-        for (const selection of currentSelections) {
-            if (selection.kind === 'Field' && selection.name.value === pathSegment) {
-                fieldNode = selection;
-                break;
-            } else if (selection.kind === 'FragmentSpread') {
-                const fragment = fragments[selection.name.value];
-                if (fragment) {
-                    // Check if the fragment contains our target field
-                    const fragmentField = fragment.selectionSet.selections.find(
-                        s => s.kind === 'Field' && s.name.value === pathSegment,
-                    ) as FieldNode;
-                    if (fragmentField) {
-                        fieldNode = fragmentField;
-                        fragmentSelections = fragment.selectionSet.selections;
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (!fieldNode) {
-            throw new Error(`Field "${pathSegment}" not found at path ${path.slice(0, i + 1).join('.')}`);
-        }
+        const { fieldNode } = findFieldInSelections(
+            currentSelections,
+            pathSegment,
+            fragments,
+            path.slice(0, i + 1),
+        );
 
         const fieldInfo = getObjectFieldInfo(currentType, pathSegment);
         if (!fieldInfo) {
@@ -156,23 +107,90 @@ export function getFieldsFromDocumentNode<
 
         // If this is the last path segment, collect the fields
         if (i === path.length - 1) {
-            if (fieldNode.selectionSet) {
-                for (const selection of fieldNode.selectionSet.selections) {
-                    if (selection.kind === 'Field' || selection.kind === 'FragmentSpread') {
-                        collectFields(fieldInfo.type, selection, fields, fragments);
-                    }
-                }
-            }
-        } else {
-            // Continue navigating deeper
-            if (!fieldNode.selectionSet) {
-                throw new Error(`Field "${pathSegment}" has no selection set but path continues`);
-            }
-            currentSelections = fieldNode.selectionSet.selections;
-            currentType = fieldInfo.type;
+            return collectFieldsFromNode(fieldNode, fieldInfo.type, fragments);
         }
+
+        // Continue navigating deeper
+        if (!fieldNode.selectionSet) {
+            throw new Error(`Field "${pathSegment}" has no selection set but path continues`);
+        }
+        currentSelections = fieldNode.selectionSet.selections;
+        currentType = fieldInfo.type;
     }
 
+    return [];
+}
+
+function collectFragments(documentNode: DocumentNode): Record<string, FragmentDefinitionNode> {
+    const fragments: Record<string, FragmentDefinitionNode> = {};
+    documentNode.definitions.forEach(def => {
+        if (def.kind === 'FragmentDefinition') {
+            fragments[def.name.value] = def;
+        }
+    });
+    return fragments;
+}
+
+function findQueryOperation(documentNode: DocumentNode): OperationDefinitionNode {
+    const operationDefinition = documentNode.definitions.find(
+        (def): def is OperationDefinitionNode =>
+            def.kind === 'OperationDefinition' && def.operation === 'query',
+    );
+    if (!operationDefinition) {
+        throw new Error('Could not find query operation definition');
+    }
+    return operationDefinition;
+}
+
+function findMutationOperation(documentNode: DocumentNode): OperationDefinitionNode {
+    const operationDefinition = documentNode.definitions.find(
+        (def): def is OperationDefinitionNode =>
+            def.kind === 'OperationDefinition' && def.operation === 'mutation',
+    );
+    if (!operationDefinition) {
+        throw new Error('Could not find mutation operation definition');
+    }
+    return operationDefinition;
+}
+
+function findFieldInSelections(
+    selections: readonly any[],
+    pathSegment: string,
+    fragments: Record<string, FragmentDefinitionNode>,
+    currentPath: string[] = [],
+): { fieldNode: FieldNode; fragmentSelections: readonly any[] } {
+    for (const selection of selections) {
+        if (selection.kind === 'Field' && selection.name.value === pathSegment) {
+            return { fieldNode: selection, fragmentSelections: [] };
+        } else if (selection.kind === 'FragmentSpread') {
+            const fragment = fragments[selection.name.value];
+            if (fragment) {
+                const fragmentField = fragment.selectionSet.selections.find(
+                    s => s.kind === 'Field' && s.name.value === pathSegment,
+                ) as FieldNode;
+                if (fragmentField) {
+                    return { fieldNode: fragmentField, fragmentSelections: fragment.selectionSet.selections };
+                }
+            }
+        }
+    }
+    const pathString = currentPath.join('.');
+    throw new Error(`Field "${pathSegment}" not found at path ${pathString}`);
+}
+
+function collectFieldsFromNode(
+    fieldNode: FieldNode,
+    typeName: string,
+    fragments: Record<string, FragmentDefinitionNode>,
+): FieldInfo[] {
+    const fields: FieldInfo[] = [];
+    if (fieldNode.selectionSet) {
+        for (const selection of fieldNode.selectionSet.selections) {
+            if (selection.kind === 'Field' || selection.kind === 'FragmentSpread') {
+                collectFields(typeName, selection, fields, fragments);
+            }
+        }
+    }
     return fields;
 }
 
@@ -318,11 +336,8 @@ function unwrapVariableDefinitionType(type: TypeNode): NamedTypeNode {
  * Helper function to get the first field selection from a query operation definition.
  */
 function getFirstQueryField(documentNode: DocumentNode): FieldNode {
-    const operationDefinition = documentNode.definitions.find(
-        (def): def is OperationDefinitionNode =>
-            def.kind === 'OperationDefinition' && def.operation === 'query',
-    );
-    const firstSelection = operationDefinition?.selectionSet.selections[0];
+    const operationDefinition = findQueryOperation(documentNode);
+    const firstSelection = operationDefinition.selectionSet.selections[0];
     if (firstSelection?.kind === 'Field') {
         return firstSelection;
     } else {
@@ -419,15 +434,7 @@ export function getObjectPathToPaginatedList(
     documentNode: DocumentNode,
     currentPath: string[] = [],
 ): string[] {
-    // get the query OperationDefinition
-    const operationDefinition = documentNode.definitions.find(
-        (def): def is OperationDefinitionNode =>
-            def.kind === 'OperationDefinition' && def.operation === 'query',
-    );
-    if (!operationDefinition) {
-        throw new Error('Could not find query operation definition');
-    }
-
+    const operationDefinition = findQueryOperation(documentNode);
     return findPaginatedListPath(operationDefinition.selectionSet, 'Query', currentPath);
 }
 
@@ -479,11 +486,8 @@ function findPaginatedListPath(
  * The mutation name is `createProduct`.
  */
 export function getMutationName(documentNode: DocumentNode): string {
-    const operationDefinition = documentNode.definitions.find(
-        (def): def is OperationDefinitionNode =>
-            def.kind === 'OperationDefinition' && def.operation === 'mutation',
-    );
-    const firstSelection = operationDefinition?.selectionSet.selections[0];
+    const operationDefinition = findMutationOperation(documentNode);
+    const firstSelection = operationDefinition.selectionSet.selections[0];
     if (firstSelection?.kind === 'Field') {
         return firstSelection.name.value;
     } else {

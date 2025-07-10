@@ -1,10 +1,10 @@
+import { CustomFieldsForm } from '@/vdb/components/shared/custom-fields-form.js';
 import { ErrorPage } from '@/vdb/components/shared/error-page.js';
 import { PermissionGuard } from '@/vdb/components/shared/permission-guard.js';
 import { Button } from '@/vdb/components/ui/button.js';
 import { DropdownMenuItem } from '@/vdb/components/ui/dropdown-menu.js';
 import { addCustomFields } from '@/vdb/framework/document-introspection/add-custom-fields.js';
 import {
-    CustomFieldsPageBlock,
     Page,
     PageActionBar,
     PageActionBarRight,
@@ -15,9 +15,10 @@ import {
 import { getDetailQueryOptions, useDetailPage } from '@/vdb/framework/page/use-detail-page.js';
 import { api } from '@/vdb/graphql/api.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
+import { useCustomFieldConfig } from '@/vdb/hooks/use-custom-field-config.js';
 import { Trans, useLingui } from '@/vdb/lib/trans.js';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Link, createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router';
 import { Pencil, User } from 'lucide-react';
 import { useMemo } from 'react';
 import { toast } from 'sonner';
@@ -32,10 +33,12 @@ import { OrderTaxSummary } from './components/order-tax-summary.js';
 import { PaymentDetails } from './components/payment-details.js';
 import { getTypeForState, StateTransitionControl } from './components/state-transition-control.js';
 import { useTransitionOrderToState } from './components/use-transition-order-to-state.js';
-import { orderDetailDocument, setOrderCustomFieldsDocument, transitionOrderToStateDocument } from './orders.graphql.js';
+import {
+    orderDetailDocument,
+    setOrderCustomFieldsDocument,
+    transitionOrderToStateDocument,
+} from './orders.graphql.js';
 import { canAddFulfillment, shouldShowAddManualPaymentButton } from './utils/order-utils.js';
-import { CustomFieldsForm } from '@/vdb/components/shared/custom-fields-form.js';
-import { useCustomFieldConfig } from '@/vdb/hooks/use-custom-field-config.js';
 
 const pageId = 'order-detail';
 
@@ -79,7 +82,7 @@ function OrderDetailPage() {
     const { i18n } = useLingui();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-    const { form, submitHandler, entity, isPending, refreshEntity } = useDetailPage({
+    const { form, submitHandler, entity, refreshEntity } = useDetailPage({
         pageId,
         queryDocument: orderDetailDocument,
         updateDocument: setOrderCustomFieldsDocument,
@@ -105,6 +108,26 @@ function OrderDetailPage() {
         mutationFn: api.mutate(transitionOrderToStateDocument),
     });
     const customFieldConfig = useCustomFieldConfig('Order');
+    const stateTransitionActions = useMemo(() => {
+        if (!entity) {
+            return [];
+        }
+        return entity.nextStates.map(state => ({
+            label: `Transition to ${state}`,
+            type: getTypeForState(state),
+            onClick: async () => {
+                const transitionError = await transitionToState(state);
+                if (transitionError) {
+                    toast(i18n.t('Failed to transition order to state'), {
+                        description: transitionError,
+                    });
+                } else {
+                    refreshOrderAndHistory();
+                }
+            },
+        }));
+    }, [entity, transitionToState, i18n]);
+
     if (!entity) {
         return null;
     }
@@ -130,23 +153,6 @@ function OrderDetailPage() {
             queryClient.refetchQueries({ queryKey: orderHistoryQueryKey(entity.id) });
         }
     }
-
-    const stateTransitionActions = useMemo(() => {
-        return entity.nextStates.map(state => ({
-            label: `Transition to ${state}`,
-            type: getTypeForState(state),
-            onClick: async () => {
-                const transitionError = await transitionToState(state);
-                if (transitionError) {
-                    toast(i18n.t('Failed to transition order to state'), {
-                        description: transitionError,
-                    });
-                } else {
-                    refreshOrderAndHistory();
-                }
-            },
-        }));
-    }, [entity, transitionToState, i18n]);
 
     return (
         <Page pageId={pageId} form={form} submitHandler={submitHandler} entity={entity}>
@@ -201,7 +207,12 @@ function OrderDetailPage() {
                     <PageBlock column="main" blockId="custom-fields">
                         <CustomFieldsForm entityType="Order" control={form.control} />
                         <div className="flex justify-end">
-                            <Button type="submit" disabled={!form.formState.isDirty || !form.formState.isValid}>Save</Button>
+                            <Button
+                                type="submit"
+                                disabled={!form.formState.isDirty || !form.formState.isValid}
+                            >
+                                Save
+                            </Button>
                         </div>
                     </PageBlock>
                 ) : null}
@@ -221,7 +232,11 @@ function OrderDetailPage() {
                     <OrderHistoryContainer orderId={entity.id} />
                 </PageBlock>
                 <PageBlock column="side" blockId="state">
-                    <StateTransitionControl currentState={entity?.state} actions={stateTransitionActions} isLoading={transitionOrderToStateMutation.isPending} />
+                    <StateTransitionControl
+                        currentState={entity?.state}
+                        actions={stateTransitionActions}
+                        isLoading={transitionOrderToStateMutation.isPending}
+                    />
                 </PageBlock>
                 <PageBlock column="side" blockId="customer" title={<Trans>Customer</Trans>}>
                     <Button variant="ghost" asChild>
@@ -278,5 +293,14 @@ function OrderDetailPage() {
                 </PageBlock>
             </PageLayout>
         </Page>
+    );
+}
+
+function ModifyOrderMenuItem({ onClick }: { onClick?: () => void }) {
+    return (
+        <DropdownMenuItem onClick={onClick}>
+            <Pencil className="w-4 h-4" />
+            <Trans>Modify</Trans>
+        </DropdownMenuItem>
     );
 }
