@@ -157,23 +157,28 @@ export function PaymentDetails({ payment, currencyCode, onSuccess }: Readonly<Pa
     return (
         <>
             <div className="space-y-1 p-3 border rounded-md">
-                <LabeledData label={<Trans>Payment method</Trans>} value={payment.method} />
-                <LabeledData
-                    label={<Trans>Amount</Trans>}
-                    value={formatCurrency(payment.amount, currencyCode)}
-                />
-                <LabeledData label={<Trans>Created at</Trans>} value={formatDate(payment.createdAt)} />
-                {payment.transactionId && (
-                    <LabeledData label={<Trans>Transaction ID</Trans>} value={payment.transactionId} />
-                )}
-                {/* We need to check if there is errorMessage field in the Payment type */}
-                {payment.errorMessage && (
+                <div className="grid lg:grid-cols-2 gap-2">
+                    <LabeledData label={<Trans>Payment method</Trans>} value={payment.method} />
                     <LabeledData
-                        label={<Trans>Error message</Trans>}
-                        value={payment.errorMessage}
-                        className="text-destructive"
+                        label={<Trans>Amount</Trans>}
+                        value={formatCurrency(payment.amount, currencyCode)}
                     />
-                )}
+                    <LabeledData
+                        label={<Trans>Created at</Trans>}
+                        value={formatDate(payment.createdAt, { dateStyle: 'short', timeStyle: 'short' })}
+                    />
+                    {payment.transactionId && (
+                        <LabeledData label={<Trans>Transaction ID</Trans>} value={payment.transactionId} />
+                    )}
+                    {/* We need to check if there is errorMessage field in the Payment type */}
+                    {payment.errorMessage && (
+                        <LabeledData
+                            label={<Trans>Error message</Trans>}
+                            value={payment.errorMessage}
+                            className="text-destructive"
+                        />
+                    )}
+                </div>
                 <Collapsible className="mt-2 border-t pt-2">
                     <CollapsibleTrigger className="flex items-center justify-between w-full text-sm hover:underline text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md p-1 -m-1">
                         <Trans>Payment metadata</Trans>
@@ -204,7 +209,10 @@ export function PaymentDetails({ payment, currencyCode, onSuccess }: Readonly<Pa
                                         <LabeledData label={<Trans>State</Trans>} value={refund.state} />
                                         <LabeledData
                                             label={<Trans>Created at</Trans>}
-                                            value={formatDate(refund.createdAt)}
+                                            value={formatDate(refund.createdAt, {
+                                                dateStyle: 'short',
+                                                timeStyle: 'short',
+                                            })}
                                         />
                                         <LabeledData
                                             label={<Trans>Total</Trans>}
