@@ -137,6 +137,7 @@ export function PaymentDetails({ payment, currencyCode, onSuccess }: Readonly<Pa
             actions.push({
                 label: 'Settle payment',
                 onClick: handleSettlePayment,
+                type: 'success',
                 disabled: settlePaymentMutation.isPending,
             });
         }

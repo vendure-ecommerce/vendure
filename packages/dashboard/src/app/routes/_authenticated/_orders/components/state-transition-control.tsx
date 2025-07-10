@@ -7,7 +7,7 @@ import {
 } from '@/vdb/components/ui/dropdown-menu.js';
 import { Trans } from '@/vdb/lib/trans.js';
 import { cn } from '@/vdb/lib/utils.js';
-import { EllipsisVertical } from 'lucide-react';
+import { EllipsisVertical, CircleDashed, CircleCheck, CircleX } from 'lucide-react';
 
 type StateType = 'default' | 'destructive' | 'success';
 
@@ -25,8 +25,8 @@ type StateTransitionControlProps = {
 };
 
 export function getTypeForState(state: string): StateType {
-    const currentStateLower = state.toLowerCase();
-    switch (currentStateLower) {
+    const stateLower = state.toLowerCase();
+    switch (stateLower) {
         case 'cancelled':
         case 'error':
             return 'destructive';
@@ -45,22 +45,21 @@ export function StateTransitionControl({
     isLoading,
 }: Readonly<StateTransitionControlProps>) {
     const currentStateType = getTypeForState(currentState);
-    let stylesForType = '';
-    if (currentStateType === 'destructive') {
-        stylesForType = 'border-destructive bg-destructive/10 text-destructive';
-    } else if (currentStateType === 'success') {
-        stylesForType = 'border-success bg-success/10 text-success';
-    }
+    const iconForType = {
+        destructive: <CircleX className="h-4 w-4 text-destructive" />,
+        success: <CircleCheck className="h-4 w-4 text-success" />,
+        default: <CircleDashed className="h-4 w-4 text-muted-foreground" />,
+    };
 
     return (
         <div className="flex min-w-0">
             <div
                 className={cn(
                     'inline-flex flex-wrap items-center justify-start gap-1 h-8 rounded-md px-3 text-xs font-medium border border-input bg-background min-w-0',
-                    stylesForType,
                     actions.length > 0 && 'rounded-r-none',
                 )}
             >
+                {iconForType[currentStateType]}
                 <span className="truncate" title={currentState}>
                     {currentState}
                 </span>
@@ -74,7 +73,6 @@ export function StateTransitionControl({
                             disabled={isLoading}
                             className={cn(
                                 'rounded-l-none border-l-0 shadow-none',
-                                stylesForType,
                                 'bg-background',
                             )}
                         >
@@ -90,6 +88,7 @@ export function StateTransitionControl({
                                     variant={action.type === 'destructive' ? 'destructive' : 'default'}
                                     disabled={action.disabled || isLoading}
                                 >
+                                    {iconForType[action.type ?? 'default']}
                                     <Trans>{action.label}</Trans>
                                 </DropdownMenuItem>
                             );
