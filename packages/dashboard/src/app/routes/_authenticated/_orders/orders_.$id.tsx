@@ -192,7 +192,7 @@ function OrderDetailPage() {
             </PageActionBar>
             <PageLayout>
                 <PageBlock column="main" blockId="order-table">
-                    <OrderTable order={entity} />
+                    <OrderTable order={entity} pageId={pageId} />
                 </PageBlock>
                 <PageBlock column="main" blockId="tax-summary" title={<Trans>Tax summary</Trans>}>
                     <OrderTaxSummary order={entity} />

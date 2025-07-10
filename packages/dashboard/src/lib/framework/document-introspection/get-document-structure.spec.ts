@@ -1,7 +1,11 @@
 import { graphql } from 'gql.tada';
 import { describe, expect, it, vi } from 'vitest';
 
-import { getListQueryFields, getOperationVariablesFields } from './get-document-structure.js';
+import {
+    getFieldsFromDocumentNode,
+    getListQueryFields,
+    getOperationVariablesFields,
+} from './get-document-structure.js';
 
 vi.mock('virtual:admin-api-schema', () => {
     return {
@@ -11,6 +15,7 @@ vi.mock('virtual:admin-api-schema', () => {
                     products: ['ProductList', false, false, true],
                     product: ['Product', false, false, false],
                     collection: ['Collection', false, false, false],
+                    order: ['Order', false, false, false],
                 },
                 Mutation: {
                     updateProduct: ['Product', false, false, false],
@@ -148,7 +153,17 @@ vi.mock('virtual:admin-api-schema', () => {
                     quantity: ['Int', false, false, false],
                 },
             },
-            scalars: ['ID', 'String', 'Int', 'Boolean', 'Float', 'JSON', 'DateTime', 'Upload', 'Money'],
+            scalars: [
+                'ID',
+                'String',
+                'Int',
+                'Boolean',
+                'Float',
+                'JSON',
+                'DateTime',
+                'Upload',
+                'CurrencyCode',
+            ],
             enums: {},
         },
     };
@@ -372,6 +387,9 @@ describe('getOperationVariablesFields', () => {
             mutation AdjustDraftOrderLine($orderId: ID!, $input: AdjustDraftOrderLineInput!) {
                 adjustDraftOrderLine(orderId: $orderId, input: $input) {
                     id
+                    lines {
+                        id
+                    }
                 }
             }
         `);
@@ -414,6 +432,307 @@ describe('getOperationVariablesFields', () => {
                         typeInfo: undefined,
                     },
                 ],
+            },
+        ]);
+    });
+});
+
+describe('getFieldsFromDocumentNode', () => {
+    it('should extract fields from a simple path', () => {
+        const doc = graphql(`
+            query {
+                order(id: "1") {
+                    id
+                    lines {
+                        id
+                        quantity
+                    }
+                }
+            }
+        `);
+
+        const fields = getFieldsFromDocumentNode(doc, ['order', 'lines']);
+        expect(fields).toEqual([
+            {
+                isPaginatedList: false,
+                isScalar: true,
+                list: false,
+                name: 'id',
+                nullable: false,
+                type: 'ID',
+            },
+            {
+                isPaginatedList: false,
+                isScalar: true,
+                list: false,
+                name: 'quantity',
+                nullable: false,
+                type: 'Int',
+            },
+        ]);
+    });
+
+    it('should extract fields from root level', () => {
+        const doc = graphql(`
+            query {
+                product {
+                    id
+                    name
+                    description
+                }
+            }
+        `);
+
+        const fields = getFieldsFromDocumentNode(doc, ['product']);
+        expect(fields).toEqual([
+            {
+                isPaginatedList: false,
+                isScalar: true,
+                list: false,
+                name: 'id',
+                nullable: false,
+                type: 'ID',
+            },
+            {
+                isPaginatedList: false,
+                isScalar: true,
+                list: false,
+                name: 'name',
+                nullable: false,
+                type: 'String',
+            },
+            {
+                isPaginatedList: false,
+                isScalar: true,
+                list: false,
+                name: 'description',
+                nullable: false,
+                type: 'String',
+            },
+        ]);
+    });
+
+    it('should handle fragments in the target selection', () => {
+        const doc = graphql(`
+            query {
+                product {
+                    id
+                    featuredAsset {
+                        ...AssetFields
+                    }
+                }
+            }
+
+            fragment AssetFields on Asset {
+                id
+                name
+                preview
+            }
+        `);
+
+        const fields = getFieldsFromDocumentNode(doc, ['product', 'featuredAsset']);
+        expect(fields).toEqual([
+            {
+                isPaginatedList: false,
+                isScalar: true,
+                list: false,
+                name: 'id',
+                nullable: false,
+                type: 'ID',
+            },
+            {
+                isPaginatedList: false,
+                isScalar: true,
+                list: false,
+                name: 'name',
+                nullable: false,
+                type: 'String',
+            },
+            {
+                isPaginatedList: false,
+                isScalar: true,
+                list: false,
+                name: 'preview',
+                nullable: false,
+                type: 'String',
+            },
+        ]);
+    });
+
+    it('should handle deep nested paths', () => {
+        const doc = graphql(`
+            query {
+                product {
+                    variants {
+                        prices {
+                            currencyCode
+                            price
+                        }
+                    }
+                }
+            }
+        `);
+
+        const fields = getFieldsFromDocumentNode(doc, ['product', 'variants', 'prices']);
+        expect(fields).toEqual([
+            {
+                isPaginatedList: false,
+                isScalar: true,
+                list: false,
+                name: 'currencyCode',
+                nullable: false,
+                type: 'CurrencyCode',
+            },
+            {
+                isPaginatedList: false,
+                isScalar: false,
+                list: false,
+                name: 'price',
+                nullable: false,
+                type: 'Money',
+            },
+        ]);
+    });
+
+    it('should throw error for non-existent field', () => {
+        const doc = graphql(`
+            query {
+                product {
+                    id
+                }
+            }
+        `);
+
+        expect(() => getFieldsFromDocumentNode(doc, ['product', 'nonExistentField'])).toThrow(
+            'Field "nonExistentField" not found at path product.nonExistentField',
+        );
+    });
+
+    it('should throw error for non-existent path', () => {
+        const doc = graphql(`
+            query {
+                product {
+                    id
+                }
+            }
+        `);
+
+        expect(() => getFieldsFromDocumentNode(doc, ['nonExistentProduct'])).toThrow(
+            'Field "nonExistentProduct" not found at path nonExistentProduct',
+        );
+    });
+
+    it('should throw error when field has no selection set but path continues', () => {
+        const doc = graphql(`
+            query {
+                product {
+                    id
+                }
+            }
+        `);
+
+        expect(() => getFieldsFromDocumentNode(doc, ['product', 'id', 'something'])).toThrow(
+            'Field "id" has no selection set but path continues',
+        );
+    });
+
+    it('should handle empty selection set', () => {
+        const doc = graphql(`
+            query {
+                product {
+                    id
+                    name
+                }
+            }
+        `);
+
+        // Test with a path that leads to a field with no selection set
+        expect(() => getFieldsFromDocumentNode(doc, ['product', 'id', 'something'])).toThrow(
+            'Field "id" has no selection set but path continues',
+        );
+    });
+
+    it('should handle mixed field types and fragments', () => {
+        const doc = graphql(`
+            query {
+                product {
+                    id
+                    featuredAsset {
+                        ...AssetFields
+                        fileSize
+                    }
+                }
+            }
+
+            fragment AssetFields on Asset {
+                id
+                name
+            }
+        `);
+
+        const fields = getFieldsFromDocumentNode(doc, ['product', 'featuredAsset']);
+        expect(fields).toEqual([
+            {
+                isPaginatedList: false,
+                isScalar: true,
+                list: false,
+                name: 'id',
+                nullable: false,
+                type: 'ID',
+            },
+            {
+                isPaginatedList: false,
+                isScalar: true,
+                list: false,
+                name: 'name',
+                nullable: false,
+                type: 'String',
+            },
+            {
+                isPaginatedList: false,
+                isScalar: true,
+                list: false,
+                name: 'fileSize',
+                nullable: false,
+                type: 'Int',
+            },
+        ]);
+    });
+
+    it('should handle fields within fragment spreads', () => {
+        const doc = graphql(`
+            query {
+                order {
+                    ...OrderFields
+                }
+            }
+
+            fragment OrderFields on Order {
+                id
+                lines {
+                    id
+                    quantity
+                }
+            }
+        `);
+
+        const fields = getFieldsFromDocumentNode(doc, ['order', 'lines']);
+        expect(fields).toEqual([
+            {
+                isPaginatedList: false,
+                isScalar: true,
+                list: false,
+                name: 'id',
+                nullable: false,
+                type: 'ID',
+            },
+            {
+                isPaginatedList: false,
+                isScalar: true,
+                list: false,
+                name: 'quantity',
+                nullable: false,
+                type: 'Int',
             },
         ]);
     });

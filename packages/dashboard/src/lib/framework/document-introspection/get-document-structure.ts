@@ -1,5 +1,5 @@
 import type { TypedDocumentNode } from '@graphql-typed-document-node/core';
-import { VariablesOf } from 'gql.tada';
+import { ResultOf, VariablesOf } from 'gql.tada';
 import {
     DocumentNode,
     FieldNode,
@@ -56,6 +56,120 @@ export function getListQueryFields(documentNode: DocumentNode): FieldInfo[] {
                 // Check for nested paginated lists
                 findNestedPaginatedLists(queryField, fieldInfo.type, fields, fragments);
             }
+        }
+    }
+
+    return fields;
+}
+
+// Utility type to get all valid paths into a type
+export type PathTo<T> = T extends object
+    ? {
+          [K in keyof T & (string | number)]: [K] | [K, ...PathTo<T[K]>];
+      }[keyof T & (string | number)]
+    : [];
+
+/**
+ * @description
+ * This function is used to get the FieldInfo for the fields in the path of a DocumentNode.
+ *
+ * For example, in the following query:
+ *
+ * ```graphql
+ * query {
+ *   product {
+ *     id
+ *     name
+ *     variants {
+ *       id
+ *       name
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * The path `['product', 'variants']` will return the FieldInfo for the `variants` field,
+ * namely the `id` and `name` fields.
+ */
+export function getFieldsFromDocumentNode<
+    T extends TypedDocumentNode<any, any>,
+    P extends PathTo<ResultOf<T>>,
+>(documentNode: T, path: P): FieldInfo[] {
+    const fields: FieldInfo[] = [];
+    const fragments: Record<string, FragmentDefinitionNode> = {};
+
+    // Collect all fragment definitions
+    documentNode.definitions.forEach(def => {
+        if (def.kind === 'FragmentDefinition') {
+            fragments[def.name.value] = def;
+        }
+    });
+
+    const operationDefinition = documentNode.definitions.find(
+        (def): def is OperationDefinitionNode =>
+            def.kind === 'OperationDefinition' && def.operation === 'query',
+    );
+
+    if (!operationDefinition) {
+        throw new Error('Could not find query operation definition');
+    }
+
+    // Navigate to the target path
+    let currentSelections = operationDefinition.selectionSet.selections;
+    let currentType = 'Query';
+
+    for (let i = 0; i < path.length; i++) {
+        const pathSegment = path[i] as string;
+
+        // Look for the field in direct selections and fragment spreads
+        let fieldNode: FieldNode | undefined;
+        let fragmentSelections: readonly any[] = [];
+
+        for (const selection of currentSelections) {
+            if (selection.kind === 'Field' && selection.name.value === pathSegment) {
+                fieldNode = selection;
+                break;
+            } else if (selection.kind === 'FragmentSpread') {
+                const fragment = fragments[selection.name.value];
+                if (fragment) {
+                    // Check if the fragment contains our target field
+                    const fragmentField = fragment.selectionSet.selections.find(
+                        s => s.kind === 'Field' && s.name.value === pathSegment,
+                    ) as FieldNode;
+                    if (fragmentField) {
+                        fieldNode = fragmentField;
+                        fragmentSelections = fragment.selectionSet.selections;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!fieldNode) {
+            throw new Error(`Field "${pathSegment}" not found at path ${path.slice(0, i + 1).join('.')}`);
+        }
+
+        const fieldInfo = getObjectFieldInfo(currentType, pathSegment);
+        if (!fieldInfo) {
+            throw new Error(`Could not determine type for field "${pathSegment}"`);
+        }
+
+        // If this is the last path segment, collect the fields
+        if (i === path.length - 1) {
+            if (fieldNode.selectionSet) {
+                for (const selection of fieldNode.selectionSet.selections) {
+                    if (selection.kind === 'Field' || selection.kind === 'FragmentSpread') {
+                        collectFields(fieldInfo.type, selection, fields, fragments);
+                    }
+                }
+            }
+        } else {
+            // Continue navigating deeper
+            if (!fieldNode.selectionSet) {
+                throw new Error(`Field "${pathSegment}" has no selection set but path continues`);
+            }
+            currentSelections = fieldNode.selectionSet.selections;
+            currentType = fieldInfo.type;
         }
     }
 
