@@ -1,6 +1,24 @@
 import { isObject } from '@vendure/common/lib/shared-utils';
 
 /**
+ * Safely assigns a property to an object, preventing prototype pollution
+ */
+function safeAssign(target: any, key: string, value: any): void {
+    // Additional safety check to ensure we're not polluting prototypes
+    if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+        return;
+    }
+
+    // Use Object.defineProperty for safer assignment
+    Object.defineProperty(target, key, {
+        value,
+        writable: true,
+        enumerable: true,
+        configurable: true,
+    });
+}
+
+/**
  * Merges properties into a target entity. This is needed for the cases in which a
  * property already exists on the target, but the hydrated version also contains that
  * property with a different set of properties. This prevents the original target
@@ -46,7 +64,7 @@ export function mergeDeep<T extends { [key: string]: any }>(
     }
 
     for (const [key, value] of Object.entries(b)) {
-        // Guard against prototype pollution
+        // Guard against prototype pollution - block dangerous property names
         if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
             continue;
         }
@@ -57,14 +75,18 @@ export function mergeDeep<T extends { [key: string]: any }>(
                 if (isObject(value) && visited.has(value)) {
                     continue;
                 }
-                // Only merge recursively if the property exists in the destination object
-                if (a.hasOwnProperty(key) && (Array.isArray(a[key]) || isObject(a[key]))) {
-                    (a as any)[key] = mergeDeep(a?.[key], b[key], visited);
+                // Only merge recursively if the property exists as an own property in the destination object
+                if (
+                    Object.prototype.hasOwnProperty.call(a, key) &&
+                    (Array.isArray(a[key]) || isObject(a[key]))
+                ) {
+                    const mergedValue = mergeDeep(a[key], b[key], visited);
+                    safeAssign(a, key, mergedValue);
                 } else {
-                    (a as any)[key] = b[key];
+                    safeAssign(a, key, value);
                 }
             } else {
-                (a as any)[key] = b[key];
+                safeAssign(a, key, value);
             }
         }
     }
