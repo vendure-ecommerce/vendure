@@ -301,12 +301,3 @@ function OrderDetailPage() {
         </Page>
     );
 }
-
-function ModifyOrderMenuItem({ onClick }: { onClick?: () => void }) {
-    return (
-        <DropdownMenuItem onClick={onClick}>
-            <Pencil className="w-4 h-4" />
-            <Trans>Modify</Trans>
-        </DropdownMenuItem>
-    );
-}

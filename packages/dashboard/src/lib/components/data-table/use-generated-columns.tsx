@@ -212,7 +212,7 @@ function getRowActions(
     return {
         id: 'actions',
         accessorKey: 'actions',
-        header: 'Actions',
+        header: () => <Trans>Actions</Trans>,
         enableColumnFilter: false,
         cell: ({ row }) => {
             return (
@@ -224,7 +224,10 @@ function getRowActions(
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                         {rowActions?.map((action, index) => (
-                            <DropdownMenuItem onClick={() => action.onClick?.(row)} key={`${action.label}-${index}`}>
+                            <DropdownMenuItem
+                                onClick={() => action.onClick?.(row)}
+                                key={`${action.label}-${index}`}
+                            >
                                 {action.label}
                             </DropdownMenuItem>
                         ))}

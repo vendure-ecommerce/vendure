@@ -10,6 +10,7 @@ import { addCustomFields } from '@/vdb/framework/document-introspection/add-cust
 import { getFieldsFromDocumentNode } from '@/vdb/framework/document-introspection/get-document-structure.js';
 import { ResultOf } from '@/vdb/graphql/graphql.js';
 import { useUserSettings } from '@/vdb/hooks/use-user-settings.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { JsonEditor } from 'json-edit-react';
 import { EllipsisVertical } from 'lucide-react';
 import { useMemo } from 'react';
@@ -29,7 +30,7 @@ export interface OrderTableProps {
 function createCustomizeColumns(currencyCode: string) {
     return {
         featuredAsset: {
-            header: 'Image',
+            header: () => <Trans>Image</Trans>,
             accessorKey: 'featuredAsset',
             cell: ({ row }: { row: any }) => {
                 const asset = row.original.featuredAsset;
@@ -37,7 +38,7 @@ function createCustomizeColumns(currencyCode: string) {
             },
         },
         productVariant: {
-            header: 'Product',
+            header: () => <Trans>Product</Trans>,
             cell: ({ row }: { row: any }) => {
                 const productVariant = row.original.productVariant;
                 return (
@@ -50,7 +51,7 @@ function createCustomizeColumns(currencyCode: string) {
             },
         },
         unitPriceWithTax: {
-            header: 'Unit price',
+            header: () => <Trans>Unit price</Trans>,
             accessorKey: 'unitPriceWithTax',
             cell: ({ row }: { row: any }) => {
                 const value = row.original.unitPriceWithTax;
@@ -73,7 +74,7 @@ function createCustomizeColumns(currencyCode: string) {
             ),
         },
         quantity: {
-            header: 'Quantity',
+            header: () => <Trans>Quantity</Trans>,
             accessorKey: 'quantity',
         },
         unitPrice: {
@@ -107,7 +108,7 @@ function createCustomizeColumns(currencyCode: string) {
             ),
         },
         linePriceWithTax: {
-            header: 'Total',
+            header: () => <Trans>Total</Trans>,
             accessorKey: 'linePriceWithTax',
             cell: ({ row }: { row: any }) => {
                 const value = row.original.linePriceWithTax;
