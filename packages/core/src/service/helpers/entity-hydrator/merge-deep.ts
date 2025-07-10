@@ -1,22 +1,6 @@
 import { isObject } from '@vendure/common/lib/shared-utils';
 
-/**
- * Safely assigns a property to an object, preventing prototype pollution
- */
-function safeAssign(target: any, key: string, value: any): void {
-    // Additional safety check to ensure we're not polluting prototypes
-    if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
-        return;
-    }
-
-    // Use Object.defineProperty for safer assignment
-    Object.defineProperty(target, key, {
-        value,
-        writable: true,
-        enumerable: true,
-        configurable: true,
-    });
-}
+import { safeAssign } from '../../../common/safe-assign';
 
 /**
  * Merges properties into a target entity. This is needed for the cases in which a
