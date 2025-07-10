@@ -27,19 +27,36 @@ export function dashboardMetadataPlugin(): Plugin {
         },
         async load(id) {
             if (id === resolvedVirtualModuleId) {
+                const startTime = Date.now();
+                this.info('Loading dashboard extensions...');
+
                 if (!loadVendureConfigResult) {
+                    const configStart = Date.now();
                     loadVendureConfigResult = await configLoaderApi.getVendureConfig();
+                    this.info(`Loaded Vendure config in ${Date.now() - configStart}ms`);
                 }
+
                 const { pluginInfo } = loadVendureConfigResult;
+                const resolveStart = Date.now();
                 const pluginsWithExtensions =
                     pluginInfo
-                        ?.map(
-                            ({ dashboardEntryPath, pluginPath }) =>
-                                dashboardEntryPath && path.join(pluginPath, dashboardEntryPath),
-                        )
+                        ?.map(({ dashboardEntryPath, pluginPath }) => {
+                            if (!dashboardEntryPath) {
+                                return null;
+                            }
+                            // Since dashboardEntryPath is now relative to the plugin file,
+                            // we need to resolve from the plugin's directory
+                            const resolved = path.resolve(path.dirname(pluginPath), dashboardEntryPath);
+                            this.info(`Resolved extension path: ${resolved}`);
+                            return resolved;
+                        })
                         .filter(x => x != null) ?? [];
 
-                this.info(`Found ${pluginsWithExtensions.length} Dashboard extensions`);
+                this.info(
+                    `Found ${pluginsWithExtensions.length} Dashboard extensions in ${Date.now() - resolveStart}ms`,
+                );
+                this.info(`Total dashboard extension loading completed in ${Date.now() - startTime}ms`);
+
                 return `
                     export async function runDashboardExtensions() {
                         ${pluginsWithExtensions
