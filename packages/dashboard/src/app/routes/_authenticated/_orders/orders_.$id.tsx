@@ -133,13 +133,19 @@ function OrderDetailPage() {
     }
 
     const handleModifyClick = async () => {
-        await transitionOrderToStateMutation.mutateAsync({
-            id: entity.id,
-            state: 'Modifying',
-        });
-        const queryKey = getDetailQueryOptions(orderDetailDocument, { id: entity.id }).queryKey;
-        await queryClient.invalidateQueries({ queryKey });
-        await navigate({ to: `/orders/$id/modify`, params: { id: entity.id } });
+        try {
+            await transitionOrderToStateMutation.mutateAsync({
+                id: entity.id,
+                state: 'Modifying',
+            });
+            const queryKey = getDetailQueryOptions(orderDetailDocument, { id: entity.id }).queryKey;
+            await queryClient.invalidateQueries({ queryKey });
+            await navigate({ to: `/orders/$id/modify`, params: { id: entity.id } });
+        } catch (error) {
+            toast(i18n.t('Failed to modify order'), {
+                description: error instanceof Error ? error.message : 'Unknown error',
+            });
+        }
     };
 
     const nextStates = entity.nextStates;

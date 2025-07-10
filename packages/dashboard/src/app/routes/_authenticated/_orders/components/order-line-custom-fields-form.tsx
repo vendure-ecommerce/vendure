@@ -2,6 +2,7 @@ import { CustomFieldsForm } from '@/vdb/components/shared/custom-fields-form.js'
 import { Button } from '@/vdb/components/ui/button.js';
 import { Form } from '@/vdb/components/ui/form.js';
 import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { Settings2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 
@@ -30,17 +31,19 @@ export function OrderLineCustomFieldsForm({ onUpdate, value }: Readonly<OrderLin
             </PopoverTrigger>
             <PopoverContent className="w-80">
                 <Form {...form}>
-                    <form onSubmit={e => {
-                        e.stopPropagation();
-                        form.handleSubmit(onSubmit)(e);
-                    }} className="space-y-4">
-                        <h4 className="font-medium leading-none">Custom Fields</h4>
-                        <CustomFieldsForm
-                            entityType="OrderLine"
-                            control={form.control}
-                        />
+                    <form
+                        onSubmit={e => {
+                            e.stopPropagation();
+                            form.handleSubmit(onSubmit)(e);
+                        }}
+                        className="space-y-4"
+                    >
+                        <h4 className="font-medium leading-none">
+                            <Trans>Custom Fields</Trans>
+                        </h4>
+                        <CustomFieldsForm entityType="OrderLine" control={form.control} />
                         <Button type="submit" className="w-full" disabled={!form.formState.isValid}>
-                            Update
+                            <Trans>Update</Trans>
                         </Button>
                     </form>
                 </Form>
