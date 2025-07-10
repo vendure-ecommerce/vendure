@@ -1,4 +1,4 @@
-import { join } from 'path';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { loadVendureConfig } from '../utils/config-loader.js';
