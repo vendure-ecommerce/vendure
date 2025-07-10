@@ -64,9 +64,10 @@ export function canAddFulfillment(order: Order): boolean {
 
     // Check if order is in a fulfillable state
     const isFulfillableState =
-        order.nextStates.includes('Shipped') ||
-        order.nextStates.includes('PartiallyShipped') ||
-        order.nextStates.includes('Delivered');
+        (order.nextStates.includes('Shipped') ||
+            order.nextStates.includes('PartiallyShipped') ||
+            order.nextStates.includes('Delivered')) &&
+        order.state !== 'ArrangingAdditionalPayment';
 
     return (
         !allItemsFulfilled &&

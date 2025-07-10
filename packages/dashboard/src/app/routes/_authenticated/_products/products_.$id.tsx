@@ -158,7 +158,6 @@ function ProductDetailPage() {
                             <AddProductVariantDialog
                                 productId={params.id}
                                 onSuccess={() => {
-                                    console.log('onSuccess');
                                     refreshRef.current?.();
                                 }}
                             />
