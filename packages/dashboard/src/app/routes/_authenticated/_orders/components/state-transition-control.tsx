@@ -55,12 +55,13 @@ export function StateTransitionControl({
         <div className="flex min-w-0">
             <div
                 className={cn(
-                    'inline-flex flex-wrap items-center justify-start gap-1 h-8 rounded-md px-3 text-xs font-medium border border-input bg-background min-w-0',
+                    'inline-flex flex-nowrap items-center justify-start gap-1 h-8 rounded-md px-3 text-xs font-medium border border-input bg-background min-w-0',
                     actions.length > 0 && 'rounded-r-none',
                 )}
+                title={currentState}
             >
-                {iconForType[currentStateType]}
-                <span className="truncate" title={currentState}>
+                <div className="flex-shrink-0">{iconForType[currentStateType]}</div>
+                <span className="truncate">
                     {currentState}
                 </span>
             </div>
