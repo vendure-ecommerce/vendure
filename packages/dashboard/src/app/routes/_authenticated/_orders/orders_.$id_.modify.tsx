@@ -17,6 +17,7 @@ import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-ro
 import { ResultOf, VariablesOf } from 'gql.tada';
 import { User } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { CustomerAddressSelector } from './components/customer-address-selector.js';
 import { EditOrderTable } from './components/edit-order-table.js';
@@ -122,6 +123,10 @@ function ModifyOrderPage() {
         },
     });
 
+    const orderLineForm = useForm<{ input: { customFields: Record<string, any> } }>({
+        defaultValues: {},
+    });
+
     const { data: eligibleShippingMethods } = useQuery({
         queryKey: ['eligibleShippingMethods', entity?.id],
         queryFn: () => api.query(draftOrderEligibleShippingMethodsDocument, { orderId: entity?.id ?? '' }),
@@ -169,6 +174,7 @@ function ModifyOrderPage() {
             return newMap;
         });
     }
+
     function handleAdjustLine({
         lineId,
         quantity,
@@ -209,6 +215,7 @@ function ModifyOrderPage() {
             });
         }
     }
+
     function handleRemoveLine({ lineId }: { lineId: string }) {
         if (lineId.startsWith('added-')) {
             const productVariantId = lineId.replace('added-', '');
@@ -236,12 +243,14 @@ function ModifyOrderPage() {
             });
         }
     }
+
     function handleSetShippingMethod({ shippingMethodId }: { shippingMethodId: string }) {
         setModifyOrderInput(prev => ({
             ...prev,
             shippingMethodIds: [shippingMethodId],
         }));
     }
+
     function handleApplyCouponCode({ couponCode }: { couponCode: string }) {
         setModifyOrderInput(prev => ({
             ...prev,
@@ -250,6 +259,7 @@ function ModifyOrderPage() {
                 : [...(prev.couponCodes ?? []), couponCode],
         }));
     }
+
     function handleRemoveCouponCode({ couponCode }: { couponCode: string }) {
         setModifyOrderInput(prev => ({
             ...prev,
@@ -285,6 +295,7 @@ function ModifyOrderPage() {
         }));
         setEditingShippingAddress(false);
     }
+
     function handleSelectBillingAddress(address: AddressFragment) {
         setModifyOrderInput(prev => ({
             ...prev,
@@ -301,7 +312,9 @@ function ModifyOrderPage() {
         // Adjust lines
         const lines = entity.lines.map(line => {
             const adjust = input.adjustOrderLines?.find(l => l.orderLineId === line.id);
-            return adjust ? { ...line, quantity: adjust.quantity } : line;
+            return adjust
+                ? { ...line, quantity: adjust.quantity, customFields: (adjust as any).customFields }
+                : line;
         });
         // Add new items (as AddedLine)
         const addedLines = input.addItems
@@ -434,7 +447,6 @@ function ModifyOrderPage() {
                         onSetShippingMethod={handleSetShippingMethod}
                         onApplyCouponCode={handleApplyCouponCode}
                         onRemoveCouponCode={handleRemoveCouponCode}
-                        orderLineForm={form}
                         displayTotals={false}
                     />
                 </PageBlock>

@@ -15,7 +15,6 @@ import {
 } from '@tanstack/react-table';
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { UseFormReturn } from 'react-hook-form';
 import {
     couponCodeSelectorPromotionListDocument,
     draftOrderEligibleShippingMethodsDocument,
@@ -50,7 +49,6 @@ export interface OrderTableProps {
     onSetShippingMethod: (event: { shippingMethodId: string }) => void;
     onApplyCouponCode: (event: { couponCode: string }) => void;
     onRemoveCouponCode: (event: { couponCode: string }) => void;
-    orderLineForm: UseFormReturn<any>;
     displayTotals?: boolean;
 }
 
@@ -63,15 +61,11 @@ export function EditOrderTable({
     onSetShippingMethod,
     onApplyCouponCode,
     onRemoveCouponCode,
-    orderLineForm,
     displayTotals = true,
 }: Readonly<OrderTableProps>) {
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-    const [couponCode, setCouponCode] = useState('');
-
     const currencyCode = order.currencyCode;
-
-    const columns: ColumnDef<OrderLineFragment>[] = [
+    const columns: ColumnDef<OrderLineFragment & { customFields?: Record<string, any> }>[] = [
         {
             header: 'Image',
             accessorKey: 'featuredAsset',
@@ -110,7 +104,7 @@ export function EditOrderTable({
                                 onAdjustLine({
                                     lineId: row.original.id,
                                     quantity: e.target.valueAsNumber,
-                                    customFields: row.original.customFields,
+                                    customFields: row.original.customFields ?? {},
                                 })
                             }
                         />
@@ -131,7 +125,7 @@ export function EditOrderTable({
                                         customFields: customFields,
                                     });
                                 }}
-                                form={orderLineForm}
+                                value={row.original.customFields}
                             />
                         )}
                     </div>
@@ -241,7 +235,7 @@ export function EditOrderTable({
                                             ))}
                                         </div>
                                     )}
-                                     <SingleRelationInput
+                                    <SingleRelationInput
                                         config={{
                                             listQuery: couponCodeSelectorPromotionListDocument,
                                             idKey: 'couponCode',

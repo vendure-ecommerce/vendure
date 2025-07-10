@@ -629,9 +629,6 @@ export const modifyOrderDocument = graphql(
                 __typename
                 ...OrderDetail
                 ...ErrorResult
-                ... on Order {
-                    customFields
-                }
             }
         }
     `,

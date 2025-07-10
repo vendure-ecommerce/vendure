@@ -17,6 +17,15 @@ interface OrderModificationSummaryProps {
     }>;
 }
 
+interface LineAdjustment {
+    orderLineId: string;
+    name: string;
+    oldQuantity: number;
+    newQuantity: number;
+    oldCustomFields: Record<string, any>;
+    newCustomFields: Record<string, any>;
+}
+
 export function OrderModificationSummary({
     originalOrder,
     modifyOrderInput,
@@ -28,14 +37,25 @@ export function OrderModificationSummary({
 
     // Adjusted lines: in both, but quantity changed
     const adjustedLines = (modifyOrderInput.adjustOrderLines ?? [])
-        .map(adj => {
+        .map((adj: NonNullable<ModifyOrderInput['adjustOrderLines']>[number] & { customFields?: any }) => {
             const orig = originalLineMap.get(adj.orderLineId);
-            if (orig && adj.quantity !== orig.quantity) {
-                return { ...orig, newQuantity: adj.quantity };
+            if (
+                orig &&
+                (adj.quantity !== orig.quantity ||
+                    JSON.stringify(adj.customFields) !== JSON.stringify((orig as any).customFields))
+            ) {
+                return {
+                    orderLineId: adj.orderLineId,
+                    name: orig.productVariant.name,
+                    oldQuantity: orig.quantity,
+                    newQuantity: adj.quantity,
+                    oldCustomFields: (orig as any).customFields,
+                    newCustomFields: adj.customFields,
+                };
             }
             return null;
         })
-        .filter(Boolean) as Array<OrderLine & { newQuantity: number }>;
+        .filter(Boolean) as Array<LineAdjustment>;
 
     // Added lines: from addItems
     const addedLines = (modifyOrderInput.addItems ?? [])
@@ -111,10 +131,25 @@ export function OrderModificationSummary({
                     </div>
                     <ul className="list-disc ml-4">
                         {adjustedLines.map(line => (
-                            <li key={line.id}>
-                                {line.productVariant.name}:{' '}
-                                <span className="text-muted-foreground">{line.quantity} → </span>
-                                {line.newQuantity}
+                            <li key={line.orderLineId} className="">
+                                <div className="flex items-center gap-2">
+                                    {line.name}:{' '}
+                                    {line.oldQuantity !== line.newQuantity && (
+                                        <div>
+                                            <span className="text-muted-foreground">
+                                                {line.oldQuantity} →{' '}
+                                            </span>
+
+                                            {line.newQuantity}
+                                        </div>
+                                    )}
+                                </div>
+                                {JSON.stringify(line.oldCustomFields) !==
+                                    JSON.stringify(line.newCustomFields) && (
+                                    <span className="text-muted-foreground">
+                                        <Trans>Custom fields changed</Trans>
+                                    </span>
+                                )}
                             </li>
                         ))}
                     </ul>
