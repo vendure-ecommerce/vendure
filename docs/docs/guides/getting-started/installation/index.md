@@ -8,7 +8,7 @@ import TabItem from '@theme/TabItem';
 
 ## Requirements
 
-- [Node.js](https://nodejs.org/en/) **v20** or above, with support for **even-numbered Node.js versions**. (Odd-numbered versions should still work but are not officially supported.)
+- [Node.js](https://nodejs.org/en/) **v20**, **v22** and **v24** - these versions are tested and supported. (Odd-numbered versions above v20 should still work but are not officially supported.)
 
 ### Optional
 
