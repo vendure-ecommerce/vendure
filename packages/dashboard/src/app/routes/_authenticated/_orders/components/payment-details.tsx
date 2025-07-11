@@ -18,7 +18,11 @@ import {
     transitionPaymentToStateDocument,
 } from '../orders.graphql.js';
 import { SettleRefundDialog } from './settle-refund-dialog.js';
-import { getTypeForState, StateTransitionControl } from './state-transition-control.js';
+import {
+    getTypeForState,
+    StateTransitionAction,
+    StateTransitionControl,
+} from './state-transition-control.js';
 
 type PaymentDetailsProps = {
     payment: ResultOf<typeof paymentWithRefundsFragment>;
@@ -131,7 +135,7 @@ export function PaymentDetails({ payment, currencyCode, onSuccess }: Readonly<Pa
     };
 
     const getPaymentActions = () => {
-        const actions = [];
+        const actions: StateTransitionAction[] = [];
 
         if (payment.nextStates?.includes('Settled')) {
             actions.push({
