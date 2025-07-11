@@ -174,7 +174,7 @@ describe('Add Command E2E', () => {
 
         it('fails when neither queryName nor mutationName is provided for API extension', async () => {
             await expect(performAddOperation({ apiExtension: true } as any)).rejects.toThrow(
-                'At least one of queryName or mutationName must be specified',
+                'At least one of query-name or mutation-name must be specified',
             );
             expect(apiExtRunSpy).not.toHaveBeenCalled();
         });

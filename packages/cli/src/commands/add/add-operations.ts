@@ -1,3 +1,6 @@
+import { log } from '@clack/prompts';
+import pc from 'picocolors';
+
 import { addApiExtensionCommand } from './api-extension/add-api-extension';
 import { addCodegenCommand } from './codegen/add-codegen';
 import { addEntityCommand } from './entity/add-entity';
@@ -145,7 +148,7 @@ export async function performAddOperation(options: AddOperationOptions): Promise
                 !options.selectedService.trim()
             ) {
                 throw new Error(
-                    'Service name is required for job queue. Usage: vendure add -j [plugin-name] --name <job-name> --selectedService <service-name>',
+                    'Service name is required for job queue. Usage: vendure add -j [plugin-name] --name <job-name> --selected-service <service-name>',
                 );
             }
             await addJobQueueCommand.run({
@@ -191,8 +194,8 @@ export async function performAddOperation(options: AddOperationOptions): Promise
 
             if (!hasValidQueryName && !hasValidMutationName) {
                 throw new Error(
-                    'At least one of queryName or mutationName must be specified as a non-empty string. ' +
-                        'Usage: vendure add -a [plugin-name] --queryName <name> --mutationName <name>',
+                    'At least one of query-name or mutation-name must be specified as a non-empty string. ' +
+                        'Usage: vendure add -a [plugin-name] --query-name <name> --mutation-name <name>',
                 );
             }
 
@@ -200,7 +203,7 @@ export async function performAddOperation(options: AddOperationOptions): Promise
             if (typeof options.apiExtension === 'string' && !options.apiExtension.trim()) {
                 throw new Error(
                     'Plugin name cannot be empty when specified. ' +
-                        'Usage: vendure add -a [plugin-name] --queryName <name> --mutationName <name>',
+                        'Usage: vendure add -a [plugin-name] --query-name <name> --mutation-name <name>',
                 );
             }
 
@@ -223,7 +226,7 @@ export async function performAddOperation(options: AddOperationOptions): Promise
             // If a string is passed, it should be a valid plugin name
             if (typeof options.uiExtensions === 'string' && !options.uiExtensions.trim()) {
                 throw new Error(
-                    'Plugin name cannot be empty when specified. Usage: vendure add --uiExtensions [plugin-name]',
+                    'Plugin name cannot be empty when specified. Usage: vendure add --ui-extensions [plugin-name]',
                 );
             }
             await addUiExtensionsCommand.run({
@@ -250,9 +253,24 @@ export async function performAddOperation(options: AddOperationOptions): Promise
         ) {
             throw error;
         }
-        return {
-            success: false,
-            message: error.message ?? 'Add operation failed',
-        };
+        // For other errors, log them in a more user-friendly way
+        // For validation errors, show the full error with stack trace
+        if (error.message.includes('Plugin name is required')) {
+            // Extract error message and stack trace
+            const errorMessage = error.message;
+            const stackLines = error.stack.split('\n');
+            const stackTrace = stackLines.slice(1).join('\n'); // Remove first line (error message)
+
+            // Display stack trace first, then colored error message at the end
+            log.error(stackTrace);
+            log.error(''); // Add empty line for better readability
+            log.error(pc.red('Error:') + ' ' + String(errorMessage));
+        } else {
+            log.error(error.message as string);
+            if (error.stack) {
+                log.error(error.stack);
+            }
+        }
+        process.exit(1);
     }
 }
