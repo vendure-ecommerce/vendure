@@ -372,7 +372,7 @@ export async function compileFile({
                 // Attempt to resolve using path aliases
                 let resolved = false;
                 for (const [alias, patterns] of Object.entries(tsConfigInfo.paths)) {
-                    const aliasPrefix = alias.replace('*', '');
+                    const aliasPrefix = alias.replace(/\*/g, '');
                     const aliasSuffix = alias.endsWith('*') ? '*' : '';
 
                     if (
@@ -381,7 +381,7 @@ export async function compileFile({
                     ) {
                         const remainingImportPath = importPath.slice(aliasPrefix.length);
                         for (const pattern of patterns) {
-                            const patternPrefix = pattern.replace('*', '');
+                            const patternPrefix = pattern.replace(/\*/g, '');
                             const patternSuffix = pattern.endsWith('*') ? '*' : '';
                             // Ensure suffix match consistency (* vs exact)
                             if (aliasSuffix !== patternSuffix) continue;

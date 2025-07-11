@@ -9,9 +9,9 @@ import { Trans } from '@/vdb/lib/trans.js';
 import { cn } from '@/vdb/lib/utils.js';
 import { EllipsisVertical, CircleDashed, CircleCheck, CircleX } from 'lucide-react';
 
-type StateType = 'default' | 'destructive' | 'success';
+export type StateType = 'default' | 'destructive' | 'success';
 
-type StateTransitionAction = {
+export type StateTransitionAction = {
     label: string;
     onClick: () => void;
     disabled?: boolean;

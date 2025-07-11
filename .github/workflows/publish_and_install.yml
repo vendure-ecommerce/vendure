@@ -31,6 +31,8 @@ concurrency:
 jobs:
     publish_install:
         runs-on: ${{ matrix.os }}
+        permissions:
+            contents: read
         strategy:
             matrix:
                 os: [ubuntu-latest, windows-latest, macos-latest]
