@@ -265,7 +265,6 @@ function DraftOrderPage() {
     const { mutate: removeCouponCodeForDraftOrder } = useMutation({
         mutationFn: api.mutate(removeCouponCodeFromDraftOrderDocument),
         onSuccess: (result: ResultOf<typeof removeCouponCodeFromDraftOrderDocument>) => {
-            const order = result.removeCouponCodeFromDraftOrder;
             toast.success(i18n.t('Coupon code removed from order'));
             refreshEntity();
         },

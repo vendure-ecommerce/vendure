@@ -32,7 +32,7 @@ interface OptionValueInputProps {
 }
 
 export function OptionValueInput({ groupIndex, disabled = false }: Readonly<OptionValueInputProps>) {
-    const { control, watch } = useFormContext<FormValues>();
+    const { control } = useFormContext<FormValues>();
     const { fields, append, remove } = useFieldArray({
         control,
         name: `optionGroups.${groupIndex}.values`,

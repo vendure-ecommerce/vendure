@@ -14,7 +14,6 @@ type PaymentDetailsProps = {
 
 export function PaymentDetails({ payment, currencyCode }: Readonly<PaymentDetailsProps>) {
     const { formatCurrency, formatDate } = useLocalFormat();
-    const t = (key: string) => key;
 
     return (
         <div className="space-y-1 p-3 border rounded-md">

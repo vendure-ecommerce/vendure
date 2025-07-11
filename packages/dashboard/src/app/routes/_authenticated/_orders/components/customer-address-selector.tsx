@@ -32,7 +32,6 @@ interface CustomerAddressSelectorProps {
 }
 
 export function CustomerAddressSelector({ customerId, onSelect }: Readonly<CustomerAddressSelectorProps>) {
-    const { i18n } = useLingui();
     const [open, setOpen] = useState(false);
 
     const { data, isLoading } = useQuery<CustomerAddressesQuery>({

@@ -45,7 +45,7 @@ export function ProductVariantSelector({ onProductVariantIdChange }: Readonly<Pr
     const [open, setOpen] = useState(false);
     const debouncedSearch = useDebounce(search, 500);
 
-    const { data, isLoading } = useQuery({
+    const { data } = useQuery({
         queryKey: ['productVariants', debouncedSearch],
         staleTime: 1000 * 60 * 5,
         enabled: debouncedSearch.length > 0,

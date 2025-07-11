@@ -37,8 +37,6 @@ function PercentageChange({ value }: PercentageChangeProps) {
 
 export function OrdersSummaryWidget() {
     const [range, setRange] = useState<Range>(Range.Today);
-    const { formatCurrency } = useLocalFormat();
-    const { activeChannel } = useChannel();
 
     const variables = useMemo(() => {
         const now = new Date();

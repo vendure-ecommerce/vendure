@@ -407,7 +407,6 @@ export class EmailPlugin implements OnApplicationBootstrap, OnApplicationShutdow
         event: EventWithContext,
     ) {
         Logger.debug(`Handling event "${handler.type}"`, loggerCtx);
-        const { type } = handler;
         try {
             const injector = new Injector(this.moduleRef);
             let globalTemplateVars = this.options.globalTemplateVars;
