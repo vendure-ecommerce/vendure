@@ -32,11 +32,11 @@ const cancelledMessage = 'Add API extension cancelled';
 export interface AddApiExtensionOptions {
     plugin?: VendurePluginRef;
     pluginName?: string;
-    'query-name'?: string;
-    'mutation-name'?: string;
+    queryName?: string;
+    mutationName?: string;
     config?: string;
     isNonInteractive?: boolean;
-    'selected-service'?: string;
+    selectedService?: string;
 }
 
 export const addApiExtensionCommand = new CliCommand({
@@ -64,8 +64,8 @@ async function addApiExtension(
 
     // In non-interactive mode, we need all required values upfront
     if (options?.isNonInteractive) {
-        const hasValidQueryName = options?.['query-name'] && options['query-name'].trim() !== '';
-        const hasValidMutationName = options?.['mutation-name'] && options['mutation-name'].trim() !== '';
+        const hasValidQueryName = options?.queryName && options.queryName.trim() !== '';
+        const hasValidMutationName = options?.mutationName && options.mutationName.trim() !== '';
 
         if (!hasValidQueryName && !hasValidMutationName) {
             throw new Error(
@@ -92,14 +92,14 @@ async function addApiExtension(
 
     if (options?.isNonInteractive) {
         // Validate that a service has been specified
-        if (!options['selected-service'] || options['selected-service'].trim() === '') {
+        if (!options.selectedService || options.selectedService.trim() === '') {
             throw new Error(
                 'Service must be specified in non-interactive mode.\n' +
                     'Usage: npx vendure add -a <PluginName> --query-name <name> --mutation-name <name> --selected-service <service-name>',
             );
         }
 
-        const selectedService = services.find(sr => sr.name === options['selected-service']);
+        const selectedService = services.find(sr => sr.name === options.selectedService);
 
         if (!selectedService) {
             const availableServices = services.map(sr => sr.name);
@@ -110,7 +110,7 @@ async function addApiExtension(
                 );
             }
             throw new Error(
-                `Service "${options['selected-service']}" not found in plugin "${plugin.name}". Available services:\n` +
+                `Service "${options.selectedService}" not found in plugin "${plugin.name}". Available services:\n` +
                     availableServices.map(name => `  - ${name}`).join('\n'),
             );
         }
@@ -150,17 +150,14 @@ async function addApiExtension(
     if (!serviceEntityRef) {
         if (options?.isNonInteractive) {
             // Use provided values - we already validated at least one exists and is non-empty
-            queryName =
-                options?.['query-name'] && options['query-name'].trim() !== ''
-                    ? options['query-name'].trim()
-                    : '';
+            queryName = options?.queryName && options.queryName.trim() !== '' ? options.queryName.trim() : '';
             mutationName =
-                options?.['mutation-name'] && options['mutation-name'].trim() !== ''
-                    ? options['mutation-name'].trim()
+                options?.mutationName && options.mutationName.trim() !== ''
+                    ? options.mutationName.trim()
                     : '';
         } else {
             const queryNameResult =
-                options?.['query-name'] ??
+                options?.queryName ??
                 (await text({
                     message: 'Enter a name for the new query',
                     initialValue: 'myNewQuery',
@@ -169,7 +166,7 @@ async function addApiExtension(
                 queryName = queryNameResult;
             }
             const mutationNameResult =
-                options?.['mutation-name'] ??
+                options?.mutationName ??
                 (await text({
                     message: 'Enter a new name for the new mutation',
                     initialValue: 'myNewMutation',
