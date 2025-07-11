@@ -29,14 +29,29 @@ export interface DashboardActionBarItem {
     component: React.FunctionComponent<{ context: PageContextValue }>;
     /**
      * @description
+     * The type of action bar item to display. Defaults to `button`.
+     * The 'dropdown' type is used to display the action bar item as a dropdown menu item.
+     *
+     * When using the dropdown type, use a suitable [dropdown item](https://ui.shadcn.com/docs/components/dropdown-menu)
+     * component, such as:
+     *
+     * ```tsx
+     * import { DropdownMenuItem } from '\@vendure/dashboard';
+     *
+     * // ...
+     *
+     * {
+     *   component: () => <DropdownMenuItem>My Item</DropdownMenuItem>
+     * }
+     * ```
+     *
+     * @default 'button'
+     */
+    type?: 'button' | 'dropdown';
+    /**
+     * @description
      * Any permissions that are required to display this action bar item.
      */
-    requiresPermission?: string | string[];
-}
-
-export interface DashboardActionBarDropdownMenuItem {
-    locationId: string;
-    component: React.FunctionComponent<{ context: PageContextValue }>;
     requiresPermission?: string | string[];
 }
 

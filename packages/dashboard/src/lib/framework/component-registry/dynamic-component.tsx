@@ -1,5 +1,5 @@
 import React from "react";
-import { COMPONENT_REGISTRY, useComponentRegistry } from "./component-registry.js";
+import { useComponentRegistry } from "./component-registry.js";
 
 export type DisplayComponentProps<
     T extends keyof (typeof COMPONENT_REGISTRY)['dataDisplay'] | string,
@@ -33,7 +33,7 @@ export type InputComponentProps<
  */
 export function DisplayComponent<
     T extends keyof (typeof COMPONENT_REGISTRY)['dataDisplay'] | string,
->(props: DisplayComponentProps<T>): React.ReactNode {   
+>(props: Readonly<DisplayComponentProps<T>>): React.ReactNode {   
     const { getDisplayComponent } = useComponentRegistry();
     const Component = getDisplayComponent(props.id);
     if (!Component) {
@@ -45,7 +45,7 @@ export function DisplayComponent<
 
 export function InputComponent<
     T extends keyof (typeof COMPONENT_REGISTRY)['dataInput'] | string,
->(props: InputComponentProps<T>): React.ReactNode {
+>(props: Readonly<InputComponentProps<T>>): React.ReactNode {
     const { getInputComponent } = useComponentRegistry();
     const Component = getInputComponent(props.id);
     if (!Component) {

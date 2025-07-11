@@ -90,22 +90,6 @@ function DraftOrderPage() {
         params: { id: params.id },
     });
 
-    const { form: orderLineForm } = useGeneratedForm({
-        document: addCustomFields(adjustDraftOrderLineDocument),
-        varName: undefined,
-        entity: entity?.lines[0],
-        setValues: entity => {
-            return {
-                orderId: entity.id,
-                input: {
-                    quantity: entity.quantity,
-                    orderLineId: entity.id,
-                    customFields: entity.customFields,
-                },
-            };
-        },
-    });
-
     const { form: orderCustomFieldsForm } = useGeneratedForm({
         document: setDraftOrderCustomFieldsDocument,
         varName: undefined,
@@ -395,7 +379,6 @@ function DraftOrderPage() {
                                 couponCode: e.couponCode,
                             })
                         }
-                        orderLineForm={orderLineForm}
                     />
                 </PageBlock>
                 <PageBlock column="main" blockId="order-custom-fields" title={<Trans>Custom fields</Trans>}>

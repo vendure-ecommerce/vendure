@@ -2,17 +2,24 @@ import { CustomFieldsForm } from '@/vdb/components/shared/custom-fields-form.js'
 import { Button } from '@/vdb/components/ui/button.js';
 import { Form } from '@/vdb/components/ui/form.js';
 import { Popover, PopoverContent, PopoverTrigger } from '@/vdb/components/ui/popover.js';
+import { Trans } from '@/vdb/lib/trans.js';
 import { Settings2 } from 'lucide-react';
-import { UseFormReturn } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 interface OrderLineCustomFieldsFormProps {
     onUpdate: (customFieldValues: Record<string, any>) => void;
-    form: UseFormReturn<any>;
+    value: Record<string, any>;
 }
 
-export function OrderLineCustomFieldsForm({ onUpdate, form }: Readonly<OrderLineCustomFieldsFormProps>) {
+export function OrderLineCustomFieldsForm({ onUpdate, value }: Readonly<OrderLineCustomFieldsFormProps>) {
+    const form = useForm<Record<string, any>>({
+        defaultValues: {
+            customFields: value,
+        },
+    });
+
     const onSubmit = (values: any) => {
-        onUpdate(values.input?.customFields);
+        onUpdate(values.customFields);
     };
 
     return (
@@ -24,15 +31,19 @@ export function OrderLineCustomFieldsForm({ onUpdate, form }: Readonly<OrderLine
             </PopoverTrigger>
             <PopoverContent className="w-80">
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        <h4 className="font-medium leading-none">Custom Fields</h4>
-                        <CustomFieldsForm
-                            entityType="OrderLine"
-                            control={form.control}
-                            formPathPrefix="input"
-                        />
+                    <form
+                        onSubmit={e => {
+                            e.stopPropagation();
+                            form.handleSubmit(onSubmit)(e);
+                        }}
+                        className="space-y-4"
+                    >
+                        <h4 className="font-medium leading-none">
+                            <Trans>Custom Fields</Trans>
+                        </h4>
+                        <CustomFieldsForm entityType="OrderLine" control={form.control} />
                         <Button type="submit" className="w-full" disabled={!form.formState.isValid}>
-                            Update
+                            <Trans>Update</Trans>
                         </Button>
                     </form>
                 </Form>

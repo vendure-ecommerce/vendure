@@ -165,7 +165,6 @@ export const orderLineFragment = graphql(
             linePriceWithTax
             discountedLinePrice
             discountedLinePriceWithTax
-            customFields
         }
     `,
     [assetFragment],
@@ -278,6 +277,7 @@ export const orderDetailFragment = graphql(
                     id
                 }
             }
+            customFields
         }
     `,
     [
@@ -294,7 +294,6 @@ export const orderDetailDocument = graphql(
         query GetOrder($id: ID!) {
             order(id: $id) {
                 ...OrderDetail
-                customFields
             }
         }
     `,
@@ -506,6 +505,9 @@ export const transitionOrderToStateDocument = graphql(
                     id
                 }
                 ...ErrorResult
+                ... on OrderStateTransitionError {
+                    transitionError
+                }
             }
         }
     `,
@@ -606,3 +608,117 @@ export const transitionFulfillmentToStateDocument = graphql(
     `,
     [errorResultFragment],
 );
+
+export const couponCodeSelectorPromotionListDocument = graphql(`
+    query CouponCodeSelectorPromotionList($options: PromotionListOptions) {
+        promotions(options: $options) {
+            items {
+                id
+                name
+                couponCode
+            }
+            totalItems
+        }
+    }
+`);
+
+export const modifyOrderDocument = graphql(
+    `
+        mutation ModifyOrder($input: ModifyOrderInput!) {
+            modifyOrder(input: $input) {
+                __typename
+                ...OrderDetail
+                ...ErrorResult
+            }
+        }
+    `,
+    [orderDetailFragment, errorResultFragment],
+);
+
+export const settlePaymentDocument = graphql(
+    `
+        mutation SettlePayment($id: ID!) {
+            settlePayment(id: $id) {
+                __typename
+                ... on Payment {
+                    id
+                    state
+                    amount
+                    method
+                    metadata
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const transitionPaymentToStateDocument = graphql(
+    `
+        mutation TransitionPaymentToState($id: ID!, $state: String!) {
+            transitionPaymentToState(id: $id, state: $state) {
+                __typename
+                ... on Payment {
+                    id
+                    state
+                    amount
+                    method
+                    metadata
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const cancelPaymentDocument = graphql(
+    `
+        mutation CancelPayment($id: ID!) {
+            cancelPayment(id: $id) {
+                __typename
+                ... on Payment {
+                    id
+                    state
+                    amount
+                    method
+                    metadata
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const settleRefundDocument = graphql(
+    `
+        mutation SettleRefund($input: SettleRefundInput!) {
+            settleRefund(input: $input) {
+                __typename
+                ... on Refund {
+                    id
+                    state
+                    total
+                    items
+                    adjustment
+                    reason
+                    transactionId
+                    method
+                    metadata
+                }
+                ...ErrorResult
+            }
+        }
+    `,
+    [errorResultFragment],
+);
+
+export const setOrderCustomFieldsDocument = graphql(`
+    mutation SetOrderCustomFields($input: UpdateOrderInput!) {
+        setOrderCustomFields(input: $input) {
+            id
+        }
+    }
+`);
