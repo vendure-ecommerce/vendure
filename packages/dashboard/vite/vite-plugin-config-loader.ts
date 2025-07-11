@@ -1,10 +1,10 @@
 import { Plugin } from 'vite';
 
-import { ConfigLoaderOptions, loadVendureConfig, LoadVendureConfigResult } from './utils/config-loader.js';
+import { compile, CompileResult, CompilerOptions } from './utils/compiler.js';
 import { debugLogger } from './utils/debug-logger.js';
 
 export interface ConfigLoaderApi {
-    getVendureConfig(): Promise<LoadVendureConfigResult>;
+    getVendureConfig(): Promise<CompileResult>;
 }
 
 export const configLoaderName = 'vendure:config-loader';
@@ -13,8 +13,8 @@ export const configLoaderName = 'vendure:config-loader';
  * This Vite plugin loads the VendureConfig from the specified file path, and
  * makes it available to other plugins via the `ConfigLoaderApi`.
  */
-export function configLoaderPlugin(options: ConfigLoaderOptions): Plugin {
-    let result: LoadVendureConfigResult;
+export function configLoaderPlugin(options: CompilerOptions): Plugin {
+    let result: CompileResult;
     const onConfigLoaded: Array<() => void> = [];
     return {
         name: configLoaderName,
@@ -24,11 +24,8 @@ export function configLoaderPlugin(options: ConfigLoaderOptions): Plugin {
             );
             try {
                 const startTime = Date.now();
-                result = await loadVendureConfig({
-                    pathAdapter: options.pathAdapter,
-                    tempDir: options.tempDir,
-                    vendureConfigPath: options.vendureConfigPath,
-                    vendureConfigExport: options.vendureConfigExport,
+                result = await compile({
+                    ...options,
                     logger: process.env.LOG
                         ? debugLogger
                         : {
@@ -37,7 +34,6 @@ export function configLoaderPlugin(options: ConfigLoaderOptions): Plugin {
                               debug: (message: string) => this.debug(message),
                               error: (message: string) => this.error(message),
                           },
-                    pluginScanPatterns: options.pluginScanPatterns,
                 });
                 const endTime = Date.now();
                 const duration = endTime - startTime;
@@ -60,11 +56,11 @@ export function configLoaderPlugin(options: ConfigLoaderOptions): Plugin {
             onConfigLoaded.forEach(fn => fn());
         },
         api: {
-            getVendureConfig(): Promise<LoadVendureConfigResult> {
+            getVendureConfig(): Promise<CompileResult> {
                 if (result) {
                     return Promise.resolve(result);
                 } else {
-                    return new Promise<LoadVendureConfigResult>(resolve => {
+                    return new Promise<CompileResult>(resolve => {
                         onConfigLoaded.push(() => {
                             resolve(result);
                         });

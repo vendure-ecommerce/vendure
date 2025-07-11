@@ -20,17 +20,23 @@ const defaultPathAdapter: Required<PathAdapter> = {
     transformTsConfigPathMappings: ({ patterns }) => patterns,
 };
 
+export interface PackageScannerConfig {
+    nodeModulesRoot?: string;
+    /**
+     * An array of glob patterns that will be appended to "node_modules/" to scan for plugins.
+     * For example: ['vendure-*plugin*', '@vendure/*plugin*']
+     * If not specified, will scan all files in node_modules that appear in imports
+     * from your project.
+     */
+    globPatterns?: string[];
+}
+
 export interface CompilerOptions {
     vendureConfigPath: string;
     outputPath: string;
     pathAdapter?: PathAdapter;
     logger?: Logger;
-    /**
-     * An array of glob patterns that will be appended to "node_modules/" to scan for plugins.
-     * For example: ['vendure-*plugin*', '@vendure/*plugin*']
-     * If not specified, will scan all files in node_modules (slower).
-     */
-    pluginScanPatterns?: string[];
+    pluginPackageScanner?: PackageScannerConfig;
 }
 
 export interface CompileResult {
@@ -44,7 +50,13 @@ export interface CompileResult {
  * and in node_modules.
  */
 export async function compile(options: CompilerOptions): Promise<CompileResult> {
-    const { vendureConfigPath, outputPath, pathAdapter, logger = debugLogger, pluginScanPatterns } = options;
+    const {
+        vendureConfigPath,
+        outputPath,
+        pathAdapter,
+        logger = debugLogger,
+        pluginPackageScanner,
+    } = options;
     const getCompiledConfigPath =
         pathAdapter?.getCompiledConfigPath ?? defaultPathAdapter.getCompiledConfigPath;
     const transformTsConfigPathMappings =
@@ -67,7 +79,7 @@ export async function compile(options: CompilerOptions): Promise<CompileResult> 
         tempDir: outputPath,
         vendureConfigPath,
         logger,
-        pluginScanPatterns,
+        packageScanner: pluginPackageScanner,
     });
 
     const analyzePluginsStart = Date.now();
@@ -151,30 +163,37 @@ async function findVendurePluginFiles({
     tempDir,
     vendureConfigPath,
     logger,
-    pluginScanPatterns,
+    packageScanner,
 }: FindPluginFilesOptions & {
     logger: Logger;
-    pluginScanPatterns?: string[];
+    packageScanner?: PackageScannerConfig;
 }): Promise<string[]> {
-    let nodeModulesRoot: string;
+    let nodeModulesRoot = packageScanner?.nodeModulesRoot;
     const readStart = Date.now();
-    try {
-        const coreUrl = import.meta.resolve('@vendure/core');
-        logger.debug(`Found core URL: ${coreUrl}`);
-        const corePath = fileURLToPath(coreUrl);
-        logger.debug(`Found core path: ${corePath}`);
-        nodeModulesRoot = path.join(path.dirname(corePath), '..', '..', '..');
-    } catch (e) {
-        logger.warn(`Failed to resolve @vendure/core: ${e instanceof Error ? e.message : String(e)}`);
-        nodeModulesRoot = path.dirname(vendureConfigPath);
+    if (!nodeModulesRoot) {
+        // If the node_modules root path has not been explicitly
+        // specified, we will try to guess it by resolving the
+        // `@vendure/core` package.
+        try {
+            const coreUrl = import.meta.resolve('@vendure/core');
+            logger.debug(`Found core URL: ${coreUrl}`);
+            const corePath = fileURLToPath(coreUrl);
+            logger.debug(`Found core path: ${corePath}`);
+            nodeModulesRoot = path.join(path.dirname(corePath), '..', '..', '..');
+        } catch (e) {
+            logger.warn(`Failed to resolve @vendure/core: ${e instanceof Error ? e.message : String(e)}`);
+            nodeModulesRoot = path.dirname(vendureConfigPath);
+        }
     }
+
+    const pluginGlobPatterns = packageScanner?.globPatterns;
 
     const patterns = [
         // Local compiled plugins in temp dir
         path.join(tempDir, '**/*.js'),
         // Node modules patterns
-        ...(pluginScanPatterns
-            ? pluginScanPatterns.map(pattern =>
+        ...(pluginGlobPatterns
+            ? pluginGlobPatterns.map(pattern =>
                   path.join(nodeModulesRoot, 'node_modules', pattern, '**/*.js'),
               )
             : [path.join(nodeModulesRoot, 'node_modules/**/*.js')]),

@@ -5,6 +5,7 @@ import path from 'path';
 import { PluginOption } from 'vite';
 
 import { PathAdapter } from './types.js';
+import { PackageScannerConfig } from './utils/compiler.js';
 import { adminApiSchemaPlugin } from './vite-plugin-admin-api-schema.js';
 import { configLoaderPlugin } from './vite-plugin-config-loader.js';
 import { viteConfigPlugin } from './vite-plugin-config.js';
@@ -67,7 +68,7 @@ export type VitePluginVendureDashboardOptions = {
     pathAdapter?: PathAdapter;
     /**
      * @description
-     * The name of the exported variable from the Vendure server configuration file.
+     * The name of the exported variable from the Vendure server configuration file, e.g. `config`.
      * This is only required if the plugin is unable to auto-detect the name of the exported variable.
      */
     vendureConfigExport?: string;
@@ -80,19 +81,11 @@ export type VitePluginVendureDashboardOptions = {
     disableTansStackRouterPlugin?: boolean;
     /**
      * @description
-     * If set to `true`, compilation errors during the build process will be reported and
-     * the build will fail.
-     *
-     * @default false
+     * Allows you to customize the location of node_modules & glob patterns used to scan for potential
+     * Vendure plugins installed as npm packages. If not provided, the compiler will attempt to guess
+     * the location based on the location of the `@vendure/core` package.
      */
-    reportCompilationErrors?: boolean;
-    /**
-     * @description
-     * An array of glob patterns that will be appended to "node_modules/" to scan for plugins.
-     * For example: ['vendure-*plugin*', '@vendure/*plugin*']
-     * If not specified, will scan all files in node_modules (slower).
-     */
-    pluginScanPatterns?: string[];
+    pluginPackageScanner?: PackageScannerConfig;
 } & UiConfigPluginOptions &
     ThemeVariablesPluginOptions;
 
@@ -133,10 +126,9 @@ export function vendureDashboardPlugin(options: VitePluginVendureDashboardOption
         tailwindcss(),
         configLoaderPlugin({
             vendureConfigPath: normalizedVendureConfigPath,
-            tempDir,
-            reportCompilationErrors: options.reportCompilationErrors,
+            outputPath: tempDir,
             pathAdapter: options.pathAdapter,
-            pluginScanPatterns: options.pluginScanPatterns,
+            pluginPackageScanner: options.pluginPackageScanner,
         }),
         viteConfigPlugin({ packageRoot }),
         adminApiSchemaPlugin(),

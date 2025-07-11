@@ -1,7 +1,7 @@
 import path from 'path';
 import { Plugin } from 'vite';
 
-import { LoadVendureConfigResult } from './utils/config-loader.js';
+import { CompileResult } from './utils/compiler.js';
 import { ConfigLoaderApi, getConfigLoaderApi } from './vite-plugin-config-loader.js';
 
 const virtualModuleId = 'virtual:dashboard-extensions';
@@ -14,7 +14,7 @@ const resolvedVirtualModuleId = `\0${virtualModuleId}`;
  */
 export function dashboardMetadataPlugin(): Plugin {
     let configLoaderApi: ConfigLoaderApi;
-    let loadVendureConfigResult: LoadVendureConfigResult;
+    let loadVendureConfigResult: CompileResult;
     return {
         name: 'vendure:dashboard-extensions-metadata',
         configResolved({ plugins }) {

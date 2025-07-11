@@ -2,7 +2,7 @@ import { rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-import { loadVendureConfig } from '../utils/config-loader.js';
+import { compile } from '../utils/compiler.js';
 import { debugLogger } from '../utils/debug-logger.js';
 
 describe('detecting plugins using tsconfig path aliases', () => {
@@ -11,8 +11,8 @@ describe('detecting plugins using tsconfig path aliases', () => {
         async () => {
             const tempDir = join(__dirname, './__temp/path-alias');
             await rm(tempDir, { recursive: true, force: true });
-            const result = await loadVendureConfig({
-                tempDir,
+            const result = await compile({
+                outputPath: tempDir,
                 vendureConfigPath: join(__dirname, 'fixtures-path-alias', 'vendure-config.ts'),
                 logger: debugLogger,
             });
