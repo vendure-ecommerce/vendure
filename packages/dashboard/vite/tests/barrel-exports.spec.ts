@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { compile } from '../utils/compiler.js';
-import { debugLogger } from '../utils/debug-logger.js';
+import { debugLogger, noopLogger } from '../utils/logger.js';
 
 describe('detecting plugins in barrel exports', () => {
     it(
@@ -14,7 +14,7 @@ describe('detecting plugins in barrel exports', () => {
             const result = await compile({
                 outputPath: tempDir,
                 vendureConfigPath: join(__dirname, 'fixtures-barrel-exports', 'vendure-config.ts'),
-                logger: debugLogger,
+                logger: process.env.LOG ? debugLogger : noopLogger,
             });
 
             expect(result.pluginInfo).toHaveLength(1);

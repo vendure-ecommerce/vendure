@@ -1,7 +1,7 @@
 import { Plugin } from 'vite';
 
 import { compile, CompileResult, CompilerOptions } from './utils/compiler.js';
-import { debugLogger } from './utils/debug-logger.js';
+import { debugLogger } from './utils/logger.js';
 
 export interface ConfigLoaderApi {
     getVendureConfig(): Promise<CompileResult>;

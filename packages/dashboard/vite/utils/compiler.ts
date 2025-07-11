@@ -9,7 +9,7 @@ import { pathToFileURL } from 'url';
 import { Logger, PathAdapter, PluginInfo } from '../types.js';
 
 import { findConfigExport } from './ast-utils.js';
-import { debugLogger } from './debug-logger.js';
+import { noopLogger } from './logger.js';
 import { discoverPlugins } from './plugin-discovery.js';
 import { findTsConfigPaths } from './tsconfig-utils.js';
 
@@ -41,13 +41,7 @@ export interface CompileResult {
  * and in node_modules.
  */
 export async function compile(options: CompilerOptions): Promise<CompileResult> {
-    const {
-        vendureConfigPath,
-        outputPath,
-        pathAdapter,
-        logger = debugLogger,
-        pluginPackageScanner,
-    } = options;
+    const { vendureConfigPath, outputPath, pathAdapter, logger = noopLogger, pluginPackageScanner } = options;
     const getCompiledConfigPath =
         pathAdapter?.getCompiledConfigPath ?? defaultPathAdapter.getCompiledConfigPath;
     const transformTsConfigPathMappings =

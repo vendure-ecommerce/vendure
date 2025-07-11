@@ -26,3 +26,18 @@ export const debugLogger: Logger = {
         console.error(`${colors.red}[ERROR] ${message}${colors.reset}`);
     },
 };
+
+export const noopLogger: Logger = {
+    info: () => {
+        /* noop */
+    },
+    warn: () => {
+        /* noop */
+    },
+    debug: () => {
+        /* noop */
+    },
+    error: () => {
+        /* noop */
+    },
+};
