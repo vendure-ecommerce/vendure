@@ -14,7 +14,7 @@ export function ContentLanguageSelector({ value, onChange, className }: ContentL
     const serverConfig = useServerConfig();
     const { formatLanguageName } = useLocalFormat();
     const {
-        settings: { contentLanguage, displayLanguage },
+        settings: { contentLanguage },
         setContentLanguage,
     } = useUserSettings();
 

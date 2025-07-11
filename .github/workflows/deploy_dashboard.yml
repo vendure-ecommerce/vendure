@@ -26,6 +26,8 @@ concurrency:
 jobs:
     deploy:
         runs-on: ubuntu-latest
+        permissions:
+            contents: read
         env:
             # VERCEL_ENV: ${{ github.ref_name == 'minor' && 'development' || github.ref_name == 'major' && 'major' || 'production' }}
             VERCEL_ENV: production

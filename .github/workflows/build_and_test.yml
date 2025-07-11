@@ -33,6 +33,8 @@ jobs:
     build:
         name: build
         runs-on: ubuntu-latest
+        permissions:
+            contents: read
         strategy:
             matrix:
                 node: [20.x, 22.x, 24.x]
@@ -51,6 +53,8 @@ jobs:
     unit-tests:
         name: unit tests
         runs-on: ubuntu-latest
+        permissions:
+            contents: read
         strategy:
             matrix:
                 node: [20.x, 22.x, 24.x]
@@ -71,6 +75,8 @@ jobs:
     e2e-tests:
         name: e2e tests
         runs-on: ubuntu-latest
+        permissions:
+            contents: read
         services:
             mariadb:
                 # With v11.6.2+, a default was changed, (https://mariadb.com/kb/en/innodb-system-variables/#innodb_snapshot_isolation)

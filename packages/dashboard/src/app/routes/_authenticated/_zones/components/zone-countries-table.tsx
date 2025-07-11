@@ -28,13 +28,6 @@ export function ZoneCountriesTable({ zoneId, canAddCountries = false }: Readonly
         },
     });
 
-    const { mutate: removeCountryFromZone } = useMutation({
-        mutationFn: api.mutate(removeCountryFromZoneMutation),
-        onSuccess: () => {
-            refetch();
-        },
-    });
-
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
 
