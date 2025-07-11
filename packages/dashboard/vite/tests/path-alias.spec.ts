@@ -11,6 +11,7 @@ describe('detecting plugins using tsconfig path aliases', () => {
         async () => {
             const tempDir = join(__dirname, './__temp/path-alias');
             await rm(tempDir, { recursive: true, force: true });
+
             const result = await compile({
                 outputPath: tempDir,
                 vendureConfigPath: join(__dirname, 'fixtures-path-alias', 'vendure-config.ts'),
